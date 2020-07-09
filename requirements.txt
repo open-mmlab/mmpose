@@ -1,0 +1,7 @@
+json_tricks
+mmcv-nightly
+numpy
+opencv-python
+pillow==6.2.2
+pycocotools
+scipy

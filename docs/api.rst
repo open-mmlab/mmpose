@@ -1,0 +1,85 @@
+API Documentation
+=================
+
+mmpose.apis
+-------------
+.. automodule:: mmpose.apis
+    :members:
+
+
+mmpose.core
+-------------
+evaluation
+^^^^^^^^^^^
+.. automodule:: mmpose.core.evaluation
+    :members:
+
+fp16
+^^^^^^^^^^^
+.. automodule:: mmpose.core.fp16
+    :members:
+
+
+utils
+^^^^^^^^^^^
+.. automodule:: mmpose.core.utils
+    :members:
+
+
+post_processing
+^^^^^^^^^^^
+.. automodule:: mmpose.core.post_processing
+    :members:
+
+
+mmpose.models
+---------------
+backbones
+^^^^^^^^^^^
+.. automodule:: mmpose.models.backbones
+    :members:
+
+detectors
+^^^^^^^^^^^
+.. automodule:: mmpose.models.detectors
+    :members:
+
+keypoint_heads
+^^^^^^^^^^^^^^^
+.. automodule:: mmpose.models.keypoint_heads
+    :members:
+
+losses
+^^^^^^^^^^^
+.. automodule:: mmpose.models.losses
+    :members:
+
+
+mmpose.datasets
+-----------------
+.. automodule:: mmpose.datasets
+    :members:
+
+datasets
+^^^^^^^^^^^
+.. automodule:: mmpose.datasets.datasets.top_down
+    :members:
+
+pipelines
+^^^^^^^^^^^
+.. automodule:: mmpose.datasets.pipelines
+    :members:
+
+.. automodule:: mmpose.datasets.pipelines.top_down
+    :members:
+
+samplers
+^^^^^^^^^^^
+.. automodule:: mmpose.datasets.samplers
+    :members:
+
+
+mmpose.utils
+---------------
+.. automodule:: mmpose.utils
+    :members:
