@@ -53,6 +53,7 @@ If you use this tool in your research, please cite this project.
   year =         {2020}
 }
 ```
+Can Wang and Sheng Jin are equal contributors.
 
 ## Acknowledgement
 
