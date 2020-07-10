@@ -1,4 +1,4 @@
-# Benchmark and Model Zoo
+# Model Zoo
 ## Result
 
 ### Top-Down
