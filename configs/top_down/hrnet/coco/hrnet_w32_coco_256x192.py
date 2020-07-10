@@ -99,7 +99,7 @@ data_cfg = dict(
     bbox_thr=1.0,
     use_gt_bbox=True,
     image_thr=0.0,
-    bbox_file='pretrained_models/det/'
+    bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
 
