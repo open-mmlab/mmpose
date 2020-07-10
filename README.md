@@ -4,12 +4,6 @@
 
 ## Introduction
 
-<div align="left">
-	<a href="http://open-mmlab.pages.gitlab.sz.sensetime.com/mmpose/">
-		<img src="https://img.shields.io/badge/docs-latest-blue"/>
-	</a>
-</div>
-
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
