@@ -22,7 +22,8 @@ The master branch works with **PyTorch 1.3+**.
 
 Benchmark with other open source projects are available on [benchmark.md](docs/benchmark.md).
 
-Results and models are available in the **README.md** of each method's config directory.
+Results and models are available in the *README.md* of each method's config directory.
+A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
 
 ## Installation
 
