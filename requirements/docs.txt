@@ -1,0 +1,9 @@
+sphinx
+sphinx_rtd_theme
+recommonmark
+sphinx-markdown-tables
+matplotlib
+pillow==6.2.2
+scipy
+json_tricks
+pycocotools
