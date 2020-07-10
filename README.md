@@ -4,6 +4,10 @@
 
 ## Introduction
 
+<a href='https://mmpose.readthedocs.io/en/latest/?badge=latest'>
+    <img src='https://readthedocs.org/projects/mmpose/badge/?version=latest' alt='Documentation Status' />
+</a>
+
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
