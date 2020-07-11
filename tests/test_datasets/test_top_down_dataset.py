@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from mmpose.datasets import DATASETS
 
 
-def test_COCO_dataset():
+def test_top_down_COCO_dataset():
     dataset = 'TopDownCocoDataset'
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)

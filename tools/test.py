@@ -23,7 +23,7 @@ def parse_args():
         type=str,
         nargs='+',
         choices=['mAP'],
-        help='evaluation metrics, which depends on the dataset,'
+        help='evaluation metric, which depends on the dataset,'
         ' e.g., "mAP" for MSCOCO')
     parser.add_argument(
         '--gpu_collect',
@@ -106,7 +106,7 @@ def main():
 
     rank, _ = get_dist_info()
     eval_config = cfg.get('eval_config', {})
-    eval_config = merge_configs(eval_config, dict(metrics=args.eval))
+    eval_config = merge_configs(eval_config, dict(metric=args.eval))
 
     if rank == 0:
         if args.out:
