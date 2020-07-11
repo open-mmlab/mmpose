@@ -18,6 +18,10 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
+<div align="center">
+  <img src="demo/demo.gif" width="600px"/>
+</div>
+
 ## Benchmark and Model Zoo
 
 Benchmark with other open source projects are available on [benchmark.md](docs/benchmark.md).
