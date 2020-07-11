@@ -6,10 +6,11 @@ import torch
 from numpy.testing import assert_array_almost_equal
 from pycocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (AffineTransform, Collect,
-                                       GenerateTarget, HalfBodyTransform,
-                                       LoadImageFromFile, NormalizeTensor,
-                                       RandomFlip, ToTensor)
+from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
+                                       NormalizeTensor, TopDownAffine,
+                                       TopDownGenerateTarget,
+                                       TopDownHalfBodyTransform,
+                                       TopDownRandomFlip, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):
@@ -119,17 +120,17 @@ def test_pipeline():
     results['ann_info']['heatmap_size'] = np.array([48, 64])
 
     # test filp
-    random_flip = RandomFlip(flip_prob=1.)
+    random_flip = TopDownRandomFlip(flip_prob=1.)
     results_flip = random_flip(copy.deepcopy(results))
     assert _check_flip(results['img'], results_flip['img'])
 
     # test halfbody transform
-    halfbody_transform = HalfBodyTransform(
+    halfbody_transform = TopDownHalfBodyTransform(
         num_joints_half_body=8, prob_half_body=1.)
     results_halfbody = halfbody_transform(copy.deepcopy(results))
     assert (results_halfbody['scale'] <= results['scale']).all()
 
-    affine_transform = AffineTransform()
+    affine_transform = TopDownAffine()
     results['rotation'] = 90
     results_affine = affine_transform(copy.deepcopy(results))
     assert results_affine['img'].shape == (256, 192, 3)
@@ -150,7 +151,7 @@ def test_pipeline():
     _check_normalize(results_tensor['img'].data.numpy(),
                      results_normalize['img'].data.numpy(), norm_cfg)
 
-    generate_target = GenerateTarget(sigma=2, unbiased_encoding=False)
+    generate_target = TopDownGenerateTarget(sigma=2, unbiased_encoding=False)
     results_target = generate_target(copy.deepcopy(results_tensor))
     assert 'target' in results_target
     assert results_target['target'].shape == (

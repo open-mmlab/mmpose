@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from mmpose.core.evaluation import pose_pck_accuracy
-from mmpose.core.evaluation.acc import keypoints_from_heatmaps
+from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
 from mmpose.core.post_processing import flip_back
 from .. import builder
 from ..registry import POSENETS
@@ -100,6 +100,7 @@ class TopDown(BasePose):
             return self.forward_test(img, img_metas, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
+        """Defines the computation performed at every call when training."""
         output = self.backbone(img)
         if self.with_keypoint:
             output = self.keypoint_head(output)
@@ -136,6 +137,7 @@ class TopDown(BasePose):
         return losses
 
     def forward_test(self, img, img_metas, **kwargs):
+        """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
         assert len(img_metas) == 1
 

@@ -15,7 +15,7 @@ The training speed is measure with s/iter. The lower, the better.
 ### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 We demonstrate the superiority of our MMPose framework in terms of speed and accuracy on the standard COCO keypoint detection benchmark.
-The mAP (the mean average precision) is used as the evaluation metrics.
+The mAP (the mean average precision) is used as the evaluation metric.
 
 | Model | Input size| MMPose (s/iter) | HRNet (s/iter) | MMPose (mAP) | HRNet (mAP) |
 | :--- | :---------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: |
