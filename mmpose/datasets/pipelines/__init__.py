@@ -1,3 +1,4 @@
-from .compose import Compose  # noqa
+from .bottom_up_transform import *  # noqa
 from .loading import LoadImageFromFile  # noqa
-from .top_down.transform import *  # noqa
+from .shared_transform import *  # noqa
+from .top_down_transform import *  # noqa

@@ -261,29 +261,29 @@ class TopDownCocoDataset(TopDownBaseDataset):
               f'low score@{self.image_thr}: {num_boxes}')
         return kpt_db
 
-    def evaluate(self, outputs, res_folder, metrics='mAP', **kwargs):
-        """Evaluate coco keypoint results.
+    def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
+        """Evaluate coco keypoint results. The pose prediction results will be
+        saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             num_keypoints: K
 
         Args:
-            outputs(list(preds, boxes, image_path))
-                :preds(np.ndarray[1,K,3]): The first two dimensions are
+            outputs (list(preds, boxes, image_path))
+                :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path(list[str]): For example, [ '/', 'v','a', 'l',
+                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
-
-            res_folder(str): Path of directory to save the results.
-            metrics(str): Metrics to be performed.
-                Defaults: 'mAP'.
+            res_folder (str): Path of directory to save the results.
+            metric (str): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
-            name_value (dict): Evaluation results for evaluation metrics.
+            name_value (dict): Evaluation results for evaluation metric.
         """
+        assert metric == 'mAP'
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
@@ -375,11 +375,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
             result = [{
                 'image_id': img_kpt['image_id'],
                 'category_id': cat_id,
-                'keypoints': list(keypoint),
+                'keypoints': list(key_point),
                 'score': img_kpt['score'],
                 'center': list(img_kpt['center']),
                 'scale': list(img_kpt['scale'])
-            } for img_kpt, keypoint in zip(img_kpts, key_points)]
+            } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)
 

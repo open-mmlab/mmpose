@@ -1,51 +1,13 @@
 import cv2
 import numpy as np
-from mmcv.parallel import DataContainer as DC
-from torchvision.transforms import functional as F
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform)
-from ...registry import PIPELINES
+from mmpose.datasets.registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class ToTensor():
-    """Transform image to Tensor.
-
-    Required key: 'img'. Modifies key: 'img'.
-
-    Args:
-        results (dict): contain all information about training.
-    """
-
-    def __call__(self, results):
-        results['img'] = F.to_tensor(results['img'])
-        return results
-
-
-@PIPELINES.register_module()
-class NormalizeTensor():
-    """Normalize the Tensor image (CxHxW), with mean and std.
-
-    Required key: 'img'. Modifies key: 'img'.
-
-    Args:
-        mean (list[float]): Mean values of 3 channels.
-        std (list[float]): Std values of 3 channels.
-    """
-
-    def __init__(self, mean, std):
-        self.mean = mean
-        self.std = std
-
-    def __call__(self, results):
-        results['img'] = F.normalize(
-            results['img'], mean=self.mean, std=self.std)
-        return results
-
-
-@PIPELINES.register_module()
-class RandomFlip():
+class TopDownRandomFlip():
     """Data augmentation with random image flip.
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
@@ -83,7 +45,7 @@ class RandomFlip():
 
 
 @PIPELINES.register_module()
-class HalfBodyTransform():
+class TopDownHalfBodyTransform():
     """Data augmentation with half-body transform. Keep only the upper body or
     the lower body at random.
 
@@ -161,7 +123,7 @@ class HalfBodyTransform():
 
 
 @PIPELINES.register_module()
-class RandomScaleRotation():
+class TopDownGetRandomScaleRotation():
     """Data augmentation with random scaling & rotating.
 
     Required key: 'scale'. Modifies key: 'scale' and 'rotation'.
@@ -196,7 +158,7 @@ class RandomScaleRotation():
 
 
 @PIPELINES.register_module()
-class AffineTransform():
+class TopDownAffine():
     """Affine transform the image to make input.
 
     Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
@@ -232,7 +194,7 @@ class AffineTransform():
 
 
 @PIPELINES.register_module()
-class GenerateTarget():
+class TopDownGenerateTarget():
     """Generate the target heatmap.
 
     Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
@@ -349,49 +311,3 @@ class GenerateTarget():
         results['target_weight'] = target_weight
 
         return results
-
-
-@PIPELINES.register_module()
-class Collect(object):
-    """Collect data from the loader relevant to the specific task.
-
-    This keeps the items in `keys` as it is, and collect items in `meta_keys`
-    into a meta item called `meta_name`.This is usually the last stage of the
-    data loader pipeline.
-    For example, when keys='imgs', meta_keys=('filename', 'label',
-    'original_shape'), meta_name='img_metas', the results will be a dict with
-    keys 'imgs' and 'img_metas', where 'img_metas' is a DataContainer of
-    another dict with keys 'filename', 'label', 'original_shape'.
-
-    Args:
-        keys (Sequence[str]): Required keys to be collected.
-        meta_name (str): The name of the key that contains meta infomation.
-            This key is always populated. Default: "img_metas".
-        meta_keys (Sequence[str]): Keys that are collected under meta_name.
-            The contents of the `meta_name` dictionary depends on `meta_keys`.
-    """
-
-    def __init__(self, keys, meta_keys, meta_name='img_metas'):
-        self.keys = keys
-        self.meta_keys = meta_keys
-        self.meta_name = meta_name
-
-    def __call__(self, results):
-        if 'ann_info' in results:
-            results.update(results['ann_info'])
-
-        data = {}
-        for key in self.keys:
-            data[key] = results[key]
-
-        if len(self.meta_keys) != 0:
-            meta = {}
-            for key in self.meta_keys:
-                meta[key] = results[key]
-            data[self.meta_name] = DC(meta, cpu_only=True)
-
-        return data
-
-    def __repr__(self):
-        return (f'{self.__class__.__name__}('
-                f'keys={self.keys}, meta_keys={self.meta_keys})')
