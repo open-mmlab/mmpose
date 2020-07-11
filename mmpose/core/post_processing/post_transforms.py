@@ -6,8 +6,6 @@
 import cv2
 import numpy as np
 
-from .shared_transforms import affine_transform, get_3rd_point, rotate_point
-
 
 def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     """Flip human joints horizontally.
@@ -140,7 +138,7 @@ def get_affine_transform(center,
     assert len(output_size) == 2
     assert len(shift) == 2
 
-    # pixel_std is 200.0
+    # pixel_std is 200.
     scale_tmp = scale * 200.0
 
     shift = np.array(shift)
@@ -155,12 +153,12 @@ def get_affine_transform(center,
     src = np.zeros((3, 2), dtype=np.float32)
     src[0, :] = center + scale_tmp * shift
     src[1, :] = center + src_dir + scale_tmp * shift
-    src[2, :] = get_3rd_point(src[0, :], src[1, :])
+    src[2, :] = _get_3rd_point(src[0, :], src[1, :])
 
     dst = np.zeros((3, 2), dtype=np.float32)
     dst[0, :] = [dst_w * 0.5, dst_h * 0.5]
     dst[1, :] = np.array([dst_w * 0.5, dst_h * 0.5]) + dst_dir
-    dst[2, :] = get_3rd_point(dst[0, :], dst[1, :])
+    dst[2, :] = _get_3rd_point(dst[0, :], dst[1, :])
 
     if inv:
         trans = cv2.getAffineTransform(np.float32(dst), np.float32(src))
@@ -168,3 +166,60 @@ def get_affine_transform(center,
         trans = cv2.getAffineTransform(np.float32(src), np.float32(dst))
 
     return trans
+
+
+def affine_transform(pt, trans_mat):
+    """Apply an affine transformation to the points.
+
+    Args:
+        pt (np.ndarray): a 2 dimensional point to be transformed
+        trans_mat (np.ndarray): 2x3 matrix of an affine transform
+
+    Returns:
+        np.ndarray: Transformed points.
+    """
+    assert len(pt) == 2
+    new_pt = np.array(trans_mat) @ np.array([pt[0], pt[1], 1.])
+
+    return new_pt
+
+
+def _get_3rd_point(a, b):
+    """To calculate the affine matrix, three pairs of points are required. This
+    function is used to get the 3rd point, given 2D points a & b.
+
+    The 3rd point is defined by rotating vector `a - b` by 90 degrees
+    anticlockwise, using b as the rotation center.
+
+    Args:
+        a (np.ndarray): point(x,y)
+        b (np.ndarray): point(x,y)
+
+    Returns:
+        np.ndarray: The 3rd point.
+    """
+    assert len(a) == 2
+    assert len(b) == 2
+    direction = a - b
+    third_pt = b + np.array([-direction[1], direction[0]], dtype=np.float32)
+
+    return third_pt
+
+
+def rotate_point(pt, angle_rad):
+    """Rotate a point by an angle.
+
+    Args:
+        pt (list[float]): 2 dimensional point to be rotated
+        angle_rad (float): rotation angle by radian
+
+    Returns:
+        list[float]: Rotated point.
+    """
+    assert len(pt) == 2
+    sn, cs = np.sin(angle_rad), np.cos(angle_rad)
+    new_x = pt[0] * cs - pt[1] * sn
+    new_y = pt[0] * sn + pt[1] * cs
+    rotated_pt = [new_x, new_y]
+
+    return rotated_pt
