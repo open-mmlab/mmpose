@@ -39,7 +39,7 @@ class BottomUpHigherResolutionHead(nn.Module):
                  num_basic_blocks=4,
                  cat_output=None,
                  with_ae_loss=None):
-        super(BottomUpHigherResolutionHead, self).__init__()
+        super().__init__()
 
         dim_tag = num_joints if tag_per_joint else 1
 

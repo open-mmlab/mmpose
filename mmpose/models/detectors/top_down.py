@@ -35,7 +35,7 @@ class TopDown(BasePose):
                  test_cfg=None,
                  pretrained=None,
                  loss_pose=None):
-        super(TopDown, self).__init__()
+        super().__init__()
 
         self.backbone = builder.build_backbone(backbone)
 

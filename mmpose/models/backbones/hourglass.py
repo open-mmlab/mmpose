@@ -28,7 +28,7 @@ class HourglassModule(nn.Module):
                  stage_channels,
                  stage_blocks,
                  norm_cfg=dict(type='BN', requires_grad=True)):
-        super(HourglassModule, self).__init__()
+        super().__init__()
 
         self.depth = depth
 
