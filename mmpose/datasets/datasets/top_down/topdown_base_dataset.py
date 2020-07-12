@@ -61,9 +61,11 @@ class TopDownBaseDataset(Dataset, metaclass=ABCMeta):
         raise NotImplementedError
 
     def __len__(self, ):
+        """Get the size of the dataset."""
         return len(self.db)
 
     def __getitem__(self, idx):
+        """Get the sample given index."""
         results = copy.deepcopy(self.db[idx])
         results['ann_info'] = self.ann_info
         return self.pipeline(results)

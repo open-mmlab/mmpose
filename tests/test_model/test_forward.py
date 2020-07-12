@@ -10,7 +10,7 @@ def test_topdown_forward():
         pretrained=None,
         backbone=dict(type='ResNet', depth=18),
         keypoint_head=dict(
-            type='SimpleHead',
+            type='TopDownSimpleHead',
             in_channels=512,
             out_channels=17,
         ),
@@ -36,6 +36,46 @@ def test_topdown_forward():
     target = mm_inputs.pop('target')
     target_weight = mm_inputs.pop('target_weight')
     img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        detector = detector.cuda()
+        _ = detector.forward(
+            imgs.cuda(), img_metas=img_metas, return_loss=False)
+
+    # flip test
+    model_cfg = dict(
+        type='TopDown',
+        pretrained=None,
+        backbone=dict(
+            type='HourglassNet',
+            num_stacks=1,
+        ),
+        keypoint_head=dict(
+            type='TopDownMultiStageHead',
+            in_channels=256,
+            out_channels=17,
+            num_stages=1,
+            num_deconv_layers=0,
+            extra=dict(final_conv_kernel=1, ),
+        ),
+        train_cfg=dict(),
+        test_cfg=dict(
+            flip_test=True,
+            post_process=True,
+            shift_heatmap=True,
+            unbiased_decoding=False,
+            modulate_kernel=11),
+        loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
+
+    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+                       model_cfg['train_cfg'], model_cfg['test_cfg'],
+                       model_cfg['pretrained'], model_cfg['loss_pose'])
 
     # Test forward train
     losses = detector.forward(

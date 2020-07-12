@@ -42,7 +42,7 @@ model = dict(
     pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
-        type='SimpleHead',
+        type='TopDownSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
     ),
@@ -75,16 +75,20 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomFlip', flip_prob=0.5),
-    dict(type='HalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
-    dict(type='RandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='AffineTransform'),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(
+        type='TopDownHalfBodyTransform',
+        num_joints_half_body=8,
+        prob_half_body=0.3),
+    dict(
+        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='GenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -96,7 +100,7 @@ train_pipeline = [
 
 valid_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='AffineTransform'),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',

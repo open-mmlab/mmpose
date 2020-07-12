@@ -29,6 +29,7 @@ test:
     - pip install pillow==6.2.2
     - pip install scipy
     - pip install json_tricks
+    - pip install munkres
     - pip install git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
     - pip install -e .
     - python -c "import mmpose; print(mmpose.__version__)"
