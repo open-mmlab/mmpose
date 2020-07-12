@@ -1,4 +1,9 @@
-from .multi_stage_head import MultiStageHead
-from .simple_head import SimpleHead
+from .bottom_up_higher_resolution_head import BottomUpHigherResolutionHead
+from .bottom_up_simple_head import BottomUpSimpleHead
+from .top_down_multi_stage_head import TopDownMultiStageHead
+from .top_down_simple_head import TopDownSimpleHead
 
-__all__ = ['SimpleHead', 'MultiStageHead']
+__all__ = [
+    'TopDownSimpleHead', 'TopDownMultiStageHead',
+    'BottomUpHigherResolutionHead', 'BottomUpSimpleHead'
+]

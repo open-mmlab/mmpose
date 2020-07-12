@@ -1,5 +1,11 @@
+import math
+
+import cv2
+import mmcv
 import numpy as np
 import torch
+from mmcv.image import imwrite
+from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
@@ -100,7 +106,6 @@ class TopDown(BasePose):
             return self.forward_test(img, img_metas, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
-        """Defines the computation performed at every call when training."""
         output = self.backbone(img)
         if self.with_keypoint:
             output = self.keypoint_head(output)
@@ -197,3 +202,144 @@ class TopDown(BasePose):
         image_path.extend(img_metas['image_file'])
 
         return all_preds, all_boxes, image_path
+
+    def show_result(self,
+                    img,
+                    result,
+                    skeleton=None,
+                    kpt_score_thr=0.3,
+                    bbox_color='green',
+                    pose_kpt_color=None,
+                    pose_limb_color=None,
+                    radius=4,
+                    text_color=(255, 0, 0),
+                    thickness=1,
+                    font_scale=0.5,
+                    win_name='',
+                    show=False,
+                    wait_time=0,
+                    out_file=None):
+        """Draw `result` over `img`.
+
+        Args:
+            img (str or Tensor): The image to be displayed.
+            result (list[dict]): The results to draw over `img`
+                (bbox_result, pose_result).
+            kpt_score_thr (float, optional): Minimum score of keypoints
+                to be shown. Default: 0.3.
+            bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
+            pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
+            pose_limb_color (np.array[Mx3]): Color of M limbs.
+            text_color (str or tuple or :obj:`Color`): Color of texts.
+            thickness (int): Thickness of lines.
+            font_scale (float): Font scales of texts.
+            win_name (str): The window name.
+            wait_time (int): Value of waitKey param.
+                Default: 0.
+            out_file (str or None): The filename to write the image.
+                Default: None.
+
+        Returns:
+            img (Tensor): Only if not `show` or `out_file`
+        """
+
+        img = mmcv.imread(img)
+        img = img.copy()
+        img_h, img_w, _ = img.shape
+
+        bbox_result = []
+        pose_result = []
+        for res in result:
+            bbox_result.append(res['bbox'])
+            pose_result.append(res['keypoints'])
+
+        if len(bbox_result) > 0:
+            bboxes = np.vstack(bbox_result)
+            # draw bounding boxes
+            mmcv.imshow_bboxes(
+                img,
+                bboxes,
+                colors=bbox_color,
+                top_k=-1,
+                thickness=thickness,
+                show=False,
+                win_name=win_name,
+                wait_time=wait_time,
+                out_file=None)
+
+            for person_id, kpts in enumerate(pose_result):
+                # draw each point on image
+                for kid, kpt in enumerate(kpts):
+                    x_coord, y_coord, kpt_score = int(kpt[0]), int(
+                        kpt[1]), kpt[2]
+                    if kpt_score > kpt_score_thr:
+                        # cv2.circle(img, (x_coord, y_coord), radius,
+                        #            pose_kpt_color, thickness)
+                        img_copy = img.copy()
+                        r, g, b = pose_kpt_color[kid]
+                        cv2.circle(img_copy, (int(x_coord), int(y_coord)),
+                                   radius, (int(r), int(g), int(b)), -1)
+                        transparency = max(0, min(1, kpt_score))
+                        cv2.addWeighted(
+                            img_copy,
+                            transparency,
+                            img,
+                            1 - transparency,
+                            0,
+                            dst=img)
+
+                        # cv2.putText(img, f'{kid}', (x_coord, y_coord - 2),
+                        #             cv2.FONT_HERSHEY_COMPLEX, font_scale,
+                        #             text_color)
+
+                # draw limbs
+                if skeleton is not None:
+                    for sk_id, sk in enumerate(skeleton):
+                        pos1 = (int(kpts[sk[0] - 1, 0]), int(kpts[sk[0] - 1,
+                                                                  1]))
+                        pos2 = (int(kpts[sk[1] - 1, 0]), int(kpts[sk[1] - 1,
+                                                                  1]))
+                        if pos1[0] > 0 and pos1[0] < img_w \
+                                and pos1[1] > 0 and pos1[1] < img_h \
+                                and pos2[0] > 0 and pos2[0] < img_w \
+                                and pos2[1] > 0 and pos2[1] < img_h \
+                                and kpts[sk[0] - 1, 2] > kpt_score_thr \
+                                and kpts[sk[1] - 1, 2] > kpt_score_thr:
+                            # cv2.line(img, pos1, pos2, pose_kpt_color, 2, 8)
+                            img_copy = img.copy()
+                            X = (pos1[0], pos2[0])
+                            Y = (pos1[1], pos2[1])
+                            mX = np.mean(X)
+                            mY = np.mean(Y)
+                            length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
+                            angle = math.degrees(
+                                math.atan2(Y[0] - Y[1], X[0] - X[1]))
+                            stickwidth = 2
+                            polygon = cv2.ellipse2Poly(
+                                (int(mX), int(mY)),
+                                (int(length / 2), int(stickwidth)), int(angle),
+                                0, 360, 1)
+
+                            r, g, b = pose_limb_color[sk_id]
+                            cv2.fillConvexPoly(img_copy, polygon,
+                                               (int(r), int(g), int(b)))
+                            transparency = max(
+                                0,
+                                min(
+                                    1, 0.5 *
+                                    (kpts[sk[0] - 1, 2] + kpts[sk[1] - 1, 2])))
+                            cv2.addWeighted(
+                                img_copy,
+                                transparency,
+                                img,
+                                1 - transparency,
+                                0,
+                                dst=img)
+
+        if show:
+            imshow(img, win_name, wait_time)
+
+        if out_file is not None:
+            imwrite(img, out_file)
+
+        return img

@@ -70,11 +70,11 @@ model = dict(
                 num_channels=(32, 64, 128, 256))),
     ),
     keypoint_head=dict(
-        type='SimpleHead',
+        type='TopDownSimpleHead',
         in_channels=32,
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
-        extra=dict(final_conv_kerne=1, ),
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
@@ -105,16 +105,20 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomFlip', flip_prob=0.5),
-    dict(type='HalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
-    dict(type='RandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='AffineTransform'),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(
+        type='TopDownHalfBodyTransform',
+        num_joints_half_body=8,
+        prob_half_body=0.3),
+    dict(
+        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='GenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -126,7 +130,7 @@ train_pipeline = [
 
 valid_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='AffineTransform'),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -142,6 +146,8 @@ valid_pipeline = [
             'flip_pairs'
         ]),
 ]
+
+test_pipeline = valid_pipeline
 
 data_root = 'data/coco'
 data = dict(

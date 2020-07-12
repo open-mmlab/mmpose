@@ -1,6 +1,5 @@
 import os
 
-import matplotlib.pyplot as plt
 import mmcv
 import numpy as np
 import torch
@@ -104,7 +103,34 @@ def _box2cs(cfg, box):
     return center, scale
 
 
-def _inference_single_pose_model(model, image_name, bbox):
+class LoadImage(object):
+    """A simple pipeline to load image."""
+
+    def __init__(self, color_type='color', channel_order='rgb'):
+        self.color_type = color_type
+        self.channel_order = channel_order
+
+    def __call__(self, results):
+        """Call function to load images into results.
+
+        Args:
+            results (dict): A result dict contains the file name
+                of the image to be read.
+
+        Returns:
+            dict: ``results`` will be returned containing loaded image.
+        """
+        if isinstance(results['img_or_path'], str):
+            results['image_file'] = results['img_or_path']
+        else:
+            results['image_file'] = ''
+        img = mmcv.imread(results['img_or_path'], self.color_type,
+                          self.channel_order)
+        results['img'] = img
+        return results
+
+
+def _inference_single_pose_model(model, img_or_path, bbox):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -120,13 +146,16 @@ def _inference_single_pose_model(model, image_name, bbox):
     """
     cfg = model.cfg
     device = next(model.parameters()).device
-    # build the data pipeline
-    test_pipeline = Compose(cfg.valid_pipeline)
 
+    # build the data pipeline
+    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    test_pipeline = Compose(test_pipeline)
+
+    assert len(bbox) in [4, 5]
     center, scale = _box2cs(cfg, bbox)
     # prepare data
     data = {
-        'image_file': image_name,
+        'img_or_path': img_or_path,
         'center': center,
         'scale': scale,
         'bbox_score': bbox[4] if len(bbox) == 5 else 1,
@@ -154,15 +183,13 @@ def _inference_single_pose_model(model, image_name, bbox):
     # forward the model
     with torch.no_grad():
         all_preds, _, _ = model(
-            return_loss=False,
-            img=data['img'],
-            img_metas=data['img_metas'].data[0])
+            return_loss=False, img=data['img'], img_metas=data['img_metas'])
 
     return all_preds[0]
 
 
 def inference_pose_model(model,
-                         image_name,
+                         img_or_path,
                          person_bboxes,
                          bbox_thr=None,
                          format='xywh'):
@@ -200,7 +227,7 @@ def inference_pose_model(model,
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
         for bbox in person_bboxes:
-            pose = _inference_single_pose_model(model, image_name, bbox)
+            pose = _inference_single_pose_model(model, img_or_path, bbox)
             pose_results.append({
                 'bbox':
                 _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
@@ -211,12 +238,13 @@ def inference_pose_model(model,
     return pose_results
 
 
-def show_pose_result(model,
-                     img,
-                     result,
-                     kpt_score_thr=0.3,
-                     skeleton=None,
-                     fig_size=(15, 10)):
+def vis_pose_result(model,
+                    img,
+                    result,
+                    kpt_score_thr=0.3,
+                    skeleton=None,
+                    show=False,
+                    out_file=None):
     """Visualize the detection results on the image.
 
     Args:
@@ -225,47 +253,35 @@ def show_pose_result(model,
         result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
         kpt_score_thr (float): The threshold to visualize the keypoints.
-        skeleton (list[tuple()]):
-        fig_size (tuple): Figure size of the pyplot figure.
+        skeleton (list[tuple()]): Default None.
+        show (bool):  Whether to show the image. Default True.
+        out_file (str|None): The filename of the output visualization image.
     """
     if hasattr(model, 'module'):
         model = model.module
+
+    p_color = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
+                        [230, 230, 0], [255, 153, 255], [153, 204, 255],
+                        [255, 102, 255], [255, 51, 255], [102, 178, 255],
+                        [51, 153, 255], [255, 153, 153], [255, 102, 102],
+                        [255, 51, 51], [153, 255, 153], [102, 255, 102],
+                        [51, 255, 51], [0, 255, 0]])
+
+    pose_limb_color = p_color[[
+        0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 16
+    ]]
+    pose_kpt_color = p_color[[
+        16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0
+    ]]
 
     img = model.show_result(
-        img, result, skeleton, kpt_score_thr=kpt_score_thr, show=False)
-
-    plt.figure(figsize=fig_size)
-    plt.imshow(mmcv.bgr2rgb(img))
-    plt.show()
-
-
-def save_pose_vis(model,
-                  img,
-                  result,
-                  out_file=None,
-                  kpt_score_thr=0.3,
-                  skeleton=None):
-    """Visualize the detection results on the image and save the img file.
-
-    Args:
-        model (nn.Module): The loaded detector.
-        img (str or np.ndarray): Image filename or loaded image.
-        result (Tensor | tuple): The results to draw over `img`
-                (bbox_result, pose_result).
-        kpt_score_thr (float): The threshold to visualize the keypoints.
-        skeleton (list[tuple()]):
-        out_file (str | None): The filename to write the image.
-                Default: None.
-    """
-    if hasattr(model, 'module'):
-        model = model.module
-
-    assert out_file is not None
-    model.show_result(
         img,
         result,
         skeleton,
+        pose_kpt_color=pose_kpt_color,
+        pose_limb_color=pose_limb_color,
         kpt_score_thr=kpt_score_thr,
-        show=False,
+        show=show,
         out_file=out_file)
-    return 0
+
+    return img

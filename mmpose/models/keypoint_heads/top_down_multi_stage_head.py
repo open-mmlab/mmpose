@@ -6,10 +6,10 @@ from ..registry import HEADS
 
 
 @HEADS.register_module()
-class MultiStageHead(nn.Module):
+class TopDownMultiStageHead(nn.Module):
     """Heads for multi-stage pose models.
 
-    MultiStageHead is consisted of multiple branches, each of
+    TopDownMultiStageHead is consisted of multiple branches, each of
     which has num_deconv_layers(>=0) number of deconv layers
     and a simple conv2d layer.
 
@@ -33,7 +33,7 @@ class MultiStageHead(nn.Module):
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
                  extra=None):
-        super(MultiStageHead, self).__init__()
+        super(TopDownMultiStageHead, self).__init__()
 
         self.in_channels = in_channels
         self.num_stages = num_stages

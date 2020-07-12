@@ -20,7 +20,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
-        type='SimpleHead',
+        type='TopDownSimpleHead',
         in_channels=512,
         out_channels=17,
     ),
