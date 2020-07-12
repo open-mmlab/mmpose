@@ -45,7 +45,7 @@ def main():
                 [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
-    assert args.show or (args.out_img_root != '/')
+    assert args.show or (args.out_img_root != '')
     assert args.img != ''
     assert 'cuda' in args.device
     assert args.det_config is not None
@@ -73,7 +73,7 @@ def main():
         bbox_thr=args.bbox_thr,
         format='xyxy')
 
-    if args.out_img_root == '/':
+    if args.out_img_root == '':
         out_file = None
     else:
         out_file = os.path.join(args.out_img_root, f'vis_{args.img}')
