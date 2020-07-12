@@ -69,8 +69,8 @@ def main():
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         videoWriter = cv2.VideoWriter(
             os.path.join(args.out_video_root,
-                         f'vis_{args.video_path.split("/")[-1]}'), fourcc, fps,
-            size)
+                         f'vis_{os.path.basename(args.video_path)}'), fourcc,
+            fps, size)
 
     while (cap.isOpened()):
         flag, img = cap.read()
