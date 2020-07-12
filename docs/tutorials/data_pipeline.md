@@ -20,16 +20,16 @@ Here is an pipeline example for Simple Baseline (ResNet50).
 ```python
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomFlip', flip_prob=0.5),
-    dict(type='HalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
-    dict(type='RandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='AffineTransform'),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(type='TopDownHalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
+    dict(type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='GenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -41,7 +41,7 @@ train_pipeline = [
 
 valid_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='AffineTransform'),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -68,16 +68,16 @@ For each operation, we list the related dict fields that are added/updated/remov
 
 ### Pre-processing
 
-`RandomFlip`
+`TopDownRandomFlip`
 - update: img, joints_3d, joints_3d_visible, center
 
-`HalfBodyTransform`
+`TopDownHalfBodyTransform`
 - update: center, scale
 
-`RandomScaleRotation`
+`TopDownGetRandomScaleRotation`
 - update: scale, rotation
 
-`AffineTransform`
+`TopDownAffine`
 - update: img, joints_3d, joints_3d_visible
 
 `NormalizeTensor`
@@ -85,7 +85,7 @@ For each operation, we list the related dict fields that are added/updated/remov
 
 ### Generating labels
 
-`GenerateTarget`
+`TopDownGenerateTarget`
 - add: target, target_weight
 
 
@@ -124,17 +124,17 @@ For each operation, we list the related dict fields that are added/updated/remov
     ```python
    train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomFlip', flip_prob=0.5),
-    dict(type='HalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
-    dict(type='RandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='AffineTransform'),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(type='TopDownHalfBodyTransform', num_joints_half_body=8, prob_half_body=0.3),
+    dict(type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+    dict(type='TopDownAffine'),
     dict(type='MyTransform'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='GenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],

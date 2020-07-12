@@ -2,24 +2,25 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import MultiStageHead, SimpleHead
+from mmpose.models import TopDownMultiStageHead, TopDownSimpleHead
 
 
-def test_simple_head():
+def test_top_down_simple_head():
     """Test simple head."""
     with pytest.raises(TypeError):
         # extra
-        _ = SimpleHead(out_channels=3, in_channels=512, extra=[])
+        _ = TopDownSimpleHead(out_channels=3, in_channels=512, extra=[])
 
     # test num deconv layers
     with pytest.raises(ValueError):
-        _ = SimpleHead(out_channels=3, in_channels=512, num_deconv_layers=-1)
+        _ = TopDownSimpleHead(
+            out_channels=3, in_channels=512, num_deconv_layers=-1)
 
-    _ = SimpleHead(out_channels=3, in_channels=512, num_deconv_layers=0)
+    _ = TopDownSimpleHead(out_channels=3, in_channels=512, num_deconv_layers=0)
 
     with pytest.raises(ValueError):
         # the number of layers should match
-        _ = SimpleHead(
+        _ = TopDownSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -28,7 +29,7 @@ def test_simple_head():
 
     with pytest.raises(ValueError):
         # the number of kernels should match
-        _ = SimpleHead(
+        _ = TopDownSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -37,7 +38,7 @@ def test_simple_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = SimpleHead(
+        _ = TopDownSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -46,7 +47,7 @@ def test_simple_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = SimpleHead(
+        _ = TopDownSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -54,31 +55,33 @@ def test_simple_head():
             num_deconv_kernels=(4, 4, -1))
 
     # test final_conv_kernel
-    head = SimpleHead(
+    head = TopDownSimpleHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 3})
     head.init_weights()
     assert head.final_layer.padding == (1, 1)
-    head = SimpleHead(
+    head = TopDownSimpleHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
     assert head.final_layer.padding == (0, 0)
     with pytest.raises(AssertionError):
         # the deconv kernels should be 4, 3, 2
-        _ = SimpleHead(
+        _ = TopDownSimpleHead(
             out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
 
-    head = SimpleHead(out_channels=3, in_channels=512)
+    head = TopDownSimpleHead(out_channels=3, in_channels=512)
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
     assert out.shape == torch.Size([1, 3, 256, 256])
 
-    head = SimpleHead(out_channels=3, in_channels=512, num_deconv_layers=0)
+    head = TopDownSimpleHead(
+        out_channels=3, in_channels=512, num_deconv_layers=0)
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
     assert out.shape == torch.Size([1, 3, 32, 32])
 
-    head = SimpleHead(out_channels=3, in_channels=512, num_deconv_layers=0)
+    head = TopDownSimpleHead(
+        out_channels=3, in_channels=512, num_deconv_layers=0)
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
     out = head([inputs])
@@ -87,23 +90,24 @@ def test_simple_head():
     head.init_weights()
 
 
-def test_multistage_head():
+def test_top_down_multistage_head():
     """Test multistage head."""
     with pytest.raises(TypeError):
         # the number of layers should match
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3, in_channels=512, num_stages=1, extra=[])
 
     # test num deconv layers
     with pytest.raises(ValueError):
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3, in_channels=512, num_deconv_layers=-1)
 
-    _ = MultiStageHead(out_channels=3, in_channels=512, num_deconv_layers=0)
+    _ = TopDownMultiStageHead(
+        out_channels=3, in_channels=512, num_deconv_layers=0)
 
     with pytest.raises(ValueError):
         # the number of layers should match
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -113,7 +117,7 @@ def test_multistage_head():
 
     with pytest.raises(ValueError):
         # the number of kernels should match
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -123,7 +127,7 @@ def test_multistage_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -133,7 +137,7 @@ def test_multistage_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -142,32 +146,33 @@ def test_multistage_head():
 
     with pytest.raises(AssertionError):
         # inputs should be list
-        head = MultiStageHead(out_channels=3, in_channels=512)
+        head = TopDownMultiStageHead(out_channels=3, in_channels=512)
         input_shape = (1, 512, 32, 32)
         inputs = _demo_inputs(input_shape)
         out = head(inputs)
 
     # test final_conv_kernel
-    head = MultiStageHead(
+    head = TopDownMultiStageHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 3})
     head.init_weights()
     assert head.multi_final_layers[0].padding == (1, 1)
-    head = MultiStageHead(
+    head = TopDownMultiStageHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
     assert head.multi_final_layers[0].padding == (0, 0)
     with pytest.raises(AssertionError):
         # the deconv kernels should be 4, 3, 2
-        _ = MultiStageHead(
+        _ = TopDownMultiStageHead(
             out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
 
-    head = MultiStageHead(out_channels=3, in_channels=512)
+    head = TopDownMultiStageHead(out_channels=3, in_channels=512)
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
     out = head([inputs])
     assert len(out) == 1
     assert out[0].shape == torch.Size([1, 3, 256, 256])
 
-    head = MultiStageHead(out_channels=3, in_channels=512, num_deconv_layers=0)
+    head = TopDownMultiStageHead(
+        out_channels=3, in_channels=512, num_deconv_layers=0)
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
     out = head([inputs])

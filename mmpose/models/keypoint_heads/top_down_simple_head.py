@@ -6,11 +6,11 @@ from ..registry import HEADS
 
 
 @HEADS.register_module()
-class SimpleHead(nn.Module):
-    r"""Top-down model head in `Simple Baselines for Human Pose Estimation and
-    Tracking <https://arxiv.org/abs/1804.06208>`_.
+class TopDownSimpleHead(nn.Module):
+    """Top-down model head of simple baseline paper ref: Bin Xiao. ``Simple
+    Baselines for Human Pose Estimation and Tracking.''.
 
-    SimpleHead is consisted of (>=0) number of deconv layers
+    TopDownSimpleHead is consisted of (>=0) number of deconv layers
     and a simple conv2d layer.
 
     Args:
@@ -25,13 +25,13 @@ class SimpleHead(nn.Module):
     """
 
     def __init__(self,
-                 in_channels=512,
-                 out_channels=17,
+                 in_channels,
+                 out_channels,
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
                  extra=None):
-        super(SimpleHead, self).__init__()
+        super(TopDownSimpleHead, self).__init__()
 
         self.in_channels = in_channels
 
