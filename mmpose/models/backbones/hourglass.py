@@ -1,6 +1,9 @@
 import torch.nn as nn
-from mmcv.cnn import ConvModule
+from mmcv.cnn import ConvModule, constant_init, normal_init
+from mmcv.runner import load_checkpoint
+from torch.nn.modules.batchnorm import _BatchNorm
 
+from mmpose.utils import get_root_logger
 from ..registry import BACKBONES
 from .base_backbone import BaseBackbone
 from .resnet import BasicBlock, ResLayer
@@ -161,13 +164,23 @@ class HourglassNet(BaseBackbone):
         self.relu = nn.ReLU(inplace=True)
 
     def init_weights(self, pretrained=None):
-        """We do nothing in this function because all modules we used
-        (ConvModule, BasicBlock and etc.) have default initialization, and
-        currently we don't provide pretrained model of HourglassNet.
+        """Initialize the weights in backbone.
 
-        Detector's __init__() will call backbone's init_weights() with
-        pretrained as input, so we keep this function.
+        Args:
+            pretrained (str, optional): Path to pre-trained weights.
+                Defaults to None.
         """
+        if isinstance(pretrained, str):
+            logger = get_root_logger()
+            load_checkpoint(self, pretrained, strict=False, logger=logger)
+        elif pretrained is None:
+            for m in self.modules():
+                if isinstance(m, nn.Conv2d):
+                    normal_init(m, std=0.001)
+                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
+                    constant_init(m, 1)
+        else:
+            raise TypeError('pretrained must be a str or None')
         pass
 
     def forward(self, x):
