@@ -29,7 +29,7 @@ class SCConv(nn.Module):
                  pooling_r,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN', momentum=0.1)):
-        super(SCConv, self).__init__()
+        super().__init__()
 
         assert in_channels == out_channels
 

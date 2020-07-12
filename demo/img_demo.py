@@ -26,7 +26,7 @@ def main():
     parser.add_argument(
         '--out-img-root',
         type=str,
-        default='/',
+        default='',
         help='Root of the output img file. '
         'Default not saving the visualization images.')
     parser.add_argument(

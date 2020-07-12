@@ -23,7 +23,7 @@ class BottomUpSimpleHead(nn.Module):
                  tag_per_joint=True,
                  with_ae_loss=None,
                  extra=None):
-        super(BottomUpSimpleHead, self).__init__()
+        super().__init__()
 
         self.in_channels = in_channels
         dim_tag = num_joints if tag_per_joint else 1

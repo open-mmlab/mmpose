@@ -33,7 +33,7 @@ class TopDownMultiStageHead(nn.Module):
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
                  extra=None):
-        super(TopDownMultiStageHead, self).__init__()
+        super().__init__()
 
         self.in_channels = in_channels
         self.num_stages = num_stages

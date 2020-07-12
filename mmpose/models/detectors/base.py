@@ -24,7 +24,7 @@ class BasePose(nn.Module):
     __metaclass__ = ABCMeta
 
     def __init__(self):
-        super(BasePose, self).__init__()
+        super().__init__()
 
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):
