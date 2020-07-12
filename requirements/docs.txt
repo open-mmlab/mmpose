@@ -7,3 +7,4 @@ pillow==6.2.2
 scipy
 json_tricks
 pycocotools
+munkres
