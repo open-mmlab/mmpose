@@ -47,19 +47,27 @@ class BottomUpHigherResolutionHead(nn.Module):
         self.cat_output = cat_output
 
         final_layer_output_channels = []
-        out_channel = num_joints + dim_tag \
-            if with_ae_loss[0] else num_joints
-        final_layer_output_channels.append(out_channel)
+
+        if with_ae_loss[0]:
+            out_channels = num_joints + dim_tag
+        else:
+            out_channels = num_joints
+
+        final_layer_output_channels.append(out_channels)
         for i in range(num_deconv_layers):
-            out_channel = num_joints + dim_tag \
-                if with_ae_loss[i+1] else num_joints
-            final_layer_output_channels.append(out_channel)
+            if with_ae_loss[i + 1]:
+                out_channels = num_joints + dim_tag
+            else:
+                out_channels = num_joints
+            final_layer_output_channels.append(out_channels)
 
         deconv_layer_output_channels = []
         for i in range(num_deconv_layers):
-            out_channel = num_joints + dim_tag \
-                if with_ae_loss[i] else num_joints
-            deconv_layer_output_channels.append(out_channel)
+            if with_ae_loss[i]:
+                out_channels = num_joints + dim_tag
+            else:
+                out_channels = num_joints
+            deconv_layer_output_channels.append(out_channels)
 
         self.final_layers = self._make_final_layers(
             in_channels, final_layer_output_channels, extra, num_deconv_layers,

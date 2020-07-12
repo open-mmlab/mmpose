@@ -54,6 +54,11 @@ class HeatmapLoss(nn.Module):
 
 @LOSSES.register_module()
 class AELoss(nn.Module):
+    """Associative Embedding loss.
+
+    `Associative Embedding: End-to-End Learning for Joint Detection and
+    Grouping <https://arxiv.org/abs/1611.05424v2>`
+    """
 
     def __init__(self, loss_type):
         super().__init__()
@@ -110,11 +115,13 @@ class AELoss(nn.Module):
         else:
             raise ValueError('Unkown ae loss type')
 
-        return push/((num_tags - 1) * num_tags) * 0.5, \
-            pull/(num_tags)
+        push_loss = push / ((num_tags - 1) * num_tags) * 0.5
+        pull_loss = pull / (num_tags)
+
+        return push_loss, pull_loss
 
     def forward(self, tags, joints):
-        """accumulate the tag loss for each image in the batch.
+        """Accumulate the tag loss for each image in the batch.
 
         Note:
             batch_size: N
@@ -122,6 +129,7 @@ class AELoss(nn.Module):
             heatmaps height: H
             max_num_people: M
             num_keypoints: K
+
         Args:
             tags(torch.Tensor[Nx(KxHxW)x1]): tag channels of output.
             joints(torch.Tensor[NxMxKx2]): joints information.
@@ -138,7 +146,7 @@ class AELoss(nn.Module):
 
 @LOSSES.register_module()
 class MultiLossFactory(nn.Module):
-    """Loss for bottom-up model.
+    """Loss for bottom-up models.
 
     Args:
         num_joints(int): Number of keypoints.
@@ -198,7 +206,7 @@ class MultiLossFactory(nn.Module):
             )
 
     def forward(self, outputs, heatmaps, masks, joints):
-        """forward function.
+        """Forward function to calculate losses.
 
         Note:
             batch_size: N
