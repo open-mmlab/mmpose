@@ -114,6 +114,7 @@ class BottomUp(BasePose):
             heatmaps weight: W
             heatmaps height: H
             max_num_people: M
+
         Args:
             img(torch.Tensor[NxCximgHximgW]): Input image.
             targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
@@ -130,6 +131,7 @@ class BottomUp(BasePose):
                 - "center": center of image
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
+
         Returns:
             losses (dict): the total loss for bottom-up
         """
@@ -167,6 +169,7 @@ class BottomUp(BasePose):
             num_img_channel: C
             img_weight: imgW
             img_height: imgH
+
         Args:
             flip_index (List(int)):
             aug_data (List(Tensor[NxCximgHximgW])): Multi-scale image

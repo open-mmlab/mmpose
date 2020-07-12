@@ -27,8 +27,10 @@ class BottomUpSimpleHead(nn.Module):
 
         self.in_channels = in_channels
         dim_tag = num_joints if tag_per_joint else 1
-        out_channels = num_joints + dim_tag \
-            if with_ae_loss[0] else num_joints
+        if with_ae_loss[0]:
+            out_channels = num_joints + dim_tag
+        else:
+            out_channels = num_joints
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
