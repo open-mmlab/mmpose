@@ -44,7 +44,7 @@ def main():
                 [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
-    assert args.show or (args.out_video_root != '/')
+    assert args.show or (args.out_video_root != '')
     assert 'cuda' in args.device
     assert args.det_config is not None
     assert args.det_checkpoint is not None
@@ -57,7 +57,7 @@ def main():
 
     cap = cv2.VideoCapture(args.video_path)
 
-    if args.out_video_root != '/':
+    if args.out_video_root != '':
         save_out_video = True
     else:
         save_out_video = False
