@@ -91,11 +91,11 @@ class AELoss(nn.Module):
 
         num_tags = len(tags)
         if num_tags == 0:
-            return _make_input(torch.zeros(1).float()), \
-                _make_input(torch.zeros(1).float())
+            return (_make_input(torch.zeros(1).float()), 
+                _make_input(torch.zeros(1).float()))
         elif num_tags == 1:
-            return _make_input(torch.zeros(1).float()), \
-                pull/(num_tags)
+            return (_make_input(torch.zeros(1).float()), 
+                pull/(num_tags))
 
         tags = torch.stack(tags)
 

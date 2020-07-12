@@ -25,7 +25,7 @@ def main():
         help='whether to show visualizations.')
     parser.add_argument(
         '--out-video-root',
-        default='/',
+        default='',
         help='Root of the output video file. '
         'Default not saving the visualization video.')
     parser.add_argument(
