@@ -36,10 +36,10 @@ channel_cfg = dict(
     ])
 
 data_cfg = dict(
-    image_size=512,
-    base_size=256,
+    image_size=640,
+    base_size=320,
     base_sigma=2,
-    heatmap_size=[128, 256],
+    heatmap_size=[160, 320],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -153,6 +153,7 @@ train_pipeline = [
 valid_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    # dict(type='BottomUpGetImgSize', test_scale_factor=[0.5, 1, 2]),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
@@ -175,8 +176,8 @@ valid_pipeline = [
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=24,
-    workers_per_gpu=1,
+    samples_per_gpu=16,
+    workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
