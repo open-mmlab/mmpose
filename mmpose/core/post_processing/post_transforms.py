@@ -90,7 +90,10 @@ def transform_preds(coords, center, scale, output_size):
         num_keypoints: K
 
     Args:
-        coords (np.ndarray[K, 2]): Predicted keypoint location.
+        coords (np.ndarray[K, ndims]):
+            if ndims=2, corrds are predicted keypoint location.
+            if ndims=5, corrds are composed of (x, y, tags,
+                fliped_tags, scores)
         center (np.ndarray[2, ]): Center of the bounding box (x, y).
         scale (np.ndarray[2, ]): Scale of the bounding box
             wrt [width, height].
@@ -99,7 +102,7 @@ def transform_preds(coords, center, scale, output_size):
     Returns:
         target_coords: predicted coordinates in the images.
     """
-    assert coords.shape[1] == 2
+    assert coords.shape[1] == 2 or coords.shape[1] == 5
     assert len(center) == 2
     assert len(scale) == 2
     assert len(output_size) == 2
