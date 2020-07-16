@@ -123,6 +123,8 @@ valid_pipeline = [
         ]),
 ]
 
+test_pipeline = valid_pipeline
+
 data_root = 'data/coco'
 data = dict(
     samples_per_gpu=32,
