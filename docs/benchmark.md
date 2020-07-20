@@ -7,7 +7,8 @@ We compare our results with some popular frameworks and official releases in ter
 Here we compare our MMPose repo with other pose estimation toolboxes in the same data and model settings.
 
 To ensure the fairness of the comparison, the comparison experiments were conducted under the same hardware environment and using the same dataset.
-For each model setting, we kept the same data pre-processing methods to make sure the same feature input. In addition, we also used MemCache, a distributed cached system, to load the data for the same IO time except for fair comparisons with Pyslowfast which uses raw videos directly from disk.
+For each model setting, we kept the same data pre-processing methods to make sure the same feature input.
+In addition, we also used Memcached, a distributed cached system, to load the data for the same IO time except for fair comparisons with Pyslowfast which uses raw videos directly from disk.
 
 
 The time we measured is the average training time for an iteration, including data processing and model training.
