@@ -10,7 +10,7 @@ from mmpose.datasets.builder import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class TopDownTRBMPIDataset(TopDownBaseDataset):
     """CocoDataset dataset for top-down pose estimation.
 
