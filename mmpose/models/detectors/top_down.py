@@ -179,7 +179,10 @@ class TopDown(BasePose):
 
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
-        score = np.array(img_metas['bbox_score']).reshape(-1)
+
+        score = 1.0
+        if 'bbox_score' in img_metas:
+            score = np.array(img_metas['bbox_score']).reshape(-1)
 
         preds, maxvals = keypoints_from_heatmaps(
             output.clone().cpu().numpy(),
@@ -197,7 +200,7 @@ class TopDown(BasePose):
         all_preds[0, :, 2:3] = maxvals
         all_boxes[0, 0:2] = c[:, 0:2]
         all_boxes[0, 2:4] = s[:, 0:2]
-        all_boxes[0, 4] = np.prod(s * 200.0, 1)
+        all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
 
@@ -288,10 +291,6 @@ class TopDown(BasePose):
                             0,
                             dst=img)
 
-                        # cv2.putText(img, f'{kid}', (x_coord, y_coord - 2),
-                        #             cv2.FONT_HERSHEY_COMPLEX, font_scale,
-                        #             text_color)
-
                 # draw limbs
                 if skeleton is not None:
                     for sk_id, sk in enumerate(skeleton):
@@ -299,12 +298,12 @@ class TopDown(BasePose):
                                                                   1]))
                         pos2 = (int(kpts[sk[1] - 1, 0]), int(kpts[sk[1] - 1,
                                                                   1]))
-                        if pos1[0] > 0 and pos1[0] < img_w \
-                                and pos1[1] > 0 and pos1[1] < img_h \
-                                and pos2[0] > 0 and pos2[0] < img_w \
-                                and pos2[1] > 0 and pos2[1] < img_h \
-                                and kpts[sk[0] - 1, 2] > kpt_score_thr \
-                                and kpts[sk[1] - 1, 2] > kpt_score_thr:
+                        if (pos1[0] > 0 and pos1[0] < img_w and pos1[1] > 0
+                                and pos1[1] < img_h and pos2[0] > 0
+                                and pos2[0] < img_w and pos2[1] > 0
+                                and pos2[1] < img_h
+                                and kpts[sk[0] - 1, 2] > kpt_score_thr
+                                and kpts[sk[1] - 1, 2] > kpt_score_thr):
                             # cv2.line(img, pos1, pos2, pose_kpt_color, 2, 8)
                             img_copy = img.copy()
                             X = (pos1[0], pos2[0])
