@@ -1,5 +1,4 @@
 json_tricks
-json_tricks
 matplotlib
 mmcv
 munkres
