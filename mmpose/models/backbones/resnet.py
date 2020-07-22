@@ -560,6 +560,7 @@ class ResNet(BaseBackbone):
         return getattr(self, self.norm1_name)
 
     def _make_stem_layer(self, in_channels, stem_channels):
+        """Make stem layer."""
         if self.deep_stem:
             self.stem = nn.Sequential(
                 ConvModule(

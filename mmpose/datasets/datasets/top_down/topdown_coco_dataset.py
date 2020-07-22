@@ -218,6 +218,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         return image_path
 
     def _load_coco_person_detection_results(self):
+        """Load coco person detection results."""
         num_joints = self.ann_info['num_joints']
         all_boxes = None
         with open(self.bbox_file, 'r') as f:

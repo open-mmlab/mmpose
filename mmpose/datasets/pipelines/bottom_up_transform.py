@@ -94,6 +94,7 @@ class HeatmapGenerator():
         self.g = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
 
     def __call__(self, joints):
+        """Generate heatmaps."""
         hms = np.zeros((self.num_joints, self.output_res, self.output_res),
                        dtype=np.float32)
         sigma = self.sigma
@@ -182,6 +183,7 @@ class BottomUpRandomFlip(object):
         self.flip_prob = flip_prob
 
     def __call__(self, results):
+        """Perform data augmentation with random image flip."""
         image, mask, joints = results['img'], results['mask'], results[
             'joints']
         self.flip_index = results['ann_info']['flip_index']
@@ -223,7 +225,7 @@ class BottomUpRandomAffine(object):
         self.trans_factor = trans_factor
 
     def _get_affine_matrix(self, center, scale, res, rot=0):
-        # Generate transformation matrix
+        """Generate transformation matrix."""
         h = scale
         t = np.zeros((3, 3))
         t[0, 0] = float(res[1]) / h

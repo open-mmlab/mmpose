@@ -81,6 +81,7 @@ class Compose(object):
         return data
 
     def __repr__(self):
+        """Compute the string representation."""
         format_string = self.__class__.__name__ + '('
         for t in self.transforms:
             format_string += f'\n    {t}'
@@ -136,5 +137,6 @@ class Collect(object):
         return data
 
     def __repr__(self):
+        """Compute the string representation."""
         return (f'{self.__class__.__name__}('
                 f'keys={self.keys}, meta_keys={self.meta_keys})')
