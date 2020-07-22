@@ -91,7 +91,9 @@ if __name__ == '__main__':
     setup(
         name='mmpose',
         version=get_version(),
-        description='A template for pytorch projects.',
+        description='OpenMMLab Pose Estimation Toolbox and Benchmark.',
+        maintainer='MMPose Authors',
+        maintainer_email='openmmlab@gmail.com',
         long_description=readme(),
         packages=find_packages(exclude=('configs', 'tools', 'demo')),
         package_data={'mmpose.ops': ['*/*.so']},
@@ -104,6 +106,7 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3.6',
             'Programming Language :: Python :: 3.7',
         ],
+        url='https://github.com/open-mmlab/mmpose',
         license='Apache License 2.0',
         setup_requires=['pytest-runner', 'cython', 'numpy'],
         tests_require=['pytest', 'xdoctest'],
