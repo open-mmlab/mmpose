@@ -1,10 +1,10 @@
-matplotlib
 json_tricks
+json_tricks
+matplotlib
 mmcv
+munkres
 numpy
 opencv-python
 pillow==6.2.2
-scipy
-json_tricks
 pycocotools
-munkres
+scipy
