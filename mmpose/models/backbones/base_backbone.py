@@ -36,7 +36,7 @@ class BaseBackbone(nn.Module, metaclass=ABCMeta):
 
     @abstractmethod
     def forward(self, x):
-        """Forward computation.
+        """Forward function.
 
         Args:
             x (tensor | tuple[tensor]): x could be a Torch.tensor or a tuple of

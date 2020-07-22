@@ -49,10 +49,11 @@ class TopDown(BasePose):
 
     @property
     def with_keypoint(self):
+        """Check if has keypoint_head."""
         return hasattr(self, 'keypoint_head')
 
     def init_weights(self, pretrained=None):
-
+        """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
         if self.with_keypoint:
             self.keypoint_head.init_weights()
@@ -106,6 +107,7 @@ class TopDown(BasePose):
             return self.forward_test(img, img_metas, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
+        """Defines the computation performed at every call when training."""
         output = self.backbone(img)
         if self.with_keypoint:
             output = self.keypoint_head(output)

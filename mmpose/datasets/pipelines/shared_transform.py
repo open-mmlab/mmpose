@@ -66,6 +66,14 @@ class Compose(object):
                                 f' {type(transform)}')
 
     def __call__(self, data):
+        """Call function to apply transforms sequentially.
+
+        Args:
+            data (dict): A result dict contains the data to transform.
+
+        Returns:
+            dict: Transformed data.
+        """
         for t in self.transforms:
             data = t(data)
             if data is None:
@@ -106,6 +114,12 @@ class Collect(object):
         self.meta_name = meta_name
 
     def __call__(self, results):
+        """Performs the Collect formating.
+
+        Args:
+            results (dict): The resulting dict to be modified and passed
+                to the next transform in pipeline.
+        """
         if 'ann_info' in results:
             results.update(results['ann_info'])
 

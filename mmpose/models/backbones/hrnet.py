@@ -44,6 +44,7 @@ class HRModule(nn.Module):
 
     def _check_branches(self, num_branches, num_blocks, in_channels,
                         num_channels):
+        """Check input to avoid ValueError."""
         if num_branches != len(num_blocks):
             error_msg = f'NUM_BRANCHES({num_branches}) ' \
                 f'!= NUM_BLOCKS({len(num_blocks)})'
@@ -65,6 +66,7 @@ class HRModule(nn.Module):
                          num_blocks,
                          num_channels,
                          stride=1):
+        """Make one branch."""
         downsample = None
         if stride != 1 or \
                 self.in_channels[branch_index] != \
@@ -105,6 +107,7 @@ class HRModule(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_branches(self, num_branches, block, num_blocks, num_channels):
+        """Make branches."""
         branches = []
 
         for i in range(num_branches):
@@ -114,6 +117,7 @@ class HRModule(nn.Module):
         return nn.ModuleList(branches)
 
     def _make_fuse_layers(self):
+        """Make fuse layer."""
         if self.num_branches == 1:
             return None
 
@@ -364,6 +368,7 @@ class HRNet(nn.Module):
 
     def _make_transition_layer(self, num_channels_pre_layer,
                                num_channels_cur_layer):
+        """Make transition layer."""
         num_branches_cur = len(num_channels_cur_layer)
         num_branches_pre = len(num_channels_pre_layer)
 
@@ -409,6 +414,7 @@ class HRNet(nn.Module):
         return nn.ModuleList(transition_layers)
 
     def _make_layer(self, block, in_channels, out_channels, blocks, stride=1):
+        """Make layer."""
         downsample = None
         if stride != 1 or in_channels != out_channels:
             downsample = nn.Sequential(
@@ -443,6 +449,7 @@ class HRNet(nn.Module):
         return nn.Sequential(*layers)
 
     def _make_stage(self, layer_config, in_channels, multiscale_output=True):
+        """Make stage."""
         num_modules = layer_config['num_modules']
         num_branches = layer_config['num_branches']
         num_blocks = layer_config['num_blocks']

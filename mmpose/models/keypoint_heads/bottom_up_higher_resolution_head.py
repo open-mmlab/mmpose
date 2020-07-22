@@ -79,6 +79,7 @@ class BottomUpHigherResolutionHead(nn.Module):
 
     def _make_final_layers(self, in_channels, final_layer_output_channels,
                            extra, num_deconv_layers, num_deconv_filters):
+        """Make final layers."""
         if extra is not None and 'final_conv_kernel' in extra:
             assert extra['final_conv_kernel'] in [1, 3]
             if extra['final_conv_kernel'] == 3:
@@ -116,7 +117,7 @@ class BottomUpHigherResolutionHead(nn.Module):
     def _make_deconv_layers(self, in_channels, deconv_layer_output_channels,
                             num_deconv_layers, num_deconv_filters,
                             num_deconv_kernels, num_basic_blocks, cat_output):
-
+        """Make deconv layers."""
         deconv_layers = []
         for i in range(num_deconv_layers):
             if cat_output[i]:
@@ -147,6 +148,7 @@ class BottomUpHigherResolutionHead(nn.Module):
         return nn.ModuleList(deconv_layers)
 
     def _get_deconv_cfg(self, deconv_kernel):
+        """Get configurations for deconv layers."""
         if deconv_kernel == 4:
             padding = 1
             output_padding = 0
@@ -162,6 +164,7 @@ class BottomUpHigherResolutionHead(nn.Module):
         return deconv_kernel, padding, output_padding
 
     def forward(self, x):
+        """Forward function."""
         if isinstance(x, list):
             x = x[0]
 
@@ -180,6 +183,7 @@ class BottomUpHigherResolutionHead(nn.Module):
         return final_outputs
 
     def init_weights(self):
+        """Initialize model weights."""
         for name, m in self.deconv_layers.named_modules():
             if isinstance(m, nn.ConvTranspose2d):
                 normal_init(m, std=0.001)

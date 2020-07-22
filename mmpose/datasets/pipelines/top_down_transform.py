@@ -23,6 +23,7 @@ class TopDownRandomFlip():
         self.flip_prob = flip_prob
 
     def __call__(self, results):
+        """Perform data augmentation with random image flip."""
         img = results['img']
         joints_3d = results['joints_3d']
         joints_3d_visible = results['joints_3d_visible']
@@ -65,6 +66,7 @@ class TopDownHalfBodyTransform():
 
     @staticmethod
     def half_body_transform(cfg, joints_3d, joints_3d_visible):
+        """Get center&scale for half-body transform."""
         upper_joints = []
         lower_joints = []
         for joint_id in range(cfg['num_joints']):
@@ -106,6 +108,7 @@ class TopDownHalfBodyTransform():
         return center, scale
 
     def __call__(self, results):
+        """Perform data augmentation with half-body transform."""
         joints_3d = results['joints_3d']
         joints_3d_visible = results['joints_3d_visible']
 
@@ -140,6 +143,7 @@ class TopDownGetRandomScaleRotation():
         self.rot_prob = rot_prob
 
     def __call__(self, results):
+        """Perform data augmentation with random scaling & rotating."""
         s = results['scale']
 
         sf = self.scale_factor
@@ -300,6 +304,7 @@ class TopDownGenerateTarget():
         return target, target_weight
 
     def __call__(self, results):
+        """Generate the target heatmap."""
         joints_3d = results['joints_3d']
         joints_3d_visible = results['joints_3d_visible']
 

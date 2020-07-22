@@ -71,6 +71,7 @@ class HourglassModule(nn.Module):
         self.up2 = nn.Upsample(scale_factor=2)
 
     def forward(self, x):
+        """Model forward function."""
         up1 = self.up1(x)
         low1 = self.low1(x)
         low2 = self.low2(low1)
@@ -184,6 +185,7 @@ class HourglassNet(BaseBackbone):
         pass
 
     def forward(self, x):
+        """Model forward function."""
         inter_feat = self.stem(x)
         out_feats = []
 

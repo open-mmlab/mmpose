@@ -65,7 +65,7 @@ class AELoss(nn.Module):
         self.loss_type = loss_type
 
     def singleTagLoss(self, pred_tag, joints):
-        """associative embedding loss for one image.
+        """Associative embedding loss for one image.
 
         Note:
             heatmaps weight: W

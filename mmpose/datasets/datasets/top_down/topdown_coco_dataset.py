@@ -101,6 +101,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         print(f'=> load {len(self.db)} samples')
 
     def _get_db(self):
+        """Load dataset."""
         if (not self.test_mode) or self.use_gt_bbox:
             # use ground truth bbox
             gt_db = self._load_coco_keypoint_annotations()

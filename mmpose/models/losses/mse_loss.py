@@ -19,6 +19,7 @@ class JointsMSELoss(nn.Module):
         self.use_target_weight = use_target_weight
 
     def forward(self, output, target, target_weight):
+        """Forward function."""
         batch_size = output.size(0)
         num_joints = output.size(1)
 
@@ -59,6 +60,7 @@ class JointsOHKMMSELoss(nn.Module):
         self.topk = topk
 
     def _ohkm(self, loss):
+        """Online hard keypoint mining."""
         ohkm_loss = 0.
         N = len(loss)
         for i in range(N):
@@ -71,6 +73,7 @@ class JointsOHKMMSELoss(nn.Module):
         return ohkm_loss
 
     def forward(self, output, target, target_weight):
+        """Forward function."""
         batch_size = output.size(0)
         num_joints = output.size(1)
         if num_joints < self.topk:

@@ -55,6 +55,7 @@ class BottomUpSimpleHead(nn.Module):
             padding=padding)
 
     def forward(self, x):
+        """Forward function."""
         if isinstance(x, list):
             x = x[0]
         final_outputs = []
@@ -63,6 +64,7 @@ class BottomUpSimpleHead(nn.Module):
         return final_outputs
 
     def init_weights(self):
+        """Initialize model weights."""
         for m in self.final_layers.modules():
             if isinstance(m, nn.Conv2d):
                 normal_init(m, std=0.001, bias=0)

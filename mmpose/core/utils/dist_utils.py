@@ -6,6 +6,7 @@ from torch._utils import (_flatten_dense_tensors, _take_tensors,
 
 
 def _allreduce_coalesced(tensors, world_size, bucket_size_mb=-1):
+    """Allreduce parameters as a whole."""
     if bucket_size_mb > 0:
         bucket_size_bytes = bucket_size_mb * 1024 * 1024
         buckets = _take_tensors(tensors, bucket_size_bytes)

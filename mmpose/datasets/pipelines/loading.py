@@ -22,6 +22,7 @@ class LoadImageFromFile(object):
         self.channel_order = channel_order
 
     def __call__(self, results):
+        """Loading image from file."""
         image_file = results['image_file']
         img = mmcv.imread(image_file, self.color_type, self.channel_order)
 
