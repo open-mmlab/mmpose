@@ -42,7 +42,7 @@ class BasicBlock(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
-        super(BasicBlock, self).__init__()
+        super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.expansion = expansion
@@ -154,7 +154,7 @@ class Bottleneck(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
-        super(Bottleneck, self).__init__()
+        super().__init__()
         assert style in ['pytorch', 'caffe']
 
         self.in_channels = in_channels
@@ -401,7 +401,7 @@ class ResLayer(nn.Sequential):
                     norm_cfg=norm_cfg,
                     **kwargs))
 
-        super(ResLayer, self).__init__(*layers)
+        super().__init__(*layers)
 
 
 @BACKBONES.register_module()
@@ -486,7 +486,7 @@ class ResNet(BaseBackbone):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=True):
-        super(ResNet, self).__init__()
+        super().__init__()
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
         self.depth = depth
@@ -614,7 +614,7 @@ class ResNet(BaseBackbone):
                 param.requires_grad = False
 
     def init_weights(self, pretrained=None):
-        super(ResNet, self).init_weights(pretrained)
+        super().init_weights(pretrained)
         if pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
@@ -649,7 +649,7 @@ class ResNet(BaseBackbone):
             return tuple(outs)
 
     def train(self, mode=True):
-        super(ResNet, self).train(mode)
+        super().train(mode)
         self._freeze_stages()
         if mode and self.norm_eval:
             for m in self.modules():
@@ -669,5 +669,4 @@ class ResNetV1d(ResNet):
     """
 
     def __init__(self, **kwargs):
-        super(ResNetV1d, self).__init__(
-            deep_stem=True, avg_down=True, **kwargs)
+        super().__init__(deep_stem=True, avg_down=True, **kwargs)
