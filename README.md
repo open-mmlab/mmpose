@@ -41,7 +41,7 @@ The master branch works with **PyTorch 1.3+**.
 - **Modular design**
 
   We decompose MMPose into different components and one can easily construct a customized
-  action understanding framework by combining different modules.
+  pose estimation framework by combining different modules.
 
 
 ## Benchmark and Model Zoo
