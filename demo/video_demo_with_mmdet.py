@@ -58,6 +58,8 @@ def main():
     cap = cv2.VideoCapture(args.video_path)
 
     if args.out_video_root != '':
+        if not os.path.isdir(args.out_video_root):
+            os.mkdir(args.out_video_root)
         save_out_video = True
     else:
         save_out_video = False
