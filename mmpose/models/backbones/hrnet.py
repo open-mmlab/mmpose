@@ -1,12 +1,12 @@
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
-from mmcv.runner import load_checkpoint
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.utils import get_root_logger
 from ..registry import BACKBONES
 from .resnet import BasicBlock, Bottleneck, get_expansion
+from .utils import load_checkpoint
 
 
 class HRModule(nn.Module):
@@ -26,7 +26,7 @@ class HRModule(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
-        super(HRModule, self).__init__()
+        super().__init__()
         self._check_branches(num_branches, num_blocks, in_channels,
                              num_channels)
 
@@ -265,7 +265,7 @@ class HRNet(nn.Module):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=False):
-        super(HRNet, self).__init__()
+        super().__init__()
         self.extra = extra
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
@@ -537,7 +537,7 @@ class HRNet(nn.Module):
 
     def train(self, mode=True):
         """Convert the model into training mode."""
-        super(HRNet, self).train(mode)
+        super().train(mode)
         if mode and self.norm_eval:
             for m in self.modules():
                 if isinstance(m, _BatchNorm):
