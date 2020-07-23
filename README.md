@@ -25,11 +25,6 @@ The master branch works with **PyTorch 1.3+**.
 
 ### Major Features
 
-- **Modular design**
-
-  We decompose the action understanding framework into different components and one can easily construct a customized
-  action understanding framework by combining different modules.
-
 - **Support top-down & bottom-up approaches**
 
   MMPose implements multiple state-of-the-art (SOTA) deep learning models for human pose estimation, including both top-down and bottom-up approaches.
@@ -42,6 +37,11 @@ The master branch works with **PyTorch 1.3+**.
 - **Well tested and documented**
 
   We provide detailed documentation and API reference, as well as unittests.
+
+- **Modular design**
+
+  We decompose MMPose into different components and one can easily construct a customized
+  action understanding framework by combining different modules.
 
 
 ## Benchmark and Model Zoo
@@ -75,11 +75,6 @@ Supported methods for human pose estimation:
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
 We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
-
-### TODO List
-- Support more backbones, e.g. resnext, mobilenet, shufflenet ...
-- Support more popular algorithms, e.g. CrowdPose ...
-- Support 2d hand keypoint estimation.
 
 If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
 
