@@ -40,7 +40,7 @@ mmpose
 
 For using custom datasets, please refer to [Tutorial 2: Adding New Dataset](tutorials/new_dataset.md)
 
-## Prepare Pratrained Models
+## Prepare Pretrained Models
 Download imagenet pretrained models from our [model zoo](model_zoo.md)
 
 ```
