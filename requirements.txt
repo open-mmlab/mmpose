@@ -5,3 +5,4 @@ opencv-python
 pillow==6.2.2
 pycocotools
 scipy
+munkres==1.1.2
