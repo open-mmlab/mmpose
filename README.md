@@ -22,12 +22,64 @@ The master branch works with **PyTorch 1.3+**.
   <img src="demo/demo.gif" width="600px"/>
 </div>
 
+
+### Major Features
+
+- **Modular design**
+
+  We decompose the action understanding framework into different components and one can easily construct a customized
+  action understanding framework by combining different modules.
+
+- **Support top-down & bottom-up approaches**
+
+  MMPose implements multiple state-of-the-art (SOTA) deep learning models for human pose estimation, including both top-down and bottom-up approaches.
+
+- **Higher efficiency and Higher Accuracy**
+
+  We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
+  See [benchmark.md](docs/benchmark.md) for more information.
+
+- **Well tested and documented**
+
+  We provide detailed documentation and API reference, as well as unittests.
+
+
 ## Benchmark and Model Zoo
 
-Benchmark with other open source projects are available on [benchmark.md](docs/benchmark.md).
+We demonstrate the superiority of our MMPose framework in terms of speed and accuracy on the standard COCO keypoint detection benchmark.
+
+| Model | Input size| MMPose (s/iter) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (s/iter) | MMPose (mAP) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (mAP) |
+| :--- | :---------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: |
+| resnet_50  | 256x192  | **0.28** | 0.64 | **0.718** | 0.704 |
+| resnet_50  | 384x288  | **0.81** | 1.24 | **0.731** | 0.722 |
+| resnet_101 | 256x192  | **0.36** | 0.84 | **0.726** | 0.714 |
+| resnet_101 | 384x288  | **0.79** | 1.53 | **0.748** | 0.736 |
+| resnet_152 | 256x192  | **0.49** | 1.00 | **0.735** | 0.720 |
+| resnet_152 | 384x288  | **0.96** | 1.65 | **0.750** | 0.743 |
+| hrnet_w32  | 256x192  | **0.54** | 1.31 | **0.746** | 0.744 |
+| hrnet_w32  | 384x288  | **0.76** | 2.00 | **0.760** | 0.758 |
+| hrnet_w48  | 256x192  | **0.66** | 1.55 | **0.756** | 0.751 |
+| hrnet_w48  | 384x288  | **1.23** | 2.20 | **0.767** | 0.763 |
+
+More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
+
+
+Supported methods for human pose estimation:
+- [x] [SimpleBaseline](configs/top_down/resnet/README.md)
+- [x] [HRNet](configs/top_down/hrnet/README.md)
+- [x] [Hourglass](configs/top_down/hourglass/README.md)
+- [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
+- [x] [DarkPose](configs/top_down/darkpose/README.md)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
+
+TODO:
+- Support more backbones, e.g. resnext, mobilenet, shufflenet ...
+- Support more popular algorithms, e.g. CrowdPose ...
+- Support 2d hand keypoint estimation.
+
 
 ## Installation
 
