@@ -77,7 +77,7 @@ def main():
         out_file = None
     else:
         if not os.path.isdir(args.out_img_root):
-            os.mkdir(args.out_img_root)
+            os.makedirs(args.out_img_root)
         out_file = os.path.join(args.out_img_root, f'vis_{args.img}')
 
     # show the results

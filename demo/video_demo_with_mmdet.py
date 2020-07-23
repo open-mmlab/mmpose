@@ -61,7 +61,7 @@ def main():
         save_out_video = False
     else:
         if not os.path.isdir(args.out_video_root):
-            os.mkdir(args.out_video_root)
+            os.makedirs(args.out_video_root)
         save_out_video = True
 
     if save_out_video:
