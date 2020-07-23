@@ -72,10 +72,10 @@ def main():
             pose_model, image_name, person_bboxes, format='xywh')
 
         if args.out_img_root == '':
-            if not os.path.isdir(args.out_img_root):
-                os.mkdir(args.out_img_root)
             out_file = None
         else:
+            if not os.path.isdir(args.out_img_root):
+                os.mkdir(args.out_img_root)
             out_file = os.path.join(args.out_img_root, f'vis_{i}.jpg')
 
         # show the results
