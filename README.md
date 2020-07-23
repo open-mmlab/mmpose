@@ -63,7 +63,7 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 
 More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
 
-
+### Model Zoo
 Supported methods for human pose estimation:
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
@@ -74,12 +74,14 @@ Supported methods for human pose estimation:
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
+We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
 
-TODO:
+### TODO List
 - Support more backbones, e.g. resnext, mobilenet, shufflenet ...
 - Support more popular algorithms, e.g. CrowdPose ...
 - Support 2d hand keypoint estimation.
 
+If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
 
 ## Installation
 
