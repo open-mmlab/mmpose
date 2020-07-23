@@ -57,10 +57,11 @@ def main():
 
     cap = cv2.VideoCapture(args.video_path)
 
-    if args.out_video_root != '':
-        save_out_video = True
-    else:
+    if args.out_video_root == '':
         save_out_video = False
+    else:
+        os.makedirs(args.out_video_root, exist_ok=True)
+        save_out_video = True
 
     if save_out_video:
         fps = cap.get(cv2.CAP_PROP_FPS)
