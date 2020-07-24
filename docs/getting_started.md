@@ -122,14 +122,14 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
 
 
-### Image demo
+### Top-down Image demo
 
 #### Using gt human bounding boxes as input
 
 We provide a demo script to test a single image, given gt json file.
 
 ```shell
-python demo/image_demo.py \
+python demo/top_down_image_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -140,7 +140,7 @@ python demo/image_demo.py \
 Examples:
 
 ```shell
-python demo/image_demo.py \
+python demo/top_down_image_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
     --img-root tests/data/ --json-file tests/data/test_coco.json \
@@ -154,7 +154,7 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 We provide a demo script to run mmdet for human detection, and mmpose for pose estimation.
 
 ```shell
-python demo/image_demo_with_mmdet.py \
+python demo/top_down_image_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --img ${IMG_FILE} \
@@ -166,7 +166,7 @@ python demo/image_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
+python demo/top_down_img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
@@ -175,14 +175,14 @@ python demo/img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r
     --out-img-root vis_results
 ```
 
-### Video demo
+### Top-down Video demo
 
 We also provide a video demo to illustrate the results.
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/video_demo_with_mmdet.py \
+python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -194,7 +194,7 @@ python demo/video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
+python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
