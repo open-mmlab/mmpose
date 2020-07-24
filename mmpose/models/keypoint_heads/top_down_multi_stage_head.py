@@ -84,7 +84,8 @@ class TopDownMultiStageHead(nn.Module):
     def forward(self, x):
         """Forward function.
 
-        return a list of heatmaps from multiple stages.
+        Returns:
+            out (list[Tensor]): a list of heatmaps from multiple stages.
         """
         out = []
         assert isinstance(x, list)
