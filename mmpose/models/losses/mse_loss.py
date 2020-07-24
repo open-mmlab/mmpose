@@ -14,7 +14,7 @@ class JointsMSELoss(nn.Module):
     """
 
     def __init__(self, use_target_weight=False):
-        super(JointsMSELoss, self).__init__()
+        super().__init__()
         self.criterion = nn.MSELoss()
         self.use_target_weight = use_target_weight
 
@@ -53,7 +53,7 @@ class JointsOHKMMSELoss(nn.Module):
     """
 
     def __init__(self, use_target_weight=False, topk=8):
-        super(JointsOHKMMSELoss, self).__init__()
+        super().__init__()
         assert topk > 0
         self.criterion = nn.MSELoss(reduction='none')
         self.use_target_weight = use_target_weight

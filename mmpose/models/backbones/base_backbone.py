@@ -2,7 +2,8 @@ import logging
 from abc import ABCMeta, abstractmethod
 
 import torch.nn as nn
-from mmcv.runner import load_checkpoint
+
+from .utils import load_checkpoint
 
 
 class BaseBackbone(nn.Module, metaclass=ABCMeta):
@@ -13,7 +14,7 @@ class BaseBackbone(nn.Module, metaclass=ABCMeta):
     """
 
     def __init__(self):
-        super(BaseBackbone, self).__init__()
+        super().__init__()
 
     def init_weights(self, pretrained=None):
         """Init backbone weights.
@@ -50,4 +51,4 @@ class BaseBackbone(nn.Module, metaclass=ABCMeta):
         Args:
             mode (bool): Whether it is train_mode or test_mode
         """
-        super(BaseBackbone, self).train(mode)
+        super().train(mode)
