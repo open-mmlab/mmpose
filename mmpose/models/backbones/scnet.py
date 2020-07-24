@@ -70,6 +70,7 @@ class SCConv(nn.Module):
         )
 
     def forward(self, x):
+        """Forward function."""
         identity = x
 
         out = torch.sigmoid(
@@ -145,6 +146,7 @@ class SCBottleneck(Bottleneck):
         self.add_module(self.norm3_name, norm3)
 
     def forward(self, x):
+        """Forward function."""
 
         def _inner_forward(x):
             identity = x

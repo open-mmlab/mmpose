@@ -62,6 +62,7 @@ class TopDownTRBMPIDataset(TopDownBaseDataset):
         print('=> load {} samples'.format(len(self.db)))
 
     def _get_db(self, ann_file):
+        """Load dataset."""
         with open(ann_file, 'r') as f:
             data = json.load(f)
         tmpl = dict(

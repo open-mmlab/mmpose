@@ -94,6 +94,7 @@ class HeatmapGenerator():
         self.g = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
 
     def __call__(self, joints):
+        """Generate heatmaps."""
         hms = np.zeros((self.num_joints, self.output_res, self.output_res),
                        dtype=np.float32)
         sigma = self.sigma
@@ -182,6 +183,7 @@ class BottomUpRandomFlip(object):
         self.flip_prob = flip_prob
 
     def __call__(self, results):
+        """Perform data augmentation with random image flip."""
         image, mask, joints = results['img'], results['mask'], results[
             'joints']
         self.flip_index = results['ann_info']['flip_index']
@@ -205,7 +207,7 @@ class BottomUpRandomFlip(object):
 
 @PIPELINES.register_module()
 class BottomUpRandomAffine(object):
-    """Data augmentation  with random scaling & rotating.
+    """Data augmentation with random scaling & rotating.
 
     Args:
         rot_factor (int): Rotating to [-rotation_factor, rotation_factor]
@@ -223,7 +225,7 @@ class BottomUpRandomAffine(object):
         self.trans_factor = trans_factor
 
     def _get_affine_matrix(self, center, scale, res, rot=0):
-        # Generate transformation matrix
+        """Generate transformation matrix."""
         h = scale
         t = np.zeros((3, 3))
         t[0, 0] = float(res[1]) / h
@@ -249,7 +251,7 @@ class BottomUpRandomAffine(object):
         return t
 
     def _affine_joints(self, joints, mat):
-        # Affine the joints by the transform matrix.
+        """Affine the joints by the transform matrix."""
         joints = np.array(joints)
         shape = joints.shape
         joints = joints.reshape(-1, 2)
@@ -258,6 +260,7 @@ class BottomUpRandomAffine(object):
             mat.T).reshape(shape)
 
     def __call__(self, results):
+        """Perform data augmentation with random scaling & rotating."""
         image, mask, joints = results['img'], results['mask'], results[
             'joints']
 
@@ -333,6 +336,7 @@ class BottomUpGenerateTarget(object):
         self.max_num_people = max_num_people
 
     def _generate(self, num_joints, heatmap_size):
+        """Get heatmap generator and joint encoder."""
         heatmap_generator = [
             HeatmapGenerator(output_size, num_joints, self.sigma)
             for output_size in heatmap_size
@@ -344,6 +348,7 @@ class BottomUpGenerateTarget(object):
         return heatmap_generator, joints_encoder
 
     def __call__(self, results):
+        """Generate multi-scale heatmap target for bottom-up."""
         heatmap_generator, joints_encoder = \
             self._generate(results['ann_info']['num_joints'],
                            results['ann_info']['heatmap_size'])
@@ -383,6 +388,7 @@ class BottomUpGetImgSize(object):
         self.current_scale = current_scale
 
     def __call__(self, results):
+        """Get multi-scale image sizes for bottom-up."""
         input_size = results['ann_info']['image_size']
         img = results['img']
 
@@ -428,6 +434,7 @@ class BottomUpResizeAlign(object):
         self.transforms = Compose(transforms)
 
     def __call__(self, results):
+        """Resize multi-scale size and align transform for bottom-up."""
         input_size = results['ann_info']['image_size']
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
