@@ -46,10 +46,11 @@ class BottomUp(BasePose):
 
     @property
     def with_keypoint(self):
+        """Check if has keypoint_head."""
         return hasattr(self, 'keypoint_head')
 
     def init_weights(self, pretrained=None):
-
+        """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
         if self.with_keypoint:
             self.keypoint_head.init_weights()

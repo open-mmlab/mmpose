@@ -54,10 +54,12 @@ class TopDownBaseDataset(Dataset, metaclass=ABCMeta):
 
     @abstractmethod
     def _get_db(self):
+        """Load dataset."""
         raise NotImplementedError
 
     @abstractmethod
     def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
+        """Evaluate keypoint results."""
         raise NotImplementedError
 
     def __len__(self, ):

@@ -85,13 +85,16 @@ class BasicBlock(nn.Module):
 
     @property
     def norm1(self):
+        """nn.Module: the normalization layer named "norm1" """
         return getattr(self, self.norm1_name)
 
     @property
     def norm2(self):
+        """nn.Module: the normalization layer named "norm2" """
         return getattr(self, self.norm2_name)
 
     def forward(self, x):
+        """Forward function."""
 
         def _inner_forward(x):
             identity = x
@@ -215,17 +218,21 @@ class Bottleneck(nn.Module):
 
     @property
     def norm1(self):
+        """nn.Module: the normalization layer named "norm1" """
         return getattr(self, self.norm1_name)
 
     @property
     def norm2(self):
+        """nn.Module: the normalization layer named "norm2" """
         return getattr(self, self.norm2_name)
 
     @property
     def norm3(self):
+        """nn.Module: the normalization layer named "norm3" """
         return getattr(self, self.norm3_name)
 
     def forward(self, x):
+        """Forward function."""
 
         def _inner_forward(x):
             identity = x
@@ -544,13 +551,16 @@ class ResNet(BaseBackbone):
         self.feat_dim = res_layer[-1].out_channels
 
     def make_res_layer(self, **kwargs):
+        """Make a ResLayer."""
         return ResLayer(**kwargs)
 
     @property
     def norm1(self):
+        """nn.Module: the normalization layer named "norm1" """
         return getattr(self, self.norm1_name)
 
     def _make_stem_layer(self, in_channels, stem_channels):
+        """Make stem layer."""
         if self.deep_stem:
             self.stem = nn.Sequential(
                 ConvModule(
@@ -596,6 +606,7 @@ class ResNet(BaseBackbone):
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
     def _freeze_stages(self):
+        """Freeze parameters."""
         if self.frozen_stages >= 0:
             if self.deep_stem:
                 self.stem.eval()
@@ -614,6 +625,12 @@ class ResNet(BaseBackbone):
                 param.requires_grad = False
 
     def init_weights(self, pretrained=None):
+        """Initialize the weights in backbone.
+
+        Args:
+            pretrained (str, optional): Path to pre-trained weights.
+                Defaults to None.
+        """
         super().init_weights(pretrained)
         if pretrained is None:
             for m in self.modules():
@@ -630,6 +647,7 @@ class ResNet(BaseBackbone):
                         constant_init(m.norm2, 0)
 
     def forward(self, x):
+        """Forward function."""
         if self.deep_stem:
             x = self.stem(x)
         else:
@@ -649,6 +667,7 @@ class ResNet(BaseBackbone):
             return tuple(outs)
 
     def train(self, mode=True):
+        """Convert the model into training mode."""
         super().train(mode)
         self._freeze_stages()
         if mode and self.norm_eval:

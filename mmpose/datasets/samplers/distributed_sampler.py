@@ -15,7 +15,7 @@ class DistributedSampler(_DistributedSampler):
         self.shuffle = shuffle
 
     def __iter__(self):
-        # deterministically shuffle based on epoch
+        """Deterministically shuffle based on epoch."""
         if self.shuffle:
             g = torch.Generator()
             g.manual_seed(self.epoch)
