@@ -194,7 +194,6 @@ class BottomUp(BasePose):
         tags_list = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx]
-            image_resized = image_resized.cuda(non_blocking=True)
 
             outputs = self.backbone(image_resized)
             outputs = self.keypoint_head(outputs)

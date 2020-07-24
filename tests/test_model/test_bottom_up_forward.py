@@ -74,10 +74,11 @@ def test_bottomup_forward():
     assert isinstance(losses, dict)
 
     # Test forward test
-    with torch.no_grad():
-        detector = detector.cuda()
-        _ = detector.forward(
-            imgs.cuda(), img_metas=img_metas, return_loss=False)
+    if torch.cuda.is_available():
+        with torch.no_grad():
+            detector = detector.cuda()
+            _ = detector.forward(
+                imgs.cuda(), img_metas=img_metas, return_loss=False)
 
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
