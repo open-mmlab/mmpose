@@ -193,8 +193,7 @@ class BottomUp(BasePose):
         aggregated_heatmaps = None
         tags_list = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
-            image_resized = aug_data[idx]
-            image_resized = image_resized.cuda(non_blocking=True)
+            image_resized = aug_data[idx].to(img.device)
 
             outputs = self.backbone(image_resized)
             outputs = self.keypoint_head(outputs)
