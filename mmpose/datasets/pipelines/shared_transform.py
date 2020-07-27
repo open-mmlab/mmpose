@@ -66,6 +66,14 @@ class Compose(object):
                                 f' {type(transform)}')
 
     def __call__(self, data):
+        """Call function to apply transforms sequentially.
+
+        Args:
+            data (dict): A result dict contains the data to transform.
+
+        Returns:
+            dict: Transformed data.
+        """
         for t in self.transforms:
             data = t(data)
             if data is None:
@@ -73,6 +81,7 @@ class Compose(object):
         return data
 
     def __repr__(self):
+        """Compute the string representation."""
         format_string = self.__class__.__name__ + '('
         for t in self.transforms:
             format_string += f'\n    {t}'
@@ -106,6 +115,12 @@ class Collect(object):
         self.meta_name = meta_name
 
     def __call__(self, results):
+        """Performs the Collect formating.
+
+        Args:
+            results (dict): The resulting dict to be modified and passed
+                to the next transform in pipeline.
+        """
         if 'ann_info' in results:
             results.update(results['ann_info'])
 
@@ -122,5 +137,6 @@ class Collect(object):
         return data
 
     def __repr__(self):
+        """Compute the string representation."""
         return (f'{self.__class__.__name__}('
                 f'keys={self.keys}, meta_keys={self.meta_keys})')

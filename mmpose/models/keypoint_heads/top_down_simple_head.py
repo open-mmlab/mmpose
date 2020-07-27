@@ -71,6 +71,7 @@ class TopDownSimpleHead(nn.Module):
             padding=padding)
 
     def forward(self, x):
+        """Forward function."""
         if isinstance(x, list):
             x = x[0]
         x = self.deconv_layers(x)
@@ -78,6 +79,7 @@ class TopDownSimpleHead(nn.Module):
         return x
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
+        """Make deconv layers."""
         if num_layers != len(num_filters):
             error_msg = f'num_layers({num_layers}) ' \
                         f'!= length of num_filters({len(num_filters)})'
@@ -110,6 +112,7 @@ class TopDownSimpleHead(nn.Module):
         return nn.Sequential(*layers)
 
     def _get_deconv_cfg(self, deconv_kernel):
+        """Get configurations for deconv layers."""
         if deconv_kernel == 4:
             padding = 1
             output_padding = 0
@@ -125,6 +128,7 @@ class TopDownSimpleHead(nn.Module):
         return deconv_kernel, padding, output_padding
 
     def init_weights(self):
+        """Initialize model weights."""
         for name, m in self.deconv_layers.named_modules():
             if isinstance(m, nn.ConvTranspose2d):
                 normal_init(m, std=0.001)

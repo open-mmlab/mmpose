@@ -9,20 +9,19 @@ import torch.nn as nn
 from ..registry import LOSSES
 
 
-def _make_input(t, requires_grad=False, need_cuda=True):
+def _make_input(t, requires_grad=False, device=torch.device('cpu')):
     """Make zero inputs for AE loss.
 
     Args:
         t (torch.Tensor): input
         requires_grad (bool): Option to use requires_grad.
-        need_cuda (bool): Opthin to use cuda.
+        device: torch device
     Returns:
         inp (torch.Tensor): zero input.
     """
     inp = torch.autograd.Variable(t, requires_grad=requires_grad)
     inp = inp.sum()
-    if need_cuda:
-        inp = inp.cuda()
+    inp = inp.to(device)
     return inp
 
 
@@ -65,7 +64,7 @@ class AELoss(nn.Module):
         self.loss_type = loss_type
 
     def singleTagLoss(self, pred_tag, joints):
-        """associative embedding loss for one image.
+        """Associative embedding loss for one image.
 
         Note:
             heatmaps weight: W
@@ -73,7 +72,7 @@ class AELoss(nn.Module):
             max_num_people: M
             num_keypoints: K
         Args:
-            tags(torch.Tensor[(KxHxW)x1]): tag  of output for one image.
+            pred_tag(torch.Tensor[(KxHxW)x1]): tag of output for one image.
             joints(torch.Tensor[MxKx2]): joints information for one image.
         """
         tags = []
@@ -91,10 +90,14 @@ class AELoss(nn.Module):
 
         num_tags = len(tags)
         if num_tags == 0:
-            return (_make_input(torch.zeros(1).float()),
-                    _make_input(torch.zeros(1).float()))
+            return (_make_input(
+                torch.zeros(1).float(), device=pred_tag.device),
+                    _make_input(
+                        torch.zeros(1).float(), device=pred_tag.device))
         elif num_tags == 1:
-            return (_make_input(torch.zeros(1).float()), pull / (num_tags))
+            return (_make_input(
+                torch.zeros(1).float(),
+                device=pred_tag.device), pull / (num_tags))
 
         tags = torch.stack(tags)
 

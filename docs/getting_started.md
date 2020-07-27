@@ -122,30 +122,29 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
 
 
-### Image demo
+### Top-down Image demo
 
 #### Using gt human bounding boxes as input
 
 We provide a demo script to test a single image, given gt json file.
 
 ```shell
-python demo/image_demo.py \
+python demo/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
-    --show \
-    [--out-img-root ${OUTPUT_DIR} --device ${GPU_ID}] \
+    --out-img-root ${OUTPUT_DIR} \
+    [--show --device ${GPU_ID}] \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Examples:
 
 ```shell
-python demo/image_demo.py \
+python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
     --img-root tests/data/ --json-file tests/data/test_coco.json \
-    --show \
-    --out-img-root ./
+    --out-img-root vis_results
 ```
 
 #### Using mmdet for human bounding box detection
@@ -155,54 +154,52 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 We provide a demo script to run mmdet for human detection, and mmpose for pose estimation.
 
 ```shell
-python demo/image_demo_with_mmdet.py \
+python demo/top_down_img_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --img ${IMG_FILE} \
-    --show \
-    [--out-img-root ${OUTPUT_DIR} --device ${GPU_ID}] \
+    --out-img-root ${OUTPUT_DIR} \
+    [--show --device ${GPU_ID}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Examples:
 
 ```shell
-python demo/img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
+python demo/top_down_img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
     --img-root tests/data/ \
     --img 000000196141.jpg \
-    --show \
-    --out-img-root ./
+    --out-img-root vis_results
 ```
 
-### Video demo
+### Top-down Video demo
 
 We also provide a video demo to illustrate the results.
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/video_demo_with_mmdet.py \
+python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
-    --show \
-    [--output-video-root ${OUTPUT_VIDEO_ROOT} --device ${GPU_ID}] \
+    --output-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Examples:
 
 ```shell
-python demo/video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
+python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
     --video_path demo/demo_video.mp4 \
-    --show \
-    --output-video-root ./
+    --output-video-root vis_results
 ```
 
 ## Train a model
@@ -264,10 +261,12 @@ If you can run MMPose on a cluster managed with [slurm](https://slurm.schedmd.co
 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} ${CONFIG_FILE} ${WORK_DIR} [${GPUS}]
 ```
 
-Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a slurm cluster. (use `GPUS_PER_NODE=8` to specify a single slurm cluster node with 8 GPUs.)
+Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a slurm cluster.
+(Use `GPUS_PER_NODE=8` to specify a single slurm cluster node with 8 GPUs, `CPUS_PER_TASK=2` to use 2 cpus per task.
+Assume that `Test` is a valid ${PARTITION} name.)
 
 ```shell
-GPUS_PER_NODE=8 ./tools/slurm_train.sh configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192 16
+GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192 16
 ```
 
 You can check [slurm_train.sh](../tools/slurm_train.sh) for full arguments and environment variables.

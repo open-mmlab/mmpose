@@ -46,10 +46,11 @@ class BottomUp(BasePose):
 
     @property
     def with_keypoint(self):
+        """Check if has keypoint_head."""
         return hasattr(self, 'keypoint_head')
 
     def init_weights(self, pretrained=None):
-
+        """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
         if self.with_keypoint:
             self.keypoint_head.init_weights()
@@ -193,8 +194,7 @@ class BottomUp(BasePose):
         aggregated_heatmaps = None
         tags_list = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
-            image_resized = aug_data[idx]
-            image_resized = image_resized.cuda(non_blocking=True)
+            image_resized = aug_data[idx].to(img.device)
 
             outputs = self.backbone(image_resized)
             outputs = self.keypoint_head(outputs)

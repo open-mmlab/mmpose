@@ -97,6 +97,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         self.num_images = len(self.ids)
 
     def __len__(self):
+        """Get dataset length."""
         return len(self.ids)
 
     def _get_single(self, idx):
@@ -272,6 +273,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             json.dump(results, f, sort_keys=True, indent=4)
 
     def _coco_keypoint_results_one_category_kernel(self, data_pack):
+        """Get coco keypoint results."""
         cat_id = data_pack['cat_id']
         keypoints = data_pack['keypoints']
         cat_results = []

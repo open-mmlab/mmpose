@@ -1,0 +1,9 @@
+json_tricks
+matplotlib
+mmcv
+munkres
+numpy
+opencv-python
+pillow==6.2.2
+pycocotools
+scipy

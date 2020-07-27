@@ -64,7 +64,7 @@ def _box2cs(box, image_size):
     return center, scale
 
 
-def test_pipeline():
+def test_top_down_pipeline():
     # test loading
     data_prefix = 'tests/data/'
     ann_file = osp.join(data_prefix, 'test_coco.json')
