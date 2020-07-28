@@ -20,9 +20,7 @@ def parse_args():
     parser.add_argument('--out', help='output result file')
     parser.add_argument(
         '--eval',
-        type=str,
-        nargs='+',
-        choices=['mAP'],
+        default='mAP',
         help='evaluation metric, which depends on the dataset,'
         ' e.g., "mAP" for MSCOCO')
     parser.add_argument(
