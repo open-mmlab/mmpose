@@ -307,7 +307,7 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} con
 ```
 
 ## Benchmark
-You can get average training batch for a second, we only care about the model training, not including the IO time and pre-processing time.
+You can get average training time for an iteration, we only care about the model training, not including the IO time and pre-processing time.
 ```shell
 python tools/benchmark.py ${MMPOSE_CONFIG_FILE}
 ```

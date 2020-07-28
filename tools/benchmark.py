@@ -62,12 +62,12 @@ def main():
         if i >= num_warmup:
             pure_inf_time += elapsed
             if (i + 1) % args.log_interval == 0:
-                fps = (i + 1 - num_warmup) / pure_inf_time
+                its = pure_inf_time / (i + 1 - num_warmup)
                 print(
-                    f'Done batch [{i + 1:<3}], fps: {fps:.1f} batch / s',
+                    f'Done batch [{i + 1:<3}],  {its:.2f} s / iter',
                     flush=True)
-    print(f'Overall fps: {fps:.1f} batch / s', flush=True)
-    print(f'Total time: {pure_inf_time:.1f} s', flush=True)
+    print(f'Overall average: {its:.2f} s / iter', flush=True)
+    print(f'Total time: {pure_inf_time:.2f} s', flush=True)
 
 
 if __name__ == '__main__':
