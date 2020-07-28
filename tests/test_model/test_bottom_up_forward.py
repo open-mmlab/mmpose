@@ -75,7 +75,6 @@ def test_bottomup_forward():
 
     # Test forward test
     with torch.no_grad():
-        detector = detector
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
 
 
