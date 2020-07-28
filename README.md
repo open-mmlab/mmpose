@@ -64,6 +64,20 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
 
 ### Model Zoo
+
+Supported backbones for human pose estimation:
+
+- [x] [AlexNet](configs/top_down/alexnet/README.md)
+- [x] [Hourglass](configs/top_down/hourglass/README.md)
+- [x] [HRNet](configs/top_down/hrnet/README.md)
+- [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
+- [x] [ResNet](configs/top_down/resnet/README.md)
+- [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
+- [x] [ResNext](configs/top_down/resnext/README.md)
+- [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [SEResNet](configs/top_down/seresnet/README.md)
+- [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
+
 Supported methods for human pose estimation:
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
