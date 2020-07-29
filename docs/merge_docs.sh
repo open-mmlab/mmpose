@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+sed -i '$a\\n' ../configs/bottom_up/*/*.md
+sed -i '$a\\n' ../configs/top_down/*/*.md
+sed -i '$a\\n' model_zoo.md
 cat  ../configs/bottom_up/*/*.md > bottom_up_models.md
 cat  ../configs/top_down/*/*.md > top_down_models.md
 
