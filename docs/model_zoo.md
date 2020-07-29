@@ -1,8 +1,10 @@
 # Model Zoo
 
-## Top-Down Method:
+## Overview
 
-### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### Top-Down Method:
+
+#### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -24,9 +26,9 @@
 | pose_hourglass_52 | 256x256 | 0.726 | 0.896 | 0.799 | 0.780 | 0.934 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hourglass/hourglass52_coco_256x256-4ec713ba_20200709.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hourglass/hourglass52_coco_256x256_20200709.log.json) |
 
 
-## Bottom-Up Method:
+### Bottom-Up Method:
 
-### Results on COCO val2017 without multi-scale test
+#### Results on COCO val2017 without multi-scale test
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -34,7 +36,7 @@
 | HRNet-w32  | 640x640 | 0.686 | 0.871 | 0.747 | 0.733 | 0.898 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet32_coco_640x640_20200712.log.json) |
 | HRNet-w48  | 512x512 | 0.686 | 0.873 | 0.741 | 0.731 | 0.892 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_20200712.log.json) |
 
-### Results on COCO val2017 with multi-scale test
+#### Results on COCO val2017 with multi-scale test
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -42,7 +44,7 @@
 | HRNet-w32  | 640x640 | 0.706 | 0.880 | 0.770 | 0.749 | 0.902 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet32_coco_640x640_20200712.log.json) |
 | HRNet-w48  | 512x512 | 0.716 | 0.884 | 0.775 | 0.755 | 0.901 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_20200712.log.json) |
 
-### Pretrained backbones on ImageNet
+#### Pretrained backbones on ImageNet
 
 | Arch |  ckpt |
 | :----------------- | :-----------: |
