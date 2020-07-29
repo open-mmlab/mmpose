@@ -62,3 +62,10 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+def builder_inited_handler(app):
+    subprocess.run(['./merge_docs.sh'])
+
+
+def setup(app):
+    app.connect('builder-inited', builder_inited_handler)

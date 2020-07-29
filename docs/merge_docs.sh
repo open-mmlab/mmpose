@@ -17,9 +17,3 @@ sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' bottom_up_m
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' top_down_models.md
 
 cat bottom_up_models.md top_down_models.md >> model_zoo.md
-# sed -i '1i\# Modelzoo' modelzoo.md
-
-# cat index.rst | grep -q "model_zoo.md"
-# if [ $? -ne 0 ] ;then
-#     sed -i '/api.rst/i\   model_zoo.md' index.rst
-# fi
