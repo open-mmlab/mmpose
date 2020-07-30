@@ -29,10 +29,10 @@ def main():
         torch.backends.cudnn.benchmark = True
 
     # build the dataloader
-    dataset = build_dataset(cfg.data.train)
+    dataset = build_dataset(cfg.data.val)
     data_loader = build_dataloader(
         dataset,
-        samples_per_gpu=cfg.data.samples_per_gpu,
+        samples_per_gpu=1,
         workers_per_gpu=cfg.data.workers_per_gpu,
         dist=False,
         shuffle=False)
@@ -53,8 +53,8 @@ def main():
 
         torch.cuda.synchronize()
         start_time = time.perf_counter()
-
-        model(return_loss=True, **data)
+        with torch.no_grad():
+            model(return_loss=False, **data)
 
         torch.cuda.synchronize()
         elapsed = time.perf_counter() - start_time
@@ -62,12 +62,11 @@ def main():
         if i >= num_warmup:
             pure_inf_time += elapsed
             if (i + 1) % args.log_interval == 0:
-                its = pure_inf_time / (i + 1 - num_warmup)
+                its = (i + 1 - num_warmup) / pure_inf_time
                 print(
-                    f'Done batch [{i + 1:<3}],  {its:.2f} s / iter',
-                    flush=True)
-    print(f'Overall average: {its:.2f} s / iter', flush=True)
-    print(f'Total time: {pure_inf_time:.2f} s', flush=True)
+                    f'Done item [{i + 1:<3}],  {its:.2f} items / s')
+    print(f'Overall average: {its:.2f} items / s')
+    print(f'Total time: {pure_inf_time:.2f} s')
 
 
 if __name__ == '__main__':
