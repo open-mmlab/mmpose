@@ -63,8 +63,7 @@ def main():
             pure_inf_time += elapsed
             if (i + 1) % args.log_interval == 0:
                 its = (i + 1 - num_warmup) / pure_inf_time
-                print(
-                    f'Done item [{i + 1:<3}],  {its:.2f} items / s')
+                print(f'Done item [{i + 1:<3}],  {its:.2f} items / s')
     print(f'Overall average: {its:.2f} items / s')
     print(f'Total time: {pure_inf_time:.2f} s')
 
