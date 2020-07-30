@@ -306,6 +306,12 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} con
 CUDA_VISIBLE_DEVICES=4,5,6,7 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} config2.py ${WORK_DIR} 4
 ```
 
+## Benchmark
+You can get average inference speed using the following script. Not that it does not includes the IO time and pre-processing time.
+```shell
+python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
+```
+
 ## Tutorials
 
 Currently, we provide some tutorials for users to [finetune model](tutorials/finetune.md),
