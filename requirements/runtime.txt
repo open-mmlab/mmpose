@@ -4,6 +4,6 @@ mmcv
 munkres
 numpy
 opencv-python
-pillow==6.2.2
+pillow
 pycocotools
 scipy
