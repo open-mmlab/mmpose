@@ -191,7 +191,7 @@ Examples:
 python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
-    --img-root tests/data/ --json-file tests/data/test_coco.json \
+    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
 ```
 
@@ -218,7 +218,7 @@ python demo/top_down_img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/fast
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192/epoch_210.pth \
-    --img-root tests/data/ \
+    --img-root tests/data/coco/ \
     --img 000000196141.jpg \
     --out-img-root vis_results
 ```
