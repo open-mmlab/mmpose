@@ -66,7 +66,7 @@ def _box2cs(box, image_size):
 
 def test_top_down_pipeline():
     # test loading
-    data_prefix = 'tests/data/'
+    data_prefix = 'tests/data/coco/'
     ann_file = osp.join(data_prefix, 'test_coco.json')
     coco = COCO(ann_file)
 

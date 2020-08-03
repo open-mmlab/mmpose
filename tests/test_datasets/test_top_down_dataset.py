@@ -35,29 +35,29 @@ def test_top_down_COCO_dataset():
         bbox_thr=1.0,
         use_gt_bbox=True,
         image_thr=0.0,
-        bbox_file='tests/data/test_coco_det_AP_H_56.json',
+        bbox_file='tests/data/coco/test_coco_det_AP_H_56.json',
     )
     # Test det bbox
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
     _ = dataset_class(
-        ann_file='tests/data/test_coco.json',
-        img_prefix='tests/data/',
+        ann_file='tests/data/coco/test_coco.json',
+        img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=True)
 
     _ = dataset_class(
-        ann_file='tests/data/test_coco.json',
-        img_prefix='tests/data/',
+        ann_file='tests/data/coco/test_coco.json',
+        img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=False)
 
     # Test gt bbox
     custom_dataset = dataset_class(
-        ann_file='tests/data/test_coco.json',
-        img_prefix='tests/data/',
+        ann_file='tests/data/coco/test_coco.json',
+        img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
         test_mode=True)
