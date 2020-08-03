@@ -8,33 +8,6 @@ For installation instructions, please see [install.md](install.md).
 It is recommended to symlink the dataset root to `$MMPOSE/data`.
 If your folder structure is different, you may need to change the corresponding paths in config files.
 
-**For MPII data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
-We support both MPII dataset and TRB-MPI dataset. We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_annotations.tar.gz).
-Extract them under {MMPose}/data, and make them look like this:
-
-```
-mmpose
-├── mmpose
-├── docs
-├── tests
-├── tools
-├── configs
-`── data
-    │── mpii
-        |── annotations
-        |   |── trb_mpi_train.json
-        |   |── trb_mpi_val.json
-        |   |── gt_valid.mat
-        |   |── test.json
-        |   |── train.json
-        |   |── trainval.json
-        |   `── valid.json
-        `── images
-            |── 000001163.jpg
-            |── 000003072.jpg
-
-```
-
 **For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -62,6 +35,54 @@ mmpose
             │-- 000000000285.jpg
             │-- 000000000632.jpg
             │-- ...
+
+```
+
+**For MPII data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mpii
+        |── annotations
+        |   |── mpii_gt_valid.mat
+        |   |── mpii_test.json
+        |   |── mpii_train.json
+        |   |── mpii_trainval.json
+        |   `── mpii_valid.json
+        `── images
+            |── 000001163.jpg
+            |── 000003072.jpg
+
+```
+
+
+**For MPII-TRB data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mpii
+        |── annotations
+        |   |── trb_mpi_train.json
+        |   |── trb_mpi_val.json
+        `── images
+            |── 000001163.jpg
+            |── 000003072.jpg
 
 ```
 
