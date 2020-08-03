@@ -97,19 +97,19 @@ valid_pipeline = [
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
-data_root = 'data/MPI'
+data_root = 'data/mpii'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownTRBMPIDataset',
-        ann_file=f'{data_root}/annotations/MPI_train.json',
+        ann_file=f'{data_root}/annotations/trb_mpi_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownTRBMPIDataset',
-        ann_file=f'{data_root}/annotations/MPI_val.json',
+        ann_file=f'{data_root}/annotations/trb_mpi_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=valid_pipeline),

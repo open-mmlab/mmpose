@@ -37,7 +37,7 @@ class TopDownTRBMPIDataset(TopDownBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
-        # flip_pairs in TRBMPI
+        # flip_pairs in TRB-MPI
         self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
                                        [10, 11], [14, 15]]
         for i in range(6):
