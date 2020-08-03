@@ -24,7 +24,7 @@
 | pose_resnet_152 | 256x192 | 0.735 | 0.905 | 0.812 | 0.790 | 0.943 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res152_coco_256x192_20200709.log.json) |
 | pose_resnet_152 | 384x288 | 0.750 | 0.908 | 0.821 | 0.800 | 0.942 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
-### Results on MPII-TRB val set.
+### Results on TRB-MPI val set.
 
 | Arch | Input Size | Skeleton Acc   | Contour Acc   | Mean Acc | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |:------: |
