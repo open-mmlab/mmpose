@@ -11,8 +11,8 @@ from .topdown_base_dataset import TopDownBaseDataset
 
 
 @DATASETS.register_module()
-class TopDownTRBMPIDataset(TopDownBaseDataset):
-    """CocoDataset dataset for top-down pose estimation.
+class TopDownMpiiTrbDataset(TopDownBaseDataset):
+    """MPII-TRB Dataset dataset for top-down pose estimation.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
