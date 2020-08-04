@@ -78,8 +78,8 @@ mmpose
 `── data
     │── mpii
         |── annotations
-        |   |── trb_mpi_train.json
-        |   |── trb_mpi_val.json
+        |   |── mpii_trb_train.json
+        |   |── mpii_trb_val.json
         `── images
             |── 000001163.jpg
             |── 000003072.jpg

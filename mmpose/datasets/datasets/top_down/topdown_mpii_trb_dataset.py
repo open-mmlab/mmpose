@@ -1,7 +1,7 @@
 import copy as cp
 import os
 import os.path as osp
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
@@ -138,22 +138,44 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 hit[i] = 1
         return hit, exist
 
-    def evaluate(self, outputs, res_folder, metrics='mAP', **kwargs):
-        """Evaluate TRBMPI keypoint results."""
+    def evaluate(self, outputs, res_folder, metrics='PCKh', **kwargs):
+        """Evaluate PCKh for MPII-TRB dataset.
+
+        Note:
+            num_keypoints: K
+
+        Args:
+            outputs(list(preds, boxes, image_path)):Output results.
+                preds(np.ndarray[1,K,3]): The first two dimensions are
+                    coordinates, score is the third dimension of the array.
+                boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                    , scale[1],area, score]
+                image_path(list[str]): For example, ['0', '0',
+                    '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+            res_folder(str): Path of directory to save the results.
+            metrics(str): Metrics to be performed.
+                Defaults: 'PCKh'.
+
+        Returns:
+            PCKh for each joint
+        """
+        # only PCKh is supported.
+        assert metrics == 'PCKh'
+        """Evaluate MPII-TRB keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
-        all_preds, all_boxes, all_image_path = list(map(list, zip(*outputs)))
+        kpts = defaultdict(list)
+        for preds, boxes, image_path in outputs:
+            str_image_path = ''.join(image_path)
+            image_id = int(str_image_path[-13:-4])
 
-        kpts = []
-
-        for idx, kpt in enumerate(all_preds):
-            kpts.append({
-                'keypoints': kpt[0],
-                'center': all_boxes[idx][0][0:2],
-                'scale': all_boxes[idx][0][2:4],
-                'area': all_boxes[idx][0][4],
-                'score': all_boxes[idx][0][5],
-                'image': int(all_image_path[idx][-13:-4]),
+            kpts[image_id].append({
+                'keypoints': preds[0],
+                'center': boxes[0][0:2],
+                'scale': boxes[0][2:4],
+                'area': boxes[0][4],
+                'score': boxes[0][5],
+                'image_id': image_id,
             })
 
         self._write_keypoint_results(kpts, res_file)
