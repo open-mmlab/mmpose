@@ -37,7 +37,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
-        # flip_pairs in TRB-MPI
+        # flip_pairs in MPII-TRB
         self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
                                        [10, 11], [14, 15]]
         for i in range(6):
@@ -167,7 +167,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(str_image_path[-13:-4])
+            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
             kpts[image_id].append({
                 'keypoints': preds[0],
