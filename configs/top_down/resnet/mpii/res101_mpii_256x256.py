@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[90, 120])
-total_epochs = 150
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
     interval=50, hooks=[
         dict(type='TextLoggerHook'),
