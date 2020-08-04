@@ -1,7 +1,7 @@
 import copy as cp
 import os
 import os.path as osp
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
