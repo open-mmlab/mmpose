@@ -16,6 +16,6 @@
 
 ### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch (config) | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_hourglass_52](/configs/top_down/hourglass/coco/hourglass52_coco_256x256.py) | 256x256 | 0.726 | 0.896 | 0.799 | 0.780 | 0.934 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hourglass/hourglass52_coco_256x256-4ec713ba_20200709.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hourglass/hourglass52_coco_256x256_20200709.log.json) |
