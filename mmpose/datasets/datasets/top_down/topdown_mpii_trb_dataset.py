@@ -72,7 +72,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             rotation=0,
             joints_3d=None,
             joints_3d_visible=None,
-            dataset='TRBMPI')
+            dataset='mpii_trb')
 
         imid2info = {
             int(osp.splitext(x['file_name'])[0]): x
@@ -170,12 +170,18 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
             kpts[image_id].append({
-                'keypoints': preds[0],
-                'center': boxes[0][0:2],
-                'scale': boxes[0][2:4],
-                'area': boxes[0][4],
-                'score': boxes[0][5],
-                'image_id': image_id,
+                'keypoints':
+                list(preds[0].astype(np.float32)),
+                'center':
+                list(boxes[0][0:2].astype(np.float32)),
+                'scale':
+                list(boxes[0][2:4].astype(np.float32)),
+                'area':
+                boxes[0][4],
+                'score':
+                boxes[0][5],
+                'image_id':
+                image_id,
             })
 
         self._write_keypoint_results(kpts, res_file)
