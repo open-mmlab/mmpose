@@ -378,10 +378,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
             result = [{
                 'image_id': img_kpt['image_id'],
                 'category_id': cat_id,
-                'keypoints': list(key_point),
+                'keypoints': list(key_point.astype(np.float32)),
                 'score': img_kpt['score'],
-                'center': list(img_kpt['center']),
-                'scale': list(img_kpt['scale'])
+                'center': list(img_kpt['center'].astype(np.float32)),
+                'scale': list(img_kpt['scale'].astype(np.float32))
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)

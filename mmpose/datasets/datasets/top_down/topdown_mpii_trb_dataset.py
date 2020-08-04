@@ -208,7 +208,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
 
-        assert len(preds) == len(self.db)
+        assert len(preds) == len(
+            self.db), f'LEN(PREDS)={len(preds)}, LEN(DB)={len(self.db)}'
         for pred, item in zip(preds, self.db):
             h, e = self.evaluate_kernel(pred['keypoints'], item['joints_3d'],
                                         item['joints_3d_visible'],
