@@ -1,7 +1,7 @@
 import copy as cp
 import os
 import os.path as osp
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
@@ -164,24 +164,19 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         """Evaluate MPII-TRB keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
-        kpts = defaultdict(list)
+        kpts = []
+
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
             image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
-            kpts[image_id].append({
-                'keypoints':
-                list(preds[0].astype(np.float32)),
-                'center':
-                list(boxes[0][0:2].astype(np.float32)),
-                'scale':
-                list(boxes[0][2:4].astype(np.float32)),
-                'area':
-                boxes[0][4],
-                'score':
-                boxes[0][5],
-                'image_id':
-                image_id,
+            kpts.append({
+                'keypoints': list(preds[0].astype(np.float32)),
+                'center': list(boxes[0][0:2].astype(np.float32)),
+                'scale': list(boxes[0][2:4].astype(np.float32)),
+                'area': float(boxes[0][4]),
+                'score': float(boxes[0][5]),
+                'image_id': image_id,
             })
 
         self._write_keypoint_results(kpts, res_file)
@@ -209,7 +204,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             preds = json.load(fin)
 
         assert len(preds) == len(
-            self.db), f'LEN(PREDS)={len(preds)}, LEN(DB)={len(self.db)}'
+            self.db), f'len(preds)={len(preds)}, len(self.db)={len(self.db)}'
         for pred, item in zip(preds, self.db):
             h, e = self.evaluate_kernel(pred['keypoints'], item['joints_3d'],
                                         item['joints_3d_visible'],
