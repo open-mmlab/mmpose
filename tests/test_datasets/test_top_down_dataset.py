@@ -67,3 +67,50 @@ def test_top_down_COCO_dataset():
     image_id = 785
     assert image_id in custom_dataset.image_set_index
     assert len(custom_dataset.image_set_index) == 4
+
+
+def test_top_down_OneHand10K_dataset():
+    dataset = 'TopDownOneHand10KDataset'
+    # test COCO datasets
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=21,
+        dataset_joints=21,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/OneHand10K/test_onehand10k.json',
+        img_prefix='tests/data/OneHand10K/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/OneHand10K/test_onehand10k.json',
+        img_prefix='tests/data/OneHand10K/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+
+    assert custom_dataset.num_images == 4
