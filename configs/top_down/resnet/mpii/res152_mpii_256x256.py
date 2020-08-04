@@ -33,8 +33,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='models/pytorch/imagenet/resnet152-b121ed2d.pth',
+    backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -102,14 +102,20 @@ data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownMpiiTrbDataset',
-        ann_file=f'{data_root}/annotations/mpii_trb_train.json',
+        type='TopDownMpiiDataset',
+        ann_file=f'{data_root}/annotations/mpii_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownMpiiTrbDataset',
-        ann_file=f'{data_root}/annotations/mpii_trb_val.json',
+        type='TopDownMpiiDataset',
+        ann_file=f'{data_root}/annotations/mpii_valid.json',
+        img_prefix=f'{data_root}/images/',
+        data_cfg=data_cfg,
+        pipeline=valid_pipeline),
+    test=dict(
+        type='TopDownMpiiDataset',
+        ann_file=f'{data_root}/annotations/mpii_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=valid_pipeline),
