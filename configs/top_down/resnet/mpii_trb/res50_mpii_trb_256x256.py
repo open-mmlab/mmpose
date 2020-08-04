@@ -99,7 +99,7 @@ val_pipeline = [
 
 data_root = 'data/mpii'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
         type='TopDownMpiiTrbDataset',
