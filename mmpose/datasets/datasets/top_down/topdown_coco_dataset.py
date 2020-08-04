@@ -383,7 +383,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         return cat_results
 
-
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
         coco_dt = self.coco.loadRes(res_file)
