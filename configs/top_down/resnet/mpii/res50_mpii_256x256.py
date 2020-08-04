@@ -25,10 +25,10 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=40,
-    dataset_joints=40,
-    dataset_channel=list(range(40)),
-    inference_channel=list(range(40)))
+    num_output_channels=16,
+    dataset_joints=16,
+    dataset_channel=list(range(16)),
+    inference_channel=list(range(16)))
 
 # model settings
 model = dict(
@@ -64,7 +64,8 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+        type='TopDownGetRandomScaleRotation', rot_factor=30,
+        scale_factor=0.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
