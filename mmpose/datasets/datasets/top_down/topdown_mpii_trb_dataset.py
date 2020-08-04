@@ -182,7 +182,6 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         return name_value
 
-
     def _write_keypoint_results(self, keypoints, res_file):
         """Write results into a json file."""
 
