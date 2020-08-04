@@ -186,9 +186,3 @@ def test_top_down_MPII_TRB_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
-
-
-# test_top_down_COCO_dataset()
-# test_top_down_MPII_dataset()
-test_top_down_OneHand10K_dataset()
-# test_top_down_MPII_TRB_dataset()
