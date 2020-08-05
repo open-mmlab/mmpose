@@ -213,8 +213,8 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         Report Mean Acc of skeleton, contour and all joints.
         """
         num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints, dtype = np.float32)
-        exist = np.zeros(num_joints, dtype = np.float32)
+        hit = np.zeros(num_joints, dtype=np.float32)
+        exist = np.zeros(num_joints, dtype=np.float32)
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
@@ -222,8 +222,8 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         assert len(preds) == len(self.db)
         for pred, item in zip(preds, self.db):
             h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
-                                        item['joints_3d_visible'],
-                                        item['headbox'])
+                                         item['joints_3d_visible'],
+                                         item['headbox'])
             hit += h
             exist += e
         pck = np.sum(hit) / np.sum(exist)
