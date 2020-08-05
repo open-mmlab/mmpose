@@ -1,5 +1,6 @@
 import copy as cp
 import os
+import os.path as osp
 from collections import OrderedDict
 
 import json_tricks as json
@@ -63,16 +64,16 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         self.ann_info['flip_pairs'] = []
 
         self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] =  \
-            np.ones(21, dtype=np.float32).reshape(
-                (self.ann_info['num_joints'], 1))
+        assert self.ann_info['num_joints'] == 21
+        self.ann_info['joints_weight'] = \
+            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db(ann_file)
         self.image_set = set([x['image_file'] for x in self.db])
         self.num_images = len(self.image_set)
 
-        print('=> num_images: {}'.format(self.num_images))
-        print('=> load {} samples'.format(len(self.db)))
+        print(f'=> num_images: {self.num_images}')
+        print(f'=> load {len(self.db)} samples')
 
     def _get_db(self, ann_file):
         """Load dataset."""
@@ -111,11 +112,9 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
                 t_vis = anno['keypoints'][ipt * 3 + 2]
                 if t_vis > 1:
                     t_vis = 1
-                joints_3d_visible[ipt, 0] = t_vis
-                joints_3d_visible[ipt, 1] = t_vis
-                joints_3d_visible[ipt, 2] = 0
+                joints_3d_visible[ipt, :] = (t_vis, t_vis, 0)
 
-            center, scale = self._box2cs(anno['bbox'][:4])
+            center, scale = self._xywh2cs(*anno['bbox'][:4])
             newitem['center'] = center
             newitem['scale'] = scale
             newitem['joints_3d'] = joints_3d
@@ -123,11 +122,6 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             gt_db.append(newitem)
 
         return gt_db
-
-    def _box2cs(self, box):
-        """Get box center & scale given box (x, y, w, h)."""
-        x, y, w, h = box[:4]
-        return self._xywh2cs(x, y, w, h)
 
     def _xywh2cs(self, x, y, w, h):
         """This encodes bbox(x,y,w,w) into (center, scale)
@@ -158,7 +152,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         return center, scale
 
-    def evaluate_kernal(self, pred, joints_3d, joints_3d_visible, bbox):
+    def _evaluate_kernel(self, pred, joints_3d, joints_3d_visible, bbox):
         """Evaluate one example.
 
         ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
@@ -186,24 +180,19 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         """Evaluate OneHand10K keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
-        all_preds, all_boxes, all_image_path = list(map(list, zip(*outputs)))
-
         kpts = []
 
-        for idx, kpt in enumerate(all_preds):
+        for preds, boxes, image_path in outputs:
+            str_image_path = ''.join(image_path)
+            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+
             kpts.append({
-                'keypoints':
-                kpt[0],
-                'center':
-                all_boxes[idx][0][0:2],
-                'scale':
-                all_boxes[idx][0][2:4],
-                'area':
-                all_boxes[idx][0][4],
-                'score':
-                all_boxes[idx][0][5],
-                'image_id':
-                int(''.join(all_image_path[idx]).split('/')[-1][:-4]),
+                'keypoints': list(preds[0].astype(np.float32)),
+                'center': list(boxes[0][0:2].astype(np.float32)),
+                'scale': list(boxes[0][2:4].astype(np.float32)),
+                'area': float(boxes[0][4]),
+                'score': float(boxes[0][5]),
+                'image_id': image_id,
             })
 
         self._write_keypoint_results(kpts, res_file)
@@ -224,21 +213,21 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         Report Mean Acc of skeleton, contour and all joints.
         """
         num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints)
-        exist = np.zeros(num_joints)
+        hit = np.zeros(num_joints, dtype = np.float32)
+        exist = np.zeros(num_joints, dtype = np.float32)
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
 
         assert len(preds) == len(self.db)
         for pred, item in zip(preds, self.db):
-            h, e = self.evaluate_kernal(pred['keypoints'], item['joints_3d'],
+            h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
                                         item['joints_3d_visible'],
                                         item['headbox'])
             hit += h
             exist += e
-        p_all = np.sum(hit) / np.sum(exist)
+        pck = np.sum(hit) / np.sum(exist)
 
         info_str = []
-        info_str.append(('p_acc', p_all))
+        info_str.append(('PCK', pck))
         return info_str
