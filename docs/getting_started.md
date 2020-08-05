@@ -306,7 +306,7 @@ Here is an example of using 8 GPUs to load ResNet50 checkpoint.
 If you can run MMPose on a cluster managed with [slurm](https://slurm.schedmd.com/), you can use the script `slurm_train.sh`. (This script also supports single machine training.)
 
 ```shell
-./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} ${CONFIG_FILE} ${WORK_DIR} [${GPUS}]
+./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} ${CONFIG_FILE} ${WORK_DIR}
 ```
 
 Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a slurm cluster.
@@ -314,7 +314,7 @@ Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a 
 Assume that `Test` is a valid ${PARTITION} name.)
 
 ```shell
-GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192 16
+GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
 You can check [slurm_train.sh](../tools/slurm_train.sh) for full arguments and environment variables.
