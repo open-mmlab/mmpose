@@ -109,9 +109,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
                 joints_3d[ipt, 0] = anno['keypoints'][ipt * 3 + 0]
                 joints_3d[ipt, 1] = anno['keypoints'][ipt * 3 + 1]
                 joints_3d[ipt, 2] = 0
-                t_vis = anno['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
-                    t_vis = 1
+                t_vis = min(anno['keypoints'][ipt * 3 + 2], 1)
                 joints_3d_visible[ipt, :] = (t_vis, t_vis, 0)
 
             center, scale = self._xywh2cs(*anno['bbox'][:4])
