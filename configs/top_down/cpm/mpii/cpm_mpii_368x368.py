@@ -34,7 +34,12 @@ channel_cfg = dict(
 model = dict(
     type='TopDown',
     pretrained=None,
-    backbone=dict(type='CPM', in_channels=3, feat_channels=128, num_stages=6),
+    backbone=dict(
+        type='CPM',
+        in_channels=3,
+        out_channels=channel_cfg['num_output_channels'],
+        feat_channels=128,
+        num_stages=6),
     keypoint_head=dict(
         type='TopDownMultiStageHead',
         in_channels=channel_cfg['num_output_channels'],
