@@ -50,7 +50,7 @@ model = dict(
         out_channels=channel_cfg['num_output_channels'],
         num_stages=1,
         num_deconv_layers=0,
-        extra=dict(final_conv_kerne=1, ),
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
