@@ -86,6 +86,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             rotation=0,
             joints_3d=None,
             joints_3d_visible=None,
+            bbox=None,
             dataset='OneHand10K')
 
         imid2info = {x['id']: x for x in data['images']}
@@ -117,6 +118,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             newitem['scale'] = scale
             newitem['joints_3d'] = joints_3d
             newitem['joints_3d_visible'] = joints_3d_visible
+            newitem['bbox'] = anno['bbox'][:4]
             gt_db.append(newitem)
 
         return gt_db
@@ -185,9 +187,9 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
             kpts.append({
-                'keypoints': list(preds[0].astype(np.float32)),
-                'center': list(boxes[0][0:2].astype(np.float32)),
-                'scale': list(boxes[0][2:4].astype(np.float32)),
+                'keypoints': preds[0].tolist(),
+                'center': boxes[0][0:2].tolist(),
+                'scale': boxes[0][2:4].tolist(),
                 'area': float(boxes[0][4]),
                 'score': float(boxes[0][5]),
                 'image_id': image_id,
@@ -221,11 +223,11 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         for pred, item in zip(preds, self.db):
             h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
                                          item['joints_3d_visible'],
-                                         item['headbox'])
+                                         item['bbox'])
             hit += h
             exist += e
         pck = np.sum(hit) / np.sum(exist)
 
         info_str = []
-        info_str.append(('PCK', pck))
+        info_str.append(('PCK', pck.item()))
         return info_str
