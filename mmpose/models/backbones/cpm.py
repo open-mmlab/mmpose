@@ -53,7 +53,7 @@ class CPM(BaseBackbone):
     <https://arxiv.org/abs/1602.00134>`_ .
 
     Args:
-        num_stacks (int): Number of stages.
+        num_stages (int): Number of stages.
         stage_channels (list[int]): Feature channel of each sub-module in a
             HourglassModule.
         stage_blocks (list[int]): Number of sub-modules stacked in a
@@ -78,13 +78,13 @@ class CPM(BaseBackbone):
                  in_channels,
                  out_channels,
                  feat_channels=128,
-                 num_stacks=6):
+                 num_stages=6):
         super().__init__()
 
         assert in_channels == 3
 
-        self.num_stacks = num_stacks
-        assert self.num_stacks >= 1
+        self.num_stages = num_stages
+        assert self.num_stages >= 1
 
         vgg = VGG(
             depth=19,
@@ -112,14 +112,14 @@ class CPM(BaseBackbone):
 
         self.cpm_stages = nn.ModuleList([
             CpmBlock(feat_channels + out_channels, feat_channels)
-            for _ in range(num_stacks - 1)
+            for _ in range(num_stages - 1)
         ])
 
         self.out_convs = nn.ModuleList([
             nn.Sequential(
                 ConvModule(feat_channels, feat_channels, 1, padding=0),
                 ConvModule(feat_channels, out_channels, 1, padding=0))
-            for _ in range(num_stacks - 1)
+            for _ in range(num_stages - 1)
         ])
 
     def init_weights(self, pretrained=None):
@@ -151,7 +151,7 @@ class CPM(BaseBackbone):
 
         out_feats.append(self.out_stage1(inter_feat))
 
-        for ind in range(self.num_stacks - 1):
+        for ind in range(self.num_stages - 1):
             single_stage = self.cpm_stages[ind]
             out_conv = self.out_convs[ind]
 
