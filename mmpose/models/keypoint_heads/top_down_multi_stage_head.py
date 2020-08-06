@@ -57,13 +57,16 @@ class TopDownMultiStageHead(nn.Module):
                     f'num_deconv_layers ({num_deconv_layers}) should >= 0.')
             self.multi_deconv_layers.append(deconv_layers)
 
+        identity_final_layer = False
         if extra is not None and 'final_conv_kernel' in extra:
             assert extra['final_conv_kernel'] in [0, 1, 3]
-            # 0 for Identity mapping.
             if extra['final_conv_kernel'] == 3:
                 padding = 1
-            else:
+            elif extra['final_conv_kernel'] == 1:
                 padding = 0
+            else:
+                # 0 for Identity mapping.
+                identity_final_layer = True
             kernel_size = extra['final_conv_kernel']
         else:
             kernel_size = 1
@@ -72,7 +75,7 @@ class TopDownMultiStageHead(nn.Module):
         # build multi-stage final layers
         self.multi_final_layers = nn.ModuleList([])
         for i in range(self.num_stages):
-            if extra['final_conv_kernel'] == 0:
+            if identity_final_layer:
                 final_layer = nn.Identity()
             else:
                 final_layer = build_conv_layer(

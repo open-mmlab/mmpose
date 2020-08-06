@@ -50,25 +50,32 @@ class TopDownSimpleHead(nn.Module):
             raise ValueError(
                 f'num_deconv_layers ({num_deconv_layers}) should >= 0.')
 
+        identity_final_layer = False
         if extra is not None and 'final_conv_kernel' in extra:
-            assert extra['final_conv_kernel'] in [1, 3]
+            assert extra['final_conv_kernel'] in [0, 1, 3]
             if extra['final_conv_kernel'] == 3:
                 padding = 1
-            else:
+            elif extra['final_conv_kernel'] == 1:
                 padding = 0
+            else:
+                # 0 for Identity mapping.
+                identity_final_layer = True
             kernel_size = extra['final_conv_kernel']
         else:
             kernel_size = 1
             padding = 0
 
-        self.final_layer = build_conv_layer(
-            cfg=dict(type='Conv2d'),
-            in_channels=num_deconv_filters[-1]
-            if num_deconv_layers > 0 else in_channels,
-            out_channels=out_channels,
-            kernel_size=kernel_size,
-            stride=1,
-            padding=padding)
+        if identity_final_layer:
+            self.final_layer = nn.Identity()
+        else:
+            self.final_layer = build_conv_layer(
+                cfg=dict(type='Conv2d'),
+                in_channels=num_deconv_filters[-1]
+                if num_deconv_layers > 0 else in_channels,
+                out_channels=out_channels,
+                kernel_size=kernel_size,
+                stride=1,
+                padding=padding)
 
     def forward(self, x):
         """Forward function."""
