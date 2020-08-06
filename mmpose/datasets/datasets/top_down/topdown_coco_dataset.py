@@ -165,7 +165,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 joints_3d_visible[ipt, 0] = t_vis
                 joints_3d_visible[ipt, 1] = t_vis
                 joints_3d_visible[ipt, 2] = 0
-            center, scale = self._box2cs(obj['clean_bbox'][:4])
+
+            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
             rec.append({
                 'image_file': self._image_path_from_index(index),
                 'center': center,
@@ -178,11 +179,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             })
 
         return rec
-
-    def _box2cs(self, box):
-        """Get box center & scale given box (x, y, w, h)."""
-        x, y, w, h = box[:4]
-        return self._xywh2cs(x, y, w, h)
 
     def _xywh2cs(self, x, y, w, h):
         """This encodes bbox(x,y,w,w) into (center, scale)
@@ -246,7 +242,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             num_boxes = num_boxes + 1
 
-            center, scale = self._box2cs(box)
+            center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
             kpt_db.append({

@@ -42,10 +42,17 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         self.ann_info['lower_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
 
         self.ann_info['use_different_joints_weight'] = False
+
+        assert self.ann_info['num_joints'] == 16
         self.ann_info['joints_weight'] = np.ones(
-            (self.ann_info['num_joints'], 1))
+            (self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db()
+        self.image_set = set([x['image_file'] for x in self.db])
+        self.num_images = len(self.image_set)
+
+        print(f'=> num_images: {self.num_images}')
+        print(f'=> load {len(self.db)} samples')
 
     def _get_db(self):
         # create train/val split
