@@ -179,22 +179,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
                 joints_3d_visible[ipt, 1] = t_vis
                 joints_3d_visible[ipt, 2] = 0
 
-            interference_num_joints = len(obj['keypoints']) // 3 - num_joints
-            interference_joints_3d = np.zeros((interference_num_joints, 3),
-                                              dtype=np.float)
-            interference_joints_3d_vis = np.zeros((interference_num_joints, 3),
-                                                  dtype=np.float)
-            for ipt in range(interference_num_joints):
-                interference_joints_3d[
-                    ipt, 0] = obj['keypoints'][(num_joints + ipt) * 3 + 0]
-                interference_joints_3d[
-                    ipt, 1] = obj['keypoints'][(num_joints + ipt) * 3 + 1]
-                interference_joints_3d[ipt, 2] = \
-                    obj['keypoints'][(num_joints + ipt) * 3 + 2]
-
-                interference_joints_3d_vis[ipt, 0] = 1
-                interference_joints_3d_vis[ipt, 1] = 1
-                interference_joints_3d_vis[ipt, 2] = 0
+            interference_joints_3d = np.array(obj['keypoints']).reshape(
+                -1, 3)[num_joints:, :]
 
             center, scale = self._box2cs(obj['clean_bbox'][:4])
             rec.append({
@@ -205,7 +191,6 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'interference_joints': interference_joints_3d,
-                'interference_joints_vis': interference_joints_3d_vis,
                 'dataset': 'crowdpose',
                 'bbox_score': 1
             })
@@ -283,30 +268,17 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
             interference_joints_3d = np.zeros((0, 3), dtype=np.float)
-            interference_joints_3d_vis = np.zeros((0, 3), dtype=np.float)
             kpt_db.append({
-                'image_file':
-                img_name,
-                'center':
-                center,
-                'scale':
-                scale,
-                'bbox_score':
-                score,
-                'dataset':
-                'crowdpose',
-                'rotation':
-                0,
-                'imgnum':
-                0,
-                'joints_3d':
-                joints_3d,
-                'joints_3d_visible':
-                joints_3d_visible,
-                'interference_joints':
-                interference_joints_3d,
-                'interference_joints_vis':
-                interference_joints_3d_vis,
+                'image_file': img_name,
+                'center': center,
+                'scale': scale,
+                'bbox_score': score,
+                'dataset': 'crowdpose',
+                'rotation': 0,
+                'imgnum': 0,
+                'joints_3d': joints_3d,
+                'joints_3d_visible': joints_3d_visible,
+                'interference_joints': interference_joints_3d,
             })
         print(f'=> Total boxes after fliter '
               f'low score@{self.image_thr}: {num_boxes}')
