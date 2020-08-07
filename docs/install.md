@@ -16,7 +16,6 @@
 Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
 
-
 ### Install mmpose
 
 a. Create a conda virtual environment and activate it.
