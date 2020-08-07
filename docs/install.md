@@ -16,6 +16,7 @@
 Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
 
+
 ### Install mmpose
 
 a. Create a conda virtual environment and activate it.
@@ -88,7 +89,12 @@ conda install -c pytorch pytorch torchvision -y
 git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
+<<<<<<< b49308296b7ec299371e21d9ef1d0ec1002da266
 pip install xtcocotools
+=======
+pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+pip install "git+https://github.com/Jeff-sjtu/CrowdPose.git#subdirectory=crowdpose-api/PythonAPI"
+>>>>>>> add crowdposetools
 python setup.py develop
 
 ```
