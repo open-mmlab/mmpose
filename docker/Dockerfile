@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y git ninja-build libglib2.0-0 libsm6 lib
 RUN pip install cython
 RUN pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
 
+# Install crowdposetools
+RUN pip install "git+https://github.com/Jeff-sjtu/CrowdPose.git#subdirectory=crowdpose-api/PythonAPI"
+
 # Install MMPose
 RUN conda clean --all
 RUN git clone https://github.com/open-mmlab/mmpose.git /mmpose

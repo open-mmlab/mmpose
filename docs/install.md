@@ -15,6 +15,7 @@
 Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
 - pycocotools (to train/test on COCO Dataset)
+- crowdposetools (to train/test on CrowdPose Dataset)
 
 ### Install mmpose
 
@@ -90,6 +91,7 @@ git clone git@gitlab.sz.sensetime.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
 pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+pip install "git+https://github.com/Jeff-sjtu/CrowdPose.git#subdirectory=crowdpose-api/PythonAPI"
 python setup.py develop
 
 ```
