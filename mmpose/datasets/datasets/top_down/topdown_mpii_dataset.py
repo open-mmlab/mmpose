@@ -81,15 +81,14 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                                          dtype=np.float)
             if not self.test_mode:
                 joints = np.array(a['joints'])
-                joints[:, 0:2] = joints[:, 0:2] - 1
+                joints[:, 0:2] -= 1
                 joints_vis = np.array(a['joints_vis'])
                 assert len(joints) == self.ann_info['num_joints'], \
                     f'joint num diff: {len(joints)}' + \
                     f' vs {self.ann_info["num_joints"]}'
 
                 joints_3d[:, 0:2] = joints[:, 0:2]
-                joints_3d_visible[:, 0] = joints_vis[:]
-                joints_3d_visible[:, 1] = joints_vis[:]
+                joints_3d_visible[:, :2] = joints_vis[:, None]
 
             gt_db.append({
                 'image_file':
@@ -147,7 +146,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         preds = np.stack(_preds)
 
         # convert 0-based index to 1-based index
-        preds = preds[:, :, 0:2] + 1.0
+        preds[..., :2] += 1.0
 
         if res_folder:
             pred_file = os.path.join(res_folder, 'pred.mat')
