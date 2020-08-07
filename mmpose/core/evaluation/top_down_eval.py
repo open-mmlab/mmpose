@@ -270,3 +270,12 @@ def keypoints_from_heatmaps(heatmaps,
         preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
 
     return preds, maxvals
+
+
+def crowd_keypoints_from_heatmaps(heatmaps,
+                                  center,
+                                  scale,
+                                  post_process=True,
+                                  unbiased=False,
+                                  kernel=11):
+    pass
