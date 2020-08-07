@@ -1,4 +1,3 @@
-crowdposetools
 json_tricks
 matplotlib
 mmcv
