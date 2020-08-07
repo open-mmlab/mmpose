@@ -33,40 +33,16 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/hrnet_w48-8ef0771d.pth',
+    pretrained=None,
     backbone=dict(
-        type='HRNet',
-        in_channels=3,
-        extra=dict(
-            stage1=dict(
-                num_modules=1,
-                num_branches=1,
-                block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
-            stage2=dict(
-                num_modules=1,
-                num_branches=2,
-                block='BASIC',
-                num_blocks=(4, 4),
-                num_channels=(48, 96)),
-            stage3=dict(
-                num_modules=4,
-                num_branches=3,
-                block='BASIC',
-                num_blocks=(4, 4, 4),
-                num_channels=(48, 96, 192)),
-            stage4=dict(
-                num_modules=3,
-                num_branches=4,
-                block='BASIC',
-                num_blocks=(4, 4, 4, 4),
-                num_channels=(48, 96, 192, 384))),
+        type='HourglassNet',
+        num_stacks=1,
     ),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
-        in_channels=48,
+        type='TopDownMultiStageHead',
+        in_channels=256,
         out_channels=channel_cfg['num_output_channels'],
+        num_stages=1,
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
     ),
@@ -111,7 +87,7 @@ train_pipeline = [
         ]),
 ]
 
-val_pipeline = [
+valid_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -139,14 +115,14 @@ data = dict(
         pipeline=train_pipeline),
     val=dict(
         type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
+        ann_file=f'{data_root}/annotations/mpii_valid.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=valid_pipeline),
     test=dict(
         type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
+        ann_file=f'{data_root}/annotations/mpii_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=valid_pipeline),
 )
