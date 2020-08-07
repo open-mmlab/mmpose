@@ -9,16 +9,6 @@ from .base_backbone import BaseBackbone
 from .utils import load_checkpoint
 
 
-def conv3x3(in_planes, out_planes, dilation=1):
-    """3x3 convolution with padding."""
-    return nn.Conv2d(
-        in_planes,
-        out_planes,
-        kernel_size=3,
-        padding=dilation,
-        dilation=dilation)
-
-
 class CpmBlock(nn.Module):
     """CpmBlock for Convolutional Pose Machine.
 
@@ -118,7 +108,7 @@ class CPM(BaseBackbone):
         self.out_convs = nn.ModuleList([
             nn.Sequential(
                 ConvModule(feat_channels, feat_channels, 1, padding=0),
-                ConvModule(feat_channels, out_channels, 1, padding=0))
+                ConvModule(feat_channels, out_channels, 1, act_cfg=None))
             for _ in range(num_stages - 1)
         ])
 
