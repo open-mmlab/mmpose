@@ -138,12 +138,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         # only PCKh is supported.
         assert metrics == 'PCKh'
 
-        _preds = []
-        for i in range(len(outputs)):
-            kpts, _, _ = outputs[i]
-            _preds.append(kpts[0])
-
-        preds = np.stack(_preds)
+        preds = np.stack([kpts[0] for kpts, _, _ in outputs])
 
         # convert 0-based index to 1-based index
         preds[..., :2] += 1.0
