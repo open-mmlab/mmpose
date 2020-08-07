@@ -63,6 +63,7 @@ d. Install build requirements and then install mmpose
 ```shell
 pip install -r requirements.txt
 pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+pip install "git+https://github.com/Jeff-sjtu/CrowdPose.git#subdirectory=crowdpose-api/PythonAPI"
 python setup.py develop
 ```
 
