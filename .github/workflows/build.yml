@@ -70,6 +70,7 @@ jobs:
         run: pip install torch==${{matrix.torch}} torchvision==${{matrix.torchvision}} -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
+          pip install "git+https://github.com/Jeff-sjtu/CrowdPose.git#subdirectory=crowdpose-api/PythonAPI"
           pip install -r requirements.txt
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
