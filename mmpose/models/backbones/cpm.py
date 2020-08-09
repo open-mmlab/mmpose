@@ -88,13 +88,13 @@ class CPM(BaseBackbone):
             bn_frozen=False,
             ceil_mode=False,
             with_last_pool=False)
-        vgg = nn.Sequential(*list(vgg.features.children())[:-4])
-
-        self.stem = nn.Sequential(*vgg, ConvModule(512, 256, 3, padding=1),
-                                  ConvModule(256, 256, 3, padding=1),
-                                  ConvModule(256, 256, 3, padding=1),
-                                  ConvModule(256, 256, 3, padding=1),
-                                  ConvModule(256, feat_channels, 3, padding=1))
+        self.vgg = nn.Sequential(*list(vgg.features.children())[:-4])
+        self.stage1 = nn.Sequential(
+            ConvModule(512, 256, 3, padding=1),
+            ConvModule(256, 256, 3, padding=1),
+            ConvModule(256, 256, 3, padding=1),
+            ConvModule(256, 256, 3, padding=1),
+            ConvModule(256, feat_channels, 3, padding=1))
 
         self.out_stage1 = nn.Sequential(
             ConvModule(feat_channels, 512, 1),
@@ -128,7 +128,7 @@ class CPM(BaseBackbone):
         if isinstance(pretrained, str):
             # initialize the VGG stem
             logger = get_root_logger()
-            load_checkpoint(self.stem, pretrained, strict=False, logger=logger)
+            load_checkpoint(self.vgg, pretrained, strict=False, logger=logger)
         elif pretrained is None:
             pass
         else:
@@ -136,7 +136,7 @@ class CPM(BaseBackbone):
 
     def forward(self, x):
         """Model forward function."""
-        inter_feat = self.stem(x)
+        inter_feat = self.stage1(self.vgg(x))
         out_feats = []
 
         out_feats.append(self.out_stage1(inter_feat))
