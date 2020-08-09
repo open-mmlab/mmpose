@@ -33,7 +33,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained=None,
+    pretrained='models/pytorch/imagenet/vgg19-dcbb9e9d.pth',
     backbone=dict(
         type='CPM',
         in_channels=3,
