@@ -226,3 +226,55 @@ def rotate_point(pt, angle_rad):
     rotated_pt = [new_x, new_y]
 
     return rotated_pt
+
+
+def fliplr_interference_joints(joints, width, matched_parts):
+    """flip interference joint."""
+    # Flip horizontal
+    joints[:, 0] = width - joints[:, 0] - 1
+
+    # Change left-right parts
+    for joint in joints:
+        if joint[2] in matched_parts:
+            joint[2] = matched_parts[joint[2]]
+
+    return joints
+
+
+def transform_crowd_preds(coords, center, scale, output_size):
+    """Get final keypoint predictions from heatmaps and transform them back to
+    the image.
+
+    First calculate the transformation matrix from `get_affine_transform()`,
+    then affine transform the predicted keypoint coordinates back
+    to the image.
+
+    Note:
+        num_keypoints: K
+        the number of candidate: N(default: 5)
+
+    Args:
+        coords (np.ndarray[K, N, ndims]):
+            if ndims=2, corrds are predicted keypoint location.
+            if ndims=5, corrds are composed of (x, y, tags,
+                fliped_tags, scores)
+        center (np.ndarray[2, ]): Center of the bounding box (x, y).
+        scale (np.ndarray[2, ]): Scale of the bounding box
+            wrt [width, height].
+        output_size (np.ndarray[2, ]): Size of the destination heatmaps.
+
+    Returns:
+        target_coords: predicted coordinates in the images.
+    """
+    assert coords.shape[2] == 2 or coords.shape[2] == 5
+    assert len(center) == 2
+    assert len(scale) == 2
+    assert len(output_size) == 2
+
+    target_coords = np.zeros_like(coords)
+    trans = get_affine_transform(center, scale, 0, output_size, inv=True)
+    for p in range(coords.shape[0]):
+        for k in range(coords.shape[1]):
+            target_coords[p, k,
+                          0:2] = affine_transform(coords[p, k, 0:2], trans)
+    return target_coords

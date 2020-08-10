@@ -386,7 +386,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         coco_eval.summarize()
 
         stats_names = [
-            'AP', 'Ap .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
             'AR .75', 'AP(E)', 'AP(M)', 'AP(H)'
         ]
 
