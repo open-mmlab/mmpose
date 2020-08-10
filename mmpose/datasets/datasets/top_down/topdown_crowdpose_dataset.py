@@ -78,20 +78,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         self.ann_info['use_different_joints_weight'] = False
         self.ann_info['joints_weight'] = np.array(
             [
-                0.2,
-                0.2,
-                0.2,
-                1.3,
-                1.5,
-                0.2,
-                1.3,
-                1.5,
-                0.2,
-                0.2,
-                0.5,
-                0.2,
-                0.2,
-                0.5,
+                0.2, 0.2, 0.2, 1.3, 1.5, 0.2, 1.3, 1.5, 0.2, 0.2, 0.5, 0.2,
+                0.2, 0.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
