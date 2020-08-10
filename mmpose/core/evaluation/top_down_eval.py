@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+import torch
 
-from mmpose.core.post_processing import transform_preds
+from mmpose.core.post_processing import transform_crowd_preds, transform_preds
 
 
 def _calc_distances(preds, targets, normalize):
@@ -272,10 +273,110 @@ def keypoints_from_heatmaps(heatmaps,
     return preds, maxvals
 
 
+def _get_multi_preds(heatmaps):
+    """Get keypoint predictions from score maps.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+        heatmap height: H
+        heatmap width: W
+        number of candidate joint: M(default:5)
+
+    Args:
+        heatmaps (torch.Tensor[N, K, H, W]): model predicted heatmaps.
+
+    Returns:
+        np.ndarray[N, K, M, 2]: Predicted keypoint location.
+        np.ndarray[N, K, M, 1]: Scores (confidence) of the keypoints.
+    """
+    assert isinstance(heatmaps,
+                      torch.Tensor), ('heatmaps should be torch.Tensor')
+    assert heatmaps.dim() == 4, 'batch_images should be 4-ndim'
+
+    pooling = torch.nn.MaxPool2d(5, 1, 2)
+    maxm = pooling(heatmaps)
+    maxm = torch.eq(maxm, heatmaps).float()
+    heatmaps = heatmaps * maxm
+
+    N, K, _, W = heatmaps.shape
+    heatmaps_reshaped = heatmaps.reshape((N, K, -1))
+    val_k, ind = heatmaps_reshaped.topk(5, dim=2)
+    x = ind % W
+    y = ind // W
+    preds = torch.stack((x, y), dim=3)
+    return preds.cpu().numpy().astype(
+        np.float32), val_k.unsqueeze(3).cpu().numpy()
+
+
 def crowd_keypoints_from_heatmaps(heatmaps,
                                   center,
                                   scale,
                                   post_process=True,
                                   unbiased=False,
                                   kernel=11):
-    pass
+    """Get final keypoint predictions from heatmaps and transform them back to
+    the image.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+        heatmap height: H
+        heatmap width: W
+        number of candidate joint: M(default:5)
+
+    Args:
+        heatmaps (np.ndarray[N, K, H, W]): model predicted heatmaps.
+        center (np.ndarray[N, 2]): Center of the bounding box (x, y).
+        scale (np.ndarray[N, 2]): Scale of the bounding box
+            wrt height/width.
+        post_process (bool): Option to use post processing or not.
+        unbiased (bool): Option to use unbiased decoding.
+            Paper ref: Zhang et al. Distribution-Aware Coordinate
+            Representation for Human Pose Estimation (CVPR 2020).
+        kernel (int): Gaussian kernel size (K) for modulation, which should
+            match the heatmap gaussian sigma when training.
+            K=17 for sigma=3 and k=11 for sigma=2.
+
+    Returns:
+        preds (np.ndarray[N, K, M, 2]): Predicted keypoint location in images.
+        maxvals (np.ndarray[N, K, M, 1]): Scores (confidence) of the keypoints.
+    """
+
+    preds, maxvals = _get_multi_preds(heatmaps)
+    N, K, H, W = heatmaps.shape
+    M = preds.shape[2]
+
+    if post_process:
+        if unbiased:  # alleviate biased coordinate
+            assert kernel > 0
+            # apply Gaussian distribution modulation.
+            heatmaps = _gaussian_blur(heatmaps, kernel)
+            heatmaps = np.maximum(heatmaps, 1e-10)
+            heatmaps = np.log(heatmaps)
+            for n in range(N):
+                for k in range(K):
+                    for m in range(M):
+                        preds[n][k][m] = _taylor(heatmaps[n][k],
+                                                 preds[n][k][m])
+        else:
+            # add +/-0.25 shift to the predicted locations for higher acc.
+            for n in range(N):
+                for k in range(K):
+                    heatmap = heatmaps[n][k]
+                    for m in range(M):
+                        px = int(preds[n][k][m][0])
+                        py = int(preds[n][k][m][1])
+                        if 1 < px < W - 1 and 1 < py < H - 1:
+                            diff = np.array([
+                                heatmap[py][px + 1] - heatmap[py][px - 1],
+                                heatmap[py + 1][px] - heatmap[py - 1][px]
+                            ])
+                            preds[n][k][
+                                m] = preds[n][k][m] + np.sign(diff) * .25
+
+    # Transform back to the image
+    for i in range(N):
+        preds[i] = transform_crowd_preds(preds[i], center[i], scale[i], [W, H])
+
+    return preds, maxvals
