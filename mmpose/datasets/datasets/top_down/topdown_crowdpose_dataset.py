@@ -124,6 +124,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
 
         Note:
             bbox:[x1, y1, w, h]
+            interference_joints_3d(np.ndarray[Nx3]): the joints in someones
+                bbox but not belong him.
         Args:
             index: crowdpose image id
         Returns:
