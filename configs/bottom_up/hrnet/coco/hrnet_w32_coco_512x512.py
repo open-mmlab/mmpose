@@ -39,9 +39,7 @@ data_cfg = dict(
     image_size=512,
     base_size=256,
     base_sigma=2,
-    heatmap_size=[
-        128,
-    ],
+    heatmap_size=[128],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -119,18 +117,10 @@ model = dict(
         num_stages=1,
         ae_loss_type='exp',
         with_ae_loss=[True],
-        push_loss_factor=[
-            0.001,
-        ],
-        pull_loss_factor=[
-            0.001,
-        ],
-        with_heatmaps_loss=[
-            True,
-        ],
-        heatmaps_loss_factor=[
-            1.0,
-        ],
+        push_loss_factor=[0.001],
+        pull_loss_factor=[0.001],
+        with_heatmaps_loss=[True],
+        heatmaps_loss_factor=[1.0],
     ),
 )
 
@@ -206,15 +196,4 @@ data = dict(
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=valid_pipeline),
-)
-
-loss = dict(
-    type='MultiLossFactory',
-    num_stages=2,
-    ae_loss_type='exp',
-    with_ae_loss=[True, False],
-    push_loss_factor=[0.001, 0.001],
-    pull_loss_factor=[0.001, 0.001],
-    with_heatmaps_loss=[True, True],
-    heatmaps_loss_factor=[1.0, 1.0],
 )
