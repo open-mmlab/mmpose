@@ -4,14 +4,10 @@
 
 ## Introduction
 
-<div align="left">
-    <a href='https://mmpose.readthedocs.io/en/latest/?badge=latest'>
-        <img src='https://readthedocs.org/projects/mmpose/badge/?version=latest' alt='Documentation Status' />
-    </a>
-    <a href="https://github.com/open-mmlab/mmaction/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/open-mmlab/mmaction.svg">
-    </a>
-</div>
+[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
+[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmaction.svg)](https://github.com/open-mmlab/mmaction/blob/master/LICENSE)
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
