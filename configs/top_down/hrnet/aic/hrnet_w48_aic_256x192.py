@@ -152,21 +152,21 @@ data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownCocoDataset',
+        type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_train.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_train_20170902/'
         'keypoint_train_images_20170902/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownCocoDataset',
+        type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
         pipeline=valid_pipeline),
     test=dict(
-        type='TopDownCocoDataset',
+        type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
