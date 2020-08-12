@@ -13,8 +13,10 @@ def test_bottomup_forward():
             type='BottomUpSimpleHead',
             in_channels=512,
             num_joints=17,
+            num_deconv_layers=0,
+            tag_per_joint=True,
             with_ae_loss=[True],
-            extra={'final_conv_kernel': 3}),
+            extra=dict(final_conv_kernel=1, )),
         train_cfg=dict(),
         test_cfg=dict(
             num_joints=17,

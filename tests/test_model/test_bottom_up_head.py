@@ -41,6 +41,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
     head.init_weights()
@@ -51,6 +52,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         with_ae_loss=[False],
         extra={'final_conv_kernel': 3})
     head.init_weights()
@@ -62,6 +64,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[False],
         extra={'final_conv_kernel': 3})
@@ -73,6 +76,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
@@ -84,6 +88,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
