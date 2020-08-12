@@ -1,29 +1,27 @@
 import os
 from collections import OrderedDict, defaultdict
 
-import json_tricks as json
 import numpy as np
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .topdown_coco_dataset import TopDownCocoDataset
 
 
 def _get_mapping_id_name(imgs):
     """
     Args:
-        imgs (list): list of image info.
+        imgs (dict): dict of image info.
     Returns:
         id2name (dict): mapping image id to name.
         name2id (dict): mapping image name to id.
     """
     id2name = {}
     name2id = {}
-    for image in imgs:
+    for image_id, image in imgs.items():
         file_name = image['file_name']
-        image_id = image['id']
         id2name[image_id] = file_name
         name2id[file_name] = image_id
 
@@ -31,7 +29,7 @@ def _get_mapping_id_name(imgs):
 
 
 @DATASETS.register_module()
-class TopDownAicDataset(TopDownBaseDataset):
+class TopDownAicDataset(TopDownCocoDataset):
     """AicDataset dataset for top-down pose estimation.
 
     `AI Challenger : A Large-scale Dataset for Going Deeper
@@ -72,7 +70,7 @@ class TopDownAicDataset(TopDownBaseDataset):
                  data_cfg,
                  pipeline,
                  test_mode=False):
-        super().__init__(
+        super(TopDownCocoDataset, self).__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
@@ -91,8 +89,8 @@ class TopDownAicDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 12, 13)
         self.ann_info['lower_body_ids'] = (6, 7, 8, 9, 10, 11)
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] = np.array(
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = np.array(
             [
                 1.,
                 1.2,
@@ -118,15 +116,15 @@ class TopDownAicDataset(TopDownBaseDataset):
         ]
         self.classes = ['__background__'] + cats
         self.num_classes = len(self.classes)
-
-        self.id2name, self.name2id = _get_mapping_id_name(self.coco.imgs)
         self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
         self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict([(self._class_to_coco_ind[cls],
-                                             self._class_to_ind[cls])
-                                            for cls in self.classes[1:]])
+        self._coco_ind_to_class_ind = dict(
+            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+            for cls in self.classes[1:])
         self.image_set_index = self.coco.getImgIds()
         self.num_images = len(self.image_set_index)
+        self.id2name, self.name2id = _get_mapping_id_name(self.coco.imgs)
+
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -134,19 +132,11 @@ class TopDownAicDataset(TopDownBaseDataset):
 
     def _get_db(self):
         """Load dataset."""
-        assert self.use_gt_bbox, 'Only gt bbox train/test is supported.'
-        # use ground truth bbox
+        assert self.use_gt_bbox
         gt_db = self._load_coco_keypoint_annotations()
         return gt_db
 
-    def _load_coco_keypoint_annotations(self):
-        """Ground truth bbox and keypoints."""
-        gt_db = []
-        for index in self.image_set_index:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernal(index))
-        return gt_db
-
-    def _load_coco_keypoint_annotation_kernal(self, index):
+    def _load_coco_keypoint_annotation_kernel(self, index):
         """load annotation from COCOAPI.
 
         Note:
@@ -183,70 +173,26 @@ class TopDownAicDataset(TopDownBaseDataset):
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
-            for ipt in range(num_joints):
-                joints_3d[ipt, 0] = obj['keypoints'][ipt * 3 + 0]
-                joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
-                joints_3d[ipt, 2] = 0
-                t_vis = obj['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
-                    t_vis = 1
-                joints_3d_visible[ipt, 0] = t_vis
-                joints_3d_visible[ipt, 1] = t_vis
-                joints_3d_visible[ipt, 2] = 0
-            center, scale = self._box2cs(obj['clean_bbox'][:4])
+
+            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
+            joints_3d[:, :2] = keypoints[:, :2]
+            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
+
+            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+
+            image_file = os.path.join(self.img_prefix, self.id2name[index])
             rec.append({
-                'image_file':
-                os.path.join(self.img_prefix, self.id2name[index]),
-                'center':
-                center,
-                'scale':
-                scale,
-                'rotation':
-                0,
-                'joints_3d':
-                joints_3d,
-                'joints_3d_visible':
-                joints_3d_visible,
-                'dataset':
-                'aic',
-                'bbox_score':
-                1
+                'image_file': image_file,
+                'center': center,
+                'scale': scale,
+                'rotation': 0,
+                'joints_3d': joints_3d,
+                'joints_3d_visible': joints_3d_visible,
+                'dataset': 'aic',
+                'bbox_score': 1
             })
+
         return rec
-
-    def _box2cs(self, box):
-        """Get box center & scale given box (x, y, w, h)."""
-        x, y, w, h = box[:4]
-        return self._xywh2cs(x, y, w, h)
-
-    def _xywh2cs(self, x, y, w, h):
-        """This encodes bbox(x,y,w,w) into (center, scale)
-
-        Args:
-            x, y, w, h
-
-        Returns:
-            center (np.ndarray[float32](2,)): center of the bbox (x, y).
-            scale (np.ndarray[float32](2,)): scale of the bbox w & h.
-        """
-        aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
-            'image_size'][1]
-        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-        if (not self.test_mode) and np.random.rand() < 0.3:
-            center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
-
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
-
-        # pixel std is 200.0
-        scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
-        scale = scale * 1.25
-
-        return center, scale
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
@@ -277,7 +223,7 @@ class TopDownAicDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = self.name2id(str_image_path)
+            image_id = self.name2id[os.path.basename(str_image_path)]
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -327,50 +273,6 @@ class TopDownAicDataset(TopDownBaseDataset):
         name_value = OrderedDict(info_str)
 
         return name_value
-
-    def _write_coco_keypoint_results(self, keypoints, res_file):
-        """Write results into a json file."""
-        data_pack = [{
-            'cat_id': self._class_to_coco_ind[cls],
-            'cls_ind': cls_ind,
-            'cls': cls,
-            'ann_type': 'keypoints',
-            'keypoints': keypoints
-        } for cls_ind, cls in enumerate(self.classes)
-                     if not cls == '__background__']
-
-        results = self._coco_keypoint_results_one_category_kernel(data_pack[0])
-
-        with open(res_file, 'w') as f:
-            json.dump(results, f, sort_keys=True, indent=4)
-
-    def _coco_keypoint_results_one_category_kernel(self, data_pack):
-        """Get coco keypoint results."""
-        cat_id = data_pack['cat_id']
-        keypoints = data_pack['keypoints']
-        cat_results = []
-
-        for img_kpts in keypoints:
-            if len(img_kpts) == 0:
-                continue
-
-            _key_points = np.array(
-                [img_kpt['keypoints'] for img_kpt in img_kpts])
-            key_points = _key_points.reshape(-1,
-                                             self.ann_info['num_joints'] * 3)
-
-            result = [{
-                'image_id': img_kpt['image_id'],
-                'category_id': cat_id,
-                'keypoints': list(key_point),
-                'score': img_kpt['score'],
-                'center': list(img_kpt['center']),
-                'scale': list(img_kpt['scale'])
-            } for img_kpt, key_point in zip(img_kpts, key_points)]
-
-            cat_results.extend(result)
-
-        return cat_results
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
