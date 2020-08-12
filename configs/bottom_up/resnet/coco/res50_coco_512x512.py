@@ -49,7 +49,7 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='TopDown',
+    type='BottomUp',
     pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(

@@ -49,7 +49,7 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='TopDown',
+    type='BottomUp',
     pretrained='models/pytorch/imagenet/hrnet_w48-8ef0771d.pth',
     backbone=dict(
         type='HRNet',
@@ -82,7 +82,7 @@ model = dict(
     ),
     keypoint_head=dict(
         type='BottomUpSimpleHead',
-        in_channels=32,
+        in_channels=48,
         num_joints=17,
         num_deconv_layers=0,
         tag_per_joint=True,
