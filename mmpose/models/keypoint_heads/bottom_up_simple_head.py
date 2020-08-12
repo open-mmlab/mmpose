@@ -83,7 +83,7 @@ class BottomUpSimpleHead(nn.Module):
             x = x[0]
         final_outputs = []
         x = self.deconv_layers(x)
-        y = self.final_layers(x)
+        y = self.final_layer(x)
         final_outputs.append(y)
         return final_outputs
 
