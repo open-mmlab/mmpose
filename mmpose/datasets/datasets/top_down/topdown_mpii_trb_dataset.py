@@ -117,7 +117,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         return gt_db
 
-    def evaluate_kernal(self, pred, joints_3d, joints_3d_visible, headbox):
+    def evaluate_kernel(self, pred, joints_3d, joints_3d_visible, headbox):
         """Evaluate one example."""
         num_joints = self.ann_info['num_joints']
         headbox = np.array(headbox)
@@ -182,7 +182,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         assert len(preds) == len(self.db)
         for pred, item in zip(preds, self.db):
-            h, e = self.evaluate_kernal(pred['keypoints'], item['joints_3d'],
+            h, e = self.evaluate_kernel(pred['keypoints'], item['joints_3d'],
                                         item['joints_3d_visible'],
                                         item['headbox'])
             hit += h

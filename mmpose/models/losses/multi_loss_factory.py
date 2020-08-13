@@ -115,7 +115,7 @@ class AELoss(nn.Module):
             diff = 1 - torch.abs(diff)
             push = torch.clamp(diff, min=0).sum() - num_tags
         else:
-            raise ValueError('Unkown ae loss type')
+            raise ValueError('Unknown ae loss type')
 
         push_loss = push / ((num_tags - 1) * num_tags) * 0.5
         pull_loss = pull / (num_tags)

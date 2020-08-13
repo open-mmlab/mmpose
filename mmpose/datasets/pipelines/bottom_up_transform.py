@@ -212,7 +212,7 @@ class BottomUpRandomAffine(object):
     Args:
         rot_factor (int): Rotating to [-rotation_factor, rotation_factor]
         scale_factor (float): Scaling to [1-scale_factor, 1+scale_factor]
-        scale_tyle: wrt ``long'' or ``short'' length of the image.
+        scale_type: wrt ``long'' or ``short'' length of the image.
         trans_factor: Translation factor.
         scale_aware_sigma: Option to use scale-aware sigma
     """
@@ -282,7 +282,7 @@ class BottomUpRandomAffine(object):
         elif self.scale_type == 'short':
             scale = min(height, width) / 1.0
         else:
-            raise ValueError('Unkonw scale type: {}'.format(self.scale_type))
+            raise ValueError('Unknown scale type: {}'.format(self.scale_type))
         aug_scale = np.random.random() * (self.max_scale - self.min_scale) \
             + self.min_scale
         scale *= aug_scale
@@ -378,7 +378,7 @@ class BottomUpGetImgSize(object):
     `results['ann_info']['image_size']×current_scale`.
 
     Args:
-        test_scale_fator (List[float]): Multi scale
+        test_scale_factor (List[float]): Multi scale
         current_scale (int): default 1
     """
 
