@@ -124,7 +124,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
         batch size: N
         keypoints num : K
         heatmap width: W
-        heatmap hight: H
+        heatmap height: H
 
     Args:
         scale (int): current scale
