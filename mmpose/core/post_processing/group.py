@@ -222,7 +222,7 @@ class HeatmapParser(object):
             dim=3)
 
         x = ind % W
-        y = (ind / W).long()
+        y = ind // W
 
         ind_k = torch.stack((x, y), dim=3)
 
@@ -240,7 +240,7 @@ class HeatmapParser(object):
         Note:
             batch size: N
             number of keypoints: K
-            heatmap hight: H
+            heatmap height: H
             heatmap width: W
 
         Args:
@@ -249,25 +249,25 @@ class HeatmapParser(object):
         """
         N, K, H, W = heatmaps.shape
         for batch_id, people in enumerate(ans):
-            for people_id, i in enumerate(people):
-                for joint_id, joint in enumerate(i):
+            for people_id, people_i in enumerate(people):
+                for joint_id, joint in enumerate(people_i):
                     if joint[2] > 0:
-                        y, x = joint[0:2]
+                        x, y = joint[0:2]
                         xx, yy = int(x), int(y)
                         tmp = heatmaps[batch_id][joint_id]
-                        if tmp[xx, min(yy + 1, H - 1)] > tmp[xx,
-                                                             max(yy - 1, 0)]:
+                        if tmp[min(H - 1, yy + 1), xx] > tmp[max(0, yy - 1),
+                                                             xx]:
                             y += 0.25
                         else:
                             y -= 0.25
 
-                        if tmp[min(xx + 1, W - 1), yy] > tmp[max(0, xx - 1),
-                                                             yy]:
+                        if tmp[yy, min(W - 1, xx + 1)] > tmp[yy,
+                                                             max(0, xx - 1)]:
                             x += 0.25
                         else:
                             x -= 0.25
                         ans[batch_id][people_id, joint_id,
-                                      0:2] = (y + 0.5, x + 0.5)
+                                      0:2] = (x + 0.5, y + 0.5)
         return ans
 
     def refine(self, heatmap, tag, keypoints):
@@ -275,7 +275,7 @@ class HeatmapParser(object):
 
         Note:
             number of keypoints: K
-            heatmap hight: H
+            heatmap height: H
             heatmap width: W
 
         Args:
@@ -313,8 +313,8 @@ class HeatmapParser(object):
 
             # find maximum position
             y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
-            xx = x
-            yy = y
+            xx = x.copy()
+            yy = y.copy()
             # detection score at maximum position
             val = _heatmap[y, x]
             # offset by 0.5
@@ -322,12 +322,12 @@ class HeatmapParser(object):
             y += 0.5
 
             # add a quarter offset
-            if _heatmap[yy, min(xx + 1, W - 1)] > _heatmap[yy, max(xx - 1, 0)]:
+            if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
                 x += 0.25
             else:
                 x -= 0.25
 
-            if _heatmap[min(yy + 1, H - 1), xx] > _heatmap[max(0, yy - 1), xx]:
+            if _heatmap[min(H - 1, yy + 1), xx] > _heatmap[max(0, yy - 1), xx]:
                 y += 0.25
             else:
                 y -= 0.25
@@ -349,7 +349,7 @@ class HeatmapParser(object):
         Note:
             batch size: N
             number of keypoints: K
-            heatmap hight: H
+            heatmap height: H
             heatmap width: W
             L: 2 if use flip test else 1
         Args:
