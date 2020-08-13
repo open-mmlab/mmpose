@@ -171,7 +171,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'image_file': self._image_path_from_index(index),
                 'center': center,
                 'scale': scale,
-                'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': 'coco',
@@ -251,8 +250,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'scale': scale,
                 'bbox_score': score,
                 'dataset': 'coco',
-                'rotation': 0,
-                'imgnum': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible
             })
