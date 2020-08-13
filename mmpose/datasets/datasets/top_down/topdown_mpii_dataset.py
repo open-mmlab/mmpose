@@ -139,8 +139,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         preds = np.stack([kpts[0] for kpts, _, _ in outputs])
 
-        # convert 0-based index to 1-based index
-        preds[..., :2] += 1.0
+        # convert 0-based index to 1-based index,
+        # and get the first two dimensions.
+        preds = preds[..., :2] + 1.0
 
         if res_folder:
             pred_file = os.path.join(res_folder, 'pred.mat')
