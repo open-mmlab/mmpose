@@ -86,6 +86,34 @@ mmpose
 
 ```
 
+**For OneHand10K data**, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
+Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── onehand10k
+        |── annotations
+        |   |── onehand10k_train.json
+        |   |── onehand10k_test.json
+        `── Train
+        |   |── source
+        |       |── 0.jpg
+        |       |── 1.jpg
+        |        ...
+        `── Test
+            |── source
+                |── 0.jpg
+                |── 1.jpg
+
+```
+
 For using custom datasets, please refer to [Tutorial 2: Adding New Dataset](tutorials/new_dataset.md)
 
 ## Prepare Pretrained Models
@@ -321,7 +349,7 @@ You can check [slurm_train.sh](../tools/slurm_train.sh) for full arguments and e
 
 If you have just multiple machines connected with ethernet, you can refer to
 pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).
-Usually it is slow if you do not have high speed networking like infiniband.
+Usually it is slow if you do not have high speed networking like InfiniBand.
 
 ### Launch multiple jobs on a single machine
 

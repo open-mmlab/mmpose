@@ -114,10 +114,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
         """Ground truth bbox and keypoints."""
         gt_db = []
         for index in self.image_set_index:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernal(index))
+            gt_db.extend(self._load_coco_keypoint_annotation_kernel(index))
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernal(self, index):
+    def _load_coco_keypoint_annotation_kernel(self, index):
         """load annotation from COCOAPI.
 
         Note:
@@ -259,7 +259,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible
             })
-        print(f'=> Total boxes after fliter '
+        print(f'=> Total boxes after filter '
               f'low score@{self.image_thr}: {num_boxes}')
         return kpt_db
 
