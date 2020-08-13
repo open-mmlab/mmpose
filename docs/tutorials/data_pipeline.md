@@ -39,7 +39,7 @@ train_pipeline = [
         ]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),

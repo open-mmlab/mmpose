@@ -83,7 +83,7 @@ class BottomUp(BasePose):
                                                  heatmaps for ae loss
             return loss(bool): Option to 'return_loss'. 'return_loss=True' for
                 training, 'return_loss=False' for validation & test
-            img_metas(dict):Information about valid&test
+            img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
                 - "aug_data": input
@@ -123,7 +123,7 @@ class BottomUp(BasePose):
                                               heatmaps
             joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
-            img_metas(dict):Information about valid&test
+            img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
                 - "aug_data": input

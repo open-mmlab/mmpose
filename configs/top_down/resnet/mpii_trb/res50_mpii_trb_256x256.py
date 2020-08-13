@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[90, 120])
-total_epochs = 150
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
     interval=50, hooks=[
         dict(type='TextLoggerHook'),
@@ -81,7 +81,7 @@ train_pipeline = [
         ]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -112,5 +112,5 @@ data = dict(
         ann_file=f'{data_root}/annotations/mpii_trb_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
 )

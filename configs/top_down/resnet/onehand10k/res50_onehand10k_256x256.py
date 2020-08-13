@@ -88,7 +88,7 @@ train_pipeline = [
         ]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -104,7 +104,7 @@ valid_pipeline = [
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
-test_pipeline = valid_pipeline
+test_pipeline = val_pipeline
 
 data_root = 'data/onehand10k'
 data = dict(
@@ -121,11 +121,11 @@ data = dict(
         ann_file=f'{data_root}/annotations/onehand10k_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
     test=dict(
         type='TopDownOneHand10KDataset',
         ann_file=f'{data_root}/annotations/onehand10k_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
 )

@@ -150,7 +150,7 @@ train_pipeline = [
         meta_keys=[]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
     dict(
@@ -173,7 +173,7 @@ valid_pipeline = [
         ]),
 ]
 
-test_pipeline = valid_pipeline
+test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
@@ -190,13 +190,13 @@ data = dict(
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
     test=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
 )
 
 loss = dict(

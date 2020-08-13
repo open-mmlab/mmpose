@@ -37,7 +37,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
-        # flip_pairs in TRB-MPI
+        # flip_pairs in MPII-TRB
         self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
                                        [10, 11], [14, 15]]
         for i in range(6):
@@ -49,17 +49,18 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'].extend(list(range(14, 28)))
         self.ann_info['lower_body_ids'].extend(list(range(28, 40)))
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] =  \
-            np.ones(40, dtype=np.float32).reshape(
-                (self.ann_info['num_joints'], 1))
+        self.ann_info['use_different_joint_weights'] = False
+
+        assert self.ann_info['num_joints'] == 40
+        self.ann_info['joint_weights'] = np.ones(
+            (self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db(ann_file)
         self.image_set = set([x['image_file'] for x in self.db])
         self.num_images = len(self.image_set)
 
-        print('=> num_images: {}'.format(self.num_images))
-        print('=> load {} samples'.format(len(self.db)))
+        print(f'=> num_images: {self.num_images}')
+        print(f'=> load {len(self.db)} samples')
 
     def _get_db(self, ann_file):
         """Load dataset."""
@@ -72,7 +73,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             rotation=0,
             joints_3d=None,
             joints_3d_visible=None,
-            dataset='TRBMPI')
+            dataset='mpii_trb')
 
         imid2info = {
             int(osp.splitext(x['file_name'])[0]): x
@@ -98,12 +99,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 joints_3d[ipt, 0] = anno['keypoints'][ipt * 3 + 0]
                 joints_3d[ipt, 1] = anno['keypoints'][ipt * 3 + 1]
                 joints_3d[ipt, 2] = 0
-                t_vis = anno['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
-                    t_vis = 1
-                joints_3d_visible[ipt, 0] = t_vis
-                joints_3d_visible[ipt, 1] = t_vis
-                joints_3d_visible[ipt, 2] = 0
+                t_vis = min(anno['keypoints'][ipt * 3 + 2], 1)
+                joints_3d_visible[ipt, :] = (t_vis, t_vis, 0)
 
             center = np.array(anno['center'], dtype=np.float32)
             scale = self.ann_info['image_size'] / anno['scale'] / 200.0
@@ -117,7 +114,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         return gt_db
 
-    def evaluate_kernel(self, pred, joints_3d, joints_3d_visible, headbox):
+    def _evaluate_kernel(self, pred, joints_3d, joints_3d_visible, headbox):
         """Evaluate one example."""
         num_joints = self.ann_info['num_joints']
         headbox = np.array(headbox)
@@ -138,22 +135,45 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 hit[i] = 1
         return hit, exist
 
-    def evaluate(self, outputs, res_folder, metrics='mAP', **kwargs):
-        """Evaluate TRBMPI keypoint results."""
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+    def evaluate(self, outputs, res_folder, metrics='PCKh', **kwargs):
+        """Evaluate PCKh for MPII-TRB dataset.
 
-        all_preds, all_boxes, all_image_path = list(map(list, zip(*outputs)))
+        Note:
+            num_keypoints: K
+
+        Args:
+            outputs(list(preds, boxes, image_path)):Output results.
+                preds(np.ndarray[1,K,3]): The first two dimensions are
+                    coordinates, score is the third dimension of the array.
+                boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                    , scale[1],area, score]
+                image_path(list[str]): For example, ['0', '0',
+                    '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+            res_folder(str): Path of directory to save the results.
+            metrics(str): Metrics to be performed.
+                Defaults: 'PCKh'.
+
+        Returns:
+            PCKh for each joint
+        """
+        # only PCKh is supported.
+        assert metrics == 'PCKh'
+        """Evaluate MPII-TRB keypoint results."""
+        res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
 
-        for idx, kpt in enumerate(all_preds):
+        for preds, boxes, image_path in outputs:
+            str_image_path = ''.join(image_path)
+            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+
             kpts.append({
-                'keypoints': kpt[0],
-                'center': all_boxes[idx][0][0:2],
-                'scale': all_boxes[idx][0][2:4],
-                'area': all_boxes[idx][0][4],
-                'score': all_boxes[idx][0][5],
-                'image': int(all_image_path[idx][-13:-4]),
+                'keypoints': preds[0].tolist(),
+                'center': boxes[0][0:2].tolist(),
+                'scale': boxes[0][2:4].tolist(),
+                'area': float(boxes[0][4]),
+                'score': float(boxes[0][5]),
+                'image_id': image_id,
             })
 
         self._write_keypoint_results(kpts, res_file)
@@ -174,25 +194,26 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         Report Mean Acc of skeleton, contour and all joints.
         """
         num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints)
-        exist = np.zeros(num_joints)
+        hit = np.zeros(num_joints, dtype=np.float32)
+        exist = np.zeros(num_joints, dtype=np.float32)
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
 
-        assert len(preds) == len(self.db)
+        assert len(preds) == len(
+            self.db), f'len(preds)={len(preds)}, len(self.db)={len(self.db)}'
         for pred, item in zip(preds, self.db):
-            h, e = self.evaluate_kernel(pred['keypoints'], item['joints_3d'],
-                                        item['joints_3d_visible'],
-                                        item['headbox'])
+            h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
+                                         item['joints_3d_visible'],
+                                         item['headbox'])
             hit += h
             exist += e
         skeleton = np.sum(hit[:14]) / np.sum(exist[:14])
         contour = np.sum(hit[14:]) / np.sum(exist[14:])
-        p_all = np.sum(hit) / np.sum(exist)
+        mean = np.sum(hit) / np.sum(exist)
 
         info_str = []
-        info_str.append(('kp_acc', skeleton))
-        info_str.append(('cp_acc', contour))
-        info_str.append(('p_acc', p_all))
+        info_str.append(('Skeleton_acc', skeleton.item()))
+        info_str.append(('Contour_acc', contour.item()))
+        info_str.append(('Mean_acc', mean.item()))
         return info_str

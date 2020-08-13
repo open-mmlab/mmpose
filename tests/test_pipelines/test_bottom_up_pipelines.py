@@ -82,8 +82,8 @@ def test_bottomup_pipeline():
         0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
     ]
 
-    ann_info['use_different_joints_weight'] = False
-    ann_info['joints_weight'] = np.array([
+    ann_info['use_different_joint_weights'] = False
+    ann_info['joint_weights'] = np.array([
         1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
         1.5
     ],

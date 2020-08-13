@@ -71,7 +71,6 @@ def test_top_down_COCO_dataset():
 
 def test_top_down_OneHand10K_dataset():
     dataset = 'TopDownOneHand10KDataset'
-    # test COCO datasets
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -112,5 +111,78 @@ def test_top_down_OneHand10K_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
-
     assert custom_dataset.num_images == 4
+
+
+def test_top_down_MPII_dataset():
+    dataset = 'TopDownMpiiDataset'
+    # test COCO datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=16,
+        dataset_joints=16,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+    )
+
+    # Test det bbox
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    custom_dataset = dataset_class(
+        ann_file='tests/data/mpii/test_mpii.json',
+        img_prefix='tests/data/mpii/',
+        data_cfg=data_cfg_copy,
+        pipeline=[])
+
+    assert len(custom_dataset) == 5
+
+
+def test_top_down_MPII_TRB_dataset():
+    dataset = 'TopDownMpiiTrbDataset'
+    # test MPII TRB datasets
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=40,
+        dataset_joints=40,
+        dataset_channel=[list(range(40))],
+        inference_channel=list(range(40)))
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/mpii/test_mpii_trb.json',
+        img_prefix='tests/data/mpii/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/mpii/test_mpii_trb.json',
+        img_prefix='tests/data/mpii/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
