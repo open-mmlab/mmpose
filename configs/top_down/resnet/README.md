@@ -29,3 +29,10 @@
 | Arch  | Input Size | Skeleton Acc   | Contour Acc   | Mean Acc | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |:------: |
 | [pose_resnet_50](/configs/top_down/resnet/mpii_trb/res50_mpii_trb_256x256.py)  | 256x256 | 0.884 | 0.855 | 0.865 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-f0305d2e_20200727.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_mpii_trb_256x256_20200727.log.json) |
+
+
+### Results on OneHand10K val set.
+
+| Arch  | Input Size | PCK@0.2 | ckpt    | log     |
+| :--- | :--------: | :------: | :------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py)  | 256x256 | 0.985 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256_20200813.log.json) |
