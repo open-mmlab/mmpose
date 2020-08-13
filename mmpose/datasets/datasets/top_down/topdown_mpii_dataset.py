@@ -41,10 +41,10 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14, 15)
         self.ann_info['lower_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
 
-        self.ann_info['use_different_joints_weight'] = False
+        self.ann_info['use_different_joint_weights'] = False
 
         assert self.ann_info['num_joints'] == 16
-        self.ann_info['joints_weight'] = np.ones(
+        self.ann_info['joint_weights'] = np.ones(
             (self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db()

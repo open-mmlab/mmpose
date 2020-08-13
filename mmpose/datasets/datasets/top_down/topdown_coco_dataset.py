@@ -74,8 +74,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] = np.array(
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = np.array(
             [
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
