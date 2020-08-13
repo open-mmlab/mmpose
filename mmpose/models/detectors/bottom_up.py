@@ -79,7 +79,7 @@ class BottomUp(BasePose):
             targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
             masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxkx2])): Joints of multi-scale target
+            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
             return loss(bool): Option to 'return_loss'. 'return_loss=True' for
                 training, 'return_loss=False' for validation & test
@@ -121,7 +121,7 @@ class BottomUp(BasePose):
             targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
             masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxkx2])): Joints of multi-scale target
+            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
             img_metas(dict):Information about valid&test
                 By default this includes:
@@ -174,7 +174,7 @@ class BottomUp(BasePose):
         Args:
             flip_index (List(int)):
             aug_data (List(Tensor[NxCximgHximgW])): Multi-scale image
-            test_scale_fator (List(float)): Multi-scale fator
+            test_scale_factor (List(float)): Multi-scale factor
             base_size (Tuple(int)): Base size of image when scale is 1
             center (np.ndarray): center of image
             scale (np.ndarray): the scale of image

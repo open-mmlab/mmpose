@@ -204,7 +204,7 @@ class HeatmapParser(object):
                     tag corresponding to the top k values of
                     feature map per keypoint.
                 loc_k (np.ndarray[NxKxMx2]):
-                    top k location of fearure map per keypoint.
+                    top k location of feature map per keypoint.
                 val_k (np.ndarray[NxKxM]):
                     top k value of feature map per keypoint.
         """

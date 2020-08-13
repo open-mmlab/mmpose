@@ -2,7 +2,7 @@
 
 We compare our results with some popular frameworks and official releases in terms of speed and accuracy.
 
-## Comparision Rules
+## Comparison Rules
 
 Here we compare our MMPose repo with other pose estimation toolboxes in the same data and model settings.
 

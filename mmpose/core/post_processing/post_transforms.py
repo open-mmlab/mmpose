@@ -55,7 +55,7 @@ def flip_back(output_flipped, flip_pairs):
         heatmap width: W
 
     Args:
-        ouput_flipped (np.ndarray[N, K, H, W]): The output heatmaps obtained
+        output_flipped (np.ndarray[N, K, H, W]): The output heatmaps obtained
             from the flipped images.
         flip_pairs (list[tuple()): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
@@ -93,7 +93,7 @@ def transform_preds(coords, center, scale, output_size):
         coords (np.ndarray[K, ndims]):
             if ndims=2, corrds are predicted keypoint location.
             if ndims=5, corrds are composed of (x, y, tags,
-                fliped_tags, scores)
+                flipped_tags, scores)
         center (np.ndarray[2, ]): Center of the bounding box (x, y).
         scale (np.ndarray[2, ]): Scale of the bounding box
             wrt [width, height].
