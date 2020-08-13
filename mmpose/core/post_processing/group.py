@@ -84,7 +84,7 @@ def _match_by_tag(inp, params):
             diff_saved = np.copy(diff_normed)
 
             if params.use_detection_val:
-                diff_normed = np.round(diff_normed) * 100 - joints[:, 2]
+                diff_normed = np.round(diff_normed) * 100 - joints[:, 2:3]
 
             num_added = diff.shape[0]
             num_grouped = diff.shape[1]
