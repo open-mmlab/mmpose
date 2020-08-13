@@ -23,3 +23,12 @@
 | [pose_resnetv1d_101](/configs/top_down/resnetv1d/coco/resnetv1d101_coco_384x288.py) | 384x288 | 0.748 | 0.902 | 0.816 | 0.799 | 0.939 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-5f9e421d_20200730.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-20200730.log.json) |
 | [pose_resnetv1d_152](/configs/top_down/resnetv1d/coco/resnetv1d152_coco_256x192.py) | 256x192 | 0.737 | 0.902 | 0.812 | 0.791 | 0.940 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192-c4df51dc_20200727.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192_20200727.log.json) |
 | [pose_resnetv1d_152](/configs/top_down/resnetv1d/coco/resnetv1d152_coco_384x288.py) | 384x288 | 0.752 | 0.909 | 0.821 | 0.802 | 0.944 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-626c622d_20200730.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-20200730.log.json) |
+
+
+### Results on MPII val set.
+
+| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
+| :--- | :--------: | :------: | :------: |:------: |:------: |
+| [pose_resnetv1d_50](/configs/top_down/resnetv1d/mpii/resnetv1d50_mpii_256x256.py) | 256x256 | 0.881 | 0.331 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256-2337a92e_20200812.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256_20200812.log.json) |
+| [pose_resnetv1d_101](/configs/top_down/resnetv1d/mpii/resnetv1d101_mpii_256x256.py) | 256x256 | 0.884 | 0.335 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256-2851d710_20200812.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256_20200812.log.json) |
+| [pose_resnetv1d_152](/configs/top_down/resnetv1d/mpii/resnetv1d152_mpii_256x256.py) | 256x256 | 0.888 | 0.343 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_mpii_256x256-8b10a87c_20200812.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnetv1d/resnetv1d152_mpii_256x256_20200812.log.json) |
