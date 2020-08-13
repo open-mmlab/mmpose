@@ -180,13 +180,12 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         headsizes = headboxes_src[1, :, :] - headboxes_src[0, :, :]
         headsizes = np.linalg.norm(headsizes, axis=0)
         headsizes *= SC_BIAS
-        scale = np.multiply(headsizes, np.ones((len(uv_err), 1)))
-        scaled_uv_err = np.divide(uv_err, scale)
-        scaled_uv_err = np.multiply(scaled_uv_err, jnt_visible)
+        scale = headsizes * np.ones((len(uv_err), 1), dtype=np.float32)
+        scaled_uv_err = uv_err / scale
+        scaled_uv_err = scaled_uv_err * jnt_visible
         jnt_count = np.sum(jnt_visible, axis=1)
-        less_than_threshold = np.multiply((scaled_uv_err <= threshold),
-                                          jnt_visible)
-        PCKh = np.divide(100. * np.sum(less_than_threshold, axis=1), jnt_count)
+        less_than_threshold = (scaled_uv_err <= threshold) * jnt_visible
+        PCKh = 100. * np.sum(less_than_threshold, axis=1) / jnt_count
 
         # save
         rng = np.arange(0, 0.5 + 0.01, 0.01)
@@ -194,10 +193,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         for r in range(len(rng)):
             threshold = rng[r]
-            less_than_threshold = np.multiply(scaled_uv_err <= threshold,
-                                              jnt_visible)
-            pckAll[r, :] = np.divide(
-                100. * np.sum(less_than_threshold, axis=1), jnt_count)
+            less_than_threshold = (scaled_uv_err <= threshold) * jnt_visible
+            pckAll[r, :] = 100. * np.sum(
+                less_than_threshold, axis=1) / jnt_count
 
         PCKh = np.ma.array(PCKh, mask=False)
         PCKh.mask[6:8] = True
