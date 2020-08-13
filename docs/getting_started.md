@@ -52,11 +52,11 @@ mmpose
 `── data
     │── mpii
         |── annotations
-        |   |── mpii_gt_valid.mat
+        |   |── mpii_gt_val.mat
         |   |── mpii_test.json
         |   |── mpii_train.json
         |   |── mpii_trainval.json
-        |   `── mpii_valid.json
+        |   `── mpii_val.json
         `── images
             |── 000001163.jpg
             |── 000003072.jpg
@@ -78,8 +78,8 @@ mmpose
 `── data
     │── mpii
         |── annotations
-        |   |── trb_mpi_train.json
-        |   |── trb_mpi_val.json
+        |   |── mpii_trb_train.json
+        |   |── mpii_trb_val.json
         `── images
             |── 000001163.jpg
             |── 000003072.jpg

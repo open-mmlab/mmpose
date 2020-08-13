@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -73,8 +74,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] = np.array(
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = np.array(
             [
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
@@ -164,12 +165,12 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 joints_3d_visible[ipt, 0] = t_vis
                 joints_3d_visible[ipt, 1] = t_vis
                 joints_3d_visible[ipt, 2] = 0
-            center, scale = self._box2cs(obj['clean_bbox'][:4])
+
+            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
             rec.append({
                 'image_file': self._image_path_from_index(index),
                 'center': center,
                 'scale': scale,
-                'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': 'coco',
@@ -177,11 +178,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             })
 
         return rec
-
-    def _box2cs(self, box):
-        """Get box center & scale given box (x, y, w, h)."""
-        x, y, w, h = box[:4]
-        return self._xywh2cs(x, y, w, h)
 
     def _xywh2cs(self, x, y, w, h):
         """This encodes bbox(x,y,w,w) into (center, scale)
@@ -245,7 +241,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             num_boxes = num_boxes + 1
 
-            center, scale = self._box2cs(box)
+            center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
             kpt_db.append({
@@ -254,8 +250,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'scale': scale,
                 'bbox_score': score,
                 'dataset': 'coco',
-                'rotation': 0,
-                'imgnum': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible
             })
@@ -292,7 +286,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(str_image_path[-16:-4])
+            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -377,10 +371,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
             result = [{
                 'image_id': img_kpt['image_id'],
                 'category_id': cat_id,
-                'keypoints': list(key_point),
-                'score': img_kpt['score'],
-                'center': list(img_kpt['center']),
-                'scale': list(img_kpt['scale'])
+                'keypoints': key_point.tolist(),
+                'score': float(img_kpt['score']),
+                'center': img_kpt['center'].tolist(),
+                'scale': img_kpt['scale'].tolist()
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)

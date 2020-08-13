@@ -85,9 +85,8 @@ def _get_max_preds(heatmaps):
 
 
 def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
-    """Calculate the pose accuracy according to PCK, but uses ground truth
-    heatmap rather than x,y locations. First value to be returned is average
-    accuracy across 'idxs', followed by individual accuracies.
+    """Calculate the pose accuracy of PCK for each individual keypoint and the
+    averaged accuracy across all keypoints.
 
     Note:
         The PCK performance metric is the percentage of joints with
