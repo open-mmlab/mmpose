@@ -151,7 +151,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         threshold = 0.5
 
         gt_file = os.path.join(
-            os.path.dirname(self.ann_file), 'mpii_gt_valid.mat')
+            os.path.dirname(self.ann_file), 'mpii_gt_val.mat')
         gt_dict = loadmat(gt_file)
         dataset_joints = gt_dict['dataset_joints']
         jnt_missing = gt_dict['jnt_missing']
