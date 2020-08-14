@@ -152,7 +152,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
                 group_area = kp_group[g_id]['group_area']
                 group_area = group_area[0] * group_area[1] / (group_area[2]**2)
 
-                # Groupingn Criterion
+                # Grouping Criterion
 
                 # Joint Group
                 dist = np.sqrt(((x_c - x0)**2 + (y_c - y0)**2) / group_area)
