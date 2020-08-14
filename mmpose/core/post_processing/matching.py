@@ -148,16 +148,13 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
             for g_id, g in kp_group.items():
 
                 x_c, y_c = kp_group[g_id]['group_center']
-                '''
-                Get Average Box Size
-                '''
+                # Get Average Box Size
                 group_area = kp_group[g_id]['group_area']
                 group_area = group_area[0] * group_area[1] / (group_area[2]**2)
-                '''
-                Groupingn Criterion
-                '''
+
+                # Groupingn Criterion
+
                 # Joint Group
-                # x0, y0, s0 = person[k][0]
                 dist = np.sqrt(((x_c - x0)**2 + (y_c - y0)**2) / group_area)
 
                 if dist <= 0.1 * sigmas[k]:  # Small Distance
