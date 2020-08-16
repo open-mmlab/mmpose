@@ -13,6 +13,10 @@ from .topdown_base_dataset import TopDownBaseDataset
 class TopDownMpiiDataset(TopDownBaseDataset):
     """MPII Dataset for top-down pose estimation.
 
+    `2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+    CVPR'2014. More details can be found in the `paper
+    <http://human-pose.mpi-inf.mpg.de/contents/andriluka14cvpr.pdf>`_ .
+
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 

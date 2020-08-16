@@ -16,6 +16,10 @@ from .topdown_base_dataset import TopDownBaseDataset
 class TopDownCocoDataset(TopDownBaseDataset):
     """CocoDataset dataset for top-down pose estimation.
 
+    `Microsoft COCO: Common Objects in Context' ECCV'2014
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1405.0312>`_ .
+
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
