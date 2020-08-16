@@ -54,14 +54,18 @@ class CPM(BaseBackbone):
     Example:
         >>> from mmpose.models import CPM
         >>> import torch
-        >>> self = CPM()
+        >>> self = CPM(3, 17)
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 368, 368)
         >>> level_outputs = self.forward(inputs)
         >>> for level_output in level_outputs:
         ...     print(tuple(level_output.shape))
-        (1, 256, 128, 128)
-        (1, 256, 128, 128)
+        (1, 17, 46, 46)
+        (1, 17, 46, 46)
+        (1, 17, 46, 46)
+        (1, 17, 46, 46)
+        (1, 17, 46, 46)
+        (1, 17, 46, 46)
     """
 
     def __init__(self,
@@ -129,20 +133,18 @@ class CPM(BaseBackbone):
             pretrained (str, optional): Path to pre-trained weights.
                 Defaults to None.
         """
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                normal_init(m, std=0.001)
-            elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                constant_init(m, 1)
-
         if isinstance(pretrained, str):
-            # initialize the VGG stem
             logger = get_root_logger()
-            load_checkpoint(self.stem, pretrained, strict=False, logger=logger)
+            load_checkpoint(self, pretrained, strict=False, logger=logger)
         elif pretrained is None:
-            pass
+            for m in self.modules():
+                if isinstance(m, nn.Conv2d):
+                    normal_init(m, std=0.001)
+                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
+                    constant_init(m, 1)
         else:
             raise TypeError('pretrained must be a str or None')
+        pass
 
     def forward(self, x):
         """Model forward function."""
