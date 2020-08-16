@@ -2,6 +2,7 @@ import os
 from collections import OrderedDict, defaultdict
 
 import numpy as np
+from pycocotools.coco import COCO
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
@@ -76,10 +77,53 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                  data_cfg,
                  pipeline,
                  test_mode=False):
-        super().__init__(
+        super(TopDownCocoDataset, self).__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
+        self.use_gt_bbox = data_cfg['use_gt_bbox']
+        self.bbox_file = data_cfg['bbox_file']
+        self.image_thr = data_cfg['image_thr']
+
+        self.soft_nms = data_cfg['soft_nms']
+        self.nms_thr = data_cfg['nms_thr']
+        self.oks_thr = data_cfg['oks_thr']
+        self.vis_thr = data_cfg['vis_thr']
+        self.bbox_thr = data_cfg['bbox_thr']
+
+        self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
+                                       [11, 12], [13, 14], [15, 16]]
+
+        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
+
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = np.array(
+            [
+                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
+                1.2, 1.5, 1.5
+            ],
+            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
+
+        self.coco = COCO(ann_file)
+
+        cats = [
+            cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
+        ]
+        self.classes = ['__background__'] + cats
+        self.num_classes = len(self.classes)
+        self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
+        self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
+        self._coco_ind_to_class_ind = dict([(self._class_to_coco_ind[cls],
+                                             self._class_to_ind[cls])
+                                            for cls in self.classes[1:]])
+        self.image_set_index = self.coco.getImgIds()
+        self.num_images = len(self.image_set_index)
         self.id2name, self.name2id = _get_mapping_id_name(self.coco.imgs)
+
+        self.db = self._get_db()
+
+        print(f'=> num_images: {self.num_images}')
+        print(f'=> load {len(self.db)} samples')
 
     def _get_db(self):
         """Load dataset."""
@@ -186,7 +230,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path]
+            image_id = self.name2id[os.path.basename(str_image_path)]
 
             kpts[image_id].append({
                 'keypoints': preds[0],
