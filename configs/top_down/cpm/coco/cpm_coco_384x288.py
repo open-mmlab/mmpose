@@ -39,7 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/vgg19_features-e03c3618.pth',
+    pretrained=None,
     backbone=dict(
         type='CPM',
         in_channels=3,
@@ -129,7 +129,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownCocoDataset',
