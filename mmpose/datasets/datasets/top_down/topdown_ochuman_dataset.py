@@ -87,7 +87,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         gt_db = self._load_coco_keypoint_annotations()
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernal(self, index):
+    def _load_coco_keypoint_annotation_kernel(self, index):
         """load annotation from COCOAPI.
 
         Note:
@@ -102,7 +102,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         height = im_ann['height']
         num_joints = self.ann_info['num_joints']
 
-        ann_ids = self.coco.getAnnIds(imgIds=index)
+        ann_ids = self.coco.getAnnIds(imgIds=index, iscrowd=False)
         objs = self.coco.loadAnns(ann_ids)
 
         # sanitize bboxes
@@ -113,8 +113,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
             y1 = max(0, y)
             x2 = min(width - 1, x1 + max(0, w - 1))
             y2 = min(height - 1, y1 + max(0, h - 1))
-            if ('area' not in obj
-                    or obj['area'] > 0) and x2 >= x1 and y2 >= y1:
+            if obj['area'] > 0 and x2 >= x1 and y2 >= y1:
                 obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
                 valid_objs.append(obj)
         objs = valid_objs
@@ -135,7 +134,8 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                 joints_3d_visible[ipt, 0] = t_vis
                 joints_3d_visible[ipt, 1] = t_vis
                 joints_3d_visible[ipt, 2] = 0
-            center, scale = self._box2cs(obj['clean_bbox'][:4])
+
+            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
             rec.append({
                 'image_file':
                 os.path.join(self.img_prefix, self.id2name[index]),
@@ -154,6 +154,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                 'bbox_score':
                 1
             })
+
         return rec
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
