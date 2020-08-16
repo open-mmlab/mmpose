@@ -150,7 +150,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                 'joints_3d_visible':
                 joints_3d_visible,
                 'dataset':
-                'aic',
+                'ochuman',
                 'bbox_score':
                 1
             })
