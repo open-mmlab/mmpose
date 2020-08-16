@@ -1,15 +1,12 @@
 import os
 from argparse import ArgumentParser
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
+from mmpose.apis import (inference_bottom_up_pose_model, init_pose_model,
                          vis_pose_result)
 
 
 def main():
-    """Visualize the demo images.
-
-    Require the json_file containing boxes.
-    """
+    """Visualize the demo images."""
     parser = ArgumentParser()
     parser.add_argument('pose_config', help='Config file for detection')
     parser.add_argument('pose_checkpoint', help='Checkpoint file')
@@ -54,23 +51,12 @@ def main():
 
     # process each image
     for i in range(len(img_keys)):
-        # get bounding box annotations
         image_id = img_keys[i]
         image = coco.loadImgs(image_id)[0]
         image_name = os.path.join(args.img_root, image['file_name'])
-        ann_ids = coco.getAnnIds(image_id)
-
-        # make person bounding boxes
-        person_bboxes = []
-        for ann_id in ann_ids:
-            ann = coco.anns[ann_id]
-            # bbox format is 'xywh'
-            bbox = ann['bbox']
-            person_bboxes.append(bbox)
 
         # test a single image, with a list of bboxes.
-        pose_results = inference_top_down_pose_model(
-            pose_model, image_name, person_bboxes, format='xywh')
+        pose_results = inference_bottom_up_pose_model(pose_model, image_name)
 
         if args.out_img_root == '':
             out_file = None
