@@ -198,7 +198,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
 
 
-### Top-down Image demo
+### Top-down image demo
 
 #### Using gt human bounding boxes as input
 
@@ -245,13 +245,13 @@ Examples:
 python demo/top_down_img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
-    hrnet_w48_coco_256x192/epoch_210.pth \
+    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ \
     --img 000000196141.jpg \
     --out-img-root vis_results
 ```
 
-### Top-down Video demo
+### Top-down video demo
 
 We also provide a video demo to illustrate the results.
 
@@ -273,7 +273,55 @@ Examples:
 python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
-    hrnet_w48_coco_256x192/epoch_210.pth \
+    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    --video_path demo/demo_video.mp4 \
+    --output-video-root vis_results
+```
+
+
+### Bottom-up image demo
+
+We provide a demo script to test a single image.
+
+```shell
+python demo/bottom_up_img_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
+    --out-img-root ${OUTPUT_DIR} \
+    [--show --device ${GPU_ID}] \
+    [--kpt-thr ${KPT_SCORE_THR}]
+```
+
+Examples:
+
+```shell
+python demo/bottom_up_img_demo.py \
+    configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
+    hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
+    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
+    --out-img-root vis_results
+```
+
+
+### Bottom-up video demo
+
+We also provide a video demo to illustrate the results.
+
+```shell
+python demo/bottom_up_video_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --video-path ${VIDEO_FILE} \
+    --output-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID}] \
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+```
+
+Examples:
+
+```shell
+python demo/bottom_up_video_demo.py \
+    configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
+    hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --video_path demo/demo_video.mp4 \
     --output-video-root vis_results
 ```

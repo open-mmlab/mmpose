@@ -2,20 +2,14 @@ import os
 from argparse import ArgumentParser
 
 import cv2
-from mmdet.apis import inference_detector, init_detector
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
+from mmpose.apis import (inference_bottom_up_pose_model, init_pose_model,
                          vis_pose_result)
 
 
 def main():
-    """Visualize the demo images.
-
-    Using mmdet to detect the human.
-    """
+    """Visualize the demo images."""
     parser = ArgumentParser()
-    parser.add_argument('det_config', help='Config file for detection')
-    parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
     parser.add_argument('pose_config', help='Config file for pose')
     parser.add_argument('pose_checkpoint', help='Checkpoint file for pose')
     parser.add_argument('--video-path', type=str, help='Video path')
@@ -32,11 +26,6 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
-        '--bbox-thr',
-        type=float,
-        default=0.3,
-        help='Bounding box score threshold')
-    parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
 
     args = parser.parse_args()
@@ -46,11 +35,7 @@ def main():
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
     assert args.show or (args.out_video_root != '')
-    assert args.det_config is not None
-    assert args.det_checkpoint is not None
 
-    det_model = init_detector(
-        args.det_config, args.det_checkpoint, device=args.device)
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device)
@@ -77,18 +62,8 @@ def main():
         flag, img = cap.read()
         if not flag:
             break
-        # test a single image, the resulting box is (x1, y1, x2, y2)
-        det_results = inference_detector(det_model, img)
-        # keep the person class bounding boxes.
-        person_bboxes = det_results[0].copy()
 
-        # test a single image, with a list of bboxes.
-        pose_results = inference_top_down_pose_model(
-            pose_model,
-            img,
-            person_bboxes,
-            bbox_thr=args.bbox_thr,
-            format='xyxy')
+        pose_results = inference_bottom_up_pose_model(pose_model, img)
 
         # show the results
         vis_img = vis_pose_result(
