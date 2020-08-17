@@ -64,6 +64,29 @@ mmpose
 ```
 
 
+**For OCHuman data**, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
+Move them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ochuman
+        │-- annotations
+        │   │-- ochuman_coco_format_val_range_0.00_1.00.json
+        │   |-- ochuman_coco_format_test_range_0.00_1.00.json
+        |-- images
+            │-- 000001.jpg
+            │-- 000002.jpg
+            │-- 000003.jpg
+            │-- ...
+
+```
+
 **For MPII-TRB data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
