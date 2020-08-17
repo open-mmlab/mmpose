@@ -85,7 +85,7 @@ model = dict(
         in_channels=48,
         num_joints=17,
         tag_per_joint=True,
-        extra=dict(final_conv_kerne=1, ),
+        extra=dict(final_conv_kernel=1, ),
         num_deconv_layers=1,
         num_deconv_filters=[48],
         num_deconv_kernels=[4],

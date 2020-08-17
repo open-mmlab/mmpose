@@ -69,7 +69,7 @@ data_cfg = dict(
     bbox_thr=1.0,
     use_gt_bbox=False,
     image_thr=0.0,
-    bbox_file='data/person_detection_results/'
+    bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
 
@@ -121,7 +121,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=48,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownCocoDataset',
