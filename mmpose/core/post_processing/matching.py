@@ -113,9 +113,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
         kp_groups (dict[k,dict]): information after grouping.
     """
 
-    kp_groups = {}
-    for k in range(num_joints):
-        kp_groups[k] = {}
+    kp_groups = {k: {} for k in range(num_joints)}
 
     ids = np.zeros(num_joints)
 
@@ -142,11 +140,11 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
             x0, y0, s0 = person[k][0]
             if s0 < 0.05:
                 continue
-            for g_id, _ in kp_group.items():
+            for g_id, g in kp_group.items():
 
-                x_c, y_c = kp_group[g_id]['group_center']
+                x_c, y_c = g['group_center']
                 # Get Average Box Size
-                group_area = kp_group[g_id]['group_area']
+                group_area = g['group_area']
                 group_area = group_area[0] * group_area[1] / (group_area[2]**2)
 
                 # Grouping Criterion
@@ -156,24 +154,21 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
 
                 if dist <= 0.1 * sigmas[k]:  # Small Distance
                     if s0 > 0.3:
-                        kp_group[g_id]['kp_list'][0] += x0 * s0
-                        kp_group[g_id]['kp_list'][1] += y0 * s0
-                        kp_group[g_id]['kp_list'][2] += s0
+                        g['kp_list'][0] += x0 * s0
+                        g['kp_list'][1] += y0 * s0
+                        g['kp_list'][2] += s0
 
-                        kp_group[g_id]['group_area'][0] += (
+                        g['group_area'][0] += (
                             person['bbox'][2] -
                             person['bbox'][0]) * person['person_score']
-                        kp_group[g_id]['group_area'][1] += (
+                        g['group_area'][1] += (
                             person['bbox'][3] -
                             person['bbox'][1]) * person['person_score']
-                        kp_group[g_id]['group_area'][2] += person[
-                            'person_score']
+                        g['group_area'][2] += person['person_score']
 
-                        x_c = kp_group[g_id]['kp_list'][0] / kp_group[g_id][
-                            'kp_list'][2]
-                        y_c = kp_group[g_id]['kp_list'][1] / kp_group[g_id][
-                            'kp_list'][2]
-                        kp_group[g_id]['group_center'] = (x_c, y_c)
+                        x_c = g['kp_list'][0] / g['kp_list'][2]
+                        y_c = g['kp_list'][1] / g['kp_list'][2]
+                        g['group_center'] = (x_c, y_c)
 
                     pose_preds[n]['group_id'][k] = g_id
 
