@@ -3,7 +3,8 @@ from argparse import ArgumentParser
 
 from mmdet.apis import inference_detector, init_detector
 
-from mmpose.apis import inference_pose_model, init_pose_model, vis_pose_result
+from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
+                         vis_pose_result)
 
 
 def main():
@@ -47,7 +48,6 @@ def main():
 
     assert args.show or (args.out_img_root != '')
     assert args.img != ''
-    assert 'cuda' in args.device
     assert args.det_config is not None
     assert args.det_checkpoint is not None
 
@@ -66,7 +66,7 @@ def main():
     person_bboxes = det_results[0].copy()
 
     # test a single image, with a list of bboxes.
-    pose_results = inference_pose_model(
+    pose_results = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_bboxes,
