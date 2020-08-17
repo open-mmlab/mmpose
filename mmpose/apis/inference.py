@@ -163,13 +163,14 @@ def _inference_single_pose_model(model, img_or_path, bbox):
         'joints_3d': np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float),
         'joints_3d_visible': np.zeros((cfg.data_cfg.num_joints, 3),
                                       dtype=np.float),
+        'rotation': 0,
         'ann_info': {
             'image_size':
             cfg.data_cfg['image_size'],
             'num_joints':
             cfg.data_cfg['num_joints'],
             'flip_pairs': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12],
-                           [13, 14], [15, 16]],
+                           [13, 14], [15, 16]]
         }
     }
     data = test_pipeline(data)
