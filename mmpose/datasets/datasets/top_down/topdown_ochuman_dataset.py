@@ -168,35 +168,23 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
-            for ipt in range(num_joints):
-                joints_3d[ipt, 0] = obj['keypoints'][ipt * 3 + 0]
-                joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
-                joints_3d[ipt, 2] = 0
-                t_vis = obj['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
-                    t_vis = 1
-                joints_3d_visible[ipt, 0] = t_vis
-                joints_3d_visible[ipt, 1] = t_vis
-                joints_3d_visible[ipt, 2] = 0
+
+            keypoints = obj['keypoints'].reshape(-1, 3)
+            joints_3d[:, :2] = keypoints[:, :2]
+            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+
+            image_file = os.path.join(self.img_prefix, self.id2name[index])
             rec.append({
-                'image_file':
-                os.path.join(self.img_prefix, self.id2name[index]),
-                'center':
-                center,
-                'scale':
-                scale,
-                'rotation':
-                0,
-                'joints_3d':
-                joints_3d,
-                'joints_3d_visible':
-                joints_3d_visible,
-                'dataset':
-                'ochuman',
-                'bbox_score':
-                1
+                'image_file': image_file,
+                'center': center,
+                'scale': scale,
+                'rotation': 0,
+                'joints_3d': joints_3d,
+                'joints_3d_visible': joints_3d_visible,
+                'dataset': 'ochuman',
+                'bbox_score': 1
             })
 
         return rec
