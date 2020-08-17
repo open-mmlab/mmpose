@@ -1,29 +1,47 @@
 import os
-import os.path as osp
 from collections import OrderedDict, defaultdict
 
-import json_tricks as json
 import numpy as np
 from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .topdown_coco_dataset import TopDownCocoDataset
+
+
+def _get_mapping_id_name(imgs):
+    """
+    Args:
+        imgs (dict): dict of image info.
+    Returns:
+        id2name (dict): mapping image id to name.
+        name2id (dict): mapping image name to id.
+    """
+    id2name = {}
+    name2id = {}
+    for image_id, image in imgs.items():
+        file_name = image['file_name']
+        id2name[image_id] = file_name
+        name2id[file_name] = image_id
+
+    return id2name, name2id
 
 
 @DATASETS.register_module()
-class TopDownCocoDataset(TopDownBaseDataset):
-    """CocoDataset dataset for top-down pose estimation.
+class TopDownOCHumanDataset(TopDownCocoDataset):
+    """OChuman dataset for top-down pose estimation.
 
-    `Microsoft COCO: Common Objects in Context' ECCV'2014
+    `Pose2Seg: Detection Free Human Instance Segmentation' CVPR'2019
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`_ .
+    <https://arxiv.org/abs/1803.10683>`_ .
 
-    The dataset loads raw features and apply specified transforms
-    to return a dict containing the image tensors and other information.
+    "Occluded Human (OCHuman)" dataset contains 8110 heavily occluded
+    human instances within 4731 images. OCHuman dataset is designed for
+    validation and testing. To evaluate on OCHuman, the model should be
+    trained on COCO training set, and then test the robustness of the
+    model to occlusion using OCHuman.
 
-    COCO keypoint indexes::
+    OCHuman keypoint indexes (same as COCO)::
 
         0: 'nose',
         1: 'left_eye',
@@ -59,7 +77,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                  data_cfg,
                  pipeline,
                  test_mode=False):
-        super().__init__(
+        super(TopDownCocoDataset, self).__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
@@ -100,6 +118,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
                                             for cls in self.classes[1:]])
         self.image_set_index = self.coco.getImgIds()
         self.num_images = len(self.image_set_index)
+        self.id2name, self.name2id = _get_mapping_id_name(self.coco.imgs)
+
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -107,19 +127,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
     def _get_db(self):
         """Load dataset."""
-        if (not self.test_mode) or self.use_gt_bbox:
-            # use ground truth bbox
-            gt_db = self._load_coco_keypoint_annotations()
-        else:
-            # use bbox from detection
-            gt_db = self._load_coco_person_detection_results()
-        return gt_db
-
-    def _load_coco_keypoint_annotations(self):
-        """Ground truth bbox and keypoints."""
-        gt_db = []
-        for index in self.image_set_index:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernel(index))
+        assert self.use_gt_bbox
+        gt_db = self._load_coco_keypoint_annotations()
         return gt_db
 
     def _load_coco_keypoint_annotation_kernel(self, index):
@@ -159,109 +168,26 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
-            for ipt in range(num_joints):
-                joints_3d[ipt, 0] = obj['keypoints'][ipt * 3 + 0]
-                joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
-                joints_3d[ipt, 2] = 0
-                t_vis = obj['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
-                    t_vis = 1
-                joints_3d_visible[ipt, 0] = t_vis
-                joints_3d_visible[ipt, 1] = t_vis
-                joints_3d_visible[ipt, 2] = 0
+
+            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
+            joints_3d[:, :2] = keypoints[:, :2]
+            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+
+            image_file = os.path.join(self.img_prefix, self.id2name[index])
             rec.append({
-                'image_file': self._image_path_from_index(index),
+                'image_file': image_file,
                 'center': center,
                 'scale': scale,
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
-                'dataset': 'coco',
+                'dataset': 'ochuman',
                 'bbox_score': 1
             })
 
         return rec
-
-    def _xywh2cs(self, x, y, w, h):
-        """This encodes bbox(x,y,w,w) into (center, scale)
-
-        Args:
-            x, y, w, h
-
-        Returns:
-            center (np.ndarray[float32](2,)): center of the bbox (x, y).
-            scale (np.ndarray[float32](2,)): scale of the bbox w & h.
-        """
-        aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
-            'image_size'][1]
-        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-        if (not self.test_mode) and np.random.rand() < 0.3:
-            center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
-
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
-
-        # pixel std is 200.0
-        scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
-        scale = scale * 1.25
-
-        return center, scale
-
-    def _image_path_from_index(self, index):
-        """ example: images/train2017/000000119993.jpg """
-        image_path = os.path.join(self.img_prefix, '%012d.jpg' % index)
-        return image_path
-
-    def _load_coco_person_detection_results(self):
-        """Load coco person detection results."""
-        num_joints = self.ann_info['num_joints']
-        all_boxes = None
-        with open(self.bbox_file, 'r') as f:
-            all_boxes = json.load(f)
-
-        if not all_boxes:
-            raise ValueError('=> Load %s fail!' % self.bbox_file)
-
-        print(f'=> Total boxes: {len(all_boxes)}')
-
-        kpt_db = []
-        num_boxes = 0
-        for n_img in range(0, len(all_boxes)):
-            det_res = all_boxes[n_img]
-            if det_res['category_id'] != 1:
-                continue
-
-            img_name = self._image_path_from_index(det_res['image_id'])
-            box = det_res['bbox']
-            score = det_res['score']
-
-            if score < self.image_thr:
-                continue
-
-            num_boxes = num_boxes + 1
-
-            center, scale = self._xywh2cs(*box[:4])
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float)
-            joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
-            kpt_db.append({
-                'image_file': img_name,
-                'center': center,
-                'scale': scale,
-                'rotation': 0,
-                'bbox_score': score,
-                'dataset': 'coco',
-                'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible
-            })
-        print(f'=> Total boxes after filter '
-              f'low score@{self.image_thr}: {num_boxes}')
-        return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
@@ -292,7 +218,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+            image_id = self.name2id[os.path.basename(str_image_path)]
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -342,67 +268,3 @@ class TopDownCocoDataset(TopDownBaseDataset):
         name_value = OrderedDict(info_str)
 
         return name_value
-
-    def _write_coco_keypoint_results(self, keypoints, res_file):
-        """Write results into a json file."""
-        data_pack = [{
-            'cat_id': self._class_to_coco_ind[cls],
-            'cls_ind': cls_ind,
-            'cls': cls,
-            'ann_type': 'keypoints',
-            'keypoints': keypoints
-        } for cls_ind, cls in enumerate(self.classes)
-                     if not cls == '__background__']
-
-        results = self._coco_keypoint_results_one_category_kernel(data_pack[0])
-
-        with open(res_file, 'w') as f:
-            json.dump(results, f, sort_keys=True, indent=4)
-
-    def _coco_keypoint_results_one_category_kernel(self, data_pack):
-        """Get coco keypoint results."""
-        cat_id = data_pack['cat_id']
-        keypoints = data_pack['keypoints']
-        cat_results = []
-
-        for img_kpts in keypoints:
-            if len(img_kpts) == 0:
-                continue
-
-            _key_points = np.array(
-                [img_kpt['keypoints'] for img_kpt in img_kpts])
-            key_points = _key_points.reshape(-1,
-                                             self.ann_info['num_joints'] * 3)
-
-            result = [{
-                'image_id': img_kpt['image_id'],
-                'category_id': cat_id,
-                'keypoints': key_point.tolist(),
-                'score': float(img_kpt['score']),
-                'center': img_kpt['center'].tolist(),
-                'scale': img_kpt['scale'].tolist()
-            } for img_kpt, key_point in zip(img_kpts, key_points)]
-
-            cat_results.extend(result)
-
-        return cat_results
-
-    def _do_python_keypoint_eval(self, res_file):
-        """Keypoint evaluation using COCOAPI."""
-        coco_dt = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_dt, 'keypoints')
-        coco_eval.params.useSegm = None
-        coco_eval.evaluate()
-        coco_eval.accumulate()
-        coco_eval.summarize()
-
-        stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AR (M)', 'AR (L)'
-        ]
-
-        info_str = []
-        for ind, name in enumerate(stats_names):
-            info_str.append((name, coco_eval.stats[ind]))
-
-        return info_str

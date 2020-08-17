@@ -14,6 +14,10 @@ from .topdown_base_dataset import TopDownBaseDataset
 class TopDownMpiiTrbDataset(TopDownBaseDataset):
     """MPII-TRB Dataset dataset for top-down pose estimation.
 
+    `TRB: A Novel Triplet Representation for Understanding 2D Human Body'
+    ICCV'2019 More details can be found in the `paper
+    <https://arxiv.org/abs/1910.11535>`_ .
+
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
