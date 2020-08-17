@@ -75,8 +75,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 12, 13)
         self.ann_info['lower_body_ids'] = (6, 7, 8, 9, 10, 11)
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] = np.array(
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = np.array(
             [
                 0.2, 0.2, 0.2, 1.3, 1.5, 0.2, 1.3, 1.5, 0.2, 0.2, 0.5, 0.2,
                 0.2, 0.5
