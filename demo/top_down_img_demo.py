@@ -38,7 +38,6 @@ def main():
     args = parser.parse_args()
 
     assert args.show or (args.out_img_root != '')
-    assert 'cuda' in args.device
 
     skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                 [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],

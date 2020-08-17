@@ -46,7 +46,6 @@ def main():
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
     assert args.show or (args.out_video_root != '')
-    assert 'cuda' in args.device
     assert args.det_config is not None
     assert args.det_checkpoint is not None
 

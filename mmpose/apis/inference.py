@@ -177,6 +177,9 @@ def _inference_single_pose_model(model, img_or_path, bbox):
     if next(model.parameters()).is_cuda:
         # scatter to specified GPU
         data = scatter(data, [device])[0]
+    else:
+        # just get the actual data from DataContainer
+        data['img_metas'] = data['img_metas'].data[0]
 
     # forward the model
     with torch.no_grad():
@@ -281,6 +284,9 @@ def inference_bottom_up_pose_model(model, img_or_path):
     if next(model.parameters()).is_cuda:
         # scatter to specified GPU
         data = scatter(data, [device])[0]
+    else:
+        # just get the actual data from DataContainer
+        data['img_metas'] = data['img_metas'].data[0]
 
     # forward the model
     with torch.no_grad():

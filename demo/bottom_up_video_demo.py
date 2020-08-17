@@ -35,7 +35,7 @@ def main():
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
     assert args.show or (args.out_video_root != '')
-    assert 'cuda' in args.device
+
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device)

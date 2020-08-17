@@ -48,7 +48,6 @@ def main():
 
     assert args.show or (args.out_img_root != '')
     assert args.img != ''
-    assert 'cuda' in args.device
     assert args.det_config is not None
     assert args.det_checkpoint is not None
 
