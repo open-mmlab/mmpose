@@ -198,14 +198,3 @@ data = dict(
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
-
-loss = dict(
-    type='MultiLossFactory',
-    num_stages=2,
-    ae_loss_type='exp',
-    with_ae_loss=[True, False],
-    push_loss_factor=[0.001, 0.001],
-    pull_loss_factor=[0.001, 0.001],
-    with_heatmaps_loss=[True, True],
-    heatmaps_loss_factor=[1.0, 1.0],
-)
