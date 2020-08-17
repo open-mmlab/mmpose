@@ -163,13 +163,14 @@ def _inference_single_pose_model(model, img_or_path, bbox):
         'joints_3d': np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float),
         'joints_3d_visible': np.zeros((cfg.data_cfg.num_joints, 3),
                                       dtype=np.float),
+        'rotation': 0,
         'ann_info': {
             'image_size':
             cfg.data_cfg['image_size'],
             'num_joints':
             cfg.data_cfg['num_joints'],
             'flip_pairs': [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12],
-                           [13, 14], [15, 16]],
+                           [13, 14], [15, 16]]
         }
     }
     data = test_pipeline(data)
@@ -177,6 +178,9 @@ def _inference_single_pose_model(model, img_or_path, bbox):
     if next(model.parameters()).is_cuda:
         # scatter to specified GPU
         data = scatter(data, [device])[0]
+    else:
+        # just get the actual data from DataContainer
+        data['img_metas'] = data['img_metas'].data[0]
 
     # forward the model
     with torch.no_grad():
@@ -186,11 +190,11 @@ def _inference_single_pose_model(model, img_or_path, bbox):
     return all_preds[0]
 
 
-def inference_pose_model(model,
-                         img_or_path,
-                         person_bboxes,
-                         bbox_thr=None,
-                         format='xywh'):
+def inference_top_down_pose_model(model,
+                                  img_or_path,
+                                  person_bboxes,
+                                  bbox_thr=None,
+                                  format='xywh'):
     """Inference a single image with a list of person bounding boxes.
 
     num_people: P
@@ -210,7 +214,7 @@ def inference_pose_model(model,
             'xywh' means (left, top, width, height).
 
     Returns:
-        list[dict]: Pose results: each item in the list is a dictionary,
+        pose_results (list[dict]): Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
     """
@@ -232,6 +236,68 @@ def inference_pose_model(model,
                 'keypoints':
                 pose,
             })
+
+    return pose_results
+
+
+def inference_bottom_up_pose_model(model, img_or_path):
+    """Inference a single image.
+
+    num_people: P
+    num_keypoints: K
+    bbox height: H
+    bbox width: W
+
+    Args:
+        model (nn.Module): The loaded pose model.
+        image_name (str| np.ndarray): Image_name.
+
+    Returns:
+        pose_results (list[ndarray]): The length of the list
+            is the number of people (P). Each item in the
+            list is a ndarray, containing each person's
+            pose (ndarray[Kx3]): x, y, score
+    """
+    pose_results = []
+    cfg = model.cfg
+    device = next(model.parameters()).device
+
+    # build the data pipeline
+    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    test_pipeline = Compose(test_pipeline)
+
+    # prepare data
+    data = {
+        'img_or_path': img_or_path,
+        'dataset': 'coco',
+        'ann_info': {
+            'image_size':
+            cfg.data_cfg['image_size'],
+            'num_joints':
+            cfg.data_cfg['num_joints'],
+            'flip_index':
+            [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15],
+        }
+    }
+
+    data = test_pipeline(data)
+    data = collate([data], samples_per_gpu=1)
+    if next(model.parameters()).is_cuda:
+        # scatter to specified GPU
+        data = scatter(data, [device])[0]
+    else:
+        # just get the actual data from DataContainer
+        data['img_metas'] = data['img_metas'].data[0]
+
+    # forward the model
+    with torch.no_grad():
+        all_preds, _, _ = model(
+            return_loss=False, img=data['img'], img_metas=data['img_metas'])
+
+    for pred in all_preds:
+        pose_results.append({
+            'keypoints': pred[:, :3],
+        })
 
     return pose_results
 
