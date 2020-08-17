@@ -109,8 +109,8 @@ def test_top_down_pipeline():
     results['ann_info']['num_joints'] = num_joints
     results['ann_info']['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     results['ann_info']['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
-    results['ann_info']['use_different_joints_weight'] = False
-    results['ann_info']['joints_weight'] = np.array([
+    results['ann_info']['use_different_joint_weights'] = False
+    results['ann_info']['joint_weights'] = np.array([
         1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
         1.5
     ],

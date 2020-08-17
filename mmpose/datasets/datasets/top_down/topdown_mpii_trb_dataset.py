@@ -49,8 +49,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         self.ann_info['upper_body_ids'].extend(list(range(14, 28)))
         self.ann_info['lower_body_ids'].extend(list(range(28, 40)))
 
-        self.ann_info['use_different_joints_weight'] = False
-        self.ann_info['joints_weight'] =  \
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] =  \
             np.ones(40, dtype=np.float32).reshape(
                 (self.ann_info['num_joints'], 1))
 
