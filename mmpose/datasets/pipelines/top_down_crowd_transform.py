@@ -121,8 +121,8 @@ class TopDownCrowdGenerateTarget():
         num_joints = cfg['num_joints']
         image_size = cfg['image_size']
         heatmap_size = cfg['heatmap_size']
-        joints_weight = cfg['joints_weight']
-        use_different_joints_weight = cfg['use_different_joints_weight']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
 
         target_weight = np.zeros((num_joints, 1), dtype=np.float32)
         target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
@@ -249,8 +249,8 @@ class TopDownCrowdGenerateTarget():
                                    img_x[0]:img_x[1]],
                                    g[g_y[0]:g_y[1], g_x[0]:g_x[1]])
 
-        if use_different_joints_weight:
-            target_weight = np.multiply(target_weight, joints_weight)
+        if use_different_joint_weights:
+            target_weight = np.multiply(target_weight, joint_weights)
 
         return target, target_weight
 
