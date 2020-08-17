@@ -25,22 +25,23 @@ def test_bottom_up_simple_head():
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
     head.init_weights()
-    assert head.final_layers.padding == (1, 1)
+    assert head.final_layer.padding == (1, 1)
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 1})
     head.init_weights()
-    assert head.final_layers.padding == (0, 0)
+    assert head.final_layer.padding == (0, 0)
     head = BottomUpSimpleHead(
         in_channels=512, num_joints=17, with_ae_loss=[True])
     head.init_weights()
-    assert head.final_layers.padding == (0, 0)
+    assert head.final_layer.padding == (0, 0)
     # test with_ae_loss
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
     head.init_weights()
@@ -51,6 +52,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         with_ae_loss=[False],
         extra={'final_conv_kernel': 3})
     head.init_weights()
@@ -62,6 +64,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[False],
         extra={'final_conv_kernel': 3})
@@ -73,6 +76,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
@@ -84,6 +88,7 @@ def test_bottom_up_simple_head():
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
         extra={'final_conv_kernel': 3})
