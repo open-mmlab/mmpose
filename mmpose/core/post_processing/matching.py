@@ -31,24 +31,21 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
     kp_groups = _grouping(bboxes, pose_preds, num_joints, box_scores)
 
     # Generate Matrix
-    human_num = len(pose_preds.keys())
-    costMatrix = []
+    num_person = len(pose_preds.keys())
+    costMatrix = [
+        np.zeros((num_person, len(kp_group)), dtype=np.float)
+        for kp_group in kp_groups
+    ]
 
-    for k in range(num_joints):
-        kp_group = kp_groups[k]
-        joint_num = len(kp_group.keys())
-        costMatrix.append(np.zeros((human_num, joint_num)))
-
-    for n, person in pose_preds.items():
-        h_id = n
-        assert 0 <= h_id < human_num
+    for h_id, person in pose_preds.items():
+        assert 0 <= h_id < num_person
         for k in range(num_joints):
             g_id = person['group_id'][k]
             if g_id is not None:
-
+                # because group_id start with 1
                 g_id = int(g_id) - 1
                 _, _, score = person[k][0]
-                h_score = person['human_score']
+                h_score = person['person_score']
 
                 if score < 0.05:
                     costMatrix[k][h_id][g_id] = 0
@@ -135,7 +132,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
 
         s /= num_joints
 
-        pose_preds[n]['human_score'] = s
+        pose_preds[n]['person_score'] = s
 
         for k in range(num_joints):
             latest_id = ids[k]
@@ -145,7 +142,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
             x0, y0, s0 = person[k][0]
             if s0 < 0.05:
                 continue
-            for g_id, g in kp_group.items():
+            for g_id, _ in kp_group.items():
 
                 x_c, y_c = kp_group[g_id]['group_center']
                 # Get Average Box Size
@@ -165,12 +162,12 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
 
                         kp_group[g_id]['group_area'][0] += (
                             person['bbox'][2] -
-                            person['bbox'][0]) * person['human_score']
+                            person['bbox'][0]) * person['person_score']
                         kp_group[g_id]['group_area'][1] += (
                             person['bbox'][3] -
-                            person['bbox'][1]) * person['human_score']
+                            person['bbox'][1]) * person['person_score']
                         kp_group[g_id]['group_area'][2] += person[
-                            'human_score']
+                            'person_score']
 
                         x_c = kp_group[g_id]['kp_list'][0] / kp_group[g_id][
                             'kp_list'][2]
@@ -196,7 +193,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
                 # Ref Area
                 ref_width = person['bbox'][2] - person['bbox'][0]
                 ref_height = person['bbox'][3] - person['bbox'][1]
-                ref_score = person['human_score']
+                ref_score = person['person_score']
                 kp_group[latest_id]['group_area'] = np.array(
                     (ref_width * ref_score, ref_height * ref_score, ref_score))
 
@@ -214,7 +211,7 @@ def _matching(pose_preds, matrix, num_joints, kp_groups):
         num_keypoints: K
     Args:
         pose_preds (dict)
-        matric (list):cost matric.
+        matrix (list):cost matrix.
         num_joints (int): num_keypoint.
         kp_groups (dict):group information.
     Returns:
@@ -222,9 +219,9 @@ def _matching(pose_preds, matrix, num_joints, kp_groups):
     """
     index = []
     for k in range(num_joints):
-        human_ind, joint_ind = linear_sum_assignment(matrix[k])
+        person_ind, joint_ind = linear_sum_assignment(matrix[k])
 
-        index.append(list(zip(human_ind, joint_ind)))
+        index.append(list(zip(person_ind, joint_ind)))
 
     for n, person in pose_preds.items():
         for k in range(num_joints):

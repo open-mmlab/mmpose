@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 from mmpose.core.post_processing import transform_crowd_preds, transform_preds
 
@@ -296,8 +297,7 @@ def _get_multi_preds(heatmaps):
                       torch.Tensor), ('heatmaps should be torch.Tensor')
     assert heatmaps.dim() == 4, 'batch_images should be 4-ndim'
 
-    pooling = torch.nn.MaxPool2d(5, 1, 2)
-    maxm = pooling(heatmaps)
+    maxm = F.max_pool2d(heatmaps, 5, 1, 2)
     maxm = torch.eq(maxm, heatmaps).float()
     heatmaps = heatmaps * maxm
 
