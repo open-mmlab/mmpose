@@ -62,10 +62,8 @@ def test_top_down_simple_head():
     head = TopDownSimpleHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
     assert head.final_layer.padding == (0, 0)
-    with pytest.raises(AssertionError):
-        # the deconv kernels should be 4, 3, 2
-        _ = TopDownSimpleHead(
-            out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
+    _ = TopDownSimpleHead(
+        out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
 
     head = TopDownSimpleHead(out_channels=3, in_channels=512)
     input_shape = (1, 512, 32, 32)
@@ -159,10 +157,8 @@ def test_top_down_multistage_head():
     head = TopDownMultiStageHead(
         out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
     assert head.multi_final_layers[0].padding == (0, 0)
-    with pytest.raises(AssertionError):
-        # the deconv kernels should be 4, 3, 2
-        _ = TopDownMultiStageHead(
-            out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
+    _ = TopDownMultiStageHead(
+        out_channels=3, in_channels=512, extra={'final_conv_kernel': 0})
 
     head = TopDownMultiStageHead(out_channels=3, in_channels=512)
     input_shape = (1, 512, 32, 32)
