@@ -169,7 +169,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
 
-            keypoints = obj['keypoints'].reshape(-1, 3)
+            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
