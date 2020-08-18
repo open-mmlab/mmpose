@@ -113,7 +113,7 @@ def _match_by_tag(inp, params):
     return ans
 
 
-class _Params(object):
+class _Params:
     """A class of parameter.
 
     Args:
@@ -138,7 +138,7 @@ class _Params(object):
             self.joint_order = list(np.arange(self.num_joints))
 
 
-class HeatmapParser(object):
+class HeatmapParser:
     """The heatmap parser for post processing."""
 
     def __init__(self, cfg):

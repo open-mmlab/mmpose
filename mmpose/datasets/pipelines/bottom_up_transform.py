@@ -172,7 +172,7 @@ class JointsEncoder():
 
 
 @PIPELINES.register_module()
-class BottomUpRandomFlip(object):
+class BottomUpRandomFlip:
     """Data augmentation with random image flip for bottom-up.
 
     Args:
@@ -206,7 +206,7 @@ class BottomUpRandomFlip(object):
 
 
 @PIPELINES.register_module()
-class BottomUpRandomAffine(object):
+class BottomUpRandomAffine:
     """Data augmentation with random scaling & rotating.
 
     Args:
@@ -323,7 +323,7 @@ class BottomUpRandomAffine(object):
 
 
 @PIPELINES.register_module()
-class BottomUpGenerateTarget(object):
+class BottomUpGenerateTarget:
     """Generate multi-scale heatmap target for bottom-up.
 
     Args:
@@ -372,7 +372,7 @@ class BottomUpGenerateTarget(object):
 
 
 @PIPELINES.register_module()
-class BottomUpGetImgSize(object):
+class BottomUpGetImgSize:
     """Get multi-scale image sizes for bottom-up, including base_size and
     test_scale_factor. Keep the ratio and the image is resized to
     `results['ann_info']['image_size']×current_scale`.
@@ -423,7 +423,7 @@ class BottomUpGetImgSize(object):
 
 
 @PIPELINES.register_module()
-class BottomUpResizeAlign(object):
+class BottomUpResizeAlign:
     """Resize multi-scale size and align transform for bottom-up.
 
     Args:
