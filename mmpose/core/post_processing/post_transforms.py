@@ -250,8 +250,8 @@ def transform_crowd_preds(coords, center, scale, output_size):
     to the image.
 
     Note:
-        num_keypoints: K
-        the number of candidate: N(default: 5)
+        number of keypoints: K
+        number of candidate: N (default: 5)
 
     Args:
         coords (np.ndarray[K, N, ndims]):

@@ -234,7 +234,9 @@ class TopDownCrowd(BasePose):
                 to be shown. Default: 0.3.
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
+                If None, do not draw keypoints.
             pose_limb_color (np.array[Mx3]): Color of M limbs.
+                If None, do not draw limbs.
             text_color (str or tuple or :obj:`Color`): Color of texts.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.
@@ -274,27 +276,28 @@ class TopDownCrowd(BasePose):
 
             for person_id, kpts in enumerate(pose_result):
                 # draw each point on image
-                for kid, kpt in enumerate(kpts):
-                    x_coord, y_coord, kpt_score = int(kpt[0]), int(
-                        kpt[1]), kpt[2]
-                    if kpt_score > kpt_score_thr:
-                        # cv2.circle(img, (x_coord, y_coord), radius,
-                        #            pose_kpt_color, thickness)
-                        img_copy = img.copy()
-                        r, g, b = pose_kpt_color[kid]
-                        cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                   radius, (int(r), int(g), int(b)), -1)
-                        transparency = max(0, min(1, kpt_score))
-                        cv2.addWeighted(
-                            img_copy,
-                            transparency,
-                            img,
-                            1 - transparency,
-                            0,
-                            dst=img)
+                if pose_kpt_color is not None:
+                    assert len(pose_kpt_color) == len(kpts)
+                    for kid, kpt in enumerate(kpts):
+                        x_coord, y_coord, kpt_score = int(kpt[0]), int(
+                            kpt[1]), kpt[2]
+                        if kpt_score > kpt_score_thr:
+                            img_copy = img.copy()
+                            r, g, b = pose_kpt_color[kid]
+                            cv2.circle(img_copy, (int(x_coord), int(y_coord)),
+                                       radius, (int(r), int(g), int(b)), -1)
+                            transparency = max(0, min(1, kpt_score))
+                            cv2.addWeighted(
+                                img_copy,
+                                transparency,
+                                img,
+                                1 - transparency,
+                                0,
+                                dst=img)
 
                 # draw limbs
-                if skeleton is not None:
+                if skeleton is not None and pose_limb_color is not None:
+                    assert len(pose_limb_color) == len(skeleton)
                     for sk_id, sk in enumerate(skeleton):
                         pos1 = (int(kpts[sk[0] - 1, 0]), int(kpts[sk[0] - 1,
                                                                   1]))
@@ -306,7 +309,6 @@ class TopDownCrowd(BasePose):
                                 and pos2[1] < img_h
                                 and kpts[sk[0] - 1, 2] > kpt_score_thr
                                 and kpts[sk[1] - 1, 2] > kpt_score_thr):
-                            # cv2.line(img, pos1, pos2, pose_kpt_color, 2, 8)
                             img_copy = img.copy()
                             X = (pos1[0], pos2[0])
                             Y = (pos1[1], pos2[1])

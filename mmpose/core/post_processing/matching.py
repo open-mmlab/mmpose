@@ -10,7 +10,7 @@ sigmas = np.array([
 
 def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
                        in_vis_thre):
-    """get final result with group and match.
+    """Get final result with group and match.
 
     Note:
         num_person: N
@@ -27,10 +27,10 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
         final_result (list): predicted in the image.
     """
 
-    # Group same keypointns together
+    # Group same keypoints together
     kp_groups = _grouping(bboxes, pose_preds, num_joints, box_scores)
 
-    # Generate Matrix
+    # Generate cost matrix
     num_person = len(pose_preds.keys())
     costMatrix = [
         np.zeros((num_person, len(kp_group)), dtype=np.float)
@@ -42,7 +42,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
         for k in range(num_joints):
             g_id = person['group_id'][k]
             if g_id is not None:
-                # because group_id start with 1
+                # group_id start with 1
                 g_id = int(g_id) - 1
                 _, _, score = person[k][0]
                 h_score = person['person_score']
@@ -54,7 +54,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
 
     pose_preds = _matching(pose_preds, costMatrix, num_joints, kp_groups)
 
-    # To JSON
+    # to JSON
     final_result = []
 
     for n, person in pose_preds.items():
@@ -97,7 +97,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
 
 
 def _grouping(bboxes, pose_preds, num_joints, box_scores):
-    """remove the joints that are repeated with group.
+    """Remove the joints that are repeated with group.
 
     Note:
         num_person: N
@@ -143,16 +143,15 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
             for g_id, g in kp_group.items():
 
                 x_c, y_c = g['group_center']
-                # Get Average Box Size
+                # Get average box size
                 group_area = g['group_area']
                 group_area = group_area[0] * group_area[1] / (group_area[2]**2)
 
-                # Grouping Criterion
-
-                # Joint Group
+                # Grouping criterion
                 dist = np.sqrt(((x_c - x0)**2 + (y_c - y0)**2) / group_area)
 
-                if dist <= 0.1 * sigmas[k]:  # Small Distance
+                # Small distance
+                if dist <= 0.1 * sigmas[k]:
                     if s0 > 0.3:
                         g['kp_list'][0] += x0 * s0
                         g['kp_list'][1] += y0 * s0
@@ -185,7 +184,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
                 x, y, s = person[k][0]
                 kp_group[latest_id]['kp_list'] = np.array((x * s, y * s, s))
 
-                # Ref Area
+                # Ref area
                 ref_width = person['bbox'][2] - person['bbox'][0]
                 ref_height = person['bbox'][3] - person['bbox'][1]
                 ref_score = person['person_score']
@@ -199,7 +198,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
 
 
 def _matching(pose_preds, matrix, num_joints, kp_groups):
-    """use hungarian algorithm to match person and keypoints.
+    """Use hungarian algorithm to match person and keypoints.
 
     Note:
         num_person: N
@@ -242,7 +241,7 @@ def _matching(pose_preds, matrix, num_joints, kp_groups):
 
 
 def convert_crowd(kpt):
-    """convert the corresponding information for subsequent processing.
+    """Convert the corresponding information for subsequent processing.
 
     Note:
         num_person: N
