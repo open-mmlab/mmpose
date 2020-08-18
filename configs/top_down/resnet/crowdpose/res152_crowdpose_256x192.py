@@ -37,8 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDownCrowd',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='models/pytorch/imagenet/resnet152-b121ed2d.pth',
+    backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -119,7 +119,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/crowdpose'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',

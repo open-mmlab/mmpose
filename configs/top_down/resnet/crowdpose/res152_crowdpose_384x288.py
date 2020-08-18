@@ -37,8 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDownCrowd',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='models/pytorch/imagenet/resnet152-b121ed2d.pth',
+    backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -54,8 +54,8 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[192, 256],
-    heatmap_size=[48, 64],
+    image_size=[288, 384],
+    heatmap_size=[72, 96],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -86,7 +86,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownCrowdGenerateTarget', sigma=2),
+    dict(type='TopDownCrowdGenerateTarget', sigma=3),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -119,7 +119,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/crowdpose'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
