@@ -103,7 +103,7 @@ def _box2cs(cfg, box):
     return center, scale
 
 
-class LoadImage(object):
+class LoadImage:
     """A simple pipeline to load image."""
 
     def __init__(self, color_type='color', channel_order='rgb'):

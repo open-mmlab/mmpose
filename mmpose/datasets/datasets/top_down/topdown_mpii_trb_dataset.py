@@ -60,7 +60,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             (self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db(ann_file)
-        self.image_set = set([x['image_file'] for x in self.db])
+        self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)
 
         print(f'=> num_images: {self.num_images}')

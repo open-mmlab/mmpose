@@ -2,7 +2,7 @@ from .registry import DATASETS
 
 
 @DATASETS.register_module()
-class RepeatDataset(object):
+class RepeatDataset:
     """A wrapper of repeated dataset.
 
     The length of repeated dataset will be `times` larger than the original

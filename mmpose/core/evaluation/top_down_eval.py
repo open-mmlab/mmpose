@@ -140,10 +140,8 @@ def _taylor(heatmap, coord):
     Returns:
         Updated coordinates.
     """
-    H = heatmap.shape[0]
-    W = heatmap.shape[1]
-    px = int(coord[0])
-    py = int(coord[1])
+    H, W = heatmap.shape[:2]
+    px, py = int(coord[0]), int(coord[1])
     if 1 < px < W - 2 and 1 < py < H - 2:
         dx = 0.5 * (heatmap[py][px + 1] - heatmap[py][px - 1])
         dy = 0.5 * (heatmap[py + 1][px] - heatmap[py - 1][px])
