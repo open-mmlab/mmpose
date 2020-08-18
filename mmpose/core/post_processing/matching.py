@@ -9,7 +9,7 @@ sigmas = np.array([
 
 
 def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
-                       in_vis_thre):
+                       vis_thr):
     """Get final result with group and match.
 
     Note:
@@ -17,12 +17,12 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
     Args:
         bboxes (torch.Tensor[N,4]): bbox(x1,y1,x2,y2).
         pose_preds (dict): candidate keypoints information.
-            pose_preds[i][j] (list): i-th person j-th joint 's canditate
+            pose_preds[i][j] (list): i-th person j-th joint 's candidate
                     keypoints information.
         num_joints (int): number of keypoints.
         img (int): image_id.
         box_scores (torch.Tensor[N,1]): bbox score.
-        in_vis_thre (float): threshold.
+        vis_thr (float): threshold.
     Returns:
         final_result (list): predicted in the image.
     """
@@ -69,7 +69,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
             final_pose[k][0] = x.item()
             final_pose[k][1] = y.item()
             final_pose[k][2] = s.item()
-            if s.item() > in_vis_thre:
+            if s.item() > vis_thr:
                 mean_score += s.item()
                 vaild_num += 1
 

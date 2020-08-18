@@ -59,7 +59,7 @@ def _match_by_tag(inp, params):
 
         tags = tag_k[idx]
         joints = np.concatenate((loc_k[idx], val_k[idx, :, None], tags), 1)
-        mask = joints[:, 2] > params.detection_threshold
+        mask = joints[:, 2] > params.detection_thr
         tags = tags[mask]
         joints = joints[mask]
 
@@ -99,7 +99,7 @@ def _match_by_tag(inp, params):
             pairs = _py_max_match(diff_normed)
             for row, col in pairs:
                 if (row < num_added and col < num_grouped
-                        and diff_saved[row][col] < params.tag_threshold):
+                        and diff_saved[row][col] < params.tag_thr):
                     key = grouped_keys[col]
                     joint_dict[key][idx] = joints[row]
                     tag_dict[key].append(tags[row])
@@ -124,8 +124,8 @@ class _Params:
         self.num_joints = cfg['num_joints']
         self.max_num_people = cfg['max_num_people']
 
-        self.detection_threshold = cfg['detection_threshold']
-        self.tag_threshold = cfg['tag_threshold']
+        self.detection_thr = cfg['detection_thr']
+        self.tag_thr = cfg['tag_thr']
         self.use_detection_val = cfg['use_detection_val']
         self.ignore_too_much = cfg['ignore_too_much']
 
