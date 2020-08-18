@@ -113,9 +113,9 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         self.num_classes = len(self.classes)
         self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
         self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict([(self._class_to_coco_ind[cls],
-                                             self._class_to_ind[cls])
-                                            for cls in self.classes[1:]])
+        self._coco_ind_to_class_ind = dict(
+            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+            for cls in self.classes[1:])
         self.image_set_index = self.coco.getImgIds()
         self.num_images = len(self.image_set_index)
         self.id2name, self.name2id = _get_mapping_id_name(self.coco.imgs)

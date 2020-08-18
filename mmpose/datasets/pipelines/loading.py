@@ -4,7 +4,7 @@ from ..registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class LoadImageFromFile(object):
+class LoadImageFromFile:
     """Loading image from file.
 
     Args:

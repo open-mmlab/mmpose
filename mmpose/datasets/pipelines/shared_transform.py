@@ -44,7 +44,7 @@ class NormalizeTensor():
 
 
 @PIPELINES.register_module()
-class Compose(object):
+class Compose:
     """Compose a data pipeline with a sequence of transforms.
 
     Args:
@@ -90,7 +90,7 @@ class Compose(object):
 
 
 @PIPELINES.register_module()
-class Collect(object):
+class Collect:
     """Collect data from the loader relevant to the specific task.
 
     This keeps the items in `keys` as it is, and collect items in `meta_keys`

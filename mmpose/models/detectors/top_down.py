@@ -116,12 +116,12 @@ class TopDown(BasePose):
         losses = dict()
         if isinstance(output, list):
             # multi-stage models
-            for i in range(len(output)):
+            for output_i in output:
                 if 'mse_loss' not in losses:
-                    losses['mse_loss'] = self.loss(output[i], target,
+                    losses['mse_loss'] = self.loss(output_i, target,
                                                    target_weight)
                 else:
-                    losses['mse_loss'] += self.loss(output[i], target,
+                    losses['mse_loss'] += self.loss(output_i, target,
                                                     target_weight)
         else:
             losses['mse_loss'] = self.loss(output, target, target_weight)
