@@ -27,8 +27,8 @@ def candidate_reselect(bboxes,
         num_joints (int): number of keypoints.
         img (int): image_id.
         box_scores (torch.Tensor[N,1]): bbox score.
-        vis_thr (float): threshold.
-        vis_thr (float): threshold.
+        vis_thr (float): threshold of visibility.
+        score_thr (float): threshold of keypoint score.
     Returns:
         final_result (list): predicted in the image.
     """
@@ -102,7 +102,13 @@ def candidate_reselect(bboxes,
     return final_result
 
 
-def _grouping(bboxes, pose_preds, num_joints, box_scores):
+def _grouping(bboxes,
+              pose_preds,
+              num_joints,
+              box_scores,
+              score_thr=0.05,
+              dist_thr=0.1,
+              vis_thr=0.3):
     """Remove the joints that are repeated with group.
 
     Note:
@@ -115,6 +121,9 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
                     keypoints information.
         num_joints (int): num_keypoints.
         box_scores (torch.Tensor[n,1]): bbox score.
+        score_thr (float): threshold of keypoint score.
+        dist_thr (float): threshold of group distance.
+        vis_thr (float): threshold of visibility.
     Returns:
         kp_groups (dict[k,dict]): information after grouping.
     """
@@ -144,7 +153,7 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
 
             assert len(person[k]) > 0
             x0, y0, s0 = person[k][0]
-            if s0 < 0.05:
+            if s0 < score_thr:
                 continue
             for g_id, g in kp_group.items():
 
@@ -157,8 +166,8 @@ def _grouping(bboxes, pose_preds, num_joints, box_scores):
                 dist = np.sqrt(((x_c - x0)**2 + (y_c - y0)**2) / group_area)
 
                 # Small distance
-                if dist <= 0.1 * sigmas[k]:
-                    if s0 > 0.3:
+                if dist <= dist_thr * sigmas[k]:
+                    if s0 > vis_thr:
                         g['kp_list'][0] += x0 * s0
                         g['kp_list'][1] += y0 * s0
                         g['kp_list'][2] += s0
