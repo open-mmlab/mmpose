@@ -1,47 +1,39 @@
 import os
-import os.path as osp
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
+from crowdposetools.coco import COCO
+from crowdposetools.cocoeval import COCOeval
 
-from ....core.post_processing import oks_nms, soft_oks_nms
+from ....core.post_processing import candidate_reselect, convert_crowd
 from ...registry import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
 
 @DATASETS.register_module()
-class TopDownCocoDataset(TopDownBaseDataset):
-    """CocoDataset dataset for top-down pose estimation.
-
-    `Microsoft COCO: Common Objects in Context' ECCV'2014
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`_ .
+class TopDownCrowdPoseDataset(TopDownBaseDataset):
+    """CrowdPoseDataset dataset for top-down pose estimation.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    COCO keypoint indexes::
+    CrowdPose keypoint indexes::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: 'left_shoulder',
+        1: 'right_shoulder',
+        2: 'left_elbow',
+        3: 'right_elbow',
+        4: 'left_wrist',
+        5: 'right_wrist',
+        6: 'left_hip',
+        7: 'right_hip',
+        8: 'left_knee',
+        9: 'right_knee',
+        10: 'left_ankle',
+        11: 'right_ankle',
+        12: 'top_head',
+        13: 'neck',
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -72,17 +64,22 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.vis_thr = data_cfg['vis_thr']
         self.bbox_thr = data_cfg['bbox_thr']
 
-        self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
-                                       [11, 12], [13, 14], [15, 16]]
+        self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
+                                       [10, 11]]
 
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
+        self.ann_info['joint_to_joint'] = {}
+        for pair in self.ann_info['flip_pairs']:
+            self.ann_info['joint_to_joint'][pair[0]] = pair[1]
+            self.ann_info['joint_to_joint'][pair[1]] = pair[0]
+
+        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 12, 13)
+        self.ann_info['lower_body_ids'] = (6, 7, 8, 9, 10, 11)
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
+                0.2, 0.2, 0.2, 1.3, 1.5, 0.2, 1.3, 1.5, 0.2, 0.2, 0.5, 0.2,
+                0.2, 0.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
@@ -95,9 +92,9 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.num_classes = len(self.classes)
         self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
         self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict(
-            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
-            for cls in self.classes[1:])
+        self._coco_ind_to_class_ind = dict((self._class_to_coco_ind[cls],
+                                             self._class_to_ind[cls])
+                                            for cls in self.classes[1:])
         self.image_set_index = self.coco.getImgIds()
         self.num_images = len(self.image_set_index)
         self.db = self._get_db()
@@ -123,12 +120,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
         return gt_db
 
     def _load_coco_keypoint_annotation_kernel(self, index):
-        """load annotation from COCOAPI.
+        """load annotation from CrowdPoseAPI.
 
         Note:
             bbox:[x1, y1, w, h]
+            interference_joints_3d(np.ndarray[Nx3]): the joints in someones
+                bbox but not belong him.
         Args:
-            index: coco image id
+            index: crowdpose image id
         Returns:
             db entry
         """
@@ -148,7 +147,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             y1 = max(0, y)
             x2 = min(width - 1, x1 + max(0, w - 1))
             y2 = min(height - 1, y1 + max(0, h - 1))
-            if obj['area'] > 0 and x2 >= x1 and y2 >= y1:
+            if x2 >= x1 and y2 >= y1:
                 obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
                 valid_objs.append(obj)
         objs = valid_objs
@@ -170,6 +169,9 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 joints_3d_visible[ipt, 1] = t_vis
                 joints_3d_visible[ipt, 2] = 0
 
+            interference_joints_3d = np.array(obj['keypoints']).reshape(
+                -1, 3)[num_joints:, :]
+
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
             rec.append({
                 'image_file': self._image_path_from_index(index),
@@ -178,7 +180,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
-                'dataset': 'coco',
+                'interference_joints': interference_joints_3d,
+                'dataset': 'crowdpose',
                 'bbox_score': 1
             })
 
@@ -214,12 +217,12 @@ class TopDownCocoDataset(TopDownBaseDataset):
         return center, scale
 
     def _image_path_from_index(self, index):
-        """ example: images/train2017/000000119993.jpg """
-        image_path = os.path.join(self.img_prefix, '%012d.jpg' % index)
+        """ example: images/119993.jpg """
+        image_path = os.path.join(self.img_prefix, '%06d.jpg' % index)
         return image_path
 
     def _load_coco_person_detection_results(self):
-        """Load coco person detection results."""
+        """Load crowdpose person detection results."""
         num_joints = self.ann_info['num_joints']
         all_boxes = None
         with open(self.bbox_file, 'r') as f:
@@ -245,39 +248,42 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             num_boxes = num_boxes + 1
 
-            center, scale = self._xywh2cs(*box[:4])
+            center, scale = self._xywh2cs(*box)
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
+            interference_joints_3d = np.zeros((0, 3), dtype=np.float)
             kpt_db.append({
                 'image_file': img_name,
                 'center': center,
                 'scale': scale,
-                'rotation': 0,
                 'bbox_score': score,
-                'dataset': 'coco',
+                'dataset': 'crowdpose',
+                'rotation': 0,
                 'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible
+                'joints_3d_visible': joints_3d_visible,
+                'interference_joints': interference_joints_3d,
             })
         print(f'=> Total boxes after filter '
               f'low score@{self.image_thr}: {num_boxes}')
         return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
-        """Evaluate coco keypoint results. The pose prediction results will be
-        saved in `${res_folder}/result_keypoints.json`.
+        """Evaluate crowdpose keypoint results. The pose prediction results
+        will be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             num_keypoints: K
 
         Args:
             outputs (list(preds, boxes, image_path))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
+                :preds (np.ndarray[1,K,5,3]): The first dimensions is the
+                    number of candidates, second third dimensions are
+                    coordinates, score is the fourth dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :image_path (list[str]): For example, [ '/', 'i','m', 'a',
+                    'g', 'e', 's', '/', '0', '0', '0', '1', '3', '3', '.',
+                    'j', 'p', 'g']
             res_folder (str): Path of directory to save the results.
             metric (str): Metric to be performed. Defaults: 'mAP'.
 
@@ -291,7 +297,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+            image_id = int(str_image_path[-10:-4])
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -305,37 +311,16 @@ class TopDownCocoDataset(TopDownBaseDataset):
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
-        oks_thr = self.oks_thr
-        oks_nmsed_kpts = []
+
+        final_result = []
         for img in kpts.keys():
             img_kpts = kpts[img]
-            for n_p in img_kpts:
-                box_score = n_p['score']
-                kpt_score = 0
-                valid_num = 0
-                for n_jt in range(0, num_joints):
-                    t_s = n_p['keypoints'][n_jt][2]
-                    if t_s > vis_thr:
-                        kpt_score = kpt_score + t_s
-                        valid_num = valid_num + 1
-                if valid_num != 0:
-                    kpt_score = kpt_score / valid_num
-                # rescoring
-                n_p['score'] = kpt_score * box_score
+            boxes, preds, box_scores = convert_crowd(img_kpts)
+            result = candidate_reselect(boxes, preds, num_joints, img,
+                                        box_scores, vis_thr)
+            final_result.append(result)
 
-            if self.soft_nms:
-                keep = soft_oks_nms(
-                    [img_kpts[i] for i in range(len(img_kpts))], oks_thr)
-            else:
-                keep = oks_nms([img_kpts[i] for i in range(len(img_kpts))],
-                               oks_thr)
-
-            if len(keep) == 0:
-                oks_nmsed_kpts.append(img_kpts)
-            else:
-                oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
-
-        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
+        self._write_coco_keypoint_results(final_result, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)
@@ -359,7 +344,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             json.dump(results, f, sort_keys=True, indent=4)
 
     def _coco_keypoint_results_one_category_kernel(self, data_pack):
-        """Get coco keypoint results."""
+        """Get crowdpose keypoint results."""
         cat_id = data_pack['cat_id']
         keypoints = data_pack['keypoints']
         cat_results = []
@@ -376,10 +361,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
             result = [{
                 'image_id': img_kpt['image_id'],
                 'category_id': cat_id,
-                'keypoints': key_point.tolist(),
-                'score': float(img_kpt['score']),
-                'center': img_kpt['center'].tolist(),
-                'scale': img_kpt['scale'].tolist()
+                'keypoints': list(key_point),
+                'score': img_kpt['score'],
+                'center': list(img_kpt['center']),
+                'scale': list(img_kpt['scale'])
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)
@@ -387,7 +372,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         return cat_results
 
     def _do_python_keypoint_eval(self, res_file):
-        """Keypoint evaluation using COCOAPI."""
+        """Keypoint evaluation using CrowdPoseAPI."""
         coco_dt = self.coco.loadRes(res_file)
         coco_eval = COCOeval(self.coco, coco_dt, 'keypoints')
         coco_eval.params.useSegm = None
@@ -397,7 +382,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         stats_names = [
             'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AR (M)', 'AR (L)'
+            'AR .75', 'AP(E)', 'AP(M)', 'AP(H)'
         ]
 
         info_str = []

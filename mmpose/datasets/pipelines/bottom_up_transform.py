@@ -159,14 +159,13 @@ class JointsEncoder():
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if pt[2] > 0 and x >= 0 and y >= 0 \
-                   and x < self.output_res and y < self.output_res:
+                if (pt[2] > 0 and x >= 0 and y >= 0 and x < self.output_res
+                        and y < self.output_res):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
                             (idx * output_res**2 + y * output_res + x, 1)
                     else:
-                        visible_kpts[i][tot] = \
-                            (y * output_res + x, 1)
+                        visible_kpts[i][tot] = (y * output_res + x, 1)
                     tot += 1
         return visible_kpts
 
@@ -233,7 +232,7 @@ class BottomUpRandomAffine:
         t[0, 2] = res[1] * (-float(center[0]) / h + .5)
         t[1, 2] = res[0] * (-float(center[1]) / h + .5)
         t[2, 2] = 1
-        if not rot == 0:
+        if rot != 0:
             rot = -rot  # To match direction of rotation from cropping
             rot_mat = np.zeros((3, 3))
             rot_rad = rot * np.pi / 180

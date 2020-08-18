@@ -90,9 +90,9 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         self.num_classes = len(self.classes)
         self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
         self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict([(self._class_to_coco_ind[cls],
-                                             self._class_to_ind[cls])
-                                            for cls in self.classes[1:]])
+        self._coco_ind_to_class_ind = dict(
+            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+            for cls in self.classes[1:])
 
         self.num_images = len(self.ids)
 

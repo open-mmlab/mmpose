@@ -52,7 +52,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             (self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.db = self._get_db()
-        self.image_set = set([x['image_file'] for x in self.db])
+        self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)
 
         print(f'=> num_images: {self.num_images}')
@@ -196,8 +196,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         rng = np.arange(0, 0.5 + 0.01, 0.01)
         pckAll = np.zeros((len(rng), 16))
 
-        for r in range(len(rng)):
-            threshold = rng[r]
+        for r, threshold in enumerate(rng):
             less_than_threshold = (scaled_uv_err <= threshold) * jnt_visible
             pckAll[r, :] = 100. * np.sum(
                 less_than_threshold, axis=1) / jnt_count
