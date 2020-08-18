@@ -93,23 +93,16 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 joints_3d[:, 0:2] = joints[:, 0:2] - 1
                 joints_3d_visible[:, :2] = joints_vis[:, None]
 
+            image_file = os.path.join(self.img_prefix, image_name)
             gt_db.append({
-                'image_file':
-                os.path.join(self.img_prefix, image_name),
-                'center':
-                center,
-                'scale':
-                scale,
-                'rotation':
-                0,
-                'joints_3d':
-                joints_3d,
-                'joints_3d_visible':
-                joints_3d_visible,
-                'dataset':
-                'mpii',
-                'bbox_score':
-                1
+                'image_file': image_file,
+                'center': center,
+                'scale': scale,
+                'rotation': 0,
+                'joints_3d': joints_3d,
+                'joints_3d_visible': joints_3d_visible,
+                'dataset': 'mpii',
+                'bbox_score': 1
             })
 
         return gt_db

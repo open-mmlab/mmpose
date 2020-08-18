@@ -116,10 +116,10 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         """Ground truth bbox and keypoints."""
         gt_db = []
         for index in self.image_set_index:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernal(index))
+            gt_db.extend(self._load_coco_keypoint_annotation_kernel(index))
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernal(self, index):
+    def _load_coco_keypoint_annotation_kernel(self, index):
         """load annotation from CrowdPoseAPI.
 
         Note:
@@ -172,7 +172,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             interference_joints_3d = np.array(obj['keypoints']).reshape(
                 -1, 3)[num_joints:, :]
 
-            center, scale = self._box2cs(obj['clean_bbox'][:4])
+            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
             rec.append({
                 'image_file': self._image_path_from_index(index),
                 'center': center,
@@ -186,11 +186,6 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             })
 
         return rec
-
-    def _box2cs(self, box):
-        """Get box center & scale given box (x, y, w, h)."""
-        x, y, w, h = box[:4]
-        return self._xywh2cs(x, y, w, h)
 
     def _xywh2cs(self, x, y, w, h):
         """This encodes bbox(x,y,w,w) into (center, scale)
@@ -254,7 +249,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
 
             num_boxes = num_boxes + 1
 
-            center, scale = self._box2cs(box)
+            center, scale = self._xywh2cs(*box)
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
             interference_joints_3d = np.zeros((0, 3), dtype=np.float)
@@ -265,12 +260,11 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
                 'bbox_score': score,
                 'dataset': 'crowdpose',
                 'rotation': 0,
-                'imgnum': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'interference_joints': interference_joints_3d,
             })
-        print(f'=> Total boxes after fliter '
+        print(f'=> Total boxes after filter '
               f'low score@{self.image_thr}: {num_boxes}')
         return kpt_db
 
