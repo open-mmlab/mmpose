@@ -38,9 +38,10 @@ def candidate_reselect(bboxes,
 
     # Generate cost matrix
     num_person = len(pose_preds.keys())
+
     costMatrix = [
         np.zeros((num_person, len(kp_group)), dtype=np.float)
-        for kp_group in kp_groups
+        for kp_group in kp_groups.values()
     ]
 
     for h_id, person in pose_preds.items():
