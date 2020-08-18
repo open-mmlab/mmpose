@@ -6,8 +6,8 @@ from mmpose.core.post_processing.group import HeatmapParser
 def test_group():
     cfg = {}
     cfg['num_joints'] = 17
-    cfg['detection_threshold'] = 0.1
-    cfg['tag_threshold'] = 1
+    cfg['detection_thr'] = 0.1
+    cfg['tag_thr'] = 1
     cfg['use_detection_val'] = True
     cfg['ignore_too_much'] = False
     cfg['nms_kernel'] = 5

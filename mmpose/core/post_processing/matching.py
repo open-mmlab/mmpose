@@ -8,8 +8,13 @@ sigmas = np.array([
 ])
 
 
-def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
-                       vis_thr):
+def candidate_reselect(bboxes,
+                       pose_preds,
+                       num_joints,
+                       img,
+                       box_scores,
+                       vis_thr,
+                       score_thr=0.05):
     """Get final result with group and match.
 
     Note:
@@ -22,6 +27,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
         num_joints (int): number of keypoints.
         img (int): image_id.
         box_scores (torch.Tensor[N,1]): bbox score.
+        vis_thr (float): threshold.
         vis_thr (float): threshold.
     Returns:
         final_result (list): predicted in the image.
@@ -47,7 +53,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
                 _, _, score = person[k][0]
                 h_score = person['person_score']
 
-                if score < 0.05:
+                if score < score_thr:
                     costMatrix[k][h_id][g_id] = 0
                 else:
                     costMatrix[k][h_id][g_id] = -(h_score * score)
@@ -73,7 +79,7 @@ def candidate_reselect(bboxes, pose_preds, num_joints, img, box_scores,
                 mean_score += s.item()
                 vaild_num += 1
 
-        if torch.max(final_pose[:, 2]).item() < 0.05:
+        if torch.max(final_pose[:, 2]).item() < score_thr:
             continue
         if vaild_num != 0:
             mean_score = mean_score / vaild_num
