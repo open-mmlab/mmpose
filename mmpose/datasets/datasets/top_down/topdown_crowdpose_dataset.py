@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -298,7 +299,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(str_image_path[-10:-4])
+            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
             kpts[image_id].append({
                 'keypoints': preds[0],
