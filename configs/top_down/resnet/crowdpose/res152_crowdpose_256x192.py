@@ -65,10 +65,10 @@ data_cfg = dict(
     oks_thr=0.9,
     vis_thr=0.2,
     bbox_thr=1.0,
-    use_gt_bbox=True,
+    use_gt_bbox=False,
     image_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
-    'COCO_val2017_detections_AP_H_56_person.json',
+    bbox_file='data/crowdpose/annotations/'
+    'det_for_crowd_test_0.1_0.5.json',
 )
 
 train_pipeline = [
@@ -123,13 +123,13 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_trainval.json',
+        ann_file=f'{data_root}/annotations/crowdpose_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_test.json',
+        ann_file=f'{data_root}/annotations/crowdpose_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
@@ -138,5 +138,4 @@ data = dict(
         ann_file=f'{data_root}/annotations/crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
-)
+        pipeline=val_pipeline))
