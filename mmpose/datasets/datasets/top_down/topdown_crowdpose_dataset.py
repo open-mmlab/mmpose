@@ -84,6 +84,11 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        self.sigmas = np.array([
+            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
+            .87, .87, .89, .89
+        ])
+
         self.coco = COCO(ann_file)
 
         cats = [
@@ -319,7 +324,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             img_kpts = kpts[img]
             boxes, preds, box_scores = convert_crowd(img_kpts)
             result = candidate_reselect(boxes, preds, num_joints, img,
-                                        box_scores, vis_thr)
+                                        box_scores, self.sigmas, vis_thr)
             final_result.append(result)
 
         self._write_coco_keypoint_results(final_result, res_file)

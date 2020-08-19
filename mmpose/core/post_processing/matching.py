@@ -2,17 +2,13 @@ import numpy as np
 import torch
 from scipy.optimize import linear_sum_assignment
 
-sigmas = np.array([
-    .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07, .87,
-    .87, .89, .89
-])
-
 
 def candidate_reselect(bboxes,
                        pose_preds,
                        num_joints,
                        img,
                        box_scores,
+                       sigmas,
                        vis_thr,
                        score_thr=0.05):
     """Get final result with group and match.
@@ -27,6 +23,7 @@ def candidate_reselect(bboxes,
         num_joints (int): number of keypoints.
         img (int): image_id.
         box_scores (torch.Tensor[N,1]): bbox score.
+        sigmas (np.ndarray): labeling variance for each keypoint.
         vis_thr (float): threshold of visibility.
         score_thr (float): threshold of keypoint score.
     Returns:
@@ -34,7 +31,7 @@ def candidate_reselect(bboxes,
     """
 
     # Group same keypoints together
-    kp_groups = _grouping(bboxes, pose_preds, num_joints, box_scores)
+    kp_groups = _grouping(bboxes, pose_preds, num_joints, box_scores, sigmas)
 
     # Generate cost matrix
     num_person = len(pose_preds.keys())
@@ -107,6 +104,7 @@ def _grouping(bboxes,
               pose_preds,
               num_joints,
               box_scores,
+              sigmas,
               score_thr=0.05,
               dist_thr=0.1,
               vis_thr=0.3):
@@ -122,6 +120,7 @@ def _grouping(bboxes,
                     keypoints information.
         num_joints (int): num_keypoints.
         box_scores (torch.Tensor[n,1]): bbox score.
+        sigmas (np.ndarray): labeling variance for each keypoint.
         score_thr (float): threshold of keypoint score.
         dist_thr (float): threshold of group distance.
         vis_thr (float): threshold of visibility.
