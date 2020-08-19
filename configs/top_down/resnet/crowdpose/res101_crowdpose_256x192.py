@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=1, metric='mAP')
+evaluation = dict(interval=10, metric='mAP')
 
 optimizer = dict(
     type='Adam',
@@ -123,13 +123,13 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_train.json',
+        ann_file=f'{data_root}/annotations/crowdpose_trainval.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_val.json',
+        ann_file=f'{data_root}/annotations/crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
