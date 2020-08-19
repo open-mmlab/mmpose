@@ -288,7 +288,8 @@ class TopDownAicDataset(TopDownCocoDataset):
         """Keypoint evaluation using COCOAPI."""
 
         coco_dt = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.sigmas, self.coco, coco_dt, 'keypoints')
+        coco_eval = COCOeval(
+            self.sigmas, self.coco, coco_dt, 'keypoints', use_area=False)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
