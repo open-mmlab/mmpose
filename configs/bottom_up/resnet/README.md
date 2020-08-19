@@ -24,12 +24,12 @@
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py)  | 512x512 | 0.466 | 0.742 | 0.479 | 0.552 | 0.797 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512_20200816.log.json) |
-| [pose_resnet_101](/configs/bottom_up/resnet/coco/res101_coco_512x512.py)  | 512x512 | 0.554 | 0.807 | 0.599 | 0.622 | 0.841 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512_20200816.log.json) |
+| [pose_resnet_50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py)  | 512x512 | 0.466 | 0.742 | 0.479 | 0.552 | 0.797 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512_20200816.log.json) |
+| [pose_resnet_101](/configs/bottom_up/resnet/coco/res101_coco_512x512.py)  | 512x512 | 0.554 | 0.807 | 0.599 | 0.622 | 0.841 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512_20200816.log.json) |
 
 ### Results on COCO val2017 with multi-scale test with scales [2, 1, 0.5].
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py)  | 512x512 | 0.503 | 0.765 | 0.521 | 0.591 | 0.821 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512_20200816.log.json) |
-| [pose_resnet_101](/configs/bottom_up/resnet/coco/res101_coco_512x512.py)  | 512x512 | 0.603 | 0.831 | 0.641 | 0.668 | 0.870 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512_20200816.log.json) |
+| [pose_resnet_50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py)  | 512x512 | 0.503 | 0.765 | 0.521 | 0.591 | 0.821 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res50_coco_512x512_20200816.log.json) |
+| [pose_resnet_101](/configs/bottom_up/resnet/coco/res101_coco_512x512.py)  | 512x512 | 0.603 | 0.831 | 0.641 | 0.668 | 0.870 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/res101_coco_512x512_20200816.log.json) |
