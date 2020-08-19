@@ -39,7 +39,7 @@ mmpose
 ```
 
 **For MPII data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
-We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
+We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
@@ -88,7 +88,7 @@ mmpose
 ```
 
 **For MPII-TRB data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
-Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
+Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
@@ -110,7 +110,7 @@ mmpose
 ```
 
 **For OneHand10K data**, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
-Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
+Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
