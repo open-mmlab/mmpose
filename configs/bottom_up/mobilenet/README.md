@@ -24,10 +24,10 @@
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_mobilenetv2](/configs/bottom_up/mobilenet/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.380 | 0.671 | 0.368 | 0.473 | 0.741 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |
+| [pose_mobilenetv2](/configs/bottom_up/mobilenet/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.380 | 0.671 | 0.368 | 0.473 | 0.741 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |
 
 ### Results on COCO val2017 with multi-scale test with scales [2, 1, 0.5].
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_mobilenetv2](/configs/bottom_up/mobilenet/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.442 | 0.696 | 0.422 | 0.517 | 0.766 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/bottom_up/hrnet_w32_coco_512x512_20200816.log.json) |
+| [pose_mobilenetv2](/configs/bottom_up/mobilenet/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.442 | 0.696 | 0.422 | 0.517 | 0.766 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/bottom_up/hrnet_w32_coco_512x512_20200816.log.json) |
