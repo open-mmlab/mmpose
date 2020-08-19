@@ -7,7 +7,7 @@ from mmpose.core.post_processing import (affine_transform,
 from mmpose.datasets.registry import PIPELINES
 
 
-@PIPELINES.register_module
+@PIPELINES.register_module()
 class TopDownCrowdRandomFlip(object):
 
     def __init__(self, flip_prob=0.5):
