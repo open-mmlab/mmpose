@@ -60,6 +60,7 @@ data_cfg = dict(
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
+    crowd_matching=True,
     soft_nms=False,
     nms_thr=1.0,
     oks_thr=0.9,
