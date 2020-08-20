@@ -88,20 +88,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
         self.sigmas = np.array([
-            .79,
-            .79,
-            .72,
-            .72,
-            .62,
-            .62,
-            1.07,
-            1.07,
-            .87,
-            .87,
-            .89,
-            .89,
-            .79,
-            .79,
+            .79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79,
+            .79
         ]) / 10.0
 
         self.coco = COCO(ann_file)
