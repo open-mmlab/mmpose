@@ -2,8 +2,8 @@ import os
 from collections import OrderedDict, defaultdict
 
 import numpy as np
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
+from xtcocotools.coco import COCO
+from xtcocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
@@ -91,22 +91,7 @@ class TopDownAicDataset(TopDownCocoDataset):
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
-            [
-                1.,
-                1.2,
-                1.5,
-                1.,
-                1.2,
-                1.5,
-                1.,
-                1.2,
-                1.5,
-                1.,
-                1.2,
-                1.5,
-                1.,
-                1.,
-            ],
+            [1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
         self.sigmas = np.array([
@@ -115,7 +100,7 @@ class TopDownAicDataset(TopDownCocoDataset):
             0.03412318, 0.02415081, 0.01291456, 0.01236173
         ])
 
-        self.coco = COCO(test_num_keypoints=14, annotation_file=ann_file)
+        self.coco = COCO(ann_file)
 
         cats = [
             cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
@@ -289,7 +274,7 @@ class TopDownAicDataset(TopDownCocoDataset):
 
         coco_dt = self.coco.loadRes(res_file)
         coco_eval = COCOeval(
-            self.sigmas, self.coco, coco_dt, 'keypoints', use_area=False)
+            self.coco, coco_dt, 'keypoints', self.sigmas, use_area=False)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
