@@ -7,7 +7,8 @@ import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
-from ....core.post_processing import candidate_reselect, convert_crowd
+from ....core.post_processing import (candidate_reselect, convert_crowd,
+                                      oks_nms, soft_oks_nms)
 from ...registry import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
@@ -58,6 +59,8 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.image_thr = data_cfg['image_thr']
+
+        self.crowd_matching = data_cfg['crowd_matching']
 
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
@@ -255,7 +258,7 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
 
             num_boxes = num_boxes + 1
 
-            center, scale = self._xywh2cs(*box)
+            center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
             interference_joints_3d = np.zeros((0, 3), dtype=np.float)
@@ -263,9 +266,9 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
                 'image_file': img_name,
                 'center': center,
                 'scale': scale,
+                'rotation': 0,
                 'bbox_score': score,
                 'dataset': 'crowdpose',
-                'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'interference_joints': interference_joints_3d,
@@ -318,16 +321,49 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
+        oks_thr = self.oks_thr
 
-        final_result = []
+        oks_nmsed_kpts = []
         for img in kpts.keys():
             img_kpts = kpts[img]
-            boxes, preds, box_scores = convert_crowd(img_kpts)
-            result = candidate_reselect(boxes, preds, num_joints, img,
-                                        box_scores, self.sigmas, vis_thr)
-            final_result.append(result)
 
-        self._write_coco_keypoint_results(final_result, res_file)
+            if self.crowd_matching:
+                boxes, preds, box_scores = convert_crowd(img_kpts)
+                selected_kpts = candidate_reselect(boxes, preds, num_joints,
+                                                   img, box_scores,
+                                                   self.sigmas, vis_thr)
+                oks_nmsed_kpts.append(selected_kpts)
+            else:
+                for n_p in img_kpts:
+                    box_score = n_p['score']
+                    kpt_score = 0
+                    valid_num = 0
+                    for n_jt in range(0, num_joints):
+                        t_s = n_p['keypoints'][n_jt][2]
+                        if t_s > vis_thr:
+                            kpt_score = kpt_score + t_s
+                            valid_num = valid_num + 1
+                    if valid_num != 0:
+                        kpt_score = kpt_score / valid_num
+                    # rescoring
+                    n_p['score'] = kpt_score * box_score
+
+                if self.soft_nms:
+                    keep = soft_oks_nms(
+                        [img_kpts[i] for i in range(len(img_kpts))],
+                        oks_thr,
+                        sigmas=self.sigmas)
+                else:
+                    keep = oks_nms([img_kpts[i] for i in range(len(img_kpts))],
+                                   oks_thr,
+                                   sigmas=self.sigmas)
+
+                if len(keep) == 0:
+                    oks_nmsed_kpts.append(img_kpts)
+                else:
+                    oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
+
+        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)
@@ -368,10 +404,10 @@ class TopDownCrowdPoseDataset(TopDownBaseDataset):
             result = [{
                 'image_id': img_kpt['image_id'],
                 'category_id': cat_id,
-                'keypoints': list(key_point),
-                'score': img_kpt['score'],
-                'center': list(img_kpt['center']),
-                'scale': list(img_kpt['scale'])
+                'keypoints': key_point.tolist(),
+                'score': float(img_kpt['score']),
+                'center': img_kpt['center'].tolist(),
+                'scale': img_kpt['scale'].tolist()
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)
