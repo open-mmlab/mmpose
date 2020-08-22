@@ -2,6 +2,7 @@
 
 sed -i '$a\\n' ../configs/bottom_up/*/*.md
 sed -i '$a\\n' ../configs/top_down/*/*.md
+sed -i '$a\\n' pretrained.md
 sed -i '$a\\n' model_zoo.md
 cat  ../configs/bottom_up/*/*.md > bottom_up_models.md
 cat  ../configs/top_down/*/*.md > top_down_models.md
@@ -19,4 +20,4 @@ sed -i 's/](\/docs\//](/g' top_down_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' bottom_up_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' top_down_models.md
 
-cat bottom_up_models.md top_down_models.md >> model_zoo.md
+cat bottom_up_models.md top_down_models.md pretrained.md >> model_zoo.md
