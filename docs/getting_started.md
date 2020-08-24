@@ -8,7 +8,7 @@ For installation instructions, please see [install.md](install.md).
 It is recommended to symlink the dataset root to `$MMPOSE/data`.
 If your folder structure is different, you may need to change the corresponding paths in config files.
 
-**For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
+**For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -140,7 +140,7 @@ mmpose
 For using custom datasets, please refer to [Tutorial 2: Adding New Dataset](tutorials/new_dataset.md)
 
 ## Prepare Pretrained Models
-Download imagenet pretrained models from our [model zoo](model_zoo.md)
+Download imagenet pretrained models from our [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
 
 ```
 mmpose
