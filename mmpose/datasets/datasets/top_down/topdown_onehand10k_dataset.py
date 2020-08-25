@@ -157,14 +157,13 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         return center, scale
 
-    def _evaluate_kernel(self, pred, joints_3d, joints_3d_visible, bbox):
+    def _evaluate_kernel_PCK(self, pred, joints_3d, joints_3d_visible,
+                             threshold):
         """Evaluate one example.
 
-        ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
+        ||pre[i] - joints_3d[i]|| < threshold
         """
         num_joints = self.ann_info['num_joints']
-        bbox = np.array(bbox)
-        threshold = np.max(bbox[2:]) * 0.2
         hit = np.zeros(num_joints, dtype=np.float32)
         exist = np.zeros(num_joints, dtype=np.float32)
 
@@ -181,8 +180,40 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
                 hit[i] = 1
         return hit, exist
 
+    def _evaluate_kernel_EPE(self, pred, joints_3d, joints_3d_visible):
+        """Evaluate one example.
+
+        ||pre[i] - joints_3d[i]||
+        """
+        num_joints = self.ann_info['num_joints']
+        error = np.zeros(num_joints, dtype=np.float32)
+        exist = np.zeros(num_joints, dtype=np.float32)
+
+        for i in range(num_joints):
+            pred_pt = pred[i]
+            gt_pt = joints_3d[i]
+            vis = joints_3d_visible[i][0]
+            if vis:
+                exist[i] = 1
+            else:
+                continue
+            error[i] = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
+        return error, exist
+
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
-        """Evaluate OneHand10K keypoint results."""
+        """Evaluate OneHand10K keypoint results. metric (str | list[str]):
+        Metrics to be evaluated. Options are 'PCK', 'AUC', 'EPE'.
+
+        'PCK': ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
+        'AUC': area under curve
+        'EPE': end-point error
+        """
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['PCK', 'AUC', 'EPE']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
+
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
@@ -201,7 +232,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             })
 
         self._write_keypoint_results(kpts, res_file)
-        info_str = self._report_metric(res_file)
+        info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
 
         return name_value
@@ -212,27 +243,72 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         with open(res_file, 'w') as f:
             json.dump(keypoints, f, sort_keys=True, indent=4)
 
-    def _report_metric(self, res_file):
+    def _report_metric(self, res_file, metrics):
         """Keypoint evaluation.
 
-        Report Mean Acc of skeleton, contour and all joints.
+        Report PCK, AUC or EPE.
         """
         num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints, dtype=np.float32)
-        exist = np.zeros(num_joints, dtype=np.float32)
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-
-        assert len(preds) == len(self.db)
-        for pred, item in zip(preds, self.db):
-            h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
-                                         item['joints_3d_visible'],
-                                         item['bbox'])
-            hit += h
-            exist += e
-        pck = np.sum(hit) / np.sum(exist)
 
         info_str = []
-        info_str.append(('PCK', pck.item()))
+
+        if 'PCK' in metrics:
+            hit = np.zeros(num_joints, dtype=np.float32)
+            exist = np.zeros(num_joints, dtype=np.float32)
+
+            with open(res_file, 'r') as fin:
+                preds = json.load(fin)
+
+            assert len(preds) == len(self.db)
+            for pred, item in zip(preds, self.db):
+                bbox = np.array(item['bbox'])
+                threshold = np.max(bbox[2:]) * 0.2
+                h, e = self._evaluate_kernel_PCK(pred['keypoints'],
+                                                 item['joints_3d'],
+                                                 item['joints_3d_visible'],
+                                                 threshold)
+                hit += h
+                exist += e
+            pck = np.sum(hit) / np.sum(exist)
+
+            info_str.append(('PCK', pck.item()))
+
+        if 'AUC' in metrics:
+            x = [1.5 * i for i in range(21)]
+            y = [0.0]
+            for threshold in x:
+                hit = np.zeros(num_joints, dtype=np.float32)
+                exist = np.zeros(num_joints, dtype=np.float32)
+
+                with open(res_file, 'r') as fin:
+                    preds = json.load(fin)
+
+                assert len(preds) == len(self.db)
+                for pred, item in zip(preds, self.db):
+                    h, e = self._evaluate_kernel_PCK(pred['keypoints'],
+                                                     item['joints_3d'],
+                                                     item['joints_3d_visible'],
+                                                     threshold)
+                    hit += h
+                    exist += e
+                pck = np.sum(hit) / np.sum(exist)
+                y.append(pck)
+
+            auc = 0
+            for i in range(20):
+                auc += 0.025 * (y[i] + y[i + 1])
+            info_str.append(('AUC', auc.item()))
+
+        if 'EPE' in metrics:
+            error = np.zeros(num_joints, dtype=np.float32)
+            exist = np.zeros(num_joints, dtype=np.float32)
+            for pred, item in zip(preds, self.db):
+                err, e = self._evaluate_kernel_EPE(pred['keypoints'],
+                                                   item['joints_3d'],
+                                                   item['joints_3d_visible'])
+                error += err
+                exist += e
+            epe = np.sum(error) / np.sum(exist)
+
+            info_str.append(('EPE', epe.item()))
         return info_str
