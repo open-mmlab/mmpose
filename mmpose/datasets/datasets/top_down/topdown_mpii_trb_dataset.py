@@ -139,7 +139,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 hit[i] = 1
         return hit, exist
 
-    def evaluate(self, outputs, res_folder, metrics='PCKh', **kwargs):
+    def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
         """Evaluate PCKh for MPII-TRB dataset.
 
         Note:
@@ -154,14 +154,14 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 image_path(list[str]): For example, ['0', '0',
                     '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
             res_folder(str): Path of directory to save the results.
-            metrics(str): Metrics to be performed.
+            metric(str): Metrics to be performed.
                 Defaults: 'PCKh'.
 
         Returns:
             PCKh for each joint
         """
         # only PCKh is supported.
-        assert metrics == 'PCKh'
+        assert metric == 'PCKh'
         """Evaluate MPII-TRB keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
