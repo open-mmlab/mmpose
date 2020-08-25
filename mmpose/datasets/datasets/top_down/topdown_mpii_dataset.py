@@ -114,7 +114,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metrics='PCKh', **kwargs):
+    def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
         """Evaluate PCKh for MPII dataset. Adapted from
         https://github.com/leoxiaobin/deep-high-resolution- net.pytorch
         Original licence: Copyright (c) Microsoft, under the MIT License.
@@ -131,7 +131,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 image_path(list[str]): For example, ['0', '0',
                     '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
             res_folder(str): Path of directory to save the results.
-            metrics(str): Metrics to be performed.
+            metric(str): Metrics to be performed.
                 Defaults: 'PCKh'.
 
         Returns:
@@ -139,7 +139,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         """
 
         # only PCKh is supported.
-        assert metrics == 'PCKh'
+        assert metric == 'PCKh'
 
         preds = np.stack([kpts[0] for kpts, _, _ in outputs])
 
