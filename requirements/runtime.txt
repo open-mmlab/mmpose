@@ -7,3 +7,4 @@ opencv-python
 pillow
 pycocotools
 scipy
+xtcocotools
