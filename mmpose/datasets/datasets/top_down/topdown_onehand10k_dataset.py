@@ -173,11 +173,9 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             vis = joints_3d_visible[i][0]
             if vis:
                 exist[i] = 1
-            else:
-                continue
-            distance = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
-            if distance < threshold:
-                hit[i] = 1
+                distance = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
+                if distance < threshold:
+                    hit[i] = 1
         return hit, exist
 
     def _evaluate_kernel_EPE(self, pred, joints_3d, joints_3d_visible):
@@ -195,9 +193,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             vis = joints_3d_visible[i][0]
             if vis:
                 exist[i] = 1
-            else:
-                continue
-            error[i] = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
+                error[i] = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
         return error, exist
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
