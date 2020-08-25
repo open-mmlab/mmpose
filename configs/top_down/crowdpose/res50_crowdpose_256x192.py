@@ -36,7 +36,7 @@ channel_cfg = dict(
 
 # model settings
 model = dict(
-    type='TopDown',
+    type='TopDownCrowd',
     pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
@@ -60,7 +60,7 @@ data_cfg = dict(
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    crowd_matching=False,
+    crowd_matching=True,
     soft_nms=False,
     nms_thr=1.0,
     oks_thr=0.9,
@@ -74,20 +74,20 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(type='TopDownCrowdRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownHalfBodyTransform',
         num_joints_half_body=6,
         prob_half_body=0.3),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='TopDownAffine'),
+    dict(type='TopDownCrowdAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(type='TopDownCrowdGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],

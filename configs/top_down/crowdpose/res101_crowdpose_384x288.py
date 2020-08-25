@@ -37,8 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDownCrowd',
-    pretrained='models/pytorch/imagenet/resnet152-b121ed2d.pth',
-    backbone=dict(type='ResNet', depth=152),
+    pretrained='models/pytorch/imagenet/resnet101-5d3b4d8f.pth',
+    backbone=dict(type='ResNet', depth=101),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -124,19 +124,19 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_train.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_val.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_test.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline))

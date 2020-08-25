@@ -36,7 +36,7 @@ channel_cfg = dict(
 
 # model settings
 model = dict(
-    type='TopDownCrowd',
+    type='TopDown',
     pretrained='models/pytorch/imagenet/resnet101-5d3b4d8f.pth',
     backbone=dict(type='ResNet', depth=101),
     keypoint_head=dict(
@@ -60,7 +60,7 @@ data_cfg = dict(
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    crowd_matching=True,
+    crowd_matching=False,
     soft_nms=False,
     nms_thr=1.0,
     oks_thr=0.9,
@@ -74,20 +74,20 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownCrowdRandomFlip', flip_prob=0.5),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownHalfBodyTransform',
         num_joints_half_body=6,
         prob_half_body=0.3),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='TopDownCrowdAffine'),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownCrowdGenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -124,19 +124,19 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_train.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_val.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_test.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline))

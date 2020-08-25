@@ -36,13 +36,43 @@ channel_cfg = dict(
 
 # model settings
 model = dict(
-    type='TopDownCrowd',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
-    backbone=dict(type='ResNet', depth=50),
+    type='TopDown',
+    pretrained='models/pytorch/imagenet/hrnet_w32-36af842e.pth',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(32, 64)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(32, 64, 128)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(32, 64, 128, 256))),
+    ),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=2048,
+        in_channels=32,
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
@@ -54,13 +84,13 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[288, 384],
-    heatmap_size=[72, 96],
+    image_size=[192, 256],
+    heatmap_size=[48, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    crowd_matching=True,
+    crowd_matching=False,
     soft_nms=False,
     nms_thr=1.0,
     oks_thr=0.9,
@@ -74,20 +104,20 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownCrowdRandomFlip', flip_prob=0.5),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownHalfBodyTransform',
         num_joints_half_body=6,
         prob_half_body=0.3),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='TopDownCrowdAffine'),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownCrowdGenerateTarget', sigma=3),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -124,19 +154,19 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_train.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_val.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/crowdpose_test.json',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline))

@@ -37,12 +37,42 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='models/pytorch/imagenet/hrnet_w48-8ef0771d.pth',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(48, 96)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(48, 96, 192)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(48, 96, 192, 384))),
+    ),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=2048,
+        in_channels=48,
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
