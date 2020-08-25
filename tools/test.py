@@ -21,6 +21,7 @@ def parse_args():
     parser.add_argument(
         '--eval',
         default='mAP',
+        nargs='+',
         help='evaluation metric, which depends on the dataset,'
         ' e.g., "mAP" for MSCOCO')
     parser.add_argument(
@@ -111,7 +112,7 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
 
-        dataset.evaluate(outputs, args.work_dir, **eval_config)
+        print(dataset.evaluate(outputs, args.work_dir, **eval_config))
 
 
 if __name__ == '__main__':
