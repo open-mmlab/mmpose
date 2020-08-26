@@ -16,8 +16,9 @@ MMPose supported datasets:
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
+
 ## Prepare Pretrained Models
-Download imagenet pretrained models from our [model zoo](model_zoo.md)
+Download imagenet pretrained models from our [model zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
 
 ```
 mmpose

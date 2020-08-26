@@ -181,7 +181,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
                 hit[i] = 1
         return hit, exist
 
-    def evaluate(self, outputs, res_folder, metrics='PCK', **kwargs):
+    def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate OneHand10K keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
