@@ -1,6 +1,8 @@
 import os
 from argparse import ArgumentParser
 
+from xtcocotools.coco import COCO
+
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
 
@@ -43,7 +45,6 @@ def main():
                 [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
-    from pycocotools.coco import COCO
     coco = COCO(args.json_file)
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(

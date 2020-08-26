@@ -2,9 +2,9 @@ import copy
 import os.path as osp
 
 import numpy as np
-import pycocotools
 import pytest
-from pycocotools.coco import COCO
+import xtcocotools
+from xtcocotools.coco import COCO
 
 from mmpose.datasets.pipelines import (BottomUpGenerateTarget,
                                        BottomUpGetImgSize,
@@ -20,16 +20,16 @@ def _get_mask(coco, anno, img_id):
 
     for obj in anno:
         if obj['iscrowd']:
-            rle = pycocotools.mask.frPyObjects(obj['segmentation'],
+            rle = xtcocotools.mask.frPyObjects(obj['segmentation'],
                                                img_info['height'],
                                                img_info['width'])
-            m += pycocotools.mask.decode(rle)
+            m += xtcocotools.mask.decode(rle)
         elif obj['num_keypoints'] == 0:
-            rles = pycocotools.mask.frPyObjects(obj['segmentation'],
+            rles = xtcocotools.mask.frPyObjects(obj['segmentation'],
                                                 img_info['height'],
                                                 img_info['width'])
             for rle in rles:
-                m += pycocotools.mask.decode(rle)
+                m += xtcocotools.mask.decode(rle)
 
     return m < 0.5
 

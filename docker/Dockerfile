@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y git ninja-build libglib2.0-0 libsm6 lib
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pycocotools
+# Install xtcocotools
 RUN pip install cython
-RUN pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+RUN pip install xtcocotools
 
 # Install MMPose
 RUN conda clean --all
