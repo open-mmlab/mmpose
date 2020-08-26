@@ -23,6 +23,13 @@
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco/hrnet_w48_coco_384x288.py)  | 384x288 | 0.767 | 0.910 | 0.831 | 0.816 | 0.946 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288-314c8528_20200708.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_20200708.log.json) |
 
 
+### Results on AIC val set.
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_hrnet_w32](/configs/top_down/hrnet/aic/hrnet_w32_aic_256x192.py) | 256x192 | 0.675 | 0.957 | 0.751 | 0.703 | 0.961 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192_20200826.log.json) |
+
+
 ### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
