@@ -4,8 +4,8 @@ from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
+from xtcocotools.coco import COCO
+from xtcocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS

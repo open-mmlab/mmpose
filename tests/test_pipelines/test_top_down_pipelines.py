@@ -4,7 +4,7 @@ import os.path as osp
 import numpy as np
 import torch
 from numpy.testing import assert_array_almost_equal
-from pycocotools.coco import COCO
+from xtcocotools.coco import COCO
 
 from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        NormalizeTensor, TopDownAffine,
