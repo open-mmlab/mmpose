@@ -2,7 +2,7 @@ import os
 from collections import OrderedDict, defaultdict
 
 import numpy as np
-from pycocotools.coco import COCO
+from xtcocotools.coco import COCO
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS

@@ -5,5 +5,5 @@ munkres
 numpy
 opencv-python
 pillow
-pycocotools
 scipy
+xtcocotools
