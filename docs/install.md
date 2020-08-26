@@ -11,10 +11,11 @@
 - Numpy
 - cv2
 - json_tricks
+- [xtcocotools](https://github.com/jin-s13/xtcocoapi)
 
 Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
-- pycocotools (to train/test on COCO Dataset)
+
 
 ### Install mmpose
 
@@ -62,7 +63,7 @@ d. Install build requirements and then install mmpose
 
 ```shell
 pip install -r requirements.txt
-pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+pip install xtcocotools
 python setup.py develop
 ```
 
@@ -88,7 +89,7 @@ conda install -c pytorch pytorch torchvision -y
 git clone git@gitlab.sz.sensetime.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
-pip install "git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI"
+pip install xtcocotools
 python setup.py develop
 
 ```
