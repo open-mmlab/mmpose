@@ -155,15 +155,22 @@ def _inference_single_pose_model(model, img_or_path, bbox):
     center, scale = _box2cs(cfg, bbox)
     # prepare data
     data = {
-        'img_or_path': img_or_path,
-        'center': center,
-        'scale': scale,
-        'bbox_score': bbox[4] if len(bbox) == 5 else 1,
-        'dataset': 'coco',
-        'joints_3d': np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float),
-        'joints_3d_visible': np.zeros((cfg.data_cfg.num_joints, 3),
-                                      dtype=np.float),
-        'rotation': 0,
+        'img_or_path':
+        img_or_path,
+        'center':
+        center,
+        'scale':
+        scale,
+        'bbox_score':
+        bbox[4] if len(bbox) == 5 else 1,
+        'dataset':
+        'coco',
+        'joints_3d':
+        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+        'joints_3d_visible':
+        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+        'rotation':
+        0,
         'ann_info': {
             'image_size':
             cfg.data_cfg['image_size'],

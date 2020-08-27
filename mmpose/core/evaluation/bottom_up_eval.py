@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 
 from mmpose.core.post_processing import transform_preds
@@ -184,7 +183,6 @@ def get_group_preds(grouped_joints, center, scale, heatmap_size):
     """
     results = []
     for person in grouped_joints[0]:
-        joints = np.zeros((person.shape[0], 3))
         joints = transform_preds(person, center, scale, heatmap_size)
         results.append(joints)
 

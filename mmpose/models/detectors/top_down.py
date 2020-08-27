@@ -195,7 +195,7 @@ class TopDown(BasePose):
             kernel=self.test_cfg['modulate_kernel'])
 
         all_preds = np.zeros((1, output.shape[1], 3), dtype=np.float32)
-        all_boxes = np.zeros((1, 6))
+        all_boxes = np.zeros((1, 6), dtype=np.float32)
         image_path = []
 
         all_preds[0, :, 0:2] = preds[:, :, 0:2]

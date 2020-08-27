@@ -157,8 +157,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         for obj in objs:
             if max(obj['keypoints']) == 0:
                 continue
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float)
-            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
+            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
             for ipt in range(num_joints):
                 joints_3d[ipt, 0] = obj['keypoints'][ipt * 3 + 0]
                 joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
@@ -246,8 +246,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
             num_boxes = num_boxes + 1
 
             center, scale = self._xywh2cs(*box[:4])
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float)
-            joints_3d_visible = np.ones((num_joints, 3), dtype=np.float)
+            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+            joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
             kpt_db.append({
                 'image_file': img_name,
                 'center': center,

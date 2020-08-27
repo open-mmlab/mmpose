@@ -153,7 +153,8 @@ class JointsEncoder():
         Returns:
             visible_kpts (np.ndarray[MxKx2]).
         """
-        visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2))
+        visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
+                                dtype=np.float32)
         output_res = self.output_res
         for i in range(len(joints)):
             tot = 0
@@ -226,7 +227,7 @@ class BottomUpRandomAffine:
     def _get_affine_matrix(self, center, scale, res, rot=0):
         """Generate transformation matrix."""
         h = scale
-        t = np.zeros((3, 3))
+        t = np.zeros((3, 3), dtype=np.float32)
         t[0, 0] = float(res[1]) / h
         t[1, 1] = float(res[0]) / h
         t[0, 2] = res[1] * (-float(center[0]) / h + .5)
@@ -234,7 +235,7 @@ class BottomUpRandomAffine:
         t[2, 2] = 1
         if rot != 0:
             rot = -rot  # To match direction of rotation from cropping
-            rot_mat = np.zeros((3, 3))
+            rot_mat = np.zeros((3, 3), dtype=np.float32)
             rot_rad = rot * np.pi / 180
             sn, cs = np.sin(rot_rad), np.cos(rot_rad)
             rot_mat[0, :2] = [cs, -sn]

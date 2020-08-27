@@ -166,8 +166,8 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         for obj in objs:
             if max(obj['keypoints']) == 0:
                 continue
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float)
-            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float)
+            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
 
             keypoints = np.array(obj['keypoints']).reshape(-1, 3)
             joints_3d[:, :2] = keypoints[:, :2]

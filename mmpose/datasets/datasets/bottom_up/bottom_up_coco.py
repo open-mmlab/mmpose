@@ -141,9 +141,11 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         num_people = len(anno)
 
         if self.ann_info['scale_aware_sigma']:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 4))
+            joints = np.zeros((num_people, self.ann_info['num_joints'], 4),
+                              dtype=np.float32)
         else:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 3))
+            joints = np.zeros((num_people, self.ann_info['num_joints'], 3),
+                              dtype=np.float32)
 
         for i, obj in enumerate(anno):
             joints[i, :self.ann_info['num_joints'], :3] = \

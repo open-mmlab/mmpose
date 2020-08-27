@@ -97,8 +97,8 @@ def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
     rng = np.random.RandomState(0)
 
     imgs = rng.rand(*input_shape)
-    target = np.zeros([N, 17, H // 4, W // 4])
-    target_weight = np.ones([N, 17])
+    target = np.zeros([N, 17, H // 4, W // 4], dtype=np.float32)
+    target_weight = np.ones([N, 17], dtype=np.float32)
 
     img_metas = [{
         'img_shape': (H, W, C),
