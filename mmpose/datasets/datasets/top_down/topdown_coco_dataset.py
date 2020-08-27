@@ -156,9 +156,9 @@ class TopDownCocoDataset(TopDownBaseDataset):
         Returns:
             db entry
         """
-        im_ann = self.coco.loadImgs(index)[0]
-        width = im_ann['width']
-        height = im_ann['height']
+        img_ann = self.coco.loadImgs(index)[0]
+        width = img_ann['width']
+        height = img_ann['height']
         num_joints = self.ann_info['num_joints']
 
         ann_ids = self.coco.getAnnIds(imgIds=index, iscrowd=False)
