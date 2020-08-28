@@ -54,7 +54,7 @@ If you build PyTorch from source instead of installing the prebuilt package, you
 c. Clone the mmpose repository
 
 ```shell
-git clone git@gitlab.sz.sensetime.com:open-mmlab/mmpose.git
+git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 ```
 
@@ -86,7 +86,7 @@ conda create -n open-mmlab python=3.7 -y
 conda activate open-mmlab
 
 conda install -c pytorch pytorch torchvision -y
-git clone git@gitlab.sz.sensetime.com:open-mmlab/mmpose.git
+git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
 pip install xtcocotools
