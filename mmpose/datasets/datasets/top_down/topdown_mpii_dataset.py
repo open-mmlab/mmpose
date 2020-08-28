@@ -80,9 +80,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             center = center - 1
 
             joints_3d = np.zeros((self.ann_info['num_joints'], 3),
-                                 dtype=np.float)
+                                 dtype=np.float32)
             joints_3d_visible = np.zeros((self.ann_info['num_joints'], 3),
-                                         dtype=np.float)
+                                         dtype=np.float32)
             if not self.test_mode:
                 joints = np.array(a['joints'])
                 joints_vis = np.array(a['joints_vis'])
@@ -131,15 +131,18 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 image_path(list[str]): For example, ['0', '0',
                     '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
             res_folder(str): Path of directory to save the results.
-            metric(str): Metrics to be performed.
+            metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
 
         Returns:
             PCKh for each joint
         """
 
-        # only PCKh is supported.
-        assert metric == 'PCKh'
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['PCKh']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
 
         preds = np.stack([kpts[0] for kpts, _, _ in outputs])
 
@@ -194,7 +197,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         # save
         rng = np.arange(0, 0.5 + 0.01, 0.01)
-        pckAll = np.zeros((len(rng), 16))
+        pckAll = np.zeros((len(rng), 16), dtype=np.float32)
 
         for r, threshold in enumerate(rng):
             less_than_threshold = (scaled_uv_err <= threshold) * jnt_visible

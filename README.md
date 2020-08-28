@@ -32,6 +32,11 @@ The master branch works with **PyTorch 1.3+**.
   We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
   See [benchmark.md](docs/benchmark.md) for more information.
 
+- **Support for various datasets**
+
+  The toolbox directly supports multiple datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
+  See [data_preparation.md](docs/data_preparation.md) for more information.
+
 - **Well tested and documented**
 
   We provide detailed documentation and API reference, as well as unittests.
@@ -66,6 +71,7 @@ More details about the benchmark are available on [benchmark.md](docs/benchmark.
 Supported backbones for human pose estimation:
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md)
+- [x] [CPM](configs/top_down/cpm/README.md)
 - [x] [Hourglass](configs/top_down/hourglass/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
@@ -77,6 +83,7 @@ Supported backbones for human pose estimation:
 - [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
 
 Supported methods for human pose estimation:
+- [x] [CPM](configs/top_down/cpm/README.md)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [Hourglass](configs/top_down/hourglass/README.md)
@@ -94,9 +101,15 @@ If you have any feature requests, please feel free to leave a comment in [Issues
 
 Please refer to [install.md](docs/install.md) for installation.
 
+## Data Preparation
+
+Please refer to [data_preparation.md](docs/data_preparation.md) for a general knowledge of data preparation.
+
 ## Get Started
 
 Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
+There are also tutorials for [finetuning model](tutorials/finetune.md),
+[adding new dataset](tutorials/new_dataset.md), [adding new modules](tutorials/new_modules.md).
 
 ## License
 

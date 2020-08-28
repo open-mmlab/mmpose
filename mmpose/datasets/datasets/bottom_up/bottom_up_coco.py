@@ -141,9 +141,11 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         num_people = len(anno)
 
         if self.ann_info['scale_aware_sigma']:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 4))
+            joints = np.zeros((num_people, self.ann_info['num_joints'], 4),
+                              dtype=np.float32)
         else:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 3))
+            joints = np.zeros((num_people, self.ann_info['num_joints'], 3),
+                              dtype=np.float32)
 
         for i, obj in enumerate(anno):
             joints[i, :self.ann_info['num_joints'], :3] = \
@@ -200,12 +202,16 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
             res_folder (str): Path of directory to save the results.
-            metric (str): Metric to be performed. Defaults: 'mAP'.
+            metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
             name_value (dict): Evaluation results for evaluation metric.
         """
-        assert metric == 'mAP'
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['mAP']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
@@ -312,8 +318,8 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
-        coco_dt = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_dt, 'keypoints')
+        coco_det = self.coco.loadRes(res_file)
+        coco_eval = COCOeval(self.coco, coco_det, 'keypoints')
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -324,8 +330,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             'AR .75', 'AR (M)', 'AR (L)'
         ]
 
-        info_str = []
-        for ind, name in enumerate(stats_names):
-            info_str.append((name, coco_eval.stats[ind]))
+        info_str = list(zip(stats_names, coco_eval.stats))
 
         return info_str

@@ -92,9 +92,9 @@ def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
     rng = np.random.RandomState(0)
 
     imgs = rng.rand(*input_shape)
-    target = np.zeros([N, 17, H // 32, W // 32])
-    mask = np.ones([N, H // 32, W // 32])
-    joints = np.zeros([N, 30, 17, 2])
+    target = np.zeros([N, 17, H // 32, W // 32], dtype=np.float32)
+    mask = np.ones([N, H // 32, W // 32], dtype=np.float32)
+    joints = np.zeros([N, 30, 17, 2], dtype=np.float32)
 
     img_metas = [{
         'image_file':

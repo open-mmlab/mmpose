@@ -1,43 +1,36 @@
 import numpy as np
 from xtcocotools.coco import COCO
+from xtcocotools.cocoeval import COCOeval
 
 from ...registry import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
 
 
 @DATASETS.register_module()
-class TopDownOCHumanDataset(TopDownCocoDataset):
-    """OChuman dataset for top-down pose estimation.
+class TopDownAicDataset(TopDownCocoDataset):
+    """AicDataset dataset for top-down pose estimation.
 
-    `Pose2Seg: Detection Free Human Instance Segmentation' CVPR'2019
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1803.10683>`_ .
+    `AI Challenger : A Large-scale Dataset for Going Deeper
+    in Image Understanding <https://arxiv.org/abs/1711.06475>`_
 
-    "Occluded Human (OCHuman)" dataset contains 8110 heavily occluded
-    human instances within 4731 images. OCHuman dataset is designed for
-    validation and testing. To evaluate on OCHuman, the model should be
-    trained on COCO training set, and then test the robustness of the
-    model to occlusion using OCHuman.
+    The dataset loads raw features and apply specified transforms
+    to return a dict containing the image tensors and other information.
 
-    OCHuman keypoint indexes (same as COCO)::
-
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    AIC keypoint indexes::
+        0: "right_shoulder",
+        1: "right_elbow",
+        2: "right_wrist",
+        3: "left_shoulder",
+        4: "left_elbow",
+        5: "left_wrist",
+        6: "right_hip",
+        7: "right_knee",
+        8: "right_ankle",
+        9: "left_hip",
+        10: "left_knee",
+        11: "left_ankle",
+        12: "head_top",
+        13: "neck"
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -68,24 +61,22 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         self.vis_thr = data_cfg['vis_thr']
         self.bbox_thr = data_cfg['bbox_thr']
 
-        self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
-                                       [11, 12], [13, 14], [15, 16]]
+        self.ann_info['flip_pairs'] = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10],
+                                       [8, 11]]
 
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
+        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 12, 13)
+        self.ann_info['lower_body_ids'] = (6, 7, 8, 9, 10, 11)
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ],
+            [1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
         self.sigmas = np.array([
-            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
-            .87, .87, .89, .89
-        ]) / 10.0
+            0.01388152, 0.01515228, 0.01057665, 0.01417709, 0.01497891,
+            0.01402144, 0.03909642, 0.03686941, 0.01981803, 0.03843971,
+            0.03412318, 0.02415081, 0.01291456, 0.01236173
+        ]) * 2
 
         self.coco = COCO(ann_file)
 
@@ -102,7 +93,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         self.image_set_index = self.coco.getImgIds()
         self.num_images = len(self.image_set_index)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'ochuman'
+        self.dataset_name = 'aic'
 
         self.db = self._get_db()
 
@@ -114,3 +105,22 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         assert self.use_gt_bbox
         gt_db = self._load_coco_keypoint_annotations()
         return gt_db
+
+    def _do_python_keypoint_eval(self, res_file):
+        """Keypoint evaluation using COCOAPI."""
+        coco_det = self.coco.loadRes(res_file)
+        coco_eval = COCOeval(
+            self.coco, coco_det, 'keypoints', self.sigmas, use_area=False)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        stats_names = [
+            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+            'AR .75', 'AR (M)', 'AR (L)'
+        ]
+
+        info_str = list(zip(stats_names, coco_eval.stats))
+
+        return info_str
