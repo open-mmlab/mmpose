@@ -252,7 +252,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
             if det_res['category_id'] != 1:
                 continue
 
-            img_name = self.id2name[det_res['image_id']]
+            image_file = os.path.join(self.img_prefix,
+                                      self.id2name[det_res['image_id']])
             box = det_res['bbox']
             score = det_res['score']
 
@@ -265,7 +266,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
             kpt_db.append({
-                'image_file': img_name,
+                'image_file': image_file,
                 'center': center,
                 'scale': scale,
                 'rotation': 0,
