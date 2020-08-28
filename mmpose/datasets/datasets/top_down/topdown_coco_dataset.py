@@ -400,8 +400,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
-        coco_dt = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_dt, 'keypoints', self.sigmas)
+        coco_det = self.coco.loadRes(res_file)
+        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
@@ -412,8 +412,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             'AR .75', 'AR (M)', 'AR (L)'
         ]
 
-        info_str = []
-        for ind, name in enumerate(stats_names):
-            info_str.append((name, coco_eval.stats[ind]))
+        info_str = list(zip(stats_names, coco_eval.stats))
 
         return info_str
