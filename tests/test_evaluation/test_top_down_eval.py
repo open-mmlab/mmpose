@@ -6,8 +6,8 @@ from mmpose.core import keypoints_from_heatmaps, pose_pck_accuracy
 
 
 def test_pose_pck_accuracy():
-    output = np.zeros((1, 5, 64, 64))
-    target = np.zeros((1, 5, 64, 64))
+    output = np.zeros((1, 5, 64, 64), dtype=np.float32)
+    target = np.zeros((1, 5, 64, 64), dtype=np.float32)
     # first channnel
     output[0, 0, 20, 20] = 1
     target[0, 0, 10, 10] = 1
@@ -23,7 +23,7 @@ def test_pose_pck_accuracy():
 
 
 def test_keypoints_from_heatmaps():
-    heatmaps = np.ones((1, 1, 64, 64))
+    heatmaps = np.ones((1, 1, 64, 64), dtype=np.float32)
     heatmaps[0, 0, 31, 31] = 2
     center = np.array([[127, 127]])
     scale = np.array([[64 / 200.0, 64 / 200.0]])

@@ -1,0 +1,198 @@
+# Prepare datasets
+
+It is recommended to symlink the dataset root to `$MMPOSE/data`.
+If your folder structure is different, you may need to change the corresponding paths in config files.
+
+MMPose supported datasets:
+- [x] [COCO](http://cocodataset.org/)
+- [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
+- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+- [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
+- [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
+- [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+
+
+**For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── coco
+        │-- annotations
+        │   │-- person_keypoints_train2017.json
+        │   |-- person_keypoints_val2017.json
+        |-- person_detection_results
+        |   |-- COCO_val2017_detections_AP_H_56_person.json
+        │-- train2017
+        │   │-- 000000000009.jpg
+        │   │-- 000000000025.jpg
+        │   │-- 000000000030.jpg
+        │   │-- ...
+        `-- val2017
+            │-- 000000000139.jpg
+            │-- 000000000285.jpg
+            │-- 000000000632.jpg
+            │-- ...
+
+```
+
+**For MPII data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mpii
+        |── annotations
+        |   |── mpii_gt_val.mat
+        |   |── mpii_test.json
+        |   |── mpii_train.json
+        |   |── mpii_trainval.json
+        |   `── mpii_val.json
+        `── images
+            |── 000001163.jpg
+            |── 000003072.jpg
+
+```
+
+**For MPII-TRB data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mpii
+        |── annotations
+        |   |── mpii_trb_train.json
+        |   |── mpii_trb_val.json
+        `── images
+            |── 000001163.jpg
+            |── 000003072.jpg
+
+```
+
+**For AIC data**, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
+Please download the annotation files from [aic_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── aic
+        │-- annotations
+        │   │-- aic_train.json
+        │   |-- aic_val.json
+        │-- ai_challenger_keypoint_train_20170902
+        │   │-- keypoint_train_images_20170902
+        │   │   │-- 0000252aea98840a550dac9a78c476ecb9f47ffa.jpg
+        │   │   │-- 000050f770985ac9653198495ef9b5c82435d49c.jpg
+        │   │   │-- ...
+        `-- ai_challenger_keypoint_validation_20170911
+            │-- keypoint_validation_images_20170911
+                │-- 0002605c53fb92109a3f2de4fc3ce06425c3b61f.jpg
+                │-- 0003b55a2c991223e6d8b4b820045bd49507bf6d.jpg
+                │-- ...
+```
+
+**For CrowdPose data**, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
+Please download the annotation files from [crowdpose_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
+We follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── crowdpose
+        │-- annotations
+        │   │-- mmpose_crowdpose_train.json
+        │   │-- mmpose_crowdpose_val.json
+        │   │-- mmpose_crowdpose_test.json
+        │   │-- det_for_crowd_test_0.1_0.5.json
+        │-- images
+            │-- 100000.jpg
+            │-- 100001.jpg
+            │-- 100002.jpg
+            │-- ...
+```
+
+**For OCHuman data**, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
+Move them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ochuman
+        │-- annotations
+        │   │-- ochuman_coco_format_val_range_0.00_1.00.json
+        │   |-- ochuman_coco_format_test_range_0.00_1.00.json
+        |-- images
+            │-- 000001.jpg
+            │-- 000002.jpg
+            │-- 000003.jpg
+            │-- ...
+
+```
+
+**For OneHand10K data**, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
+Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── onehand10k
+        |── annotations
+        |   |── onehand10k_train.json
+        |   |── onehand10k_test.json
+        `── Train
+        |   |── source
+        |       |── 0.jpg
+        |       |── 1.jpg
+        |        ...
+        `── Test
+            |── source
+                |── 0.jpg
+                |── 1.jpg
+
+```
+
+For using custom datasets, please refer to [Tutorial 2: Adding New Dataset](tutorials/new_dataset.md)

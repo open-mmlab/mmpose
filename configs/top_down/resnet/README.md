@@ -40,6 +40,12 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.582 | 0.723 | 0.627 | 0.627 | 0.752 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
 
+### Results on AIC val set.
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_101](/configs/top_down/resnet/aic/res101_aic_256x192.py) | 256x192 | 0.650 | 0.947 | 0.726 | 0.680 | 0.954 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
+
 
 ### Results on MPII val set.
 

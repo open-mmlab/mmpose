@@ -71,7 +71,7 @@ def oks_iou(g, d, a_g, a_d, sigmas=None, vis_thr=None):
     xg = g[0::3]
     yg = g[1::3]
     vg = g[2::3]
-    ious = np.zeros(len(d))
+    ious = np.zeros(len(d), dtype=np.float32)
     for n_d in range(0, len(d)):
         xd = d[n_d, 0::3]
         yd = d[n_d, 1::3]

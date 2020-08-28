@@ -16,7 +16,7 @@ from mmpose.datasets.pipelines import (BottomUpGenerateTarget,
 def _get_mask(coco, anno, img_id):
     img_info = coco.loadImgs(img_id)[0]
 
-    m = np.zeros((img_info['height'], img_info['width']))
+    m = np.zeros((img_info['height'], img_info['width']), dtype=np.float32)
 
     for obj in anno:
         if obj['iscrowd']:
@@ -38,9 +38,11 @@ def _get_joints(anno, ann_info, int_sigma):
     num_people = len(anno)
 
     if ann_info['scale_aware_sigma']:
-        joints = np.zeros((num_people, ann_info['num_joints'], 4))
+        joints = np.zeros((num_people, ann_info['num_joints'], 4),
+                          dtype=np.float32)
     else:
-        joints = np.zeros((num_people, ann_info['num_joints'], 3))
+        joints = np.zeros((num_people, ann_info['num_joints'], 3),
+                          dtype=np.float32)
 
     for i, obj in enumerate(anno):
         joints[i, :ann_info['num_joints'], :3] = \
