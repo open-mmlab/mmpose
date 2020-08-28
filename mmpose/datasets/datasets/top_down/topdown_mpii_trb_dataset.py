@@ -154,14 +154,19 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 image_path(list[str]): For example, ['0', '0',
                     '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
             res_folder(str): Path of directory to save the results.
-            metric(str): Metrics to be performed.
+            metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
 
         Returns:
             PCKh for each joint
         """
         # only PCKh is supported.
-        assert metric == 'PCKh'
+
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['PCKh']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
         """Evaluate MPII-TRB keypoint results."""
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 

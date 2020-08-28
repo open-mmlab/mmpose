@@ -296,12 +296,16 @@ class TopDownCocoDataset(TopDownBaseDataset):
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
             res_folder (str): Path of directory to save the results.
-            metric (str): Metric to be performed. Defaults: 'mAP'.
+            metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
             name_value (dict): Evaluation results for evaluation metric.
         """
-        assert metric == 'mAP'
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['mAP']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
