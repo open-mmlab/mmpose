@@ -72,6 +72,67 @@ def test_top_down_COCO_dataset():
     _ = custom_dataset[0]
 
 
+def test_top_down_OCHuman_dataset():
+    dataset = 'TopDownOCHumanDataset'
+    # test OCHuman datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=17,
+        dataset_joints=17,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        ])
+
+    data_cfg = dict(
+        image_size=[192, 256],
+        heatmap_size=[48, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        bbox_thr=1.0,
+        use_gt_bbox=True,
+        image_thr=0.0,
+        bbox_file='',
+    )
+
+    with pytest.raises(AssertionError):
+        # Test det bbox
+        data_cfg_copy = copy.deepcopy(data_cfg)
+        data_cfg_copy['use_gt_bbox'] = False
+        _ = dataset_class(
+            ann_file='tests/data/ochuman/test_ochuman.json',
+            img_prefix='tests/data/ochuman/',
+            data_cfg=data_cfg_copy,
+            pipeline=[],
+            test_mode=True)
+
+    # Test gt bbox
+    custom_dataset = dataset_class(
+        ann_file='tests/data/ochuman/test_ochuman.json',
+        img_prefix='tests/data/ochuman/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+
+    image_id = 1
+    assert image_id in custom_dataset.image_set_index
+    assert len(custom_dataset.image_set_index) == 3
+    _ = custom_dataset[0]
+
+
 def test_top_down_OneHand10K_dataset():
     dataset = 'TopDownOneHand10KDataset'
     dataset_class = DATASETS.get(dataset)
