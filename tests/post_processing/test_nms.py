@@ -1,6 +1,6 @@
 import numpy as np
 
-from mmpose.core.post_processing.nms import oks_nms, soft_oks_nms
+from mmpose.core.post_processing.nms import nms, oks_iou, oks_nms, soft_oks_nms
 
 
 def test_soft_oks_nms():
@@ -27,3 +27,15 @@ def test_soft_oks_nms():
 
     keep = oks_nms([kpts[i] for i in range(len(kpts))], oks_thr)
     assert (keep == np.array([0, 2])).all()
+
+
+def test_func_nms():
+    result = nms(np.array([[0, 0, 10, 10, 0.9], [0, 0, 10, 8, 0.8]]), 0.5)
+    assert result == [0]
+
+
+def test_oks_iou():
+    result = oks_iou(np.ones([17 * 3]), np.ones([1, 17 * 3]), 1, [1])
+    assert result[0] == 1.
+    result = oks_iou(np.zeros([17 * 3]), np.ones([1, 17 * 3]), 1, [1])
+    assert result[0] < 0.01
