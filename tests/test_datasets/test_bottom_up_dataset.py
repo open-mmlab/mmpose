@@ -37,3 +37,4 @@ def test_bottom_up_COCO_dataset():
         pipeline=[])
 
     assert custom_dataset.num_images == 4
+    _ = custom_dataset[0]
