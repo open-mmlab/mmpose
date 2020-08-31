@@ -37,14 +37,11 @@ The master branch works with **PyTorch 1.3+**.
   The toolbox directly supports multiple datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
   See [data_preparation.md](docs/data_preparation.md) for more information.
 
-- **Well tested and documented**
-
-  We provide detailed documentation and API reference, as well as unittests.
-
-- **Modular design**
+- **Well designed, tested and documented**
 
   We decompose MMPose into different components and one can easily construct a customized
   pose estimation framework by combining different modules.
+  We provide detailed documentation and API reference, as well as unittests.
 
 
 ## [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
