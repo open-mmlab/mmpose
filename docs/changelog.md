@@ -52,3 +52,8 @@
 
  **Highlights**
 - MMPose is released.
+
+ **Main Features**
+- Support both top-down and bottom-up pose estimation approaches.
+- Achieve higher training efficiency and higher accuracy than other popular codebases (e.g. AlphaPose, HRNet).
+- Support various backbone models: ResNet, HRNet, SCNet, Houglass and HigherHRNet.
