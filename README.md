@@ -44,7 +44,7 @@ The master branch works with **PyTorch 1.3+**.
   We provide detailed documentation and API reference, as well as unittests.
 
 
-## [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
+## [Model Zoo](https://mmpose.readthedocs.io/en/latest/top_down_models.html)
 
 Supported backbones for human pose estimation:
 
