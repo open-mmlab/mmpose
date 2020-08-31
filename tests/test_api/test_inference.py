@@ -10,7 +10,9 @@ def test_top_down_demo():
 
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/top_down/resnet/coco/res50_coco_256x192.py', None)
+        'configs/top_down/resnet/coco/res50_coco_256x192.py',
+        None,
+        device='cpu')
 
     image_name = 'tests/data/coco/000000000785.jpg'
     # test a single image, with a list of bboxes.
@@ -28,7 +30,9 @@ def test_bottom_up_demo():
 
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/bottom_up/resnet/coco/res50_coco_512x512.py', None)
+        'configs/bottom_up/resnet/coco/res50_coco_512x512.py',
+        None,
+        device='cpu')
 
     image_name = 'tests/data/coco/000000000785.jpg'
 
