@@ -66,7 +66,7 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 
 More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
 
-### Model Zoo
+### [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
 
 Supported backbones for human pose estimation:
 
