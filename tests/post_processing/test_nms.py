@@ -10,4 +10,6 @@ def test_nms():
 
 def test_oks_iou():
     result = oks_iou(np.ones([17 * 3]), np.ones([1, 17 * 3]), 1, [1])
-    assert result == [1.]
+    assert result[0] == 1.
+    result = oks_iou(np.zeros([17 * 3]), np.ones([1, 17 * 3]), 1, [1])
+    assert result[0] < 0.01
