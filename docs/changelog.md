@@ -5,24 +5,23 @@
  **Highlights**
 
 1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
-- [x] ResNext
-- [x] SEResNet
-- [x] ResNetV1D
-- [x] MobileNetv2
-- [x] ShuffleNetv1
-- [x] CPM (Convolutional Pose Machine)
+- ResNext
+- SEResNet
+- ResNetV1D
+- MobileNetv2
+- ShuffleNetv1
+- CPM (Convolutional Pose Machine)
 
 2. Add more popular datasets:
-- [x] [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
-- [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
-- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-- [x] [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
+- [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
+- [MPII](http://human-pose.mpi-inf.mpg.de/)
+- [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+- [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
 
 3. Support 2d hand keypoint estimation.
-- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+- [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 
 4. Support bottom-up inference.
-- [x] Done.
 
 
  **New Features**
