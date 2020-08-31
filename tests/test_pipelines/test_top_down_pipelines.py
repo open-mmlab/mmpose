@@ -9,6 +9,7 @@ from xtcocotools.coco import COCO
 from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        NormalizeTensor, TopDownAffine,
                                        TopDownGenerateTarget,
+                                       TopDownGetRandomScaleRotation,
                                        TopDownHalfBodyTransform,
                                        TopDownRandomFlip, ToTensor)
 
@@ -123,6 +124,14 @@ def test_top_down_pipeline():
     random_flip = TopDownRandomFlip(flip_prob=1.)
     results_flip = random_flip(copy.deepcopy(results))
     assert _check_flip(results['img'], results_flip['img'])
+
+    # test random scale and rotate
+    random_scale_rotate = TopDownGetRandomScaleRotation(90, 0.3, 1.0)
+    results_scale_rotate = random_scale_rotate(copy.deepcopy(results))
+    assert results_scale_rotate['rotation'] <= 180
+    assert results_scale_rotate['rotation'] >= -180
+    assert (results_scale_rotate['scale'] / results['scale'] <= 1.3).all()
+    assert (results_scale_rotate['scale'] / results['scale'] >= 0.7).all()
 
     # test halfbody transform
     halfbody_transform = TopDownHalfBodyTransform(
