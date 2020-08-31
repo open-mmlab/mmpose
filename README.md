@@ -125,7 +125,7 @@ This project is released under the [Apache 2.0 license](LICENSE).
 
 ## Contributing
 
-We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md in MMDetection](https://github.com/open-mmlab/mmdetection/blob/master/.github/CONTRIBUTING.md) for the contributing guideline.
+We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md](https://github.com/open-mmlab/mmpose/blob/master/.github/CONTRIBUTING.md) for the contributing guideline.
 
 ## Acknowledgement
 
