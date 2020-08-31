@@ -4,13 +4,14 @@ It is recommended to symlink the dataset root to `$MMPOSE/data`.
 If your folder structure is different, you may need to change the corresponding paths in config files.
 
 MMPose supported datasets:
-- [x] [COCO](http://cocodataset.org/)
-- [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
-- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-- [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
-- [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
-- [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
-- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+
+- [COCO](http://cocodataset.org/)
+- [MPII](http://human-pose.mpi-inf.mpg.de/)
+- [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+- [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
+- [OCHuman](https://github.com/liruilong940607/OCHumanApi)
+- [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 
 
 **For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
