@@ -7,13 +7,28 @@ Welcome to MMPose's documentation!
    install.md
    getting_started.md
    benchmark.md
-   config.md
    data_preparation.md
    model_zoo.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Notes
+
+   config.md
+   changelog.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+
    tutorials/finetune.md
    tutorials/new_dataset.md
    tutorials/data_pipeline.md
    tutorials/new_modules.md
+
+.. toctree::
+   :caption: API Reference
+
    api.rst
 
 
