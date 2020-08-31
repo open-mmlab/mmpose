@@ -7,6 +7,7 @@ Welcome to MMPose's documentation!
    install.md
    getting_started.md
    benchmark.md
+   data_preparation.md
    model_zoo.md
 
 .. toctree::
