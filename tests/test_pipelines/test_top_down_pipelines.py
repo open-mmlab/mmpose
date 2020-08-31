@@ -128,8 +128,8 @@ def test_top_down_pipeline():
     # test random scale and rotate
     random_scale_rotate = TopDownGetRandomScaleRotation(90, 0.3, 1.0)
     results_scale_rotate = random_scale_rotate(copy.deepcopy(results))
-    assert results_scale_rotate['rotation'].all() <= 180
-    assert results_scale_rotate['rotation'].all() >= -180
+    assert results_scale_rotate['rotation'] <= 180
+    assert results_scale_rotate['rotation'] >= -180
     assert results_scale_rotate['scale'].all() <= 1.3
     assert results_scale_rotate['scale'].all() >= 0.7
 
