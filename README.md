@@ -47,7 +47,49 @@ The master branch works with **PyTorch 1.3+**.
   pose estimation framework by combining different modules.
 
 
-## Benchmark and Model Zoo
+## [Model Zoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
+
+Supported backbones for human pose estimation:
+
+- [x] [AlexNet](configs/top_down/alexnet/README.md)
+- [x] [CPM](configs/top_down/cpm/README.md)
+- [x] [Hourglass](configs/top_down/hourglass/README.md)
+- [x] [HRNet](configs/top_down/hrnet/README.md)
+- [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
+- [x] [ResNet](configs/top_down/resnet/README.md)
+- [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
+- [x] [ResNext](configs/top_down/resnext/README.md)
+- [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [SEResNet](configs/top_down/seresnet/README.md)
+- [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
+
+Supported methods for human pose estimation:
+
+- [x] [CPM](configs/top_down/cpm/README.md)
+- [x] [SimpleBaseline](configs/top_down/resnet/README.md)
+- [x] [HRNet](configs/top_down/hrnet/README.md)
+- [x] [Hourglass](configs/top_down/hourglass/README.md)
+- [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
+- [x] [DarkPose](configs/top_down/darkpose/README.md)
+
+Supported datasets:
+
+- [x] [COCO](http://cocodataset.org/)
+- [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
+- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+- [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
+- [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
+- [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+
+Results and models are available in the *README.md* of each method's config directory.
+A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
+We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
+
+If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
+
+## Benchmark
 
 We demonstrate the superiority of our MMPose framework in terms of speed and accuracy on the standard COCO keypoint detection benchmark.
 
@@ -65,37 +107,6 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 | hrnet_w48  | 384x288  | **1.23** | 2.20 | **0.767** | 0.763 |
 
 More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
-
-### Model Zoo
-
-Supported backbones for human pose estimation:
-
-- [x] [AlexNet](configs/top_down/alexnet/README.md)
-- [x] [CPM](configs/top_down/cpm/README.md)
-- [x] [Hourglass](configs/top_down/hourglass/README.md)
-- [x] [HRNet](configs/top_down/hrnet/README.md)
-- [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
-- [x] [ResNet](configs/top_down/resnet/README.md)
-- [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
-- [x] [ResNext](configs/top_down/resnext/README.md)
-- [x] [SCNet](configs/top_down/scnet/README.md)
-- [x] [SEResNet](configs/top_down/seresnet/README.md)
-- [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
-
-Supported methods for human pose estimation:
-- [x] [CPM](configs/top_down/cpm/README.md)
-- [x] [SimpleBaseline](configs/top_down/resnet/README.md)
-- [x] [HRNet](configs/top_down/hrnet/README.md)
-- [x] [Hourglass](configs/top_down/hourglass/README.md)
-- [x] [SCNet](configs/top_down/scnet/README.md)
-- [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
-- [x] [DarkPose](configs/top_down/darkpose/README.md)
-
-Results and models are available in the *README.md* of each method's config directory.
-A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
-We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
-
-If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
 
 ## Installation
 
