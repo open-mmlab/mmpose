@@ -6,6 +6,8 @@ from collections import OrderedDict
 import json_tricks as json
 import numpy as np
 
+from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
+                                                  keypoint_pck_accuracy)
 from mmpose.datasets.builder import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
@@ -157,32 +159,20 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         return center, scale
 
-    def _evaluate_kernel(self, pred, joints_3d, joints_3d_visible, bbox):
-        """Evaluate one example.
-
-        ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
-        """
-        num_joints = self.ann_info['num_joints']
-        bbox = np.array(bbox)
-        threshold = np.max(bbox[2:]) * 0.2
-        hit = np.zeros(num_joints, dtype=np.float32)
-        exist = np.zeros(num_joints, dtype=np.float32)
-
-        for i in range(num_joints):
-            pred_pt = pred[i]
-            gt_pt = joints_3d[i]
-            vis = joints_3d_visible[i][0]
-            if vis:
-                exist[i] = 1
-            else:
-                continue
-            distance = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
-            if distance < threshold:
-                hit[i] = 1
-        return hit, exist
-
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
-        """Evaluate OneHand10K keypoint results."""
+        """Evaluate OneHand10K keypoint results. metric (str | list[str]):
+        Metrics to be evaluated. Options are 'PCK', 'AUC', 'EPE'.
+
+        'PCK': ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
+        'AUC': area under curve
+        'EPE': end-point error
+        """
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['PCK', 'AUC', 'EPE']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
+
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
@@ -201,7 +191,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             })
 
         self._write_keypoint_results(kpts, res_file)
-        info_str = self._report_metric(res_file)
+        info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
 
         return name_value
@@ -212,27 +202,46 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         with open(res_file, 'w') as f:
             json.dump(keypoints, f, sort_keys=True, indent=4)
 
-    def _report_metric(self, res_file):
+    def _report_metric(self, res_file, metrics):
         """Keypoint evaluation.
 
-        Report Mean Acc of skeleton, contour and all joints.
+        Report PCK, AUC or EPE.
         """
-        num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints, dtype=np.float32)
-        exist = np.zeros(num_joints, dtype=np.float32)
+        info_str = []
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
-
         assert len(preds) == len(self.db)
-        for pred, item in zip(preds, self.db):
-            h, e = self._evaluate_kernel(pred['keypoints'], item['joints_3d'],
-                                         item['joints_3d_visible'],
-                                         item['bbox'])
-            hit += h
-            exist += e
-        pck = np.sum(hit) / np.sum(exist)
 
-        info_str = []
-        info_str.append(('PCK', pck.item()))
+        outputs = []
+        gts = []
+        for pred, item in zip(preds, self.db):
+            outputs.append(pred['keypoints'])
+            gts.append(item['joints_3d'])
+        outputs = np.array(outputs)[:, :, :-1]
+        gts = np.array(gts)[:, :, :-1]
+
+        if 'PCK' in metrics:
+            hit = 0
+            exist = 0
+
+            for pred, item in zip(preds, self.db):
+                bbox = np.array(item['bbox'])
+                threshold = np.max(bbox[2:]) * 0.2
+                h, _, e = keypoint_pck_accuracy(
+                    np.array(pred['keypoints'])[None, :, :-1],
+                    np.array(item['joints_3d'])[None, :, :-1], 1,
+                    np.array([[threshold, threshold]]))
+                hit += len(h[h > 0])
+                exist += e
+            pck = hit / exist
+
+            info_str.append(('PCK', pck))
+
+        if 'AUC' in metrics:
+            info_str.append(('AUC', keypoint_auc(outputs, gts, 30)))
+
+        if 'EPE' in metrics:
+
+            info_str.append(('EPE', keypoint_epe(outputs, gts)))
         return info_str
