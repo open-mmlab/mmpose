@@ -4,7 +4,7 @@
 
  **Highlights**
 
-1. Add more popular backbones & enrich the modelzoo.
+1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
 - [x] ResNext
 - [x] SEResNet
 - [x] ResNetV1D
