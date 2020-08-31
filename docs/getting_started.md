@@ -6,13 +6,14 @@ For installation instructions, please see [install.md](install.md).
 ## Prepare datasets
 
 MMPose supported datasets:
-- [x] [COCO](http://cocodataset.org/)
-- [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
-- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-- [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
-- [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
-- [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
-- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+
+- [COCO](http://cocodataset.org/)
+- [MPII](http://human-pose.mpi-inf.mpg.de/)
+- [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+- [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
+- [OCHuman](https://github.com/liruilong940607/OCHumanApi)
+- [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
@@ -294,7 +295,7 @@ Assume that `Test` is a valid ${PARTITION} name.)
 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
-You can check [slurm_train.sh](../tools/slurm_train.sh) for full arguments and environment variables.
+You can check [slurm_train.sh](https://github.com/open-mmlab/mmpose/tree/master/tools/slurm_train.sh) for full arguments and environment variables.
 
 If you have just multiple machines connected with ethernet, you can refer to
 pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).
