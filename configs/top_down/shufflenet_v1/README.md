@@ -1,4 +1,4 @@
-# Imagenet classification with deep convolutional neural networks
+# Shufflenet: An extremely efficient convolutional neural network for mobile devices
 
 ## Introduction
 ```
