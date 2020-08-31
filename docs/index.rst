@@ -8,6 +8,7 @@ Welcome to MMPose's documentation!
    getting_started.md
    benchmark.md
    config.md
+   data_preparation.md
    model_zoo.md
    tutorials/finetune.md
    tutorials/new_dataset.md
