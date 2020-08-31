@@ -19,5 +19,3 @@
 | se-resnet101 | se-resnet101_batch256_20200708-038a4d04.pth | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmclassification/v0/imagenet/se-resnet101_batch256_20200708-038a4d04.pth)  |
 | shufflenet_v1 | shufflenet_v1_batch1024_20200708-7a087432.pth | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmclassification/v0/imagenet/shufflenet_v1_batch1024_20200708-7a087432.pth) |
 | mobilenet_v2 | mobilenet_v2_batch256_20200708-3b2dc3af.pth | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmclassification/v0/imagenet/mobilenet_v2_batch256_20200708-3b2dc3af.pth) |
-
-
