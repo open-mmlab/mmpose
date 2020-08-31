@@ -81,7 +81,7 @@ Supported datasets:
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 
 Results and models are available in the *README.md* of each method's config directory.
-A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/model_zoo.html) page.
+A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/top_down_models.html) page.
 We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
 
 If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
