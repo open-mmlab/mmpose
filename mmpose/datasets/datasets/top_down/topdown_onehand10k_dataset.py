@@ -6,6 +6,8 @@ from collections import OrderedDict
 import json_tricks as json
 import numpy as np
 
+from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
+                                                  keypoint_pck_accuracy)
 from mmpose.datasets.builder import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
@@ -157,45 +159,6 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         return center, scale
 
-    def _evaluate_kernel_PCK(self, pred, joints_3d, joints_3d_visible,
-                             threshold):
-        """Evaluate one example.
-
-        ||pre[i] - joints_3d[i]|| < threshold
-        """
-        num_joints = self.ann_info['num_joints']
-        hit = np.zeros(num_joints, dtype=np.float32)
-        exist = np.zeros(num_joints, dtype=np.float32)
-
-        for i in range(num_joints):
-            pred_pt = pred[i]
-            gt_pt = joints_3d[i]
-            vis = joints_3d_visible[i][0]
-            if vis:
-                exist[i] = 1
-                distance = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
-                if distance < threshold:
-                    hit[i] = 1
-        return hit, exist
-
-    def _evaluate_kernel_EPE(self, pred, joints_3d, joints_3d_visible):
-        """Evaluate one example.
-
-        ||pre[i] - joints_3d[i]||
-        """
-        num_joints = self.ann_info['num_joints']
-        error = np.zeros(num_joints, dtype=np.float32)
-        exist = np.zeros(num_joints, dtype=np.float32)
-
-        for i in range(num_joints):
-            pred_pt = pred[i]
-            gt_pt = joints_3d[i]
-            vis = joints_3d_visible[i][0]
-            if vis:
-                exist[i] = 1
-                error[i] = np.linalg.norm(pred_pt[:2] - gt_pt[:2])
-        return error, exist
-
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate OneHand10K keypoint results. metric (str | list[str]):
         Metrics to be evaluated. Options are 'PCK', 'AUC', 'EPE'.
@@ -244,67 +207,41 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         Report PCK, AUC or EPE.
         """
-        num_joints = self.ann_info['num_joints']
-
         info_str = []
 
+        with open(res_file, 'r') as fin:
+            preds = json.load(fin)
+        assert len(preds) == len(self.db)
+
+        outputs = []
+        gts = []
+        for pred, item in zip(preds, self.db):
+            outputs.append(pred['keypoints'])
+            gts.append(item['joints_3d'])
+        outputs = np.array(outputs)[:, :, :-1]
+        gts = np.array(gts)[:, :, :-1]
+
         if 'PCK' in metrics:
-            hit = np.zeros(num_joints, dtype=np.float32)
-            exist = np.zeros(num_joints, dtype=np.float32)
+            hit = 0
+            exist = 0
 
-            with open(res_file, 'r') as fin:
-                preds = json.load(fin)
-
-            assert len(preds) == len(self.db)
             for pred, item in zip(preds, self.db):
                 bbox = np.array(item['bbox'])
                 threshold = np.max(bbox[2:]) * 0.2
-                h, e = self._evaluate_kernel_PCK(pred['keypoints'],
-                                                 item['joints_3d'],
-                                                 item['joints_3d_visible'],
-                                                 threshold)
-                hit += h
+                h, _, e = keypoint_pck_accuracy(
+                    np.array(pred['keypoints'])[None, :, :-1],
+                    np.array(item['joints_3d'])[None, :, :-1], 1,
+                    np.array([[threshold, threshold]]))
+                hit += len(h[h > 0])
                 exist += e
-            pck = np.sum(hit) / np.sum(exist)
+            pck = hit / exist
 
-            info_str.append(('PCK', pck.item()))
+            info_str.append(('PCK', pck))
 
         if 'AUC' in metrics:
-            x = [1.5 * i for i in range(21)]
-            y = [0.0]
-            for threshold in x:
-                hit = np.zeros(num_joints, dtype=np.float32)
-                exist = np.zeros(num_joints, dtype=np.float32)
-
-                with open(res_file, 'r') as fin:
-                    preds = json.load(fin)
-
-                assert len(preds) == len(self.db)
-                for pred, item in zip(preds, self.db):
-                    h, e = self._evaluate_kernel_PCK(pred['keypoints'],
-                                                     item['joints_3d'],
-                                                     item['joints_3d_visible'],
-                                                     threshold)
-                    hit += h
-                    exist += e
-                pck = np.sum(hit) / np.sum(exist)
-                y.append(pck)
-
-            auc = 0
-            for i in range(20):
-                auc += 0.025 * (y[i] + y[i + 1])
-            info_str.append(('AUC', auc.item()))
+            info_str.append(('AUC', keypoint_auc(outputs, gts, 30)))
 
         if 'EPE' in metrics:
-            error = np.zeros(num_joints, dtype=np.float32)
-            exist = np.zeros(num_joints, dtype=np.float32)
-            for pred, item in zip(preds, self.db):
-                err, e = self._evaluate_kernel_EPE(pred['keypoints'],
-                                                   item['joints_3d'],
-                                                   item['joints_3d_visible'])
-                error += err
-                exist += e
-            epe = np.sum(error) / np.sum(exist)
 
-            info_str.append(('EPE', epe.item()))
+            info_str.append(('EPE', keypoint_epe(outputs, gts)))
         return info_str

@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
 
-from mmpose.core import keypoints_from_heatmaps, pose_pck_accuracy
+from mmpose.core import (keypoint_auc, keypoint_epe, keypoint_pck_accuracy,
+                         keypoints_from_heatmaps, pose_pck_accuracy)
 
 
 def test_pose_pck_accuracy():
@@ -47,3 +48,76 @@ def test_keypoints_from_heatmaps():
     assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
     assert isinstance(preds, np.ndarray)
     assert isinstance(maxvals, np.ndarray)
+
+
+def test_keypoint_pck_accuracy():
+    output = np.zeros((1, 5, 2))
+    target = np.zeros((1, 5, 2))
+    thr = np.full((1, 2), 10, dtype=np.float32)
+    # first channnel
+    output[0, 0] = [10, 0]
+    target[0, 0] = [10, 0]
+    # second channel
+    output[0, 1] = [20, 20]
+    target[0, 1] = [10, 10]
+    # third channel
+    output[0, 2] = [0, 0]
+    target[0, 2] = [0, 0]
+    # fourth channel
+    output[0, 3] = [30, 30]
+    target[0, 3] = [30, 30]
+    # fifth channnel
+    output[0, 4] = [0, 10]
+    target[0, 4] = [0, 10]
+
+    acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, 0.5, thr)
+
+    assert_array_almost_equal(acc, np.array([1, 0, -1, 1, 1]), decimal=4)
+    assert abs(avg_acc - 0.75) < 1e-4
+    assert abs(cnt - 4) < 1e-4
+
+
+def test_keypoint_auc():
+    output = np.zeros((1, 5, 2))
+    target = np.zeros((1, 5, 2))
+    # first channnel
+    output[0, 0] = [10, 4]
+    target[0, 0] = [10, 0]
+    # second channel
+    output[0, 1] = [10, 18]
+    target[0, 1] = [10, 10]
+    # third channel
+    output[0, 2] = [0, 0]
+    target[0, 2] = [0, 0]
+    # fourth channel
+    output[0, 3] = [40, 40]
+    target[0, 3] = [30, 30]
+    # fifth channnel
+    output[0, 4] = [20, 10]
+    target[0, 4] = [0, 10]
+
+    auc = keypoint_auc(output, target, 20, 4)
+    assert abs(auc - 0.375) < 1e-4
+
+
+def test_keypoint_epe():
+    output = np.zeros((1, 5, 2))
+    target = np.zeros((1, 5, 2))
+    # first channnel
+    output[0, 0] = [10, 4]
+    target[0, 0] = [10, 0]
+    # second channel
+    output[0, 1] = [10, 18]
+    target[0, 1] = [10, 10]
+    # third channel
+    output[0, 2] = [0, 0]
+    target[0, 2] = [0, 0]
+    # fourth channel
+    output[0, 3] = [40, 40]
+    target[0, 3] = [30, 30]
+    # fifth channnel
+    output[0, 4] = [20, 10]
+    target[0, 4] = [0, 10]
+
+    epe = keypoint_epe(output, target)
+    assert abs(epe - 11.5355339) < 1e-4

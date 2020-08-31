@@ -23,7 +23,7 @@ def _calc_distances(preds, targets, normalize):
     N, K, _ = preds.shape
     distances = np.full((K, N), -1, dtype=np.float32)
     eps = np.finfo(np.float32).eps
-    mask = (targets[..., 0] > eps) & (targets[..., 1] > eps)
+    mask = (targets[..., 0] > eps) | (targets[..., 1] > eps)
     distances[mask.T] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances
@@ -86,7 +86,7 @@ def _get_max_preds(heatmaps):
 
 def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
-    averaged accuracy across all keypoints.
+    averaged accuracy across all keypoints from heatmaps.
 
     Note:
         The PCK performance metric is the percentage of joints with
@@ -117,6 +117,28 @@ def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
 
     pred, _ = _get_max_preds(output)
     gt, _ = _get_max_preds(target)
+    return keypoint_pck_accuracy(pred, gt, thr, normalize)
+
+
+def keypoint_pck_accuracy(pred, gt, thr, normalize):
+    """Calculate the pose accuracy of PCK for each individual keypoint and the
+    averaged accuracy across all keypoints for coordinates.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+
+    Args:
+        pred (np.ndarray[N, K, 2]): Predicted keypoint location.
+        gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        thr (float): Threshold of PCK calculation.
+        normalize (np.ndarray[N, 2]): Normalization factor.
+
+    Returns:
+        np.ndarray[K]: Accuracy of each keypoint.
+        float: Averaged accuracy across all keypoints.
+        int: Number of valid keypoints.
+    """
     distances = _calc_distances(pred, gt, normalize)
 
     acc = np.array([_distance_acc(d, thr) for d in distances])
@@ -124,6 +146,56 @@ def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
     cnt = len(valid_acc)
     avg_acc = valid_acc.mean() if cnt > 0 else 0
     return acc, avg_acc, cnt
+
+
+def keypoint_auc(pred, gt, normalize, num_step=20):
+    """Calculate the pose accuracy of PCK for each individual keypoint and the
+    averaged accuracy across all keypoints for coordinates.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+
+    Args:
+        pred (np.ndarray[N, K, 2]): Predicted keypoint location.
+        gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        normalize (float): Normalization factor.
+
+    Returns:
+        float: Area under curve.
+    """
+    nor = np.tile(np.array([[normalize, normalize]]), (pred.shape[0], 1))
+    x = [1.0 * i / num_step for i in range(num_step)]
+    y = []
+    for thr in x:
+        _, avg_acc, _ = keypoint_pck_accuracy(pred, gt, thr, nor)
+        y.append(avg_acc)
+
+    auc = 0
+    for i in range(num_step):
+        auc += 1.0 / num_step * y[i]
+    return auc
+
+
+def keypoint_epe(pred, gt):
+    """Calculate the end-point error.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+
+    Args:
+        pred (np.ndarray[N, K, 2]): Predicted keypoint location.
+        gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+
+    Returns:
+        float: Average end-point error.
+    """
+    distances = _calc_distances(
+        pred, gt, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
+    distance_valid = distances[distances != -1]
+    valid_num = len(distance_valid)
+    return distance_valid.sum() / valid_num
 
 
 def _taylor(heatmap, coord):
