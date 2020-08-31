@@ -63,3 +63,9 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_50](/configs/top_down/resnet/mpii_trb/res50_mpii_trb_256x256.py)  | 256x256 | 0.887 | 0.858 | 0.868 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_mpii_trb_256x256_20200812.log.json) |
 | [pose_resnet_101](/configs/top_down/resnet/mpii_trb/res101_mpii_trb_256x256.py)  | 256x256 | 0.890 | 0.863 | 0.873 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_mpii_trb_256x256_20200812.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/mpii_trb/res152_mpii_trb_256x256.py)  | 256x256 | 0.897 | 0.868 | 0.879 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_trb_256x256_20200812.log.json) |
+
+### Results on OneHand10K val set.
+
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py) | 256x256 | 0.985 | 0.536 | 27.3 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256_20200813.log.json) |
