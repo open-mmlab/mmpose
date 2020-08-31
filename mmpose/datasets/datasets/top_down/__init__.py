@@ -8,5 +8,6 @@ from .topdown_onehand10k_dataset import TopDownOneHand10KDataset
 
 __all__ = [
     'TopDownCocoDataset', 'TopDownMpiiTrbDataset', 'TopDownMpiiDataset',
-    'TopDownOneHand10KDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset', 'TopDownCrowdPoseDataset'
+    'TopDownOneHand10KDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset',
+    'TopDownCrowdPoseDataset'
 ]
