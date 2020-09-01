@@ -27,7 +27,7 @@ utils
 
 
 post_processing
-^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 .. automodule:: mmpose.core.post_processing
     :members:
 
@@ -65,12 +65,24 @@ datasets
 .. automodule:: mmpose.datasets.datasets.top_down
     :members:
 
+.. automodule:: mmpose.datasets.datasets.bottom_up
+    :members:
+
 pipelines
 ^^^^^^^^^^^
 .. automodule:: mmpose.datasets.pipelines
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.top_down
+.. automodule:: mmpose.datasets.pipelines.loading
+    :members:
+
+.. automodule:: mmpose.datasets.pipelines.shared_transform
+    :members:
+
+.. automodule:: mmpose.datasets.pipelines.top_down_transform
+    :members:
+
+.. automodule:: mmpose.datasets.pipelines.bottom_up_transform
     :members:
 
 samplers

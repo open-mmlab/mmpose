@@ -97,8 +97,8 @@ class TopDown(BasePose):
                 for training, `return loss=False` for validation & test.
 
         Returns:
-            if `return loss` is true, then return losses. Otherwise, return
-            predicted poses, boxes and image paths.
+            dict|tuple: if `return loss` is true, then return losses.
+              Otherwise, return predicted poses, boxes and image paths.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
@@ -247,7 +247,7 @@ class TopDown(BasePose):
                 Default: None.
 
         Returns:
-            img (Tensor): Only if not `show` or `out_file`
+            Tensor: Visualized img, only if not `show` or `out_file`.
         """
 
         img = mmcv.imread(img)

@@ -100,8 +100,9 @@ class BottomUp(BasePose):
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
         Returns:
-            if 'return_loss' is true, then return losses. Otherwise, return
-                predicted poses, scores and image paths.
+            dict|tuple: if 'return_loss' is true, then return losses.
+              Otherwise, return predicted poses, scores and image
+              paths.
         """
 
         if return_loss:
@@ -141,7 +142,7 @@ class BottomUp(BasePose):
                 - "flip_index": flip index of keypoints
 
         Returns:
-            losses (dict): the total loss for bottom-up
+            dict: The total loss for bottom-up
         """
 
         output = self.backbone(img)
@@ -279,7 +280,7 @@ class BottomUp(BasePose):
                 Default: None.
 
         Returns:
-            img (Tensor): Only if not `show` or `out_file`
+            Tensor: Visualized image only if not `show` or `out_file`
         """
 
         img = mmcv.imread(img)

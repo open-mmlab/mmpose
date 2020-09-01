@@ -29,12 +29,14 @@ def get_multi_stage_outputs(outputs,
         size_projected ([w, h]): Base size of heatmaps.
 
     Returns:
-        outputs (list(torch.Tensor)): List of simple outputs and
-            flip outputs.
-        heatmaps (torch.Tensor): Multi-stage heatmaps that are resized to
-            the base size.
-        tags (torch.Tensor): Multi-stage tags that are resized to
-            the base size.
+        tuple: A tuple containing multi-stage outputs.
+
+        - outputs (list(torch.Tensor)): List of simple outputs and
+          flip outputs.
+        - heatmaps (torch.Tensor): Multi-stage heatmaps that are resized to
+          the base size.
+        - tags (torch.Tensor): Multi-stage tags that are resized to
+          the base size.
     """
 
     heatmaps_avg = 0
@@ -135,8 +137,10 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
         flip_test (bool): Option to use flip test.
 
     Return:
-        aggregated_heatmaps(torch.Tensor): Heatmaps with multi scale.
-        tags_list(list(torch.Tensor)): Tag list of multi scale.
+        tuple: a tuple containing aggregated results.
+
+        - aggregated_heatmaps (torch.Tensor): Heatmaps with multi scale.
+        - tags_list (list(torch.Tensor)): Tag list of multi scale.
     """
     if scale == 1 or len(test_scale_factor) == 1:
         if aggregated_heatmaps is not None and not project2image:
@@ -179,7 +183,7 @@ def get_group_preds(grouped_joints, center, scale, heatmap_size):
         heatmap_size (np.ndarray[2, ]): Size of the destination heatmaps.
 
     Returns:
-        results (List): List of the pose result for each person.
+        list: List of the pose result for each person.
     """
     results = []
     for person in grouped_joints[0]:

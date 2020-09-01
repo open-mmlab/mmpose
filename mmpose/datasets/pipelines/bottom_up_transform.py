@@ -21,9 +21,11 @@ def _get_multi_scale_size(image, input_size, current_scale, min_scale):
         min_scale (float): Minimal scale.
 
     Returns:
-        (w_resized, h_resized) (tuple(int)): resized width/height
-        center (np.ndarray)image center
-        scale (np.ndarray): scales wrt width/height
+        tuple: A tuple containing multi-scale sizes.
+
+        - (w_resized, h_resized) (tuple(int)): resized width/height
+        - center (np.ndarray)image center
+        - scale (np.ndarray): scales wrt width/height
     """
     h, w, _ = image.shape
 
@@ -59,9 +61,11 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
         min_scale (float): Minimal scale
 
     Returns:
-        image_resized (tuple): size of resize image
-        center (np.ndarray): center of image
-        scale (np.ndarray): scale
+        tuple: A tuple containing image info.
+
+        - image_resized (tuple): size of resize image
+        - center (np.ndarray): center of image
+        - scale (np.ndarray): scale
     """
     size_resized, center, scale = _get_multi_scale_size(
         image, input_size, current_scale, min_scale)
@@ -147,6 +151,7 @@ class JointsEncoder():
             number of people in image: N
             number of keypoints: K
             max number of people in an image: M
+
         Args:
             joints (np.ndarray[NxKx3])
 

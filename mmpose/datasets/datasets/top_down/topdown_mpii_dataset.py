@@ -135,7 +135,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 Defaults: 'PCKh'.
 
         Returns:
-            PCKh for each joint
+            dict: PCKh for each joint
         """
 
         metrics = metric if isinstance(metric, list) else [metric]

@@ -48,8 +48,8 @@ class Compose:
     """Compose a data pipeline with a sequence of transforms.
 
     Args:
-        transforms (list[dict | callable]):
-            Either config dicts of transforms or transform objects.
+        transforms (list[dict | callable]): Either config
+          dicts of transforms or transform objects.
     """
 
     def __init__(self, transforms):
@@ -104,9 +104,9 @@ class Collect:
     Args:
         keys (Sequence[str]): Required keys to be collected.
         meta_name (str): The name of the key that contains meta infomation.
-            This key is always populated. Default: "img_metas".
+          This key is always populated. Default: "img_metas".
         meta_keys (Sequence[str]): Keys that are collected under meta_name.
-            The contents of the `meta_name` dictionary depends on `meta_keys`.
+          The contents of the `meta_name` dictionary depends on `meta_keys`.
     """
 
     def __init__(self, keys, meta_keys, meta_name='img_metas'):
@@ -119,7 +119,7 @@ class Collect:
 
         Args:
             results (dict): The resulting dict to be modified and passed
-                to the next transform in pipeline.
+              to the next transform in pipeline.
         """
         if 'ann_info' in results:
             results.update(results['ann_info'])
