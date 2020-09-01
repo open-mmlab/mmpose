@@ -13,8 +13,9 @@ MMPose supported datasets:
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 
+## COCO
 
-**For COCO data**, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
+For COCO data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -44,7 +45,9 @@ mmpose
 
 ```
 
-**For MPII data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+## MPII
+
+For MPII data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
@@ -69,7 +72,9 @@ mmpose
 
 ```
 
-**For MPII-TRB data**, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+## MPII-TRB
+
+For MPII-TRB data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
@@ -91,7 +96,9 @@ mmpose
 
 ```
 
-**For AIC data**, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
+## AIC
+
+For AIC data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
 Please download the annotation files from [aic_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -119,7 +126,9 @@ mmpose
                 │-- ...
 ```
 
-**For CrowdPose data**, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
+## CrowdPose
+
+For CrowdPose data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
 Please download the annotation files from [crowdpose_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
 We follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
 Download and extract them under $MMPOSE/data, and make them look like this:
@@ -145,7 +154,9 @@ mmpose
             │-- ...
 ```
 
-**For OCHuman data**, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
+## OCHuman
+
+For OCHuman data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
 Move them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -168,7 +179,9 @@ mmpose
 
 ```
 
-**For OneHand10K data**, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
+## OneHand10K
+
+For OneHand10K data, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
 Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
@@ -195,5 +208,3 @@ mmpose
                 |── 1.jpg
 
 ```
-
-For using custom datasets, please refer to [Tutorial 2: Adding New Dataset](tutorials/new_dataset.md)
