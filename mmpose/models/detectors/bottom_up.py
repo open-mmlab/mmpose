@@ -101,8 +101,8 @@ class BottomUp(BasePose):
                 - "flip_index": flip index of keypoints
         Returns:
             dict|tuple: if 'return_loss' is true, then return losses.
-                Otherwise, return predicted poses, scores and image
-                paths.
+              Otherwise, return predicted poses, scores and image
+              paths.
         """
 
         if return_loss:

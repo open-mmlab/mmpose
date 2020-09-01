@@ -50,7 +50,7 @@ def _xyxy2xywh(bbox_xyxy):
 
     Returns:
         np.ndarray: Bounding boxes (with scores),
-            shaped (n, 4) or (n, 5). (left, top, width, height, [score])
+          shaped (n, 4) or (n, 5). (left, top, width, height, [score])
     """
     bbox_xywh = bbox_xyxy.copy()
     bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
@@ -66,7 +66,7 @@ def _xywh2xyxy(bbox_xywh):
             shaped (n, 4) or (n, 5). (left, top, width, height, [score])
     Returns:
         np.ndarray: Bounding boxes (with scores), shaped (n, 4) or
-            (n, 5). (left, top, right, bottom, [score])
+          (n, 5). (left, top, right, bottom, [score])
     """
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
@@ -81,8 +81,10 @@ def _box2cs(cfg, box):
         x, y, w, h
 
     Returns:
-        np.ndarray[float32](2,): Center of the bbox (x, y).
-        np.ndarray[float32](2,): Scale of the bbox w & h.
+        tuple: A tuple containing center and scale.
+
+        - np.ndarray[float32](2,): Center of the bbox (x, y).
+        - np.ndarray[float32](2,): Scale of the bbox w & h.
     """
 
     x, y, w, h = box[:4]
@@ -221,7 +223,9 @@ def inference_top_down_pose_model(model,
             'xywh' means (left, top, width, height).
 
     Returns:
-        list[dict]: Each item in the list is a dictionary,
+        list[dict]: The bbox & pose info.
+
+            Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
     """
@@ -260,7 +264,9 @@ def inference_bottom_up_pose_model(model, img_or_path):
         image_name (str| np.ndarray): Image_name.
 
     Returns:
-        list[ndarray]: The length of the list
+        list[ndarray]: The predicted pose info.
+
+            The length of the list
             is the number of people (P). Each item in the
             list is a ndarray, containing each person's
             pose (ndarray[Kx3]): x, y, score

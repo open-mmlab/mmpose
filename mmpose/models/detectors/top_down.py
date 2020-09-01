@@ -98,7 +98,7 @@ class TopDown(BasePose):
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-                Otherwise, return predicted poses, boxes and image paths.
+              Otherwise, return predicted poses, boxes and image paths.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
