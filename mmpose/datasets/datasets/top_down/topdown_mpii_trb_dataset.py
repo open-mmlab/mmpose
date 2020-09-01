@@ -158,10 +158,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 Defaults: 'PCKh'.
 
         Returns:
-            PCKh for each joint
+            dict: PCKh for each joint
         """
-        # only PCKh is supported.
-
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['PCKh']
         for metric in metrics:

@@ -17,7 +17,7 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
         requires_grad (bool): Option to use requires_grad.
         device: torch device
     Returns:
-        inp (torch.Tensor): zero input.
+        torch.Tensor: zero input.
     """
     inp = torch.autograd.Variable(t, requires_grad=requires_grad)
     inp = inp.sum()

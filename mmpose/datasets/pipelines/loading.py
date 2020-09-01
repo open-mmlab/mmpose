@@ -9,7 +9,7 @@ class LoadImageFromFile:
 
     Args:
         color_type (str): Flags specifying the color type of a loaded image,
-        candidates are 'color', 'grayscale' and 'unchanged'.
+          candidates are 'color', 'grayscale' and 'unchanged'.
         channel_order (str): Order of channel, candidates are 'bgr' and 'rgb'.
     """
 

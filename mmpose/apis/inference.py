@@ -221,7 +221,7 @@ def inference_top_down_pose_model(model,
             'xywh' means (left, top, width, height).
 
     Returns:
-        pose_results (list[dict]): Each item in the list is a dictionary,
+        list[dict]: Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
     """
@@ -260,7 +260,7 @@ def inference_bottom_up_pose_model(model, img_or_path):
         image_name (str| np.ndarray): Image_name.
 
     Returns:
-        pose_results (list[ndarray]): The length of the list
+        list[ndarray]: The length of the list
             is the number of people (P). Each item in the
             list is a ndarray, containing each person's
             pose (ndarray[Kx3]): x, y, score

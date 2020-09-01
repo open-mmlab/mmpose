@@ -221,10 +221,14 @@ class TopDownGenerateTarget():
 
         Args:
             cfg (dict): data config
-            joints_3d: np.ndarray([num_joints, 3])
-            joints_3d_visible: np.ndarray([num_joints, 3])
+            joints_3d: np.ndarray ([num_joints, 3])
+            joints_3d_visible: np.ndarray ([num_joints, 3])
+
         Returns:
-             target, target_weight(1: visible, 0: invisible)
+            tuple: A tuple containing targets.
+
+            - target: Target heatmaps.
+            - target_weight: (1: visible, 0: invisible)
         """
         num_joints = cfg['num_joints']
         image_size = cfg['image_size']

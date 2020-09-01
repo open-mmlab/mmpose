@@ -15,7 +15,7 @@ def _py_max_match(scores):
         scores(np.ndarray): cost matrix.
 
     Returns:
-        tmp(np.ndarray): best match.
+        np.ndarray: best match.
     """
     m = Munkres()
     tmp = m.compute(scores)
@@ -43,7 +43,7 @@ def _match_by_tag(inp, params):
         params(Params): class Params().
 
     Returns:
-        ans(np.ndarray): result of pose groups.
+        np.ndarray: result of pose groups.
     """
     assert isinstance(params, _Params), 'params should be class _Params()'
 
@@ -154,7 +154,7 @@ class HeatmapParser:
             heatmap(torch.Tensor): Heatmaps before nms.
 
         Returns:
-            heatmap(torch.Tensor): Heatmaps after nms.
+            torch.Tensor: Heatmaps after nms.
         """
 
         maxm = self.pool(heatmaps)
@@ -199,14 +199,15 @@ class HeatmapParser:
             tags (torch.Tensor[NxKxHxWxL])
 
         Return:
-            ans(dict):
-                tag_k (np.ndarray[NxKxMxL]):
-                    tag corresponding to the top k values of
-                    feature map per keypoint.
-                loc_k (np.ndarray[NxKxMx2]):
-                    top k location of feature map per keypoint.
-                val_k (np.ndarray[NxKxM]):
-                    top k value of feature map per keypoint.
+            dict: A dict containing top_k values.
+
+            - tag_k (np.ndarray[NxKxMxL]):
+              tag corresponding to the top k values of
+              feature map per keypoint.
+            - loc_k (np.ndarray[NxKxMx2]):
+              top k location of feature map per keypoint.
+            - val_k (np.ndarray[NxKxM]):
+              top k value of feature map per keypoint.
         """
         heatmaps = self.nms(heatmaps)
         N, K, H, W = heatmaps.size()
@@ -244,8 +245,8 @@ class HeatmapParser:
             heatmap width: W
 
         Args:
-            ans (List(np.ndarray))
-            heatmaps (torch.Tensor[NxKxHxW])
+            ans (list(np.ndarray)): Keypoint predictions.
+            heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
         """
         N, K, H, W = heatmaps.shape
         for batch_id, people in enumerate(ans):
@@ -285,8 +286,7 @@ class HeatmapParser:
                         last dim is (x, y, heatmap score, tag score).
 
         Returns:
-            keypoints: np.ndarray of size (K, 4) if not flip,
-                        last dim is (x, y, heatmap score, tag score).
+            np.ndarray: The refined keypoints.
         """
 
         K, H, W = heatmap.shape
@@ -352,12 +352,16 @@ class HeatmapParser:
             heatmap height: H
             heatmap width: W
             L: 2 if use flip test else 1
+
         Args:
             heatmaps (torch.Tensor[NxKxHxW]): model output heatmaps.
             tags (torch.Tensor[NxKxHxWxL]): model output tagmaps.
+
         Returns:
-            ans (List(np.ndarray)): pose results.
-            scores (List): score of people.
+            tuple: A tuple containing keypoint grouping results.
+
+            - ans (list(np.ndarray)): Pose results.
+            - scores (list): Score of people.
         """
         ans = self.match(**self.top_k(heatmaps, tags))
 
