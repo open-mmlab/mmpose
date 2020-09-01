@@ -107,7 +107,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             idx (int): image idx
 
         Returns:
-            db_rec (dict): info for model training
+            dict: info for model training
         """
         coco = self.coco
         img_id = self.ids[idx]
@@ -205,7 +205,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
-            name_value (dict): Evaluation results for evaluation metric.
+            dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['mAP']

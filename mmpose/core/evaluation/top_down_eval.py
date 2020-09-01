@@ -18,7 +18,7 @@ def _calc_distances(preds, targets, normalize):
 
     Returns:
         np.ndarray[K, N]: The normalized distances.
-        If target keypoints are missing, the distance is -1.
+          If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
     distances = np.full((K, N), -1, dtype=np.float32)
@@ -41,7 +41,7 @@ def _distance_acc(distances, thr=0.5):
 
     Returns:
         float: Percentage of distances below the threshold.
-        If all target keypoints are missing, return -1.
+          If all target keypoints are missing, return -1.
     """
     distance_valid = distances != -1
     num_distance_valid = distance_valid.sum()
@@ -63,8 +63,10 @@ def _get_max_preds(heatmaps):
         heatmaps (np.ndarray[N, K, H, W]): model predicted heatmaps.
 
     Returns:
-        np.ndarray[N, K, 2]: Predicted keypoint location.
-        np.ndarray[N, K, 1]: Scores (confidence) of the keypoints.
+        tuple: A tuple containing aggregated results.
+
+        - preds (np.ndarray[N, K, 2]): Predicted keypoint location.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
     assert isinstance(heatmaps,
                       np.ndarray), ('heatmaps should be numpy.ndarray')
@@ -105,9 +107,11 @@ def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
         normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
     Returns:
-        np.ndarray[K]: Accuracy of each keypoint.
-        float: Averaged accuracy across all keypoints.
-        int: Number of valid keypoints.
+        tuple: A tuple containing keypoint accuracy.
+
+        - np.ndarray[K]: Accuracy of each keypoint.
+        - float: Averaged accuracy across all keypoints.
+        - int: Number of valid keypoints.
     """
     N, K, H, W = output.shape
     if K == 0:
@@ -135,9 +139,11 @@ def keypoint_pck_accuracy(pred, gt, thr, normalize):
         normalize (np.ndarray[N, 2]): Normalization factor.
 
     Returns:
-        np.ndarray[K]: Accuracy of each keypoint.
-        float: Averaged accuracy across all keypoints.
-        int: Number of valid keypoints.
+        tuple: A tuple containing keypoint accuracy.
+
+        - acc (np.ndarray[K]): Accuracy of each keypoint.
+        - avg_acc (float): Averaged accuracy across all keypoints.
+        - cnt (int): Number of valid keypoints.
     """
     distances = _calc_distances(pred, gt, normalize)
 
@@ -210,7 +216,7 @@ def _taylor(heatmap, coord):
         coord (np.ndarray[2,]): Coordinates of the predicted keypoints.
 
     Returns:
-        Updated coordinates.
+        np.ndarray[2,]: Updated coordinates.
     """
     H, W = heatmap.shape[:2]
     px, py = int(coord[0]), int(coord[1])
@@ -256,7 +262,7 @@ def _gaussian_blur(heatmaps, kernel=11):
             K=17 for sigma=3 and k=11 for sigma=2.
 
     Returns:
-        Modulated heatmap distribution.
+        np.ndarray[N, K, H, W]: Modulated heatmap distribution.
     """
     assert kernel % 2 == 1
 
@@ -306,8 +312,10 @@ def keypoints_from_heatmaps(heatmaps,
             K=17 for sigma=3 and k=11 for sigma=2.
 
     Returns:
-        preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
-        maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+        tuple: A tuple containing keypoint predictions and scores.
+
+        - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
 
     preds, maxvals = _get_max_preds(heatmaps)

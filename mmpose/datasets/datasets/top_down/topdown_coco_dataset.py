@@ -116,9 +116,12 @@ class TopDownCocoDataset(TopDownBaseDataset):
         """
         Args:
             imgs (dict): dict of image info.
+
         Returns:
-            id2name (dict): mapping image id to name.
-            name2id (dict): mapping image name to id.
+            tuple: Image name & id mapping dicts.
+
+            - id2name (dict): Mapping image id to name.
+            - name2id (dict): Mapping image name to id.
         """
         id2name = {}
         name2id = {}
@@ -154,7 +157,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         Args:
             index: coco image id
         Returns:
-            db entry
+            dict: db entry
         """
         img_ann = self.coco.loadImgs(index)[0]
         width = img_ann['width']
@@ -212,8 +215,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
             x, y, w, h
 
         Returns:
-            center (np.ndarray[float32](2,)): center of the bbox (x, y).
-            scale (np.ndarray[float32](2,)): scale of the bbox w & h.
+            tuple: A tuple containing center and scale.
+
+            - center (np.ndarray[float32](2,)): center of the bbox (x, y).
+            - scale (np.ndarray[float32](2,)): scale of the bbox w & h.
         """
         aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
             'image_size'][1]
@@ -299,7 +304,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
-            name_value (dict): Evaluation results for evaluation metric.
+            dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['mAP']

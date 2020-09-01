@@ -7,7 +7,7 @@
 - PyTorch 1.3+
 - CUDA 9.2+ (If you build PyTorch from source, CUDA 9.0 is also compatible)
 - GCC 5+
-- [mmcv](https://github.com/open-mmlab/mmcv) v1.0rc0+
+- [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version)
 - Numpy
 - cv2
 - json_tricks
@@ -63,7 +63,6 @@ d. Install build requirements and then install mmpose
 
 ```shell
 pip install -r requirements.txt
-pip install xtcocotools
 python setup.py develop
 ```
 
@@ -89,7 +88,6 @@ conda install -c pytorch pytorch torchvision -y
 git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
-pip install xtcocotools
 python setup.py develop
 
 ```

@@ -14,7 +14,7 @@ def nms(dets, thr):
         thr: Retain overlap < thr.
 
     Returns:
-         indexes to keep.
+         list: Indexes to keep.
     """
     if len(dets) == 0:
         return []
@@ -131,6 +131,7 @@ def _rescore(overlap, scores, thr, type='gaussian'):
         scores: target scores.
         thr: retain oks overlap < thr.
         type: 'gaussian' or 'linear'
+
     Returns:
         np.ndarray: indexes to keep
     """
