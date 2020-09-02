@@ -97,6 +97,8 @@ val_pipeline = [
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
+test_pipeline = val_pipeline
+
 data_root = 'data/mpii'
 data = dict(
     samples_per_gpu=32,
@@ -118,5 +120,5 @@ data = dict(
         ann_file=f'{data_root}/annotations/mpii_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=test_pipeline),
 )
