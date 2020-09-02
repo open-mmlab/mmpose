@@ -166,7 +166,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
     elif dataset == 'TopDownOneHand10KDataset':
         flip_pairs = []
     else:
-        NotImplementedError()
+        raise NotImplementedError()
 
     # prepare data
     data = {
@@ -398,7 +398,7 @@ def vis_pose_result(model,
         ]]
 
     else:
-        NotImplementedError()
+        raise NotImplementedError()
 
     img = model.show_result(
         img,

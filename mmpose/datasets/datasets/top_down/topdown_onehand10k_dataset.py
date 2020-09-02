@@ -174,7 +174,6 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
                 raise KeyError(f'metric {metric} is not supported')
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
-        print(res_file, flush=True)
 
         kpts = []
 
