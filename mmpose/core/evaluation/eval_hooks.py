@@ -115,7 +115,7 @@ class EvalHook(Hook):
             results (list): Output results.
         """
         eval_res = self.dataloader.dataset.evaluate(
-            results, logger=runner.logger, **self.eval_kwargs)
+            results, runner.work_dir, logger=runner.logger, **self.eval_kwargs)
         for name, val in eval_res.items():
             runner.log_buffer.output[name] = val
         runner.log_buffer.ready = True
