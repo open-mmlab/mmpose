@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=2)
 evaluation = dict(interval=1, metric=['PCK', 'AUC', 'EPE'])
 
 optimizer = dict(
