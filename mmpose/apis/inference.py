@@ -357,7 +357,8 @@ def vis_pose_result(model,
                         [255, 51, 51], [153, 255, 153], [102, 255, 102],
                         [51, 255, 51], [0, 255, 0]])
 
-    if dataset == 'TopDownCocoDataset' or dataset == 'TopDownOCHumanDataset':
+    if dataset == 'TopDownCocoDataset' or dataset == 'BottomUpCocoDataset' \
+            or dataset == 'TopDownOCHumanDataset':
         # show the results
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                     [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],

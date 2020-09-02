@@ -41,10 +41,6 @@ def main():
 
     args = parser.parse_args()
 
-    skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
-
     assert args.show or (args.out_video_root != '')
     assert args.det_config is not None
     assert args.det_checkpoint is not None
@@ -54,6 +50,8 @@ def main():
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device)
+
+    dataset = pose_model.cfg.data['test']['type']
 
     cap = cv2.VideoCapture(args.video_path)
 
@@ -88,14 +86,15 @@ def main():
             img,
             person_bboxes,
             bbox_thr=args.bbox_thr,
-            format='xyxy')
+            format='xyxy',
+            dataset=dataset)
 
         # show the results
         vis_img = vis_pose_result(
             pose_model,
             img,
             pose_results,
-            skeleton=skeleton,
+            dataset=dataset,
             kpt_score_thr=args.kpt_thr,
             show=False)
 
