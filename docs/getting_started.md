@@ -176,8 +176,8 @@ python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/fa
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
-    --video_path demo/demo_video.mp4 \
-    --output-video-root vis_results
+    --video-path demo/demo_video.mp4 \
+    --out-video-root vis_results
 ```
 
 
@@ -224,8 +224,8 @@ Examples:
 python demo/bottom_up_video_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
     hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
-    --video_path demo/demo_video.mp4 \
-    --output-video-root vis_results
+    --video-path demo/demo_video.mp4 \
+    --out-video-root vis_results
 ```
 
 ## Train a model
