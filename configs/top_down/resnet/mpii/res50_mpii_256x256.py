@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=1, metric='PCKh')
+evaluation = dict(interval=10, metric='PCKh', key_indicator='PCKh')
 
 optimizer = dict(
     type='Adam',
@@ -97,6 +97,8 @@ val_pipeline = [
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
+test_pipeline = val_pipeline
+
 data_root = 'data/mpii'
 data = dict(
     samples_per_gpu=64,
@@ -118,5 +120,5 @@ data = dict(
         ann_file=f'{data_root}/annotations/mpii_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=test_pipeline),
 )

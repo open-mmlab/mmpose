@@ -42,10 +42,6 @@ def main():
 
     args = parser.parse_args()
 
-    skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
-
     assert args.show or (args.out_img_root != '')
     assert args.img != ''
     assert args.det_config is not None
@@ -56,6 +52,8 @@ def main():
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device)
+
+    dataset = pose_model.cfg.data['test']['type']
 
     image_name = os.path.join(args.img_root, args.img)
 
@@ -71,7 +69,8 @@ def main():
         image_name,
         person_bboxes,
         bbox_thr=args.bbox_thr,
-        format='xyxy')
+        format='xyxy',
+        dataset=dataset)
 
     if args.out_img_root == '':
         out_file = None
@@ -84,7 +83,7 @@ def main():
         pose_model,
         image_name,
         pose_results,
-        skeleton=skeleton,
+        dataset=dataset,
         kpt_score_thr=args.kpt_thr,
         show=args.show,
         out_file=out_file)

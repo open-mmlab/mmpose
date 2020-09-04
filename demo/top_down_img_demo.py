@@ -41,14 +41,12 @@ def main():
 
     assert args.show or (args.out_img_root != '')
 
-    skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
-
     coco = COCO(args.json_file)
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device)
+
+    dataset = pose_model.cfg.data['test']['type']
 
     img_keys = list(coco.imgs.keys())
 
@@ -70,7 +68,11 @@ def main():
 
         # test a single image, with a list of bboxes.
         pose_results = inference_top_down_pose_model(
-            pose_model, image_name, person_bboxes, format='xywh')
+            pose_model,
+            image_name,
+            person_bboxes,
+            format='xywh',
+            dataset=dataset)
 
         if args.out_img_root == '':
             out_file = None
@@ -78,12 +80,11 @@ def main():
             os.makedirs(args.out_img_root, exist_ok=True)
             out_file = os.path.join(args.out_img_root, f'vis_{i}.jpg')
 
-        # show the results
         vis_pose_result(
             pose_model,
             image_name,
             pose_results,
-            skeleton=skeleton,
+            dataset=dataset,
             kpt_score_thr=args.kpt_thr,
             show=args.show,
             out_file=out_file)
