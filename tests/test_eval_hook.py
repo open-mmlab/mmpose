@@ -61,8 +61,6 @@ class ExampleModel(nn.Module):
         return outputs
 
 
-@pytest.mark.skipif(
-    not torch.cuda.is_available(), reason='requires CUDA support')
 def test_eval_hook():
     with pytest.raises(TypeError):
         # dataloader must be a pytorch DataLoader
