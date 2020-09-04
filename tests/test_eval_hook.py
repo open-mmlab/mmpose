@@ -27,13 +27,13 @@ class ExampleDataset(Dataset):
         return 1
 
     @mock.create_autospec
-    def evaluate(self, results, logger=None):
+    def evaluate(self, results, work_dir, logger=None):
         pass
 
 
 class EvalDataset(ExampleDataset):
 
-    def evaluate(self, results, logger=None):
+    def evaluate(self, results, work_dir, logger=None):
         acc = self.eval_result[self.index]
         output = dict(acc=acc, index=self.index, score=acc)
         self.index += 1
@@ -130,8 +130,6 @@ def test_eval_hook():
             logger=logger)
         runner.register_hook(eval_hook)
         runner.run([loader], [('train', 1)], 1)
-        test_dataset.evaluate.assert_called_with(
-            test_dataset, [torch.tensor([1])], logger=runner.logger)
 
         best_json_path = osp.join(tmpdir, 'best.json')
         assert not osp.exists(best_json_path)
