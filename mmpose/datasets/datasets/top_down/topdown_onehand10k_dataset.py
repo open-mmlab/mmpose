@@ -94,7 +94,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
             joints_3d=None,
             joints_3d_visible=None,
             bbox=None,
-            dataset='OneHand10K')
+            dataset='onehand10k')
 
         imid2info = {x['id']: x for x in data['images']}
 

@@ -161,15 +161,15 @@ def test_top_down_OneHand10K_dataset():
     # Test
     data_cfg_copy = copy.deepcopy(data_cfg)
     _ = dataset_class(
-        ann_file='tests/data/OneHand10K/test_onehand10k.json',
-        img_prefix='tests/data/OneHand10K/',
+        ann_file='tests/data/onehand10k/test_onehand10k.json',
+        img_prefix='tests/data/onehand10k/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=True)
 
     custom_dataset = dataset_class(
-        ann_file='tests/data/OneHand10K/test_onehand10k.json',
-        img_prefix='tests/data/OneHand10K/',
+        ann_file='tests/data/onehand10k/test_onehand10k.json',
+        img_prefix='tests/data/onehand10k/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=False)
