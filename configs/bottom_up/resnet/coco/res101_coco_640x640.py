@@ -3,8 +3,8 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
-evaluation = dict(interval=100, metric='mAP')
+checkpoint_config = dict(interval=50)
+evaluation = dict(interval=50, metric='mAP', key_indicator='mAP')
 
 optimizer = dict(
     type='Adam',
