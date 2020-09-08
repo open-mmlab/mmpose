@@ -23,7 +23,7 @@ def _calc_distances(preds, targets, normalize):
     N, K, _ = preds.shape
     distances = np.full((K, N), -1, dtype=np.float32)
     eps = np.finfo(np.float32).eps
-    mask = (targets[..., 0] > eps) | (targets[..., 1] > eps)
+    mask = (targets[..., 0] > -eps) & (targets[..., 1] > -eps)
     distances[mask.T] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances
