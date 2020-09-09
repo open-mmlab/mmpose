@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 import json_tricks as json
 import numpy as np
 import pytest
+from numpy.testing import assert_almost_equal
 
 from mmpose.datasets import DATASETS
 
@@ -14,7 +15,8 @@ def load_json_to_output(json_name):
     outputs = []
 
     for image_info, anno in zip(data['images'], data['annotations']):
-        keypoints = np.array(anno['keypoints']).reshape((1, -1, 3))
+        keypoints = np.array(
+            anno['keypoints'], dtype=np.float32).reshape((1, -1, 3))
         box = np.array([0, 0, 0, 0, 0, 0], dtype=np.float32).reshape(1, -1)
         img_path = []
         img_path[:0] = image_info['file_name']
@@ -198,9 +200,9 @@ def test_top_down_OneHand10K_dataset():
     outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert (abs(infos['PCK'] - 1.0) < 1e-4)
-        assert (abs(infos['AUC'] - 0.95) < 1e-4)
-        assert (abs(infos['EPE']) < 1e-4)
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
 
 
 def test_top_down_FreiHand_dataset():
@@ -251,9 +253,9 @@ def test_top_down_FreiHand_dataset():
     outputs = load_json_to_output('tests/data/freihand/test_freihand.json')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert (abs(infos['PCK'] - 1.0) < 1e-4)
-        assert (abs(infos['AUC'] - 0.95) < 1e-4)
-        assert (abs(infos['EPE']) < 1e-4)
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
 
 
 def test_top_down_MPII_dataset():
