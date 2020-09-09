@@ -8,49 +8,49 @@
     "licenses": "",
     "images": [
         {
-            "file_name": "training/rgb/00017620.jpg",
+            "file_name": "00017620.jpg",
             "height": 224,
             "width": 224,
             "id": 17620
         },
         {
-            "file_name": "training/rgb/00050180.jpg",
+            "file_name": "00050180.jpg",
             "height": 224,
             "width": 224,
             "id": 50180
         },
         {
-            "file_name": "training/rgb/00082740.jpg",
+            "file_name": "00082740.jpg",
             "height": 224,
             "width": 224,
             "id": 82740
         },
         {
-            "file_name": "training/rgb/00115300.jpg",
+            "file_name": "00115300.jpg",
             "height": 224,
             "width": 224,
             "id": 115300
         },
         {
-            "file_name": "training/rgb/00000355.jpg",
+            "file_name": "00000355.jpg",
             "height": 224,
             "width": 224,
             "id": 355
         },
         {
-            "file_name": "training/rgb/00032915.jpg",
+            "file_name": "00032915.jpg",
             "height": 224,
             "width": 224,
             "id": 32915
         },
         {
-            "file_name": "training/rgb/00065475.jpg",
+            "file_name": "00065475.jpg",
             "height": 224,
             "width": 224,
             "id": 65475
         },
         {
-            "file_name": "training/rgb/00098035.jpg",
+            "file_name": "00098035.jpg",
             "height": 224,
             "width": 224,
             "id": 98035
