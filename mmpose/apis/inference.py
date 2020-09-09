@@ -163,7 +163,8 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
                       [13, 14], [15, 16]]
     elif dataset == 'TopDownAicDataset':
         flip_pairs = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10], [8, 11]]
-    elif dataset == 'TopDownOneHand10KDataset' or 'TopDownFreiHandDataset':
+    elif dataset == 'TopDownOneHand10KDataset' or \
+            dataset == 'TopDownFreiHandDataset':
         flip_pairs = []
     else:
         raise NotImplementedError()

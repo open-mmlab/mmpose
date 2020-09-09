@@ -1,9 +1,26 @@
 import copy
+import tempfile
 from unittest.mock import MagicMock
 
+import json_tricks as json
+import numpy as np
 import pytest
 
 from mmpose.datasets import DATASETS
+
+
+def load_json_to_output(json_name):
+    data = json.load(open(json_name, 'r'))
+    outputs = []
+
+    for image_info, anno in zip(data['images'], data['annotations']):
+        keypoints = np.array(anno['keypoints']).reshape((1, -1, 3))
+        box = np.array([0, 0, 0, 0, 0, 0], dtype=np.float32).reshape(1, -1)
+        img_path = []
+        img_path[:0] = image_info['file_name']
+        output = (keypoints, box, img_path)
+        outputs.append(output)
+    return outputs
 
 
 def test_top_down_COCO_dataset():
@@ -178,6 +195,13 @@ def test_top_down_OneHand10K_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
+    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert (abs(infos['PCK'] - 1.0) < 1e-4)
+        assert (abs(infos['AUC'] - 0.95) < 1e-4)
+        assert (abs(infos['EPE']) < 1e-4)
+
 
 def test_top_down_FreiHand_dataset():
     dataset = 'TopDownFreiHandDataset'
@@ -223,6 +247,13 @@ def test_top_down_FreiHand_dataset():
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
+
+    outputs = load_json_to_output('tests/data/freihand/test_freihand.json')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert (abs(infos['PCK'] - 1.0) < 1e-4)
+        assert (abs(infos['AUC'] - 0.95) < 1e-4)
+        assert (abs(infos['EPE']) < 1e-4)
 
 
 def test_top_down_MPII_dataset():
