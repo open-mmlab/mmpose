@@ -81,9 +81,6 @@ def _get_max_preds(heatmaps):
     preds[:, :, 0] = preds[:, :, 0] % W
     preds[:, :, 1] = preds[:, :, 1] // W
 
-    # pred_mask = np.tile(maxvals > 0.0, (1, 1, 2))
-    # pred_mask = np.tile(np.where(maxvals > 0.0, 1, -1), (1, 1, 2))
-    # preds *= pred_mask
     preds = np.where(np.tile(maxvals, (1, 1, 2)) > 0.0, preds, -1)
     return preds, maxvals
 

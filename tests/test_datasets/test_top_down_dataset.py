@@ -204,6 +204,9 @@ def test_top_down_OneHand10K_dataset():
         assert_almost_equal(infos['AUC'], 0.95)
         assert_almost_equal(infos['EPE'], 0.0)
 
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
 
 def test_top_down_FreiHand_dataset():
     dataset = 'TopDownFreiHandDataset'
@@ -256,6 +259,9 @@ def test_top_down_FreiHand_dataset():
         assert_almost_equal(infos['PCK'], 1.0)
         assert_almost_equal(infos['AUC'], 0.95)
         assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
 def test_top_down_MPII_dataset():
