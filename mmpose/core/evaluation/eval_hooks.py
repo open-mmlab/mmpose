@@ -32,8 +32,8 @@ class EvalHook(Hook):
 
     rule_map = {'greater': lambda x, y: x > y, 'less': lambda x, y: x < y}
     init_value_map = {'greater': -inf, 'less': inf}
-    greater_keys = ['acc', 'AP', 'mAP', 'PCK', 'PCKh', 'AUC']
-    less_keys = ['loss', 'EPE']
+    greater_keys = ['acc', 'ap', 'ar', 'pck', 'auc']
+    less_keys = ['loss', 'epe']
 
     def __init__(self,
                  dataloader,
@@ -54,9 +54,9 @@ class EvalHook(Hook):
                            f'but got {rule}.')
 
         if rule is None and save_best:
-            if any(key in key_indicator for key in self.greater_keys):
+            if any(key in key_indicator.lower() for key in self.greater_keys):
                 rule = 'greater'
-            elif any(key in key_indicator for key in self.less_keys):
+            elif any(key in key_indicator.lower() for key in self.less_keys):
                 rule = 'less'
             else:
                 raise ValueError(
