@@ -222,5 +222,5 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         info_str = []
         info_str.append(('Skeleton_acc', skeleton.item()))
         info_str.append(('Contour_acc', contour.item()))
-        info_str.append(('Mean_acc', mean.item()))
+        info_str.append(('PCKh', mean.item()))
         return info_str
