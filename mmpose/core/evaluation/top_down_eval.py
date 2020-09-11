@@ -23,7 +23,7 @@ def _calc_distances(preds, targets, normalize):
     N, K, _ = preds.shape
     distances = np.full((K, N), -1, dtype=np.float32)
     eps = np.finfo(np.float32).eps
-    mask = (targets[..., 0] > eps) | (targets[..., 1] > eps)
+    mask = (targets[..., 0] > -eps) & (targets[..., 1] > -eps)
     distances[mask.T] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances
@@ -81,8 +81,7 @@ def _get_max_preds(heatmaps):
     preds[:, :, 0] = preds[:, :, 0] % W
     preds[:, :, 1] = preds[:, :, 1] // W
 
-    pred_mask = np.tile(maxvals > 0.0, (1, 1, 2))
-    preds *= pred_mask
+    preds = np.where(np.tile(maxvals, (1, 1, 2)) > 0.0, preds, -1)
     return preds, maxvals
 
 

@@ -62,7 +62,7 @@ def test_keypoint_pck_accuracy():
     target[0, 1] = [10, 10]
     # third channel
     output[0, 2] = [0, 0]
-    target[0, 2] = [0, 0]
+    target[0, 2] = [-1, 0]
     # fourth channel
     output[0, 3] = [30, 30]
     target[0, 3] = [30, 30]
@@ -88,7 +88,7 @@ def test_keypoint_auc():
     target[0, 1] = [10, 10]
     # third channel
     output[0, 2] = [0, 0]
-    target[0, 2] = [0, 0]
+    target[0, 2] = [0, -1]
     # fourth channel
     output[0, 3] = [40, 40]
     target[0, 3] = [30, 30]
@@ -111,7 +111,7 @@ def test_keypoint_epe():
     target[0, 1] = [10, 10]
     # third channel
     output[0, 2] = [0, 0]
-    target[0, 2] = [0, 0]
+    target[0, 2] = [-1, -1]
     # fourth channel
     output[0, 3] = [40, 40]
     target[0, 3] = [30, 30]

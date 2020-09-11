@@ -1,9 +1,28 @@
 import copy
+import tempfile
 from unittest.mock import MagicMock
 
+import json_tricks as json
+import numpy as np
 import pytest
+from numpy.testing import assert_almost_equal
 
 from mmpose.datasets import DATASETS
+
+
+def load_json_to_output(json_name):
+    data = json.load(open(json_name, 'r'))
+    outputs = []
+
+    for image_info, anno in zip(data['images'], data['annotations']):
+        keypoints = np.array(
+            anno['keypoints'], dtype=np.float32).reshape((1, -1, 3))
+        box = np.array([0, 0, 0, 0, 0, 0], dtype=np.float32).reshape(1, -1)
+        img_path = []
+        img_path[:0] = image_info['file_name']
+        output = (keypoints, box, img_path)
+        outputs.append(output)
+    return outputs
 
 
 def test_top_down_COCO_dataset():
@@ -177,6 +196,72 @@ def test_top_down_OneHand10K_dataset():
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
+
+    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_top_down_FreiHand_dataset():
+    dataset = 'TopDownFreiHandDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=21,
+        dataset_joints=21,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ])
+
+    data_cfg = dict(
+        image_size=[224, 224],
+        heatmap_size=[56, 56],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/freihand/test_freihand.json',
+        img_prefix='tests/data/freihand/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/freihand/test_freihand.json',
+        img_prefix='tests/data/freihand/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 8
+    _ = custom_dataset[0]
+
+    outputs = load_json_to_output('tests/data/freihand/test_freihand.json')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
 def test_top_down_MPII_dataset():
