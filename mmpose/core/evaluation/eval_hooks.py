@@ -40,7 +40,7 @@ class EvalHook(Hook):
                  interval=1,
                  gpu_collect=False,
                  save_best=True,
-                 key_indicator='mAP',
+                 key_indicator='AP',
                  rule=None,
                  **eval_kwargs):
         if not isinstance(dataloader, DataLoader):
