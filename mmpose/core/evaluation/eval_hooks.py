@@ -24,7 +24,7 @@ class EvalHook(Hook):
         key_indicator (str | None): Key indicator to measure the best
             checkpoint during evaluation when ``save_best`` is set to True.
             Options are the evaluation metrics to the test dataset. e.g.,
-             ``acc``, ``mAP``. Default: `mAP`.
+             ``acc``, ``AP``, ``PCK``. Default: `AP`.
         rule (str | None): Comparison rule for best score. If set to None,
             it will infer a reasonable rule. Default: 'None'.
         eval_kwargs (dict, optional): Arguments for evaluation.
