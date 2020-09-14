@@ -12,6 +12,7 @@ MMPose supported datasets:
 - [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+- [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 
 ## COCO
 
@@ -216,4 +217,36 @@ mmpose
                 |── 0.jpg
                 |── 1.jpg
 
+```
+
+
+## FreiHAND Dataset
+
+For FreiHAND data, please download from [FreiHand Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html).
+Since the official dataset does not provide validation set, we randomly split the training data into 8:1:1 for train/val/test.
+Please download the annotation files from [freihand_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/frei_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── onehand10k
+        |── annotations
+        |   |── freihand_train.json
+        |   |── freihand_val.json
+        |   |── freihand_test.json
+        `── training
+            |── rgb
+            |   |── 00000000.jpg
+            |   |── 00000001.jpg
+            |    ...
+            |── mask
+                |── 00000000.jpg
+                |── 00000001.jpg
+                 ...
 ```
