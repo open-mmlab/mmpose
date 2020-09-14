@@ -14,6 +14,7 @@ MMPose supported datasets:
 - [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+- [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
