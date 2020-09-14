@@ -79,6 +79,7 @@ Supported datasets:
 - [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+- [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/top_down_models.html) page.

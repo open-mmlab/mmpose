@@ -13,7 +13,9 @@
 
 ## Results and models
 
-### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### 2d Human Pose Estimation
+
+#### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -26,7 +28,7 @@
 
 
 
-### Results on OCHuman test dataset with ground-truth bounding boxes
+#### Results on OCHuman test dataset with ground-truth bounding boxes
 
 Following the common setting, the models are trained on COCO train dataset, and evaluate on OCHuman dataset.
 
@@ -40,14 +42,14 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.582 | 0.723 | 0.627 | 0.627 | 0.752 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
 
-### Results on AIC val set.
+#### Results on AIC val set.
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_resnet_101](/configs/top_down/resnet/aic/res101_aic_256x192.py) | 256x192 | 0.650 | 0.947 | 0.726 | 0.680 | 0.954 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
 
 
-### Results on MPII val set.
+#### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
@@ -56,7 +58,7 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_152](/configs/top_down/resnet/mpii/res152_mpii_256x256.py) | 256x256 | 0.890 | 0.347 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_256x256-3ecba29d_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_256x256_20200812.log.json) |
 
 
-### Results on MPII-TRB val set.
+#### Results on MPII-TRB val set.
 
 | Arch  | Input Size | Skeleton Acc   | Contour Acc   | Mean Acc | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |:------: |
@@ -64,8 +66,17 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_101](/configs/top_down/resnet/mpii_trb/res101_mpii_trb_256x256.py)  | 256x256 | 0.890 | 0.863 | 0.873 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res101_mpii_trb_256x256_20200812.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/mpii_trb/res152_mpii_trb_256x256.py)  | 256x256 | 0.897 | 0.868 | 0.879 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res152_mpii_trb_256x256_20200812.log.json) |
 
-### Results on OneHand10K val set.
+
+### 2d Hand Pose Estimation
+
+#### Results on OneHand10K val set.
 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_resnet_50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py) | 256x256 | 0.985 | 0.536 | 27.3 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_onehand10k_256x256_20200813.log.json) |
+
+#### Results on FreiHand val set.
+
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/freihand/res50_freihand_224x224.py) | 224x224 | 0.985 | 0.536 | 27.3 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_freihand_224x224_20200914.log.json) |
