@@ -6,7 +6,7 @@ import numpy as np
 from mmcv.parallel import collate
 from mmcv.runner import get_dist_info
 from mmcv.utils import build_from_cfg
-from torch.utils.data import DataLoader
+from mmcv.utils.parrots_wrapper import _get_dataloader
 
 from .dataset_wrappers import RepeatDataset
 from .registry import DATASETS
@@ -90,6 +90,7 @@ def build_dataloader(dataset,
         worker_init_fn, num_workers=num_workers, rank=rank,
         seed=seed) if seed is not None else None
 
+    _, DataLoader = _get_dataloader()
     data_loader = DataLoader(
         dataset,
         batch_size=batch_size,
