@@ -22,25 +22,13 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    COCO keypoint indexes::
+    In total, we have 133 keypoints for wholebody pose estimation.
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    COCO-WholeBody keypoint indexes::
+        0-16: 17 body keypoints
+        17-22: 6 foot keypoints
+        23-90: 68 face keypoints
+        91-132: 42 hand keypoints
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -85,10 +73,42 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
-        self.sigmas = np.array([
-            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
-            .87, .87, .89, .89
-        ]) / 10.0
+        self.body_num = 17
+        self.foot_num = 6
+        self.face_num = 68
+        self.hand_num = 42
+
+        self.sigmas_body = [
+            0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072,
+            0.062, 0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
+        ]
+        self.sigmas_foot = [0.068, 0.066, 0.066, 0.092, 0.094, 0.094]
+        self.sigmas_face = [
+            0.042, 0.043, 0.044, 0.043, 0.040, 0.035, 0.031, 0.025, 0.020,
+            0.023, 0.029, 0.032, 0.037, 0.038, 0.043, 0.041, 0.045, 0.013,
+            0.012, 0.011, 0.011, 0.012, 0.012, 0.011, 0.011, 0.013, 0.015,
+            0.009, 0.007, 0.007, 0.007, 0.012, 0.009, 0.008, 0.016, 0.010,
+            0.017, 0.011, 0.009, 0.011, 0.009, 0.007, 0.013, 0.008, 0.011,
+            0.012, 0.010, 0.034, 0.008, 0.008, 0.009, 0.008, 0.008, 0.007,
+            0.010, 0.008, 0.009, 0.009, 0.009, 0.007, 0.007, 0.008, 0.011,
+            0.008, 0.008, 0.008, 0.01, 0.008
+        ]
+        self.sigmas_lefthand = [
+            0.029, 0.022, 0.035, 0.037, 0.047, 0.026, 0.025, 0.024, 0.035,
+            0.018, 0.024, 0.022, 0.026, 0.017, 0.021, 0.021, 0.032, 0.02,
+            0.019, 0.022, 0.031
+        ]
+        self.sigmas_righthand = [
+            0.029, 0.022, 0.035, 0.037, 0.047, 0.026, 0.025, 0.024, 0.035,
+            0.018, 0.024, 0.022, 0.026, 0.017, 0.021, 0.021, 0.032, 0.02,
+            0.019, 0.022, 0.031
+        ]
+
+        self.sigmas_wholebody = (
+            self.sigmas_body + self.sigmas_foot + self.sigmas_face +
+            self.sigmas_lefthand + self.sigmas_righthand)
+
+        self.sigmas = np.array(self.sigmas_wholebody)
 
         self.coco = COCO(ann_file)
 
@@ -415,12 +435,32 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
                                              self.ann_info['num_joints'] * 3)
 
             result = [{
-                'image_id': img_kpt['image_id'],
-                'category_id': cat_id,
-                'keypoints': key_point.tolist(),
-                'score': float(img_kpt['score']),
-                'center': img_kpt['center'].tolist(),
-                'scale': img_kpt['scale'].tolist()
+                'image_id':
+                img_kpt['image_id'],
+                'category_id':
+                cat_id,
+                'keypoints':
+                key_point[0:self.body_num * 3].tolist(),
+                'foot':
+                key_point[self.body_num * 3:(self.body_num + self.foot_num) *
+                          3].tolist(),
+                'landmark_68':
+                key_points[(self.body_num + self.foot_num) *
+                           3:(self.body_num + self.foot_num + self.face_num) *
+                           3].tolist(),
+                'lefthand_kpts':
+                key_points[(self.body_num + self.foot_num + self.face_num) *
+                           3:(self.body_num + self.foot_num + self.face_num +
+                              21) * 3].tolist(),
+                'righthand_kpts':
+                key_points[(self.body_num + self.foot_num + self.face_num +
+                            21) * 3:].tolist(),
+                'score':
+                float(img_kpt['score']),
+                'center':
+                img_kpt['center'].tolist(),
+                'scale':
+                img_kpt['scale'].tolist()
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)
@@ -430,7 +470,68 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
         coco_det = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_body',
+            np.array(self.sigmas_body),
+            use_area=True)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_foot',
+            np.array(self.sigmas_foot),
+            use_area=True)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_face',
+            np.array(self.sigmas_face),
+            use_area=True)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_lefthand',
+            np.array(self.sigmas_lefthand),
+            use_area=True)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_righthand',
+            np.array(self.sigmas_righthand),
+            use_area=True)
+        coco_eval.params.useSegm = None
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
+
+        coco_eval = COCOeval(
+            self.coco,
+            coco_det,
+            'keypoints_wholebody',
+            np.array(self.sigmas_wholebody),
+            use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
