@@ -59,19 +59,14 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
         self.vis_thr = data_cfg['vis_thr']
         self.bbox_thr = data_cfg['bbox_thr']
 
-        self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
-                                       [11, 12], [13, 14], [15, 16]]
+        self.ann_info['flip_pairs'] = self._make_flip_pairs()
 
         self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
         self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
 
         self.ann_info['use_different_joint_weights'] = False
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
+        self.ann_info['joint_weights'] = \
+            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.body_num = 17
         self.foot_num = 6
@@ -141,7 +136,7 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
                 [29, 33], [30, 32], [40, 49], [41, 48], [42, 47], [43, 46],
                 [44, 45], [54, 58], [55, 57], [59, 68], [60, 67], [61, 66],
                 [62, 65], [63, 70], [64, 69], [71, 77], [72, 76], [73, 75],
-                [78, 82], [79, 81], [83, 87], [84, 86], [88, 90]],
+                [78, 82], [79, 81], [83, 87], [84, 86], [88, 90]]
 
         hand = [[91, 112], [92, 113], [93, 114], [94, 115], [95, 116],
                 [96, 117], [97, 118], [98, 119], [99, 120], [100, 121],
@@ -227,9 +222,11 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
 
-            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
+            keypoints = np.array(obj['keypoints'] + obj['foot_kpts'] +
+                                 obj['face_kpts'] + obj['lefthand_kpts'] +
+                                 obj['righthand_kpts']).reshape(-1, 3)
             joints_3d[:, :2] = keypoints[:, :2]
-            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
+            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3] > 0)
 
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
 
