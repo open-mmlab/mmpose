@@ -438,10 +438,10 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
                 cat_id,
                 'keypoints':
                 key_point[0:self.body_num * 3].tolist(),
-                'foot':
+                'foot_kpts':
                 key_point[self.body_num * 3:(self.body_num + self.foot_num) *
                           3].tolist(),
-                'landmark_68':
+                'face_kpts':
                 key_points[(self.body_num + self.foot_num) *
                            3:(self.body_num + self.foot_num + self.face_num) *
                            3].tolist(),
