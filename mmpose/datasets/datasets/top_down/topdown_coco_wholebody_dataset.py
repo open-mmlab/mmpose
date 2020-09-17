@@ -442,16 +442,16 @@ class TopDownCocoWholeBodyDataset(TopDownBaseDataset):
                 key_point[self.body_num * 3:(self.body_num + self.foot_num) *
                           3].tolist(),
                 'face_kpts':
-                key_points[(self.body_num + self.foot_num) *
-                           3:(self.body_num + self.foot_num + self.face_num) *
-                           3].tolist(),
+                key_point[(self.body_num + self.foot_num) *
+                          3:(self.body_num + self.foot_num + self.face_num) *
+                          3].tolist(),
                 'lefthand_kpts':
-                key_points[(self.body_num + self.foot_num + self.face_num) *
-                           3:(self.body_num + self.foot_num + self.face_num +
-                              21) * 3].tolist(),
+                key_point[(self.body_num + self.foot_num + self.face_num) *
+                          3:(self.body_num + self.foot_num + self.face_num +
+                             21) * 3].tolist(),
                 'righthand_kpts':
-                key_points[(self.body_num + self.foot_num + self.face_num +
-                            21) * 3:].tolist(),
+                key_point[(self.body_num + self.foot_num + self.face_num +
+                           21) * 3:].tolist(),
                 'score':
                 float(img_kpt['score']),
                 'center':
