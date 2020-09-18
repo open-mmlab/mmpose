@@ -3,8 +3,6 @@ from mmcv.utils import get_git_hash
 
 import mmpose
 
-NUM_HASHES = 7
-
 
 def get_short_git_hash(num_hashes=7):
     return get_git_hash()[:num_hashes]
@@ -12,8 +10,7 @@ def get_short_git_hash(num_hashes=7):
 
 def collect_env():
     env_info = collect_basic_env()
-    env_info['MMPose'] = (
-        mmpose.__version__ + '+' + get_short_git_hash(NUM_HASHES))
+    env_info['MMPose'] = (mmpose.__version__ + '+' + get_short_git_hash())
     return env_info
 
 
