@@ -23,8 +23,16 @@ copyright = '2020, MMPose Authors'
 author = 'MMPose Authors'
 
 # The full version, including alpha/beta/rc tags
-with open('../mmpose/VERSION', 'r') as f:
-    release = f.read().strip()
+version_file = '../mmpose/version.py'
+
+
+def get_version():
+    with open(version_file, 'r') as f:
+        exec(compile(f.read(), version_file, 'exec'))
+    return locals()['__version__']
+
+
+release = get_version()
 
 # -- General configuration ---------------------------------------------------
 

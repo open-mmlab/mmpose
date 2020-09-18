@@ -13,7 +13,7 @@ from mmpose import __version__
 from mmpose.apis import train_model
 from mmpose.datasets import build_dataset
 from mmpose.models import build_posenet
-from mmpose.utils import collect_env, get_root_logger
+from mmpose.utils import collect_env, get_root_logger, get_short_git_hash
 
 
 def parse_args():
@@ -138,7 +138,7 @@ def main():
         # save mmpose version, config file content
         # checkpoints as meta data
         cfg.checkpoint_config.meta = dict(
-            mmpose_version=__version__,
+            mmpose_version=__version__ + get_short_git_hash(),
             config=cfg.pretty_text,
         )
     train_model(
