@@ -68,7 +68,8 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.body_num = 17
         self.foot_num = 6
         self.face_num = 68
-        self.hand_num = 42
+        self.left_hand_num = 21
+        self.right_hand_num = 21
 
         self.sigmas_body = [
             0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072,
@@ -169,8 +170,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             y1 = max(0, y)
             x2 = min(width - 1, x1 + max(0, w - 1))
             y2 = min(height - 1, y1 + max(0, h - 1))
-            if ('area' not in obj
-                    or obj['area'] > 0) and x2 >= x1 and y2 >= y1:
+            if ('area' not in obj or obj['area'] > 0) and x2 > x1 and y2 > y1:
                 obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
                 valid_objs.append(obj)
         objs = valid_objs
@@ -219,33 +219,22 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             key_points = _key_points.reshape(-1,
                                              self.ann_info['num_joints'] * 3)
 
+            cuts = np.cumsum([
+                0, self.body_num, self.foot_num, self.face_num,
+                self.left_hand_num, self.right_hand_num
+            ]) * 3
+
             result = [{
-                'image_id':
-                img_kpt['image_id'],
-                'category_id':
-                cat_id,
-                'keypoints':
-                key_point[0:self.body_num * 3].tolist(),
-                'foot_kpts':
-                key_point[self.body_num * 3:(self.body_num + self.foot_num) *
-                          3].tolist(),
-                'face_kpts':
-                key_point[(self.body_num + self.foot_num) *
-                          3:(self.body_num + self.foot_num + self.face_num) *
-                          3].tolist(),
-                'lefthand_kpts':
-                key_point[(self.body_num + self.foot_num + self.face_num) *
-                          3:(self.body_num + self.foot_num + self.face_num +
-                             21) * 3].tolist(),
-                'righthand_kpts':
-                key_point[(self.body_num + self.foot_num + self.face_num +
-                           21) * 3:].tolist(),
-                'score':
-                float(img_kpt['score']),
-                'center':
-                img_kpt['center'].tolist(),
-                'scale':
-                img_kpt['scale'].tolist()
+                'image_id': img_kpt['image_id'],
+                'category_id': cat_id,
+                'keypoints': key_point[cuts[0]:cuts[1]].tolist(),
+                'foot_kpts': key_point[cuts[1]:cuts[2]].tolist(),
+                'face_kpts': key_point[cuts[2]:cuts[3]].tolist(),
+                'lefthand_kpts': key_point[cuts[3]:cuts[4]].tolist(),
+                'righthand_kpts': key_point[cuts[4]:cuts[5]].tolist(),
+                'score': float(img_kpt['score']),
+                'center': img_kpt['center'].tolist(),
+                'scale': img_kpt['scale'].tolist()
             } for img_kpt, key_point in zip(img_kpts, key_points)]
 
             cat_results.extend(result)
