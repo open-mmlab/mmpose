@@ -16,4 +16,4 @@ def parse_version_info(version_str):
     return tuple(version_info)
 
 
-version_info = parse_version_info(__version__)
+__version__ = parse_version_info(__version__)

@@ -1,6 +1,6 @@
 json_tricks
 matplotlib
-mmcv
+mmcv>=1.1.1
 munkres
 numpy
 opencv-python

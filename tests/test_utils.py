@@ -9,7 +9,6 @@ from mmpose.utils import collect_env
 
 def test_collect_env():
     env_info = collect_env()
-
     assert env_info['PyTorch'] == torch.__version__
     assert env_info['TorchVision'] == torchvision.__version__
     assert env_info['OpenCV'] == cv2.__version__
