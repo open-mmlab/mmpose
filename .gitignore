@@ -106,6 +106,7 @@ venv.bak/
 
 # custom
 mmpose/version.py
+/models
 /data
 .vscode
 .idea

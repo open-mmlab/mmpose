@@ -1,11 +1,12 @@
 from .bottom_up import BottomUpCocoDataset
 from .top_down import (TopDownAicDataset, TopDownCocoDataset,
-                       TopDownFreiHandDataset, TopDownMpiiDataset,
-                       TopDownMpiiTrbDataset, TopDownOCHumanDataset,
-                       TopDownOneHand10KDataset)
+                       TopDownCocoWholeBodyDataset, TopDownFreiHandDataset,
+                       TopDownMpiiDataset, TopDownMpiiTrbDataset,
+                       TopDownOCHumanDataset, TopDownOneHand10KDataset)
 
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'TopDownMpiiDataset',
     'TopDownMpiiTrbDataset', 'TopDownOneHand10KDataset',
-    'TopDownFreiHandDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset'
+    'TopDownFreiHandDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset',
+    'TopDownCocoWholeBodyDataset'
 ]
