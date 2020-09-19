@@ -22,7 +22,7 @@
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py)  | 256x192 | 0.756 | 0.907 | 0.825 | 0.806 | 0.942 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_20200708.log.json) |
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco/hrnet_w48_coco_384x288.py)  | 384x288 | 0.767 | 0.910 | 0.831 | 0.816 | 0.946 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288-314c8528_20200708.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_20200708.log.json) |
 
-### Results on COCO-WholeBody val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
 | :---- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :-----: | :-----: | :------: |:-------: |:------: | :------: |
