@@ -73,6 +73,7 @@ Supported methods for human pose estimation:
 Supported datasets:
 
 - [x] [COCO](http://cocodataset.org/)
+- [x] [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
 - [x] [MPII](http://human-pose.mpi-inf.mpg.de/)
 - [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
 - [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)

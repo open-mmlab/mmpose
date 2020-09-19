@@ -8,6 +8,7 @@ For installation instructions, please see [install.md](install.md).
 MMPose supported datasets:
 
 - [COCO](http://cocodataset.org/)
+- [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
 - [MPII](http://human-pose.mpi-inf.mpg.de/)
 - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
 - [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
