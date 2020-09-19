@@ -6,6 +6,7 @@ If your folder structure is different, you may need to change the corresponding 
 MMPose supported datasets:
 
 - [COCO](http://cocodataset.org/)
+- [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
 - [MPII](http://human-pose.mpi-inf.mpg.de/)
 - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
 - [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
@@ -16,7 +17,8 @@ MMPose supported datasets:
 
 ## COCO
 
-For COCO data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation. [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-)
+For COCO data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
+[HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -45,6 +47,43 @@ mmpose
             │-- ...
 
 ```
+
+## COCO-WholeBody
+
+For COCO-WholeBody datatset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
+Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).
+Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── coco
+        │-- annotations
+        │   │-- coco_wholebody_train_v1.0.json
+        │   |-- coco_wholebody_val_v1.0.json
+        |-- person_detection_results
+        |   |-- COCO_val2017_detections_AP_H_56_person.json
+        │-- train2017
+        │   │-- 000000000009.jpg
+        │   │-- 000000000025.jpg
+        │   │-- 000000000030.jpg
+        │   │-- ...
+        `-- val2017
+            │-- 000000000139.jpg
+            │-- 000000000285.jpg
+            │-- 000000000632.jpg
+            │-- ...
+
+```
+Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support COCO-WholeBody evaluation:
+
+```pip install xtcocotools```
 
 ## MPII
 

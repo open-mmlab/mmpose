@@ -24,3 +24,11 @@
 | [dark_pose_hrnet_w32](/configs/top_down/darkpose/coco/hrnet_w32_coco_384x288_dark.py) | 384x288 | 0.767 | 0.909 | 0.832 | 0.816 | 0.944 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark-459422a4_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark_20200812.log.json) |
 | [dark_pose_hrnet_w48](/configs/top_down/darkpose/coco/hrnet_w48_coco_256x192_dark.py) | 256x192 | 0.764 | 0.907 | 0.830 | 0.814 | 0.943 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark_20200812.log.json) |
 | [dark_pose_hrnet_w48](/configs/top_down/darkpose/coco/hrnet_w48_coco_384x288_dark.py) | 384x288 | 0.773 | 0.910 | 0.833 | 0.820 | 0.946 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark-741844ba_20200812.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark_20200812.log.json) |
+
+### Results on COCO-WholeBody val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+
+| Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
+| :---- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :-----: | :-----: | :------: |:-------: |:------: | :------: |
+| [dark_pose_hrnet_w48+](/configs/top_down/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark.py)  | 384x288 | 0.742 | 0.807 | 0.705 | 0.804 | 0.840 | 0.892 | 0.602 | 0.694 | 0.661 | 0.743 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_20200708.log.json) |
+
+Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on COCO-WholeBody dataset. We find this will lead to better performance.
