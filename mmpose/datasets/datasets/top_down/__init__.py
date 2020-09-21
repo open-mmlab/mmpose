@@ -6,9 +6,11 @@ from .topdown_mpii_dataset import TopDownMpiiDataset
 from .topdown_mpii_trb_dataset import TopDownMpiiTrbDataset
 from .topdown_ochuman_dataset import TopDownOCHumanDataset
 from .topdown_onehand10k_dataset import TopDownOneHand10KDataset
+from .topdown_panoptic_dataset import TopDownPanopticDataset
 
 __all__ = [
     'TopDownCocoDataset', 'TopDownMpiiTrbDataset', 'TopDownMpiiDataset',
     'TopDownOneHand10KDataset', 'TopDownFreiHandDataset',
-    'TopDownOCHumanDataset', 'TopDownAicDataset', 'TopDownCocoWholeBodyDataset'
+    'TopDownPanopticDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset',
+    'TopDownCocoWholeBodyDataset'
 ]
