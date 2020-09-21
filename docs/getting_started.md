@@ -19,7 +19,6 @@ MMPose supported datasets:
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
-
 ## Prepare Pretrained Models
 Download imagenet pretrained models from our [model zoo](https://mmpose.readthedocs.io/en/latest/pretrained.html)
 
@@ -37,6 +36,7 @@ mmpose
 
 
 ```
+
 ## Inference with pretrained models
 
 We provide testing scripts to evaluate a whole dataset (COCO, etc.),
@@ -99,8 +99,6 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
         checkpoints/SOME_CHECKPOINT.pth \
         --eval mAP
     ```
-
-
 
 ### Top-down image demo
 
@@ -182,7 +180,6 @@ python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/fa
     --out-video-root vis_results
 ```
 
-
 ### Bottom-up image demo
 
 We provide a demo script to test a single image.
@@ -206,7 +203,6 @@ python demo/bottom_up_img_demo.py \
     --out-img-root vis_results
 ```
 
-
 ### Bottom-up video demo
 
 We also provide a video demo to illustrate the results.
@@ -229,6 +225,19 @@ python demo/bottom_up_video_demo.py \
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
 ```
+
+### Speed up inference
+Some tips to speed up MMPose inference:
+
+For top-down models, try to edit the config file.
+1. set `flip_test=False` (line 51 in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py))
+2. set `unbiased_decoding=False` (line 54 in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py))
+
+For bottom-up models, try to edit the config file.
+1. set `flip_test=False` (line 80 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+2. set `adjust=False` (line 78 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+3. set `refine=False` (line 79 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+4. use smaller input image size (line 39 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
 
 ## Train a model
 
