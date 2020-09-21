@@ -1,5 +1,36 @@
 ## Changelog
 
+ ### v0.7.0 (to be released)
+
+ **Highlights**
+
+1. Support WholeBody human pose estimation.
+- [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody)
+
+2. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
+- ShuffleNetv2
+
+3. Support more 2d hand keypoint estimation datasets.
+- [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+
+4. Support hand demo.
+
+
+ **New Features**
+- Support [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody) dataset ([#133](https://github.com/open-mmlab/mmpose/pull/133)).
+- Support [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) dataset ([#125](https://github.com/open-mmlab/mmpose/pull/125)).
+- Support ShuffleNetv2 ([#139](https://github.com/open-mmlab/mmpose/pull/139)).
+- Support saving best models based on key indicator ([#127](https://github.com/open-mmlab/mmpose/pull/127)).
+
+ **Bug Fixes**
+- Fix typos in docs ([#121](https://github.com/open-mmlab/mmpose/pull/121)).
+
+ **Improvements**
+- Add tools to transform .mat format to .json format ([#126](https://github.com/open-mmlab/mmpose/pull/126)).
+- Add hand demo ([#115](https://github.com/open-mmlab/mmpose/pull/115)).
+- Reuse mmcv utility function and update version files ([#135](https://github.com/open-mmlab/mmpose/pull/135) and [#137](https://github.com/open-mmlab/mmpose/pull/137)).
+
+
  ### v0.6.0 (31/8/2020)
 
  **Highlights**

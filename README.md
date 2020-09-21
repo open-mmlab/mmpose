@@ -49,8 +49,6 @@ The master branch works with **PyTorch 1.3+**.
 Supported backbones for human pose estimation:
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md)
-- [x] [CPM](configs/top_down/cpm/README.md)
-- [x] [Hourglass](configs/top_down/hourglass/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
 - [x] [ResNet](configs/top_down/resnet/README.md)
@@ -59,6 +57,7 @@ Supported backbones for human pose estimation:
 - [x] [SCNet](configs/top_down/scnet/README.md)
 - [x] [SEResNet](configs/top_down/seresnet/README.md)
 - [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
+- [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md)
 
 Supported methods for human pose estimation:
 
