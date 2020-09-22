@@ -106,7 +106,7 @@ def transform_preds(coords, center, scale, output_size):
     Returns:
         np.ndarray: Predicted coordinates in the images.
     """
-    assert coords.shape[1] == 2 or coords.shape[1] == 4 or coords.shape[1] == 5
+    assert coords.shape[1] in (2, 4, 5)
     assert len(center) == 2
     assert len(scale) == 2
     assert len(output_size) == 2
