@@ -17,7 +17,7 @@ RUN pip install cython
 RUN pip install xtcocotools
 
 # Install MMCV
-RUN pip install mmcv-full==latest+torch1.6.0+cu101 -f https://openmmlab.oss-accelerate.aliyuncs.com/mmcv/dist/index.html
+RUN pip install mmcv-full==latest+torch1.6.0+cu101 -f https://download.openmmlab.com/mmcv/dist/index.html
 
 # Install MMPose
 RUN conda clean --all
