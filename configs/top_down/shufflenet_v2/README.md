@@ -19,3 +19,10 @@
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_shufflenetv2](/configs/top_down/shufflenet_v2/coco/shufflenetv2_coco_256x192.py)  | 256x192 | 0.599 | 0.854 | 0.663 | 0.664 | 0.899 | [ckpt](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_256x192-0aba71c7_20200921.pth) | [log](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_256x192_20200921.log.json) |
 | [pose_shufflenetv2](/configs/top_down/shufflenet_v2/coco/shufflenetv2_coco_384x288.py)  | 384x288 | 0.636 | 0.865 | 0.705 | 0.697 | 0.909 | [ckpt](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_384x288-fb38ac3a_20200921.pth) | [log](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_384x288_20200921.log.json) |
+
+
+#### Results on MPII val set.
+
+| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
+| :--- | :--------: | :------: | :------: |:------: |:------: |
+| [pose_shufflenetv2](/configs/top_down/shufflenet_v2/mpii/shufflenetv2_mpii_256x256.py) | 256x256 | 0.828 | 0.238 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256_20200925.log.json) |
