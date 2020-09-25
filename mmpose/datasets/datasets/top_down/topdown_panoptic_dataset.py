@@ -191,7 +191,6 @@ class TopDownPanopticDataset(TopDownBaseDataset):
 
         for preds, boxes, image_path in outputs:
             str_image_path = ''.join(image_path)
-            print(str_image_path, flush=True)
             image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
             kpts.append({

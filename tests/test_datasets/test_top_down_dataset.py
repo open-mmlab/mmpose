@@ -1,4 +1,5 @@
 import copy
+import os
 import tempfile
 from unittest.mock import MagicMock
 
@@ -19,7 +20,7 @@ def load_json_to_output(json_name, prefix=''):
             anno['keypoints'], dtype=np.float32).reshape((1, -1, 3))
         box = np.array([0, 0, 0, 0, 0, 0], dtype=np.float32).reshape(1, -1)
         img_path = []
-        img_path[:0] = prefix + image_info['file_name']
+        img_path[:0] = os.path.join(prefix, image_info['file_name'])
         output = (keypoints, box, img_path)
         outputs.append(output)
     return outputs
