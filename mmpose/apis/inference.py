@@ -180,8 +180,9 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
         flip_pairs = body + foot + face + hand
     elif dataset == 'TopDownAicDataset':
         flip_pairs = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10], [8, 11]]
-    elif dataset == 'TopDownOneHand10KDataset' or \
-            dataset == 'TopDownFreiHandDataset':
+    elif (dataset == 'TopDownOneHand10KDataset'
+          or dataset == 'TopDownFreiHandDataset'
+          or dataset == 'TopDownPanopticDataset'):
         flip_pairs = []
     else:
         raise NotImplementedError()
@@ -438,8 +439,9 @@ def vis_pose_result(model,
             9, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 0, 0
         ]]
 
-    elif dataset == 'TopDownOneHand10KDataset' or \
-            dataset == 'TopDownFreiHandDataset':
+    elif (dataset == 'TopDownOneHand10KDataset'
+          or dataset == 'TopDownFreiHandDataset'
+          or dataset == 'TopDownPanopticDataset'):
         skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
                     [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
                     [14, 15], [15, 16], [16, 17], [1, 18], [18, 19], [19, 20],

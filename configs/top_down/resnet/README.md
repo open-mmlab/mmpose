@@ -80,3 +80,9 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_resnet_50](/configs/top_down/resnet/freihand/res50_freihand_224x224.py) | 224x224 | 0.985 | 0.536 | 27.3 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_freihand_224x224_20200914.log.json) |
+
+#### Results on CMU Panoptic (MPII+NZSL val set).
+
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/panoptic/res50_panoptic_256x256.py) | 224x224 | 0.998 | 0.708 | 9.24 | [ckpt](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_panoptic_256x256-5f55ca1a_20200925.pth) | [log](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/top_down/resnet/res50_panoptic_256x256_20200925.log.json) |
