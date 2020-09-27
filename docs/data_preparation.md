@@ -88,7 +88,7 @@ Please also install the latest version of [Extended COCO API](https://github.com
 ## MPII
 
 For MPII data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
-We have converted the original annotation files into json format, please download them from [mpii_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_annotations.tar).
+We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
@@ -124,7 +124,7 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 ## MPII-TRB
 
 For MPII-TRB data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
-Please download the annotation files from [mpii_trb_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/mpii_trb_annotations.tar).
+Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
@@ -148,7 +148,7 @@ mmpose
 ## AIC
 
 For AIC data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
-Please download the annotation files from [aic_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
+Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -178,7 +178,7 @@ mmpose
 ## CrowdPose
 
 For CrowdPose data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
-Please download the annotation files from [crowdpose_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/aic_annotations.tar).
+Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
 We follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -231,7 +231,7 @@ mmpose
 ## OneHand10K
 
 For OneHand10K data, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
-Please download the annotation files from [onehand10k_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/onehand10k_annotations.tar).
+Please download the annotation files from [onehand10k_annotations](https://download.openmmlab.com/mmpose/datasets/onehand10k_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
@@ -263,7 +263,7 @@ mmpose
 
 For FreiHAND data, please download from [FreiHand Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html).
 Since the official dataset does not provide validation set, we randomly split the training data into 8:1:1 for train/val/test.
-Please download the annotation files from [freihand_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/frei_annotations.tar).
+Please download the annotation files from [freihand_annotations](https://download.openmmlab.com/mmpose/datasets/frei_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```
