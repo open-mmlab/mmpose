@@ -16,6 +16,7 @@ MMPose supported datasets:
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+- [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 

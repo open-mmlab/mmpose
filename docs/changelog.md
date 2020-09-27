@@ -12,6 +12,7 @@
 
 3. Support more 2d hand keypoint estimation datasets.
 - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+- [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 
 4. Support hand demo.
 
@@ -19,6 +20,7 @@
  **New Features**
 - Support [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody) dataset ([#133](https://github.com/open-mmlab/mmpose/pull/133)).
 - Support [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) dataset ([#125](https://github.com/open-mmlab/mmpose/pull/125)).
+- Support [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) dataset ([#144](https://github.com/open-mmlab/mmpose/pull/144)).
 - Support ShuffleNetv2 ([#139](https://github.com/open-mmlab/mmpose/pull/139)).
 - Support saving best models based on key indicator ([#127](https://github.com/open-mmlab/mmpose/pull/127)).
 

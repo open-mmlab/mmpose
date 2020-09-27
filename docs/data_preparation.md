@@ -14,6 +14,7 @@ MMPose supported datasets:
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+- [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 
 ## COCO
 
@@ -287,5 +288,43 @@ mmpose
             |── mask
                 |── 00000000.jpg
                 |── 00000001.jpg
+                 ...
+```
+
+## CMU Panoptic HandDB
+
+For CMU Panoptic HandDB, please download from [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html).
+Following [Simon et al](https://arxiv.org/abs/1704.07809), panoptic images (hand143_panopticdb) and MPII & NZSL training sets (manual_train) are used for training, while MPII & NZSL test set (manual_test) for testing.
+Please download the annotation files from [panoptic_annotations](https://download.openmmlab.com/mmpose/datasets/panoptic_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── panoptic
+        |── annotations
+        |   |── panoptic_train.json
+        |   |── panoptic_test.json
+        |
+        `── hand143_panopticdb
+        |   |── imgs
+        |   |   |── 00000000.jpg
+        |   |   |── 00000001.jpg
+        |   |    ...
+        |
+        `── hand_labels
+            |── manual_train
+            |   |── 000015774_01_l.jpg
+            |   |── 000015774_01_r.jpg
+            |    ...
+            |
+            `── manual_test
+                |── 000648952_02_l.jpg
+                |── 000835470_01_l.jpg
                  ...
 ```
