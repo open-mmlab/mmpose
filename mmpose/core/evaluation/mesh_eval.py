@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Adapted from https://github.com/nkolot/SPIN
+# Adapted from https://github.com/akanazawa/hmr
 # Original licence: Copyright (c) 2018 akanazawa, under the MIT License.
 # ------------------------------------------------------------------------------
 
@@ -24,12 +24,11 @@ def compute_similarity_transform(source_points, target_points):
         source_points_hat (np.ndarray([N, 3])): Transformed source point set.
     """
 
-    transposed = False
-    if source_points.shape[0] != 3 and source_points.shape[0] != 2:
-        source_points = source_points.T
-        target_points = target_points.T
-        transposed = True
-    assert (target_points.shape[1] == source_points.shape[1])
+    assert (target_points.shape[0] == source_points.shape[0])
+    assert (target_points.shape[1] == 3 and source_points.shape[1] == 3)
+
+    source_points = source_points.T
+    target_points = target_points.T
 
     # 1. Remove mean.
     mu1 = source_points.mean(axis=1, keepdims=True)
@@ -45,7 +44,7 @@ def compute_similarity_transform(source_points, target_points):
 
     # 4. Solution that Maximizes trace(R'K) is R=U*V', where U, V are
     # singular vectors of K.
-    U, s, Vh = np.linalg.svd(K)
+    U, _, Vh = np.linalg.svd(K)
     V = Vh.T
     # Construct Z that fixes the orientation of R to get det(R)=1.
     Z = np.eye(U.shape[0])
@@ -62,7 +61,6 @@ def compute_similarity_transform(source_points, target_points):
     # 7. Transform the source points:
     source_points_hat = scale * R.dot(source_points) + t
 
-    if transposed:
-        source_points_hat = source_points_hat.T
+    source_points_hat = source_points_hat.T
 
     return source_points_hat
