@@ -1,9 +1,3 @@
-# ------------------------------------------------------------------------------
-# Copied from https://github.com/open-mmlab/mmediting
-# Original licence: Copyright (c) MMEditing Authors,
-# under the Apache License 2.0
-# ------------------------------------------------------------------------------
-
 import torch
 import torch.nn as nn
 
@@ -13,7 +7,7 @@ from mmpose.core import build_optimizers
 class ExampleModel(nn.Module):
 
     def __init__(self):
-        super(ExampleModel, self).__init__()
+        super().__init__()
         self.model1 = nn.Conv2d(3, 8, kernel_size=3)
         self.model2 = nn.Conv2d(3, 4, kernel_size=3)
 

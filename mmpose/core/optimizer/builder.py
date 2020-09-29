@@ -1,9 +1,3 @@
-# ------------------------------------------------------------------------------
-# Copied from https://github.com/open-mmlab/mmediting
-# Original licence: Copyright (c) MMEditing Authors,
-# under the Apache License 2.0
-# ------------------------------------------------------------------------------
-
 from mmcv.runner import build_optimizer
 
 
