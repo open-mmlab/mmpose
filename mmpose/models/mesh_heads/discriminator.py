@@ -98,7 +98,7 @@ class BaseDiscriminator(nn.Module):
 
 
 class ShapeDiscriminator(BaseDiscriminator):
-    """Discriminator for SMPL shape parameters, the inputs is (batch size x 10)
+    """Discriminator for SMPL shape parameters, the inputs is (batch_size x 10)
 
     Args:
         fc_layers (Tuple): Tuple of neuron count,
@@ -126,7 +126,7 @@ class ShapeDiscriminator(BaseDiscriminator):
 
 class PoseDiscriminator(nn.Module):
     """Discriminator for SMPL pose parameters of each joint. It is composed of
-    discriminators for each joints. The inputs is (batch size x joint_count x
+    discriminators for each joints. The inputs is (batch_size x joint_count x
     9)
 
     Args:
@@ -163,12 +163,12 @@ class PoseDiscriminator(nn.Module):
     def forward(self, inputs):
         """Forward function.
 
-        The input is (batch size x joint_count x 9)
+        The input is (batch_size x joint_count x 9)
         """
-        inputs = inputs.transpose(1, 2).\
-            unsqueeze(2).contiguous()  # to N x 9 x 1 x joint_count
-        internal_outputs = self.conv_blocks(
-            inputs)  # to N x c x 1 x joint_count
+        # shape: batch_size x 9 x 1 x joint_count
+        inputs = inputs.transpose(1, 2).unsqueeze(2).contiguous()
+        # shape: batch_size x c x 1 x joint_count
+        internal_outputs = self.conv_blocks(inputs)
         outputs = []
         for idx in range(self.joint_count):
             outputs.append(self.fc_layer[idx](internal_outputs[:, :, 0, idx]))

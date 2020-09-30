@@ -19,18 +19,11 @@ class MeshHMRHead(nn.Module):
         n_iter (int): The iterations of estimating delta parameters
     """
 
-    def __init__(self,
-                 in_channels,
-                 smpl_mean_params=None,
-                 n_iter=3,
-                 extra=None):
+    def __init__(self, in_channels, smpl_mean_params=None, n_iter=3):
         super().__init__()
 
         self.in_channels = in_channels
         self.n_iter = n_iter
-
-        if extra is not None and not isinstance(extra, dict):
-            raise TypeError('extra should be dict or None.')
 
         npose = 24 * 6
         nbeta = 10
