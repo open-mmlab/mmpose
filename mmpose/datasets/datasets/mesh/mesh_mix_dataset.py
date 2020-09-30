@@ -43,5 +43,5 @@ class MeshMixDataset(Dataset, metaclass=ABCMeta):
             if p <= self.partition[i]:
                 index_new = (index + np.random.rand()) * len(
                     self.datasets[i]) / self.length
-                index_new = int(np.round(index_new) % (len(self.datasets[i])))
+                index_new = int(np.round(index_new)) % (len(self.datasets[i]))
                 return self.datasets[i][index_new]
