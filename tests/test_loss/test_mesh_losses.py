@@ -20,12 +20,12 @@ def test_mesh_loss():
 
     loss = build_loss(loss_cfg)
 
-    smpl_pose = torch.zeros(1, 72)
+    smpl_pose = torch.zeros([1, 72], dtype=torch.float32)
     smpl_rotmat = batch_rodrigues(smpl_pose.view(-1, 3)).view(-1, 24, 3, 3)
-    smpl_beta = torch.zeros(1, 10)
-    camera = torch.tensor([[1, 0, 0]])
-    vertices = torch.rand([1, 6890, 3])
-    joints_3d = torch.ones([1, 24, 3])
+    smpl_beta = torch.zeros([1, 10], dtype=torch.float32)
+    camera = torch.tensor([[1, 0, 0]], dtype=torch.float32)
+    vertices = torch.rand([1, 6890, 3], dtype=torch.float32)
+    joints_3d = torch.ones([1, 24, 3], dtype=torch.float32)
     joints_2d = loss.project_points(joints_3d, camera) + 128
 
     fake_pred = {}
@@ -39,11 +39,11 @@ def test_mesh_loss():
     fake_gt['pose'] = smpl_pose
     fake_gt['beta'] = smpl_beta
     fake_gt['vertices'] = vertices
-    fake_gt['has_smpl'] = torch.ones(1)
+    fake_gt['has_smpl'] = torch.ones(1, dtype=torch.float32)
     fake_gt['joints_3d'] = joints_3d
-    fake_gt['joints_3d_visible'] = torch.ones(1, 24, 1)
+    fake_gt['joints_3d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
     fake_gt['joints_2d'] = joints_2d
-    fake_gt['joints_2d_visible'] = torch.ones(1, 24, 1)
+    fake_gt['joints_2d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
 
     losses = loss(fake_pred, fake_gt)
     assert torch.allclose(losses['vertices_loss'], torch.tensor(0.))
@@ -65,11 +65,11 @@ def test_mesh_loss():
     fake_gt['pose'] = smpl_pose
     fake_gt['beta'] = smpl_beta
     fake_gt['vertices'] = vertices
-    fake_gt['has_smpl'] = torch.ones(1)
+    fake_gt['has_smpl'] = torch.ones(1, dtype=torch.float32)
     fake_gt['joints_3d'] = joints_3d_t
-    fake_gt['joints_3d_visible'] = torch.ones(1, 24, 1)
+    fake_gt['joints_3d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
     fake_gt['joints_2d'] = joints_2d + 128
-    fake_gt['joints_2d_visible'] = torch.ones(1, 24, 1)
+    fake_gt['joints_2d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
 
     losses = loss(fake_pred, fake_gt)
     assert torch.allclose(losses['vertices_loss'], torch.tensor(1.))
