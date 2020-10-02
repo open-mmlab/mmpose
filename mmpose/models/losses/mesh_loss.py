@@ -247,9 +247,7 @@ class MeshLoss(nn.Module):
 
 @LOSSES.register_module()
 class GANLoss(nn.Module):
-    """Define GAN loss. Adapted from https://github.com/open-mmlab/mmediting
-    Original licence:  Copyright (c) MMEditing Authors, under the Apache
-    License 2.0.
+    """Define GAN loss.
 
     Args:
         gan_type (str): Support 'vanilla', 'lsgan', 'wgan', 'hinge'.

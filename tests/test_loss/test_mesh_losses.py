@@ -80,11 +80,7 @@ def test_mesh_loss():
 
 
 def test_gan_loss():
-    """test gan loss.
-
-    Adapted from https://github.com/open-mmlab/mmediting Original licence:
-    Copyright (c) MMEditing Authors, under the Apache License 2.0.
-    """
+    """test gan loss."""
     with pytest.raises(NotImplementedError):
         loss_cfg = dict(
             type='GANLoss',
