@@ -13,8 +13,7 @@ def load_checkpoint(model,
     Args:
         model (Module): Module to load checkpoint.
         filename (str): Accept local filepath, URL, ``torchvision://xxx``,
-            ``open-mmlab://xxx``. Please refer to ``docs/model_zoo.md`` for
-            details.
+            ``open-mmlab://xxx``.
         map_location (str): Same as :func:`torch.load`.
         strict (bool): Whether to allow different params for the model and
             checkpoint.
