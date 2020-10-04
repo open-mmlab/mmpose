@@ -20,3 +20,11 @@ sed -i 's/](\/docs\//](/g' top_down_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' bottom_up_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' top_down_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' getting_started.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' install.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' benchmark.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' config.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
+sed -i 's/](\/docs\//](/g' ./tutorials/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tutorials/*.md
+sed -i 's/](\/docs\//](/g' data_preparation.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' data_preparation.md
