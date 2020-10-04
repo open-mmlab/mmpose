@@ -78,6 +78,7 @@ Supported datasets:
 - [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
 - [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [x] [H36m](http://vision.imar.ro/human3.6m/description.php)
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
