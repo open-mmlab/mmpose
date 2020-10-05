@@ -11,7 +11,7 @@ from .resnext import Bottleneck
 class RegNet(ResNet):
     """RegNet backbone.
 
-    More details can be found in `paper <https://arxiv.org/abs/2003.13678>`_ .
+    More details can be found in `paper <https://arxiv.org/abs/2003.13678>`__ .
 
     Args:
         arch (dict): The parameter of RegNets.

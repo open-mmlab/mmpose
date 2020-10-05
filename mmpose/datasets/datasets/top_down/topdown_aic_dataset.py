@@ -11,7 +11,7 @@ class TopDownAicDataset(TopDownCocoDataset):
     """AicDataset dataset for top-down pose estimation.
 
     `AI Challenger : A Large-scale Dataset for Going Deeper
-    in Image Understanding <https://arxiv.org/abs/1711.06475>`_
+    in Image Understanding <https://arxiv.org/abs/1711.06475>`__
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

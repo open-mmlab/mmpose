@@ -94,10 +94,12 @@ def transform_preds(coords, center, scale, output_size):
 
     Args:
         coords (np.ndarray[K, ndims]):
-            if ndims=2, corrds are predicted keypoint location.
-            if ndims=4, corrds are composed of (x, y, tags, scores)
-            if ndims=5, corrds are composed of (x, y, tags,
-                flipped_tags, scores)
+
+            * If ndims=2, corrds are predicted keypoint location.
+            * If ndims=4, corrds are composed of (x, y, tags, scores)
+            * If ndims=5, corrds are composed of (x, y, tags,
+              flipped_tags, scores)
+
         center (np.ndarray[2, ]): Center of the bounding box (x, y).
         scale (np.ndarray[2, ]): Scale of the bounding box
             wrt [width, height].

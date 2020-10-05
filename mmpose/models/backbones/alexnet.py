@@ -6,7 +6,7 @@ from .base_backbone import BaseBackbone
 
 @BACKBONES.register_module()
 class AlexNet(BaseBackbone):
-    """`AlexNet <https://en.wikipedia.org/wiki/AlexNet>`_ backbone.
+    """`AlexNet <https://en.wikipedia.org/wiki/AlexNet>`__ backbone.
 
     The input for AlexNet is a 224x224 RGB image.
 

@@ -86,7 +86,7 @@ class HourglassNet(BaseBackbone):
 
     Stacked Hourglass Networks for Human Pose Estimation.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1603.06937>`_ .
+    <https://arxiv.org/abs/1603.06937>`__ .
 
     Args:
         downsample_times (int): Downsample times in a HourglassModule.

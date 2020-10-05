@@ -14,9 +14,9 @@ from .topdown_base_dataset import TopDownBaseDataset
 class TopDownMpiiTrbDataset(TopDownBaseDataset):
     """MPII-TRB Dataset dataset for top-down pose estimation.
 
-    `TRB: A Novel Triplet Representation for Understanding 2D Human Body'
+    `TRB: A Novel Triplet Representation for Understanding 2D Human Body`
     ICCV'2019 More details can be found in the `paper
-    <https://arxiv.org/abs/1910.11535>`_ .
+    <https://arxiv.org/abs/1910.11535>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -147,12 +147,14 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         Args:
             outputs(list(preds, boxes, image_path)):Output results.
-                preds(np.ndarray[1,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                image_path(list[str]): For example, ['0', '0',
-                    '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+
+                * preds(np.ndarray[1,K,3]): The first two dimensions are
+                  coordinates, score is the third dimension of the array.
+                * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                  , scale[1],area, score]
+                * image_path(list[str]): For example, ['0', '0',
+                  '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.

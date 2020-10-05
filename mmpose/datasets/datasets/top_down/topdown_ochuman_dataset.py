@@ -11,7 +11,7 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
 
     `Pose2Seg: Detection Free Human Instance Segmentation' CVPR'2019
     More details can be found in the `paper
-    <https://arxiv.org/abs/1803.10683>`_ .
+    <https://arxiv.org/abs/1803.10683>`__ .
 
     "Occluded Human (OCHuman)" dataset contains 8110 heavily occluded
     human instances within 4731 images. OCHuman dataset is designed for

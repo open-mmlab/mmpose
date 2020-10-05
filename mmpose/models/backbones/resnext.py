@@ -89,7 +89,7 @@ class Bottleneck(_Bottleneck):
 class ResNeXt(ResNet):
     """ResNeXt backbone.
 
-    Please refer to the `paper <https://arxiv.org/abs/1611.05431>`_ for
+    Please refer to the `paper <https://arxiv.org/abs/1611.05431>`__ for
     details.
 
     Args:
