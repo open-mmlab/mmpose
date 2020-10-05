@@ -7,8 +7,13 @@ Welcome to MMPose's documentation!
    install.md
    getting_started.md
    benchmark.md
-   data_preparation.md
    config.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Datasets
+
+   data_preparation.md
 
 .. toctree::
    :maxdepth: 2
