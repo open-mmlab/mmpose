@@ -103,7 +103,7 @@ from .my_model import MyModel
 
 3. Create a new file `mmpose/models/keypoint_heads/my_head.py`.
 
-You can write a new classification head inherit from [BaseHead](../mmpose/models/keypoint_heads/base.py),
+You can write a new classification head inherit from `nn.Module`,
 and overwrite `init_weights(self)` and `forward(self, x)` method.
 
 ```python

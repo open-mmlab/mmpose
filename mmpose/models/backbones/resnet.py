@@ -415,7 +415,7 @@ class ResLayer(nn.Sequential):
 class ResNet(BaseBackbone):
     """ResNet backbone.
 
-    Please refer to the `paper <https://arxiv.org/abs/1512.03385>`_ for
+    Please refer to the `paper <https://arxiv.org/abs/1512.03385>`__ for
     details.
 
     Args:
@@ -680,7 +680,7 @@ class ResNet(BaseBackbone):
 @BACKBONES.register_module()
 class ResNetV1d(ResNet):
     r"""ResNetV1d variant described in `Bag of Tricks
-    <https://arxiv.org/pdf/1812.01187.pdf>`_.
+    <https://arxiv.org/pdf/1812.01187.pdf>`__.
 
     Compared with default ResNet(ResNetV1b), ResNetV1d replaces the 7x7 conv in
     the input stem with three 3x3 convs. And in the downsampling block, a 2x2

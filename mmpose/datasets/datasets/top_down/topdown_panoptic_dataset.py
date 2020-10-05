@@ -18,7 +18,7 @@ class TopDownPanopticDataset(TopDownBaseDataset):
     `Hand Keypoint Detection in Single Images using Multiview
     Bootstrapping' CVPR'2017
     More details can be found in the `paper
-    <https://arxiv.org/abs/1704.07809>`_ .
+    <https://arxiv.org/abs/1704.07809>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

@@ -15,7 +15,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
     `2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
     CVPR'2014. More details can be found in the `paper
-    <http://human-pose.mpi-inf.mpg.de/contents/andriluka14cvpr.pdf>`_ .
+    <http://human-pose.mpi-inf.mpg.de/contents/andriluka14cvpr.pdf>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -124,12 +124,14 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         Args:
             outputs(list(preds, boxes, image_path)):Output results.
-                preds(np.ndarray[1,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                image_path(list[str]): For example, ['0', '0',
-                    '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+
+                * preds(np.ndarray[1,K,3]): The first two dimensions are
+                  coordinates, score is the third dimension of the array.
+                * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                  , scale[1],area, score]
+                * image_path(list[str]): For example, ['0', '0',
+                  '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.

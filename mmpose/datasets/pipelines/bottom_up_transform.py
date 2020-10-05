@@ -217,7 +217,7 @@ class BottomUpRandomAffine:
     Args:
         rot_factor (int): Rotating to [-rotation_factor, rotation_factor]
         scale_factor (float): Scaling to [1-scale_factor, 1+scale_factor]
-        scale_type: wrt ``long'' or ``short'' length of the image.
+        scale_type: wrt ``long`` or ``short`` length of the image.
         trans_factor: Translation factor.
         scale_aware_sigma: Option to use scale-aware sigma
     """

@@ -8,7 +8,7 @@ from ..registry import HEADS
 @HEADS.register_module()
 class TopDownSimpleHead(nn.Module):
     """Top-down model head of simple baseline paper ref: Bin Xiao. ``Simple
-    Baselines for Human Pose Estimation and Tracking.''.
+    Baselines for Human Pose Estimation and Tracking``.
 
     TopDownSimpleHead is consisted of (>=0) number of deconv layers
     and a simple conv2d layer.

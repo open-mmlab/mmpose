@@ -94,7 +94,7 @@ class SEBottleneck(_SEBottleneck):
 class SEResNeXt(SEResNet):
     """SEResNeXt backbone.
 
-    Please refer to the `paper <https://arxiv.org/abs/1709.01507>`_ for
+    Please refer to the `paper <https://arxiv.org/abs/1709.01507>`__ for
     details.
 
     Args:
