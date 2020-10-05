@@ -23,3 +23,10 @@
 | [pose_resnext_101](/configs/top_down/resnext/coco/resnext101_coco_384x288.py) | 384x288 | 0.743 | 0.903 | 0.815 | 0.795 | 0.939 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_384x288-f5eabcd6_20200727.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_384x288_20200727.log.json) |
 | [pose_resnext_152](/configs/top_down/resnext/coco/resnext152_coco_256x192.py) | 256x192 | 0.730 | 0.904 | 0.808 | 0.786 | 0.940 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_256x192-102449aa_20200727.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_256x192_20200727.log.json) |
 | [pose_resnext_152](/configs/top_down/resnext/coco/resnext152_coco_384x288.py) | 384x288 | 0.742 | 0.902 | 0.810 | 0.794 | 0.939 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_384x288-806176df_20200727.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_384x288_20200727.log.json) |
+
+
+#### Results on MPII val set.
+
+| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
+| :--- | :--------: | :------: | :------: |:------: |:------: |
+| [pose_resnext_152](/configs/top_down/resnext/mpii/resnext152_mpii_256x256.py) | 256x256 | 0.887 | 0.334 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_mpii_256x256-df302719_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_mpii_256x256_20200927.log.json) |
