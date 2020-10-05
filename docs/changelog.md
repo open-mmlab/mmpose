@@ -37,7 +37,9 @@
 - Add whole-body demo ([#163](https://github.com/open-mmlab/mmpose/pull/163))
 - Reuse mmcv utility function and update version files ([#135](https://github.com/open-mmlab/mmpose/pull/135), [#137](https://github.com/open-mmlab/mmpose/pull/137))
 - Enrich the modelzoo ([#147](https://github.com/open-mmlab/mmpose/pull/147), [#169](https://github.com/open-mmlab/mmpose/pull/169))
-
+- Improve docs ([#174](https://github.com/open-mmlab/mmpose/pull/174), [#175](https://github.com/open-mmlab/mmpose/pull/175), [#178](https://github.com/open-mmlab/mmpose/pull/178))
+- Improve README ([#176](https://github.com/open-mmlab/mmpose/pull/176))
+- Improve version.py ([#173](https://github.com/open-mmlab/mmpose/pull/173))
 
 ## v0.6.0 (31/8/2020)
 
