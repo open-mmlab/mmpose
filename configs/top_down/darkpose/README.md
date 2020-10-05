@@ -33,3 +33,11 @@
 | [dark_pose_hrnet_w48+](/configs/top_down/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py)  | 384x288 | 0.742 | 0.807 | 0.705 | 0.804 | 0.840 | 0.892 | 0.602 | 0.694 | 0.661 | 0.743 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark_20200918.log.json) |
 
 Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on COCO-WholeBody dataset. We find this will lead to better performance.
+
+
+### Results on MPII val set.
+
+| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
+| :--- | :--------: | :------: | :------: |:------: |:------: |
+| [dark_pose_hrnet_w32](/configs/top_down/darkpose/mpii/hrnet_w32_mpii_256x256_dark.py) | 256x256 | 0.904 | 0.396 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark_20200927.log.json) |
+| [dark_pose_hrnet_w48](/configs/top_down/darkpose/mpii/hrnet_w48_mpii_256x256_dark.py) | 256x256 | 0.905 | 0.401 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark-0decd39f_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark_20200927.log.json) |
