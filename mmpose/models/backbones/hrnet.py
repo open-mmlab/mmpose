@@ -204,7 +204,7 @@ class HRNet(nn.Module):
     """HRNet backbone.
 
     `High-Resolution Representations for Labeling Pixels and Regions
-    <https://arxiv.org/abs/1904.04514>`_
+    <https://arxiv.org/abs/1904.04514>`__
 
     Args:
         extra (dict): detailed configuration for each stage of HRNet.

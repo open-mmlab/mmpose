@@ -19,7 +19,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
     `Mask-pose Cascaded CNN for 2D Hand Pose Estimation from
     Single Color Images' TCSVT'2019
     More details can be found in the `paper
-    <https://www.yangangwang.com/papers/WANG-MCC-2018-10.pdf>`_ .
+    <https://www.yangangwang.com/papers/WANG-MCC-2018-10.pdf>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

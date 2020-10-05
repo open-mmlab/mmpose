@@ -14,7 +14,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
 
     `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
     More details can be found in the `paper
-    <https://arxiv.org/abs/2007.11858>`_ .
+    <https://arxiv.org/abs/2007.11858>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

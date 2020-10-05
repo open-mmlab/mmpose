@@ -19,29 +19,40 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
     to return a dict containing the image tensors and other information.
 
     Keypoint Order:
-        "keypoints": {
-            0: "nose",
-            1: "left_eye",
-            2: "right_eye",
-            3: "left_ear",
-            4: "right_ear",
-            5: "left_shoulder",
-            6: "right_shoulder",
-            7: "left_elbow",
-            8: "right_elbow",
-            9: "left_wrist",
-            10: "right_wrist",
-            11: "left_hip",
-            12: "right_hip",
-            13: "left_knee",
-            14: "right_knee",
-            15: "left_ankle",
-            16: "right_ankle"
+
+    .. code-block:: JSON
+
+      {
+        "keypoints":
+        {
+          "0": "nose",
+          "1": "left_eye",
+          "2": "right_eye",
+          "3": "left_ear",
+          "4": "right_ear",
+          "5": "left_shoulder",
+          "6": "right_shoulder",
+          "7": "left_elbow",
+          "8": "right_elbow",
+          "9": "left_wrist",
+          "10": "right_wrist",
+          "11": "left_hip",
+          "12": "right_hip",
+          "13": "left_knee",
+          "14": "right_knee",
+          "15": "left_ankle",
+          "16": "right_ankle"
         },
-        "skeleton": [
-            [16,14],[14,12],[17,15],[15,13],[12,13],[6,12],
-            [7,13],[6,7],[6,8],[7,9],[8,10],[9,11],[2,3],
-            [1,2],[1,3],[2,4],[3,5],[4,6],[5,7]]
+        "skeleton":
+        [
+          [16,14],[14,12],[17,15],[15,13],[12,13],[6,12],
+          [7,13],[6,7],[6,8],[7,9],[8,10],[9,11],[2,3],
+          [1,2],[1,3],[2,4],[3,5],[4,6],[5,7]
+        ]
+      }
+
+
+
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -194,13 +205,15 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
 
         Args:
             outputs (list(preds, scores, image_path)):Output results.
-                preds (list[images x np.ndarray(P, K, 3+tag_num)]):
-                    Pose predictions for all people in images.
-                scores (list[images x P]):
-                image_path (list[str]): For example, [ 'c','o','c','o',
-                    '/',i','m','a','g','e','s','/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+
+                * preds (list[images x np.ndarray(P, K, 3+tag_num)]):
+                  Pose predictions for all people in images.
+                * scores (list[images x P]):
+                * image_path (list[str]): For example, [ 'c','o','c','o',
+                  '/',i','m','a','g','e','s','/', 'v','a', 'l',
+                  '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
+                  '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 

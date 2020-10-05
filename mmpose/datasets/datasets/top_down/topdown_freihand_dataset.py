@@ -19,7 +19,7 @@ class TopDownFreiHandDataset(TopDownBaseDataset):
     `FreiHAND: A Dataset for Markerless Capture of Hand Pose
     and Shape from Single RGB Images' ICCV'2019
     More details can be found in the `paper
-    <https://arxiv.org/pdf/1909.04349.pdf>`_ .
+    <https://arxiv.org/pdf/1909.04349.pdf>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
