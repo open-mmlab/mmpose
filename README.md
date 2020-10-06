@@ -119,8 +119,8 @@ Please refer to [data_preparation.md](docs/data_preparation.md) for a general kn
 ## Get Started
 
 Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
-There are also tutorials for [finetuning model](tutorials/finetune.md),
-[adding new dataset](tutorials/new_dataset.md), [adding new modules](tutorials/new_modules.md).
+There are also tutorials for [finetuning model](docs/tutorials/finetune.md),
+[adding new dataset](docs/tutorials/new_dataset.md), [adding new modules](docs/tutorials/new_modules.md).
 
 ## License
 
