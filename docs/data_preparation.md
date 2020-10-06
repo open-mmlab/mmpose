@@ -179,7 +179,7 @@ mmpose
 ## CrowdPose
 
 For CrowdPose data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
-Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
+Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
 We follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
