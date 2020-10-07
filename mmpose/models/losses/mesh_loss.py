@@ -234,7 +234,11 @@ class MeshLoss(nn.Module):
         pred_joints_2d = self.project_points(pred_joints_3d, pred_camera)
 
         # Normalize keypoints to [-1,1]
+        # The ordinate origin of pred_joints_2d is
+        #  the center of the input image.
         pred_joints_2d = pred_joints_2d / (self.img_res / 2.)
+        # The ordinate origin of gt_joints_2d is
+        # the top left corner of the input image.
         gt_joints_2d = gt_joints_2d / (self.img_res / 2.) - 1
         loss_joints_2d = self.joints_2d_loss(pred_joints_2d, gt_joints_2d,
                                              joints_2d_visible)
