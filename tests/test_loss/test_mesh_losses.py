@@ -12,11 +12,11 @@ def test_mesh_loss():
         type='MeshLoss',
         joints_2d_loss_weight=1,
         joints_3d_loss_weight=1,
-        vertices_loss_weight=1,
+        vertex_loss_weight=1,
         smpl_pose_loss_weight=1,
         smpl_beta_loss_weight=1,
-        focal_length=5000,
-        img_res=256)
+        img_res=256,
+        focal_length=5000)
 
     loss = build_loss(loss_cfg)
 
@@ -46,7 +46,7 @@ def test_mesh_loss():
     fake_gt['joints_2d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
 
     losses = loss(fake_pred, fake_gt)
-    assert torch.allclose(losses['vertices_loss'], torch.tensor(0.))
+    assert torch.allclose(losses['vertex_loss'], torch.tensor(0.))
     assert torch.allclose(losses['smpl_pose_loss'], torch.tensor(0.))
     assert torch.allclose(losses['smpl_beta_loss'], torch.tensor(0.))
     assert torch.allclose(losses['joints_3d_loss'], torch.tensor(0.))
@@ -72,7 +72,7 @@ def test_mesh_loss():
     fake_gt['joints_2d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
 
     losses = loss(fake_pred, fake_gt)
-    assert torch.allclose(losses['vertices_loss'], torch.tensor(1.))
+    assert torch.allclose(losses['vertex_loss'], torch.tensor(1.))
     assert torch.allclose(losses['smpl_pose_loss'], torch.tensor(1.))
     assert torch.allclose(losses['smpl_beta_loss'], torch.tensor(1.))
     assert torch.allclose(losses['joints_3d_loss'], torch.tensor(0.5 / 24))

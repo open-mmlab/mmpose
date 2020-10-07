@@ -21,7 +21,7 @@ def perspective_projection(points, rotation, translation, focal_length,
         camera_center (Tensor([B, 2])): Camera center
 
     Returns:
-        projected_points (Tensor([B, N, 3])): Projected 2D
+        projected_points (Tensor([B, N, 2])): Projected 2D
             points in image space.
     """
 
@@ -42,7 +42,6 @@ def perspective_projection(points, rotation, translation, focal_length,
     # Apply camera intrinsics
     projected_points = torch.einsum('bij,bkj->bki', K, projected_points)
     projected_points = projected_points[:, :, :-1]
-
     return projected_points
 
 
@@ -54,23 +53,23 @@ class MeshLoss(nn.Module):
     Args:
         joints_2d_loss_weight (float): Weight for loss on 2D joints.
         joints_3d_loss_weight (float): Weight for loss on 3D joints.
-        vertices_loss_weight (float): Weight for loss on 3D verteices.
+        vertex_loss_weight (float): Weight for loss on 3D verteices.
         smpl_pose_loss_weight (float): Weight for loss on SMPL
             pose parameters.
         smpl_beta_loss_weight (float): Weight for loss on SMPL
             shape parameters.
+        img_res (int): Input image resolution.
         focal_length (float): Focal length of camera model. Default=5000.
-        img_res (int): Input image resolution. Default=256.
     """
 
     def __init__(self,
                  joints_2d_loss_weight,
                  joints_3d_loss_weight,
-                 vertices_loss_weight,
+                 vertex_loss_weight,
                  smpl_pose_loss_weight,
                  smpl_beta_loss_weight,
-                 focal_length=5000,
-                 img_res=256):
+                 img_res,
+                 focal_length=5000):
 
         super().__init__()
         # Per-vertex loss on the mesh
@@ -85,7 +84,7 @@ class MeshLoss(nn.Module):
 
         self.joints_2d_loss_weight = joints_2d_loss_weight
         self.joints_3d_loss_weight = joints_3d_loss_weight
-        self.vertices_loss_weight = vertices_loss_weight
+        self.vertex_loss_weight = vertex_loss_weight
         self.smpl_pose_loss_weight = smpl_pose_loss_weight
         self.smpl_beta_loss_weight = smpl_beta_loss_weight
         self.focal_length = focal_length
@@ -120,16 +119,16 @@ class MeshLoss(nn.Module):
         else:
             return pred_joints_3d.sum() * 0
 
-    def vertices_loss(self, pred_vertices, gt_vertices, has_smpl):
+    def vertex_loss(self, pred_vertices, gt_vertices, has_smpl):
         """Compute 3D vertex loss for the examples that 3D human mesh
         annotations are available.
 
         The loss is weighted by the has_smpl.
         """
         conf = has_smpl.float()
-        loss_vertices = self.criterion_vertex(pred_vertices, gt_vertices)
-        loss_vertices = (conf[:, None, None] * loss_vertices).mean()
-        return loss_vertices
+        loss_vertex = self.criterion_vertex(pred_vertices, gt_vertices)
+        loss_vertex = (conf[:, None, None] * loss_vertex).mean()
+        return loss_vertex
 
     def smpl_losses(self, pred_rotmat, pred_betas, gt_pose, gt_betas,
                     has_smpl):
@@ -204,9 +203,8 @@ class MeshLoss(nn.Module):
 
         gt_vertices = target['vertices']
         has_smpl = target['has_smpl']
-        loss_vertices = self.vertices_loss(pred_vertices, gt_vertices,
-                                           has_smpl)
-        losses['vertices_loss'] = loss_vertices * self.vertices_loss_weight
+        loss_vertex = self.vertex_loss(pred_vertices, gt_vertices, has_smpl)
+        losses['vertex_loss'] = loss_vertex * self.vertex_loss_weight
 
         # Compute loss on SMPL parameters, if avaliable
         if 'pose' in output.keys() and 'beta' in output.keys():
@@ -263,7 +261,7 @@ class GANLoss(nn.Module):
                  real_label_val=1.0,
                  fake_label_val=0.0,
                  loss_weight=1.0):
-        super(GANLoss, self).__init__()
+        super().__init__()
         self.gan_type = gan_type
         self.loss_weight = loss_weight
         self.real_label_val = real_label_val
