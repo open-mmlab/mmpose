@@ -92,6 +92,70 @@ def test_top_down_COCO_dataset():
     _ = custom_dataset[0]
 
 
+def test_top_down_CrowdPose_dataset():
+    dataset = 'TopDownCrowdPoseDataset'
+    # test CrowdPose datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=14,
+        dataset_joints=14,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        ],
+        inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+
+    data_cfg = dict(
+        image_size=[192, 256],
+        heatmap_size=[48, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        bbox_thr=1.0,
+        use_gt_bbox=True,
+        image_thr=0.0,
+        bbox_file='tests/data/crowdpose/test_crowdpose_det_AP_40.json',
+    )
+    # Test det bbox
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['use_gt_bbox'] = False
+    _ = dataset_class(
+        ann_file='tests/data/crowdpose/test_crowdpose.json',
+        img_prefix='tests/data/crowdpose/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    _ = dataset_class(
+        ann_file='tests/data/crowdpose/test_crowdpose.json',
+        img_prefix='tests/data/crowdpose/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    # Test gt bbox
+    custom_dataset = dataset_class(
+        ann_file='tests/data/crowdpose/test_crowdpose.json',
+        img_prefix='tests/data/crowdpose/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+
+    image_id = 103319
+    assert image_id in custom_dataset.image_set_index
+    assert len(custom_dataset.image_set_index) == 2
+    _ = custom_dataset[0]
+
+
 def test_top_down_COCO_wholebody_dataset():
     dataset = 'TopDownCocoWholeBodyDataset'
     # test COCO datasets

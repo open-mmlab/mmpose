@@ -275,7 +275,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'scale': scale,
                 'rotation': 0,
                 'bbox_score': score,
-                'dataset': 'coco',
+                'dataset': self.dataset_name,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible
             })
