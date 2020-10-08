@@ -21,8 +21,10 @@ The master branch works with **PyTorch 1.3+**.
     COCO 17-keypoint pose estimation
 </div>
 <div align="center">
-    <img src="demo/demo_wholebody.gif" width="600px" alt><br>
-    133-keypoint whole-body pose estimation
+<img src="demo/demo_wholebody.gif" width="600px" alt><br>
+
+133-keypoint whole-body pose estimation (check for [full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
+
 </div>
 
 ### Major Features
