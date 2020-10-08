@@ -17,9 +17,13 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 The master branch works with **PyTorch 1.3+**.
 
 <div align="center">
-  <img src="demo/demo.gif" width="600px"/>
+    <img src="demo/demo_coco.gif" width="600px" alt><br>
+    COCO 17-keypoint pose
 </div>
-
+<div align="center">
+    <img src="demo/demo_wholebody.gif" width="600px" alt><br>
+    133-keypoint whole-body
+</div>
 
 ### Major Features
 
