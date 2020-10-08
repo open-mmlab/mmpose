@@ -26,7 +26,7 @@ def test_mesh_loss():
     camera = torch.tensor([[1, 0, 0]], dtype=torch.float32)
     vertices = torch.rand([1, 6890, 3], dtype=torch.float32)
     joints_3d = torch.ones([1, 24, 3], dtype=torch.float32)
-    joints_2d = loss.project_points(joints_3d, camera) + 128
+    joints_2d = loss.project_points(joints_3d, camera) + (256 - 1) / 2
 
     fake_pred = {}
     fake_pred['pose'] = smpl_rotmat
@@ -68,7 +68,7 @@ def test_mesh_loss():
     fake_gt['has_smpl'] = torch.ones(1, dtype=torch.float32)
     fake_gt['joints_3d'] = joints_3d_t
     fake_gt['joints_3d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
-    fake_gt['joints_2d'] = joints_2d + 128
+    fake_gt['joints_2d'] = joints_2d + (256 - 1) / 2
     fake_gt['joints_2d_visible'] = torch.ones([1, 24, 1], dtype=torch.float32)
 
     losses = loss(fake_pred, fake_gt)

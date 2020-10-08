@@ -236,10 +236,10 @@ class MeshLoss(nn.Module):
         # Normalize keypoints to [-1,1]
         # The coordinate origin of pred_joints_2d is
         #  the center of the input image.
-        pred_joints_2d = pred_joints_2d / (self.img_res / 2.)
+        pred_joints_2d = 2 * pred_joints_2d / (self.img_res - 1)
         # The coordinate origin of gt_joints_2d is
         # the top left corner of the input image.
-        gt_joints_2d = gt_joints_2d / (self.img_res / 2.) - 1
+        gt_joints_2d = 2 * gt_joints_2d / (self.img_res - 1) - 1
         loss_joints_2d = self.joints_2d_loss(pred_joints_2d, gt_joints_2d,
                                              joints_2d_visible)
         losses['joints_2d_loss'] = loss_joints_2d * self.joints_2d_loss_weight
