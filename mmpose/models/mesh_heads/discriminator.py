@@ -7,6 +7,7 @@ from abc import abstractmethod
 
 import torch
 import torch.nn as nn
+from mmcv.cnn import normal_init, xavier_init
 
 from .geometric_layers import batch_rodrigues
 
@@ -96,6 +97,12 @@ class BaseDiscriminator(nn.Module):
         msg = 'the base class [BaseDiscriminator] is not callable!'
         raise NotImplementedError(msg)
 
+    def init_weights(self):
+        """Initialize model weights."""
+        for m in self.fc_blocks.named_modules():
+            if isinstance(m, nn.Linear):
+                xavier_init(m, gain=0.01)
+
 
 class ShapeDiscriminator(BaseDiscriminator):
     """Discriminator for SMPL shape parameters, the inputs is (batch_size x 10)
@@ -174,6 +181,15 @@ class PoseDiscriminator(nn.Module):
             outputs.append(self.fc_layer[idx](internal_outputs[:, :, 0, idx]))
 
         return torch.cat(outputs, 1), internal_outputs
+
+    def init_weights(self):
+        """Initialize model weights."""
+        for m in self.conv_blocks:
+            if isinstance(m, nn.Conv2d):
+                normal_init(m, std=0.001, bias=0)
+        for m in self.fc_layer.named_modules():
+            if isinstance(m, nn.Linear):
+                xavier_init(m, gain=0.01)
 
 
 class FullPoseDiscriminator(BaseDiscriminator):
@@ -284,3 +300,9 @@ class SMPLDiscriminator(nn.Module):
             pose_inter_disc_value.contiguous().view(batch_size, -1))
         return torch.cat(
             (pose_disc_value, full_pose_disc_value, shape_disc_value), 1)
+
+    def init_weights(self):
+        """Initialize model weights."""
+        self.full_pose_discriminator.init_weights()
+        self.pose_discriminator.init_weights()
+        self.shape_discriminator.init_weights()
