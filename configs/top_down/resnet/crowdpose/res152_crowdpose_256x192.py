@@ -37,8 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet101-5d3b4d8f.pth',
-    backbone=dict(type='ResNet', depth=101),
+    pretrained='models/pytorch/imagenet/resnet152-b121ed2d.pth',
+    backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -54,8 +54,8 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[256, 320],
-    heatmap_size=[64, 80],
+    image_size=[192, 256],
+    heatmap_size=[48, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
