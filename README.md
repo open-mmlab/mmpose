@@ -23,13 +23,13 @@ The master branch works with **PyTorch 1.3+**.
 
 ### Major Features
 
-- **Support Diverse Tasks**
+- **Support diverse tasks**
 
-  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 133 keypoint whole-body human pose estimation, and 3d human mesh recovery. 
+  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 133 keypoint whole-body human pose estimation, and 3d human mesh recovery.
 
-- **Higher efficiency and Higher Accuracy**
+- **Higher efficiency and higher accuracy**
 
-  MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) and [AlphaPose](https://github.com/MVIG-SJTU/AlphaPose).
+  MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
   See [benchmark.md](docs/benchmark.md) for more information.
 
 - **Support for various datasets**
