@@ -17,24 +17,30 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 The master branch works with **PyTorch 1.3+**.
 
 <div align="center">
-  <img src="demo/demo.gif" width="600px"/>
+    <img src="demo/demo_coco.gif" width="600px" alt><br>
+    COCO 17-keypoint pose estimation
 </div>
+<div align="center">
+<img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
 
+133-keypoint whole-body pose estimation ([full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
+
+</div>
 
 ### Major Features
 
-- **Support top-down & bottom-up approaches**
+- **Support diverse tasks**
 
-  MMPose implements multiple state-of-the-art (SOTA) deep learning models for human pose estimation, including both top-down and bottom-up approaches.
+  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 133 keypoint whole-body human pose estimation, and 3d human mesh recovery.
 
-- **Higher efficiency and Higher Accuracy**
+- **Higher efficiency and higher accuracy**
 
-  We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
+  MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
   See [benchmark.md](docs/benchmark.md) for more information.
 
 - **Support for various datasets**
 
-  The toolbox directly supports multiple datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
+  The toolbox directly supports multiple popular and representative datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
   See [data_preparation.md](docs/data_preparation.md) for more information.
 
 - **Well designed, tested and documented**
