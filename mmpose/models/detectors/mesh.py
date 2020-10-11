@@ -151,7 +151,7 @@ class ParametricMesh(BasePose):
         pred_out = self.smpl(
             betas=pred_beta,
             body_pose=pred_pose[:, 1:],
-            global_orient=pred_pose[:, [0]],
+            global_orient=pred_pose[:, :1],
             pose2rot=False)
         pred_vertices = pred_out.vertices
         pred_joints_3d = self.get_3d_joints_from_mesh(pred_vertices)
@@ -230,7 +230,7 @@ class ParametricMesh(BasePose):
         pred_out = self.smpl(
             betas=pred_beta,
             body_pose=pred_pose[:, 1:],
-            global_orient=pred_pose[:, 0].unsqueeze(1),
+            global_orient=pred_pose[:, :1],
             pose2rot=False)
         pred_vertices = pred_out.vertices
         pred_joints_3d = self.get_3d_joints_from_mesh(pred_vertices)
