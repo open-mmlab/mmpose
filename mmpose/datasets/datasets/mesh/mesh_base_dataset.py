@@ -144,6 +144,10 @@ class MeshBaseDataset(Dataset, metaclass=ABCMeta):
             gt_db.append(newitem)
         return gt_db
 
+    def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
+        """Evaluate keypoint results."""
+        raise NotImplementedError
+
     def __len__(self, ):
         """Get the size of the dataset."""
         return len(self.db)
