@@ -23,8 +23,9 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-# model settings
 img_res = 224
+
+# model settings
 model = dict(
     type='ParametricMesh',
     pretrained=None,
@@ -32,12 +33,12 @@ model = dict(
     mesh_head=dict(
         type='MeshHMRHead',
         in_channels=2048,
-        smpl_mean_params='models/smpl/smpl_mean_params.npz',
+        smpl_mean_params='tests/data/smpl/smpl_mean_params.npz',
     ),
     disc=dict(),
     smpl=dict(
-        smpl_path='models/smpl',
-        joints_regressor='models/smpl/decomr_24_joints.npy'),
+        smpl_path='tests/data/smpl',
+        joints_regressor='tests/data/smpl/test_joint_regressor.npy'),
     train_cfg=dict(disc_step=1),
     test_cfg=dict(
         flip_test=False,
@@ -109,7 +110,7 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=4,
     workers_per_gpu=0,
     train=dict(
         type='MeshMixDataset',
