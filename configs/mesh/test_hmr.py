@@ -1,0 +1,140 @@
+log_level = 'INFO'
+load_from = None
+resume_from = None
+dist_params = dict(backend='nccl')
+workflow = [('train', 1)]
+checkpoint_config = dict(interval=2)
+evaluation = dict(
+    interval=2, metric='joint_error', key_indicator='MPJPE-PA', rule='less')
+
+optimizer = dict(
+    generator=dict(type='Adam', lr=2.5e-4),
+    discriminator=dict(type='Adam', lr=1e-4))
+
+optimizer_config = dict(grad_clip=None)
+
+lr_config = dict(policy='Fixed', by_epoch=False)
+
+total_epochs = 2
+log_config = dict(
+    interval=1,
+    hooks=[
+        dict(type='TextLoggerHook'),
+        # dict(type='TensorboardLoggerHook')
+    ])
+
+# model settings
+img_res = 224
+model = dict(
+    type='ParametricMesh',
+    pretrained=None,
+    backbone=dict(type='ResNet', depth=50),
+    mesh_head=dict(
+        type='MeshHMRHead',
+        in_channels=2048,
+        smpl_mean_params='models/smpl/smpl_mean_params.npz',
+    ),
+    disc=dict(),
+    smpl=dict(
+        smpl_path='models/smpl',
+        joints_regressor='models/smpl/decomr_24_joints.npy'),
+    train_cfg=dict(disc_step=1),
+    test_cfg=dict(
+        flip_test=False,
+        post_process=True,
+        shift_heatmap=True,
+        unbiased_decoding=False,
+        modulate_kernel=11),
+    loss_mesh=dict(
+        type='MeshLoss',
+        joints_2d_loss_weight=100,
+        joints_3d_loss_weight=1000,
+        vertex_loss_weight=20,
+        smpl_pose_loss_weight=30,
+        smpl_beta_loss_weight=0.2,
+        focal_length=5000,
+        img_res=img_res),
+    loss_gan=dict(
+        type='GANLoss',
+        gan_type='lsgan',
+        real_label_val=1.0,
+        fake_label_val=0.0,
+        loss_weight=1))
+
+data_cfg = dict(
+    image_size=[img_res, img_res],
+    iuv_size=[img_res // 4, img_res // 4],
+    num_joints=24,
+    use_IUV=False,
+    uv_type='BF')
+
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='MeshRandomChannelNoise', noise_factor=0.4),
+    dict(type='MeshRandomFlip', flip_prob=0.5),
+    dict(type='MeshGetRandomScaleRotation', rot_factor=30, scale_factor=0.25),
+    dict(type='MeshAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
+    dict(
+        type='Collect',
+        keys=[
+            'img', 'joints_2d', 'joints_2d_visible', 'joints_3d',
+            'joints_3d_visible', 'pose', 'beta', 'has_smpl'
+        ],
+        meta_keys=['image_file', 'center', 'scale', 'rotation']),
+]
+
+train_adv_pipeline = [dict(type='Collect', keys=['mosh_theta'], meta_keys=[])]
+
+val_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='MeshAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
+    dict(
+        type='Collect',
+        keys=[
+            'img',
+        ],
+        meta_keys=['image_file', 'center', 'scale', 'rotation']),
+]
+
+test_pipeline = val_pipeline
+
+data = dict(
+    samples_per_gpu=2,
+    workers_per_gpu=0,
+    train=dict(
+        type='MeshMixDataset',
+        configs=[
+            dict(
+                ann_file='tests/data/h36m/test_h36m.npz',
+                img_prefix='tests/data/h36m',
+                data_cfg=data_cfg,
+                pipeline=train_pipeline),
+            dict(
+                ann_file='tests/data/h36m/test_h36m.npz',
+                img_prefix='tests/data/h36m',
+                data_cfg=data_cfg,
+                pipeline=train_pipeline),
+        ],
+        partition=[0.6, 0.4]),
+    train_adv=dict(
+        type='MoshDataset',
+        ann_file='tests/data/mosh/test_mosh.npz',
+        pipeline=train_adv_pipeline),
+    val=dict(
+        type='MeshH36MDataset',
+        ann_file='tests/data/h36m/test_h36m.npz',
+        img_prefix='tests/data/h36m',
+        data_cfg=data_cfg,
+        pipeline=test_pipeline,
+    ),
+)
