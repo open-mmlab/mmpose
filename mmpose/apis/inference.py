@@ -52,6 +52,8 @@ def _xyxy2xywh(bbox_xyxy):
         np.ndarray: Bounding boxes (with scores),
           shaped (n, 4) or (n, 5). (left, top, width, height, [score])
     """
+    if len(bbox_xyxy) == 0:
+        return []
     bbox_xywh = bbox_xyxy.copy()
     bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
     bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
@@ -68,6 +70,8 @@ def _xywh2xyxy(bbox_xywh):
         np.ndarray: Bounding boxes (with scores), shaped (n, 4) or
           (n, 5). (left, top, right, bottom, [score])
     """
+    if len(bbox_xywh) == 0:
+        return []
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
     bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
