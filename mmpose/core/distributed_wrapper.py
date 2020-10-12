@@ -53,7 +53,7 @@ class DistributedDataParallelWrapper(nn.Module):
                  broadcast_buffers=False,
                  find_unused_parameters=False,
                  **kwargs):
-        super(DistributedDataParallelWrapper, self).__init__()
+        super().__init__()
         assert len(device_ids) == 1, (
             'Currently, DistributedDataParallelWrapper only supports one'
             'single CUDA device for each process.'
