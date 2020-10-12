@@ -106,6 +106,8 @@ val_pipeline = [
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
+test_pipeline = val_pipeline
+
 data_root = 'data/mpii'
 data = dict(
     samples_per_gpu=64,
