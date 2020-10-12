@@ -90,7 +90,7 @@ def train_model_adv(model,
         dataloader_setting = dict(
             # samples_per_gpu=cfg.data.get('samples_per_gpu', {}),
             samples_per_gpu=1,
-            workers_per_gpu=cfg.data.get('workers_per_gpu', {}),
+            workers_per_gpu=cfg.data.get('workers_per_gpu', 0),
             # cfg.gpus will be ignored if distributed
             num_gpus=len(cfg.gpu_ids),
             dist=distributed,
