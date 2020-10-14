@@ -7,11 +7,13 @@ checkpoint_config = dict(interval=2)
 evaluation = dict(
     interval=2, metric='joint_error', key_indicator='MPJPE-PA', rule='less')
 
+use_adversarial_train = True
+
 optimizer = dict(
     generator=dict(type='Adam', lr=2.5e-4),
     discriminator=dict(type='Adam', lr=1e-4))
 
-optimizer_config = dict(grad_clip=None)
+optimizer_config = None
 
 lr_config = dict(policy='Fixed', by_epoch=False)
 
@@ -108,10 +110,7 @@ val_pipeline = [
 ]
 
 test_pipeline = val_pipeline
-
-data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=0,
+'''
     train=dict(
         type='MeshMixDataset',
         configs=[
@@ -131,6 +130,34 @@ data = dict(
         type='MoshDataset',
         ann_file='tests/data/mosh/test_mosh.npz',
         pipeline=train_adv_pipeline),
+
+'''
+
+data = dict(
+    samples_per_gpu=4,
+    workers_per_gpu=0,
+    train=dict(
+        type='MeshAdversarialDataset',
+        train_dataset=dict(
+            type='MeshMixDataset',
+            configs=[
+                dict(
+                    ann_file='tests/data/h36m/test_h36m.npz',
+                    img_prefix='tests/data/h36m',
+                    data_cfg=data_cfg,
+                    pipeline=train_pipeline),
+                dict(
+                    ann_file='tests/data/h36m/test_h36m.npz',
+                    img_prefix='tests/data/h36m',
+                    data_cfg=data_cfg,
+                    pipeline=train_pipeline)
+            ],
+            partition=[0.6, 0.4]),
+        adversarial_dataset=dict(
+            type='MoshDataset',
+            ann_file='tests/data/mosh/test_mosh.npz',
+            pipeline=train_adv_pipeline),
+    ),
     val=dict(
         type='MeshH36MDataset',
         ann_file='tests/data/h36m/test_h36m.npz',

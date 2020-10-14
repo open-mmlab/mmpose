@@ -9,16 +9,15 @@ from mmpose.datasets.pipelines import Compose
 
 
 class MeshBaseDataset(Dataset, metaclass=ABCMeta):
-    """Base dataset for 3D human mesh estimation task. In 3D humamesh
+    """Base dataset for 3D human mesh estimation task.
+
+    In 3D humamesh
     estimation task, all datasets share this BaseDataset for training and have
     their own evaluate function.
-
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
-
     This dataset can only be used for training.
     For evaluation, subclass should write an extra evaluate function.
-
     Args:
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
@@ -143,10 +142,6 @@ class MeshBaseDataset(Dataset, metaclass=ABCMeta):
             newitem['has_iuv'] = has_iuv
             gt_db.append(newitem)
         return gt_db
-
-    def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
-        """Evaluate keypoint results."""
-        raise NotImplementedError
 
     def __len__(self, ):
         """Get the size of the dataset."""

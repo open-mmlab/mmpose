@@ -3,7 +3,9 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import (DistSamplerSeedHook, EpochBasedRunner, OptimizerHook,
                          build_optimizer)
 
-from mmpose.core import DistEvalHook, EvalHook, Fp16OptimizerHook
+from mmpose.core import (DistEvalHook, EvalHook, Fp16OptimizerHook,
+                         build_optimizers)
+from mmpose.core.distributed_wrapper import DistributedDataParallelWrapper
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.utils import get_root_logger
 
@@ -46,22 +48,39 @@ def train_model(model,
         build_dataloader(ds, **dataloader_setting) for ds in dataset
     ]
 
+    # determine wether use adversarial training precess or not
+    use_adverserial_train = cfg.get('use_adversarial_train', False)
+
     # put model on gpus
     if distributed:
         find_unused_parameters = cfg.get('find_unused_parameters', True)
         # Sets the `find_unused_parameters` parameter in
         # torch.nn.parallel.DistributedDataParallel
-        model = MMDistributedDataParallel(
-            model.cuda(),
-            device_ids=[torch.cuda.current_device()],
-            broadcast_buffers=False,
-            find_unused_parameters=find_unused_parameters)
+
+        if use_adverserial_train:
+            # Use DistributedDataParallelWrapper for adversarial training
+            model = DistributedDataParallelWrapper(
+                model,
+                device_ids=[torch.cuda.current_device()],
+                broadcast_buffers=False,
+                find_unused_parameters=find_unused_parameters)
+        else:
+            model = MMDistributedDataParallel(
+                model.cuda(),
+                device_ids=[torch.cuda.current_device()],
+                broadcast_buffers=False,
+                find_unused_parameters=find_unused_parameters)
     else:
         model = MMDataParallel(
             model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
 
     # build runner
-    optimizer = build_optimizer(model, cfg.optimizer)
+    if use_adverserial_train:
+        # build multiple optimizers for generator and discriminator
+        optimizer = build_optimizers(model, cfg.optimizer)
+    else:
+        optimizer = build_optimizer(model, cfg.optimizer)
+
     runner = EpochBasedRunner(
         model,
         optimizer=optimizer,
@@ -71,15 +90,20 @@ def train_model(model,
     # an ugly workaround to make .log and .log.json filenames the same
     runner.timestamp = timestamp
 
-    # fp16 setting
-    fp16_cfg = cfg.get('fp16', None)
-    if fp16_cfg is not None:
-        optimizer_config = Fp16OptimizerHook(
-            **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
-    elif distributed and 'type' not in cfg.optimizer_config:
-        optimizer_config = OptimizerHook(**cfg.optimizer_config)
+    if use_adverserial_train:
+        # The optimizer step process is included in the train_step function
+        # of the model, so the runner should NOT include optimizer hook.
+        optimizer_config = None
     else:
-        optimizer_config = cfg.optimizer_config
+        # fp16 setting
+        fp16_cfg = cfg.get('fp16', None)
+        if fp16_cfg is not None:
+            optimizer_config = Fp16OptimizerHook(
+                **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
+        elif distributed and 'type' not in cfg.optimizer_config:
+            optimizer_config = OptimizerHook(**cfg.optimizer_config)
+        else:
+            optimizer_config = cfg.optimizer_config
 
     # register hooks
     runner.register_training_hooks(cfg.lr_config, optimizer_config,
