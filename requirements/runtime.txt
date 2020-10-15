@@ -1,4 +1,5 @@
 dataclasses; python_version == '3.6'
+chumpy
 json_tricks
 matplotlib
 mmcv>=1.1.1
