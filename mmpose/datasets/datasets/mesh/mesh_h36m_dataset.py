@@ -29,7 +29,11 @@ class MeshH36MDataset(MeshBaseDataset):
 
     def evaluate(self, outputs, res_folder, metric='joint_error', logger=None):
         """Evaluate 3D keypoint results."""
-        assert metric == 'joint_error'
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['joint_error']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
         kpts = []
