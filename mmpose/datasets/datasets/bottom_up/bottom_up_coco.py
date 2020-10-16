@@ -13,46 +13,30 @@ from .bottom_up_base_dataset import BottomUpBaseDataset
 
 @DATASETS.register_module()
 class BottomUpCocoDataset(BottomUpBaseDataset):
-    """CocoDataset dataset for bottom-up pose estimation.
+    """COCO dataset for bottom-up pose estimation.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    Keypoint Order:
+    COCO keypoint indexes::
 
-    .. code-block:: JSON
-
-      {
-        "keypoints":
-        {
-          "0": "nose",
-          "1": "left_eye",
-          "2": "right_eye",
-          "3": "left_ear",
-          "4": "right_ear",
-          "5": "left_shoulder",
-          "6": "right_shoulder",
-          "7": "left_elbow",
-          "8": "right_elbow",
-          "9": "left_wrist",
-          "10": "right_wrist",
-          "11": "left_hip",
-          "12": "right_hip",
-          "13": "left_knee",
-          "14": "right_knee",
-          "15": "left_ankle",
-          "16": "right_ankle"
-        },
-        "skeleton":
-        [
-          [16,14],[14,12],[17,15],[15,13],[12,13],[6,12],
-          [7,13],[6,7],[6,8],[7,9],[8,10],[9,11],[2,3],
-          [1,2],[1,3],[2,4],[3,5],[4,6],[5,7]
-        ]
-      }
-
-
-
+        0: 'nose',
+        1: 'left_eye',
+        2: 'right_eye',
+        3: 'left_ear',
+        4: 'right_ear',
+        5: 'left_shoulder',
+        6: 'right_shoulder',
+        7: 'left_elbow',
+        8: 'right_elbow',
+        9: 'left_wrist',
+        10: 'right_wrist',
+        11: 'left_hip',
+        12: 'right_hip',
+        13: 'left_knee',
+        14: 'right_knee',
+        15: 'left_ankle',
+        16: 'right_ankle'
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -70,7 +54,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  data_cfg,
                  pipeline,
                  test_mode=False):
-
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
         self.ann_info['flip_index'] = [
@@ -85,18 +68,16 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        self.sigmas = np.array([
+            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
+            .87, .87, .89, .89
+        ]) / 10.0
+
         self.coco = COCO(ann_file)
 
         cats = [
             cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
         ]
-        self.ids = list(self.coco.imgs.keys())
-        if not test_mode:
-            self.ids = [
-                img_id for img_id in self.ids
-                if len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
-            ]
-
         self.classes = ['__background__'] + cats
         self.num_classes = len(self.classes)
         self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
@@ -104,12 +85,35 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         self._coco_ind_to_class_ind = dict(
             (self._class_to_coco_ind[cls], self._class_to_ind[cls])
             for cls in self.classes[1:])
+        self.image_set_index = self.coco.getImgIds()
+        if not test_mode:
+            self.image_set_index = [
+                img_id for img_id in self.image_set_index
+                if len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
+            ]
+        self.num_images = len(self.image_set_index)
+        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
+        self.dataset_name = 'coco'
 
-        self.num_images = len(self.ids)
+        print(f'=> num_images: {self.num_images}')
 
-    def __len__(self):
-        """Get dataset length."""
-        return len(self.ids)
+    def _get_mapping_id_name(self, imgs):
+        """
+        Args:
+            imgs (dict): dict of image info.
+
+        Returns:
+            tuple: Image name & id mapping dicts.
+
+            - id2name (dict): Mapping image id to name.
+            - name2id (dict): Mapping image name to id.
+        """
+        id2name = {}
+        name2id = {}
+        for image_id, image in imgs.items():
+            file_name = image['file_name']
+            id2name[image_id] = file_name
+            name2id[file_name] = image_id
 
     def _get_single(self, idx):
         """Get anno for a single image.
@@ -121,7 +125,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             dict: info for model training
         """
         coco = self.coco
-        img_id = self.ids[idx]
+        img_id = self.image_set_index[idx]
         ann_ids = coco.getAnnIds(imgIds=img_id)
         anno = coco.loadAnns(ann_ids)
 
@@ -138,10 +142,9 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         ]
 
         db_rec = {}
-        db_rec['dataset'] = 'coco'
-        db_rec['image_file'] = os.path.join(
-            self.img_prefix,
-            coco.loadImgs(img_id)[0]['file_name'])
+        db_rec['dataset'] = self.dataset_name
+        db_rec['image_file'] = os.path.join(self.img_prefix,
+                                            self.id2name[img_id])
         db_rec['mask'] = mask_list
         db_rec['joints'] = joints_list
 
@@ -176,7 +179,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
     def _get_mask(self, anno, idx):
         """Get ignore masks to mask out losses."""
         coco = self.coco
-        img_info = coco.loadImgs(self.ids[idx])[0]
+        img_info = coco.loadImgs(self.image_set_index[idx])[0]
 
         m = np.zeros((img_info['height'], img_info['width']), dtype=np.float32)
 
@@ -240,24 +243,20 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         kpts = defaultdict(list)
         # iterate over images
         for idx, _preds in enumerate(preds):
-            file_name = image_paths[idx]
+            str_image_path = image_paths[idx]
+            image_id = self.name2id[os.path.basename(str_image_path)]
             # iterate over people
             for idx_person, kpt in enumerate(_preds):
                 # use bbox area
                 area = (np.max(kpt[:, 0]) - np.min(kpt[:, 0])) * (
                     np.max(kpt[:, 1]) - np.min(kpt[:, 1]))
 
-                kpts[int(file_name[-16:-4])].append({
-                    'keypoints':
-                    kpt[:, 0:3],
-                    'score':
-                    scores[idx][idx_person],
-                    'tags':
-                    kpt[:, 3],
-                    'image_id':
-                    int(file_name[-16:-4]),
-                    'area':
-                    area
+                kpts[image_id].append({
+                    'keypoints': kpt[:, 0:3],
+                    'score': scores[idx][idx_person],
+                    'tags': kpt[:, 3],
+                    'image_id': image_id,
+                    'area': area,
                 })
 
         oks_nmsed_kpts = []
@@ -332,7 +331,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
         coco_det = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_det, 'keypoints')
+        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
