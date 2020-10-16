@@ -50,14 +50,14 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.ann_info['flip_index'] = [
-            0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
+            1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 12, 13
         ]
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
+                0.2, 0.2, 0.2, 1.3, 1.5, 0.2, 1.3, 1.5, 0.2, 0.2, 0.5, 0.2,
+                0.2, 0.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
