@@ -115,6 +115,8 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             id2name[image_id] = file_name
             name2id[file_name] = image_id
 
+        return id2name, name2id
+
     def _get_single(self, idx):
         """Get anno for a single image.
 
@@ -184,17 +186,18 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         m = np.zeros((img_info['height'], img_info['width']), dtype=np.float32)
 
         for obj in anno:
-            if obj['iscrowd']:
-                rle = xtcocotools.mask.frPyObjects(obj['segmentation'],
-                                                   img_info['height'],
-                                                   img_info['width'])
-                m += xtcocotools.mask.decode(rle)
-            elif obj['num_keypoints'] == 0:
-                rles = xtcocotools.mask.frPyObjects(obj['segmentation'],
-                                                    img_info['height'],
-                                                    img_info['width'])
-                for rle in rles:
+            if 'segmentation' in obj:
+                if obj['iscrowd']:
+                    rle = xtcocotools.mask.frPyObjects(obj['segmentation'],
+                                                       img_info['height'],
+                                                       img_info['width'])
                     m += xtcocotools.mask.decode(rle)
+                elif obj['num_keypoints'] == 0:
+                    rles = xtcocotools.mask.frPyObjects(
+                        obj['segmentation'], img_info['height'],
+                        img_info['width'])
+                    for rle in rles:
+                        m += xtcocotools.mask.decode(rle)
 
         return m < 0.5
 
