@@ -82,7 +82,7 @@ model = dict(
     keypoint_head=dict(
         type='BottomUpHigherResolutionHead',
         in_channels=32,
-        num_joints=17,
+        num_joints=14,
         tag_per_joint=True,
         extra=dict(final_conv_kernel=1, ),
         num_deconv_layers=1,
@@ -113,7 +113,7 @@ model = dict(
         flip_test=True),
     loss_pose=dict(
         type='MultiLossFactory',
-        num_joints=17,
+        num_joints=14,
         num_stages=2,
         ae_loss_type='exp',
         with_ae_loss=[True, False],
