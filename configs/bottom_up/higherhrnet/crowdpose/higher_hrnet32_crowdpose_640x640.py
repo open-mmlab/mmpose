@@ -27,19 +27,18 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    dataset_joints=17,
+    num_output_channels=14,
+    dataset_joints=14,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-    ])
+    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
 data_cfg = dict(
-    image_size=512,
-    base_size=256,
+    image_size=640,
+    base_size=320,
     base_sigma=2,
-    heatmap_size=[128, 256],
+    heatmap_size=[160, 320],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -153,6 +152,7 @@ train_pipeline = [
 val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    # dict(type='BottomUpGetImgSize', test_scale_factor=[0.5, 1, 2]),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
@@ -175,26 +175,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/crowdpose'
 data = dict(
-    samples_per_gpu=24,
+    samples_per_gpu=16,
     workers_per_gpu=2,
     train=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='BottomUpCrowdPoseDataset',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpCrowdPoseDataset',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpCrowdPoseDataset',
+        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=test_pipeline),
 )
