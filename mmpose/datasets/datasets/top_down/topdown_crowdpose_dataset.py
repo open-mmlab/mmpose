@@ -120,8 +120,8 @@ class TopDownCrowdPoseDataset(TopDownCocoDataset):
         coco_eval.summarize()
 
         stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AP(E)', 'AP(M)', 'AP(H)'
+            'AP', 'AP .5', 'AP .75', 'AR', 'AR .5', 'AR .75', 'AP(E)', 'AP(M)',
+            'AP(H)'
         ]
 
         info_str = list(zip(stats_names, coco_eval.stats))
