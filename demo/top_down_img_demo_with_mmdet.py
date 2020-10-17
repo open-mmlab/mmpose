@@ -64,7 +64,7 @@ def main():
     person_bboxes = det_results[0].copy()
 
     # test a single image, with a list of bboxes.
-    pose_results = inference_top_down_pose_model(
+    pose_results, outputs = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_bboxes,

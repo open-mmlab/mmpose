@@ -55,7 +55,8 @@ def main():
         image_name = os.path.join(args.img_root, image['file_name'])
 
         # test a single image, with a list of bboxes.
-        pose_results = inference_bottom_up_pose_model(pose_model, image_name)
+        pose_results, heatmap = inference_bottom_up_pose_model(
+            pose_model, image_name)
 
         if args.out_img_root == '':
             out_file = None

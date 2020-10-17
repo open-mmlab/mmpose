@@ -288,10 +288,13 @@ class TopDownCocoDataset(TopDownBaseDataset):
         saved in `${res_folder}/result_keypoints.json`.
 
         Note:
+            batch_size: N
             num_keypoints: K
+            heatmap height: H
+            heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path))
+            outputs (list(preds, boxes, image_path, output_cpu))
                 :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
@@ -299,6 +302,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 :image_path (list[str]): For example, [ '/', 'v','a', 'l',
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :output_cpu (np.ndarray[N, K, H, W]): model outpus.
+
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
@@ -314,7 +319,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = defaultdict(list)
-        for preds, boxes, image_path in outputs:
+        for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
             image_id = self.name2id[os.path.basename(str_image_path)]
 

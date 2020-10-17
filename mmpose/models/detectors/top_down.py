@@ -179,6 +179,7 @@ class TopDown(BasePose):
                     output_flipped.clone()[:, :, :, 0:-1]
             output = (output + output_flipped) * 0.5
 
+        output_cpu = output.clone().cpu().numpy()
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -187,7 +188,7 @@ class TopDown(BasePose):
             score = np.array(img_metas['bbox_score']).reshape(-1)
 
         preds, maxvals = keypoints_from_heatmaps(
-            output.clone().cpu().numpy(),
+            output_cpu,
             c,
             s,
             post_process=self.test_cfg['post_process'],
@@ -206,7 +207,7 @@ class TopDown(BasePose):
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
 
-        return all_preds, all_boxes, image_path
+        return all_preds, all_boxes, image_path, output_cpu
 
     def show_result(self,
                     img,

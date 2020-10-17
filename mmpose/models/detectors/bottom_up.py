@@ -243,7 +243,9 @@ class BottomUp(BasePose):
         image_path = []
         image_path.extend(img_metas['image_file'])
 
-        return results, scores, image_path
+        output_cpu = aggregated_heatmaps.clone().cpu().numpy()
+
+        return results, scores, image_path, output_cpu
 
     def show_result(self,
                     img,
