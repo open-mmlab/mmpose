@@ -35,13 +35,13 @@ class MeshMixDataset(Dataset, metaclass=ABCMeta):
         """Get the size of the dataset."""
         return self.length
 
-    def __getitem__(self, index):
+    def __getitem__(self, idx):
         """Given index, sample the data from multiple datasets with the given
         proportion."""
         p = np.random.rand()
         for i in range(len(self.datasets)):
             if p <= self.partition[i]:
-                index_new = (index + np.random.rand()) * len(
+                index_new = (idx + np.random.rand()) * len(
                     self.datasets[i]) / self.length
                 index_new = int(np.round(index_new)) % (len(self.datasets[i]))
                 return self.datasets[i][index_new]
