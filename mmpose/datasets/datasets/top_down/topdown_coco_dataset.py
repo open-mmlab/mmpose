@@ -321,7 +321,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
-            image_id = self.name2id[os.path.basename(str_image_path)]
+            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -337,8 +337,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
         oks_nmsed_kpts = []
-        for img in kpts.keys():
-            img_kpts = kpts[img]
+        for image_id in kpts.keys():
+            img_kpts = kpts[image_id]
             for n_p in img_kpts:
                 box_score = n_p['score']
                 kpt_score = 0

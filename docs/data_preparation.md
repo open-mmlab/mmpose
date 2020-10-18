@@ -206,6 +206,67 @@ mmpose
             │-- ...
 ```
 
+## PoseTrack18
+
+For PoseTrack18 data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
+Please download the annotation files from [posetrack18_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/posetrack18_annotations.tar).
+We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json).
+The person detection results of PoseTrack2018 val are from [LightTrack](https://github.com/Guanghan/lighttrack). To save space, we have filtered out some low-score boxes (score < 0.1).
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── posetrack18
+        │-- annotations
+        │   │-- posetrack18_train.json
+        │   │-- posetrack18_val.json
+        │   │-- posetrack18_val_human_detections.json
+        │   │-- train
+        │   │   │-- 000001_bonn_train.json
+        │   │   │-- 000002_bonn_train.json
+        │   │   │-- ...
+        │   │-- val
+        │   │   │-- 000342_mpii_test.json
+        │   │   │-- 000522_mpii_test.json
+        │   │   │-- ...
+        │   `-- test
+        │       │-- 000001_mpiinew_test.json
+        │       │-- 000002_mpiinew_test.json
+        │       │-- ...
+        │
+        `-- images
+            │-- train
+            │   │-- 000001_bonn_train
+            │   │   │-- 000000.jpg
+            │   │   │-- 000001.jpg
+            │   │   │-- ...
+            │   │-- ...
+            │-- val
+            │   │-- 000342_mpii_test
+            │   │   │-- 000000.jpg
+            │   │   │-- 000001.jpg
+            │   │   │-- ...
+            │   │-- ...
+            `-- test
+                │-- 000001_mpiinew_test
+                │   │-- 000000.jpg
+                │   │-- 000001.jpg
+                │   │-- ...
+                │-- ...
+```
+
+The official evaluation tool for PoseTrack should be installed from GitHub.
+```
+pip install git+https://github.com/svenkreiss/poseval.git
+```
+
+
 ## OCHuman
 
 For OCHuman data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
