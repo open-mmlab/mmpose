@@ -62,7 +62,8 @@ def main():
         if not flag:
             break
 
-        pose_results = inference_bottom_up_pose_model(pose_model, img)
+        pose_results, heatmaps = inference_bottom_up_pose_model(
+            pose_model, img)
 
         # show the results
         vis_img = vis_pose_result(

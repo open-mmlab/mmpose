@@ -67,7 +67,7 @@ def main():
             person_bboxes.append(bbox)
 
         # test a single image, with a list of bboxes.
-        pose_results = inference_top_down_pose_model(
+        pose_results, heatmaps = inference_top_down_pose_model(
             pose_model,
             image_name,
             person_bboxes,

@@ -146,6 +146,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
 
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
+        ndarray[NxKxHxW]: Model output heatmap.
     """
     cfg = model.cfg
     device = next(model.parameters()).device
@@ -222,10 +223,10 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _ = model(
+        all_preds, _, _, heatmap = model(
             return_loss=False, img=data['img'], img_metas=data['img_metas'])
 
-    return all_preds[0]
+    return all_preds[0], heatmap
 
 
 def inference_top_down_pose_model(model,
@@ -266,13 +267,14 @@ def inference_top_down_pose_model(model,
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
     pose_results = []
+    heatmaps = []
 
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
         for bbox in person_bboxes:
-            pose = _inference_single_pose_model(model, img_or_path, bbox,
-                                                dataset)
+            pose, heatmap = _inference_single_pose_model(
+                model, img_or_path, bbox, dataset)
             pose_results.append({
                 'bbox':
                 _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
@@ -280,7 +282,9 @@ def inference_top_down_pose_model(model,
                 pose,
             })
 
-    return pose_results
+            heatmaps.append(heatmap)
+
+    return pose_results, heatmaps
 
 
 def inference_bottom_up_pose_model(model, img_or_path):
@@ -336,7 +340,7 @@ def inference_bottom_up_pose_model(model, img_or_path):
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _ = model(
+        all_preds, _, _, heatmap = model(
             return_loss=False, img=data['img'], img_metas=data['img_metas'])
 
     for pred in all_preds:
@@ -344,7 +348,7 @@ def inference_bottom_up_pose_model(model, img_or_path):
             'keypoints': pred[:, :3],
         })
 
-    return pose_results
+    return pose_results, heatmap
 
 
 def vis_pose_result(model,
