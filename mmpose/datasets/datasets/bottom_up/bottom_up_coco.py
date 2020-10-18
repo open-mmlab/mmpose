@@ -210,7 +210,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             num_keypoints: K
 
         Args:
-            outputs (list(preds, scores, image_path)):Output results.
+            outputs (list(preds, scores, image_path, output_heatmap)):
 
                 * preds (list[images x np.ndarray(P, K, 3+tag_num)]):
                   Pose predictions for all people in images.
@@ -219,6 +219,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                   '/',i','m','a','g','e','s','/', 'v','a', 'l',
                   '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                   '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                * output_heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
@@ -238,7 +239,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         scores = []
         image_paths = []
 
-        for _preds, _scores, _image_path in outputs:
+        for _preds, _scores, _image_path, _ in outputs:
             preds.append(_preds)
             scores.append(_scores)
             image_paths.append(''.join(_image_path))
