@@ -1,7 +1,6 @@
 import torch
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
-from mmcv.runner import (DistSamplerSeedHook, EpochBasedRunner, OptimizerHook,
-                         build_optimizer)
+from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, OptimizerHook
 
 from mmpose.core import (DistEvalHook, EvalHook, Fp16OptimizerHook,
                          build_optimizers)
@@ -75,11 +74,7 @@ def train_model(model,
             model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
 
     # build runner
-    if use_adverserial_train:
-        # build multiple optimizers for generator and discriminator
-        optimizer = build_optimizers(model, cfg.optimizer)
-    else:
-        optimizer = build_optimizer(model, cfg.optimizer)
+    optimizer = build_optimizers(model, cfg.optimizer)
 
     runner = EpochBasedRunner(
         model,
