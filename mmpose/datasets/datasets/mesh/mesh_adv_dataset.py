@@ -1,7 +1,7 @@
 import numpy as np
 from torch.utils.data import Dataset
 
-from mmpose.datasets.builder import DATASETS
+from mmpose.datasets.builder import DATASETS, build_dataset
 
 
 @DATASETS.register_module()
@@ -20,8 +20,8 @@ class MeshAdversarialDataset(Dataset):
 
     def __init__(self, train_dataset, adversarial_dataset):
         super().__init__()
-        self.train_dataset = train_dataset
-        self.adversarial_dataset = adversarial_dataset
+        self.train_dataset = build_dataset(train_dataset)
+        self.adversarial_dataset = build_dataset(adversarial_dataset)
         self.length = len(self.train_dataset)
 
     def __len__(self):

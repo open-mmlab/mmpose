@@ -76,15 +76,14 @@ def test_mesh_Adversarial_dataset():
     # test mesh Adversarial dataset
 
     # load train dataset
-    dataset = 'MeshMixDataset'
-    dataset_class = DATASETS.get(dataset)
     data_cfg = dict(
         image_size=[256, 256],
         iuv_size=[64, 64],
         num_joints=24,
         use_IUV=True,
         uv_type='BF')
-    train_dataset = dataset_class(
+    train_dataset = dict(
+        type='MeshMixDataset',
         configs=[
             dict(
                 ann_file='tests/data/h36m/test_h36m.npz',
@@ -100,10 +99,10 @@ def test_mesh_Adversarial_dataset():
         partition=[0.6, 0.4])
 
     # load adversarial dataset
-    dataset = 'MoshDataset'
-    dataset_class = DATASETS.get(dataset)
-    adversarial_dataset = dataset_class(
-        ann_file='tests/data/mosh/test_mosh.npz', pipeline=[])
+    adversarial_dataset = dict(
+        type='MoshDataset',
+        ann_file='tests/data/mosh/test_mosh.npz',
+        pipeline=[])
 
     # combine train and adversarial dataset to form a new dataset
     dataset = 'MeshAdversarialDataset'
