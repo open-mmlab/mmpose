@@ -27,7 +27,17 @@
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.750 | 0.908 | 0.821 | 0.800 | 0.942 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
 
-### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
+#### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) detector.
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/crowdpose/res50_crowdpose_256x192.py)  | 256x192 | 0.707 | 0.914 | 0.769 | 0.773 | 0.937 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_20200709.log.json) |
+| [pose_resnet_101](/configs/top_down/resnet/crowdpose/res101_crowdpose_256x192.py) | 256x192 | 0. | 0. | 0. | 0. | 0. | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192_20200708.log.json) |
+| [pose_resnet_152](/configs/top_down/resnet/crowdpose/res101_crowdpose_320x256.py) | 256x192 | 0. | 0. | 0. | 0. | 0. | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192_20200709.log.json) |
+
+Note: All models are trained on CrowdPose train, validated on CrowdPose val, and tested on CrowdPose test.
+
+#### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
 | :---- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :-----: | :-----: | :------: |:-------: |:------: | :------: |
@@ -76,6 +86,16 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_50](/configs/top_down/resnet/mpii_trb/res50_mpii_trb_256x256.py)  | 256x256 | 0.887 | 0.858 | 0.868 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256_20200812.log.json) |
 | [pose_resnet_101](/configs/top_down/resnet/mpii_trb/res101_mpii_trb_256x256.py)  | 256x256 | 0.890 | 0.863 | 0.873 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256_20200812.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/mpii_trb/res152_mpii_trb_256x256.py)  | 256x256 | 0.897 | 0.868 | 0.879 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256_20200812.log.json) |
+
+
+### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector.
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
+| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
+| [pose_resnet_50](/configs/top_down/resnet/crowdpose/res50_crowdpose_256x192.py)  | 256x192 | 0.634 | 0.805 | 0.689 | 0.742 | 0.646 | 0.503 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192-f1ddd03a_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192_20201017.log.json) |
+| [pose_resnet_101](/configs/top_down/resnet/crowdpose/res101_crowdpose_256x192.py)  | 256x192 | 0.647 | 0.814 | 0.703 | 0.748 | 0.658 | 0.518 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192-ad003be3_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192_20201017.log.json) |
+| [pose_resnet_101](/configs/top_down/resnet/crowdpose/res101_crowdpose_320x256.py)  | 320x256 | 0.659 | 0.819 | 0.713 | 0.757 | 0.669 | 0.536 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-7723ede3_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256_20201017.log.json) |
+| [pose_resnet_152](/configs/top_down/resnet/crowdpose/res152_crowdpose_256x192.py)  | 256x192 | 0.653 | 0.815 | 0.710 | 0.751 | 0.665 | 0.526 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192-a6507ad0_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192_20201017.log.json) |
 
 
 ### 2d Hand Pose Estimation

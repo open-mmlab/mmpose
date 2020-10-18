@@ -13,7 +13,9 @@
 
 ## Results and models
 
-### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### 2d Human Pose Estimation
+
+#### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -25,7 +27,7 @@
 | [dark_pose_hrnet_w48](/configs/top_down/darkpose/coco/hrnet_w48_coco_256x192_dark.py) | 256x192 | 0.764 | 0.907 | 0.830 | 0.814 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark_20200812.log.json) |
 | [dark_pose_hrnet_w48](/configs/top_down/darkpose/coco/hrnet_w48_coco_384x288_dark.py) | 384x288 | 0.773 | 0.910 | 0.833 | 0.820 | 0.946 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark-741844ba_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark_20200812.log.json) |
 
-### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
+#### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
 | :---- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :-----: | :-----: | :------: |:-------: |:------: | :------: |
@@ -35,7 +37,7 @@
 Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on COCO-WholeBody dataset. We find this will lead to better performance.
 
 
-### Results on MPII val set.
+#### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |

@@ -53,12 +53,12 @@ class BottomUpBaseDataset(Dataset):
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
 
-        self.db = []
+        self.img_ids = []
         self.pipeline = Compose(self.pipeline)
 
-    def __len__(self, ):
-        """Get the size of the dataset."""
-        pass
+    def __len__(self):
+        """Get dataset length."""
+        return len(self.img_ids)
 
     def _get_single(self, idx):
         """Get anno for a single image."""

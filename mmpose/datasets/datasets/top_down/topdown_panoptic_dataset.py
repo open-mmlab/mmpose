@@ -75,8 +75,8 @@ class TopDownPanopticDataset(TopDownBaseDataset):
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
         self.coco = COCO(ann_file)
-        self.image_set_index = self.coco.getImgIds()
-        self.num_images = len(self.image_set_index)
+        self.img_ids = self.coco.getImgIds()
+        self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'panoptic'
 
@@ -108,10 +108,10 @@ class TopDownPanopticDataset(TopDownBaseDataset):
     def _get_db(self):
         """Load dataset."""
         gt_db = []
-        for index in self.image_set_index:
+        for img_id in self.img_ids:
             num_joints = self.ann_info['num_joints']
 
-            ann_ids = self.coco.getAnnIds(imgIds=index, iscrowd=False)
+            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
             objs = self.coco.loadAnns(ann_ids)
 
             rec = []
@@ -127,7 +127,8 @@ class TopDownPanopticDataset(TopDownBaseDataset):
 
                 center, scale = self._xywh2cs(*obj['bbox'][:4])
 
-                image_file = os.path.join(self.img_prefix, self.id2name[index])
+                image_file = os.path.join(self.img_prefix,
+                                          self.id2name[img_id])
                 rec.append({
                     'image_file': image_file,
                     'center': center,

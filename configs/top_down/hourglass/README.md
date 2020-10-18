@@ -14,7 +14,9 @@
 
 ## Results and models
 
-### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### 2d Human Pose Estimation
+
+#### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -22,7 +24,7 @@
 | [pose_hourglass_52](/configs/top_down/hourglass/coco/hourglass52_coco_384x384.py) | 384x384 | 0.746 | 0.900 | 0.813 | 0.797 | 0.939 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_coco_384x384-be91ba2b_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_coco_384x384_20200812.log.json) |
 
 
-### Results on MPII val set.
+#### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
