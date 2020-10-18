@@ -294,7 +294,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_cpu))
+            outputs (list(preds, boxes, image_path, output_heatmap))
                 :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
@@ -302,7 +302,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 :image_path (list[str]): For example, [ '/', 'v','a', 'l',
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
-                :output_cpu (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
