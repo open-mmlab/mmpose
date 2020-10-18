@@ -102,8 +102,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self._coco_ind_to_class_ind = dict(
             (self._class_to_coco_ind[cls], self._class_to_ind[cls])
             for cls in self.classes[1:])
-        self.image_set_index = self.coco.getImgIds()
-        self.num_images = len(self.image_set_index)
+        self.img_ids = self.coco.getImgIds()
+        self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'coco'
 
@@ -145,26 +145,26 @@ class TopDownCocoDataset(TopDownBaseDataset):
     def _load_coco_keypoint_annotations(self):
         """Ground truth bbox and keypoints."""
         gt_db = []
-        for index in self.image_set_index:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernel(index))
+        for img_id in self.img_ids:
+            gt_db.extend(self._load_coco_keypoint_annotation_kernel(img_id))
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernel(self, index):
+    def _load_coco_keypoint_annotation_kernel(self, img_id):
         """load annotation from COCOAPI.
 
         Note:
             bbox:[x1, y1, w, h]
         Args:
-            index: coco image id
+            img_id: coco image id
         Returns:
             dict: db entry
         """
-        img_ann = self.coco.loadImgs(index)[0]
+        img_ann = self.coco.loadImgs(img_id)[0]
         width = img_ann['width']
         height = img_ann['height']
         num_joints = self.ann_info['num_joints']
 
-        ann_ids = self.coco.getAnnIds(imgIds=index, iscrowd=False)
+        ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
         objs = self.coco.loadAnns(ann_ids)
 
         # sanitize bboxes
@@ -193,7 +193,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
 
-            image_file = os.path.join(self.img_prefix, self.id2name[index])
+            image_file = os.path.join(self.img_prefix, self.id2name[img_id])
             rec.append({
                 'image_file': image_file,
                 'center': center,

@@ -83,6 +83,6 @@ def test_bottom_up_CrowdPose_dataset():
         test_mode=True)
 
     image_id = 103319
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 2
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]

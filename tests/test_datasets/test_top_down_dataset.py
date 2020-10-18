@@ -87,8 +87,8 @@ def test_top_down_COCO_dataset():
     assert custom_dataset.test_mode is True
 
     image_id = 785
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 4
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
 
@@ -151,8 +151,8 @@ def test_top_down_CrowdPose_dataset():
     assert custom_dataset.test_mode is True
 
     image_id = 103319
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 2
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
 
@@ -215,8 +215,8 @@ def test_top_down_COCO_wholebody_dataset():
     assert custom_dataset.test_mode is True
 
     image_id = 785
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 4
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
 
@@ -276,8 +276,8 @@ def test_top_down_OCHuman_dataset():
     assert custom_dataset.test_mode is True
 
     image_id = 1
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 3
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
 
@@ -587,6 +587,6 @@ def test_top_down_AIC_dataset():
     assert custom_dataset.test_mode is True
 
     image_id = 1
-    assert image_id in custom_dataset.image_set_index
-    assert len(custom_dataset.image_set_index) == 3
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]

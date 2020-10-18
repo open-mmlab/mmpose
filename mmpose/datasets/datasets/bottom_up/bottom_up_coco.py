@@ -85,13 +85,13 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         self._coco_ind_to_class_ind = dict(
             (self._class_to_coco_ind[cls], self._class_to_ind[cls])
             for cls in self.classes[1:])
-        self.image_set_index = self.coco.getImgIds()
+        self.img_ids = self.coco.getImgIds()
         if not test_mode:
-            self.image_set_index = [
-                img_id for img_id in self.image_set_index
+            self.img_ids = [
+                img_id for img_id in self.img_ids
                 if len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
             ]
-        self.num_images = len(self.image_set_index)
+        self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'coco'
 
@@ -127,7 +127,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             dict: info for model training
         """
         coco = self.coco
-        img_id = self.image_set_index[idx]
+        img_id = self.img_ids[idx]
         ann_ids = coco.getAnnIds(imgIds=img_id)
         anno = coco.loadAnns(ann_ids)
 
@@ -181,7 +181,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
     def _get_mask(self, anno, idx):
         """Get ignore masks to mask out losses."""
         coco = self.coco
-        img_info = coco.loadImgs(self.image_set_index[idx])[0]
+        img_info = coco.loadImgs(self.img_ids[idx])[0]
 
         m = np.zeros((img_info['height'], img_info['width']), dtype=np.float32)
 
