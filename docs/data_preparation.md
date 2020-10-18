@@ -180,7 +180,8 @@ mmpose
 
 For CrowdPose data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
 Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
-We follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
+For top-down approaches, we follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
+For model training, we follow [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation) to train models on CrowdPose train/val dataset, and evaluate models on CrowdPose test dataset.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -195,6 +196,7 @@ mmpose
         │-- annotations
         │   │-- mmpose_crowdpose_train.json
         │   │-- mmpose_crowdpose_val.json
+        │   │-- mmpose_crowdpose_trainval.json
         │   │-- mmpose_crowdpose_test.json
         │   │-- det_for_crowd_test_0.1_0.5.json
         │-- images

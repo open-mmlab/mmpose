@@ -13,7 +13,9 @@
 
 ## Results and models
 
-### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
+### 2d Human Pose Estimation
+
+#### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -25,7 +27,7 @@
 | [pose_resnetv1d_152](/configs/top_down/resnetv1d/coco/resnetv1d152_coco_384x288.py) | 384x288 | 0.752 | 0.909 | 0.821 | 0.802 | 0.944 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-626c622d_20200730.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-20200730.log.json) |
 
 
-### Results on MPII val set.
+#### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |

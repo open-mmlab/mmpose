@@ -1,11 +1,11 @@
-from .bottom_up import BottomUpCocoDataset
+from .bottom_up import BottomUpCocoDataset, BottomUpCrowdPoseDataset
 from .mesh import (MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
                    MoshDataset)
 from .top_down import (TopDownAicDataset, TopDownCocoDataset,
-                       TopDownCocoWholeBodyDataset, TopDownFreiHandDataset,
-                       TopDownMpiiDataset, TopDownMpiiTrbDataset,
-                       TopDownOCHumanDataset, TopDownOneHand10KDataset,
-                       TopDownPanopticDataset)
+                       TopDownCocoWholeBodyDataset, TopDownCrowdPoseDataset,
+                       TopDownFreiHandDataset, TopDownMpiiDataset,
+                       TopDownMpiiTrbDataset, TopDownOCHumanDataset,
+                       TopDownOneHand10KDataset, TopDownPanopticDataset)
 
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'TopDownMpiiDataset',
@@ -13,5 +13,6 @@ __all__ = [
     'TopDownPanopticDataset', 'TopDownFreiHandDataset',
     'TopDownOCHumanDataset', 'TopDownAicDataset',
     'TopDownCocoWholeBodyDataset', 'MeshH36MDataset', 'MeshMixDataset',
-    'MoshDataset', 'MeshAdversarialDataset'
+    'MoshDataset', 'MeshAdversarialDataset', 'TopDownCrowdPoseDataset',
+    'BottomUpCrowdPoseDataset'
 ]

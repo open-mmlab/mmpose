@@ -62,7 +62,7 @@ class TopDownBaseDataset(Dataset, metaclass=ABCMeta):
         """Evaluate keypoint results."""
         raise NotImplementedError
 
-    def __len__(self, ):
+    def __len__(self):
         """Get the size of the dataset."""
         return len(self.db)
 
