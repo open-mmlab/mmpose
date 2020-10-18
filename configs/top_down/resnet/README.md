@@ -37,7 +37,7 @@
 
 Note: All models are trained on CrowdPose train, validated on CrowdPose val, and tested on CrowdPose test.
 
-### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
+#### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
 | :---- | :--------: | :-----: | :-----: | :-----: | :-----: | :-----: | :------: | :-----: | :-----: | :------: |:-------: |:------: | :------: |
