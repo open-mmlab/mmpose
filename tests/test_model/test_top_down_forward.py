@@ -21,7 +21,7 @@ def test_topdown_forward():
             shift_heatmap=True,
             unbiased_decoding=False,
             modulate_kernel=11),
-        loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
+        loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
     detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
@@ -84,8 +84,62 @@ def test_topdown_forward():
     with torch.no_grad():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
 
+    model_cfg = dict(
+        type='TopDown',
+        pretrained=None,
+        backbone=dict(
+            type='HourglassNet',
+            num_stacks=1,
+        ),
+        keypoint_head=dict(
+            type='TopDownMultiStageHead',
+            in_channels=256,
+            out_channels=17,
+            num_stages=1,
+            num_deconv_layers=0,
+            extra=dict(final_conv_kernel=1, ),
+        ),
+        # keypoint_head=dict(
+        #     type='TopDownSimpleHead',
+        #     in_channels=512,
+        #     out_channels=17,
+        # ),
+        train_cfg=dict(loss_weights=([1])),
 
-def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
+        # train_cfg=dict(),
+        test_cfg=dict(
+            flip_test=False,
+            post_process=True,
+            shift_heatmap=True,
+            unbiased_decoding=False,
+            modulate_kernel=11),
+        # loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
+        loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)])
+
+    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+                       model_cfg['train_cfg'], model_cfg['test_cfg'],
+                       model_cfg['pretrained'], model_cfg['loss_pose'])
+
+    detector.init_weights()
+
+    input_shape = (1, 3, 256, 256)
+    mm_inputs = _demo_mm_inputs(input_shape, num_outputs=1)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+
+
+def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
     """Create a superset of inputs needed to run test or train batches.
 
     Args:
@@ -97,8 +151,13 @@ def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
     rng = np.random.RandomState(0)
 
     imgs = rng.rand(*input_shape)
-    target = np.zeros([N, 17, H // 4, W // 4], dtype=np.float32)
-    target_weight = np.ones([N, 17], dtype=np.float32)
+    if num_outputs is not None:
+        target = np.zeros([N, num_outputs, 17, H // 4, W // 4],
+                          dtype=np.float32)
+        target_weight = np.ones([N, num_outputs, 17, 1], dtype=np.float32)
+    else:
+        target = np.zeros([N, 17, H // 4, W // 4], dtype=np.float32)
+        target_weight = np.ones([N, 17, 1], dtype=np.float32)
 
     img_metas = [{
         'img_shape': (H, W, C),
