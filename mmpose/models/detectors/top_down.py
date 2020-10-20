@@ -207,7 +207,11 @@ class TopDown(BasePose):
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
 
-        return all_preds, all_boxes, image_path, output_heatmap
+        if 'return_heatmap' in self.test_cfg and self.test_cfg[
+                'return_heatmap']:
+            return all_preds, all_boxes, image_path, output_heatmap
+        else:
+            return all_preds, all_boxes, image_path, None
 
     def show_result(self,
                     img,

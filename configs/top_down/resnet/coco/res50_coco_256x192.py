@@ -52,7 +52,8 @@ model = dict(
         post_process=True,
         shift_heatmap=True,
         unbiased_decoding=False,
-        modulate_kernel=11),
+        modulate_kernel=11,
+        return_heatmap=False),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(

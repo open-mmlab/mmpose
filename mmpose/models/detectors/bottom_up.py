@@ -245,7 +245,11 @@ class BottomUp(BasePose):
 
         output_heatmap = aggregated_heatmaps.detach().cpu().numpy()
 
-        return results, scores, image_path, output_heatmap
+        if 'return_heatmap' in self.test_cfg and self.test_cfg[
+                'return_heatmap']:
+            return results, scores, image_path, output_heatmap
+        else:
+            return results, scores, image_path, None
 
     def show_result(self,
                     img,
