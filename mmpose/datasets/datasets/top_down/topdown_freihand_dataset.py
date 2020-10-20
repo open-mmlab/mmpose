@@ -188,9 +188,9 @@ class TopDownFreiHandDataset(TopDownBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :image_path (list[str]): For example, [ 't', 'r', 'a', 'i',
+                    'n', 'i', 'n', 'g', '/', 'r', 'g', 'b', '/', '0', '0',
+                    '0', '3', '1', '4', '2', '6', '.', 'j', 'p', 'g']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.

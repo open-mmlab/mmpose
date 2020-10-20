@@ -188,9 +188,11 @@ class TopDownPanopticDataset(TopDownBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :image_path (list[str]): For example, [ 'h', 'a', 'n', 'd',
+                    '_', 'l', 'a', 'b', 'e', 'l', 's', '/', 'm', 'a', 'n',
+                    'u', 'a', 'l', '_', 't', 'e', 's', 't', '/', '0', '0',
+                    '0', '6', '4', '8', '9', '5', '2', '_', '0', '2', '_',
+                    'l', '.', 'j', 'p', 'g']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.

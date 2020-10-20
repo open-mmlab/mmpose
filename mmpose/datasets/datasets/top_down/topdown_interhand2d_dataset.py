@@ -316,9 +316,12 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :image_path (list[str]): For example, ['C', 'a', 'p', 't',
+                    'u', 'r', 'e', '1', '2', '/', '0', '3', '9', '0', '_',
+                    'd', 'h', '_', 't', 'o', 'u', 'c', 'h', 'R', 'O', 'M',
+                    '/', 'c', 'a', 'm', '4', '1', '0', '2', '0', '9', '/',
+                    'i', 'm', 'a', 'g', 'e', '6', '2', '4', '3', '4', '.',
+                    'j', 'p', 'g']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.
