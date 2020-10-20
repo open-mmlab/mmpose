@@ -1,10 +1,9 @@
-import copy as cp
 import os
-import os.path as osp
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
+from xtcocotools.coco import COCO
 
 from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
                                                   keypoint_pck_accuracy)
@@ -75,59 +74,73 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.db = self._get_db(ann_file)
-        self.image_set = set(x['image_file'] for x in self.db)
-        self.num_images = len(self.image_set)
+        self.coco = COCO(ann_file)
+        self.img_ids = self.coco.getImgIds()
+        self.num_images = len(self.img_ids)
+        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
+        self.dataset_name = 'onehand10k'
+
+        self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def _get_db(self, ann_file):
+    def _get_mapping_id_name(self, imgs):
+        """
+        Args:
+            imgs (dict): dict of image info.
+
+        Returns:
+            tuple: Image name & id mapping dicts.
+
+            - id2name (dict): Mapping image id to name.
+            - name2id (dict): Mapping image name to id.
+        """
+        id2name = {}
+        name2id = {}
+        for image_id, image in imgs.items():
+            file_name = image['file_name']
+            id2name[image_id] = file_name
+            name2id[file_name] = image_id
+
+        return id2name, name2id
+
+    def _get_db(self):
         """Load dataset."""
-        with open(ann_file, 'r') as f:
-            data = json.load(f)
-        tmpl = dict(
-            image_file=None,
-            center=None,
-            scale=None,
-            rotation=0,
-            joints_3d=None,
-            joints_3d_visible=None,
-            bbox=None,
-            dataset='onehand10k')
-
-        imid2info = {x['id']: x for x in data['images']}
-
-        num_joints = self.ann_info['num_joints']
         gt_db = []
+        for img_id in self.img_ids:
+            num_joints = self.ann_info['num_joints']
 
-        for anno in data['annotations']:
-            newitem = cp.deepcopy(tmpl)
-            image_id = anno['image_id']
-            newitem['image_file'] = os.path.join(
-                self.img_prefix, imid2info[image_id]['file_name'])
+            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
+            objs = self.coco.loadAnns(ann_ids)
 
-            if max(anno['keypoints']) == 0:
-                continue
+            rec = []
+            for obj in objs:
+                if max(obj['keypoints']) == 0:
+                    continue
+                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
 
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
+                keypoints = np.array(obj['keypoints']).reshape(-1, 3)
+                joints_3d[:, :2] = keypoints[:, :2]
+                joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-            for ipt in range(num_joints):
-                joints_3d[ipt, 0] = anno['keypoints'][ipt * 3 + 0]
-                joints_3d[ipt, 1] = anno['keypoints'][ipt * 3 + 1]
-                joints_3d[ipt, 2] = 0
-                t_vis = min(anno['keypoints'][ipt * 3 + 2], 1)
-                joints_3d_visible[ipt, :] = (t_vis, t_vis, 0)
+                center, scale = self._xywh2cs(*obj['bbox'][:4])
 
-            center, scale = self._xywh2cs(*anno['bbox'][:4])
-            newitem['center'] = center
-            newitem['scale'] = scale
-            newitem['joints_3d'] = joints_3d
-            newitem['joints_3d_visible'] = joints_3d_visible
-            newitem['bbox'] = anno['bbox'][:4]
-            gt_db.append(newitem)
+                image_file = os.path.join(self.img_prefix,
+                                          self.id2name[img_id])
 
+                rec.append({
+                    'image_file': image_file,
+                    'center': center,
+                    'scale': scale,
+                    'rotation': 0,
+                    'joints_3d': joints_3d,
+                    'joints_3d_visible': joints_3d_visible,
+                    'bbox': obj['bbox'],
+                    'bbox_score': 1
+                })
+            gt_db.extend(rec)
         return gt_db
 
     def _xywh2cs(self, x, y, w, h):
@@ -160,12 +173,32 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
         return center, scale
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
-        """Evaluate OneHand10K keypoint results. metric (str | list[str]):
-        Metrics to be evaluated. Options are 'PCK', 'AUC', 'EPE'.
+        """Evaluate onehand10k keypoint results. The pose prediction results
+        will be saved in `${res_folder}/result_keypoints.json`.
 
-        'PCK': ||pre[i] - joints_3d[i]|| < 0.2 * max(w, h)
-        'AUC': area under curve
-        'EPE': end-point error
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmap height: H
+            heatmap width: W
+
+        Args:
+            outputs (list(preds, boxes, image_path, output_heatmap))
+                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                    coordinates, score is the third dimension of the array.
+                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                    , scale[1],area, score]
+                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
+                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
+                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+
+            res_folder (str): Path of directory to save the results.
+            metric (str | list[str]): Metric to be performed.
+                Options: 'PCK', 'AUC', 'EPE'.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['PCK', 'AUC', 'EPE']
@@ -179,7 +212,7 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
 
         for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
-            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
             kpts.append({
                 'keypoints': preds[0].tolist(),

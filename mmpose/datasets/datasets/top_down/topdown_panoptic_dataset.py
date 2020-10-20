@@ -23,7 +23,7 @@ class TopDownPanopticDataset(TopDownBaseDataset):
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    OneHand10K keypoint indexes::
+    Panoptic keypoint indexes::
 
         0: 'wrist',
         1: 'thumb1',
@@ -173,12 +173,32 @@ class TopDownPanopticDataset(TopDownBaseDataset):
         return center, scale
 
     def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
-        """Evaluate OneHand10K keypoint results. metric (str | list[str]):
-        Metrics to be evaluated. Options are 'PCKh', 'AUC', 'EPE'.
+        """Evaluate panoptic keypoint results. The pose prediction results will
+        be saved in `${res_folder}/result_keypoints.json`.
 
-        'PCKh': ||pre[i] - joints_3d[i]|| < 0.7 * head_size
-        'AUC': area under curve
-        'EPE': end-point error
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmap height: H
+            heatmap width: W
+
+        Args:
+            outputs (list(preds, boxes, image_path, output_heatmap))
+                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                    coordinates, score is the third dimension of the array.
+                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                    , scale[1],area, score]
+                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
+                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
+                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+
+            res_folder (str): Path of directory to save the results.
+            metric (str | list[str]): Metric to be performed.
+                Options: 'PCKh', 'AUC', 'EPE'.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['PCKh', 'AUC', 'EPE']

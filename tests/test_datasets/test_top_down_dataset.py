@@ -445,7 +445,8 @@ def test_top_down_OneHand10K_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json')
+    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json',
+                                  'tests/data/onehand10k/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -501,7 +502,8 @@ def test_top_down_FreiHand_dataset():
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
 
-    outputs = load_json_to_output('tests/data/freihand/test_freihand.json')
+    outputs = load_json_to_output('tests/data/freihand/test_freihand.json',
+                                  'tests/data/freihand/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -568,6 +570,58 @@ def test_top_down_Panoptic_dataset():
 
         with pytest.raises(KeyError):
             infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_top_down_InterHand2D_dataset():
+    dataset = 'TopDownInterHand2DDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=21,
+        dataset_joints=21,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
+        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
+        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
+        img_prefix='tests/data/interhand2d/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
+        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
+        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
+        img_prefix='tests/data/interhand2d/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 4
+    assert len(custom_dataset.db) == 6
+
+    _ = custom_dataset[0]
 
 
 def test_top_down_MPII_dataset():
