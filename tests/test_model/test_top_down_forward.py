@@ -99,21 +99,13 @@ def test_topdown_forward():
             num_deconv_layers=0,
             extra=dict(final_conv_kernel=1, ),
         ),
-        # keypoint_head=dict(
-        #     type='TopDownSimpleHead',
-        #     in_channels=512,
-        #     out_channels=17,
-        # ),
         train_cfg=dict(loss_weights=([1])),
-
-        # train_cfg=dict(),
         test_cfg=dict(
             flip_test=False,
             post_process=True,
             shift_heatmap=True,
             unbiased_decoding=False,
             modulate_kernel=11),
-        # loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
         loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)])
 
     detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],

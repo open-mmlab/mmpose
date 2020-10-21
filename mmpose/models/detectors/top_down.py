@@ -153,19 +153,20 @@ class TopDown(BasePose):
 
         if isinstance(output, list):
             if target.dim() == 5 and target_weight.dim() == 4:
-                _, avg_acc, cnt = pose_pck_accuracy(
+                _, avg_acc, _ = pose_pck_accuracy(
                     output[-1][target_weight[:, -1, :, :].squeeze(-1) > 0].
                     unsqueeze(0).detach().cpu().numpy(),
                     target[:, -1, :, :, :][target_weight[:, -1, :, :].squeeze(
                         -1) > 0].unsqueeze(0).detach().cpu().numpy())
+                # Only use the last output for prediction
             else:
-                _, avg_acc, cnt = pose_pck_accuracy(
+                _, avg_acc, _ = pose_pck_accuracy(
                     output[-1][target_weight.squeeze(-1) > 0].unsqueeze(
                         0).detach().cpu().numpy(),
                     target[target_weight.squeeze(-1) > 0].unsqueeze(
                         0).detach().cpu().numpy())
         else:
-            _, avg_acc, cnt = pose_pck_accuracy(
+            _, avg_acc, _ = pose_pck_accuracy(
                 output[target_weight.squeeze(-1) > 0].unsqueeze(
                     0).detach().cpu().numpy(),
                 target[target_weight.squeeze(-1) > 0].unsqueeze(
@@ -210,6 +211,7 @@ class TopDown(BasePose):
                     output_flipped.clone()[:, :, :, 0:-1]
             output = (output + output_flipped) * 0.5
 
+        output_heatmap = output.detach().cpu().numpy()
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -218,7 +220,7 @@ class TopDown(BasePose):
             score = np.array(img_metas['bbox_score']).reshape(-1)
 
         preds, maxvals = keypoints_from_heatmaps(
-            output.clone().cpu().numpy(),
+            output_heatmap,
             c,
             s,
             post_process=self.test_cfg['post_process'],
@@ -237,7 +239,7 @@ class TopDown(BasePose):
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
 
-        return all_preds, all_boxes, image_path
+        return all_preds, all_boxes, image_path, output_heatmap
 
     def show_result(self,
                     img,
