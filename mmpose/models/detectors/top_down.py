@@ -4,6 +4,7 @@ import cv2
 import mmcv
 import numpy as np
 import torch
+import torch.nn as nn
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
@@ -43,7 +44,6 @@ class TopDown(BasePose):
             self.keypoint_head = builder.build_head(keypoint_head)
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
-
         self.loss = builder.build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
 
@@ -115,30 +115,62 @@ class TopDown(BasePose):
         # if return loss
         losses = dict()
         if isinstance(output, list):
-            # multi-stage models
-            for output_i in output:
-                if 'mse_loss' not in losses:
-                    losses['mse_loss'] = self.loss(output_i, target,
-                                                   target_weight)
+            if target.dim() == 5 and target_weight.dim() == 4:
+                # target: [batch_size, num_outputs, num_joints, h, w]
+                # target_weight: [batch_size, num_outputs, num_joints, 1]
+                assert target.size(1) == len(output)
+            if isinstance(self.loss, nn.Sequential):
+                assert len(self.loss) == len(output)
+            if 'loss_weights' in self.train_cfg and self.train_cfg[
+                    'loss_weights'] is not None:
+                assert len(self.train_cfg['loss_weights']) == len(output)
+            for i in range(len(output)):
+                if target.dim() == 5 and target_weight.dim() == 4:
+                    target_i = target[:, i, :, :, :]
+                    target_weight_i = target_weight[:, i, :, :]
                 else:
-                    losses['mse_loss'] += self.loss(output_i, target,
-                                                    target_weight)
+                    target_i = target
+                    target_weight_i = target_weight
+                if isinstance(self.loss, nn.Sequential):
+                    loss_func = self.loss[i]
+                else:
+                    loss_func = self.loss
+
+                loss_i = loss_func(output[i], target_i, target_weight_i)
+                if 'loss_weights' in self.train_cfg and self.train_cfg[
+                        'loss_weights']:
+                    loss_i = loss_i * self.train_cfg['loss_weights'][i]
+                if 'mse_loss' not in losses:
+                    losses['mse_loss'] = loss_i
+                else:
+                    losses['mse_loss'] += loss_i
         else:
+            assert not isinstance(self.loss, nn.Sequential)
+            assert target.dim() == 4 and target_weight.dim() == 3
+            # target: [batch_size, num_joints, h, w]
+            # target_weight: [batch_size, num_joints, 1]
             losses['mse_loss'] = self.loss(output, target, target_weight)
 
         if isinstance(output, list):
-            _, avg_acc, cnt = pose_pck_accuracy(
-                output[-1][target_weight.squeeze(-1) > 0].unsqueeze(
-                    0).detach().cpu().numpy(),
-                target[target_weight.squeeze(-1) > 0].unsqueeze(
-                    0).detach().cpu().numpy())
+            if target.dim() == 5 and target_weight.dim() == 4:
+                _, avg_acc, _ = pose_pck_accuracy(
+                    output[-1][target_weight[:, -1, :, :].squeeze(-1) > 0].
+                    unsqueeze(0).detach().cpu().numpy(),
+                    target[:, -1, :, :, :][target_weight[:, -1, :, :].squeeze(
+                        -1) > 0].unsqueeze(0).detach().cpu().numpy())
+                # Only use the last output for prediction
+            else:
+                _, avg_acc, _ = pose_pck_accuracy(
+                    output[-1][target_weight.squeeze(-1) > 0].unsqueeze(
+                        0).detach().cpu().numpy(),
+                    target[target_weight.squeeze(-1) > 0].unsqueeze(
+                        0).detach().cpu().numpy())
         else:
-            _, avg_acc, cnt = pose_pck_accuracy(
+            _, avg_acc, _ = pose_pck_accuracy(
                 output[target_weight.squeeze(-1) > 0].unsqueeze(
                     0).detach().cpu().numpy(),
                 target[target_weight.squeeze(-1) > 0].unsqueeze(
                     0).detach().cpu().numpy())
-
         losses['acc_pose'] = float(avg_acc)
 
         return losses
