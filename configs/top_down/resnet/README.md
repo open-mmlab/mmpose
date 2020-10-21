@@ -110,7 +110,7 @@ Following the common setting, the models are trained on COCO train dataset, and 
 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/freihand/res50_freihand_224x224.py) | 224x224 | 0.985 | 0.536 | 27.3 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224_20200914.log.json) |
+| [pose_resnet_50](/configs/top_down/resnet/freihand/res50_freihand_224x224.py) | 224x224 | 0.999 | 0.868 | 3.27 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224_20200914.log.json) |
 
 #### Results on CMU Panoptic (MPII+NZSL val set).
 
