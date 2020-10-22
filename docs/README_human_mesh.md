@@ -192,8 +192,10 @@ mmpose
 ```
 
 ## Prepare Pretrained Models
-Download the pretrained HMR model from
-[here](https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth).
+Please download the pretrained HMR model from
+[here](https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth),
+and make it looks llike this:
+
 
 ```
 mmpose
@@ -201,13 +203,12 @@ mmpose
     `-- pytorch
          `-- hmr
             |-- hmr_mesh_224x224-c21e8229_20201015.pth
-            |-- ...
 ```
 
 ## Inference with pretrained models
 
-### Test a dataset
-You can use the following commands to test on Human3.6M test set and
+### Test a Dataset
+You can use the following commands to test the pretrained model on Human3.6M test set and
 evaluate the joint error.
 
 ```shell
@@ -220,9 +221,8 @@ models/pytorch/hmr/hmr_mesh_224x224-c21e8229_20201015.pth --eval=joint_error
 models/pytorch/hmr/hmr_mesh_224x224-c21e8229_20201015.pth 8 --eval=joint_error
 ```
 
-
 ## Train the model
-Inorder to train the model, please download the
+In order to train the model, please download the
 [zip file](https://drive.google.com/file/d/1JrwfHYIFdQPO7VeBEG9Kk3xsZMVJmhtv/view?usp=sharing)
 of the sampled train images of Human3.6M dataset.
 Extract the images and make them look like this：
