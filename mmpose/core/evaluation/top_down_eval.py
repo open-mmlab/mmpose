@@ -4,7 +4,7 @@ import numpy as np
 from mmpose.core.post_processing import transform_preds
 
 
-def _calc_distances(preds, targets, normalize):
+def _calc_distances(preds, targets, mask, normalize):
     """Calculate the normalized distances between preds and target.
 
     Note:
@@ -22,8 +22,9 @@ def _calc_distances(preds, targets, normalize):
     """
     N, K, _ = preds.shape
     distances = np.full((K, N), -1, dtype=np.float32)
-    eps = np.finfo(np.float32).eps
-    mask = (targets[..., 0] > -eps) & (targets[..., 1] > -eps)
+    # eps = np.finfo(np.float32).eps
+    # mask = ((targets[..., 0] > -eps) & (targets[..., 1] > -eps))
+    # print(mask)
     distances[mask.T] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances
@@ -85,7 +86,7 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
-def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
+def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
@@ -102,6 +103,9 @@ def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
     Args:
         output (np.ndarray[N, K, H, W]): Model output heatmaps.
         target (np.ndarray[N, K, H, W]): Groundtruth heatmaps.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
         thr (float): Threshold of PCK calculation.
         normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
@@ -120,10 +124,10 @@ def pose_pck_accuracy(output, target, thr=0.5, normalize=None):
 
     pred, _ = _get_max_preds(output)
     gt, _ = _get_max_preds(target)
-    return keypoint_pck_accuracy(pred, gt, thr, normalize)
+    return keypoint_pck_accuracy(pred, gt, mask, thr, normalize)
 
 
-def keypoint_pck_accuracy(pred, gt, thr, normalize):
+def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints for coordinates.
 
@@ -134,6 +138,9 @@ def keypoint_pck_accuracy(pred, gt, thr, normalize):
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
         gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
         thr (float): Threshold of PCK calculation.
         normalize (np.ndarray[N, 2]): Normalization factor.
 
@@ -144,7 +151,7 @@ def keypoint_pck_accuracy(pred, gt, thr, normalize):
         - avg_acc (float): Averaged accuracy across all keypoints.
         - cnt (int): Number of valid keypoints.
     """
-    distances = _calc_distances(pred, gt, normalize)
+    distances = _calc_distances(pred, gt, mask, normalize)
 
     acc = np.array([_distance_acc(d, thr) for d in distances])
     valid_acc = acc[acc >= 0]
@@ -153,7 +160,7 @@ def keypoint_pck_accuracy(pred, gt, thr, normalize):
     return acc, avg_acc, cnt
 
 
-def keypoint_auc(pred, gt, normalize, num_step=20):
+def keypoint_auc(pred, gt, mask, normalize, num_step=20):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints for coordinates.
 
@@ -164,6 +171,9 @@ def keypoint_auc(pred, gt, normalize, num_step=20):
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
         gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
         normalize (float): Normalization factor.
 
     Returns:
@@ -173,7 +183,7 @@ def keypoint_auc(pred, gt, normalize, num_step=20):
     x = [1.0 * i / num_step for i in range(num_step)]
     y = []
     for thr in x:
-        _, avg_acc, _ = keypoint_pck_accuracy(pred, gt, thr, nor)
+        _, avg_acc, _ = keypoint_pck_accuracy(pred, gt, mask, thr, nor)
         y.append(avg_acc)
 
     auc = 0
@@ -182,7 +192,7 @@ def keypoint_auc(pred, gt, normalize, num_step=20):
     return auc
 
 
-def keypoint_epe(pred, gt):
+def keypoint_epe(pred, gt, mask):
     """Calculate the end-point error.
 
     Note:
@@ -192,12 +202,15 @@ def keypoint_epe(pred, gt):
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
         gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
 
     Returns:
         float: Average end-point error.
     """
     distances = _calc_distances(
-        pred, gt, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
+        pred, gt, mask, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
     distance_valid = distances[distances != -1]
     valid_num = len(distance_valid)
     return distance_valid.sum() / valid_num

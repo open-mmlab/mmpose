@@ -147,10 +147,9 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
                 threshold = np.max(bbox[2:]) * 0.2
 
                 h, _, e = keypoint_pck_accuracy(
-                    np.array(pred['keypoints'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1],
-                    np.array(item['joints_3d'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1], 1,
+                    np.array(pred['keypoints'])[None, :, :-1],
+                    np.array(item['joints_3d'])[None, :, :-1],
+                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0, 1,
                     np.array([[threshold, threshold]]))
                 hit += len(h[h > 0])
                 exist += e
@@ -165,10 +164,9 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
             for pred, item in zip(preds, self.db):
                 threshold = item['head_size'] * 0.7
                 h, _, e = keypoint_pck_accuracy(
-                    np.array(pred['keypoints'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1],
-                    np.array(item['joints_3d'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1], 1,
+                    np.array(pred['keypoints'])[None, :, :-1],
+                    np.array(item['joints_3d'])[None, :, :-1],
+                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0, 1,
                     np.array([[threshold, threshold]]))
                 hit += len(h[h > 0])
                 exist += e
@@ -179,23 +177,23 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         if 'AUC' in metrics or 'EPE' in metrics:
             outputs = []
             gts = []
+            masks = []
 
             for pred, item in zip(preds, self.db):
-                outputs.append(
-                    np.array(pred['keypoints'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1])
-                gts.append(
-                    np.array(item['joints_3d'])[
-                        None, item['joints_3d_visible'][:, 0] > 0, :-1])
+                outputs.append(np.array(pred['keypoints'])[None, :, :-1])
+                gts.append(np.array(item['joints_3d'])[None, :, :-1])
+                masks.append(
+                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0)
 
             outputs = np.concatenate(outputs, axis=1)
             gts = np.concatenate(gts, axis=1)
+            masks = np.concatenate(masks, axis=1)
 
             if 'AUC' in metrics:
-                info_str.append(('AUC', keypoint_auc(outputs, gts, 30)))
+                info_str.append(('AUC', keypoint_auc(outputs, gts, masks, 30)))
 
             if 'EPE' in metrics:
-                info_str.append(('EPE', keypoint_epe(outputs, gts)))
+                info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
 
         return info_str
 
