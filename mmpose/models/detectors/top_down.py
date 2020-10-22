@@ -167,6 +167,7 @@ class TopDown(BasePose):
                 output.detach().cpu().numpy(),
                 target.detach().cpu().numpy(),
                 target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+
         losses['acc_pose'] = float(avg_acc)
 
         return losses
