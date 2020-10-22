@@ -112,7 +112,7 @@ data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownInterHand2DDataset',
+        type='InterHand2DDataset',
         ann_file=f'{data_root}/annotations/human_annot/'
         'InterHand2.6M_train_data.json',
         camera_file=f'{data_root}/annotations/human_annot/'
@@ -123,7 +123,7 @@ data = dict(
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownInterHand2DDataset',
+        type='InterHand2DDataset',
         ann_file=f'{data_root}/annotations/machine_annot/'
         'InterHand2.6M_val_data.json',
         camera_file=f'{data_root}/annotations/machine_annot/'
@@ -134,7 +134,7 @@ data = dict(
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownInterHand2DDataset',
+        type='InterHand2DDataset',
         ann_file=f'{data_root}/annotations/human_annot/'
         'InterHand2.6M_test_data.json',
         camera_file=f'{data_root}/annotations/human_annot/'

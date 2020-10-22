@@ -3,16 +3,13 @@ from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
-from xtcocotools.coco import COCO
 
-from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
-                                                  keypoint_pck_accuracy)
 from mmpose.datasets.builder import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .hand_base_dataset import HandBaseDataset
 
 
 @DATASETS.register_module()
-class TopDownInterHand2DDataset(TopDownBaseDataset):
+class InterHand2DDataset(HandBaseDataset):
     """InterHand2.6M 2D dataset for top-down hand pose estimation.
 
     `InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
@@ -68,45 +65,18 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
-        self.ann_info['flip_pairs'] = []
-
         self.ann_info['use_different_joint_weights'] = False
         assert self.ann_info['num_joints'] == 21
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.coco = COCO(ann_file)
-        self.img_ids = self.coco.getImgIds()
-        self.num_images = len(self.img_ids)
-        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'interhand2d'
-
         self.camera_file = camera_file
         self.joint_file = joint_file
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
-
-    def _get_mapping_id_name(self, imgs):
-        """
-        Args:
-            imgs (dict): dict of image info.
-
-        Returns:
-            tuple: Image name & id mapping dicts.
-
-            - id2name (dict): Mapping image id to name.
-            - name2id (dict): Mapping image name to id.
-        """
-        id2name = {}
-        name2id = {}
-        for image_id, image in imgs.items():
-            file_name = image['file_name']
-            id2name[image_id] = file_name
-            name2id[file_name] = image_id
-
-        return id2name, name2id
 
     def _cam2pixel_(self, cam_coord, f, c):
         """Transform the joints from their camera coordinates to their pixel
@@ -221,7 +191,7 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
                         bbox[2] = max(bbox[2], joints_3d[i][0])
                         bbox[3] = max(bbox[3], joints_3d[i][1])
 
-                center, scale = self._xywh2cs(*bbox)
+                center, scale = self._xywh2cs(*bbox, 1.5)
 
                 rec.append({
                     'image_file': image_file,
@@ -254,7 +224,7 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
                         bbox[2] = max(bbox[2], joints_3d[i][0])
                         bbox[3] = max(bbox[3], joints_3d[i][1])
 
-                center, scale = self._xywh2cs(*bbox)
+                center, scale = self._xywh2cs(*bbox, 1.5)
 
                 rec.append({
                     'image_file': image_file,
@@ -270,35 +240,6 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
                 gt_db.extend(rec)
 
         return gt_db
-
-    def _xywh2cs(self, x, y, w, h):
-        """This encodes bbox(x,y,w,w) into (center, scale)
-
-        Args:
-            x, y, w, h
-
-        Returns:
-            center (np.ndarray[float32](2,)): center of the bbox (x, y).
-            scale (np.ndarray[float32](2,)): scale of the bbox w & h.
-        """
-        aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
-            'image_size'][1]
-        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-        if (not self.test_mode) and np.random.rand() < 0.3:
-            center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
-
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
-
-        # pixel std is 200.0
-        scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
-        scale = scale * 1.5
-
-        return center, scale
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
@@ -359,53 +300,3 @@ class TopDownInterHand2DDataset(TopDownBaseDataset):
         name_value = OrderedDict(info_str)
 
         return name_value
-
-    def _write_keypoint_results(self, keypoints, res_file):
-        """Write results into a json file."""
-
-        with open(res_file, 'w') as f:
-            json.dump(keypoints, f, sort_keys=True, indent=4)
-
-    def _report_metric(self, res_file, metrics):
-        """Keypoint evaluation.
-
-        Report PCK, AUC or EPE.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        for pred, item in zip(preds, self.db):
-            outputs.append(pred['keypoints'])
-            gts.append(item['joints_3d'])
-        outputs = np.array(outputs)[:, :, :-1]
-        gts = np.array(gts)[:, :, :-1]
-
-        if 'PCK' in metrics:
-            hit = 0
-            exist = 0
-
-            for pred, item in zip(preds, self.db):
-                bbox = np.array(item['bbox'])
-                threshold = np.max(bbox[2:]) * 0.2
-                h, _, e = keypoint_pck_accuracy(
-                    np.array(pred['keypoints'])[None, :, :-1],
-                    np.array(item['joints_3d'])[None, :, :-1], 1,
-                    np.array([[threshold, threshold]]))
-                hit += len(h[h > 0])
-                exist += e
-            pck = hit / exist
-
-            info_str.append(('PCK', pck))
-
-        if 'AUC' in metrics:
-            info_str.append(('AUC', keypoint_auc(outputs, gts, 30)))
-
-        if 'EPE' in metrics:
-
-            info_str.append(('EPE', keypoint_epe(outputs, gts)))
-        return info_str

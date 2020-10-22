@@ -401,7 +401,7 @@ def test_top_down_OCHuman_dataset():
 
 
 def test_top_down_OneHand10K_dataset():
-    dataset = 'TopDownOneHand10KDataset'
+    dataset = 'OneHand10KDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -458,7 +458,7 @@ def test_top_down_OneHand10K_dataset():
 
 
 def test_top_down_FreiHand_dataset():
-    dataset = 'TopDownFreiHandDataset'
+    dataset = 'FreiHandDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -515,7 +515,7 @@ def test_top_down_FreiHand_dataset():
 
 
 def test_top_down_Panoptic_dataset():
-    dataset = 'TopDownPanopticDataset'
+    dataset = 'PanopticDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -573,7 +573,7 @@ def test_top_down_Panoptic_dataset():
 
 
 def test_top_down_InterHand2D_dataset():
-    dataset = 'TopDownInterHand2DDataset'
+    dataset = 'InterHand2DDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
