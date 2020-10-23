@@ -1,4 +1,6 @@
 import os
+import functools
+from collections import OrderedDict
 
 import mmcv
 import numpy as np
@@ -131,10 +133,7 @@ class LoadImage:
         results['img'] = img
         return results
 
-
-def _inference_single_pose_model(model, img_or_path, bbox, dataset, 
-                                 return_heatmap=False, 
-                                 return_backbone_features=False):
+def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -145,7 +144,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset,
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
-        return_heatmap (bool) : To return heatmap
+        outputs (list(str) : List of layer names whose output is to be returned
         return_backbone_features (bool) : To return backbone features
 
     Returns:
@@ -228,23 +227,54 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset,
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _, heatmap, backbone_features = model(
-            return_loss=False,
-            return_heatmap=return_heatmap,
-            return_backbone_features=return_backbone_features, 
-            img=data['img'], img_metas=data['img_metas'])
+        # prepare hooks to return ouputs
+        returned_outputs = OrderedDict()
+        return_heatmap = False
+        handles = []
+        def hook_wrapper(name):
+            def hook(model, input, output):
+                returned_outputs[name] = output.detach().cpu().numpy()
+            return hook
 
-    return all_preds[0], heatmap, backbone_features
+        if isinstance(outputs, (list, tuple)):
+            for name in outputs:
+                try:
+                    layer = rgetattr(model, name)
+                    h = layer.register_forward_hook(hook_wrapper(name))
+                except Exception as e:
+                    #raise AttributeError(f'Module {name} not found')
+                    continue
+                handles.append(h)
 
+            if 'heatmap' or 'heatmaps' in outputs:
+                return_heatmap = True
+            
+        all_preds, _, _ = model(return_loss=False, 
+                                return_heatmap=return_heatmap,
+                                img=data['img'], img_metas=data['img_metas'])
+
+        if return_heatmap:
+            returned_outputs['heatmap'] = model.output_heatmap
+
+        #clear handles (if any)
+        for h in handles:
+            h.remove()
+            
+    return all_preds[0], returned_outputs
+
+# using wonder's beautiful simplification: https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects/31174427?noredirect=1#comment86638618_31174427
+def rgetattr(obj, attr, *args):
+    def _getattr(obj, attr):
+        return getattr(obj, attr, *args)
+    return functools.reduce(_getattr, [obj] + attr.split('.'))
 
 def inference_top_down_pose_model(model,
                                   img_or_path,
                                   person_bboxes,
                                   bbox_thr=None,
                                   format='xywh',
-                                  return_heatmap=False, 
-                                  return_backbone_features=False,
-                                  dataset='TopDownCocoDataset'):
+                                  dataset='TopDownCocoDataset',
+                                  outputs=None):
     """Inference a single image with a list of person bounding boxes.
 
     num_people: P
@@ -263,7 +293,7 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
-        return_heamap (bool) : To return heatmaps
+        outputs (list(str)) : To return heatmaps
         return_backbone_features (bool) : To return backbone features 
 
     Returns:
@@ -271,8 +301,7 @@ def inference_top_down_pose_model(model,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
-        list[ndarray]: The heatmap 
-        list[ndarray]: The backbone features
+        list[ndarray]: Names of layers whose output is to be returned
         
     """
     # only two kinds of bbox format is supported.
@@ -282,25 +311,22 @@ def inference_top_down_pose_model(model,
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
         
     pose_results = []
-    heatmaps=[]
-    backbone_features=[]
+    returned_outputs = []
+
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
         for bbox in person_bboxes:
-            pose, heatmap, backbone_feat = _inference_single_pose_model(
-                model, img_or_path, bbox, dataset, return_heatmap, return_backbone_features)
+            pose, returned_features = _inference_single_pose_model(model, img_or_path, bbox, 
+                                                dataset, outputs=outputs)
             
-            if return_heatmap:
-                heatmaps.append(heatmap)
-                
-            if backbone_features:
-                backbone_features.append(backbone_feat)
+            if outputs is not None:
+                returned_outputs.append(returned_features)
                 
             pose_results.append({'bbox': _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
                                  'keypoints': pose})
             
-    return pose_results, heatmaps, backbone_features
+    return pose_results, returned_outputs
 
 
 def inference_bottom_up_pose_model(model, img_or_path):

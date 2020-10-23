@@ -64,6 +64,8 @@ def main():
     person_bboxes = det_results[0].copy()
 
     # test a single image, with a list of bboxes.
+    
+    output_layer_names = ('heatmap') #None
     pose_results, heatmaps, backbone_features = inference_top_down_pose_model(
         pose_model,
         image_name,
@@ -71,8 +73,7 @@ def main():
         bbox_thr=args.bbox_thr,
         format='xyxy',
         dataset=dataset,
-        return_heatmap=False, 
-        return_backbone_features=False)
+        outputs=output_layer_names)
 
     if args.out_img_root == '':
         out_file = None

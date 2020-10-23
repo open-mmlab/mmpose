@@ -1,5 +1,4 @@
 import math
-
 import cv2
 import mmcv
 import numpy as np
@@ -65,7 +64,6 @@ class TopDown(BasePose):
                 img_metas=None,
                 return_loss=True,
                 return_heatmap=False,
-                return_backbone_features=False,
                 **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss=True. Note this setting will change the expected inputs.
@@ -97,16 +95,16 @@ class TopDown(BasePose):
                 - "bbox_score": score of bbox
             return_loss (bool): Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
+            outputs (list(str) | tuple(str)) : layer_nae
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
               Otherwise, return predicted poses, boxes and image paths.
         """
         if return_loss:
-            return self.forward_train(img, target, target_weight, img_metas,
-                                      **kwargs)
+            return self.forward_train(img, target, target_weight, img_metas, **kwargs)
         else:
-            return self.forward_test(img, img_metas, return_heatmap, return_backbone_features,  **kwargs)
+            return self.forward_test(img, img_metas, return_heatmap = return_heatmap, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
@@ -176,24 +174,23 @@ class TopDown(BasePose):
         losses['acc_pose'] = float(avg_acc)
 
         return losses
-
-    def forward_test(self, img, img_metas, return_heatmap, return_backbone_features, **kwargs):
+            
+    def forward_test(self, img, img_metas, return_heatmap = False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
         assert len(img_metas) == 1
         img_metas = img_metas[0]
-        backbone_features = None
             
         # compute backbone features
         output = self.backbone(img)
         
-        if return_backbone_features:
-            backbone_features = output.detach().cpu().numpy()
-            
-        all_preds, all_boxes, image_path, heatmap = process_head(output, img_metas, return_heatmap=return_heatmap)
-        return all_preds, all_boxes, image_path, heatmap, backbone_features
+        # process head
+        all_preds, all_boxes, image_path = self.process_head(output, img, img_metas, return_heatmap=return_heatmap)
+        
+        return all_preds, all_boxes, image_path
 
-    def process_head(self, output, img_metas, return_heatmap=False):
+            
+    def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas['flip_pairs']
         
@@ -224,6 +221,9 @@ class TopDown(BasePose):
             output = (output + output_flipped) * 0.5
 
         output_heatmap = output.detach().cpu().numpy()
+        if return_heatmap:
+            self.output_heatmap = output_heatmap
+            
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -251,10 +251,7 @@ class TopDown(BasePose):
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
         
-        if return_heatmap:
-            return all_preds, all_boxes, image_path, output_heatmap
-        else:
-            return all_preds, all_boxes, image_path, None
+        return all_preds, all_boxes, image_path
     
     def show_result(self,
                     img,
