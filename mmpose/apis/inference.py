@@ -299,7 +299,7 @@ def inference_top_down_pose_model(model,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
-        list[str]: Names of layers whose output is to be returned
+        list[dict]: Returned output feature maps from layers specified in `outputs`
         
     """
     # only two kinds of bbox format is supported.
