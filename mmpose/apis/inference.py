@@ -132,7 +132,9 @@ class LoadImage:
         return results
 
 
-def _inference_single_pose_model(model, img_or_path, bbox, dataset):
+def _inference_single_pose_model(model, img_or_path, bbox, dataset, 
+                                 return_heatmap=False, 
+                                 return_backbone_features=False):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -143,10 +145,13 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
+        return_heatmap (bool) : To return heatmap
+        return_backbone_features (bool) : To return backbone features
 
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
         ndarray[NxKxHxW]: Model output heatmap.
+        ndarray[NxKxHxW]: Model backbone features.
     """
     cfg = model.cfg
     device = next(model.parameters()).device
@@ -223,10 +228,13 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _, heatmap = model(
-            return_loss=False, img=data['img'], img_metas=data['img_metas'])
+        all_preds, _, _, heatmap, backbone_features = model(
+            return_loss=False,
+            return_heatmap=return_heatmap,
+            return_backbone_features=return_backbone_features, 
+            img=data['img'], img_metas=data['img_metas'])
 
-    return all_preds[0], heatmap
+    return all_preds[0], heatmap, backbone_features
 
 
 def inference_top_down_pose_model(model,
@@ -234,6 +242,8 @@ def inference_top_down_pose_model(model,
                                   person_bboxes,
                                   bbox_thr=None,
                                   format='xywh',
+                                  return_heatmap=False, 
+                                  return_backbone_features=False,
                                   dataset='TopDownCocoDataset'):
     """Inference a single image with a list of person bounding boxes.
 
@@ -253,38 +263,44 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
+        return_heamap (bool) : To return heatmaps
+        return_backbone_features (bool) : To return backbone features 
 
     Returns:
-        list[dict]: The bbox & pose info.
-
+        list[dict]: The bbox & pose info,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
+        list[ndarray]: The heatmap 
+        list[ndarray]: The backbone features
+        
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
     # transform the bboxes format to xywh
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
+        
     pose_results = []
-    heatmaps = []
-
+    heatmaps=[]
+    backbone_features=[]
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
         for bbox in person_bboxes:
-            pose, heatmap = _inference_single_pose_model(
-                model, img_or_path, bbox, dataset)
-            pose_results.append({
-                'bbox':
-                _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                'keypoints':
-                pose,
-            })
-
-            heatmaps.append(heatmap)
-
-    return pose_results, heatmaps
+            pose, heatmap, backbone_feat = _inference_single_pose_model(
+                model, img_or_path, bbox, dataset, return_heatmap, return_backbone_features)
+            
+            if return_heatmap:
+                heatmaps.append(heatmap)
+                
+            if backbone_features:
+                backbone_features.append(backbone_feat)
+                
+            pose_results.append({'bbox': _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
+                                 'keypoints': pose})
+            
+    return pose_results, heatmaps, backbone_features
 
 
 def inference_bottom_up_pose_model(model, img_or_path):

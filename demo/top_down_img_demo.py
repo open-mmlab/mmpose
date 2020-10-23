@@ -66,13 +66,15 @@ def main():
             bbox = ann['bbox']
             person_bboxes.append(bbox)
 
-        # test a single image, with a list of bboxes.
-        pose_results, heatmaps = inference_top_down_pose_model(
+        # test a single image, with a list of bboxes
+        pose_results, heatmaps, backbone_features = inference_top_down_pose_model(
             pose_model,
             image_name,
             person_bboxes,
             format='xywh',
-            dataset=dataset)
+            dataset=dataset,
+            return_heatmap=False, 
+            return_backbone_features=False)
 
         if args.out_img_root == '':
             out_file = None

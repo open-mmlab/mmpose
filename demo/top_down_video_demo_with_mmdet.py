@@ -81,13 +81,15 @@ def main():
         person_bboxes = det_results[0].copy()
 
         # test a single image, with a list of bboxes.
-        pose_results, heatmaps = inference_top_down_pose_model(
+        pose_results, heatmaps, backbone_features = inference_top_down_pose_model(
             pose_model,
             img,
             person_bboxes,
             bbox_thr=args.bbox_thr,
             format='xyxy',
-            dataset=dataset)
+            dataset=dataset,
+            return_heatmap=False, 
+            return_backbone_features=False)
 
         # show the results
         vis_img = vis_pose_result(

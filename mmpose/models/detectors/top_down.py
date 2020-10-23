@@ -64,6 +64,8 @@ class TopDown(BasePose):
                 target_weight=None,
                 img_metas=None,
                 return_loss=True,
+                return_heatmap=False,
+                return_backbone_features=False,
                 **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss=True. Note this setting will change the expected inputs.
@@ -104,7 +106,7 @@ class TopDown(BasePose):
             return self.forward_train(img, target, target_weight, img_metas,
                                       **kwargs)
         else:
-            return self.forward_test(img, img_metas, **kwargs)
+            return self.forward_test(img, img_metas, return_heatmap, return_backbone_features,  **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
@@ -175,16 +177,26 @@ class TopDown(BasePose):
 
         return losses
 
-    def forward_test(self, img, img_metas, **kwargs):
+    def forward_test(self, img, img_metas, return_heatmap, return_backbone_features, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
         assert len(img_metas) == 1
-
         img_metas = img_metas[0]
-
-        flip_pairs = img_metas['flip_pairs']
-        # compute output
+        backbone_features = None
+            
+        # compute backbone features
         output = self.backbone(img)
+        
+        if return_backbone_features:
+            backbone_features = output.detach().cpu().numpy()
+            
+        all_preds, all_boxes, image_path, heatmap = process_head(output, img_metas, return_heatmap=return_heatmap)
+        return all_preds, all_boxes, image_path, heatmap, backbone_features
+
+    def process_head(self, output, img_metas, return_heatmap=False):
+        """Process heatmap and keypoints from backbone features."""
+        flip_pairs = img_metas['flip_pairs']
+        
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
@@ -238,9 +250,12 @@ class TopDown(BasePose):
         all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
-
-        return all_preds, all_boxes, image_path, output_heatmap
-
+        
+        if return_heatmap:
+            return all_preds, all_boxes, image_path, output_heatmap
+        else:
+            return all_preds, all_boxes, image_path, None
+    
     def show_result(self,
                     img,
                     result,
