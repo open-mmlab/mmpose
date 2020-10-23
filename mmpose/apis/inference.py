@@ -291,8 +291,7 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
-        outputs (list(str)) : To return heatmaps
-        return_backbone_features (bool) : To return backbone features 
+        outputs (list(str) | tuple(str)) : Names of layers whose outputs need to be returned
 
     Returns:
         list[dict]: The bbox & pose info,
