@@ -144,7 +144,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
-        outputs (list(str) : List of layer names whose output is to be returned
+        outputs (list[str]): Names of layers whose output is to be returned
         
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
@@ -299,7 +299,7 @@ def inference_top_down_pose_model(model,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
-        list[ndarray]: Names of layers whose output is to be returned
+        list[str]: Names of layers whose output is to be returned
         
     """
     # only two kinds of bbox format is supported.
