@@ -145,12 +145,10 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
         outputs (list(str) : List of layer names whose output is to be returned
-        return_backbone_features (bool) : To return backbone features
-
+        
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
-        ndarray[NxKxHxW]: Model output heatmap.
-        ndarray[NxKxHxW]: Model backbone features.
+        dict: Output feature maps of layer names specified in `outputs`
     """
     cfg = model.cfg
     device = next(model.parameters()).device

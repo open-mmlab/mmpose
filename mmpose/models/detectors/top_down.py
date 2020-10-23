@@ -95,7 +95,7 @@ class TopDown(BasePose):
                 - "bbox_score": score of bbox
             return_loss (bool): Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
-            outputs (list(str) | tuple(str)) : layer_nae
+            return_heatmap (bool) : Option to return heatmap.
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
