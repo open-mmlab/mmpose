@@ -244,7 +244,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None
                     continue
                 handles.append(h)
 
-            if 'heatmap' or 'heatmaps' in outputs:
+            if any(x in outputs for x in ('heatmap', 'heatmaps')):
                 return_heatmap = True
             
         all_preds, _, _ = model(return_loss=False, 
