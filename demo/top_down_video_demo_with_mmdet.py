@@ -54,7 +54,7 @@ def main():
     dataset = pose_model.cfg.data['test']['type']
 
     cap = cv2.VideoCapture(args.video_path)
-    
+
     if args.out_video_root == '':
         save_out_video = False
     else:
@@ -71,8 +71,8 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
-    output_layer_names = ('heatmap') #None
-    
+    output_layer_names = ('heatmap')  # default : None
+
     while (cap.isOpened()):
         flag, img = cap.read()
         if not flag:

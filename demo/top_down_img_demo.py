@@ -49,9 +49,9 @@ def main():
     dataset = pose_model.cfg.data['test']['type']
 
     img_keys = list(coco.imgs.keys())
-    
-    output_layer_names = ('heatmap') #None
-    
+
+    output_layer_names = ('heatmap')  # default : None
+
     # process each image
     for i in range(len(img_keys)):
         # get bounding box annotations
@@ -77,7 +77,7 @@ def main():
             format='xyxy',
             dataset=dataset,
             outputs=output_layer_names)
-        
+
         if args.out_img_root == '':
             out_file = None
         else:

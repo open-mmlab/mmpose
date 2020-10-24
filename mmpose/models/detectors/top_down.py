@@ -1,4 +1,5 @@
 import math
+
 import cv2
 import mmcv
 import numpy as np
@@ -102,9 +103,11 @@ class TopDown(BasePose):
               Otherwise, return predicted poses, boxes and image paths.
         """
         if return_loss:
-            return self.forward_train(img, target, target_weight, img_metas, **kwargs)
+            return self.forward_train(img, target, target_weight, img_metas,
+                                      **kwargs)
         else:
-            return self.forward_test(img, img_metas, return_heatmap = return_heatmap, **kwargs)
+            return self.forward_test(
+                img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
@@ -174,26 +177,26 @@ class TopDown(BasePose):
         losses['acc_pose'] = float(avg_acc)
 
         return losses
-            
-    def forward_test(self, img, img_metas, return_heatmap = False, **kwargs):
+
+    def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
         assert len(img_metas) == 1
         img_metas = img_metas[0]
-            
+
         # compute backbone features
         output = self.backbone(img)
-        
+
         # process head
-        all_preds, all_boxes, image_path = self.process_head(output, img, img_metas, return_heatmap=return_heatmap)
-        
+        all_preds, all_boxes, image_path = self.process_head(
+            output, img, img_metas, return_heatmap=return_heatmap)
+
         return all_preds, all_boxes, image_path
 
-            
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas['flip_pairs']
-        
+
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
@@ -223,7 +226,7 @@ class TopDown(BasePose):
         output_heatmap = output.detach().cpu().numpy()
         if return_heatmap:
             self.output_heatmap = output_heatmap
-            
+
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -250,9 +253,9 @@ class TopDown(BasePose):
         all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
-        
+
         return all_preds, all_boxes, image_path
-    
+
     def show_result(self,
                     img,
                     result,

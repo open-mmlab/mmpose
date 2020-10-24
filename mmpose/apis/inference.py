@@ -1,5 +1,5 @@
-import os
 import functools
+import os
 from collections import OrderedDict
 
 import mmcv
@@ -133,7 +133,12 @@ class LoadImage:
         results['img'] = img
         return results
 
-def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None):
+
+def _inference_single_pose_model(model,
+                                 img_or_path,
+                                 bbox,
+                                 dataset,
+                                 outputs=None):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -145,7 +150,7 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
         outputs (list[str]): Names of layers whose output is to be returned
-        
+
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
         dict: Output feature maps of layer names specified in `outputs`
@@ -229,42 +234,54 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset, outputs=None
         returned_outputs = OrderedDict()
         return_heatmap = False
         handles = []
+
         def hook_wrapper(name):
+
             def hook(model, input, output):
                 returned_outputs[name] = output.detach().cpu().numpy()
+
             return hook
 
         if isinstance(outputs, (list, tuple)):
             for name in outputs:
+                layer = rgetattr(model, name)
                 try:
-                    layer = rgetattr(model, name)
                     h = layer.register_forward_hook(hook_wrapper(name))
-                except Exception as e:
-                    #raise AttributeError(f'Module {name} not found')
-                    continue
+                except AttributeError:
+                    if name in ('heatmap', 'heatmaps'):
+                        continue
+                    else:
+                        raise AttributeError(f'Module {name} not found')
                 handles.append(h)
 
             if any(x in outputs for x in ('heatmap', 'heatmaps')):
                 return_heatmap = True
-            
-        all_preds, _, _ = model(return_loss=False, 
-                                return_heatmap=return_heatmap,
-                                img=data['img'], img_metas=data['img_metas'])
+
+        all_preds, _, _ = model(
+            return_loss=False,
+            return_heatmap=return_heatmap,
+            img=data['img'],
+            img_metas=data['img_metas'])
 
         if return_heatmap:
             returned_outputs['heatmap'] = model.output_heatmap
 
-        #clear handles (if any)
+        # clear handles (if any)
         for h in handles:
             h.remove()
-            
+
     return all_preds[0], returned_outputs
 
-# using wonder's beautiful simplification: https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects/31174427?noredirect=1#comment86638618_31174427
+
+# using wonder's beautiful simplification:
+# https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects
 def rgetattr(obj, attr, *args):
+
     def _getattr(obj, attr):
         return getattr(obj, attr, *args)
+
     return functools.reduce(_getattr, [obj] + attr.split('.'))
+
 
 def inference_top_down_pose_model(model,
                                   img_or_path,
@@ -291,22 +308,23 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
-        outputs (list(str) | tuple(str)) : Names of layers whose outputs need to be returned
+        outputs (list(str) | tuple(str)) : Names of layers whose outputs
+            need to be returned.
 
     Returns:
         list[dict]: The bbox & pose info,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
-        list[dict]: Returned output feature maps from layers specified in `outputs`
-        
+        list[dict]: Returned output feature maps from layers
+            specified in `outputs`.
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
     # transform the bboxes format to xywh
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
-        
+
     pose_results = []
     returned_outputs = []
 
@@ -314,15 +332,19 @@ def inference_top_down_pose_model(model,
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
         for bbox in person_bboxes:
-            pose, returned_features = _inference_single_pose_model(model, img_or_path, bbox, 
-                                                dataset, outputs=outputs)
-            
+            pose, returned_features = _inference_single_pose_model(
+                model, img_or_path, bbox, dataset, outputs=outputs)
+
             if outputs is not None:
                 returned_outputs.append(returned_features)
-                
-            pose_results.append({'bbox': _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                                 'keypoints': pose})
-            
+
+            pose_results.append({
+                'bbox':
+                _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
+                'keypoints':
+                pose
+            })
+
     return pose_results, returned_outputs
 
 
