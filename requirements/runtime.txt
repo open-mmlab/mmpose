@@ -1,4 +1,3 @@
-dataclasses
 json_tricks
 matplotlib
 mmcv>=1.1.1
