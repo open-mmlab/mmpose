@@ -204,8 +204,7 @@ class TopDown(BasePose):
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:
-                output_flipped[:, :, :, 1:] = \
-                    output_flipped.clone()[:, :, :, 0:-1]
+                output_flipped[:, :, :, 1:] = output_flipped[:, :, :, :-1]
             output_heatmap = (output_heatmap + output_flipped) * 0.5
 
         c = img_metas['center'].reshape(1, -1)
