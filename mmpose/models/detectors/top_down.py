@@ -3,7 +3,6 @@ import math
 import cv2
 import mmcv
 import numpy as np
-import torch
 import torch.nn as nn
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
@@ -191,6 +190,7 @@ class TopDown(BasePose):
         if isinstance(output, list):
             output = output[-1]
 
+        output_heatmap = output.detach().cpu().numpy()
         if self.test_cfg['flip_test']:
             img_flipped = img.flip(3)
 
@@ -199,19 +199,15 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
-            output_flipped = flip_back(output_flipped.cpu().numpy(),
+            output_flipped = flip_back(output_flipped.detach().cpu().numpy(),
                                        flip_pairs)
-
-            output_flipped = torch.from_numpy(output_flipped.copy()).to(
-                output.device)
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:
                 output_flipped[:, :, :, 1:] = \
                     output_flipped.clone()[:, :, :, 0:-1]
-            output = (output + output_flipped) * 0.5
+            output_heatmap = (output_heatmap + output_flipped) * 0.5
 
-        output_heatmap = output.detach().cpu().numpy()
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -227,7 +223,7 @@ class TopDown(BasePose):
             unbiased=self.test_cfg['unbiased_decoding'],
             kernel=self.test_cfg['modulate_kernel'])
 
-        all_preds = np.zeros((1, output.shape[1], 3), dtype=np.float32)
+        all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((1, 6), dtype=np.float32)
         image_path = []
 
