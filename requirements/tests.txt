@@ -1,5 +1,4 @@
 coverage
-dataclass
 flake8
 git+https://github.com/svenkreiss/poseval.git
 interrogate
