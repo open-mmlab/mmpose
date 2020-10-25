@@ -170,6 +170,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         # sanitize bboxes
         valid_objs = []
         for obj in objs:
+            if 'bbox' not in obj:
+                continue
             x, y, w, h = obj['bbox']
             x1 = max(0, x)
             y1 = max(0, y)
@@ -182,7 +184,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         rec = []
         for obj in objs:
+            if 'keypoints' not in obj:
+                continue
             if max(obj['keypoints']) == 0:
+                continue
+            if 'num_keypoints' in obj and obj['num_keypoints'] == 0:
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)

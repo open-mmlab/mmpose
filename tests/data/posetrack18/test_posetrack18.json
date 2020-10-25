@@ -1,9 +1,4 @@
 {
-    "info": {
-        "description": "For testing PoseTrack'18 dataset.",
-        "year": 2020,
-        "date_created": "2020/09/21"
-    },
     "categories": [
         {
             "supercategory": "person",
@@ -647,9 +642,9 @@
                 ]
             ],
             "id": 10128340000,
-            "mask_file": "mask/val/012834_mpii_test/000000.jpg",
+            "width": 1920,
             "height": 1080,
-            "width": 1920
+            "mask_file": "mask/val/012834_mpii_test/000000.jpg"
         },
         {
             "has_no_densepose": true,
@@ -763,9 +758,9 @@
                 ]
             ],
             "id": 10094730000,
-            "mask_file": "mask/val/009473_mpii_test/000000.jpg",
+            "width": 1920,
             "height": 1080,
-            "width": 1920
+            "mask_file": "mask/val/009473_mpii_test/000000.jpg"
         },
         {
             "has_no_densepose": true,
@@ -1341,9 +1336,9 @@
                 ]
             ],
             "id": 10034180000,
-            "mask_file": "mask/val/003418_mpii_test/000000.jpg",
+            "width": 1920,
             "height": 1080,
-            "width": 1920
+            "mask_file": "mask/val/003418_mpii_test/000000.jpg"
         }
     ],
     "annotations": [
@@ -1418,6 +1413,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000000,
+            "iscrowd": false,
             "num_keypoints": 11
         },
         {
@@ -1491,6 +1487,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000001,
+            "iscrowd": false,
             "num_keypoints": 14
         },
         {
@@ -1564,6 +1561,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000002,
+            "iscrowd": false,
             "num_keypoints": 11
         },
         {
@@ -1637,6 +1635,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000003,
+            "iscrowd": false,
             "num_keypoints": 15
         },
         {
@@ -1710,6 +1709,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000004,
+            "iscrowd": false,
             "num_keypoints": 12
         },
         {
@@ -1783,6 +1783,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000005,
+            "iscrowd": false,
             "num_keypoints": 13
         },
         {
@@ -1856,6 +1857,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000006,
+            "iscrowd": false,
             "num_keypoints": 14
         },
         {
@@ -1929,6 +1931,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000007,
+            "iscrowd": false,
             "num_keypoints": 14
         },
         {
@@ -2002,6 +2005,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000008,
+            "iscrowd": false,
             "num_keypoints": 13
         },
         {
@@ -2075,6 +2079,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000009,
+            "iscrowd": false,
             "num_keypoints": 11
         },
         {
@@ -2148,6 +2153,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1012834000010,
+            "iscrowd": false,
             "num_keypoints": 14
         },
         {
@@ -2221,6 +2227,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1009473000000,
+            "iscrowd": false,
             "num_keypoints": 14
         },
         {
@@ -2294,6 +2301,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1009473000001,
+            "iscrowd": false,
             "num_keypoints": 15
         },
         {
@@ -2367,6 +2375,7 @@
             "scores": [],
             "category_id": 1,
             "id": 1003418000000,
+            "iscrowd": false,
             "num_keypoints": 11
         }
     ]
