@@ -1,3 +1,3 @@
-dataclass; python_version == "3.6"
+dataclass
 git+https://github.com/svenkreiss/poseval.git
 smplx
