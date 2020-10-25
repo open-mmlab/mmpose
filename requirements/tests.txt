@@ -1,5 +1,5 @@
 coverage
-dataclass; python_version == 3.6
+dataclass; python_version == '3.6'
 flake8
 git+https://github.com/svenkreiss/poseval.git
 interrogate
