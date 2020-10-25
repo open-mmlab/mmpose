@@ -7,5 +7,4 @@ numpy
 opencv-python
 pillow
 scipy
-smplx
 xtcocotools>=1.6

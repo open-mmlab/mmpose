@@ -1,0 +1,4 @@
+dataclass; python_version == 3.6
+# These are optional
+git+https://github.com/svenkreiss/poseval.git
+smplx
