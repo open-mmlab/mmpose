@@ -103,8 +103,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         self._coco_ind_to_class_ind = dict(
             (self._class_to_coco_ind[cls], self._class_to_ind[cls])
             for cls in self.classes[1:])
-        self.image_set_index = self.coco.getImgIds()
-        self.num_images = len(self.image_set_index)
+        self.img_ids = self.coco.getImgIds()
+        self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'posetrack18'
 

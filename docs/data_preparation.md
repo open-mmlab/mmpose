@@ -209,8 +209,8 @@ mmpose
 ## PoseTrack18
 
 For PoseTrack18 data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
-Please download the annotation files from [posetrack18_annotations](https://openmmlab.oss-accelerate.aliyuncs.com/mmpose/datasets/posetrack18_annotations.tar).
-We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json). We also generate the [mask files](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/datasets/posetrack18_mask.tar) to speed up training.
+Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
+We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json). We also generate the [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) to speed up training.
 The person detection results of PoseTrack2018 val are from [LightTrack](https://github.com/Guanghan/lighttrack). To save space, we have filtered out some low-score boxes (score < 0.1).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
