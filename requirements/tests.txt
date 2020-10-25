@@ -1,8 +1,8 @@
 coverage
 flake8
-git+https://github.com/svenkreiss/poseval.git
 interrogate
 isort==4.3.21
+poseval@git+https://github.com/svenkreiss/poseval.git
 pytest
 pytest-runner
 smplx
