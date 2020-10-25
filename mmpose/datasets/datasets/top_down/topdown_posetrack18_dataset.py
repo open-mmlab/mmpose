@@ -142,6 +142,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                 raise KeyError(f'metric {metric} is not supported')
 
         pred_folder = osp.join(res_folder, 'preds')
+        os.makedirs(pred_folder, exist_ok=True)
         gt_folder = osp.join(
             osp.dirname(self.annotations_path),
             osp.splitext(self.annotations_path.split('_')[-1])[0])
