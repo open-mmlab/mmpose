@@ -249,13 +249,10 @@ def _inference_single_pose_model(model,
                     h = layer.register_forward_hook(hook_wrapper(name))
                 except AttributeError:
                     if name in ('heatmap', 'heatmaps'):
-                        continue
+                        return_heatmap = True
                     else:
                         raise AttributeError(f'Module {name} not found')
                 handles.append(h)
-
-            if any(x in outputs for x in ('heatmap', 'heatmaps')):
-                return_heatmap = True
 
         all_preds, _, _ = model(
             return_loss=False,
