@@ -8,6 +8,20 @@ from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
 
 
+def process_mmdet_results(mmdet_results, cat_id=0):
+    """Process mmdet results, and return a list of bboxes.
+
+    :param mmdet_results:
+    :param cat_id: category id (default: 0 for human)
+    :return: a list of detected bounding boxes
+    """
+    if isinstance(mmdet_results, tuple):
+        det_results = mmdet_results[0]
+    else:
+        det_results = mmdet_results
+    return det_results[cat_id]
+
+
 def main():
     """Visualize the demo images.
 
@@ -76,9 +90,10 @@ def main():
         if not flag:
             break
         # test a single image, the resulting box is (x1, y1, x2, y2)
-        det_results = inference_detector(det_model, img)
+        mmdet_results = inference_detector(det_model, img)
+
         # keep the person class bounding boxes.
-        person_bboxes = det_results[0].copy()
+        person_bboxes = process_mmdet_results(mmdet_results)
 
         # test a single image, with a list of bboxes.
         pose_results, heatmaps = inference_top_down_pose_model(
