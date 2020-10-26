@@ -250,10 +250,10 @@ def _inference_single_pose_model(model,
                 except AttributeError:
                     if name in ('heatmap', 'heatmaps'):
                         return_heatmap = True
+                        continue
                     else:
                         raise AttributeError(f'Module {name} not found')
                 handles.append(h)
-
         all_preds, _, _ = model(
             return_loss=False,
             return_heatmap=return_heatmap,
