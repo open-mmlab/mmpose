@@ -244,8 +244,8 @@ def _inference_single_pose_model(model,
 
         if isinstance(outputs, (list, tuple)):
             for name in outputs:
-                layer = rgetattr(model, name)
                 try:
+                    layer = rgetattr(model, name)
                     h = layer.register_forward_hook(hook_wrapper(name))
                 except AttributeError:
                     if name in ('heatmap', 'heatmaps'):
