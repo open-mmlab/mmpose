@@ -148,7 +148,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             osp.splitext(self.annotations_path.split('_')[-1])[0])
 
         kpts = defaultdict(list)
-        for preds, boxes, image_path in outputs:
+        for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
             image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
