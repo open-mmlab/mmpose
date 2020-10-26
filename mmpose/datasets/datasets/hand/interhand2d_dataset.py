@@ -191,6 +191,9 @@ class InterHand2DDataset(HandBaseDataset):
                         bbox[2] = max(bbox[2], joints_3d[i][0])
                         bbox[3] = max(bbox[3], joints_3d[i][1])
 
+                bbox[2] -= bbox[0]
+                bbox[3] -= bbox[1]
+
                 center, scale = self._xywh2cs(*bbox, 1.5)
 
                 rec.append({
@@ -223,6 +226,9 @@ class InterHand2DDataset(HandBaseDataset):
                         bbox[1] = min(bbox[1], joints_3d[i][1])
                         bbox[2] = max(bbox[2], joints_3d[i][0])
                         bbox[3] = max(bbox[3], joints_3d[i][1])
+
+                bbox[2] -= bbox[0]
+                bbox[3] -= bbox[1]
 
                 center, scale = self._xywh2cs(*bbox, 1.5)
 
