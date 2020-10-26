@@ -138,62 +138,46 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
             preds = json.load(fin)
         assert len(preds) == len(self.db)
 
-        if 'PCK' in metrics:
-            hit = 0
-            exist = 0
+        outputs = []
+        gts = []
+        masks = []
+        threshold_bbox = []
+        threshold_head_box = []
 
-            for pred, item in zip(preds, self.db):
+        for pred, item in zip(preds, self.db):
+            outputs.append(np.array(pred['keypoints'])[:, :-1])
+            gts.append(np.array(item['joints_3d'])[:, :-1])
+            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
+            if 'PCK' in metrics:
                 bbox = np.array(item['bbox'])
-                threshold = np.max(bbox[2:]) * 0.2
+                bbox_thr = np.max(bbox[2:])
+                threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
+            if 'PCKh' in metrics:
+                head_box_thr = item['head_size']
+                threshold_head_box.append(
+                    np.array([head_box_thr, head_box_thr]))
 
-                h, _, e = keypoint_pck_accuracy(
-                    np.array(pred['keypoints'])[None, :, :-1],
-                    np.array(item['joints_3d'])[None, :, :-1],
-                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0, 1,
-                    np.array([[threshold, threshold]]))
-                hit += len(h[h > 0])
-                exist += e
-            pck = hit / exist
+        outputs = np.array(outputs)
+        gts = np.array(gts)
+        masks = np.array(masks)
+        threshold_bbox = np.array(threshold_bbox)
+        threshold_head_box = np.array(threshold_head_box)
 
+        if 'PCK' in metrics:
+            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, 0.2,
+                                              threshold_bbox)
             info_str.append(('PCK', pck))
 
         if 'PCKh' in metrics:
-            hit = 0
-            exist = 0
+            _, pckh, _ = keypoint_pck_accuracy(outputs, gts, masks, 0.7,
+                                               threshold_head_box)
+            info_str.append(('PCKh', pckh))
 
-            for pred, item in zip(preds, self.db):
-                threshold = item['head_size'] * 0.7
-                h, _, e = keypoint_pck_accuracy(
-                    np.array(pred['keypoints'])[None, :, :-1],
-                    np.array(item['joints_3d'])[None, :, :-1],
-                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0, 1,
-                    np.array([[threshold, threshold]]))
-                hit += len(h[h > 0])
-                exist += e
-            pck = hit / exist
+        if 'AUC' in metrics:
+            info_str.append(('AUC', keypoint_auc(outputs, gts, masks, 30)))
 
-            info_str.append(('PCKh', pck))
-
-        if 'AUC' in metrics or 'EPE' in metrics:
-            outputs = []
-            gts = []
-            masks = []
-
-            for pred, item in zip(preds, self.db):
-                outputs.append(np.array(pred['keypoints'])[None, :, :-1])
-                gts.append(np.array(item['joints_3d'])[None, :, :-1])
-                masks.append(
-                    (np.array(item['joints_3d_visible'])[None, :, 0]) > 0)
-
-            outputs = np.concatenate(outputs, axis=1)
-            gts = np.concatenate(gts, axis=1)
-            masks = np.concatenate(masks, axis=1)
-
-            if 'AUC' in metrics:
-                info_str.append(('AUC', keypoint_auc(outputs, gts, masks, 30)))
-
-            if 'EPE' in metrics:
-                info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
+        if 'EPE' in metrics:
+            info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
 
         return info_str
 

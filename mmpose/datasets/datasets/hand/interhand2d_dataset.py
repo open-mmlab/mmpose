@@ -160,90 +160,50 @@ class InterHand2DDataset(HandBaseDataset):
                 joint_world.transpose(1, 0), camera_rot,
                 camera_pos.reshape(3, 1)).transpose(1, 0)
             joint_img = self._cam2pixel_(joint_cam, focal, principal_pt)[:, :2]
+            joint_img = joint_img.reshape(2, -1, 2)
 
             joint_valid = np.array(
-                ann['joint_valid'], dtype=np.float32).reshape(2 * num_joints)
+                ann['joint_valid'], dtype=np.float32).reshape(2, -1)
             # if root is not valid -> root-relative 3D pose is also not valid.
             # Therefore, mark all joints as invalid
-            joint_valid[:num_joints] *= joint_valid[num_joints - 1]
-            joint_valid[num_joints:] *= joint_valid[2 * num_joints - 1]
+            for hand in range(2):
+                joint_valid[hand, :] *= joint_valid[hand][-1]
 
-            left_valid = True if np.sum(
-                joint_valid[:num_joints]) > 11 else False
-            right_valid = True if np.sum(
-                joint_valid[num_joints:]) > 11 else False
+                if np.sum(joint_valid[hand, :]) > 11:
+                    rec = []
+                    joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+                    joints_3d_visible = np.zeros((num_joints, 3),
+                                                 dtype=np.float32)
+                    joints_3d[:, :2] = joint_img[hand, :, :]
+                    joints_3d_visible[:, :2] = np.minimum(
+                        1,
+                        np.array(joint_valid[hand, :]).reshape(-1, 1))
 
-            if left_valid:
-                rec = []
-                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d[:, :2] = joint_img[:num_joints, :]
-                joints_3d_visible[:, :2] = np.minimum(
-                    1,
-                    np.array(joint_valid[:num_joints]).reshape(
-                        (num_joints, 1)))
+                    bbox = [img['width'], img['height'], 0, 0]
+                    for i in range(num_joints):
+                        if joints_3d_visible[i][0]:
+                            bbox[0] = min(bbox[0], joints_3d[i][0])
+                            bbox[1] = min(bbox[1], joints_3d[i][1])
+                            bbox[2] = max(bbox[2], joints_3d[i][0])
+                            bbox[3] = max(bbox[3], joints_3d[i][1])
 
-                bbox = [img['width'], img['height'], 0, 0]
-                for i in range(num_joints):
-                    if joints_3d_visible[i][0]:
-                        bbox[0] = min(bbox[0], joints_3d[i][0])
-                        bbox[1] = min(bbox[1], joints_3d[i][1])
-                        bbox[2] = max(bbox[2], joints_3d[i][0])
-                        bbox[3] = max(bbox[3], joints_3d[i][1])
+                    bbox[2] -= bbox[0]
+                    bbox[3] -= bbox[1]
 
-                bbox[2] -= bbox[0]
-                bbox[3] -= bbox[1]
+                    center, scale = self._xywh2cs(*bbox, 1.5)
 
-                center, scale = self._xywh2cs(*bbox, 1.5)
-
-                rec.append({
-                    'image_file': image_file,
-                    'center': center,
-                    'scale': scale,
-                    'rotation': 0,
-                    'joints_3d': joints_3d,
-                    'joints_3d_visible': joints_3d_visible,
-                    'dataset': self.dataset_name,
-                    'bbox': bbox,
-                    'bbox_score': 1
-                })
-                gt_db.extend(rec)
-
-            if right_valid:
-                rec = []
-                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d[:, :2] = joint_img[num_joints:, :]
-                joints_3d_visible[:, :2] = np.minimum(
-                    1,
-                    np.array(joint_valid[num_joints:]).reshape(
-                        (num_joints, 1)))
-
-                bbox = [img['width'], img['height'], 0, 0]
-                for i in range(num_joints):
-                    if joints_3d_visible[i][0]:
-                        bbox[0] = min(bbox[0], joints_3d[i][0])
-                        bbox[1] = min(bbox[1], joints_3d[i][1])
-                        bbox[2] = max(bbox[2], joints_3d[i][0])
-                        bbox[3] = max(bbox[3], joints_3d[i][1])
-
-                bbox[2] -= bbox[0]
-                bbox[3] -= bbox[1]
-
-                center, scale = self._xywh2cs(*bbox, 1.5)
-
-                rec.append({
-                    'image_file': image_file,
-                    'center': center,
-                    'scale': scale,
-                    'rotation': 0,
-                    'joints_3d': joints_3d,
-                    'joints_3d_visible': joints_3d_visible,
-                    'dataset': self.dataset_name,
-                    'bbox': bbox,
-                    'bbox_score': 1
-                })
-                gt_db.extend(rec)
+                    rec.append({
+                        'image_file': image_file,
+                        'center': center,
+                        'scale': scale,
+                        'rotation': 0,
+                        'joints_3d': joints_3d,
+                        'joints_3d_visible': joints_3d_visible,
+                        'dataset': self.dataset_name,
+                        'bbox': bbox,
+                        'bbox_score': 1
+                    })
+                    gt_db.extend(rec)
 
         return gt_db
 
