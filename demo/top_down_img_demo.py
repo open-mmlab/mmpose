@@ -50,7 +50,7 @@ def main():
 
     img_keys = list(coco.imgs.keys())
 
-    output_layer_names = ('heatmap')  # default : None
+    output_layer_names = ('heatmap', )  # default : None
 
     # process each image
     for i in range(len(img_keys)):

@@ -71,7 +71,7 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
-    output_layer_names = ('heatmap')  # default : None
+    output_layer_names = ('heatmap', )  # default : None
 
     while (cap.isOpened()):
         flag, img = cap.read()
