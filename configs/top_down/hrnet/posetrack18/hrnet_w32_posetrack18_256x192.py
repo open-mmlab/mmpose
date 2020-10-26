@@ -1,10 +1,10 @@
 log_level = 'INFO'
-load_from = 'https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth'  # noqa: E501
+load_from = 'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth'  # noqa: E501
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=1)
-evaluation = dict(interval=1, metric='mAP', key_indicator='Total AP')
+evaluation = dict(interval=1, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
@@ -39,13 +39,43 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='https://download.openmmlab.com/mmpose/top_down/resnet/'
-    'res50_coco_256x192-ec54d7f3_20200709.pth',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='https://download.openmmlab.com/mmpose/top_down/hrnet/'
+    'hrnet_w32_coco_256x192-c78dce93_20200708.pth',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(32, 64)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(32, 64, 128)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(32, 64, 128, 256))),
+    ),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=2048,
+        in_channels=32,
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(

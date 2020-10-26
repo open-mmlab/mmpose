@@ -247,7 +247,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
                 if len(img_kpts) == 0:
                     continue
-                for track_id, img_kpt in enumerate(img_kpts):
+                for track_id, img_kpt in enumerate(img_kpts[0]):
                     ann = {}
                     ann['image_id'] = img_kpt['image_id']
                     ann['keypoints'] = np.array(
@@ -269,7 +269,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
     def _do_python_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation using poseval."""
 
-        argv = ['', gt_folder, pred_folder]
+        argv = ['', gt_folder + '/', pred_folder + '/']
 
         print('Loading data')
         gtFramesAll, prFramesAll = eval_helpers.load_data_dir(argv)
