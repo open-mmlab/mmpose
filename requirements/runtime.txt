@@ -8,3 +8,4 @@ pillow
 scipy
 smplx
 xtcocotools>=1.6
+dataclasses; python_version == '3.6'
