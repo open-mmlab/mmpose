@@ -26,6 +26,26 @@ def load_json_to_output(json_name, prefix=''):
     return outputs
 
 
+def convert_db_to_output(db):
+    outputs = []
+
+    for item in db:
+        keypoints = item['joints_3d'].reshape((1, -1, 3))
+        center = item['center']
+        scale = item['scale']
+        box = np.array([
+            center[0], center[1], scale[0], scale[1],
+            scale[0] * scale[1] * 200 * 200, 1.0
+        ],
+                       dtype=np.float32).reshape(1, -1)
+        img_path = []
+        img_path[:0] = item['image_file']
+        output = (keypoints, box, img_path, None)
+        outputs.append(output)
+
+    return outputs
+
+
 def test_top_down_COCO_dataset():
     dataset = 'TopDownCocoDataset'
     # test COCO datasets
@@ -90,6 +110,14 @@ def test_top_down_COCO_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
 def test_top_down_PoseTrack18_dataset():
@@ -222,6 +250,14 @@ def test_top_down_CrowdPose_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_COCO_wholebody_dataset():
     dataset = 'TopDownCocoWholeBodyDataset'
@@ -286,6 +322,14 @@ def test_top_down_COCO_wholebody_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_OCHuman_dataset():
     dataset = 'TopDownOCHumanDataset'
@@ -346,6 +390,14 @@ def test_top_down_OCHuman_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
 def test_top_down_OneHand10K_dataset():
@@ -657,3 +709,11 @@ def test_top_down_AIC_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
