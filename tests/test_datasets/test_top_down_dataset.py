@@ -186,6 +186,14 @@ def test_top_down_PoseTrack18_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_CrowdPose_dataset():
     dataset = 'TopDownCrowdPoseDataset'
