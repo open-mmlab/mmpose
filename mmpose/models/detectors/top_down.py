@@ -154,8 +154,9 @@ class TopDown(BasePose):
             if target.dim() == 5 and target_weight.dim() == 4:
                 _, avg_acc, _ = pose_pck_accuracy(
                     output[-1].detach().cpu().numpy(),
-                    target[:, -1, :, :, :].detach().cpu().numpy(),
-                    target_weight[:, -1, ...].detach().cpu().numpy().squeeze(-1) > 0)
+                    target[:, -1, ...].detach().cpu().numpy(),
+                    target_weight[:, -1,
+                                  ...].detach().cpu().numpy().squeeze(-1) > 0)
                 # Only use the last output for prediction
             else:
                 _, avg_acc, _ = pose_pck_accuracy(
