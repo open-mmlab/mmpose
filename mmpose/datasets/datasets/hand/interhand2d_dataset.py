@@ -124,7 +124,8 @@ class InterHand2DDataset(HandBaseDataset):
     def _get_db(self):
         """Load dataset.
 
-        Adapted from https://github.com/facebookresearch/InterHand2.6M
+        Adapted from 'https://github.com/facebookresearch/InterHand2.6M/'
+                        'blob/master/data/InterHand2.6M/dataset.py'
         Copyright (c) FaceBook Research, under CC-BY-NC 4.0 license.
         """
         with open(self.camera_file, 'r') as f:
