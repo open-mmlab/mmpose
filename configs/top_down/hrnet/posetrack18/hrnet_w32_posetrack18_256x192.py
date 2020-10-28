@@ -39,8 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='https://download.openmmlab.com/mmpose/top_down/hrnet/'
-    'hrnet_w32_coco_256x192-c78dce93_20200708.pth',
+    pretrained=None,
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -99,7 +98,7 @@ data_cfg = dict(
     vis_thr=0.2,
     bbox_thr=1.0,
     use_gt_bbox=True,
-    image_thr=0.0,
+    image_thr=0.4,
     bbox_file='data/posetrack18/annotations/'
     'posetrack18_val_human_detections.json',
 )
