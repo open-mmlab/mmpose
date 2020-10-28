@@ -130,6 +130,57 @@ def test_topdown_forward():
     with torch.no_grad():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
 
+    model_cfg = dict(
+        type='TopDown',
+        pretrained=None,
+        backbone=dict(
+            type='RSN',
+            unit_channels=256,
+            num_stages=1,
+            num_units=4,
+            num_blocks=[2, 2, 2, 2],
+            num_steps=4,
+            norm_cfg=dict(type='BN')),
+        keypoint_head=dict(
+            type='TopDownMSPNHead',
+            out_shape=(64, 48),
+            unit_channels=256,
+            out_channels=17,
+            num_stages=1,
+            num_units=4,
+            use_prm=False,
+            norm_cfg=dict(type='BN')),
+        train_cfg=dict(num_units=4),
+        test_cfg=dict(
+            flip_test=True,
+            post_process=True,
+            shift_heatmap=True,
+            unbiased_decoding=False,
+            modulate_kernel=11),
+        loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)] * 3 +
+        [dict(type='JointsOHKMMSELoss', use_target_weight=True)])
+    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+                       model_cfg['train_cfg'], model_cfg['test_cfg'],
+                       model_cfg['pretrained'], model_cfg['loss_pose'])
+
+    detector.init_weights()
+
+    input_shape = (1, 3, 256, 192)
+    mm_inputs = _demo_mm_inputs(input_shape, num_outputs=4)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
     """Create a superset of inputs needed to run test or train batches.
