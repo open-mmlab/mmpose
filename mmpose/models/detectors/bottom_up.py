@@ -51,6 +51,8 @@ class BottomUp(BasePose):
         self.loss = build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
 
+        self.fp16_enabled = False
+
     @property
     def with_keypoint(self):
         """Check if has keypoint_head."""

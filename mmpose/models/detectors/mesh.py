@@ -80,6 +80,8 @@ class ParametricMesh(BasePose):
         self.loss_mesh = builder.build_loss(loss_mesh)
         self.init_weights(pretrained=pretrained)
 
+        self.fp16_enabled = False
+
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
