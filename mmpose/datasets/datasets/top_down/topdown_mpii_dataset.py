@@ -20,6 +20,25 @@ class TopDownMpiiDataset(TopDownBaseDataset):
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
+    MPII keypoint indexes::
+
+        0: 'right_ankle'
+        1: 'right_knee',
+        2: 'right_hip',
+        3: 'left_hip',
+        4: 'left_knee',
+        5: 'left_ankle',
+        6: 'pelvis',
+        7: 'thorax',
+        8: 'upper_neck',
+        9: 'head_top',
+        10: 'right_wrist',
+        11: 'right_elbow',
+        12: 'right_shoulder',
+        13: 'left_shoulder',
+        14: 'left_elbow',
+        15: 'left_wrist'
+
     Args:
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
