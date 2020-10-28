@@ -184,7 +184,6 @@ def test_topdown_forward():
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
     """Create a superset of inputs needed to run test or train batches.
-
     Args:
         input_shape (tuple):
             input batch dimensions
