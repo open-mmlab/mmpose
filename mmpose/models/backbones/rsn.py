@@ -11,9 +11,9 @@ from .base_backbone import BaseBackbone
 
 
 class RSB(nn.Module):
-    """Residual Steps block for RSN. Paper ref: Cai et al. "Learning Delicate
+    """Residual Steps block for RSN.
+    Paper ref: Cai et al. "Learning Delicate
     Local Representations for Multi-Person Pose Estimation" (ECCV 2020).
-
     Args:
         in_channels (int): Input channels of this block.
         out_channels (int): Output channels of this block.
@@ -103,7 +103,7 @@ class RSB(nn.Module):
                 else:
                     inputs = outputs[i][j - 1]
                 if i > j:
-                    inputs += outputs[i - 1][j]
+                    inputs = inputs + outputs[i - 1][j]
                 module_name = f'conv_bn_relu2_{i + 1}_{j + 1}'
                 module_i_j = getattr(self, module_name)
                 outputs[i].append(module_i_j(inputs))
@@ -123,7 +123,6 @@ class RSB(nn.Module):
 
 class Downsample_module(nn.Module):
     """Downsample module for RSN.
-
     Args:
         block (nn.Module): Downsample block.
         num_blocks (list): Number of blocks in each downsample unit.
@@ -234,7 +233,6 @@ class Downsample_module(nn.Module):
 
 class Upsample_unit(nn.Module):
     """Upsample unit for upsample module.
-
     Args:
         ind (int): Indicates whether to interpolate (>0) and whether to
            generate feature map for the next hourglass-like module.
@@ -350,7 +348,6 @@ class Upsample_unit(nn.Module):
 
 class Upsample_module(nn.Module):
     """Upsample module for RSN.
-
     Args:
         unit_channels (int): Channel number in the upsample units.
             Default:256.
@@ -421,7 +418,6 @@ class Upsample_module(nn.Module):
 
 class Single_stage_RSN(nn.Module):
     """Single_stage Residual Steps Network.
-
     Args:
         unit_channels (int): Channel number in the upsample units. Default:256.
         num_units (int): Numbers of downsample/upsample units. Default: 4
@@ -482,7 +478,6 @@ class Single_stage_RSN(nn.Module):
 
 class ResNet_top(nn.Module):
     """ResNet top for RSN.
-
     Args:
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
