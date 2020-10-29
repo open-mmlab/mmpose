@@ -20,12 +20,14 @@ class RSB(nn.Module):
         stride (int): stride of the block. Default: 1
         downsample (nn.Module): downsample operation on identity branch.
             Default: None.
-
         with_cp (bool): Use checkpoint or not. Using checkpoint will save some
             memory while slowing down the training speed.
-
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        expand_times (int): Times by which the in_channels are expanded.
+            Default:26.
+        res_top_channels (int): Number of channels of feature output by
+            ResNet_top. Default:64.
     """
 
     expansion = 1
@@ -37,11 +39,14 @@ class RSB(nn.Module):
                  stride=1,
                  downsample=None,
                  with_cp=False,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 expand_times=26,
+                 res_top_channels=64):
         super().__init__()
         assert num_steps > 1
         self.in_channels = in_channels
-        self.branch_channels = self.in_channels * 26 // 64
+        self.branch_channels = self.in_channels * expand_times
+        self.branch_channels //= res_top_channels
         self.out_channels = out_channels
         self.stride = stride
         self.downsample = downsample
@@ -136,6 +141,10 @@ class Downsample_module(nn.Module):
         num_steps (int): Number of steps in a block. Default:4
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        in_channels (int): Number of channels of the input feature to
+            downsample module. Default: 64
+        expand_times (int): Times by which the in_channels are expanded.
+            Default:26.
     """
 
     def __init__(self,
@@ -144,24 +153,42 @@ class Downsample_module(nn.Module):
                  num_steps=4,
                  num_units=4,
                  has_skip=False,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 in_channels=64,
+                 expand_times=26):
         super().__init__()
         self.has_skip = has_skip
-        self.in_channels = 64
+        self.in_channels = in_channels
         assert len(num_blocks) == num_units
         self.num_blocks = num_blocks
         self.num_units = num_units
         self.num_steps = num_steps
         self.norm_cfg = norm_cfg
-        self.layer1 = self._make_layer(block, 64, num_blocks[0])
+        self.layer1 = self._make_layer(
+            block,
+            in_channels,
+            num_blocks[0],
+            expand_times=expand_times,
+            res_top_channels=in_channels)
         for i in range(1, num_units):
             module_name = 'layer' + str(i + 1)
             self.add_module(
                 module_name,
                 self._make_layer(
-                    block, 64 * pow(2, i), num_blocks[i], stride=2))
+                    block,
+                    in_channels * pow(2, i),
+                    num_blocks[i],
+                    stride=2,
+                    expand_times=expand_times,
+                    res_top_channels=in_channels))
 
-    def _make_layer(self, block, out_channels, blocks, stride=1):
+    def _make_layer(self,
+                    block,
+                    out_channels,
+                    blocks,
+                    stride=1,
+                    expand_times=26,
+                    res_top_channels=64):
         downsample = None
         if stride != 1 or self.in_channels != out_channels * block.expansion:
             downsample = ConvModule(
@@ -182,12 +209,18 @@ class Downsample_module(nn.Module):
                 num_steps=self.num_steps,
                 stride=stride,
                 downsample=downsample,
-                norm_cfg=self.norm_cfg))
+                norm_cfg=self.norm_cfg,
+                expand_times=expand_times,
+                res_top_channels=res_top_channels))
         self.in_channels = out_channels * block.expansion
         for _ in range(1, blocks):
             units.append(
                 block(
-                    self.in_channels, out_channels, num_steps=self.num_steps))
+                    self.in_channels,
+                    out_channels,
+                    num_steps=self.num_steps,
+                    expand_times=expand_times,
+                    res_top_channels=res_top_channels))
 
         return nn.Sequential(*units)
 
@@ -329,6 +362,8 @@ class Upsample_module(nn.Module):
             hourglass-like module. Default:False
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        out_channels (int): Number of channels of feature output by upsample
+            module. Must equal to in_channels of downsample module. Default:64
     """
 
     def __init__(self,
@@ -336,11 +371,12 @@ class Upsample_module(nn.Module):
                  num_units=4,
                  gen_skip=False,
                  gen_cross_conv=False,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 out_channels=64):
         super().__init__()
         self.in_channels = list()
         for i in range(num_units):
-            self.in_channels.append(64 * pow(2, i))
+            self.in_channels.append(out_channels * pow(2, i))
         self.in_channels.reverse()
         self.num_units = num_units
         self.gen_skip = gen_skip
@@ -398,6 +434,10 @@ class Single_stage_RSN(nn.Module):
             Default: [2, 2, 2, 2] Note: Make sure num_units==len(num_blocks)
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        in_channels (int): Number of channels of the feature from ResNet_Top.
+            Default: 64.
+        expand_times (int): Times by which the in_channels are expanded in RSB.
+            Default:26.
     """
 
     def __init__(self,
@@ -408,7 +448,9 @@ class Single_stage_RSN(nn.Module):
                  num_units=4,
                  num_steps=4,
                  num_blocks=[2, 2, 2, 2],
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 in_channels=64,
+                 expand_times=26):
         super().__init__()
         assert len(num_blocks) == num_units
         self.has_skip = has_skip
@@ -420,14 +462,11 @@ class Single_stage_RSN(nn.Module):
         self.num_blocks = num_blocks
         self.norm_cfg = norm_cfg
 
-        self.downsample = Downsample_module(
-            RSB, num_blocks, num_steps, num_units, has_skip, norm_cfg=norm_cfg)
-        self.upsample = Upsample_module(
-            unit_channels,
-            num_units,
-            gen_skip,
-            gen_cross_conv,
-            norm_cfg=norm_cfg)
+        self.downsample = Downsample_module(RSB, num_blocks, num_steps,
+                                            num_units, has_skip, norm_cfg,
+                                            in_channels, expand_times)
+        self.upsample = Upsample_module(unit_channels, num_units, gen_skip,
+                                        gen_cross_conv, norm_cfg, in_channels)
 
     def forward(self, x, skip1, skip2):
         mid = self.downsample(x, skip1, skip2)
@@ -442,14 +481,15 @@ class ResNet_top(nn.Module):
     Args:
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        channels (int): Number of channels of the feature output by ResNet_top.
     """
 
-    def __init__(self, norm_cfg=dict(type='BN')):
+    def __init__(self, norm_cfg=dict(type='BN'), channels=64):
         super().__init__()
         self.top = nn.Sequential(
             ConvModule(
                 3,
-                64,
+                channels,
                 kernel_size=7,
                 stride=2,
                 padding=3,
@@ -476,6 +516,10 @@ class RSN(BaseBackbone):
         num_steps (int): Number of steps in a RSB. Default:4
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        res_top_channels (int): Number of channels of feature from ResNet_top.
+            Default: 64.
+        expand_times (int): Times by which the in_channels are expanded in RSB.
+            Default:26.
     Example:
         >>> from mmpose.models import RSN
         >>> import torch
@@ -499,7 +543,9 @@ class RSN(BaseBackbone):
                  num_units=4,
                  num_blocks=[2, 2, 2, 2],
                  num_steps=4,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 res_top_channels=64,
+                 expand_times=26):
         super().__init__()
         self.unit_channels = unit_channels
         self.num_stages = num_stages
@@ -525,15 +571,10 @@ class RSN(BaseBackbone):
                 gen_skip = False
                 gen_cross_conv = False
             self.multi_stage_rsn.append(
-                Single_stage_RSN(
-                    has_skip,
-                    gen_skip,
-                    gen_cross_conv,
-                    unit_channels,
-                    num_units,
-                    num_steps,
-                    num_blocks,
-                    norm_cfg=norm_cfg))
+                Single_stage_RSN(has_skip, gen_skip, gen_cross_conv,
+                                 unit_channels, num_units, num_steps,
+                                 num_blocks, norm_cfg, res_top_channels,
+                                 expand_times))
 
     def forward(self, x):
         """Model forward function."""
