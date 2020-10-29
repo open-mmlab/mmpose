@@ -10,8 +10,8 @@ from .base_backbone import BaseBackbone
 
 
 class RSB(nn.Module):
-    """Residual Steps block for RSN. Paper ref: Cai et al. Learning Delicate
-    Local Representations for Multi-Person Pose Estimation (ECCV 2020).
+    """Residual Steps block for RSN. Paper ref: Cai et al. "Learning Delicate
+    Local Representations for Multi-Person Pose Estimation" (ECCV 2020).
 
     Args:
         in_channels (int): Input channels of this block.
@@ -463,8 +463,8 @@ class ResNet_top(nn.Module):
 @BACKBONES.register_module()
 class RSN(BaseBackbone):
     """Residual Steps Network backbone.
-              Paper ref: Cai et al. Learning Delicate Local Representations
-              for Multi-Person Pose Estimation (ECCV 2020).
+              Paper ref: Cai et al. "Learning Delicate Local Representations
+              for Multi-Person Pose Estimation" (ECCV 2020).
     Args:
         unit_channels (int): Number of Channels in an upsample unit.
             Default: 256
