@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.8.0 (31/10/2020)
+
+**Highlights**
+
+1. Support more human pose estimation datasets.
+    - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+    - [PoseTrack18](https://posetrack.net/)
+2. Support more 2D hand keypoint estimation datasets.
+    - [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M)
+3. Support adversarial training for 3D human shape recovery.
+4. Support multi-stage losses.
+5. Support mpii demo.
+
+
+**New Features**
+- Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195)).
+- Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220)).
+- Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202)).
+- Support adversarial training for 3D human shape recovery ([#192](https://github.com/open-mmlab/mmpose/pull/192)).
+- Support multi-stage losses ([#204](https://github.com/open-mmlab/mmpose/pull/204)).
+
+**Bug Fixes**
+
+- Fix config files ([#190](https://github.com/open-mmlab/mmpose/pull/190))
+
+**Improvements**
+
+- Add mpii demo ([#216](https://github.com/open-mmlab/mmpose/pull/216))
+- Improve README ([#181](https://github.com/open-mmlab/mmpose/pull/181),[#183](https://github.com/open-mmlab/mmpose/pull/183),[#208](https://github.com/open-mmlab/mmpose/pull/208))
+- Support return heatmaps and backbone features ([#196](https://github.com/open-mmlab/mmpose/pull/196),[#212](https://github.com/open-mmlab/mmpose/pull/212))
+- Support different return formats of mmdetection models ([#217](https://github.com/open-mmlab/mmpose/pull/217))
+
+
 ## v0.7.0 (30/9/2020)
 
 **Highlights**
