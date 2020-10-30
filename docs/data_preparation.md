@@ -206,6 +206,80 @@ mmpose
             │-- ...
 ```
 
+## PoseTrack18
+
+For PoseTrack18 data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
+Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
+We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json). We also generate the [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) to speed up training.
+For top-down approaches, we use [MMDetection](https://github.com/open-mmlab/mmdetection) pre-trained [Cascade R-CNN](http://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) to generate the detected human bounding boxes.
+Please download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── posetrack18
+        │-- annotations
+        │   │-- posetrack18_train.json
+        │   │-- posetrack18_val.json
+        │   │-- posetrack18_val_human_detections.json
+        │   │-- train
+        │   │   │-- 000001_bonn_train.json
+        │   │   │-- 000002_bonn_train.json
+        │   │   │-- ...
+        │   │-- val
+        │   │   │-- 000342_mpii_test.json
+        │   │   │-- 000522_mpii_test.json
+        │   │   │-- ...
+        │   `-- test
+        │       │-- 000001_mpiinew_test.json
+        │       │-- 000002_mpiinew_test.json
+        │       │-- ...
+        │
+        `-- images
+        │   │-- train
+        │   │   │-- 000001_bonn_train
+        │   │   │   │-- 000000.jpg
+        │   │   │   │-- 000001.jpg
+        │   │   │   │-- ...
+        │   │   │-- ...
+        │   │-- val
+        │   │   │-- 000342_mpii_test
+        │   │   │   │-- 000000.jpg
+        │   │   │   │-- 000001.jpg
+        │   │   │   │-- ...
+        │   │   │-- ...
+        │   `-- test
+        │       │-- 000001_mpiinew_test
+        │       │   │-- 000000.jpg
+        │       │   │-- 000001.jpg
+        │       │   │-- ...
+        │       │-- ...
+        `-- mask
+            │-- train
+            │   │-- 000002_bonn_train
+            │   │   │-- 000000.jpg
+            │   │   │-- 000001.jpg
+            │   │   │-- ...
+            │   │-- ...
+            `-- val
+                │-- 000522_mpii_test
+                │   │-- 000000.jpg
+                │   │-- 000001.jpg
+                │   │-- ...
+                │-- ...
+```
+
+The official evaluation tool for PoseTrack should be installed from GitHub.
+```
+pip install git+https://github.com/svenkreiss/poseval.git
+```
+
+
 ## OCHuman
 
 For OCHuman data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
