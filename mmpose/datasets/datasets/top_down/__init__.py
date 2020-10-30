@@ -10,5 +10,5 @@ from .topdown_posetrack18_dataset import TopDownPoseTrack18Dataset
 __all__ = [
     'TopDownAicDataset', 'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset',
     'TopDownCrowdPoseDataset', 'TopDownMpiiDataset', 'TopDownMpiiTrbDataset',
-    'TopDownOCHumanDataset',  'TopDownPoseTrack18Dataset'
+    'TopDownOCHumanDataset', 'TopDownPoseTrack18Dataset'
 ]
