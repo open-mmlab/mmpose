@@ -177,7 +177,7 @@ class TopDownFreiHandDataset(TopDownBaseDataset):
 
         kpts = []
 
-        for preds, boxes, image_path in outputs:
+        for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
             image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 

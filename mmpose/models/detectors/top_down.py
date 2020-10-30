@@ -100,7 +100,8 @@ class TopDown(BasePose):
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes and image paths.
+              Otherwise, return predicted poses, boxes, image paths
+                  and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
@@ -188,10 +189,10 @@ class TopDown(BasePose):
         output = self.backbone(img)
 
         # process head
-        all_preds, all_boxes, image_path = self.process_head(
+        all_preds, all_boxes, image_path, heatmap = self.process_head(
             output, img, img_metas, return_heatmap=return_heatmap)
 
-        return all_preds, all_boxes, image_path
+        return all_preds, all_boxes, image_path, heatmap
 
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
@@ -224,9 +225,6 @@ class TopDown(BasePose):
             output = (output + output_flipped) * 0.5
 
         output_heatmap = output.detach().cpu().numpy()
-        if return_heatmap:
-            self.output_heatmap = output_heatmap
-
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -254,7 +252,10 @@ class TopDown(BasePose):
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
 
-        return all_preds, all_boxes, image_path
+        if not return_heatmap:
+            output_heatmap = None
+
+        return all_preds, all_boxes, image_path, output_heatmap
 
     def show_result(self,
                     img,

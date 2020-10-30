@@ -66,7 +66,7 @@ def main():
     # test a single image, with a list of bboxes.
 
     output_layer_names = ('heatmap', )  # default : None
-    pose_results, heatmaps, backbone_features = inference_top_down_pose_model(
+    pose_results, returned_outputs = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_bboxes,
