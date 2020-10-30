@@ -33,3 +33,12 @@
 | Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_resnet_50](/configs/hand/resnet/panoptic/res50_panoptic_256x256.py) | 256x256 | 0.998 | 0.708 | 9.24 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_panoptic_256x256-5f55ca1a_20200925.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_panoptic_256x256_20200925.log.json) |
+
+#### Results on InterHand2.6M val & test set.
+
+|Train Set| Set | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--- | :--------: | :--------: | :------: | :------: | :------: |:------: |:------: |
+|Human_annot|val(M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_human_256x256.py) | 256x256 | 0.973 | 0.828 | 5.15 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human_20201029.log.json) |
+|Human_annot|test(H)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_human_256x256.py) | 256x256 | 0.973 | 0.826 | 5.27 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human_20201029.log.json) |
+|Human_annot|test(M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_human_256x256.py) | 256x256 | 0.975 | 0.841 | 4.90 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human_20201029.log.json) |
+|Human_annot|test(H+M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_human_256x256.py) | 256x256 | 0.975 | 0.839 | 4.97 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_interhand2d_256x256_human_20201029.log.json) |
