@@ -1,6 +1,4 @@
-import functools
 import os
-from collections import OrderedDict
 
 import mmcv
 import numpy as np
@@ -10,6 +8,7 @@ from mmcv.runner import load_checkpoint
 
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
+from mmpose.utils.hooks import OutputsHook
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -138,7 +137,7 @@ def _inference_single_pose_model(model,
                                  img_or_path,
                                  bbox,
                                  dataset,
-                                 outputs=None):
+                                 return_heatmap=False):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -154,8 +153,9 @@ def _inference_single_pose_model(model,
 
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
-        dict: Output feature maps of layers specified in `outputs`.
+        heatmap[N, K, H, W]: Model output heatmap.
     """
+
     cfg = model.cfg
     device = next(model.parameters()).device
 
@@ -231,53 +231,12 @@ def _inference_single_pose_model(model,
 
     # forward the model
     with torch.no_grad():
-        # prepare hooks to return ouputs
-        returned_outputs = OrderedDict()
-        return_heatmap = False
-        handles = []
-
-        def hook_wrapper(name):
-
-            def hook(model, input, output):
-                returned_outputs[name] = output.detach().cpu().numpy()
-
-            return hook
-
-        if isinstance(outputs, (list, tuple)):
-            for name in outputs:
-                try:
-                    layer = rgetattr(model, name)
-                    h = layer.register_forward_hook(hook_wrapper(name))
-                except AttributeError:
-                    if name in ('heatmap', 'heatmaps'):
-                        return_heatmap = True
-                        continue
-                    else:
-                        raise AttributeError(f'Module {name} not found')
-                handles.append(h)
         all_preds, _, _, heatmap = model(
             return_loss=False,
             return_heatmap=return_heatmap,
             img=data['img'],
             img_metas=data['img_metas'])
-
-        if heatmap:
-            returned_outputs['heatmap'] = heatmap
-        # clear handles (if any)
-        for h in handles:
-            h.remove()
-
-    return all_preds[0], returned_outputs
-
-
-# using wonder's beautiful simplification:
-# https://stackoverflow.com/questions/31174295/getattr-and-setattr-on-nested-objects
-def rgetattr(obj, attr, *args):
-
-    def _getattr(obj, attr):
-        return getattr(obj, attr, *args)
-
-    return functools.reduce(_getattr, [obj] + attr.split('.'))
+    return all_preds[0], heatmap
 
 
 def inference_top_down_pose_model(model,
@@ -322,25 +281,39 @@ def inference_top_down_pose_model(model,
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
 
+    return_heatmap = False
+    if isinstance(outputs, (list, tuple)) and any(
+            x in outputs for x in ('heatmap', 'heatmaps')):
+        return_heatmap = True
+
     pose_results = []
     returned_outputs = []
 
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
-        for bbox in person_bboxes:
-            pose, outputs_returned = _inference_single_pose_model(
-                model, img_or_path, bbox, dataset, outputs=outputs)
 
-            if outputs is not None:
-                returned_outputs.append(outputs_returned)
+        with OutputsHook(model, outputs=outputs) as h:
+            for bbox in person_bboxes:
+                pose, heatmap = _inference_single_pose_model(
+                    model,
+                    img_or_path,
+                    bbox,
+                    dataset,
+                    return_heatmap=return_heatmap)
 
-            pose_results.append({
-                'bbox':
-                _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                'keypoints':
-                pose
-            })
+                if outputs is not None:
+                    outputs_returned = dict(h.layer_outputs)
+                    if return_heatmap:
+                        outputs_returned['heatmap'] = heatmap
+                    returned_outputs.append(outputs_returned)
+
+                pose_results.append({
+                    'bbox':
+                    _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
+                    'keypoints':
+                    pose
+                })
 
     return pose_results, returned_outputs
 
