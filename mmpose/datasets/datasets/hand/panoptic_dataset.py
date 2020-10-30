@@ -94,6 +94,9 @@ class PanopticDataset(HandBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
+                # the bbox is the tightest bbox enclosing keypoints
+                # the paper use 2.2bbox as input
+                # we use 1.76bbox(2.2 * 0.8) as input
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.76)
 
                 image_file = os.path.join(self.img_prefix,

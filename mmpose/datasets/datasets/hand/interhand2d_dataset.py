@@ -78,7 +78,7 @@ class InterHand2DDataset(HandBaseDataset):
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def _cam2pixel_(self, cam_coord, f, c):
+    def _cam2pixel(self, cam_coord, f, c):
         """Transform the joints from their camera coordinates to their pixel
         coordinates.
 
@@ -101,7 +101,7 @@ class InterHand2DDataset(HandBaseDataset):
         img_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
         return img_coord
 
-    def _world2cam_(self, world_coord, R, T):
+    def _world2cam(self, world_coord, R, T):
         """Transform the joints from their world coordinates to their camera
         coordinates.
 
@@ -109,13 +109,13 @@ class InterHand2DDataset(HandBaseDataset):
             N: number of joints
 
         Args:
-            world_coord (ndarray[N, 3]): 3D joints coordinates
+            world_coord (ndarray[3, N]): 3D joints coordinates
                 in the world coordinate system
             R (ndarray[3, 3]): camera rotation matrix
             T (ndarray[3]): camera position (x, y, z)
 
         Returns:
-            cam_coord (ndarray[N, 3]): 3D joints coordinates
+            cam_coord (ndarray[3, N]): 3D joints coordinates
                 in the camera coordinate system
         """
         cam_coord = np.dot(R, world_coord - T)
@@ -157,10 +157,10 @@ class InterHand2DDataset(HandBaseDataset):
                     dtype=np.float32)
             joint_world = np.array(
                 joints[capture_id][frame_idx]['world_coord'], dtype=np.float32)
-            joint_cam = self._world2cam_(
+            joint_cam = self._world2cam(
                 joint_world.transpose(1, 0), camera_rot,
                 camera_pos.reshape(3, 1)).transpose(1, 0)
-            joint_img = self._cam2pixel_(joint_cam, focal, principal_pt)[:, :2]
+            joint_img = self._cam2pixel(joint_cam, focal, principal_pt)[:, :2]
             joint_img = joint_img.reshape(2, -1, 2)
 
             joint_valid = np.array(
@@ -177,9 +177,9 @@ class InterHand2DDataset(HandBaseDataset):
                                                  dtype=np.float32)
                     joints_3d[:, :2] = joint_img[hand, :, :]
                     joints_3d_visible[:, :2] = np.minimum(
-                        1,
-                        np.array(joint_valid[hand, :]).reshape(-1, 1))
+                        1, joint_valid[hand, :].reshape(-1, 1))
 
+                    # use the tightest bbox enclosing all keypoints as bbox
                     bbox = [img['width'], img['height'], 0, 0]
                     for i in range(num_joints):
                         if joints_3d_visible[i][0]:
@@ -191,6 +191,7 @@ class InterHand2DDataset(HandBaseDataset):
                     bbox[2] -= bbox[0]
                     bbox[3] -= bbox[1]
 
+                    # use 1.5bbox as input
                     center, scale = self._xywh2cs(*bbox, 1.5)
 
                     rec.append({

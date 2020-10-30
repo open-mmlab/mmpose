@@ -127,10 +127,24 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         with open(res_file, 'w') as f:
             json.dump(keypoints, f, sort_keys=True, indent=4)
 
-    def _report_metric(self, res_file, metrics):
+    def _report_metric(self,
+                       res_file,
+                       metrics,
+                       pck_thr=0.2,
+                       pckh_thr=0.7,
+                       auc_nor=30):
         """Keypoint evaluation.
 
-        Report PCK, AUC or EPE.
+        Args:
+            res_file (str): Json file stored prediction results.
+            metrics (str | list[str]): Metric to be performed.
+                Options: 'PCK', 'PCKh', 'AUC', 'EPE'.
+            pck_thr (float): PCK threshold, default as 0.2.
+            pckh_thr (float): PCKh threshold, default as 0.7.
+            auc_nor (float): AUC normalization factor, default as 30 pixel.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
         """
         info_str = []
 
@@ -164,17 +178,18 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         threshold_head_box = np.array(threshold_head_box)
 
         if 'PCK' in metrics:
-            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, 0.2,
+            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
                                               threshold_bbox)
             info_str.append(('PCK', pck))
 
         if 'PCKh' in metrics:
-            _, pckh, _ = keypoint_pck_accuracy(outputs, gts, masks, 0.7,
+            _, pckh, _ = keypoint_pck_accuracy(outputs, gts, masks, pckh_thr,
                                                threshold_head_box)
             info_str.append(('PCKh', pckh))
 
         if 'AUC' in metrics:
-            info_str.append(('AUC', keypoint_auc(outputs, gts, masks, 30)))
+            info_str.append(('AUC', keypoint_auc(outputs, gts, masks,
+                                                 auc_nor)))
 
         if 'EPE' in metrics:
             info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))

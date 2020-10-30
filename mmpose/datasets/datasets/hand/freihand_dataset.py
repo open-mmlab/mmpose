@@ -68,7 +68,7 @@ class FreiHandDataset(HandBaseDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.dataset_name = 'ferihand'
+        self.dataset_name = 'freihand'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
