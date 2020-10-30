@@ -113,6 +113,7 @@ mmpose/version.py
 *.pkl
 *.pkl.json
 *.log.json
+*.npy
 work_dirs/
 
 # Pytorch
