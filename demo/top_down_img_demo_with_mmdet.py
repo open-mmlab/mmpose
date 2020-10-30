@@ -65,7 +65,10 @@ def main():
 
     # test a single image, with a list of bboxes.
 
-    output_layer_names = ('heatmap', )  # default : None
+    # optional
+    return_heatmap = False
+    output_layer_names = ('backbone', )  # default : None
+
     pose_results, returned_outputs = inference_top_down_pose_model(
         pose_model,
         image_name,
@@ -73,6 +76,7 @@ def main():
         bbox_thr=args.bbox_thr,
         format='xyxy',
         dataset=dataset,
+        return_heatmap=return_heatmap,
         outputs=output_layer_names)
 
     if args.out_img_root == '':

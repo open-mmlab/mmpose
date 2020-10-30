@@ -245,6 +245,7 @@ def inference_top_down_pose_model(model,
                                   bbox_thr=None,
                                   format='xywh',
                                   dataset='TopDownCocoDataset',
+                                  return_heatmap=False,
                                   outputs=None):
     """Inference a single image with a list of person bounding boxes.
 
@@ -264,6 +265,7 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
+        return_heatmap (bool) : Flag to return heatmap, default: False
         outputs (list(str) | tuple(str)) : Names of layers whose outputs
             need to be returned, default: None
 
@@ -272,19 +274,15 @@ def inference_top_down_pose_model(model,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
-        list[dict[np.ndarray[N, K, H, W]]]: Output feature maps from layers
-            specified in `outputs`.
+        list[dict[np.ndarray[N, K, H, W] | torch.tensor[N, K, H, W]]]:
+            Output feature maps from layers specified in `outputs`.
+            Includes 'heatmap' if `return_heatmap` is True.
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
     # transform the bboxes format to xywh
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
-
-    return_heatmap = False
-    if isinstance(outputs, (list, tuple)) and any(
-            x in outputs for x in ('heatmap', 'heatmaps')):
-        return_heatmap = True
 
     pose_results = []
     returned_outputs = []
@@ -293,7 +291,7 @@ def inference_top_down_pose_model(model,
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
 
-        with OutputsHook(model, outputs=outputs) as h:
+        with OutputsHook(model, outputs=outputs, as_tensor=True) as h:
             for bbox in person_bboxes:
                 pose, heatmap = _inference_single_pose_model(
                     model,
@@ -302,12 +300,10 @@ def inference_top_down_pose_model(model,
                     dataset,
                     return_heatmap=return_heatmap)
 
-                if outputs is not None:
-                    outputs_returned = dict(h.layer_outputs)
-                    if return_heatmap:
-                        outputs_returned['heatmap'] = heatmap
-                    returned_outputs.append(outputs_returned)
+                if return_heatmap:
+                    h.layer_outputs['heatmap'] = heatmap
 
+                returned_outputs.append(h.layer_outputs)
                 pose_results.append({
                     'bbox':
                     _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),

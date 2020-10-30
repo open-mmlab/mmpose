@@ -50,7 +50,9 @@ def main():
 
     img_keys = list(coco.imgs.keys())
 
-    output_layer_names = ('heatmap', )  # default : None
+    # optional
+    return_heatmap = False
+    output_layer_names = ('backbone', )  # default : None
 
     # process each image
     for i in range(len(img_keys)):
@@ -76,6 +78,7 @@ def main():
             bbox_thr=args.bbox_thr,
             format='xywh',
             dataset=dataset,
+            return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
         if args.out_img_root == '':

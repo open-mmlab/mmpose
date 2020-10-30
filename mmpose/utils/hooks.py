@@ -23,8 +23,9 @@ class Hook:
 
 class OutputsHook(Hook):
 
-    def __init__(self, module, outputs=None):
+    def __init__(self, module, outputs=None, as_tensor=False):
         self.outputs = outputs
+        self.as_tensor = as_tensor
         self.layer_outputs = {}
         super().__init__(module)
 
@@ -33,7 +34,10 @@ class OutputsHook(Hook):
         def hook_wrapper(name):
 
             def hook(model, input, output):
-                self.layer_outputs[name] = output.detach().cpu().numpy()
+                if self.as_tensor:
+                    self.layer_outputs[name] = output
+                else:
+                    self.layer_outputs[name] = output.detach().cpu().numpy()
 
             return hook
 
@@ -44,10 +48,7 @@ class OutputsHook(Hook):
                     layer = rgetattr(module, name)
                     h = layer.register_forward_hook(hook_wrapper(name))
                 except AttributeError:
-                    if name in ('heatmap', 'heatmaps'):
-                        continue
-                    else:
-                        raise AttributeError(f'Module {name} not found')
+                    raise AttributeError(f'Module {name} not found')
                 self.handles.append(h)
 
     def remove(self):
