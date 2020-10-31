@@ -8,6 +8,7 @@ from mmcv.runner import load_checkpoint
 
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
+from mmpose.utils.hooks import OutputHook
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -132,7 +133,11 @@ class LoadImage:
         return results
 
 
-def _inference_single_pose_model(model, img_or_path, bbox, dataset):
+def _inference_single_pose_model(model,
+                                 img_or_path,
+                                 bbox,
+                                 dataset,
+                                 return_heatmap=False):
     """Inference a single bbox.
 
     num_keypoints: K
@@ -143,11 +148,14 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
+        outputs (list[str] | tuple[str]): Names of layers whose output is
+            to be returned, default: None
 
     Returns:
         ndarray[Kx3]: Predicted pose x, y, score.
-        ndarray[NxKxHxW]: Model output heatmap.
+        heatmap[N, K, H, W]: Model output heatmap.
     """
+
     cfg = model.cfg
     device = next(model.parameters()).device
 
@@ -226,8 +234,10 @@ def _inference_single_pose_model(model, img_or_path, bbox, dataset):
     # forward the model
     with torch.no_grad():
         all_preds, _, _, heatmap = model(
-            return_loss=False, img=data['img'], img_metas=data['img_metas'])
-
+            return_loss=False,
+            return_heatmap=return_heatmap,
+            img=data['img'],
+            img_metas=data['img_metas'])
     return all_preds[0], heatmap
 
 
@@ -236,7 +246,9 @@ def inference_top_down_pose_model(model,
                                   person_bboxes,
                                   bbox_thr=None,
                                   format='xywh',
-                                  dataset='TopDownCocoDataset'):
+                                  dataset='TopDownCocoDataset',
+                                  return_heatmap=False,
+                                  outputs=None):
     """Inference a single image with a list of person bounding boxes.
 
     num_people: P
@@ -255,38 +267,53 @@ def inference_top_down_pose_model(model,
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
+        return_heatmap (bool) : Flag to return heatmap, default: False
+        outputs (list(str) | tuple(str)) : Names of layers whose outputs
+            need to be returned, default: None
 
     Returns:
-        list[dict]: The bbox & pose info.
-
+        list[dict]: The bbox & pose info,
             Each item in the list is a dictionary,
             containing the bbox: (left, top, right, bottom, [score])
             and the pose (ndarray[Kx3]): x, y, score
+        list[dict[np.ndarray[N, K, H, W] | torch.tensor[N, K, H, W]]]:
+            Output feature maps from layers specified in `outputs`.
+            Includes 'heatmap' if `return_heatmap` is True.
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
     # transform the bboxes format to xywh
     if format == 'xyxy':
         person_bboxes = _xyxy2xywh(np.array(person_bboxes))
+
     pose_results = []
-    heatmaps = []
+    returned_outputs = []
 
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
-        for bbox in person_bboxes:
-            pose, heatmap = _inference_single_pose_model(
-                model, img_or_path, bbox, dataset)
-            pose_results.append({
-                'bbox':
-                _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                'keypoints':
-                pose,
-            })
 
-            heatmaps.append(heatmap)
+        with OutputHook(model, outputs=outputs, as_tensor=True) as h:
+            for bbox in person_bboxes:
+                pose, heatmap = _inference_single_pose_model(
+                    model,
+                    img_or_path,
+                    bbox,
+                    dataset,
+                    return_heatmap=return_heatmap)
 
-    return pose_results, heatmaps
+                if return_heatmap:
+                    h.layer_outputs['heatmap'] = heatmap
+
+                returned_outputs.append(h.layer_outputs)
+                pose_results.append({
+                    'bbox':
+                    _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
+                    'keypoints':
+                    pose
+                })
+
+    return pose_results, returned_outputs
 
 
 def inference_bottom_up_pose_model(model, img_or_path):
