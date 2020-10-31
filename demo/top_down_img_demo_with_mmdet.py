@@ -78,13 +78,22 @@ def main():
     person_bboxes = process_mmdet_results(mmdet_results)
 
     # test a single image, with a list of bboxes.
-    pose_results, heatmaps = inference_top_down_pose_model(
+
+    # optional
+    return_heatmap = False
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
+    pose_results, returned_outputs = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_bboxes,
         bbox_thr=args.bbox_thr,
         format='xyxy',
-        dataset=dataset)
+        dataset=dataset,
+        return_heatmap=return_heatmap,
+        outputs=output_layer_names)
 
     if args.out_img_root == '':
         out_file = None
