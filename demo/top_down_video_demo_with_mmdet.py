@@ -73,7 +73,9 @@ def main():
 
     # optional
     return_heatmap = False
-    output_layer_names = ('backbone', )  # default : None
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
 
     while (cap.isOpened()):
         flag, img = cap.read()

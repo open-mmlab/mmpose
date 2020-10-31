@@ -67,7 +67,9 @@ def main():
 
     # optional
     return_heatmap = False
-    output_layer_names = ('backbone', )  # default : None
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
 
     pose_results, returned_outputs = inference_top_down_pose_model(
         pose_model,
