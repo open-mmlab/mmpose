@@ -15,6 +15,7 @@
 
 
 **New Features**
+
 - Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195)).
 - Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220)).
 - Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202)).
@@ -28,8 +29,8 @@
 **Improvements**
 
 - Add mpii demo ([#216](https://github.com/open-mmlab/mmpose/pull/216))
-- Improve README ([#181](https://github.com/open-mmlab/mmpose/pull/181),[#183](https://github.com/open-mmlab/mmpose/pull/183),[#208](https://github.com/open-mmlab/mmpose/pull/208))
-- Support return heatmaps and backbone features ([#196](https://github.com/open-mmlab/mmpose/pull/196),[#212](https://github.com/open-mmlab/mmpose/pull/212))
+- Improve README ([#181](https://github.com/open-mmlab/mmpose/pull/181), [#183](https://github.com/open-mmlab/mmpose/pull/183), [#208](https://github.com/open-mmlab/mmpose/pull/208))
+- Support return heatmaps and backbone features ([#196](https://github.com/open-mmlab/mmpose/pull/196), [#212](https://github.com/open-mmlab/mmpose/pull/212))
 - Support different return formats of mmdetection models ([#217](https://github.com/open-mmlab/mmpose/pull/217))
 
 
