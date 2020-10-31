@@ -8,7 +8,7 @@ from mmcv.runner import load_checkpoint
 
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
-from mmpose.utils.hooks import OutputsHook
+from mmpose.utils.hooks import OutputHook
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -291,7 +291,7 @@ def inference_top_down_pose_model(model,
         if bbox_thr is not None:
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
 
-        with OutputsHook(model, outputs=outputs, as_tensor=True) as h:
+        with OutputHook(model, outputs=outputs, as_tensor=True) as h:
             for bbox in person_bboxes:
                 pose, heatmap = _inference_single_pose_model(
                     model,

@@ -1,33 +1,14 @@
 import functools
 
 
-class Hook:
-
-    def __init__(self, module):
-        self.module = module
-        self.handles = None
-        self.register(self.module)
-
-    def register(self, module):
-        pass
-
-    def remove(self):
-        pass
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.remove()
-
-
-class OutputsHook(Hook):
+class OutputHook:
 
     def __init__(self, module, outputs=None, as_tensor=False):
+        self.module = module
         self.outputs = outputs
         self.as_tensor = as_tensor
         self.layer_outputs = {}
-        super().__init__(module)
+        self.register(self.module)
 
     def register(self, module):
 
@@ -54,6 +35,12 @@ class OutputsHook(Hook):
     def remove(self):
         for h in self.handles:
             h.remove()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.remove()
 
 
 # using wonder's beautiful simplification:
