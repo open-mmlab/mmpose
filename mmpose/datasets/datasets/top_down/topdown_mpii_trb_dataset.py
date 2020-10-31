@@ -149,7 +149,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             heatmap width: W
 
         Args:
-            outputs(list(preds, boxes, image_path, output_heatmap)):
+            outputs(list(preds, boxes, image_path, heatmap)):
 
                 * preds(np.ndarray[1,K,3]): The first two dimensions are
                   coordinates, score is the third dimension of the array.
@@ -157,8 +157,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                   , scale[1],area, score]
                 * image_path(list[str]): For example, ['0', '0',
                   '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
-                * output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-
+                * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
