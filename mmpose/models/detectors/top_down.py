@@ -105,8 +105,6 @@ class TopDown(BasePose):
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
                                       **kwargs)
-        return self.forward_test(
-            img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
