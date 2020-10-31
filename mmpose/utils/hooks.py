@@ -4,11 +4,10 @@ import functools
 class OutputHook:
 
     def __init__(self, module, outputs=None, as_tensor=False):
-        self.module = module
         self.outputs = outputs
         self.as_tensor = as_tensor
         self.layer_outputs = {}
-        self.register(self.module)
+        self.register(module)
 
     def register(self, module):
 
