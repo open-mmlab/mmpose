@@ -17,6 +17,7 @@ MMPose supported datasets:
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+- [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
