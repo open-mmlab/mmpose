@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=1)
 evaluation = dict(
-    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='PCK')
+    interval=1, metric=['PCKh', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -18,8 +18,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[70, 100])
+total_epochs = 110
 log_config = dict(
     interval=20,
     hooks=[
@@ -99,33 +99,31 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
 test_pipeline = val_pipeline
 
-data_root = 'data/onehand10k'
+data_root = 'data/panoptic'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownOneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_train.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_train.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownOneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_test.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownOneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_test.json',
+        type='PanopticDataset',
+        ann_file=f'{data_root}/annotations/panoptic_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

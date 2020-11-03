@@ -135,8 +135,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
         """Evaluate PCKh for MPII dataset. Adapted from
-        https://github.com/leoxiaobin/deep-high-resolution- net.pytorch
-        Original licence: Copyright (c) Microsoft, under the MIT License.
+        https://github.com/leoxiaobin/deep-high-resolution-net.pytorch
+        Copyright (c) Microsoft, under the MIT License.
 
         Note:
             batch_size: N
