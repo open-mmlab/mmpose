@@ -92,9 +92,9 @@ class ParametricMesh(BasePose):
 
         In this function, the detector will finish the train step following
         the pipeline:
-            1. get fake and real SMPL parameters
-            2. optimize discriminator (if have)
-            3. optimize generator
+        1. get fake and real SMPL parameters
+        2. optimize discriminator (if have)
+        3. optimize generator
 
         If `self.train_cfg.disc_step > 1`, the train step will contain multiple
         iterations for optimizing discriminator with different input data and

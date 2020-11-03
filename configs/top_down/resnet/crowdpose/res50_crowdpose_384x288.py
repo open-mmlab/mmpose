@@ -107,9 +107,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
             'flip_pairs'
