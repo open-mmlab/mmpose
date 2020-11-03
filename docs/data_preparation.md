@@ -15,6 +15,7 @@ MMPose supported datasets:
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+- [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 
 ## COCO
 
@@ -403,4 +404,35 @@ mmpose
                 |── 000648952_02_l.jpg
                 |── 000835470_01_l.jpg
                  ...
+```
+
+## InterHand2.6M
+
+For InterHand2.6M, please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
+Please download the annotation files from [annotations](https://github.com/facebookresearch/InterHand2.6M/releases/download/v0.0/InterHand2.6M.annotations.5.fps.zip).
+Extract them under {MMPose}/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── interhand2.6m
+        |── annotations
+        |   |── all
+        |   |── human_annot
+        |   |── machine_annot
+        |   |── skeleton.txt
+        |   |── subject.txt
+        |
+        `── images
+        |   |── train
+        |   |   |-- Capture0 ~ Capture26
+        |   |── val
+        |   |   |-- Capture0
+        |   |── test
+        |   |   |-- Capture0 ~ Capture7
 ```

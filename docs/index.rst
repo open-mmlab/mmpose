@@ -21,6 +21,7 @@ Welcome to MMPose's documentation!
 
    top_down_models.md
    bottom_up_models.md
+   hand_models.md
    pretrained.md
 
 .. toctree::

@@ -191,7 +191,7 @@ class MeshLoss(nn.Module):
             target (dict): dict of ground-truth labels.
                 Keys: 'vertices', 'joints_3d', 'joints_3d_visible',
                 'joints_2d', 'joints_2d_visible', 'pose', 'beta',
-                 'has_smpl',
+                'has_smpl'
 
         Returns:
             losses (dict): dict of losses.
