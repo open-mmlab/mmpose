@@ -231,14 +231,14 @@ python demo/bottom_up_video_demo.py \
 Some tips to speed up MMPose inference:
 
 For top-down models, try to edit the config file.
-1. set `flip_test=False` (line 51 in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/top_down/resnet/coco/res50_coco_256x192.py))
-2. set `unbiased_decoding=False` (line 54 in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/top_down/resnet/coco/res50_coco_256x192.py))
+1. set `flip_test=False` (line 51 in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py))
+2. set `unbiased_decoding=False` (line 54 in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py))
 
 For bottom-up models, try to edit the config file.
-1. set `flip_test=False` (line 80 in [bottomup-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
-2. set `adjust=False` (line 78 in [bottomup-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
-3. set `refine=False` (line 79 in [bottomup-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
-4. use smaller input image size (line 39 in [bottomup-res50](https://github.com/open-mmlab/mmpose/tree/master/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+1. set `flip_test=False` (line 80 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+2. set `adjust=False` (line 78 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+3. set `refine=False` (line 79 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
+4. use smaller input image size (line 39 in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py))
 
 ## Train a model
 
@@ -307,7 +307,7 @@ Assume that `Test` is a valid ${PARTITION} name.)
 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
-You can check [slurm_train.sh](https://github.com/open-mmlab/mmpose/tree/master/tools/slurm_train.sh) for full arguments and environment variables.
+You can check [slurm_train.sh](/tools/slurm_train.sh) for full arguments and environment variables.
 
 If you have just multiple machines connected with ethernet, you can refer to
 pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).
