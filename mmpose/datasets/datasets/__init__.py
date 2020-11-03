@@ -1,6 +1,5 @@
-from deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
-                        TopDownPanopticDataset)
-
+from ...deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
+                           TopDownPanopticDataset)
 from .bottom_up import BottomUpCocoDataset, BottomUpCrowdPoseDataset
 from .hand import (FreiHandDataset, InterHand2DDataset, OneHand10KDataset,
                    PanopticDataset)

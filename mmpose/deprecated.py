@@ -1,6 +1,5 @@
-from mmpose.datasets.builder import DATASETS
-from mmpose.datasets.datasets.top_down.topdown_base_dataset import \
-    TopDownBaseDataset
+from .datasets.builder import DATASETS
+from .datasets.datasets.top_down.topdown_base_dataset import TopDownBaseDataset
 
 
 @DATASETS.register_module()
