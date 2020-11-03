@@ -36,7 +36,7 @@ def test_top_down_demo():
     # OneHand10K demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py',
+        'configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/onehand10k/9.jpg'
@@ -45,13 +45,10 @@ def test_top_down_demo():
         pose_model,
         image_name, [[50, 50, 50, 100]],
         format='xywh',
-        dataset='TopDownOneHand10KDataset')
+        dataset='OneHand10KDataset')
     # show the results
     vis_pose_result(
-        pose_model,
-        image_name,
-        pose_results,
-        dataset='TopDownOneHand10KDataset')
+        pose_model, image_name, pose_results, dataset='OneHand10KDataset')
 
     with pytest.raises(NotImplementedError):
         pose_results, _ = inference_top_down_pose_model(

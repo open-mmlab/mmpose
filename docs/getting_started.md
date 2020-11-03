@@ -17,6 +17,7 @@ MMPose supported datasets:
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+- [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
@@ -307,7 +308,7 @@ Assume that `Test` is a valid ${PARTITION} name.)
 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
-You can check [slurm_train.sh](https://github.com/open-mmlab/mmpose/tree/master/tools/slurm_train.sh) for full arguments and environment variables.
+You can check [slurm_train.sh](/tools/slurm_train.sh) for full arguments and environment variables.
 
 If you have just multiple machines connected with ethernet, you can refer to
 pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).

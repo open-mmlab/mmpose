@@ -88,6 +88,7 @@ Supported datasets:
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+- [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/top_down_models.html) page.
