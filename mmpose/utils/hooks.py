@@ -17,7 +17,13 @@ class OutputHook:
                 if self.as_tensor:
                     self.layer_outputs[name] = output
                 else:
-                    self.layer_outputs[name] = output.detach().cpu().numpy()
+                    if isinstance(output, list):
+                        self.layer_outputs[name] = [
+                            out.detach().cpu().numpy() for out in output
+                        ]
+                    else:
+                        self.layer_outputs[name] = output.detach().cpu().numpy(
+                        )
 
             return hook
 

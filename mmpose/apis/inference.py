@@ -233,10 +233,10 @@ def _inference_single_pose_model(model,
     # forward the model
     with torch.no_grad():
         all_preds, _, _, heatmap = model(
-            return_loss=False,
-            return_heatmap=return_heatmap,
             img=data['img'],
-            img_metas=data['img_metas'])
+            img_metas=data['img_metas'],
+            return_loss=False,
+            return_heatmap=return_heatmap)
     return all_preds[0], heatmap
 
 
@@ -290,9 +290,10 @@ def inference_top_down_pose_model(model,
 
     if len(person_bboxes) > 0:
         if bbox_thr is not None:
+            assert person_bboxes.shape[1] == 5
             person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
 
-        with OutputHook(model, outputs=outputs, as_tensor=True) as h:
+        with OutputHook(model, outputs=outputs, as_tensor=False) as h:
             for bbox in person_bboxes:
                 pose, heatmap = _inference_single_pose_model(
                     model,
@@ -315,7 +316,10 @@ def inference_top_down_pose_model(model,
     return pose_results, returned_outputs
 
 
-def inference_bottom_up_pose_model(model, img_or_path):
+def inference_bottom_up_pose_model(model,
+                                   img_or_path,
+                                   return_heatmap=False,
+                                   outputs=None):
     """Inference a single image.
 
     num_people: P
@@ -326,16 +330,22 @@ def inference_bottom_up_pose_model(model, img_or_path):
     Args:
         model (nn.Module): The loaded pose model.
         image_name (str| np.ndarray): Image_name.
+        return_heatmap (bool) : Flag to return heatmap, default: False
+        outputs (list(str) | tuple(str)) : Names of layers whose outputs
+            need to be returned, default: None
 
     Returns:
         list[ndarray]: The predicted pose info.
-
-            The length of the list
-            is the number of people (P). Each item in the
-            list is a ndarray, containing each person's
-            pose (ndarray[Kx3]): x, y, score
+            The length of the list is the number of people (P).
+            Each item in the list is a ndarray, containing each person's
+            pose (ndarray[Kx3]): x, y, score.
+        list[dict[np.ndarray[N, K, H, W] | torch.tensor[N, K, H, W]]]:
+            Output feature maps from layers specified in `outputs`.
+            Includes 'heatmap' if `return_heatmap` is True.
     """
     pose_results = []
+    returned_outputs = []
+
     cfg = model.cfg
     device = next(model.parameters()).device
 
@@ -366,17 +376,26 @@ def inference_bottom_up_pose_model(model, img_or_path):
         # just get the actual data from DataContainer
         data['img_metas'] = data['img_metas'].data[0]
 
-    # forward the model
-    with torch.no_grad():
-        all_preds, _, _, heatmap = model(
-            return_loss=False, img=data['img'], img_metas=data['img_metas'])
+    with OutputHook(model, outputs=outputs, as_tensor=False) as h:
+        # forward the model
+        with torch.no_grad():
+            all_preds, _, _, heatmap = model(
+                img=data['img'],
+                img_metas=data['img_metas'],
+                return_loss=False,
+                return_heatmap=return_heatmap)
 
-    for pred in all_preds:
-        pose_results.append({
-            'keypoints': pred[:, :3],
-        })
+        if return_heatmap:
+            h.layer_outputs['heatmap'] = heatmap
 
-    return pose_results, heatmap
+        returned_outputs.append(h.layer_outputs)
+
+        for pred in all_preds:
+            pose_results.append({
+                'keypoints': pred[:, :3],
+            })
+
+    return pose_results, returned_outputs
 
 
 def vis_pose_result(model,
