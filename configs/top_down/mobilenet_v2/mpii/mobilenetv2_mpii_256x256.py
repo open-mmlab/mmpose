@@ -33,8 +33,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'mobilenet_v2_batch256_20200708-3b2dc3af.pth',
+    pretrained='mmcls://mobilenet_v2',
     backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
         type='TopDownSimpleHead',
