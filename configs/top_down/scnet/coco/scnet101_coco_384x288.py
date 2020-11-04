@@ -39,7 +39,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/scnet101-94250a77.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/scnet101-94250a77.pth',
     backbone=dict(type='SCNet', depth=101),
     keypoint_head=dict(
         type='TopDownSimpleHead',

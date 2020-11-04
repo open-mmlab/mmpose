@@ -37,7 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/hrnet_w32-36af842e.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,

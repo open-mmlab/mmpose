@@ -39,8 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'se-resnet101_batch256_20200708-038a4d04.pth',
+    pretrained='mmcls://se-resnet101',
     backbone=dict(type='SEResNet', depth=101),
     keypoint_head=dict(
         type='TopDownSimpleHead',
