@@ -69,6 +69,7 @@ class BottomUp(BasePose):
                 joints=None,
                 img_metas=None,
                 return_loss=True,
+                return_heatmap=False,
                 **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss is True.
@@ -88,8 +89,6 @@ class BottomUp(BasePose):
                                               heatmaps
             joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
-            return loss(bool): Option to 'return_loss'. 'return_loss=True' for
-                training, 'return_loss=False' for validation & test
             img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
@@ -99,17 +98,23 @@ class BottomUp(BasePose):
                 - "center": center of image
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
+
+            return loss(bool): Option to 'return_loss'. 'return_loss=True' for
+                training, 'return_loss=False' for validation & test
+            return_heatmap (bool) : Option to return heatmap.
+
         Returns:
             dict|tuple: if 'return_loss' is true, then return losses.
-              Otherwise, return predicted poses, scores and image
-              paths.
+              Otherwise, return predicted poses, scores, image
+              paths and heatmaps.
         """
 
         if return_loss:
             return self.forward_train(img, targets, masks, joints, img_metas,
                                       **kwargs)
         else:
-            return self.forward_test(img, img_metas, **kwargs)
+            return self.forward_test(
+                img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
     def forward_train(self, img, targets, masks, joints, img_metas, **kwargs):
         """Forward the bottom-up model and calculate the loss.
@@ -170,7 +175,7 @@ class BottomUp(BasePose):
         losses['all_loss'] = loss
         return losses
 
-    def forward_test(self, img, img_metas, **kwargs):
+    def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Inference the bottom-up model.
 
         Note:
@@ -243,7 +248,10 @@ class BottomUp(BasePose):
         image_path = []
         image_path.extend(img_metas['image_file'])
 
-        output_heatmap = aggregated_heatmaps.detach().cpu().numpy()
+        if return_heatmap:
+            output_heatmap = aggregated_heatmaps.detach().cpu().numpy()
+        else:
+            output_heatmap = None
 
         return results, scores, image_path, output_heatmap
 

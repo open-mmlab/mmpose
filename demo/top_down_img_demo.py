@@ -77,7 +77,7 @@ def main():
             pose_model,
             image_name,
             person_bboxes,
-            bbox_thr=args.bbox_thr,
+            bbox_thr=None,
             format='xywh',
             dataset=dataset,
             return_heatmap=return_heatmap,

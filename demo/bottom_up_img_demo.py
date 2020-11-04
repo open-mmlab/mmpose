@@ -48,6 +48,12 @@ def main():
 
     img_keys = list(coco.imgs.keys())
 
+    # optional
+    return_heatmap = False
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     # process each image
     for i in range(len(img_keys)):
         image_id = img_keys[i]
@@ -55,8 +61,11 @@ def main():
         image_name = os.path.join(args.img_root, image['file_name'])
 
         # test a single image, with a list of bboxes.
-        pose_results, heatmaps = inference_bottom_up_pose_model(
-            pose_model, image_name)
+        pose_results, returned_outputs = inference_bottom_up_pose_model(
+            pose_model,
+            image_name,
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         if args.out_img_root == '':
             out_file = None
