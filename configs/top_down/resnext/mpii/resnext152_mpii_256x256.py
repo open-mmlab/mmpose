@@ -33,8 +33,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'resnext152_32x4d_batch256_20200708-aab5034c.pth',
+    pretrained='mmcls://resnext152',
     backbone=dict(type='ResNeXt', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
