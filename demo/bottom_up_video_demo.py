@@ -57,13 +57,22 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
+    # optional
+    return_heatmap = False
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     while (cap.isOpened()):
         flag, img = cap.read()
         if not flag:
             break
 
-        pose_results, heatmaps = inference_bottom_up_pose_model(
-            pose_model, img)
+        pose_results, returned_outputs = inference_bottom_up_pose_model(
+            pose_model,
+            img,
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         # show the results
         vis_img = vis_pose_result(
