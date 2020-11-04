@@ -39,8 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'shufflenet_v2_batch1024_20200812-5bf4721e.pth',
+    pretrained='mmcls://shufflenet_v2',
     backbone=dict(type='ShuffleNetV2', widen_factor=1.0),
     keypoint_head=dict(
         type='TopDownSimpleHead',
