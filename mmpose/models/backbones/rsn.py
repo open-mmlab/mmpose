@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.utils.checkpoint as cp
 from mmcv.cnn import (ConvModule, MaxPool2d, constant_init, kaiming_init,
                       normal_init)
 
@@ -20,8 +19,6 @@ class RSB(nn.Module):
         stride (int): stride of the block. Default: 1
         downsample (nn.Module): downsample operation on identity branch.
             Default: None.
-        with_cp (bool): Use checkpoint or not. Using checkpoint will save some
-            memory while slowing down the training speed.
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
         expand_times (int): Times by which the in_channels are expanded.
@@ -88,41 +85,32 @@ class RSB(nn.Module):
     def forward(self, x):
         """Forward function."""
 
-        def _inner_forward(x):
-            identity = x
-            x = self.conv_bn_relu1(x)
-            spx = torch.split(x, self.branch_channels, 1)
-            outputs = list()
-            outs = list()
-            for i in range(self.num_steps):
-                outputs_i = list()
-                outputs.append(outputs_i)
-                for j in range(i + 1):
-                    if j == 0:
-                        inputs = spx[i]
-                    else:
-                        inputs = outputs[i][j - 1]
-                    if i > j:
-                        inputs += outputs[i - 1][j]
-                    module_name = 'conv_bn_relu2_' + str(i + 1) + '_' + str(j +
-                                                                            1)
-                    module_i_j = getattr(self, module_name)
-                    outputs[i].append(module_i_j(inputs))
+        identity = x
+        x = self.conv_bn_relu1(x)
+        spx = torch.split(x, self.branch_channels, 1)
+        outputs = list()
+        outs = list()
+        for i in range(self.num_steps):
+            outputs_i = list()
+            outputs.append(outputs_i)
+            for j in range(i + 1):
+                if j == 0:
+                    inputs = spx[i]
+                else:
+                    inputs = outputs[i][j - 1]
+                if i > j:
+                    inputs += outputs[i - 1][j]
+                module_name = 'conv_bn_relu2_' + str(i + 1) + '_' + str(j + 1)
+                module_i_j = getattr(self, module_name)
+                outputs[i].append(module_i_j(inputs))
 
-                outs.append(outputs[i][i])
-            out = torch.cat(tuple(outs), 1)
-            out = self.conv_bn3(out)
+            outs.append(outputs[i][i])
+        out = torch.cat(tuple(outs), 1)
+        out = self.conv_bn3(out)
 
-            if self.downsample is not None:
-                identity = self.downsample(identity)
-            out = out + identity
-
-            return out
-
-        if self.with_cp and x.requires_grad:
-            out = cp.checkpoint(_inner_forward, x)
-        else:
-            out = _inner_forward(x)
+        if self.downsample is not None:
+            identity = self.downsample(identity)
+        out = out + identity
 
         out = self.relu(out)
 
