@@ -121,7 +121,8 @@ class PRM(nn.Module):
         out_2 = out_2.unsqueeze(3)
 
         out_3 = self.bottom_path(out_1)
-        out = out_1.mul(1 + out_2.expand_as(out_1).mul(out_3.expand_as(out_1)))
+        out = out_1 * (1 + out_2 * out_3)
+
         return out
 
 
@@ -178,7 +179,7 @@ class TopDownMSPNHead(nn.Module):
         assert len(x) == self.num_stages
         for i in range(self.num_stages):
             for j in range(self.num_units):
-                y = self.predict_layers[i * self.num_stages + j](x[i][j])
+                y = self.predict_layers[i * self.num_units + j](x[i][j])
                 out.append(y)
 
         return out
