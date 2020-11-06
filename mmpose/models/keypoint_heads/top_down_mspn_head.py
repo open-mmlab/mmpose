@@ -1,3 +1,5 @@
+import copy as cp
+
 import torch.nn as nn
 from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule, Linear,
                       build_activation_layer, build_norm_layer, constant_init,
@@ -15,7 +17,7 @@ class PredictHeatmap(nn.Module):
         out_shape (tuple): Shape of the output heatmap.
         use_prm (bool): Whether to use pose refine machine. Default: False.
         norm_cfg (dict): dictionary to construct and config norm layer.
-        Default: dict(type='BN')
+            Default: dict(type='BN')
     """
 
     def __init__(self,
@@ -24,6 +26,8 @@ class PredictHeatmap(nn.Module):
                  out_shape,
                  use_prm=False,
                  norm_cfg=dict(type='BN')):
+        # Protect mutable default arguments
+        norm_cfg = cp.deepcopy(norm_cfg)
         super().__init__()
         self.unit_channels = unit_channels
         self.out_channels = out_channels
@@ -72,6 +76,8 @@ class PRM(nn.Module):
     """
 
     def __init__(self, out_channels, norm_cfg=dict(type='BN')):
+        # Protect mutable default arguments
+        norm_cfg = cp.deepcopy(norm_cfg)
         super().__init__()
         self.out_channels = out_channels
         self.global_pooling = nn.AdaptiveAvgPool2d((1, 1))
@@ -150,6 +156,8 @@ class TopDownMSPNHead(nn.Module):
                  num_units=4,
                  use_prm=False,
                  norm_cfg=dict(type='BN')):
+        # Protect mutable default arguments
+        norm_cfg = cp.deepcopy(norm_cfg)
         super().__init__()
 
         self.out_shape = out_shape
