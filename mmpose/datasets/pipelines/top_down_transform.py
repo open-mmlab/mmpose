@@ -348,7 +348,7 @@ class TopDownGenerateTarget():
 
             heatmaps[i, int(target_y), int(target_x)] = 1
             heatmaps[i] = cv2.GaussianBlur(heatmaps[i], kernel, 0)
-            maxi = np.amax(heatmaps[i])
+            maxi = heatmaps[i, int(target_y), int(target_x)]
 
             heatmaps[i] /= maxi / 255
 
