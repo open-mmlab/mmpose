@@ -375,8 +375,7 @@ class TopDownGenerateTarget():
                 for i in range(num_sigmas):
                     target_i, target_weight_i = self._msra_generate_target(
                         cfg, joints_3d, joints_3d_visible, self.sigma[i])
-                    target = np.concatenate([target, target_weight_i[None]],
-                                            axis=0)
+                    target = np.concatenate([target, target_i[None]], axis=0)
                     target_weight = np.concatenate(
                         [target_weight, target_weight_i[None]], axis=0)
             else:
@@ -395,8 +394,7 @@ class TopDownGenerateTarget():
                 for i in range(num_kernels):
                     target_i, target_weight_i = self._megvii_generate_target(
                         cfg, joints_3d, joints_3d_visible, self.kernel[i])
-                    target = np.concatenate([target, target_weight_i[None]],
-                                            axis=0)
+                    target = np.concatenate([target, target_i[None]], axis=0)
                     target_weight = np.concatenate(
                         [target_weight, target_weight_i[None]], axis=0)
             else:
