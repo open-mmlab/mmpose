@@ -242,7 +242,7 @@ class TopDownGenerateTarget():
         """
         num_joints = cfg['num_joints']
         image_size = cfg['image_size']
-        [W, H] = cfg['heatmap_size']
+        W, H = cfg['heatmap_size']
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
 
@@ -329,7 +329,7 @@ class TopDownGenerateTarget():
 
         num_joints = cfg['num_joints']
         image_size = cfg['image_size']
-        [W, H] = cfg['heatmap_size']
+        W, H = cfg['heatmap_size']
         heatmaps = np.zeros((num_joints, H, W), dtype='float32')
         target_weight = np.zeros((num_joints, 1), dtype=np.float32)
 
@@ -388,7 +388,7 @@ class TopDownGenerateTarget():
                 num_kernels = len(self.kernel)
                 cfg = results['ann_info']
                 num_joints = cfg['num_joints']
-                [W, H] = cfg['heatmap_size']
+                W, H = cfg['heatmap_size']
 
                 target = np.empty((0, num_joints, H, W), dtype=np.float32)
                 target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
@@ -404,8 +404,8 @@ class TopDownGenerateTarget():
                     results['ann_info'], joints_3d, joints_3d_visible,
                     self.kernel)
         else:
-            raise ValueError('Encoding approach %s is not supported!' %
-                             format(self.encoding))
+            raise ValueError(
+                f'Encoding approach {self.encoding} is not supported!')
 
         results['target'] = target
         results['target_weight'] = target_weight
