@@ -1,5 +1,5 @@
 mmcv==1.1.1
+munkres
 torch
 torchvision
 xtcocotools>=1.6
-munkres
