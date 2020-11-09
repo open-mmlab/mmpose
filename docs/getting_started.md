@@ -21,23 +21,6 @@ MMPose supported datasets:
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
-## Prepare Pretrained Models
-Download imagenet pretrained models from our [model zoo](https://mmpose.readthedocs.io/en/latest/pretrained.html)
-
-```
-mmpose
-`-- models
-    `-- pytorch
-         `-- imagenet
-            |-- hrnet_w32-36af842e.pth
-            |-- hrnet_w48-8ef0771d.pth
-            |-- resnet50-19c8e357.pth
-            |-- resnet101-5d3b4d8f.pth
-            |-- resnet152-b121ed2d.pth
-            |-- ...
-
-
-```
 
 ## Inference with pretrained models
 
