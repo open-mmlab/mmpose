@@ -263,8 +263,6 @@ class BottomUp(BasePose):
                     pose_kpt_color=None,
                     pose_limb_color=None,
                     radius=4,
-                    thickness=1,
-                    font_scale=0.5,
                     win_name='',
                     show=False,
                     wait_time=0,

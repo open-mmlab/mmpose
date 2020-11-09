@@ -84,7 +84,7 @@ class BasePose(nn.Module):
 
         return loss, log_vars
 
-    def train_step(self, data_batch, optimizer, **kwargs):
+    def train_step(self, data_batch):
         """The iteration step during training.
 
         This method defines an iteration step during training, except for the
@@ -121,7 +121,7 @@ class BasePose(nn.Module):
 
         return outputs
 
-    def val_step(self, data_batch, optimizer, **kwargs):
+    def val_step(self, data_batch):
         """The iteration step during validation.
 
         This method shares the same signature as :func:`train_step`, but used

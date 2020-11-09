@@ -13,7 +13,7 @@ class OutputHook:
 
         def hook_wrapper(name):
 
-            def hook(model, input, output):
+            def hook(output):
                 if self.as_tensor:
                     self.layer_outputs[name] = output
                 else:

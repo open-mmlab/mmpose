@@ -27,7 +27,7 @@ class MeshH36MDataset(MeshBaseDataset):
             validation dataset. Default: False.
     """
 
-    def evaluate(self, outputs, res_folder, metric='joint_error', logger=None):
+    def evaluate(self, outputs, res_folder, metric='joint_error'):
         """Evaluate 3D keypoint results."""
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['joint_error']
