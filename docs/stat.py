@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import re
-import glob
 import functools as func
+import glob
+import re
 
 files = sorted(glob.glob('*_models.md'))
 
@@ -15,13 +15,16 @@ for f in files:
     title = content.split('\n')[0].replace('#', '')
 
     # count papers
-    papers = set(x.lower().strip() for x in re.findall(r'\btitle={(.*)}', content))
+    papers = set(x.lower().strip()
+                 for x in re.findall(r'\btitle={(.*)}', content))
     paperlist = '\n'.join(sorted('    - ' + x for x in papers))
     # count configs
-    configs = set(x.lower().strip() for x in re.findall(r'https.*configs/.*\.py', content))
+    configs = set(x.lower().strip()
+                  for x in re.findall(r'https.*configs/.*\.py', content))
 
     # count ckpts
-    ckpts = set(x.lower().strip() for x in re.findall(r'https://download.*\.pth', content))
+    ckpts = set(x.lower().strip()
+                for x in re.findall(r'https://download.*\.pth', content))
 
     statsmsg = f"""
 ## [{title}]({f})
