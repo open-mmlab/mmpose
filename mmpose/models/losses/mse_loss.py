@@ -65,7 +65,7 @@ class JointsOHKMMSELoss(nn.Module):
         N = len(loss)
         for i in range(N):
             sub_loss = loss[i]
-            topk_val, topk_idx = torch.topk(
+            _, topk_idx = torch.topk(
                 sub_loss, k=self.topk, dim=0, sorted=False)
             tmp_loss = torch.gather(sub_loss, 0, topk_idx)
             ohkm_loss += torch.sum(tmp_loss) / self.topk

@@ -444,9 +444,9 @@ class BottomUpResizeAlign:
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
 
-        for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
+        for _, s in enumerate(sorted(test_scale_factor, reverse=True)):
             _results = results.copy()
-            image_resized, center, scale = _resize_align_multi_scale(
+            image_resized, _, _ = _resize_align_multi_scale(
                 _results['img'], input_size, s, min(test_scale_factor))
             _results['img'] = image_resized
             _results = self.transforms(_results)

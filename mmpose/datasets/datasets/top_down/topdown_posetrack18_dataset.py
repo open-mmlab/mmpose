@@ -280,8 +280,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         # evaluate per-frame multi-person pose estimation (AP)
         # compute AP
         print('Evaluation of per-frame multi-person pose estimation')
-        apAll, preAll, recAll = evaluateAP(gtFramesAll, prFramesAll, None,
-                                           False, False)
+        apAll, _, _ = evaluateAP(gtFramesAll, prFramesAll, None, False, False)
 
         # print AP
         print('Average Precision (AP) metric:')
