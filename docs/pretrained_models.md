@@ -20,7 +20,3 @@
 | shufflenet_v1 | shufflenet_v1_batch1024_20200708-7a087432.pth | [ckpt](https://download.openmmlab.com/mmclassification/v0/imagenet/shufflenet_v1_batch1024_20200708-7a087432.pth) |
 | shufflenet_v2 | shufflenet_v2_batch1024_20200812-5bf4721e.pth | [ckpt](https://download.openmmlab.com/mmclassification/v0/imagenet/shufflenet_v2_batch1024_20200812-5bf4721e.pth) |
 | mobilenet_v2 | mobilenet_v2_batch256_20200708-3b2dc3af.pth | [ckpt](https://download.openmmlab.com/mmclassification/v0/imagenet/mobilenet_v2_batch256_20200708-3b2dc3af.pth) |
-
-
-
-
