@@ -1,3 +1,5 @@
+import copy
+
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
@@ -26,6 +28,7 @@ class HRModule(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self._check_branches(num_branches, num_blocks, in_channels,
                              num_channels)
@@ -269,6 +272,7 @@ class HRNet(nn.Module):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=False):
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self.extra = extra
         self.conv_cfg = conv_cfg
