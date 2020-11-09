@@ -88,7 +88,28 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 ### Run demos
 
 We also provide scripts to run demos.
-For more details, please see [demo.md](demo.md).
+Here is an example of running top-down human pose demos using ground-truth bounding boxes.
+
+```shell
+python demo/top_down_img_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
+    --out-img-root ${OUTPUT_DIR} \
+    [--show --device ${GPU_ID}] \
+    [--kpt-thr ${KPT_SCORE_THR}]
+```
+
+Examples:
+
+```shell
+python demo/top_down_img_demo.py \
+    configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
+    --out-img-root vis_results
+```
+
+More examples and details can be found in [demo.md](demo.md).
 
 ## Train a model
 
