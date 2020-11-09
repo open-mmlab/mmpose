@@ -111,7 +111,6 @@ class ParametricMesh(BasePose):
             the number of samples.
         """
 
-
         img = data_batch['img']
         pred_smpl = self.generator(img)
         pred_pose, pred_beta, pred_camera = pred_smpl

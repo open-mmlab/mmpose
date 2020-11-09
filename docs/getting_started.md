@@ -88,7 +88,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 ### Run demos
 
 We also provide scripts to run demos.
-For more instructions, please see [demo.md](demo.md).
+For more details, please see [demo.md](demo.md).
 
 ## Train a model
 
