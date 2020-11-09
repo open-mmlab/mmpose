@@ -6,6 +6,7 @@ Welcome to MMPose's documentation!
 
    install.md
    getting_started.md
+   demo.md
    benchmark.md
    config.md
 
