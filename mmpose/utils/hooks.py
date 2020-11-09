@@ -33,8 +33,9 @@ class OutputHook:
                 try:
                     layer = rgetattr(module, name)
                     h = layer.register_forward_hook(hook_wrapper(name))
-                except AttributeError:
-                    raise AttributeError(f'Module {name} not found')
+                except ModuleNotFoundError as module_not_found:
+                    raise ModuleNotFoundError(
+                        f'Module {name} not found') from module_not_found
                 self.handles.append(h)
 
     def remove(self):
