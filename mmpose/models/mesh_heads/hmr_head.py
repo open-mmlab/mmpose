@@ -73,7 +73,7 @@ class MeshHMRHead(nn.Module):
         pred_pose = init_pose
         pred_shape = init_shape
         pred_cam = init_cam
-        for i in range(self.n_iter):
+        for _ in range(self.n_iter):
             xc = torch.cat([x, pred_pose, pred_shape, pred_cam], 1)
             xc = self.fc1(xc)
             xc = self.drop1(xc)

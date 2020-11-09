@@ -43,7 +43,7 @@ class TopDownMultiStageHead(nn.Module):
 
         # build multi-stage deconv layers
         self.multi_deconv_layers = nn.ModuleList([])
-        for i in range(self.num_stages):
+        for _ in range(self.num_stages):
             if num_deconv_layers > 0:
                 deconv_layers = self._make_deconv_layer(
                     num_deconv_layers,
@@ -153,7 +153,7 @@ class TopDownMultiStageHead(nn.Module):
 
     def init_weights(self):
         """Initialize model weights."""
-        for name, m in self.multi_deconv_layers.named_modules():
+        for _, m in self.multi_deconv_layers.named_modules():
             if isinstance(m, nn.ConvTranspose2d):
                 normal_init(m, std=0.001)
             elif isinstance(m, nn.BatchNorm2d):

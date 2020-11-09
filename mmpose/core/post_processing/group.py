@@ -248,7 +248,7 @@ class HeatmapParser:
             ans (list(np.ndarray)): Keypoint predictions.
             heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
         """
-        N, K, H, W = heatmaps.shape
+        _, _, H, W = heatmaps.shape
         for batch_id, people in enumerate(ans):
             for people_id, people_i in enumerate(people):
                 for joint_id, joint in enumerate(people_i):
