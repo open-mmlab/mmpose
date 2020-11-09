@@ -24,7 +24,8 @@ for f in files:
 
     # count ckpts
     ckpts = set(x.lower().strip()
-                for x in re.findall(r'https://download.*\.pth', content))
+                for x in re.findall(r'https://download.*\.pth', content)
+                if 'mmpose' in x)
 
     statsmsg = f"""
 ## [{title}]({f})
