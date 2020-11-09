@@ -21,7 +21,7 @@ python demo/top_down_img_demo.py \
 
 ```shell
 python demo/top_down_img_demo.py \
-    configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
+    configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
     --out-img-root vis_results
@@ -51,7 +51,7 @@ python demo/top_down_img_demo_with_mmdet.py \
 ```shell
 python demo/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
+    configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ \
     --img 9.jpg \
@@ -83,7 +83,7 @@ Examples:
 ```shell
 python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
-    configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
+    configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
@@ -92,6 +92,6 @@ python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_
 ### Speed Up Inference
 Some tips to speed up MMPose inference:
 
-For 2D hand pose estimation models, try to edit the config file.
-1. set `flip_test=False` (line 56 in [res50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py))
-2. set `unbiased_decoding=False` (line 59 in [res50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py))
+For 2D hand pose estimation models, try to edit the config file. For example,
+1. set `flip_test=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L56).
+2. set `unbiased_decoding=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L59).
