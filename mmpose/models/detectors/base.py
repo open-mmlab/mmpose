@@ -23,9 +23,6 @@ class BasePose(nn.Module):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self):
-        super().__init__()
-
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):
         """Defines the computation performed at training."""
