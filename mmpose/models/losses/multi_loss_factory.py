@@ -29,9 +29,6 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
 class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch."""
 
-    def __init__(self):
-        super().__init__()
-
     def forward(self, pred, gt, mask):
         """
         Note:
