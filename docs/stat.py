@@ -12,14 +12,11 @@ for f in files:
         content = content_file.read()
 
     # title
-    title = content.split('\n')[0]
+    title = content.split('\n')[0].replace('#', '')
 
     # count papers
     papers = set(x.lower().strip() for x in re.findall(r'\btitle={(.*)}', content))
-    paperlist = '\n'.join('* ' + x for x in papers)
-    if len(papers) > 0:
-        paperlist = '### Supported Papers\n\n' + paperlist
-
+    paperlist = '\n'.join(sorted('    - ' + x for x in papers))
     # count configs
     configs = set(x.lower().strip() for x in re.findall(r'https.*configs/.*\.py', content))
 
@@ -27,12 +24,11 @@ for f in files:
     ckpts = set(x.lower().strip() for x in re.findall(r'https://download.*\.pth', content))
 
     statsmsg = f"""
-#{title}
+## [{title}]({f})
 
 * Number of checkpoints: {len(ckpts)}
 * Number of configs: {len(configs)}
 * Number of papers: {len(papers)}
-
 {paperlist}
 
     """
