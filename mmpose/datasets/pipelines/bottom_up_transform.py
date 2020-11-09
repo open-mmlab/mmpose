@@ -165,8 +165,8 @@ class JointsEncoder():
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if (pt[2] > 0 and x >= 0 and y >= 0 and x < self.output_res
-                        and y < self.output_res):
+                if (pt[2] > 0 and self.output_res > y >= 0
+                        and self.output_res > x >= 0):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
                             (idx * output_res**2 + y * output_res + x, 1)
