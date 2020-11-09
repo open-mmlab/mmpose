@@ -18,7 +18,7 @@ for f in files:
     papers = set(x.lower().strip() for x in re.findall(r'\btitle={(.*)}', content))
     paperlist = '\n'.join('* ' + x for x in papers)
     if len(papers) > 0:
-        paperlist = '### Supproted Papers\n\n' + paperlist
+        paperlist = '### Supported Papers\n\n' + paperlist
 
     # count configs
     configs = set(x.lower().strip() for x in re.findall(r'https.*configs/.*\.py', content))
