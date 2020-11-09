@@ -317,7 +317,7 @@ class TopDown(BasePose):
                 wait_time=wait_time,
                 out_file=None)
 
-            for person_id, kpts in enumerate(pose_result):
+            for _, kpts in enumerate(pose_result):
                 # draw each point on image
                 if pose_kpt_color is not None:
                     assert len(pose_kpt_color) == len(kpts)

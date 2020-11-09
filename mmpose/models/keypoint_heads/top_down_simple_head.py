@@ -136,7 +136,7 @@ class TopDownSimpleHead(nn.Module):
 
     def init_weights(self):
         """Initialize model weights."""
-        for name, m in self.deconv_layers.named_modules():
+        for _, m in self.deconv_layers.named_modules():
             if isinstance(m, nn.ConvTranspose2d):
                 normal_init(m, std=0.001)
             elif isinstance(m, nn.BatchNorm2d):
