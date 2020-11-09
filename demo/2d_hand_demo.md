@@ -22,7 +22,7 @@ python demo/top_down_img_demo.py \
 ```shell
 python demo/top_down_img_demo.py \
     configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
-    models/res50_onehand10k_256x256-e67998f6_20200813.pth \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
     --out-img-root vis_results
 ```
@@ -50,9 +50,9 @@ python demo/top_down_img_demo_with_mmdet.py \
 
 ```shell
 python demo/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
-    models/mmdet/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
     configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
-    models/res50_onehand10k_256x256-e67998f6_20200813.pth \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ \
     --img 9.jpg \
     --out-img-root vis_results
@@ -82,9 +82,9 @@ Examples:
 
 ```shell
 python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k.py \
-    models/mmdet/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
     configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py \
-    models/res50_onehand10k_256x256-e67998f6_20200813.pth \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
 ```

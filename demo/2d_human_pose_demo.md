@@ -19,7 +19,7 @@ Examples:
 ```shell
 python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
-    hrnet_w48_coco_256x192/epoch_210.pth \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
 ```
@@ -46,7 +46,7 @@ Examples:
 python demo/top_down_img_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
-    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ \
     --img 000000196141.jpg \
     --out-img-root vis_results
@@ -74,7 +74,7 @@ Examples:
 python demo/top_down_video_demo_with_mmdet.py mmdetection/configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py \
     mmdetection/checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
-    hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
 ```
@@ -97,7 +97,7 @@ Examples:
 ```shell
 python demo/bottom_up_img_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
-    hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
+    https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
 ```
@@ -120,7 +120,7 @@ Examples:
 ```shell
 python demo/bottom_up_video_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
-    hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
+    https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --video-path demo/demo_video.mp4 \
     --out-video-root vis_results
 ```
