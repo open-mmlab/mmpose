@@ -19,10 +19,11 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Model Zoo
 
+   modelzoo.md
    top_down_models.md
    bottom_up_models.md
    hand_models.md
-   pretrained.md
+   pretrained_models.md
 
 .. toctree::
    :maxdepth: 2
