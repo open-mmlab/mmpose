@@ -376,7 +376,7 @@ class ResLayer(nn.Sequential):
                     norm_cfg=norm_cfg,
                     **kwargs))
             in_channels = out_channels
-            for i in range(1, num_blocks):
+            for _ in range(1, num_blocks):
                 layers.append(
                     block(
                         in_channels=in_channels,
