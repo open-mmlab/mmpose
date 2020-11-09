@@ -23,7 +23,6 @@ Welcome to MMPose's documentation!
    top_down_models.md
    bottom_up_models.md
    hand_models.md
-   pretrained_models.md
 
 .. toctree::
    :maxdepth: 2
