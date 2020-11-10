@@ -167,7 +167,7 @@ def _inference_single_pose_model(model,
     center, scale = _box2cs(cfg, bbox)
 
     flip_pairs = None
-    if dataset == 'TopDownCocoDataset' or dataset == 'TopDownOCHumanDataset':
+    if dataset in ('TopDownCocoDataset', 'TopDownOCHumanDataset'):
         flip_pairs = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12],
                       [13, 14], [15, 16]]
     elif dataset == 'TopDownCocoWholeBodyDataset':
@@ -191,8 +191,8 @@ def _inference_single_pose_model(model,
         flip_pairs = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10], [8, 11]]
     elif dataset == 'TopDownMpiiDataset':
         flip_pairs = [[0, 5], [1, 4], [2, 3], [10, 15], [11, 14], [12, 13]]
-    elif (dataset == 'OneHand10KDataset' or dataset == 'FreiHandDataset'
-          or dataset == 'PanopticDataset' or dataset == 'InterHand2DDataset'):
+    elif dataset in ('OneHand10KDataset', 'FreiHandDataset', 'PanopticDataset',
+                     'InterHand2DDataset'):
         flip_pairs = []
     else:
         raise NotImplementedError()
@@ -430,8 +430,8 @@ def vis_pose_result(model,
 
     radius = 4
 
-    if dataset == 'TopDownCocoDataset' or dataset == 'BottomUpCocoDataset' \
-            or dataset == 'TopDownOCHumanDataset':
+    if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
+                   'TopDownOCHumanDataset'):
         # show the results
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                     [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
@@ -499,8 +499,8 @@ def vis_pose_result(model,
             16, 16, 16, 16, 16, 16, 7, 7, 0, 0, 9, 9, 9, 9, 9, 9
         ]]
 
-    elif (dataset == 'OneHand10KDataset' or dataset == 'FreiHandDataset'
-          or dataset == 'PanopticDataset'):
+    elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
+                     'PanopticDataset'):
         skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
                     [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
                     [14, 15], [15, 16], [16, 17], [1, 18], [18, 19], [19, 20],
