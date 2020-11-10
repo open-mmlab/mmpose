@@ -144,7 +144,6 @@ class CPM(BaseBackbone):
                     constant_init(m, 1)
         else:
             raise TypeError('pretrained must be a str or None')
-        pass
 
     def forward(self, x):
         """Model forward function."""
