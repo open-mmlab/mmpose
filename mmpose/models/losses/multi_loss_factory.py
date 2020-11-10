@@ -93,8 +93,7 @@ class AELoss(nn.Module):
                         torch.zeros(1).float(), device=pred_tag.device))
         elif num_tags == 1:
             return (_make_input(
-                torch.zeros(1).float(),
-                device=pred_tag.device), pull / (num_tags))
+                torch.zeros(1).float(), device=pred_tag.device), pull)
 
         tags = torch.stack(tags)
 

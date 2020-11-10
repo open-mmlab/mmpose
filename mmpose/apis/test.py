@@ -122,21 +122,21 @@ def collect_results_cpu(result_part, size, tmpdir=None):
     # collect all parts
     if rank != 0:
         return None
-    else:
-        # load results of all parts from tmp dir
-        part_list = []
-        for i in range(world_size):
-            part_file = osp.join(tmpdir, f'part_{i}.pkl')
-            part_list.append(mmcv.load(part_file))
-        # sort the results
-        ordered_results = []
-        for res in zip(*part_list):
-            ordered_results.extend(list(res))
-        # the dataloader may pad some samples
-        ordered_results = ordered_results[:size]
-        # remove tmp dir
-        shutil.rmtree(tmpdir)
-        return ordered_results
+
+    # load results of all parts from tmp dir
+    part_list = []
+    for i in range(world_size):
+        part_file = osp.join(tmpdir, f'part_{i}.pkl')
+        part_list.append(mmcv.load(part_file))
+    # sort the results
+    ordered_results = []
+    for res in zip(*part_list):
+        ordered_results.extend(list(res))
+    # the dataloader may pad some samples
+    ordered_results = ordered_results[:size]
+    # remove tmp dir
+    shutil.rmtree(tmpdir)
+    return ordered_results
 
 
 def collect_results_gpu(result_part, size):

@@ -116,8 +116,7 @@ class MeshLoss(nn.Module):
             return (
                 conf *
                 self.criterion_joints_3d(pred_joints_3d, gt_joints_3d)).mean()
-        else:
-            return pred_joints_3d.sum() * 0
+        return pred_joints_3d.sum() * 0
 
     def vertex_loss(self, pred_vertices, gt_vertices, has_smpl):
         """Compute 3D vertex loss for the examples that 3D human mesh
