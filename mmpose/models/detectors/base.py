@@ -84,7 +84,7 @@ class BasePose(nn.Module):
 
         return loss, log_vars
 
-    def train_step(self, data_batch):
+    def train_step(self, data_batch, optimizer):
         """The iteration step during training.
 
         This method defines an iteration step during training, except for the
