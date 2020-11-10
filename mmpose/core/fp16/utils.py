@@ -29,5 +29,5 @@ def cast_tensor_type(inputs, src_type, dst_type):
     elif isinstance(inputs, abc.Iterable):
         return type(inputs)(
             cast_tensor_type(item, src_type, dst_type) for item in inputs)
-    else:
-        return inputs
+
+    return inputs

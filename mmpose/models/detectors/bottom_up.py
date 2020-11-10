@@ -112,9 +112,8 @@ class BottomUp(BasePose):
         if return_loss:
             return self.forward_train(img, targets, masks, joints, img_metas,
                                       **kwargs)
-        else:
-            return self.forward_test(
-                img, img_metas, return_heatmap=return_heatmap, **kwargs)
+        return self.forward_test(
+            img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
     def forward_train(self, img, targets, masks, joints, img_metas, **kwargs):
         """Forward the bottom-up model and calculate the loss.
