@@ -40,4 +40,3 @@ class BaseBackbone(nn.Module, metaclass=ABCMeta):
             x (tensor | tuple[tensor]): x could be a Torch.tensor or a tuple of
                 Torch.tensor, containing input data for forward computation.
         """
-        pass
