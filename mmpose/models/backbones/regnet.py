@@ -308,5 +308,4 @@ class RegNet(ResNet):
 
         if len(outs) == 1:
             return outs[0]
-        else:
-            return tuple(outs)
+        return tuple(outs)

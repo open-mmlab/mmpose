@@ -106,8 +106,7 @@ class InvertedResidual(nn.Module):
 
             if self.with_res_shortcut:
                 return x + out
-            else:
-                return out
+            return out
 
         if self.with_cp and x.requires_grad:
             out = cp.checkpoint(_inner_forward, x)

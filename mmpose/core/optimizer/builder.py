@@ -48,5 +48,5 @@ def build_optimizers(model, cfgs):
             module = getattr(model, key)
             optimizers[key] = build_optimizer(module, cfg_)
         return optimizers
-    else:
-        return build_optimizer(model, cfgs)
+
+    return build_optimizer(model, cfgs)
