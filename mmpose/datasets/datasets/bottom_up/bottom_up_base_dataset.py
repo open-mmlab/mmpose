@@ -80,5 +80,5 @@ class BottomUpBaseDataset(Dataset):
         """Get the sample for either training or testing given index."""
         if self.test_mode:
             return self.prepare_test_img(idx)
-        else:
-            return self.prepare_train_img(idx)
+
+        return self.prepare_train_img(idx)

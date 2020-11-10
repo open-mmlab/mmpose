@@ -294,5 +294,4 @@ class ParametricMesh(BasePose):
 
         if return_loss:
             return self.forward_train(img, img_metas, **kwargs)
-        else:
-            return self.forward_test(img, img_metas, **kwargs)
+        return self.forward_test(img, img_metas, **kwargs)
