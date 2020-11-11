@@ -235,7 +235,7 @@ class ShuffleNetV1(BaseBackbone):
 
         self.layers = nn.ModuleList()
         for i, num_blocks in enumerate(self.stage_blocks):
-            first_block = bool(i == 0)
+            first_block = (i == 0)
             layer = self.make_layer(channels[i], num_blocks, first_block)
             self.layers.append(layer)
 
