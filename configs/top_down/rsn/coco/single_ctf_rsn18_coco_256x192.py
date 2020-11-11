@@ -47,7 +47,7 @@ model = dict(
         num_steps=4,
         norm_cfg=dict(type='BN')),
     keypoint_head=dict(
-        type='TopDownMSPNHead',
+        type='TopDownMSMUHead',
         out_shape=(64, 48),
         unit_channels=256,
         out_channels=channel_cfg['num_output_channels'],
