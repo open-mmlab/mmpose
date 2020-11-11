@@ -340,11 +340,15 @@ class TopDownMSMUHead(nn.Module):
         """Forward function.
 
         Returns:
-            out (list[Tensor]): a list of heatmaps from multiple stages.
+            out (list[Tensor]): a list of heatmaps from multiple stages
+                                and units.
         """
         out = []
         assert isinstance(x, list)
         assert len(x) == self.num_stages
+        assert isinstance(x[0], list)
+        assert len(x[0]) == self.num_units
+        assert x[0][0].shape[1] == self.unit_channels
         for i in range(self.num_stages):
             for j in range(self.num_units):
                 y = self.predict_layers[i * self.num_units + j](x[i][j])
