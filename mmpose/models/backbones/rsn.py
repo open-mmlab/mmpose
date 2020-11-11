@@ -564,6 +564,7 @@ class RSN(BaseBackbone):
         self.num_steps = num_steps
         self.norm_cfg = norm_cfg
 
+        assert self.num_stages > 0
         assert self.num_steps > 1
         assert self.num_units > 1
         assert self.num_units == len(self.num_blocks)
