@@ -248,7 +248,7 @@ class TopDownGenerateTarget():
 
         target_weight = np.zeros((num_joints, 1), dtype=np.float32)
         target = np.zeros((num_joints, H, W), dtype=np.float32)
-
+        # 3-sigma rule
         tmp_size = sigma * 3
 
         if self.unbiased_encoding:
