@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import TopDownMultiStageHead, TopDownSimpleHead
+from mmpose.models import (TopDownMSMUHead, TopDownMultiStageHead,
+                           TopDownSimpleHead)
 
 
 def test_top_down_simple_head():
@@ -173,6 +174,68 @@ def test_top_down_multistage_head():
     inputs = _demo_inputs(input_shape)
     out = head([inputs])
     assert out[0].shape == torch.Size([1, 3, 32, 32])
+
+    head.init_weights()
+
+
+def test_top_down_msmu_head():
+    """Test multi-stage multi-unit head."""
+    with pytest.raises(AssertionError):
+        # inputs should be list
+        head = TopDownMSMUHead(
+            out_shape=(64, 48), unit_channels=256, num_stages=2, num_units=2)
+        input_shape = (1, 256, 32, 32)
+        inputs = _demo_inputs(input_shape)
+        _ = head(inputs)
+
+    with pytest.raises(AssertionError):
+        # inputs should be list[list, ...]
+        head = TopDownMSMUHead(
+            out_shape=(64, 48), unit_channels=256, num_stages=2, num_units=2)
+        input_shape = (1, 256, 32, 32)
+        inputs = _demo_inputs(input_shape)
+        inputs = [inputs] * 2
+        _ = head(inputs)
+
+    with pytest.raises(AssertionError):
+        # len(inputs) should equal to num_stages
+        head = TopDownMSMUHead(
+            out_shape=(64, 48), unit_channels=256, num_stages=2, num_units=2)
+        input_shape = (1, 256, 32, 32)
+        inputs = _demo_inputs(input_shape)
+        inputs = [[inputs] * 2] * 3
+        _ = head(inputs)
+
+    with pytest.raises(AssertionError):
+        # len(inputs[0]) should equal to num_units
+        head = TopDownMSMUHead(
+            out_shape=(64, 48), unit_channels=256, num_stages=2, num_units=2)
+        input_shape = (1, 256, 32, 32)
+        inputs = _demo_inputs(input_shape)
+        inputs = [[inputs] * 3] * 2
+        _ = head(inputs)
+
+    with pytest.raises(AssertionError):
+        # input channels should equal to param unit_channels
+        head = TopDownMSMUHead(
+            out_shape=(64, 48), unit_channels=256, num_stages=2, num_units=2)
+        input_shape = (1, 128, 32, 32)
+        inputs = _demo_inputs(input_shape)
+        inputs = [[inputs] * 2] * 2
+        _ = head(inputs)
+
+    head = TopDownMSMUHead(
+        out_shape=(64, 48),
+        unit_channels=256,
+        out_channels=17,
+        num_stages=2,
+        num_units=2)
+    input_shape = (1, 256, 32, 32)
+    inputs = _demo_inputs(input_shape)
+    inputs = [[inputs] * 2] * 2
+    out = head(inputs)
+    assert len(out) == 2 * 2
+    assert out[0].shape == torch.Size([1, 17, 64, 48])
 
     head.init_weights()
 
