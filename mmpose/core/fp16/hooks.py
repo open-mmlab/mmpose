@@ -52,7 +52,8 @@ class Fp16OptimizerHook(OptimizerHook):
         # convert model to fp16
         wrap_fp16_model(runner.model)
 
-    def copy_grads_to_fp32(self, fp16_net, fp32_weights):
+    @staticmethod
+    def copy_grads_to_fp32(fp16_net, fp32_weights):
         """Copy gradients from fp16 model to fp32 weight copy."""
         for fp32_param, fp16_param in zip(fp32_weights, fp16_net.parameters()):
             if fp16_param.grad is not None:
@@ -60,7 +61,8 @@ class Fp16OptimizerHook(OptimizerHook):
                     fp32_param.grad = fp32_param.data.new(fp32_param.size())
                 fp32_param.grad.copy_(fp16_param.grad)
 
-    def copy_params_to_fp16(self, fp16_net, fp32_weights):
+    @staticmethod
+    def copy_params_to_fp16(fp16_net, fp32_weights):
         """Copy updated params from fp32 weight copy to fp16 model."""
         for fp16_param, fp32_param in zip(fp16_net.parameters(), fp32_weights):
             fp16_param.data.copy_(fp32_param.data)

@@ -78,7 +78,8 @@ class InterHand2DDataset(HandBaseDataset):
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def _cam2pixel(self, cam_coord, f, c):
+    @staticmethod
+    def _cam2pixel(cam_coord, f, c):
         """Transform the joints from their camera coordinates to their pixel
         coordinates.
 
@@ -101,7 +102,8 @@ class InterHand2DDataset(HandBaseDataset):
         img_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
         return img_coord
 
-    def _world2cam(self, world_coord, R, T):
+    @staticmethod
+    def _world2cam(world_coord, R, T):
         """Transform the joints from their world coordinates to their camera
         coordinates.
 

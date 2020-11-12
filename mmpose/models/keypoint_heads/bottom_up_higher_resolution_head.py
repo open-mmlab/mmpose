@@ -77,8 +77,9 @@ class BottomUpHigherResolutionHead(nn.Module):
             num_deconv_filters, num_deconv_kernels, num_basic_blocks,
             cat_output)
 
-    def _make_final_layers(self, in_channels, final_layer_output_channels,
-                           extra, num_deconv_layers, num_deconv_filters):
+    @staticmethod
+    def _make_final_layers(in_channels, final_layer_output_channels, extra,
+                           num_deconv_layers, num_deconv_filters):
         """Make final layers."""
         if extra is not None and 'final_conv_kernel' in extra:
             assert extra['final_conv_kernel'] in [1, 3]
@@ -147,7 +148,8 @@ class BottomUpHigherResolutionHead(nn.Module):
 
         return nn.ModuleList(deconv_layers)
 
-    def _get_deconv_cfg(self, deconv_kernel):
+    @staticmethod
+    def _get_deconv_cfg(deconv_kernel):
         """Get configurations for deconv layers."""
         if deconv_kernel == 4:
             padding = 1

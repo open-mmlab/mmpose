@@ -31,7 +31,8 @@ class MoshDataset(Dataset, metaclass=ABCMeta):
         self.db = self._get_db(ann_file)
         self.pipeline = Compose(self.pipeline)
 
-    def _get_db(self, ann_file):
+    @staticmethod
+    def _get_db(ann_file):
         """Load dataset."""
         data = np.load(ann_file)
         _betas = data['shape'].astype(np.float32)
