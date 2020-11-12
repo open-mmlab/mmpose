@@ -28,6 +28,8 @@ class HRModule(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
+
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self._check_branches(num_branches, num_blocks, in_channels,
@@ -272,6 +274,7 @@ class HRNet(nn.Module):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=False):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self.extra = extra

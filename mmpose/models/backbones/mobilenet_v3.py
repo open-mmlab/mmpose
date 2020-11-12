@@ -71,6 +71,7 @@ class MobileNetV3(BaseBackbone):
                  frozen_stages=-1,
                  norm_eval=False,
                  with_cp=False):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         assert arch in self.arch_settings

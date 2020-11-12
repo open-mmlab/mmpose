@@ -37,6 +37,7 @@ class InvertedResidual(nn.Module):
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU'),
                  with_cp=False):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         act_cfg = copy.deepcopy(act_cfg)
         super().__init__()
@@ -162,6 +163,7 @@ class ShuffleNetV2(BaseBackbone):
                  act_cfg=dict(type='ReLU'),
                  norm_eval=False,
                  with_cp=False):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         act_cfg = copy.deepcopy(act_cfg)
         super().__init__()

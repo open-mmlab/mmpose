@@ -77,6 +77,7 @@ class CPM(BaseBackbone):
                  middle_channels=32,
                  num_stages=6,
                  norm_cfg=dict(type='BN', requires_grad=True)):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
 

@@ -100,6 +100,7 @@ class RegNet(ResNet):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=True):
+        # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
         super(ResNet, self).__init__()
 
