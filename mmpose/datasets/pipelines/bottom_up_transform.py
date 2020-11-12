@@ -229,7 +229,8 @@ class BottomUpRandomAffine:
         self.scale_type = scale_type
         self.trans_factor = trans_factor
 
-    def _get_affine_matrix(self, center, scale, res, rot=0):
+    @staticmethod
+    def _get_affine_matrix(center, scale, res, rot=0):
         """Generate transformation matrix."""
         h = scale
         t = np.zeros((3, 3), dtype=np.float32)
@@ -255,7 +256,8 @@ class BottomUpRandomAffine:
             t = np.dot(t_inv, np.dot(rot_mat, np.dot(t_mat, t)))
         return t
 
-    def _affine_joints(self, joints, mat):
+    @staticmethod
+    def _affine_joints(joints, mat):
         """Affine the joints by the transform matrix."""
         joints = np.array(joints)
         shape = joints.shape
