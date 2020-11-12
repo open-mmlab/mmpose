@@ -202,8 +202,8 @@ class RegNet(ResNet):
         self.add_module(self.norm1_name, norm1)
         self.relu = nn.ReLU(inplace=True)
 
-    def generate_regnet(self,
-                        initial_width,
+    @staticmethod
+    def generate_regnet(initial_width,
                         width_slope,
                         width_parameter,
                         depth,

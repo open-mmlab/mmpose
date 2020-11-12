@@ -112,7 +112,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def _get_mapping_id_name(self, imgs):
+    @staticmethod
+    def _get_mapping_id_name(imgs):
         """
         Args:
             imgs (dict): dict of image info.

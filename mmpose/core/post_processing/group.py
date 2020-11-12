@@ -235,7 +235,8 @@ class HeatmapParser:
 
         return ans
 
-    def adjust(self, ans, heatmaps):
+    @staticmethod
+    def adjust(ans, heatmaps):
         """Adjust the coordinates for better accuracy.
 
         Note:
@@ -271,7 +272,8 @@ class HeatmapParser:
                                       0:2] = (x + 0.5, y + 0.5)
         return ans
 
-    def refine(self, heatmap, tag, keypoints):
+    @staticmethod
+    def refine(heatmap, tag, keypoints):
         """Given initial keypoint predictions, we identify missing joints.
 
         Note:

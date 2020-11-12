@@ -199,7 +199,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
         return name_value
 
-    def _write_posetrack18_keypoint_results(self, keypoint_results, gt_folder,
+    @staticmethod
+    def _write_posetrack18_keypoint_results(keypoint_results, gt_folder,
                                             pred_folder):
         """Write results into a json file.
 

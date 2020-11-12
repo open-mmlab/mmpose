@@ -125,7 +125,8 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def _make_flip_pairs(self):
+    @staticmethod
+    def _make_flip_pairs():
         body = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14],
                 [15, 16]]
         foot = [[17, 20], [18, 21], [19, 22]]

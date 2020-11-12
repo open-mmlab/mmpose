@@ -283,7 +283,8 @@ class GANLoss(nn.Module):
             raise NotImplementedError(
                 f'GAN type {self.gan_type} is not implemented.')
 
-    def _wgan_loss(self, input, target):
+    @staticmethod
+    def _wgan_loss(input, target):
         """wgan loss.
 
         Args:
