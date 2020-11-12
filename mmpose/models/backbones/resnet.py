@@ -1,3 +1,5 @@
+import copy
+
 import torch.nn as nn
 import torch.utils.checkpoint as cp
 from mmcv.cnn import (ConvModule, build_conv_layer, build_norm_layer,
@@ -42,6 +44,8 @@ class BasicBlock(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -157,6 +161,8 @@ class Bottleneck(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         assert style in ['pytorch', 'caffe']
 
@@ -336,6 +342,8 @@ class ResLayer(nn.Sequential):
                  norm_cfg=dict(type='BN'),
                  downsample_first=True,
                  **kwargs):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         self.block = block
         self.expansion = get_expansion(block, expansion)
 
@@ -493,6 +501,8 @@ class ResNet(BaseBackbone):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=True):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
