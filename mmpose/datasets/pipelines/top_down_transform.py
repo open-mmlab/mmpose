@@ -338,17 +338,17 @@ class TopDownGenerateTarget():
 
             if target_weight[i] < 1:
                 continue
-            target_y = joints_3d[i, 1] * H / image_size[1]
-            target_x = joints_3d[i, 0] * W / image_size[0]
+            target_y = int(joints_3d[i, 1] * H / image_size[1])
+            target_x = int(joints_3d[i, 0] * W / image_size[0])
 
             if (target_x >= W or target_x < 0) \
                     or (target_y >= H or target_y < 0):
                 target_weight[i] = 0
                 continue
 
-            heatmaps[i, int(target_y), int(target_x)] = 1
+            heatmaps[i, target_y, target_x] = 1
             heatmaps[i] = cv2.GaussianBlur(heatmaps[i], kernel, 0)
-            maxi = heatmaps[i, int(target_y), int(target_x)]
+            maxi = heatmaps[i, target_y, target_x]
 
             heatmaps[i] /= maxi / 255
 
