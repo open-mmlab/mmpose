@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer, build_norm_layer
@@ -98,6 +100,8 @@ class RegNet(ResNet):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=True):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super(ResNet, self).__init__()
 
         # Generate RegNet parameters first
