@@ -62,7 +62,8 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
 
         self.pipeline = Compose(self.pipeline)
 
-    def _get_mapping_id_name(self, imgs):
+    @staticmethod
+    def _get_mapping_id_name(imgs):
         """
         Args:
             imgs (dict): dict of image info.
@@ -121,7 +122,8 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         """Evaluate keypoint results."""
         raise NotImplementedError
 
-    def _write_keypoint_results(self, keypoints, res_file):
+    @staticmethod
+    def _write_keypoint_results(keypoints, res_file):
         """Write results into a json file."""
 
         with open(res_file, 'w') as f:

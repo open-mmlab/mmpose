@@ -118,7 +118,8 @@ class TopDownSimpleHead(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def _get_deconv_cfg(self, deconv_kernel):
+    @staticmethod
+    def _get_deconv_cfg(deconv_kernel):
         """Get configurations for deconv layers."""
         if deconv_kernel == 4:
             padding = 1

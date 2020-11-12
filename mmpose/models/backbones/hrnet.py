@@ -42,8 +42,8 @@ class HRModule(nn.Module):
         self.fuse_layers = self._make_fuse_layers()
         self.relu = nn.ReLU(inplace=True)
 
-    def _check_branches(self, num_branches, num_blocks, in_channels,
-                        num_channels):
+    @staticmethod
+    def _check_branches(num_branches, num_blocks, in_channels, num_channels):
         """Check input to avoid ValueError."""
         if num_branches != len(num_blocks):
             error_msg = f'NUM_BRANCHES({num_branches}) ' \
