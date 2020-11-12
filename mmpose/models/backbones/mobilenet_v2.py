@@ -1,3 +1,4 @@
+import copy
 import logging
 
 import torch.nn as nn
@@ -38,6 +39,9 @@ class InvertedResidual(nn.Module):
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU6'),
                  with_cp=False):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
+        act_cfg = copy.deepcopy(act_cfg)
         super().__init__()
         self.stride = stride
         assert stride in [1, 2], f'stride must in [1, 2]. ' \
@@ -131,6 +135,9 @@ class MobileNetV2(BaseBackbone):
                  act_cfg=dict(type='ReLU6'),
                  norm_eval=False,
                  with_cp=False):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
+        act_cfg = copy.deepcopy(act_cfg)
         super().__init__()
         self.widen_factor = widen_factor
         self.out_indices = out_indices

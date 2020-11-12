@@ -1,3 +1,5 @@
+import copy
+
 import torch.nn as nn
 from mmcv.cnn import ConvModule, constant_init, normal_init
 from torch.nn.modules.batchnorm import _BatchNorm
@@ -28,6 +30,8 @@ class HourglassModule(nn.Module):
                  stage_channels,
                  stage_blocks,
                  norm_cfg=dict(type='BN', requires_grad=True)):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
 
         self.depth = depth
@@ -119,6 +123,8 @@ class HourglassNet(BaseBackbone):
                  stage_blocks=(2, 2, 2, 2, 2, 4),
                  feat_channel=256,
                  norm_cfg=dict(type='BN', requires_grad=True)):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
 
         self.num_stacks = num_stacks

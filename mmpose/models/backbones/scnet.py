@@ -1,3 +1,5 @@
+import copy
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -29,6 +31,8 @@ class SCConv(nn.Module):
                  pooling_r,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN', momentum=0.1)):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
 
         assert in_channels == out_channels
