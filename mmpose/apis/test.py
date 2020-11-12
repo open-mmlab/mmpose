@@ -183,3 +183,4 @@ def collect_results_gpu(result_part, size):
         # the dataloader may pad some samples
         ordered_results = ordered_results[:size]
         return ordered_results
+    return None
