@@ -103,7 +103,7 @@ class RSB(nn.Module):
                 else:
                     inputs = outputs[i][j - 1]
                 if i > j:
-                    inputs += outputs[i - 1][j]
+                    inputs = inputs + outputs[i - 1][j]
                 module_name = f'conv_bn_relu2_{i + 1}_{j + 1}'
                 module_i_j = getattr(self, module_name)
                 outputs[i].append(module_i_j(inputs))
