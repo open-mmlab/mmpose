@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
+    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='PCK')
 
 optimizer = dict(
     type='Adam',
@@ -18,8 +18,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[50, 70])
-total_epochs = 100
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
     interval=20,
     hooks=[
@@ -44,7 +44,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
+    pretrained='torchvision://resnet50',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -61,8 +61,8 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[224, 224],
-    heatmap_size=[56, 56],
+    image_size=[256, 256],
+    heatmap_size=[64, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -99,33 +99,31 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 
 test_pipeline = val_pipeline
 
-data_root = 'data/freihand'
+data_root = 'data/onehand10k'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownFreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_train.json',
+        type='OneHand10KDataset',
+        ann_file=f'{data_root}/annotations/onehand10k_train.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownFreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_val.json',
+        type='OneHand10KDataset',
+        ann_file=f'{data_root}/annotations/onehand10k_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownFreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_test.json',
+        type='OneHand10KDataset',
+        ann_file=f'{data_root}/annotations/onehand10k_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

@@ -165,8 +165,8 @@ class JointsEncoder():
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if (pt[2] > 0 and x >= 0 and y >= 0 and x < self.output_res
-                        and y < self.output_res):
+                if (pt[2] > 0 and 0 <= y < self.output_res
+                        and 0 <= x < self.output_res):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
                             (idx * output_res**2 + y * output_res + x, 1)
@@ -444,9 +444,9 @@ class BottomUpResizeAlign:
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
 
-        for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
+        for _, s in enumerate(sorted(test_scale_factor, reverse=True)):
             _results = results.copy()
-            image_resized, center, scale = _resize_align_multi_scale(
+            image_resized, _, _ = _resize_align_multi_scale(
                 _results['img'], input_size, s, min(test_scale_factor))
             _results['img'] = image_resized
             _results = self.transforms(_results)

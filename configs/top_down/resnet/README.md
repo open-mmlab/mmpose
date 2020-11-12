@@ -27,16 +27,6 @@
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.750 | 0.908 | 0.821 | 0.800 | 0.942 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
 
-#### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) detector.
-
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/crowdpose/res50_crowdpose_256x192.py)  | 256x192 | 0.707 | 0.914 | 0.769 | 0.773 | 0.937 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_20200709.log.json) |
-| [pose_resnet_101](/configs/top_down/resnet/crowdpose/res101_crowdpose_256x192.py) | 256x192 | 0. | 0. | 0. | 0. | 0. | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192_20200708.log.json) |
-| [pose_resnet_152](/configs/top_down/resnet/crowdpose/res101_crowdpose_320x256.py) | 256x192 | 0. | 0. | 0. | 0. | 0. | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192_20200709.log.json) |
-
-Note: All models are trained on CrowdPose train, validated on CrowdPose val, and tested on CrowdPose test.
-
 #### Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
 | Arch  | Input Size | Body AP | Body AR | Foot AP | Foot AR | Face AP | Face AR  | Hand AP | Hand AR | Whole AP | Whole AR | ckpt | log |
@@ -88,7 +78,7 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_152](/configs/top_down/resnet/mpii_trb/res152_mpii_trb_256x256.py)  | 256x256 | 0.897 | 0.868 | 0.879 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256_20200812.log.json) |
 
 
-### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector.
+#### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector.
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
@@ -97,23 +87,18 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_101](/configs/top_down/resnet/crowdpose/res101_crowdpose_320x256.py)  | 320x256 | 0.659 | 0.819 | 0.713 | 0.757 | 0.669 | 0.536 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-7723ede3_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256_20201017.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/crowdpose/res152_crowdpose_256x192.py)  | 256x192 | 0.653 | 0.815 | 0.710 | 0.751 | 0.665 | 0.526 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192-a6507ad0_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192_20201017.log.json) |
 
+#### Results on PoseTrack2018 val with ground-truth bounding boxes.
 
-### 2d Hand Pose Estimation
+| Arch  | Input Size | Head | Shou | Elb | Wri | Hip | Knee | Ankl | Total  | ckpt    | log     |
+| :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/posetrack18/res50_posetrack18_256x192.py) | 256x192 | 86.5 | 87.5 | 82.3 | 75.6 | 79.9 | 78.6 | 74.0 | 81.0 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192_20201028.log.json) |
 
-#### Results on OneHand10K val set.
+The models are first pre-trained on COCO dataset, and then fine-tuned on PoseTrack18.
 
-| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
-| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/onehand10k/res50_onehand10k_256x256.py) | 256x256 | 0.985 | 0.536 | 27.3 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256_20200813.log.json) |
+#### Results on PoseTrack2018 val with [MMDetection](https://github.com/open-mmlab/mmdetection) pre-trained [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) human detector.
 
-#### Results on FreiHand val set.
+| Arch  | Input Size | Head | Shou | Elb | Wri | Hip | Knee | Ankl | Total  | ckpt    | log     |
+| :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/top_down/resnet/posetrack18/res50_posetrack18_256x192.py) | 256x192 | 78.9 | 81.9 | 77.8 | 70.8 | 75.3 | 73.2 | 66.4 | 75.2 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192_20201028.log.json) |
 
-| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
-| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/freihand/res50_freihand_224x224.py) | 224x224 | 0.999 | 0.868 | 3.27 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_freihand_224x224_20200914.log.json) |
-
-#### Results on CMU Panoptic (MPII+NZSL val set).
-
-| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
-| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/panoptic/res50_panoptic_256x256.py) | 224x224 | 0.998 | 0.708 | 9.24 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_panoptic_256x256-5f55ca1a_20200925.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_panoptic_256x256_20200925.log.json) |
+The models are first pre-trained on COCO dataset, and then fine-tuned on PoseTrack18.

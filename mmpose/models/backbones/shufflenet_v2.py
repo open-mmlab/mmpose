@@ -283,8 +283,7 @@ class ShuffleNetV2(BaseBackbone):
 
         if len(outs) == 1:
             return outs[0]
-        else:
-            return tuple(outs)
+        return tuple(outs)
 
     def train(self, mode=True):
         super().train(mode)

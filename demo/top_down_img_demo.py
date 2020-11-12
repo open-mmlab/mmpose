@@ -50,6 +50,12 @@ def main():
 
     img_keys = list(coco.imgs.keys())
 
+    # optional
+    return_heatmap = False
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     # process each image
     for i in range(len(img_keys)):
         # get bounding box annotations
@@ -66,13 +72,16 @@ def main():
             bbox = ann['bbox']
             person_bboxes.append(bbox)
 
-        # test a single image, with a list of bboxes.
-        pose_results, heatmaps = inference_top_down_pose_model(
+        # test a single image, with a list of bboxes
+        pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             image_name,
             person_bboxes,
+            bbox_thr=None,
             format='xywh',
-            dataset=dataset)
+            dataset=dataset,
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         if args.out_img_root == '':
             out_file = None

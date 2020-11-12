@@ -50,7 +50,7 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='BottomUp',
-    pretrained='models/pytorch/imagenet/resnet50-19c8e357.pth',
+    pretrained='torchvision://resnet50',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='BottomUpSimpleHead',
@@ -130,9 +130,7 @@ val_pipeline = [
         ]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'

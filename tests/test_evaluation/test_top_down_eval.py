@@ -9,6 +9,7 @@ from mmpose.core import (keypoint_auc, keypoint_epe, keypoint_pck_accuracy,
 def test_pose_pck_accuracy():
     output = np.zeros((1, 5, 64, 64), dtype=np.float32)
     target = np.zeros((1, 5, 64, 64), dtype=np.float32)
+    mask = np.array([[True, True, False, False, False]])
     # first channnel
     output[0, 0, 20, 20] = 1
     target[0, 0, 10, 10] = 1
@@ -16,7 +17,7 @@ def test_pose_pck_accuracy():
     output[0, 1, 30, 30] = 1
     target[0, 1, 30, 30] = 1
 
-    acc, avg_acc, cnt = pose_pck_accuracy(output, target)
+    acc, avg_acc, cnt = pose_pck_accuracy(output, target, mask)
 
     assert_array_almost_equal(acc, np.array([0, 1, -1, -1, -1]), decimal=4)
     assert abs(avg_acc - 0.5) < 1e-4
@@ -53,6 +54,7 @@ def test_keypoints_from_heatmaps():
 def test_keypoint_pck_accuracy():
     output = np.zeros((1, 5, 2))
     target = np.zeros((1, 5, 2))
+    mask = np.array([[True, True, False, True, True]])
     thr = np.full((1, 2), 10, dtype=np.float32)
     # first channnel
     output[0, 0] = [10, 0]
@@ -70,7 +72,7 @@ def test_keypoint_pck_accuracy():
     output[0, 4] = [0, 10]
     target[0, 4] = [0, 10]
 
-    acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, 0.5, thr)
+    acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, mask, 0.5, thr)
 
     assert_array_almost_equal(acc, np.array([1, 0, -1, 1, 1]), decimal=4)
     assert abs(avg_acc - 0.75) < 1e-4
@@ -80,6 +82,7 @@ def test_keypoint_pck_accuracy():
 def test_keypoint_auc():
     output = np.zeros((1, 5, 2))
     target = np.zeros((1, 5, 2))
+    mask = np.array([[True, True, False, True, True]])
     # first channnel
     output[0, 0] = [10, 4]
     target[0, 0] = [10, 0]
@@ -96,13 +99,14 @@ def test_keypoint_auc():
     output[0, 4] = [20, 10]
     target[0, 4] = [0, 10]
 
-    auc = keypoint_auc(output, target, 20, 4)
+    auc = keypoint_auc(output, target, mask, 20, 4)
     assert abs(auc - 0.375) < 1e-4
 
 
 def test_keypoint_epe():
     output = np.zeros((1, 5, 2))
     target = np.zeros((1, 5, 2))
+    mask = np.array([[True, True, False, True, True]])
     # first channnel
     output[0, 0] = [10, 4]
     target[0, 0] = [10, 0]
@@ -119,5 +123,5 @@ def test_keypoint_epe():
     output[0, 4] = [20, 10]
     target[0, 4] = [0, 10]
 
-    epe = keypoint_epe(output, target)
+    epe = keypoint_epe(output, target, mask)
     assert abs(epe - 11.5355339) < 1e-4

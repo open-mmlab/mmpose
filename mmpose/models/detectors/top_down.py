@@ -3,7 +3,6 @@ import math
 import cv2
 import mmcv
 import numpy as np
-import torch
 import torch.nn as nn
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
@@ -64,6 +63,7 @@ class TopDown(BasePose):
                 target_weight=None,
                 img_metas=None,
                 return_loss=True,
+                return_heatmap=False,
                 **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss=True. Note this setting will change the expected inputs.
@@ -95,16 +95,18 @@ class TopDown(BasePose):
                 - "bbox_score": score of bbox
             return_loss (bool): Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
+            return_heatmap (bool) : Option to return heatmap.
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes and image paths.
+              Otherwise, return predicted poses, boxes, image paths
+                  and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
                                       **kwargs)
-        else:
-            return self.forward_test(img, img_metas, **kwargs)
+        return self.forward_test(
+            img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
@@ -154,43 +156,52 @@ class TopDown(BasePose):
         if isinstance(output, list):
             if target.dim() == 5 and target_weight.dim() == 4:
                 _, avg_acc, _ = pose_pck_accuracy(
-                    output[-1][target_weight[:, -1, :, :].squeeze(-1) > 0].
-                    unsqueeze(0).detach().cpu().numpy(),
-                    target[:, -1, :, :, :][target_weight[:, -1, :, :].squeeze(
-                        -1) > 0].unsqueeze(0).detach().cpu().numpy())
+                    output[-1].detach().cpu().numpy(),
+                    target[:, -1, ...].detach().cpu().numpy(),
+                    target_weight[:, -1,
+                                  ...].detach().cpu().numpy().squeeze(-1) > 0)
                 # Only use the last output for prediction
             else:
                 _, avg_acc, _ = pose_pck_accuracy(
-                    output[-1][target_weight.squeeze(-1) > 0].unsqueeze(
-                        0).detach().cpu().numpy(),
-                    target[target_weight.squeeze(-1) > 0].unsqueeze(
-                        0).detach().cpu().numpy())
+                    output[-1].detach().cpu().numpy(),
+                    target.detach().cpu().numpy(),
+                    target_weight.detach().cpu().numpy().squeeze(-1) > 0)
         else:
             _, avg_acc, _ = pose_pck_accuracy(
-                output[target_weight.squeeze(-1) > 0].unsqueeze(
-                    0).detach().cpu().numpy(),
-                target[target_weight.squeeze(-1) > 0].unsqueeze(
-                    0).detach().cpu().numpy())
+                output.detach().cpu().numpy(),
+                target.detach().cpu().numpy(),
+                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+
         losses['acc_pose'] = float(avg_acc)
 
         return losses
 
-    def forward_test(self, img, img_metas, **kwargs):
+    def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
         assert len(img_metas) == 1
-
         img_metas = img_metas[0]
 
-        flip_pairs = img_metas['flip_pairs']
-        # compute output
+        # compute backbone features
         output = self.backbone(img)
+
+        # process head
+        all_preds, all_boxes, image_path, heatmap = self.process_head(
+            output, img, img_metas, return_heatmap=return_heatmap)
+
+        return all_preds, all_boxes, image_path, heatmap
+
+    def process_head(self, output, img, img_metas, return_heatmap=False):
+        """Process heatmap and keypoints from backbone features."""
+        flip_pairs = img_metas['flip_pairs']
+
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
         if isinstance(output, list):
             output = output[-1]
 
+        output_heatmap = output.detach().cpu().numpy()
         if self.test_cfg['flip_test']:
             img_flipped = img.flip(3)
 
@@ -199,19 +210,14 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
-            output_flipped = flip_back(output_flipped.cpu().numpy(),
+            output_flipped = flip_back(output_flipped.detach().cpu().numpy(),
                                        flip_pairs)
-
-            output_flipped = torch.from_numpy(output_flipped.copy()).to(
-                output.device)
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:
-                output_flipped[:, :, :, 1:] = \
-                    output_flipped.clone()[:, :, :, 0:-1]
-            output = (output + output_flipped) * 0.5
+                output_flipped[:, :, :, 1:] = output_flipped[:, :, :, :-1]
+            output_heatmap = (output_heatmap + output_flipped) * 0.5
 
-        output_heatmap = output.detach().cpu().numpy()
         c = img_metas['center'].reshape(1, -1)
         s = img_metas['scale'].reshape(1, -1)
 
@@ -227,7 +233,7 @@ class TopDown(BasePose):
             unbiased=self.test_cfg['unbiased_decoding'],
             kernel=self.test_cfg['modulate_kernel'])
 
-        all_preds = np.zeros((1, output.shape[1], 3), dtype=np.float32)
+        all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((1, 6), dtype=np.float32)
         image_path = []
 
@@ -238,6 +244,9 @@ class TopDown(BasePose):
         all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
         all_boxes[0, 5] = score
         image_path.extend(img_metas['image_file'])
+
+        if not return_heatmap:
+            output_heatmap = None
 
         return all_preds, all_boxes, image_path, output_heatmap
 
@@ -307,7 +316,7 @@ class TopDown(BasePose):
                 wait_time=wait_time,
                 out_file=None)
 
-            for person_id, kpts in enumerate(pose_result):
+            for _, kpts in enumerate(pose_result):
                 # draw each point on image
                 if pose_kpt_color is not None:
                     assert len(pose_kpt_color) == len(kpts)

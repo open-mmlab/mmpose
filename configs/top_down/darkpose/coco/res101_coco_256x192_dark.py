@@ -39,7 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet101-5d3b4d8f.pth',
+    pretrained='torchvision://resnet101',
     backbone=dict(type='ResNet', depth=101),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -108,9 +108,7 @@ valid_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
             'flip_pairs'

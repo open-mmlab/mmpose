@@ -376,7 +376,7 @@ class ResLayer(nn.Sequential):
                     norm_cfg=norm_cfg,
                     **kwargs))
             in_channels = out_channels
-            for i in range(1, num_blocks):
+            for _ in range(1, num_blocks):
                 layers.append(
                     block(
                         in_channels=in_channels,
@@ -500,7 +500,7 @@ class ResNet(BaseBackbone):
         self.stem_channels = stem_channels
         self.base_channels = base_channels
         self.num_stages = num_stages
-        assert num_stages >= 1 and num_stages <= 4
+        assert 1 <= num_stages <= 4
         self.strides = strides
         self.dilations = dilations
         assert len(strides) == len(dilations) == num_stages
@@ -663,8 +663,7 @@ class ResNet(BaseBackbone):
                 outs.append(x)
         if len(outs) == 1:
             return outs[0]
-        else:
-            return tuple(outs)
+        return tuple(outs)
 
     def train(self, mode=True):
         """Convert the model into training mode."""

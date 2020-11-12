@@ -132,7 +132,7 @@ class RegNet(ResNet):
         self.stem_channels = stem_channels
         self.base_channels = base_channels
         self.num_stages = num_stages
-        assert num_stages >= 1 and num_stages <= 4
+        assert 1 <= num_stages <= 4
         self.strides = strides
         self.dilations = dilations
         assert len(strides) == len(dilations) == num_stages
@@ -308,5 +308,4 @@ class RegNet(ResNet):
 
         if len(outs) == 1:
             return outs[0]
-        else:
-            return tuple(outs)
+        return tuple(outs)

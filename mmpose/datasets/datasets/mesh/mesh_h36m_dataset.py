@@ -91,7 +91,7 @@ class MeshH36MDataset(MeshBaseDataset):
         """Evaluate one example."""
         # Only 14 lsp joints are used for evaluation
         joint_mapper = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18]
-        assert (joints_3d_visible[joint_mapper].min() > 0)
+        assert joints_3d_visible[joint_mapper].min() > 0
 
         pred_joints_3d = np.array(pred_joints_3d)
         pred_joints_3d = pred_joints_3d[joint_mapper, :]

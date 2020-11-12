@@ -49,7 +49,8 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='BottomUp',
-    pretrained='models/pytorch/imagenet/hrnet_w48-8ef0771d.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w48-8ef0771d.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -164,9 +165,7 @@ val_pipeline = [
         ]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'

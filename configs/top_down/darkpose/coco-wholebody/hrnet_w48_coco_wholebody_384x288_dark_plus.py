@@ -38,8 +38,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/coco/'
-    'hrnet_w48_coco_384x288_dark-741844ba_20200812.pth',
+    pretrained='https://download.openmmlab.com/mmpose/top_down/'
+    'hrnet/hrnet_w48_coco_384x288_dark-741844ba_20200812.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -138,9 +138,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
             'flip_pairs'

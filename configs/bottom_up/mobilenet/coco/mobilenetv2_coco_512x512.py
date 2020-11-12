@@ -50,8 +50,7 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='BottomUp',
-    pretrained='models/pytorch/imagenet/'
-    'mobilenet_v2_batch256_20200708-3b2dc3af.pth',
+    pretrained='mmcls://mobilenet_v2',
     backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
         type='BottomUpSimpleHead',
@@ -131,9 +130,7 @@ val_pipeline = [
         ]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'

@@ -33,8 +33,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'shufflenet_v2_batch1024_20200812-5bf4721e.pth',
+    pretrained='mmcls://shufflenet_v2',
     backbone=dict(type='ShuffleNetV2', widen_factor=1.0),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -92,9 +91,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 

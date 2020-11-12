@@ -170,6 +170,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         # sanitize bboxes
         valid_objs = []
         for obj in objs:
+            if 'bbox' not in obj:
+                continue
             x, y, w, h = obj['bbox']
             x1 = max(0, x)
             y1 = max(0, y)
@@ -182,7 +184,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         rec = []
         for obj in objs:
+            if 'keypoints' not in obj:
+                continue
             if max(obj['keypoints']) == 0:
+                continue
+            if 'num_keypoints' in obj and obj['num_keypoints'] == 0:
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
@@ -294,7 +300,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
+            outputs (list(preds, boxes, image_path, heatmap))
                 :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
@@ -302,8 +308,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 :image_path (list[str]): For example, [ '/', 'v','a', 'l',
                     '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
                     '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
-
+                :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
@@ -321,7 +326,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         kpts = defaultdict(list)
         for preds, boxes, image_path, _ in outputs:
             str_image_path = ''.join(image_path)
-            image_id = self.name2id[os.path.basename(str_image_path)]
+            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
             kpts[image_id].append({
                 'keypoints': preds[0],
@@ -337,8 +342,8 @@ class TopDownCocoDataset(TopDownBaseDataset):
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
         oks_nmsed_kpts = []
-        for img in kpts.keys():
-            img_kpts = kpts[img]
+        for image_id in kpts.keys():
+            img_kpts = kpts[image_id]
             for n_p in img_kpts:
                 box_score = n_p['score']
                 kpt_score = 0

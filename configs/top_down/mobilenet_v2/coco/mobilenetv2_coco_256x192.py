@@ -39,8 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'mobilenet_v2_batch256_20200708-3b2dc3af.pth',
+    pretrained='mmcls://mobilenet_v2',
     backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -109,9 +108,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
             'flip_pairs'

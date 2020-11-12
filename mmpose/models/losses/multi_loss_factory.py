@@ -29,9 +29,6 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
 class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch."""
 
-    def __init__(self):
-        super().__init__()
-
     def forward(self, pred, gt, mask):
         """
         Note:
@@ -96,8 +93,7 @@ class AELoss(nn.Module):
                         torch.zeros(1).float(), device=pred_tag.device))
         elif num_tags == 1:
             return (_make_input(
-                torch.zeros(1).float(),
-                device=pred_tag.device), pull / (num_tags))
+                torch.zeros(1).float(), device=pred_tag.device), pull)
 
         tags = torch.stack(tags)
 

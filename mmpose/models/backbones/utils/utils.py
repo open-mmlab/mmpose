@@ -5,7 +5,7 @@ from mmcv.runner.checkpoint import _load_checkpoint, load_state_dict
 
 def load_checkpoint(model,
                     filename,
-                    map_location=None,
+                    map_location='cpu',
                     strict=False,
                     logger=None):
     """Load checkpoint from a file or URI.

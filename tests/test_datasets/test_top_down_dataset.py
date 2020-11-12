@@ -26,6 +26,26 @@ def load_json_to_output(json_name, prefix=''):
     return outputs
 
 
+def convert_db_to_output(db):
+    outputs = []
+
+    for item in db:
+        keypoints = item['joints_3d'].reshape((1, -1, 3))
+        center = item['center']
+        scale = item['scale']
+        box = np.array([
+            center[0], center[1], scale[0], scale[1],
+            scale[0] * scale[1] * 200 * 200, 1.0
+        ],
+                       dtype=np.float32).reshape(1, -1)
+        img_path = []
+        img_path[:0] = item['image_file']
+        output = (keypoints, box, img_path, None)
+        outputs.append(output)
+
+    return outputs
+
+
 def test_top_down_COCO_dataset():
     dataset = 'TopDownCocoDataset'
     # test COCO datasets
@@ -89,6 +109,81 @@ def test_top_down_COCO_dataset():
     image_id = 785
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 4
+    _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+
+def test_top_down_PoseTrack18_dataset():
+    dataset = 'TopDownPoseTrack18Dataset'
+    # test PoseTrack datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=17,
+        dataset_joints=17,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        ])
+
+    data_cfg = dict(
+        image_size=[192, 256],
+        heatmap_size=[48, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        bbox_thr=1.0,
+        use_gt_bbox=True,
+        image_thr=0.0,
+        bbox_file='tests/data/posetrack18/'
+        'test_posetrack18_human_detections.json',
+    )
+    # Test det bbox
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['use_gt_bbox'] = False
+    _ = dataset_class(
+        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    _ = dataset_class(
+        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    # Test gt bbox
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+
+    image_id = 10128340000
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
 
@@ -155,6 +250,14 @@ def test_top_down_CrowdPose_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_COCO_wholebody_dataset():
     dataset = 'TopDownCocoWholeBodyDataset'
@@ -219,6 +322,14 @@ def test_top_down_COCO_wholebody_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_OCHuman_dataset():
     dataset = 'TopDownOCHumanDataset'
@@ -280,9 +391,17 @@ def test_top_down_OCHuman_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_top_down_OneHand10K_dataset():
-    dataset = 'TopDownOneHand10KDataset'
+    dataset = 'OneHand10KDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -326,7 +445,8 @@ def test_top_down_OneHand10K_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json')
+    outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json',
+                                  'tests/data/onehand10k/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -338,7 +458,7 @@ def test_top_down_OneHand10K_dataset():
 
 
 def test_top_down_FreiHand_dataset():
-    dataset = 'TopDownFreiHandDataset'
+    dataset = 'FreiHandDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -382,7 +502,8 @@ def test_top_down_FreiHand_dataset():
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
 
-    outputs = load_json_to_output('tests/data/freihand/test_freihand.json')
+    outputs = load_json_to_output('tests/data/freihand/test_freihand.json',
+                                  'tests/data/freihand/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -394,7 +515,7 @@ def test_top_down_FreiHand_dataset():
 
 
 def test_top_down_Panoptic_dataset():
-    dataset = 'TopDownPanopticDataset'
+    dataset = 'PanopticDataset'
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -449,6 +570,58 @@ def test_top_down_Panoptic_dataset():
 
         with pytest.raises(KeyError):
             infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_top_down_InterHand2D_dataset():
+    dataset = 'InterHand2DDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=21,
+        dataset_joints=21,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
+        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
+        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
+        img_prefix='tests/data/interhand2d/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
+        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
+        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
+        img_prefix='tests/data/interhand2d/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 4
+    assert len(custom_dataset.db) == 6
+
+    _ = custom_dataset[0]
 
 
 def test_top_down_MPII_dataset():
@@ -590,3 +763,11 @@ def test_top_down_AIC_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')

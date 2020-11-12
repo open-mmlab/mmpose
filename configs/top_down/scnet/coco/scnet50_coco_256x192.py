@@ -39,7 +39,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/scnet50-7ef0a199.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/scnet50-7ef0a199.pth',
     backbone=dict(type='SCNet', depth=50),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -108,9 +109,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
             'flip_pairs'

@@ -24,8 +24,8 @@ def compute_similarity_transform(source_points, target_points):
         source_points_hat (np.ndarray([N, 3])): Transformed source point set.
     """
 
-    assert (target_points.shape[0] == source_points.shape[0])
-    assert (target_points.shape[1] == 3 and source_points.shape[1] == 3)
+    assert target_points.shape[0] == source_points.shape[0]
+    assert target_points.shape[1] == 3 and source_points.shape[1] == 3
 
     source_points = source_points.T
     target_points = target_points.T

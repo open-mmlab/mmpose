@@ -33,8 +33,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/'
-    'se-resnet101_batch256_20200708-038a4d04.pth',
+    pretrained='mmcls://se-resnet101',
     backbone=dict(type='SEResNet', depth=101),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -92,9 +91,7 @@ val_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
 ]
 

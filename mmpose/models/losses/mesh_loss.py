@@ -116,8 +116,7 @@ class MeshLoss(nn.Module):
             return (
                 conf *
                 self.criterion_joints_3d(pred_joints_3d, gt_joints_3d)).mean()
-        else:
-            return pred_joints_3d.sum() * 0
+        return pred_joints_3d.sum() * 0
 
     def vertex_loss(self, pred_vertices, gt_vertices, has_smpl):
         """Compute 3D vertex loss for the examples that 3D human mesh
@@ -191,7 +190,7 @@ class MeshLoss(nn.Module):
             target (dict): dict of ground-truth labels.
                 Keys: 'vertices', 'joints_3d', 'joints_3d_visible',
                 'joints_2d', 'joints_2d_visible', 'pose', 'beta',
-                 'has_smpl',
+                'has_smpl'
 
         Returns:
             losses (dict): dict of losses.

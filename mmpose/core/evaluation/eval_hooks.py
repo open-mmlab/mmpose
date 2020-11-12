@@ -122,8 +122,8 @@ class EvalHook(Hook):
         runner.log_buffer.ready = True
         if self.key_indicator is not None:
             return eval_res[self.key_indicator]
-        else:
-            return None
+
+        return None
 
 
 class DistEvalHook(EvalHook):

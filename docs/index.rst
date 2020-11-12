@@ -6,6 +6,7 @@ Welcome to MMPose's documentation!
 
    install.md
    getting_started.md
+   demo.md
    benchmark.md
    config.md
 
@@ -19,9 +20,10 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Model Zoo
 
+   modelzoo.md
    top_down_models.md
    bottom_up_models.md
-   pretrained.md
+   hand_models.md
 
 .. toctree::
    :maxdepth: 2

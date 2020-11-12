@@ -280,7 +280,7 @@ class SMPLDiscriminator(nn.Module):
 
     def forward(self, thetas):
         """Forward function."""
-        cams, poses, shapes = thetas
+        _, poses, shapes = thetas
 
         batch_size = poses.shape[0]
         shape_disc_value = self.shape_discriminator(shapes)

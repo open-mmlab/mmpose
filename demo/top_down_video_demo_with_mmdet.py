@@ -85,6 +85,12 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
+    # optional
+    return_heatmap = False
+
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     while (cap.isOpened()):
         flag, img = cap.read()
         if not flag:
@@ -96,13 +102,15 @@ def main():
         person_bboxes = process_mmdet_results(mmdet_results)
 
         # test a single image, with a list of bboxes.
-        pose_results, heatmaps = inference_top_down_pose_model(
+        pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             img,
             person_bboxes,
             bbox_thr=args.bbox_thr,
             format='xyxy',
-            dataset=dataset)
+            dataset=dataset,
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         # show the results
         vis_img = vis_pose_result(
