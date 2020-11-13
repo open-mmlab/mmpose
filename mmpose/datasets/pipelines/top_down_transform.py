@@ -338,6 +338,7 @@ class TopDownGenerateTarget():
 
             if target_weight[i] < 1:
                 continue
+
             target_y = int(joints_3d[i, 1] * H / image_size[1])
             target_x = int(joints_3d[i, 0] * W / image_size[0])
 

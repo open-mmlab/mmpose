@@ -1,3 +1,5 @@
+import copy
+
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
@@ -26,6 +28,9 @@ class HRModule(nn.Module):
                  with_cp=False,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
+
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self._check_branches(num_branches, num_blocks, in_channels,
                              num_channels)
@@ -42,8 +47,8 @@ class HRModule(nn.Module):
         self.fuse_layers = self._make_fuse_layers()
         self.relu = nn.ReLU(inplace=True)
 
-    def _check_branches(self, num_branches, num_blocks, in_channels,
-                        num_channels):
+    @staticmethod
+    def _check_branches(num_branches, num_blocks, in_channels, num_channels):
         """Check input to avoid ValueError."""
         if num_branches != len(num_blocks):
             error_msg = f'NUM_BRANCHES({num_branches}) ' \
@@ -269,6 +274,8 @@ class HRNet(nn.Module):
                  norm_eval=False,
                  with_cp=False,
                  zero_init_residual=False):
+        # Protect mutable default arguments
+        norm_cfg = copy.deepcopy(norm_cfg)
         super().__init__()
         self.extra = extra
         self.conv_cfg = conv_cfg
