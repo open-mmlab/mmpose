@@ -12,6 +12,7 @@ from .base_backbone import BaseBackbone
 
 class RSB(nn.Module):
     """Residual Steps block for RSN.
+
     Paper ref: Cai et al. "Learning Delicate
     Local Representations for Multi-Person Pose Estimation" (ECCV 2020).
     Args:
@@ -123,6 +124,7 @@ class RSB(nn.Module):
 
 class Downsample_module(nn.Module):
     """Downsample module for RSN.
+
     Args:
         block (nn.Module): Downsample block.
         num_blocks (list): Number of blocks in each downsample unit.
@@ -233,6 +235,7 @@ class Downsample_module(nn.Module):
 
 class Upsample_unit(nn.Module):
     """Upsample unit for upsample module.
+
     Args:
         ind (int): Indicates whether to interpolate (>0) and whether to
            generate feature map for the next hourglass-like module.
@@ -348,6 +351,7 @@ class Upsample_unit(nn.Module):
 
 class Upsample_module(nn.Module):
     """Upsample module for RSN.
+
     Args:
         unit_channels (int): Channel number in the upsample units.
             Default:256.
@@ -418,6 +422,7 @@ class Upsample_module(nn.Module):
 
 class Single_stage_RSN(nn.Module):
     """Single_stage Residual Steps Network.
+
     Args:
         unit_channels (int): Channel number in the upsample units. Default:256.
         num_units (int): Numbers of downsample/upsample units. Default: 4
@@ -478,6 +483,7 @@ class Single_stage_RSN(nn.Module):
 
 class ResNet_top(nn.Module):
     """ResNet top for RSN.
+
     Args:
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
