@@ -47,3 +47,28 @@ def load_checkpoint(model,
     # load state_dict
     load_state_dict(model, state_dict, strict, logger)
     return checkpoint
+
+
+def get_state_dict(filename, map_location=None):
+    """Get state_dict from a file or URI.
+
+    Args:
+        filename (str): Accept local filepath, URL, ``torchvision://xxx``,
+            ``open-mmlab://xxx``.
+        map_location (str): Same as :func:`torch.load`.
+
+    Returns:
+        dict or OrderedDict: The loaded checkpoint.
+    """
+    checkpoint = _load_checkpoint(filename, map_location)
+    # OrderedDict is a subclass of dict
+    if not isinstance(checkpoint, dict):
+        raise RuntimeError(
+            f'No state_dict found in checkpoint file {filename}')
+    # get state_dict from checkpoint
+    if 'state_dict' in checkpoint:
+        state_dict = checkpoint['state_dict']
+    else:
+        state_dict = checkpoint
+
+    return state_dict
