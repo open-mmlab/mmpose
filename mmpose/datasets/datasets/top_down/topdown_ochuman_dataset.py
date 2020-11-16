@@ -54,9 +54,15 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 use_nms=True):
         super(TopDownCocoDataset, self).__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            test_mode=test_mode,
+            use_nms=use_nms)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']

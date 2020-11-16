@@ -78,10 +78,11 @@ def main():
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     data_loader = build_dataloader(
         dataset,
-        samples_per_gpu=1,
+        samples_per_gpu=cfg.data.samples_per_gpu,
         workers_per_gpu=cfg.data.workers_per_gpu,
         dist=distributed,
-        shuffle=False)
+        shuffle=False,
+        drop_last=False)
 
     # build the model and load checkpoint
     model = build_posenet(cfg.model)
