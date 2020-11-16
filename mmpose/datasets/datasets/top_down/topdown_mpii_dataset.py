@@ -147,12 +147,12 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         Args:
             outputs(list(preds, boxes, image_path, heatmap)):
 
-                * preds(np.ndarray[1,K,3]): The first two dimensions are
+                * preds(np.ndarray[N,K,3]): The first two dimensions are
                   coordinates, score is the third dimension of the array.
-                * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                * boxes(np.ndarray[N,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_path(list[str]): For example, ['0', '0',
-                  '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+                * image_path(list[str]): For example, ['data/coco/val2017
+                    /000000393226.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
 
             res_folder(str): Path of directory to save the results.
@@ -169,7 +169,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        preds = np.stack([kpts[0] for kpts, _, _, _ in outputs])
+        preds = np.empty((0, 3), dtype=np.float32)
+        for kpts, _, _, _ in outputs:
+            preds = np.concatenate([preds, kpts], axis=0)
 
         # convert 0-based index to 1-based index,
         # and get the first two dimensions.

@@ -155,8 +155,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                   coordinates, score is the third dimension of the array.
                 * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_path(list[str]): For example, ['0', '0',
-                  '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+                * image_path(list[str]): For example, ['data/coco/val2017
+                    /000000393226.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
@@ -174,19 +174,20 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
-
         for preds, boxes, image_path, _ in outputs:
-            str_image_path = ''.join(image_path)
-            image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
+            batch_size = len(image_path)
+            for i in range(batch_size):
+                str_image_path = image_path[i]
+                image_id = int(osp.basename(osp.splitext(str_image_path)[0]))
 
-            kpts.append({
-                'keypoints': preds[0].tolist(),
-                'center': boxes[0][0:2].tolist(),
-                'scale': boxes[0][2:4].tolist(),
-                'area': float(boxes[0][4]),
-                'score': float(boxes[0][5]),
-                'image_id': image_id,
-            })
+                kpts.append({
+                    'keypoints': preds[i].tolist(),
+                    'center': boxes[i][0:2].tolist(),
+                    'scale': boxes[i][2:4].tolist(),
+                    'area': float(boxes[i][4]),
+                    'score': float(boxes[i][5]),
+                    'image_id': image_id,
+                })
 
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)

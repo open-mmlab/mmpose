@@ -29,7 +29,8 @@ class TopDownBaseDataset(Dataset, metaclass=ABCMeta):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 use_nms=True):
 
         self.image_info = {}
         self.ann_info = {}
@@ -38,6 +39,7 @@ class TopDownBaseDataset(Dataset, metaclass=ABCMeta):
         self.img_prefix = img_prefix
         self.pipeline = pipeline
         self.test_mode = test_mode
+        self.use_nms = use_nms
 
         self.ann_info['image_size'] = np.array(data_cfg['image_size'])
         self.ann_info['heatmap_size'] = np.array(data_cfg['heatmap_size'])
