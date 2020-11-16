@@ -31,7 +31,7 @@ class Bottleneck(_Bottleneck):
         super().__init__(in_channels, out_channels * 4, **kwargs)
 
 
-class Downsample_module(nn.Module):
+class DownsampleModule(nn.Module):
     """Downsample module for MSPN.
 
     Args:
@@ -111,7 +111,7 @@ class Downsample_module(nn.Module):
         return tuple(out)
 
 
-class Upsample_unit(nn.Module):
+class UpsampleUnit(nn.Module):
     """Upsample unit for upsample module.
 
     Args:
@@ -227,7 +227,7 @@ class Upsample_unit(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class Upsample_module(nn.Module):
+class UpsampleModule(nn.Module):
     """Upsample module for MSPN.
 
     Args:
@@ -267,7 +267,7 @@ class Upsample_module(nn.Module):
             module_name = f'up{i + 1}'
             self.add_module(
                 module_name,
-                Upsample_unit(
+                UpsampleUnit(
                     i,
                     self.num_units,
                     self.in_channels[i],
@@ -341,10 +341,10 @@ class Single_stage_Network(nn.Module):
         self.num_blocks = num_blocks
         self.norm_cfg = norm_cfg
 
-        self.downsample = Downsample_module(Bottleneck, num_blocks, num_units,
-                                            has_skip, norm_cfg, in_channels)
-        self.upsample = Upsample_module(unit_channels, num_units, gen_skip,
-                                        gen_cross_conv, norm_cfg, in_channels)
+        self.downsample = DownsampleModule(Bottleneck, num_blocks, num_units,
+                                           has_skip, norm_cfg, in_channels)
+        self.upsample = UpsampleModule(unit_channels, num_units, gen_skip,
+                                       gen_cross_conv, norm_cfg, in_channels)
 
     def forward(self, x, skip1, skip2):
         mid = self.downsample(x, skip1, skip2)
