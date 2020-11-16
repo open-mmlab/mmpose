@@ -299,7 +299,7 @@ class UpsampleModule(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class Single_stage_Network(nn.Module):
+class SingleStageNetwork(nn.Module):
     """Single_stage Network.
 
     Args:
@@ -315,7 +315,7 @@ class Single_stage_Network(nn.Module):
             Default: [2, 2, 2, 2] Note: Make sure num_units==len(num_blocks)
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
-        in_channels (int): Number of channels of the feature from ResNet_Top.
+        in_channels (int): Number of channels of the feature from ResNetTop.
             Default: 64.
     """
 
@@ -353,13 +353,13 @@ class Single_stage_Network(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class ResNet_top(nn.Module):
+class ResNetTop(nn.Module):
     """ResNet top for MSPN.
 
     Args:
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
-        channels (int): Number of channels of the feature output by ResNet_top.
+        channels (int): Number of channels of the feature output by ResNetTop.
     """
 
     def __init__(self, norm_cfg=dict(type='BN'), channels=64):
@@ -396,7 +396,7 @@ class MSPN(BaseBackbone):
             downsample unit. Default: [2, 2, 2, 2]
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
-        res_top_channels (int): Number of channels of feature from ResNet_top.
+        res_top_channels (int): Number of channels of feature from ResNetTop.
             Default: 64.
     Example:
         >>> from mmpose.models import MSPN
@@ -435,7 +435,7 @@ class MSPN(BaseBackbone):
         assert self.num_stages > 0
         assert self.num_units > 1
         assert self.num_units == len(self.num_blocks)
-        self.top = ResNet_top(norm_cfg=norm_cfg)
+        self.top = ResNetTop(norm_cfg=norm_cfg)
         self.multi_stage_mspn = nn.ModuleList([])
         for i in range(self.num_stages):
             if i == 0:
@@ -449,9 +449,9 @@ class MSPN(BaseBackbone):
                 gen_skip = False
                 gen_cross_conv = False
             self.multi_stage_mspn.append(
-                Single_stage_Network(has_skip, gen_skip, gen_cross_conv,
-                                     unit_channels, num_units, num_blocks,
-                                     norm_cfg, res_top_channels))
+                SingleStageNetwork(has_skip, gen_skip, gen_cross_conv,
+                                   unit_channels, num_units, num_blocks,
+                                   norm_cfg, res_top_channels))
 
     def forward(self, x):
         """Model forward function."""
