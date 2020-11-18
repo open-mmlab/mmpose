@@ -157,7 +157,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         for preds, boxes, image_path, _ in outputs:
             batch_size = len(image_path)
             for i in range(batch_size):
-                image_id = self.name2id[os.path.basename(image_path[i])]
+                image_id = self.name2id[image_path[i][len(self.img_prefix):]]
                 kpts[image_id].append({
                     'keypoints': preds[i],
                     'center': boxes[i][0:2],

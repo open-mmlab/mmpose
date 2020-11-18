@@ -213,7 +213,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
-
+        data_len = len(self.db)
+        preds = preds[:data_len]
         assert len(preds) == len(
             self.db), f'len(preds)={len(preds)}, len(self.db)={len(self.db)}'
         for pred, item in zip(preds, self.db):
