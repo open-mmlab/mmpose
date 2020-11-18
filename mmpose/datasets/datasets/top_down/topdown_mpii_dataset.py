@@ -169,7 +169,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        preds = np.empty((0, 3), dtype=np.float32)
+        num_joints = outputs[0][0].shape[1]
+        preds = np.empty((0, num_joints, 3), dtype=np.float32)
+
         for kpts, _, _, _ in outputs:
             preds = np.concatenate([preds, kpts], axis=0)
 
@@ -193,6 +195,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         headboxes_src = gt_dict['headboxes_src']
 
         pos_pred_src = np.transpose(preds, [1, 2, 0])
+        data_len = pos_gt_src.shape[2]
+        pos_pred_src = pos_pred_src[..., :data_len]
 
         head = np.where(dataset_joints == 'head')[1][0]
         lsho = np.where(dataset_joints == 'lsho')[1][0]
