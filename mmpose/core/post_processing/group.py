@@ -3,10 +3,11 @@
 # Original licence: Copyright (c) 2017, umich-vl, under BSD 3-Clause License.
 # ------------------------------------------------------------------------------
 
+import cv2
 import numpy as np
 import torch
 from munkres import Munkres
-
+from numpy.linalg import LinAlgError
 
 def _py_max_match(scores):
     """Apply munkres algorithm to get the best match.
@@ -369,6 +370,305 @@ class HeatmapParser:
 
         if adjust:
             ans = self.adjust(ans, heatmaps)
+
+        scores = [i[:, 2].mean() for i in ans[0]]
+
+        if refine:
+            ans = ans[0]
+            # for every detected person
+            for i in range(len(ans)):
+                heatmap_numpy = heatmaps[0].cpu().numpy()
+                tag_numpy = tags[0].cpu().numpy()
+                if not self.tag_per_joint:
+                    tag_numpy = np.tile(tag_numpy,
+                                        (self.params.num_joints, 1, 1, 1))
+                ans[i] = self.refine(heatmap_numpy, tag_numpy, ans[i])
+            ans = [ans]
+
+        return ans, scores
+
+class HeatmapParser_udp:
+    """The heatmap parser for post processing."""
+
+    def __init__(self, cfg):
+        self.params = _Params(cfg)
+        self.tag_per_joint = cfg['tag_per_joint']
+        self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
+                                       cfg['nms_padding'])
+
+    def nms(self, heatmaps):
+        """Non-Maximum Suppression for heatmaps.
+
+        Args:
+            heatmap(torch.Tensor): Heatmaps before nms.
+
+        Returns:
+            torch.Tensor: Heatmaps after nms.
+        """
+
+        maxm = self.pool(heatmaps)
+        maxm = torch.eq(maxm, heatmaps).float()
+        heatmaps = heatmaps * maxm
+
+        return heatmaps
+
+    def match(self, tag_k, loc_k, val_k):
+        """Group keypoints to human poses in a batch.
+
+        Args:
+            tag_k (np.ndarray[NxKxMxL]): tag corresponding to the
+                top k values of feature map per keypoint.
+            loc_k (np.ndarray[NxKxMx2]): top k locations of the
+                feature maps for keypoint.
+            val_k (np.ndarray[NxKxM]): top k value of the
+                feature maps per keypoint.
+
+        Returns:
+            list
+        """
+
+        def _match(x):
+            return _match_by_tag(x, self.params)
+
+        return list(map(_match, zip(tag_k, loc_k, val_k)))
+
+    def top_k(self, heatmaps, tags):
+        """Find top_k values in an image.
+
+        Note:
+            batch size: N
+            number of keypoints: K
+            heatmap height: H
+            heatmap width: W
+            max number of people: M
+            If use flip testing, L=2; else L=1.
+
+        Args:
+            heatmaps (torch.Tensor[NxKxHxW])
+            tags (torch.Tensor[NxKxHxWxL])
+
+        Return:
+            dict: A dict containing top_k values.
+
+            - tag_k (np.ndarray[NxKxMxL]):
+              tag corresponding to the top k values of
+              feature map per keypoint.
+            - loc_k (np.ndarray[NxKxMx2]):
+              top k location of feature map per keypoint.
+            - val_k (np.ndarray[NxKxM]):
+              top k value of feature map per keypoint.
+        """
+        heatmaps = self.nms(heatmaps)
+        N, K, H, W = heatmaps.size()
+        heatmaps = heatmaps.view(N, K, -1)
+        val_k, ind = heatmaps.topk(self.params.max_num_people, dim=2)
+
+        tags = tags.view(tags.size(0), tags.size(1), W * H, -1)
+        if not self.tag_per_joint:
+            tags = tags.expand(-1, self.params.num_joints, -1, -1)
+
+        tag_k = torch.stack(
+            [torch.gather(tags[..., i], 2, ind) for i in range(tags.size(3))],
+            dim=3)
+
+        x = ind % W
+        y = ind // W
+
+        ind_k = torch.stack((x, y), dim=3)
+
+        ans = {
+            'tag_k': tag_k.cpu().numpy(),
+            'loc_k': ind_k.cpu().numpy(),
+            'val_k': val_k.cpu().numpy()
+        }
+
+        return ans
+
+    def post_dark(self, coords, batch_heatmaps):
+        '''
+        DARK post-pocessing
+        :param coords: batchsize*num_kps*2
+        :param batch_heatmaps:batchsize*num_kps*high*width
+        :return:
+        '''
+        if not isinstance(batch_heatmaps,np.ndarray):
+            batch_heatmaps= batch_heatmaps.cpu().numpy()
+        shape_pad = list(batch_heatmaps.shape)
+        shape_pad[2] = shape_pad[2] + 2
+        shape_pad[3] = shape_pad[3] + 2
+        coord_shape = list(coords.shape)
+        for i in range(shape_pad[0]):
+            for j in range(shape_pad[1]):
+                mapij = batch_heatmaps[0, j, :, :]
+                maxori = np.max(mapij)
+                mapij = cv2.GaussianBlur(mapij, (3, 3), 0)
+                # max = np.max(mapij)
+                # min = np.min(mapij)
+                # mapij = (mapij - min) / (max - min) * maxori
+                batch_heatmaps[0, j, :, :] = mapij
+        batch_heatmaps = np.clip(batch_heatmaps, 0.001, 50)
+        batch_heatmaps = np.log(batch_heatmaps)
+        batch_heatmaps_pad = np.zeros(shape_pad, dtype=float)
+        batch_heatmaps_pad[:, :, 1:-1, 1:-1] = batch_heatmaps
+        batch_heatmaps_pad[:, :, 1:-1, -1] = batch_heatmaps[:, :, :, -1]
+        batch_heatmaps_pad[:, :, -1, 1:-1] = batch_heatmaps[:, :, -1, :]
+        batch_heatmaps_pad[:, :, 1:-1, 0] = batch_heatmaps[:, :, :, 0]
+        batch_heatmaps_pad[:, :, 0, 1:-1] = batch_heatmaps[:, :, 0, :]
+        batch_heatmaps_pad[:, :, -1, -1] = batch_heatmaps[:, :, -1, -1]
+        batch_heatmaps_pad[:, :, 0, 0] = batch_heatmaps[:, :, 0, 0]
+        batch_heatmaps_pad[:, :, 0, -1] = batch_heatmaps[:, :, 0, -1]
+        batch_heatmaps_pad[:, :, -1, 0] = batch_heatmaps[:, :, -1, 0]
+        I = np.zeros((coord_shape[0], coord_shape[1]))
+        Ix1 = np.zeros((coord_shape[0], coord_shape[1]))
+        Iy1 = np.zeros((coord_shape[0], coord_shape[1]))
+        Ix1y1 = np.zeros((coord_shape[0], coord_shape[1]))
+        Ix1_y1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        Ix1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        Iy1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        coords = coords.astype(np.int32)
+        for i in range(coord_shape[0]):
+            for j in range(coord_shape[1]):
+                I[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0] + 1]
+                Ix1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0] + 2]
+                Ix1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0]]
+                Iy1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2, coords[i, j, 0] + 1]
+                Iy1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1], coords[i, j, 0] + 1]
+                Ix1y1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2, coords[i, j, 0] + 2]
+                Ix1_y1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1], coords[i, j, 0]]
+        dx = 0.5 * (Ix1 - Ix1_)
+        dy = 0.5 * (Iy1 - Iy1_)
+        D = np.zeros((coord_shape[0], coord_shape[1], 2))
+        D[:, :, 0] = dx
+        D[:, :, 1] = dy
+        D.reshape((coord_shape[0], coord_shape[1], 2, 1))
+        dxx = Ix1 - 2 * I + Ix1_
+        dyy = Iy1 - 2 * I + Iy1_
+        dxy = 0.5 * (Ix1y1 - Ix1 - Iy1 + I + I - Ix1_ - Iy1_ + Ix1_y1_)
+        hessian = np.zeros((coord_shape[0], coord_shape[1], 2, 2))
+        hessian[:, :, 0, 0] = dxx
+        hessian[:, :, 1, 0] = dxy
+        hessian[:, :, 0, 1] = dxy
+        hessian[:, :, 1, 1] = dyy
+        inv_hessian = np.zeros(hessian.shape)
+        # hessian_test = np.zeros(hessian.shape)
+        for i in range(coord_shape[0]):
+            for j in range(coord_shape[1]):
+                hessian_tmp = hessian[i, j, :, :]
+                try:
+                    inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
+                except LinAlgError:
+                    inv_hessian[i, j, :, :] = np.zeros((2, 2))
+                # hessian_test[i,j,:,:] = np.matmul(hessian[i,j,:,:],inv_hessian[i,j,:,:])
+                # print( hessian_test[i,j,:,:])
+        res = np.zeros(coords.shape)
+        coords = coords.astype(np.float)
+        for i in range(coord_shape[0]):
+            for j in range(coord_shape[1]):
+                D_tmp = D[i, j, :]
+                D_tmp = D_tmp[:, np.newaxis]
+                shift = np.matmul(inv_hessian[i, j, :, :], D_tmp)
+                # print(shift.shape)
+                res_tmp = coords[i, j, :] - shift.reshape((-1))
+                res[i, j, :] = res_tmp
+        return res
+
+    def refine(self, heatmap, tag, keypoints):
+        """Given initial keypoint predictions, we identify missing joints.
+
+        Note:
+            number of keypoints: K
+            heatmap height: H
+            heatmap width: W
+
+        Args:
+            heatmap: np.ndarray of size (K, H, W).
+            tag: np.ndarray of size (K, H, W) if not flip.
+            keypoints: np.ndarray of size (K, 4) if not flip,
+                        last dim is (x, y, heatmap score, tag score).
+
+        Returns:
+            np.ndarray: The refined keypoints.
+        """
+
+        K, H, W = heatmap.shape
+        if len(tag.shape) == 3:
+            tag = tag[..., None]
+
+        tags = []
+        for i in range(K):
+            if keypoints[i, 2] > 0:
+                # save tag value of detected keypoint
+                x, y = keypoints[i][:2].astype(int)
+                x = max(0,min(x,W-1))
+                y = max(0,min(y,H-1))
+                tags.append(tag[i, y, x])
+
+        # mean tag of current detected people
+        prev_tag = np.mean(tags, axis=0)
+        ans = []
+
+        for _heatmap, _tag in zip(heatmap, tag):
+            # distance of all tag values with mean tag of
+            # current detected people
+            distance_tag = (((_tag -
+                              prev_tag[None, None, :])**2).sum(axis=2)**0.5)
+            norm_heatmap = _heatmap - np.round(distance_tag)
+
+            # find maximum position
+            y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
+            xx = x.copy()
+            yy = y.copy()
+            # detection score at maximum position
+            val = _heatmap[y, x]
+
+            # add a quarter offset
+            if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
+                x += 0.25
+            else:
+                x -= 0.25
+
+            if _heatmap[min(H - 1, yy + 1), xx] > _heatmap[max(0, yy - 1), xx]:
+                y += 0.25
+            else:
+                y -= 0.25
+
+            ans.append((x, y, val))
+        ans = np.array(ans)
+        # ans[:,:2] = self.post_dark(ans[np.newaxis,:,:2],heatmap[np.newaxis,:]).squeeze()
+        if ans is not None:
+            for i in range(K):
+                # add keypoint if it is not detected
+                if ans[i, 2] > 0 and keypoints[i, 2] == 0:
+                    keypoints[i, :3] = ans[i, :3]
+
+        return keypoints
+
+    def parse(self, heatmaps, tags, adjust=True, refine=True):
+        """Group keypoints into poses given heatmap and tag.
+
+        Note:
+            batch size: N
+            number of keypoints: K
+            heatmap height: H
+            heatmap width: W
+            L: 2 if use flip test else 1
+
+        Args:
+            heatmaps (torch.Tensor[NxKxHxW]): model output heatmaps.
+            tags (torch.Tensor[NxKxHxWxL]): model output tagmaps.
+
+        Returns:
+            tuple: A tuple containing keypoint grouping results.
+
+            - ans (list(np.ndarray)): Pose results.
+            - scores (list): Score of people.
+        """
+        ans = self.match(**self.top_k(heatmaps, tags))
+
+        if adjust:
+            for i in range(len(ans)):
+                if ans[i].shape[0]>0:
+                    ans[i][:,:,:2] = self.post_dark(ans[i][:,:,:2].copy(),heatmaps[i:i+1,:])
 
         scores = [i[:, 2].mean() for i in ans[0]]
 
