@@ -563,8 +563,6 @@ class HeatmapParser_udp:
                     inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
                 except LinAlgError:
                     inv_hessian[i, j, :, :] = np.zeros((2, 2))
-                # hessian_test[i,j,:,:] = np.matmul(hessian[i,j,:,:],inv_hessian[i,j,:,:])
-                # print( hessian_test[i,j,:,:])
         res = np.zeros(coords.shape)
         coords = coords.astype(np.float)
         for i in range(coord_shape[0]):

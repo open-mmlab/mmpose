@@ -279,7 +279,7 @@ class HeatmapGenerator_udp():
 
                     cc, dd = max(0, ul[0]), min(br[0], self.output_res)
                     aa, bb = max(0, ul[1]), min(br[1], self.output_res)
-                    hms[idx, aa:bb,cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd],
+                    hms[idx, aa:bb, cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd],
                                                        g[a:b, c:d])
         return hms
 

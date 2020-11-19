@@ -286,8 +286,10 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
 
     return aggregated_heatmaps, tags_list
 
-def aggregate_results_udp(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
-                      test_scale_factor, project2image, flip_test):
+
+def aggregate_results_udp(scale, aggregated_heatmaps, tags_list,
+                          heatmaps, tags, test_scale_factor,
+                          project2image, flip_test):
     """Aggregate multi-scale outputs.
 
     Note:
