@@ -116,15 +116,16 @@ def get_multi_stage_outputs(outputs,
 
     return outputs, heatmaps, tags
 
+
 def get_multi_stage_outputs_udp(outputs,
-                            outputs_flip,
-                            num_joints,
-                            with_heatmaps,
-                            with_ae,
-                            tag_per_joint=True,
-                            flip_index=None,
-                            project2image=True,
-                            size_projected=None):
+                                outputs_flip,
+                                num_joints,
+                                with_heatmaps,
+                                with_ae,
+                                tag_per_joint=True,
+                                flip_index=None,
+                                project2image=True,
+                                size_projected=None):
     """Inference the model to get multi-stage outputs (heatmaps & tags), and
     resize them to base sizes.
 
@@ -154,7 +155,7 @@ def get_multi_stage_outputs_udp(outputs,
 
     heatmaps_avg = 0
     num_heatmaps = 0
-    align_corners =True
+    align_corners = True
     heatmaps = []
     tags = []
 
@@ -341,7 +342,7 @@ def aggregate_results_udp(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
     return aggregated_heatmaps, tags_list
 
 
-def get_warpmatrix_inverse(theta, size_input, size_dst, size_target):
+def get_warpmatrix(theta, size_input, size_dst, size_target):
     """
     :param theta: angle x y
     :param size_input:[w,h]
@@ -356,18 +357,25 @@ def get_warpmatrix_inverse(theta, size_input, size_dst, size_target):
     scale_y = size_dst[1] / size_target[1]
     matrix[0, 0] = math.cos(theta) * scale_x
     matrix[0, 1] = -math.sin(theta) * scale_x
-    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) + 0.5 * size_input[1] * math.sin(theta) + 0.5 * size_target[0])
+    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) +
+                              0.5 * size_input[1] * math.sin(theta) +
+                              0.5 * size_target[0])
     matrix[1, 0] = math.sin(theta) * scale_y
     matrix[1, 1] = math.cos(theta) * scale_y
-    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) - 0.5 * size_input[1] * math.cos(theta) + 0.5 * size_target[1])
+    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) -
+                              0.5 * size_input[1] * math.cos(theta) +
+                              0.5 * size_target[1])
     return matrix
+
 
 def _affine_joints(joints, mat):
     """Affine the joints by the transform matrix."""
     joints = np.array(joints)
     shape = joints.shape
     joints = joints.reshape(-1, 2)
-    return np.dot(np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),mat.T).reshape(shape)
+    return np.dot(np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
+                  mat.T).reshape(shape)
+
 
 def get_group_preds(grouped_joints, center, scale, heatmap_size):
     """Transform the grouped joints back to the image.
@@ -403,10 +411,14 @@ def get_group_preds_udp(grouped_joints, center, scale, heatmap_size):
     Returns:
         list: List of the pose result for each person.
     """
-    if grouped_joints[0].shape[0]>0:
-        mat_inverse = get_warpmatrix_inverse(theta=0,
-                                             size_input=np.array(heatmap_size,dtype=np.float32)-1.0,
-                                             size_dst=scale,size_target=np.array(heatmap_size,dtype=np.float32)-1.0)
-        grouped_joints[0][:, :, :2] = _affine_joints(grouped_joints[0][:,:,:2],mat_inverse)
+    if grouped_joints[0].shape[0] > 0:
+        trans = get_warpmatrix(theta=0,
+                               size_input=np.array(heatmap_size,
+                                                   dtype=np.float32)-1.0,
+                               size_dst=scale,
+                               size_target=np.array(heatmap_size,
+                                                    dtype=np.float32)-1.0)
+        grouped_joints[0][:, :, :2] = \
+            _affine_joints(grouped_joints[0][:, :, :2], trans)
     results = [person for person in grouped_joints[0]]
     return results

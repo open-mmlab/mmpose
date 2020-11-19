@@ -153,7 +153,8 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    # dict(type='BottomUpGetImgSize_udp', test_scale_factor=[2.0, 1, 0.5]),# for multi-scale testing
+    # for multi-scale testing
+    # dict(type='BottomUpGetImgSize_udp', test_scale_factor=[2.0, 1, 0.5]),
     dict(type='BottomUpGetImgSize_udp', test_scale_factor=[1]),
     dict(
         type='BottomUpResizeAlign_udp',

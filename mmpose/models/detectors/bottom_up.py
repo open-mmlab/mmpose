@@ -11,7 +11,7 @@ from mmpose.core.evaluation import (aggregate_results, get_group_preds,
                                     get_multi_stage_outputs)
 from mmpose.core.evaluation import (aggregate_results_udp, get_group_preds_udp,
                                     get_multi_stage_outputs_udp)
-from mmpose.core.post_processing.group import HeatmapParser,HeatmapParser_udp
+from mmpose.core.post_processing.group import HeatmapParser, HeatmapParser_udp
 from mmpose.models.builder import build_loss
 from .. import builder
 from ..registry import POSENETS

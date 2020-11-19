@@ -9,6 +9,7 @@ import torch
 from munkres import Munkres
 from numpy.linalg import LinAlgError
 
+
 def _py_max_match(scores):
     """Apply munkres algorithm to get the best match.
 
@@ -387,6 +388,7 @@ class HeatmapParser:
 
         return ans, scores
 
+
 class HeatmapParser_udp:
     """The heatmap parser for post processing."""
 
@@ -491,8 +493,8 @@ class HeatmapParser_udp:
         :param batch_heatmaps:batchsize*num_kps*high*width
         :return:
         '''
-        if not isinstance(batch_heatmaps,np.ndarray):
-            batch_heatmaps= batch_heatmaps.cpu().numpy()
+        if not isinstance(batch_heatmaps, np.ndarray):
+            batch_heatmaps = batch_heatmaps.cpu().numpy()
         shape_pad = list(batch_heatmaps.shape)
         shape_pad[2] = shape_pad[2] + 2
         shape_pad[3] = shape_pad[3] + 2
@@ -500,11 +502,7 @@ class HeatmapParser_udp:
         for i in range(shape_pad[0]):
             for j in range(shape_pad[1]):
                 mapij = batch_heatmaps[0, j, :, :]
-                maxori = np.max(mapij)
                 mapij = cv2.GaussianBlur(mapij, (3, 3), 0)
-                # max = np.max(mapij)
-                # min = np.min(mapij)
-                # mapij = (mapij - min) / (max - min) * maxori
                 batch_heatmaps[0, j, :, :] = mapij
         batch_heatmaps = np.clip(batch_heatmaps, 0.001, 50)
         batch_heatmaps = np.log(batch_heatmaps)
@@ -518,32 +516,39 @@ class HeatmapParser_udp:
         batch_heatmaps_pad[:, :, 0, 0] = batch_heatmaps[:, :, 0, 0]
         batch_heatmaps_pad[:, :, 0, -1] = batch_heatmaps[:, :, 0, -1]
         batch_heatmaps_pad[:, :, -1, 0] = batch_heatmaps[:, :, -1, 0]
-        I = np.zeros((coord_shape[0], coord_shape[1]))
-        Ix1 = np.zeros((coord_shape[0], coord_shape[1]))
-        Iy1 = np.zeros((coord_shape[0], coord_shape[1]))
-        Ix1y1 = np.zeros((coord_shape[0], coord_shape[1]))
-        Ix1_y1_ = np.zeros((coord_shape[0], coord_shape[1]))
-        Ix1_ = np.zeros((coord_shape[0], coord_shape[1]))
-        Iy1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        i_ = np.zeros((coord_shape[0], coord_shape[1]))
+        ix1 = np.zeros((coord_shape[0], coord_shape[1]))
+        iy1 = np.zeros((coord_shape[0], coord_shape[1]))
+        ix1y1 = np.zeros((coord_shape[0], coord_shape[1]))
+        ix1_y1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        ix1_ = np.zeros((coord_shape[0], coord_shape[1]))
+        iy1_ = np.zeros((coord_shape[0], coord_shape[1]))
         coords = coords.astype(np.int32)
         for i in range(coord_shape[0]):
             for j in range(coord_shape[1]):
-                I[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0] + 1]
-                Ix1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0] + 2]
-                Ix1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1, coords[i, j, 0]]
-                Iy1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2, coords[i, j, 0] + 1]
-                Iy1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1], coords[i, j, 0] + 1]
-                Ix1y1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2, coords[i, j, 0] + 2]
-                Ix1_y1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1], coords[i, j, 0]]
-        dx = 0.5 * (Ix1 - Ix1_)
-        dy = 0.5 * (Iy1 - Iy1_)
+                i_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                              coords[i, j, 0] + 1]
+                ix1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                               coords[i, j, 0] + 2]
+                ix1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                                coords[i, j, 0]]
+                iy1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
+                                               coords[i, j, 0] + 1]
+                iy1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
+                                                coords[i, j, 0] + 1]
+                ix1y1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
+                                                 coords[i, j, 0] + 2]
+                ix1_y1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
+                                                   coords[i, j, 0]]
+        dx = 0.5 * (ix1 - ix1_)
+        dy = 0.5 * (iy1 - iy1_)
         D = np.zeros((coord_shape[0], coord_shape[1], 2))
         D[:, :, 0] = dx
         D[:, :, 1] = dy
         D.reshape((coord_shape[0], coord_shape[1], 2, 1))
-        dxx = Ix1 - 2 * I + Ix1_
-        dyy = Iy1 - 2 * I + Iy1_
-        dxy = 0.5 * (Ix1y1 - Ix1 - Iy1 + I + I - Ix1_ - Iy1_ + Ix1_y1_)
+        dxx = ix1 - 2 * i_ + ix1_
+        dyy = iy1 - 2 * i_ + iy1_
+        dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
         hessian = np.zeros((coord_shape[0], coord_shape[1], 2, 2))
         hessian[:, :, 0, 0] = dxx
         hessian[:, :, 1, 0] = dxy
@@ -599,8 +604,8 @@ class HeatmapParser_udp:
             if keypoints[i, 2] > 0:
                 # save tag value of detected keypoint
                 x, y = keypoints[i][:2].astype(int)
-                x = max(0,min(x,W-1))
-                y = max(0,min(y,H-1))
+                x = max(0, min(x, W-1))
+                y = max(0, min(y, H-1))
                 tags.append(tag[i, y, x])
 
         # mean tag of current detected people
@@ -634,7 +639,6 @@ class HeatmapParser_udp:
 
             ans.append((x, y, val))
         ans = np.array(ans)
-        # ans[:,:2] = self.post_dark(ans[np.newaxis,:,:2],heatmap[np.newaxis,:]).squeeze()
         if ans is not None:
             for i in range(K):
                 # add keypoint if it is not detected
@@ -667,8 +671,9 @@ class HeatmapParser_udp:
 
         if adjust:
             for i in range(len(ans)):
-                if ans[i].shape[0]>0:
-                    ans[i][:,:,:2] = self.post_dark(ans[i][:,:,:2].copy(),heatmaps[i:i+1,:])
+                if ans[i].shape[0] > 0:
+                    ans[i][:, :, :2] = self.post_dark(ans[i][:, :, :2].copy(),
+                                                      heatmaps[i:i+1, :])
 
         scores = [i[:, 2].mean() for i in ans[0]]
 

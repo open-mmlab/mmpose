@@ -1,15 +1,12 @@
 import cv2
 import numpy as np
 import math
-from random import random as rand
-import random
-from PIL import Image
 from mmpose.core.post_processing import get_affine_transform
 from mmpose.datasets.registry import PIPELINES
 from .shared_transform import Compose
 
 
-def get_warpmatrix_inverse(theta, size_input, size_dst, size_target):
+def get_warpmatrix(theta, size_input, size_dst, size_target):
     """
     :param theta: angle x y
     :param size_input:[w,h]
@@ -24,10 +21,14 @@ def get_warpmatrix_inverse(theta, size_input, size_dst, size_target):
     scale_y = size_dst[1] / size_target[1]
     matrix[0, 0] = math.cos(theta) * scale_x
     matrix[0, 1] = -math.sin(theta) * scale_x
-    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) + 0.5 * size_input[1] * math.sin(theta) + 0.5 * size_target[0])
+    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) +
+                              0.5 * size_input[1] * math.sin(theta) +
+                              0.5 * size_target[0])
     matrix[1, 0] = math.sin(theta) * scale_y
     matrix[1, 1] = math.cos(theta) * scale_y
-    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) - 0.5 * size_input[1] * math.cos(theta) + 0.5 * size_target[1])
+    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) -
+                              0.5 * size_input[1] * math.cos(theta) +
+                              0.5 * size_target[1])
     return matrix
 
 
@@ -36,7 +37,8 @@ def _affine_joints(joints, mat):
     joints = np.array(joints)
     shape = joints.shape
     joints = joints.reshape(-1, 2)
-    return np.dot(np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),mat.T).reshape(shape)
+    return np.dot(np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
+                  mat.T).reshape(shape)
 
 
 def _ceil_to_multiples_of(x, base=64):
@@ -131,12 +133,14 @@ def _get_multi_scale_size_udp(image, input_size, current_scale, min_scale):
     min_input_size = _ceil_to_multiples_of(min_scale * input_size, 64)
     if w < h:
         w_resized = int(min_input_size * current_scale / min_scale)
-        h_resized = int(_ceil_to_multiples_of(min_input_size / w * h, 64) * current_scale / min_scale)
+        h_resized = int(_ceil_to_multiples_of(min_input_size / w * h,
+                                              64) * current_scale / min_scale)
         scale_w = w - 1.0
         scale_h = (h_resized - 1.0) / (w_resized - 1.0) * (w - 1.0)
     else:
         h_resized = int(min_input_size * current_scale / min_scale)
-        w_resized = int(_ceil_to_multiples_of(min_input_size / h * w, 64) * current_scale / min_scale)
+        w_resized = int(_ceil_to_multiples_of(min_input_size / h * w,
+                                              64) * current_scale / min_scale)
         scale_h = h - 1.0
         scale_w = (w_resized - 1.0) / (h_resized - 1.0) * (h-1.0)
     center = (scale_w/2.0, scale_h/2.0)
@@ -167,11 +171,13 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
     _, center, scale = _get_multi_scale_size_udp(
         image, input_size, min_scale, min_scale)
 
-    mat_input = get_warpmatrix_inverse(theta=0,
-                                       size_input=np.array(scale, dtype=np.float),
-                                       size_dst=np.array(size_resized, dtype=np.float) - 1.0,
-                                       size_target=np.array(scale, dtype=np.float))
-    image_resized = cv2.warpAffine(image.copy(), mat_input, size_resized, flags=cv2.INTER_LINEAR)
+    trans = get_warpmatrix(theta=0,
+                           size_input=np.array(scale, dtype=np.float),
+                           size_dst=np.array(size_resized,
+                                             dtype=np.float) - 1.0,
+                           size_target=np.array(scale, dtype=np.float))
+    image_resized = cv2.warpAffine(image.copy(), trans,
+                                   size_resized, flags=cv2.INTER_LINEAR)
 
     return image_resized, center, scale
 
@@ -258,8 +264,10 @@ class HeatmapGenerator_udp():
                        x >= self.output_res or y >= self.output_res:
                         continue
 
-                    x0, y0 = 3 * sigma + 1 + pt[0] - x, 3 * sigma + 1 + pt[1] - y
-                    g = np.exp(-((self.x - x0) ** 2 + (self.y - y0) ** 2) / (2 * sigma ** 2))
+                    x0 = 3 * sigma + 1 + pt[0] - x
+                    y0 = 3 * sigma + 1 + pt[1] - y
+                    g = np.exp(-((self.x - x0) ** 2 + (self.y - y0) ** 2) /
+                               (2 * sigma ** 2))
 
                     ul = int(np.round(x - 3 * sigma - 1)), int(
                         np.round(y - 3 * sigma - 1))
@@ -271,7 +279,8 @@ class HeatmapGenerator_udp():
 
                     cc, dd = max(0, ul[0]), min(br[0], self.output_res)
                     aa, bb = max(0, ul[1]), min(br[1], self.output_res)
-                    hms[idx, aa:bb,cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd],g[a:b, c:d])
+                    hms[idx, aa:bb,cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd],
+                                                       g[a:b, c:d])
         return hms
 
 
@@ -497,7 +506,6 @@ class BottomUpRandomAffine_udp:
         self.scale_type = scale_type
         self.trans_factor = trans_factor
 
-
     def __call__(self, results):
         """Perform data augmentation with random scaling & rotating."""
         image, mask, joints = results['img'], results['mask'], results[
@@ -538,25 +546,32 @@ class BottomUpRandomAffine_udp:
 
         for i, _output_size in enumerate(self.output_size):
 
-            mat_output = get_warpmatrix_inverse(theta=aug_rot,
-                                             size_input=center * 2.0,
-                                             size_dst=np.array((_output_size,_output_size),dtype=np.float) - 1.0,
-                                             size_target=np.array((scale,scale),dtype=np.float))
-            mask[i] = cv2.warpAffine((mask[i] * 255).astype(np.uint8), mat_output,
+            trans = get_warpmatrix(theta=aug_rot,
+                                   size_input=center * 2.0,
+                                   size_dst=np.array((_output_size,
+                                                      _output_size),
+                                                     dtype=np.float) - 1.0,
+                                   size_target=np.array((scale, scale),
+                                                        dtype=np.float))
+            mask[i] = cv2.warpAffine((mask[i] * 255).astype(np.uint8), trans,
                                      (int(_output_size), int(_output_size)),
-                                     flags= cv2.INTER_LINEAR)/ 255
+                                     flags=cv2.INTER_LINEAR) / 255
             mask[i] = (mask[i] > 0.5).astype(np.float32)
-            joints[i][:, :, 0:2] = _affine_joints(joints[i][:, :, 0:2].copy(), mat_output)
+            joints[i][:, :, 0:2] = _affine_joints(joints[i][:, :, 0:2].copy(),
+                                                  trans)
             if results['ann_info']['scale_aware_sigma']:
                 joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
 
-        mat_input = get_warpmatrix_inverse(theta=aug_rot,
-                                            size_input=center * 2.0,
-                                            size_dst=np.array((self.input_size, self.input_size), dtype=np.float) - 1.0,
-                                            size_target=np.array((scale, scale), dtype=np.float))
+        mat_input = get_warpmatrix(theta=aug_rot,
+                                   size_input=center * 2.0,
+                                   size_dst=np.array((self.input_size,
+                                                      self.input_size),
+                                                     dtype=np.float) - 1.0,
+                                   size_target=np.array((scale, scale),
+                                                        dtype=np.float))
         image = cv2.warpAffine(image.copy(), mat_input,
-                                 (int(self.input_size), int(self.input_size)),
-                                 flags=cv2.INTER_LINEAR)
+                               (int(self.input_size), int(self.input_size)),
+                               flags=cv2.INTER_LINEAR)
 
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
