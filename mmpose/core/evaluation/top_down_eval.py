@@ -332,7 +332,7 @@ def keypoints_from_heatmaps(heatmaps,
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
 
-    assert not megvii and unbiased
+    assert not (megvii and unbiased)
 
     N, K, H, W = heatmaps.shape
 
