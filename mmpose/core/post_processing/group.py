@@ -6,7 +6,7 @@
 import numpy as np
 import torch
 from munkres import Munkres
-
+from mmpose.core.evaluation import post_dark
 
 def _py_max_match(scores):
     """Apply munkres algorithm to get the best match.
@@ -141,11 +141,12 @@ class _Params:
 class HeatmapParser:
     """The heatmap parser for post processing."""
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, use_udp=False):
         self.params = _Params(cfg)
         self.tag_per_joint = cfg['tag_per_joint']
         self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
                                        cfg['nms_padding'])
+        self.use_udp = use_udp
 
     def nms(self, heatmaps):
         """Non-Maximum Suppression for heatmaps.
@@ -273,7 +274,7 @@ class HeatmapParser:
         return ans
 
     @staticmethod
-    def refine(heatmap, tag, keypoints):
+    def refine(heatmap, tag, keypoints, use_udp):
         """Given initial keypoint predictions, we identify missing joints.
 
         Note:
@@ -300,6 +301,8 @@ class HeatmapParser:
             if keypoints[i, 2] > 0:
                 # save tag value of detected keypoint
                 x, y = keypoints[i][:2].astype(int)
+                x = max(0, min(x, W-1))
+                y = max(0, min(y, H-1))
                 tags.append(tag[i, y, x])
 
         # mean tag of current detected people
@@ -319,9 +322,10 @@ class HeatmapParser:
             yy = y.copy()
             # detection score at maximum position
             val = _heatmap[y, x]
-            # offset by 0.5
-            x += 0.5
-            y += 0.5
+            if not use_udp:
+                # offset by 0.5
+                x += 0.5
+                y += 0.5
 
             # add a quarter offset
             if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
@@ -368,7 +372,13 @@ class HeatmapParser:
         ans = self.match(**self.top_k(heatmaps, tags))
 
         if adjust:
-            ans = self.adjust(ans, heatmaps)
+            if self.use_udp:
+                for i in range(len(ans)):
+                    if ans[i].shape[0] > 0:
+                        ans[i][:, :, :2] = post_dark(ans[i][:, :, :2].copy(),
+                                                          heatmaps[i:i+1, :])
+            else:
+                ans = self.adjust(ans, heatmaps)
 
         scores = [i[:, 2].mean() for i in ans[0]]
 
@@ -381,7 +391,8 @@ class HeatmapParser:
                 if not self.tag_per_joint:
                     tag_numpy = np.tile(tag_numpy,
                                         (self.params.num_joints, 1, 1, 1))
-                ans[i] = self.refine(heatmap_numpy, tag_numpy, ans[i])
+                ans[i] = self.refine(heatmap_numpy, tag_numpy, ans[i],
+                                     use_udp=self.use_udp)
             ans = [ans]
 
         return ans, scores

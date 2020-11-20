@@ -35,7 +35,8 @@ class BottomUp(BasePose):
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None,
-                 loss_pose=None):
+                 loss_pose=None,
+                 use_udp=False):
         super().__init__()
 
         self.backbone = builder.build_backbone(backbone)
@@ -46,10 +47,11 @@ class BottomUp(BasePose):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
 
-        self.parser = HeatmapParser(self.test_cfg)
+        self.parser = HeatmapParser(self.test_cfg, use_udp=use_udp)
 
         self.loss = build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
+        self.use_udp = use_udp
 
     @property
     def with_keypoint(self):
@@ -222,12 +224,13 @@ class BottomUp(BasePose):
                 outputs, outputs_flip, self.test_cfg['num_joints'],
                 self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
                 self.test_cfg['tag_per_joint'], img_metas['flip_index'],
-                self.test_cfg['project2image'], base_size)
+                self.test_cfg['project2image'], base_size,
+                use_udp=self.use_udp)
 
             aggregated_heatmaps, tags_list = aggregate_results(
                 s, aggregated_heatmaps, tags_list, heatmaps, tags,
                 test_scale_factor, self.test_cfg['project2image'],
-                self.test_cfg['flip_test'])
+                self.test_cfg['flip_test'], use_udp=self.use_udp)
 
         # average heatmaps of different scales
         aggregated_heatmaps = aggregated_heatmaps / float(
@@ -242,7 +245,7 @@ class BottomUp(BasePose):
         results = get_group_preds(
             grouped, center, scale,
             [aggregated_heatmaps.size(3),
-             aggregated_heatmaps.size(2)])
+             aggregated_heatmaps.size(2)], use_udp=self.use_udp)
 
         image_path = []
         image_path.extend(img_metas['image_file'])

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from numpy.linalg import LinAlgError
 from mmpose.core.post_processing import transform_preds
 
 
@@ -248,6 +249,98 @@ def _taylor(heatmap, coord):
             offset = np.squeeze(np.array(offset.T), axis=0)
             coord += offset
     return coord
+
+
+def post_dark(coords, batch_heatmaps):
+    """ DARK post-pocessing
+
+    Args:
+        coords (np.ndarray): Coords in shape of batchsize*num_kps*2.
+        batch_heatmaps (np.ndarray): batch_heatmaps in shape of
+                batchsize*num_kps*high*width.
+
+    Returns:
+        res (np.ndarray): Refined coords in shape of batchsize*num_kps*2.
+    """
+    if not isinstance(batch_heatmaps, np.ndarray):
+        batch_heatmaps = batch_heatmaps.cpu().numpy()
+    shape_pad = list(batch_heatmaps.shape)
+    shape_pad[2] = shape_pad[2] + 2
+    shape_pad[3] = shape_pad[3] + 2
+    coord_shape = list(coords.shape)
+    for i in range(shape_pad[0]):
+        for j in range(shape_pad[1]):
+            mapij = batch_heatmaps[0, j, :, :]
+            mapij = cv2.GaussianBlur(mapij, (3, 3), 0)
+            batch_heatmaps[0, j, :, :] = mapij
+    batch_heatmaps = np.clip(batch_heatmaps, 0.001, 50)
+    batch_heatmaps = np.log(batch_heatmaps)
+    batch_heatmaps_pad = np.zeros(shape_pad, dtype=float)
+    batch_heatmaps_pad[:, :, 1:-1, 1:-1] = batch_heatmaps
+    batch_heatmaps_pad[:, :, 1:-1, -1] = batch_heatmaps[:, :, :, -1]
+    batch_heatmaps_pad[:, :, -1, 1:-1] = batch_heatmaps[:, :, -1, :]
+    batch_heatmaps_pad[:, :, 1:-1, 0] = batch_heatmaps[:, :, :, 0]
+    batch_heatmaps_pad[:, :, 0, 1:-1] = batch_heatmaps[:, :, 0, :]
+    batch_heatmaps_pad[:, :, -1, -1] = batch_heatmaps[:, :, -1, -1]
+    batch_heatmaps_pad[:, :, 0, 0] = batch_heatmaps[:, :, 0, 0]
+    batch_heatmaps_pad[:, :, 0, -1] = batch_heatmaps[:, :, 0, -1]
+    batch_heatmaps_pad[:, :, -1, 0] = batch_heatmaps[:, :, -1, 0]
+    i_ = np.zeros((coord_shape[0], coord_shape[1]))
+    ix1 = np.zeros((coord_shape[0], coord_shape[1]))
+    iy1 = np.zeros((coord_shape[0], coord_shape[1]))
+    ix1y1 = np.zeros((coord_shape[0], coord_shape[1]))
+    ix1_y1_ = np.zeros((coord_shape[0], coord_shape[1]))
+    ix1_ = np.zeros((coord_shape[0], coord_shape[1]))
+    iy1_ = np.zeros((coord_shape[0], coord_shape[1]))
+    coords = coords.astype(np.int32)
+    for i in range(coord_shape[0]):
+        for j in range(coord_shape[1]):
+            i_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                          coords[i, j, 0] + 1]
+            ix1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                           coords[i, j, 0] + 2]
+            ix1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
+                                            coords[i, j, 0]]
+            iy1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
+                                           coords[i, j, 0] + 1]
+            iy1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
+                                            coords[i, j, 0] + 1]
+            ix1y1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
+                                             coords[i, j, 0] + 2]
+            ix1_y1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
+                                               coords[i, j, 0]]
+    dx = 0.5 * (ix1 - ix1_)
+    dy = 0.5 * (iy1 - iy1_)
+    D = np.zeros((coord_shape[0], coord_shape[1], 2))
+    D[:, :, 0] = dx
+    D[:, :, 1] = dy
+    D.reshape((coord_shape[0], coord_shape[1], 2, 1))
+    dxx = ix1 - 2 * i_ + ix1_
+    dyy = iy1 - 2 * i_ + iy1_
+    dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
+    hessian = np.zeros((coord_shape[0], coord_shape[1], 2, 2))
+    hessian[:, :, 0, 0] = dxx
+    hessian[:, :, 1, 0] = dxy
+    hessian[:, :, 0, 1] = dxy
+    hessian[:, :, 1, 1] = dyy
+    inv_hessian = np.zeros(hessian.shape)
+    for i in range(coord_shape[0]):
+        for j in range(coord_shape[1]):
+            hessian_tmp = hessian[i, j, :, :]
+            try:
+                inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
+            except LinAlgError:
+                inv_hessian[i, j, :, :] = np.zeros((2, 2))
+    res = np.zeros(coords.shape)
+    coords = coords.astype(np.float)
+    for i in range(coord_shape[0]):
+        for j in range(coord_shape[1]):
+            D_tmp = D[i, j, :]
+            D_tmp = D_tmp[:, np.newaxis]
+            shift = np.matmul(inv_hessian[i, j, :, :], D_tmp)
+            res_tmp = coords[i, j, :] - shift.reshape((-1))
+            res[i, j, :] = res_tmp
+    return res
 
 
 def _gaussian_blur(heatmaps, kernel=11):
