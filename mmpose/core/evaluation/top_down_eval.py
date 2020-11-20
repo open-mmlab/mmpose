@@ -297,6 +297,7 @@ def keypoints_from_heatmaps(heatmaps,
                             scale,
                             post_process=True,
                             unbiased=False,
+                            megvii=False,
                             kernel=11):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
@@ -313,9 +314,13 @@ def keypoints_from_heatmaps(heatmaps,
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
         post_process (bool): Option to use post processing or not.
-        unbiased (bool): Option to use unbiased decoding.
+        unbiased (bool): Option to use unbiased decoding. Mutually
+            exclusive with megvii.
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
+        megvii (bool):  Option to use megvii's way of post processing.
+            Currently used in RSN and MSPN. Default: False. Mutually
+            exclusive with unbiased.
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
@@ -327,11 +332,13 @@ def keypoints_from_heatmaps(heatmaps,
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
 
-    preds, maxvals = _get_max_preds(heatmaps)
+    assert not megvii and unbiased
+
     N, K, H, W = heatmaps.shape
 
     if post_process:
         if unbiased:  # alleviate biased coordinate
+            preds, maxvals = _get_max_preds(heatmaps)
             assert kernel > 0
             # apply Gaussian distribution modulation.
             heatmaps = _gaussian_blur(heatmaps, kernel)
@@ -341,6 +348,10 @@ def keypoints_from_heatmaps(heatmaps,
                 for k in range(K):
                     preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
         else:
+            if megvii:
+                assert kernel > 0
+                heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
+            preds, maxvals = _get_max_preds(heatmaps)
             # add +/-0.25 shift to the predicted locations for higher acc.
             for n in range(N):
                 for k in range(K):
@@ -353,9 +364,16 @@ def keypoints_from_heatmaps(heatmaps,
                             heatmap[py + 1][px] - heatmap[py - 1][px]
                         ])
                         preds[n][k] += np.sign(diff) * .25
+                        if megvii:
+                            preds[n][k] += 0.5
+
+    else:
+        preds, maxvals = _get_max_preds(heatmaps)
 
     # Transform back to the image
     for i in range(N):
         preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
+    if post_process and megvii:
+        maxvals = maxvals / 255 + 0.5
 
     return preds, maxvals
