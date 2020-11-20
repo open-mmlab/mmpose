@@ -3,9 +3,10 @@
 # Original licence: Copyright (c) 2017, umich-vl, under BSD 3-Clause License.
 # ------------------------------------------------------------------------------
 
-import torch
 import numpy as np
+import torch
 from munkres import Munkres
+
 from mmpose.core.evaluation import post_dark
 
 
@@ -303,8 +304,8 @@ class HeatmapParser:
             if keypoints[i, 2] > 0:
                 # save tag value of detected keypoint
                 x, y = keypoints[i][:2].astype(int)
-                x = max(0, min(x, W-1))
-                y = max(0, min(y, H-1))
+                x = max(0, min(x, W - 1))
+                y = max(0, min(y, H - 1))
                 tags.append(tag[i, y, x])
 
         # mean tag of current detected people
@@ -378,7 +379,7 @@ class HeatmapParser:
                 for i in range(len(ans)):
                     if ans[i].shape[0] > 0:
                         ans[i][:, :, :2] = post_dark(ans[i][:, :, :2].copy(),
-                                                     heatmaps[i:i+1, :])
+                                                     heatmaps[i:i + 1, :])
             else:
                 ans = self.adjust(ans, heatmaps)
 
@@ -393,8 +394,8 @@ class HeatmapParser:
                 if not self.tag_per_joint:
                     tag_numpy = np.tile(tag_numpy,
                                         (self.params.num_joints, 1, 1, 1))
-                ans[i] = self.refine(heatmap_numpy, tag_numpy, ans[i],
-                                     use_udp=self.use_udp)
+                ans[i] = self.refine(
+                    heatmap_numpy, tag_numpy, ans[i], use_udp=self.use_udp)
             ans = [ans]
 
         return ans, scores

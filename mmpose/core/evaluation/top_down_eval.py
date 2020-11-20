@@ -251,7 +251,7 @@ def _taylor(heatmap, coord):
 
 
 def post_dark(coords, batch_heatmaps):
-    """ DARK post-pocessing
+    """DARK post-pocessing.
 
     Args:
         coords (np.ndarray): Coords in shape of batchsize*num_kps*2.
@@ -325,7 +325,7 @@ def post_dark(coords, batch_heatmaps):
     inv_hessian = np.zeros(hessian.shape)
     for i in range(coord_shape[0]):
         for j in range(coord_shape[1]):
-            hessian_tmp = hessian[i, j, :, :] + 1e-8*np.eye(2)
+            hessian_tmp = hessian[i, j, :, :] + 1e-8 * np.eye(2)
             inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
     res = np.zeros(coords.shape)
     coords = coords.astype(np.float)

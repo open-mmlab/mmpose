@@ -1,7 +1,8 @@
-import torch
 import numpy as np
+import torch
+
 from mmpose.core.post_processing import transform_preds
-from mmpose.datasets.pipelines import get_warpmatrix, affine_joints
+from mmpose.datasets.pipelines import affine_joints, get_warpmatrix
 
 
 def get_multi_stage_outputs(outputs,
@@ -119,8 +120,14 @@ def get_multi_stage_outputs(outputs,
     return outputs, heatmaps, tags
 
 
-def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
-                      test_scale_factor, project2image, flip_test,
+def aggregate_results(scale,
+                      aggregated_heatmaps,
+                      tags_list,
+                      heatmaps,
+                      tags,
+                      test_scale_factor,
+                      project2image,
+                      flip_test,
                       align_corners=False):
     """Aggregate multi-scale outputs.
 
@@ -177,7 +184,10 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
     return aggregated_heatmaps, tags_list
 
 
-def get_group_preds(grouped_joints, center, scale, heatmap_size,
+def get_group_preds(grouped_joints,
+                    center,
+                    scale,
+                    heatmap_size,
                     use_udp=False):
     """Transform the grouped joints back to the image.
 
@@ -195,10 +205,11 @@ def get_group_preds(grouped_joints, center, scale, heatmap_size,
     if use_udp:
         if grouped_joints[0].shape[0] > 0:
             heatmap_size_t = np.array(heatmap_size, dtype=np.float32) - 1.0
-            trans = get_warpmatrix(theta=0,
-                                   size_input=heatmap_size_t,
-                                   size_dst=scale,
-                                   size_target=heatmap_size_t)
+            trans = get_warpmatrix(
+                theta=0,
+                size_input=heatmap_size_t,
+                size_dst=scale,
+                size_target=heatmap_size_t)
             grouped_joints[0][:, :, :2] = \
                 affine_joints(grouped_joints[0][:, :, :2], trans)
         results = [person for person in grouped_joints[0]]

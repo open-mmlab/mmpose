@@ -1,13 +1,15 @@
+import math
+
 import cv2
 import numpy as np
-import math
+
 from mmpose.core.post_processing import get_affine_transform
 from mmpose.datasets.registry import PIPELINES
 from .shared_transform import Compose
 
 
 def get_warpmatrix(theta, size_input, size_dst, size_target):
-    """ Calculate the transformation matrix under the constraint of unbiased
+    """Calculate the transformation matrix under the constraint of unbiased.
 
     Args:
         theta (float): Rotation angle in degrees.
@@ -41,8 +43,9 @@ def affine_joints(joints, mat):
     joints = np.array(joints)
     shape = joints.shape
     joints = joints.reshape(-1, 2)
-    return np.dot(np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
-                  mat.T).reshape(shape)
+    return np.dot(
+        np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
+        mat.T).reshape(shape)
 
 
 def _ceil_to_multiples_of(x, base=64):
@@ -50,8 +53,11 @@ def _ceil_to_multiples_of(x, base=64):
     return int(np.ceil(x / base)) * base
 
 
-def _get_multi_scale_size(image, input_size, current_scale,
-                          min_scale, use_udp=False):
+def _get_multi_scale_size(image,
+                          input_size,
+                          current_scale,
+                          min_scale,
+                          use_udp=False):
     """Get the size for multi-scale training.
 
     Args:
@@ -89,12 +95,12 @@ def _get_multi_scale_size(image, input_size, current_scale,
             min_scale)
         if use_udp:
             scale_h = h - 1.0
-            scale_w = (w_resized - 1.0) / (h_resized - 1.0) * (h-1.0)
+            scale_w = (w_resized - 1.0) / (h_resized - 1.0) * (h - 1.0)
         else:
             scale_h = h / 200.0
             scale_w = w_resized / h_resized * h / 200.0
     if use_udp:
-        center = (scale_w/2.0, scale_h/2.0)
+        center = (scale_w / 2.0, scale_h / 2.0)
     else:
         center = np.array([round(w / 2.0), round(h / 2.0)])
     return (w_resized, h_resized), center, np.array([scale_w, scale_h])
@@ -141,19 +147,19 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
         - center (np.ndarray): center of image
         - scale (np.ndarray): scale
     """
-    size_resized, _, _ = _get_multi_scale_size(
-        image, input_size, current_scale, min_scale, True)
+    size_resized, _, _ = _get_multi_scale_size(image, input_size,
+                                               current_scale, min_scale, True)
 
-    _, center, scale = _get_multi_scale_size(
-        image, input_size, min_scale, min_scale, True)
+    _, center, scale = _get_multi_scale_size(image, input_size, min_scale,
+                                             min_scale, True)
 
-    trans = get_warpmatrix(theta=0,
-                           size_input=np.array(scale, dtype=np.float),
-                           size_dst=np.array(size_resized,
-                                             dtype=np.float) - 1.0,
-                           size_target=np.array(scale, dtype=np.float))
-    image_resized = cv2.warpAffine(image.copy(), trans,
-                                   size_resized, flags=cv2.INTER_LINEAR)
+    trans = get_warpmatrix(
+        theta=0,
+        size_input=np.array(scale, dtype=np.float),
+        size_dst=np.array(size_resized, dtype=np.float) - 1.0,
+        size_target=np.array(scale, dtype=np.float))
+    image_resized = cv2.warpAffine(
+        image.copy(), trans, size_resized, flags=cv2.INTER_LINEAR)
 
     return image_resized, center, scale
 
@@ -182,8 +188,7 @@ class HeatmapGenerator():
             x = np.arange(0, size, 1, np.float32)
             y = x[:, None]
             x0, y0 = 3 * sigma + 1, 3 * sigma + 1
-            self.g = np.exp(
-                -((x - x0) ** 2 + (y - y0) ** 2) / (2 * sigma ** 2))
+            self.g = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
 
     def __call__(self, joints):
         """Generate heatmaps."""
@@ -201,8 +206,8 @@ class HeatmapGenerator():
                     if self.use_udp:
                         x0 = 3 * sigma + 1 + pt[0] - x
                         y0 = 3 * sigma + 1 + pt[1] - y
-                        g = np.exp(-((self.x - x0) ** 2 + (self.y - y0) ** 2) /
-                                   (2 * sigma ** 2))
+                        g = np.exp(-((self.x - x0)**2 + (self.y - y0)**2) /
+                                   (2 * sigma**2))
                     else:
                         g = self.g
 
@@ -216,8 +221,9 @@ class HeatmapGenerator():
 
                     cc, dd = max(0, ul[0]), min(br[0], self.output_res)
                     aa, bb = max(0, ul[1]), min(br[1], self.output_res)
-                    hms[idx, aa:bb, cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd],
-                                                        g[a:b, c:d])
+                    hms[idx, aa:bb,
+                        cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
+                                                                      c:d])
         return hms
 
 
@@ -317,8 +323,12 @@ class BottomUpRandomAffine:
         scale_aware_sigma: Option to use scale-aware sigma
     """
 
-    def __init__(self, rot_factor, scale_factor, scale_type,
-                 trans_factor, use_udp=False):
+    def __init__(self,
+                 rot_factor,
+                 scale_factor,
+                 scale_type,
+                 trans_factor,
+                 use_udp=False):
         self.max_rotation = rot_factor
         self.min_scale = scale_factor[0]
         self.max_scale = scale_factor[1]
@@ -370,7 +380,7 @@ class BottomUpRandomAffine:
 
         height, width = image.shape[:2]
         if self.use_udp:
-            center = np.array(((width-1.0) / 2, (height-1.0) / 2))
+            center = np.array(((width - 1.0) / 2, (height - 1.0) / 2))
         else:
             center = np.array((width / 2, height / 2))
         if self.scale_type == 'long':
@@ -394,55 +404,47 @@ class BottomUpRandomAffine:
             center[1] += dy
         if self.use_udp:
             for i, _output_size in enumerate(self.output_size):
-                trans = get_warpmatrix(theta=aug_rot,
-                                       size_input=center * 2.0,
-                                       size_dst=np.array((_output_size,
-                                                          _output_size),
-                                                         dtype=np.float) - 1.0,
-                                       size_target=np.array((scale, scale),
-                                                            dtype=np.float))
-                mask[i] = cv2.warpAffine((mask[i] * 255).astype(np.uint8),
-                                         trans,
-                                         (
-                                         int(_output_size), int(_output_size)),
-                                         flags=cv2.INTER_LINEAR) / 255
+                trans = get_warpmatrix(
+                    theta=aug_rot,
+                    size_input=center * 2.0,
+                    size_dst=np.array(
+                        (_output_size, _output_size), dtype=np.float) - 1.0,
+                    size_target=np.array((scale, scale), dtype=np.float))
+                mask[i] = cv2.warpAffine(
+                    (mask[i] * 255).astype(np.uint8),
+                    trans, (int(_output_size), int(_output_size)),
+                    flags=cv2.INTER_LINEAR) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
-                joints[i][:, :, 0:2] = affine_joints(
-                    joints[i][:, :, 0:2].copy(),
-                    trans)
+                joints[i][:, :,
+                          0:2] = affine_joints(joints[i][:, :, 0:2].copy(),
+                                               trans)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-            mat_input = get_warpmatrix(theta=aug_rot,
-                                       size_input=center * 2.0,
-                                       size_dst=np.array((self.input_size,
-                                                          self.input_size),
-                                                         dtype=np.float) - 1.0,
-                                       size_target=np.array((scale, scale),
-                                                            dtype=np.float))
-            image = cv2.warpAffine(image.copy(), mat_input,
-                                   (
-                                   int(self.input_size), int(self.input_size)),
-                                   flags=cv2.INTER_LINEAR)
+            mat_input = get_warpmatrix(
+                theta=aug_rot,
+                size_input=center * 2.0,
+                size_dst=np.array(
+                    (self.input_size, self.input_size), dtype=np.float) - 1.0,
+                size_target=np.array((scale, scale), dtype=np.float))
+            image = cv2.warpAffine(
+                image.copy(),
+                mat_input, (int(self.input_size), int(self.input_size)),
+                flags=cv2.INTER_LINEAR)
         else:
             for i, _output_size in enumerate(self.output_size):
-                mat_output = self._get_affine_matrix(center, scale,
-                                                     (_output_size,
-                                                      _output_size),
-                                                     aug_rot)[:2]
+                mat_output = self._get_affine_matrix(
+                    center, scale, (_output_size, _output_size), aug_rot)[:2]
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8), mat_output,
                     (_output_size, _output_size)) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
 
-                joints[i][:, :, 0:2] = affine_joints(
-                    joints[i][:, :, 0:2],
-                    mat_output)
+                joints[i][:, :, 0:2] = affine_joints(joints[i][:, :, 0:2],
+                                                     mat_output)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-            mat_input = self._get_affine_matrix(center, scale,
-                                                (self.input_size,
-                                                 self.input_size),
-                                                aug_rot)[:2]
+            mat_input = self._get_affine_matrix(
+                center, scale, (self.input_size, self.input_size), aug_rot)[:2]
             image = cv2.warpAffine(image, mat_input,
                                    (self.input_size, self.input_size))
 
