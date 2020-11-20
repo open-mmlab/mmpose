@@ -51,7 +51,7 @@ data_cfg = dict(
 model = dict(
     type='BottomUp',
     pretrained='https://download.openmmlab.com/mmpose/'
-               'pretrain_models/hrnet_w32-36af842e.pth',
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -156,16 +156,17 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='BottomUpGetImgSize',
-         test_scale_factor=[1],
-         use_udp=True),
-    dict(type='BottomUpResizeAlign',
-         transforms=[dict(type='ToTensor'),
-                     dict(
-                         type='NormalizeTensor',
-                         mean=[0.485, 0.456, 0.406],
-                         std=[0.229, 0.224, 0.225])],
-         use_udp=True),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1], use_udp=True),
+    dict(
+        type='BottomUpResizeAlign',
+        transforms=[
+            dict(type='ToTensor'),
+            dict(
+                type='NormalizeTensor',
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225])
+        ],
+        use_udp=True),
     dict(
         type='Collect',
         keys=[
