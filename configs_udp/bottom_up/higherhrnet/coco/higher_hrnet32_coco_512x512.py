@@ -112,7 +112,8 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True),
+        flip_test=True,
+        use_udp=True),
     loss_pose=dict(
         type='MultiLossFactory',
         num_joints=17,
@@ -124,7 +125,6 @@ model = dict(
         with_heatmaps_loss=[True, True],
         heatmaps_loss_factor=[1.0, 1.0],
     ),
-    use_udp=True,
 )
 
 train_pipeline = [
@@ -168,7 +168,9 @@ val_pipeline = [
          use_udp=True),
     dict(
         type='Collect',
-        keys=['img', ],
+        keys=[
+            'img',
+        ],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'

@@ -8,6 +8,7 @@ import torch
 from munkres import Munkres
 from mmpose.core.evaluation import post_dark
 
+
 def _py_max_match(scores):
     """Apply munkres algorithm to get the best match.
 
@@ -141,12 +142,12 @@ class _Params:
 class HeatmapParser:
     """The heatmap parser for post processing."""
 
-    def __init__(self, cfg, use_udp=False):
+    def __init__(self, cfg):
         self.params = _Params(cfg)
         self.tag_per_joint = cfg['tag_per_joint']
         self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
                                        cfg['nms_padding'])
-        self.use_udp = use_udp
+        self.use_udp = cfg.get('use_udp', False)
 
     def nms(self, heatmaps):
         """Non-Maximum Suppression for heatmaps.
@@ -287,6 +288,7 @@ class HeatmapParser:
             tag: np.ndarray of size (K, H, W) if not flip.
             keypoints: np.ndarray of size (K, 4) if not flip,
                         last dim is (x, y, heatmap score, tag score).
+            use_udp: bool-unbiased data processing
 
         Returns:
             np.ndarray: The refined keypoints.
@@ -376,7 +378,7 @@ class HeatmapParser:
                 for i in range(len(ans)):
                     if ans[i].shape[0] > 0:
                         ans[i][:, :, :2] = post_dark(ans[i][:, :, :2].copy(),
-                                                          heatmaps[i:i+1, :])
+                                                     heatmaps[i:i+1, :])
             else:
                 ans = self.adjust(ans, heatmaps)
 

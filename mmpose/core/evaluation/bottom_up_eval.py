@@ -13,7 +13,7 @@ def get_multi_stage_outputs(outputs,
                             flip_index=None,
                             project2image=True,
                             size_projected=None,
-                            use_udp=False):
+                            align_corners=False):
     """Inference the model to get multi-stage outputs (heatmaps & tags), and
     resize them to base sizes.
 
@@ -29,7 +29,7 @@ def get_multi_stage_outputs(outputs,
         flip_index (list[int]): Keypoint flip index.
         project2image (bool): Option to resize to base scale.
         size_projected ([w, h]): Base size of heatmaps.
-        use_udp (bool): Unbiased data processing.
+        align_corners (bool): Align corners when performing interpolation.
 
     Returns:
         tuple: A tuple containing multi-stage outputs.
@@ -56,7 +56,7 @@ def get_multi_stage_outputs(outputs,
                 output,
                 size=(outputs[-1].size(2), outputs[-1].size(3)),
                 mode='bilinear',
-                align_corners=use_udp)
+                align_corners=align_corners)
 
         # staring index of the associative embeddings
         offset_feat = num_joints if with_heatmaps[i] else 0
@@ -82,7 +82,7 @@ def get_multi_stage_outputs(outputs,
                     output,
                     size=(outputs_flip[-1].size(2), outputs_flip[-1].size(3)),
                     mode='bilinear',
-                    align_corners=use_udp)
+                    align_corners=align_corners)
             output = torch.flip(output, [3])
             outputs.append(output)
 
@@ -105,7 +105,7 @@ def get_multi_stage_outputs(outputs,
                 hms,
                 size=(size_projected[1], size_projected[0]),
                 mode='bilinear',
-                align_corners=use_udp) for hms in heatmaps
+                align_corners=align_corners) for hms in heatmaps
         ]
 
         tags = [
@@ -113,7 +113,7 @@ def get_multi_stage_outputs(outputs,
                 tms,
                 size=(size_projected[1], size_projected[0]),
                 mode='bilinear',
-                align_corners=use_udp) for tms in tags
+                align_corners=align_corners) for tms in tags
         ]
 
     return outputs, heatmaps, tags
@@ -121,7 +121,7 @@ def get_multi_stage_outputs(outputs,
 
 def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
                       test_scale_factor, project2image, flip_test,
-                      use_udp=False):
+                      align_corners=False):
     """Aggregate multi-scale outputs.
 
     Note:
@@ -139,7 +139,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
         test_scale_factor (List(int)): Multi-scale factor for testing.
         project2image (bool): Option to resize to base scale.
         flip_test (bool): Option to use flip test.
-        use_udp (bool): Unbiased data processing.
+        align_corners (bool): Align corners when performing interpolation.
 
     Return:
         tuple: a tuple containing aggregated results.
@@ -155,7 +155,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
                     size=(aggregated_heatmaps.size(2),
                           aggregated_heatmaps.size(3)),
                     mode='bilinear',
-                    align_corners=use_udp) for tms in tags
+                    align_corners=align_corners) for tms in tags
             ]
         for tms in tags:
             tags_list.append(torch.unsqueeze(tms, dim=4))
@@ -172,7 +172,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
             heatmaps_avg,
             size=(aggregated_heatmaps.size(2), aggregated_heatmaps.size(3)),
             mode='bilinear',
-            align_corners=use_udp)
+            align_corners=align_corners)
 
     return aggregated_heatmaps, tags_list
 

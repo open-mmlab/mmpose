@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-from numpy.linalg import LinAlgError
 from mmpose.core.post_processing import transform_preds
 
 
@@ -326,11 +325,8 @@ def post_dark(coords, batch_heatmaps):
     inv_hessian = np.zeros(hessian.shape)
     for i in range(coord_shape[0]):
         for j in range(coord_shape[1]):
-            hessian_tmp = hessian[i, j, :, :]
-            try:
-                inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
-            except LinAlgError:
-                inv_hessian[i, j, :, :] = np.zeros((2, 2))
+            hessian_tmp = hessian[i, j, :, :] + 1e-8*np.eye(2)
+            inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
     res = np.zeros(coords.shape)
     coords = coords.astype(np.float)
     for i in range(coord_shape[0]):
