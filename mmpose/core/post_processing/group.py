@@ -3,8 +3,8 @@
 # Original licence: Copyright (c) 2017, umich-vl, under BSD 3-Clause License.
 # ------------------------------------------------------------------------------
 
-import numpy as np
 import torch
+import numpy as np
 from munkres import Munkres
 from mmpose.core.evaluation import post_dark
 
@@ -275,7 +275,7 @@ class HeatmapParser:
         return ans
 
     @staticmethod
-    def refine(heatmap, tag, keypoints, use_udp):
+    def refine(heatmap, tag, keypoints, use_udp=False):
         """Given initial keypoint predictions, we identify missing joints.
 
         Note:
