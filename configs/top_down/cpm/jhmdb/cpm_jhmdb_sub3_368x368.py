@@ -8,7 +8,7 @@ evaluation = dict(interval=1, metric='PCK', key_indicator='Mean PCK')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-5,
+    lr=5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[10, 15])
-total_epochs = 20
+    step=[20, 30])
+total_epochs = 40
 log_config = dict(
     interval=50,
     hooks=[
@@ -122,7 +122,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/jhmdb'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownJhmdbDataset',
