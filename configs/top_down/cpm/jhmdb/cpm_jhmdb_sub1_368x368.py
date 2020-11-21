@@ -68,8 +68,14 @@ data_cfg = dict(
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
+    soft_nms=False,
+    nms_thr=1.0,
+    oks_thr=0.9,
+    vis_thr=0.2,
+    bbox_thr=1.0,
     use_gt_bbox=True,
-    bbox_file=None,
+    image_thr=0.0,
+    bbox_file='',
 )
 
 train_pipeline = [
