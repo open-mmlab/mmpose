@@ -1,12 +1,11 @@
-Cython
 dataclasses; python_version == '3.6'
 json_tricks
 matplotlib
-mmcv-full
 munkres
 numpy
 opencv-python
 pillow
 scipy
+torch
 torchvision
 xtcocotools>=1.6
