@@ -144,21 +144,26 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
         gts = []
         masks = []
         threshold_bbox = []
+        threshold_torso = []
 
         for pred, item in zip(preds, self.db):
             outputs.append(np.array(pred['keypoints'])[:, :-1])
             gts.append(np.array(item['joints_3d'])[:, :-1])
             masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
             if 'PCK' in metrics:
-
                 bbox = np.array(item['bbox'])
                 bbox_thr = np.max(bbox[2:])
                 threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
+
+            if 'tPCK' in metrics:
+                torso_thr = np.linalg.norm(gts[4] - gts[5])
+                threshold_torso.append(np.array([torso_thr, torso_thr]))
 
         outputs = np.array(outputs)
         gts = np.array(gts)
         masks = np.array(masks)
         threshold_bbox = np.array(threshold_bbox)
+        threshold_torso = np.array(threshold_torso)
 
         if 'PCK' in metrics:
             pck_p, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
@@ -167,6 +172,26 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
             stats_names = [
                 'Head PCK', 'Sho PCK', 'Elb PCK', 'Wri PCK', 'Hip PCK',
                 'Knee PCK', 'Ank PCK', 'Mean PCK'
+            ]
+
+            stats = [
+                pck_p[2], 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                0.5 * pck_p[7] + 0.5 * pck_p[8],
+                0.5 * pck_p[11] + 0.5 * pck_p[12],
+                0.5 * pck_p[5] + 0.5 * pck_p[6],
+                0.5 * pck_p[9] + 0.5 * pck_p[10],
+                0.5 * pck_p[13] + 0.5 * pck_p[14], pck
+            ]
+
+            info_str.extend(list(zip(stats_names, stats)))
+
+        if 'tPCK' in metrics:
+            pck_p, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
+                                                  threshold_torso)
+
+            stats_names = [
+                'Head tPCK', 'Sho tPCK', 'Elb tPCK', 'Wri tPCK', 'Hip tPCK',
+                'Knee tPCK', 'Ank tPCK', 'Mean tPCK'
             ]
 
             stats = [
@@ -203,13 +228,15 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'AUC', 'EPE'.
+                Options: 'PCK', 'tPCK'.
+                PCK means normalized by the bounding boxes, while tPCK
+                means normalized by the torso size.
 
         Returns:
             dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['PCK']
+        allowed_metrics = ['PCK', 'tPCK']
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
