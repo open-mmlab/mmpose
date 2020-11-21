@@ -1,5 +1,5 @@
 log_level = 'INFO'
-load_from = 'https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth'  # noqa: E501
+load_from = 'https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth'  # noqa: E501
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
@@ -38,11 +38,19 @@ channel_cfg = dict(
 model = dict(
     type='TopDown',
     pretrained=None,
-    backbone=dict(type='ResNet', depth=50),
-    keypoint_head=dict(
-        type='TopDownSimpleHead',
-        in_channels=2048,
+    backbone=dict(
+        type='CPM',
+        in_channels=3,
         out_channels=channel_cfg['num_output_channels'],
+        feat_channels=128,
+        num_stages=6),
+    keypoint_head=dict(
+        type='TopDownMultiStageHead',
+        in_channels=channel_cfg['num_output_channels'],
+        out_channels=channel_cfg['num_output_channels'],
+        num_stages=6,
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=0, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
@@ -54,20 +62,14 @@ model = dict(
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
-    image_size=[256, 256],
-    heatmap_size=[64, 64],
+    image_size=[368, 368],
+    heatmap_size=[46, 46],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    soft_nms=False,
-    nms_thr=1.0,
-    oks_thr=0.9,
-    vis_thr=0.2,
-    bbox_thr=1.0,
     use_gt_bbox=True,
-    image_thr=0.0,
-    bbox_file='',
+    bbox_file=None,
 )
 
 train_pipeline = [
