@@ -843,5 +843,11 @@ def test_top_down_JHMDB_dataset():
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
         assert_almost_equal(infos['Mean PCK'], 1.0)
 
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['tPCK'])
+        assert_almost_equal(infos['Mean tPCK'], 1.0)
+
         with pytest.raises(KeyError):
             infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+test_top_down_JHMDB_dataset()

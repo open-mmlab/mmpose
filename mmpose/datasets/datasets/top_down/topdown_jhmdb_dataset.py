@@ -228,7 +228,13 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
                 threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
 
             if 'tPCK' in metrics:
-                torso_thr = np.linalg.norm(gts[4] - gts[5])
+                torso_thr = np.linalg.norm(item['joints_3d'][4, :2] -
+                                           item['joints_3d'][5, :2])
+                if torso_thr < 1:
+                    torso_thr = np.linalg.norm(
+                        np.array(pred['keypoints'])[4, :2] -
+                        np.array(pred['keypoints'])[5, :2])
+                    print('Torso Size < 1, may be an error....', flush=True)
                 threshold_torso.append(np.array([torso_thr, torso_thr]))
 
         outputs = np.array(outputs)
