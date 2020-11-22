@@ -124,8 +124,8 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', encoding='UDP',
-         target_type=target_type),
+    dict(
+        type='TopDownGenerateTarget', encoding='UDP', target_type=target_type),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
