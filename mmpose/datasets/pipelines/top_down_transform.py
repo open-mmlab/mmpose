@@ -3,6 +3,7 @@ import numpy as np
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform)
+from mmpose.datasets.pipelines import affine_joints, get_warpmatrix
 from mmpose.datasets.registry import PIPELINES
 
 
@@ -170,6 +171,9 @@ class TopDownAffine():
     'joints_3d_visible'.
     """
 
+    def __init__(self, use_udp=False):
+        self.use_udp = use_udp
+
     def __call__(self, results):
         image_size = results['ann_info']['image_size']
 
@@ -179,16 +183,24 @@ class TopDownAffine():
         c = results['center']
         s = results['scale']
         r = results['rotation']
-        trans = get_affine_transform(c, s, r, image_size)
 
-        img = cv2.warpAffine(
-            img,
-            trans, (int(image_size[0]), int(image_size[1])),
-            flags=cv2.INTER_LINEAR)
-
-        for i in range(results['ann_info']['num_joints']):
-            if joints_3d_visible[i, 0] > 0.0:
-                joints_3d[i, 0:2] = affine_transform(joints_3d[i, 0:2], trans)
+        if self.use_udp:
+            trans = get_warpmatrix(r, c * 2.0, image_size - 1.0, s * 200.0)
+            img = cv2.warpAffine(
+                img.copy(),
+                trans, (int(image_size[0]), int(image_size[1])),
+                flags=cv2.INTER_LINEAR)
+            joints_3d[:, 0:2] = affine_joints(joints_3d[:, 0:2].copy(), trans)
+        else:
+            trans = get_affine_transform(c, s, r, image_size)
+            img = cv2.warpAffine(
+                img,
+                trans, (int(image_size[0]), int(image_size[1])),
+                flags=cv2.INTER_LINEAR)
+            for i in range(results['ann_info']['num_joints']):
+                if joints_3d_visible[i, 0] > 0.0:
+                    joints_3d[i,
+                              0:2] = affine_transform(joints_3d[i, 0:2], trans)
 
         results['img'] = img
         results['joints_3d'] = joints_3d
@@ -219,11 +231,15 @@ class TopDownGenerateTarget():
     def __init__(self,
                  sigma=2,
                  kernel=(11, 11),
+                 kpd=3.5,
+                 target_type='GaussianHeatMap',
                  encoding='MSRA',
                  unbiased_encoding=False):
         self.sigma = sigma
         self.unbiased_encoding = unbiased_encoding
         self.kernel = kernel
+        self.kpd = kpd
+        self.target_type = target_type
         self.encoding = encoding
 
     def _msra_generate_target(self, cfg, joints_3d, joints_3d_visible, sigma):
@@ -356,12 +372,113 @@ class TopDownGenerateTarget():
 
         return heatmaps, target_weight
 
+    def _udp_generate_target(self, cfg, joints_3d, joints_3d_visible, factor,
+                             target_type):
+        """Generate the target heatmap via 'UDP' approach.
+
+        Args:
+            cfg (dict): data config
+            joints_3d: np.ndarray ([num_joints, 3])
+            joints_3d_visible: np.ndarray ([num_joints, 3])
+
+        Returns:
+            tuple: A tuple containing targets.
+
+            - target: Target heatmaps.
+            - target_weight: (1: visible, 0: invisible)
+        """
+        num_joints = cfg['num_joints']
+        image_size = cfg['image_size']
+        heatmap_size = cfg['heatmap_size']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        target_weight = np.ones((num_joints, 1), dtype=np.float32)
+        target_weight[:, 0] = joints_3d_visible[:, 0]
+
+        if target_type == 'GaussianHeatMap':
+            target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
+                              dtype=np.float32)
+
+            tmp_size = factor * 3
+
+            for joint_id in range(num_joints):
+                feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
+                mu_x = int(joints_3d[joint_id][0] / feat_stride[0] + 0.5)
+                mu_y = int(joints_3d[joint_id][1] / feat_stride[1] + 0.5)
+                # Check that any part of the gaussian is in-bounds
+                ul = [int(mu_x - tmp_size), int(mu_y - tmp_size)]
+                br = [int(mu_x + tmp_size + 1), int(mu_y + tmp_size + 1)]
+                if ul[0] >= heatmap_size[0] or ul[1] >= heatmap_size[1] \
+                        or br[0] < 0 or br[1] < 0:
+                    # If not, just return the image as is
+                    target_weight[joint_id] = 0
+                    continue
+
+                # # Generate gaussian
+                size = 2 * tmp_size + 1
+                x = np.arange(0, size, 1, np.float32)
+                y = x[:, np.newaxis]
+                mu_x_ac = joints_3d[joint_id][0] / feat_stride[0]
+                mu_y_ac = joints_3d[joint_id][1] / feat_stride[1]
+                x0 = y0 = size // 2
+                x0 += mu_x_ac - mu_x
+                y0 += mu_y_ac - mu_y
+                g = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * factor**2))
+
+                # Usable gaussian range
+                g_x = max(0, -ul[0]), min(br[0], heatmap_size[0]) - ul[0]
+                g_y = max(0, -ul[1]), min(br[1], heatmap_size[1]) - ul[1]
+                # Image range
+                img_x = max(0, ul[0]), min(br[0], heatmap_size[0])
+                img_y = max(0, ul[1]), min(br[1], heatmap_size[1])
+
+                v = target_weight[joint_id]
+                if v > 0.5:
+                    target[joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
+                        g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
+        elif target_type == 'CombinedTarget':
+            target = np.zeros(
+                (num_joints, 3, heatmap_size[1] * heatmap_size[0]),
+                dtype=np.float32)
+            feat_width = heatmap_size[0]
+            feat_height = heatmap_size[1]
+            feat_x_int = np.arange(0, feat_width)
+            feat_y_int = np.arange(0, feat_height)
+            feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
+            feat_x_int = feat_x_int.reshape((-1, ))
+            feat_y_int = feat_y_int.reshape((-1, ))
+            kps_pos_distance_x = factor / 64.0 * heatmap_size[1]
+            kps_pos_distance_y = factor / 64.0 * heatmap_size[1]
+            feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
+            for joint_id in range(num_joints):
+                mu_x = joints_3d[joint_id][0] / feat_stride[0]
+                mu_y = joints_3d[joint_id][1] / feat_stride[1]
+                x_offset = (mu_x - feat_x_int) / kps_pos_distance_x
+                y_offset = (mu_y - feat_y_int) / kps_pos_distance_y
+                dis = x_offset**2 + y_offset**2
+                keep_pos = np.where((dis <= 1) & (dis >= 0))[0]
+                v = target_weight[joint_id]
+                if v > 0.5:
+                    target[joint_id, 0, keep_pos] = 1
+                    target[joint_id, 1, keep_pos] = x_offset[keep_pos]
+                    target[joint_id, 2, keep_pos] = y_offset[keep_pos]
+            target = target.reshape(
+                (num_joints * 3, heatmap_size[1], heatmap_size[0]))
+        else:
+            assert False
+
+        if use_different_joint_weights:
+            target_weight = np.multiply(target_weight, joint_weights)
+
+        return target, target_weight
+
     def __call__(self, results):
         """Generate the target heatmap."""
         joints_3d = results['joints_3d']
         joints_3d_visible = results['joints_3d_visible']
 
-        assert self.encoding in ['MSRA', 'Megvii']
+        assert self.encoding in ['MSRA', 'Megvii', 'UDP']
 
         if self.encoding == 'MSRA':
             if isinstance(self.sigma, list):
@@ -403,6 +520,35 @@ class TopDownGenerateTarget():
                 target, target_weight = self._megvii_generate_target(
                     results['ann_info'], joints_3d, joints_3d_visible,
                     self.kernel)
+        elif self.encoding == 'UDP':
+            if self.target_type == 'CombinedTarget':
+                factors = self.kpd
+                channel_factor = 3
+            elif self.target_type == 'GaussianHeatMap':
+                factors = self.sigma
+                channel_factor = 1
+            else:
+                assert False
+            if isinstance(factors, list):
+                num_factors = len(self.kernel)
+                cfg = results['ann_info']
+                num_joints = cfg['num_joints']
+                W, H = cfg['heatmap_size']
+
+                target = np.empty((0, channel_factor * num_joints, H, W),
+                                  dtype=np.float32)
+                target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                for i in range(num_factors):
+                    target_i, target_weight_i = self._udp_generate_target(
+                        cfg, joints_3d, joints_3d_visible, factors[i],
+                        self.target_type)
+                    target = np.concatenate([target, target_i[None]], axis=0)
+                    target_weight = np.concatenate(
+                        [target_weight, target_weight_i[None]], axis=0)
+            else:
+                target, target_weight = self._udp_generate_target(
+                    results['ann_info'], joints_3d, joints_3d_visible, factors,
+                    self.target_type)
         else:
             raise ValueError(
                 f'Encoding approach {self.encoding} is not supported!')

@@ -386,7 +386,10 @@ def keypoints_from_heatmaps(heatmaps,
                             scale,
                             post_process=True,
                             unbiased=False,
-                            kernel=11):
+                            kernel=11,
+                            kpd=3.5,
+                            use_udp=False,
+                            target_type='GaussianHeatMap'):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -408,6 +411,9 @@ def keypoints_from_heatmaps(heatmaps,
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
+        kpd (float): Keypoint pose distance for UDP.
+        use_udp (bool): Use unbiased data processing.
+        target_type (str): GaussianHeatMap or CombinedTarget.
 
     Returns:
         tuple: A tuple containing keypoint predictions and scores.
@@ -416,35 +422,68 @@ def keypoints_from_heatmaps(heatmaps,
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
 
-    preds, maxvals = _get_max_preds(heatmaps)
     N, K, H, W = heatmaps.shape
+    if use_udp:
+        if target_type == 'GaussianHeatMap':
+            coords, maxvals = _get_max_preds(heatmaps)
+            if post_process:
+                coords = post_dark(coords, heatmaps)
+        elif target_type == 'CombinedTarget':
+            net_output = heatmaps.copy()
+            kps_pos_distance_x = kpd / 64 * H
+            kps_pos_distance_y = kpd / 64 * H
+            heatmaps = net_output[:, ::3, :]
+            offset_x = net_output[:, 1::3, :] * kps_pos_distance_x
+            offset_y = net_output[:, 2::3, :] * kps_pos_distance_y
+            for i in range(heatmaps.shape[0]):
+                for j in range(heatmaps.shape[1]):
+                    heatmaps[i, j, :, :] = cv2.GaussianBlur(
+                        heatmaps[i, j, :, :], (2 * kernel + 1, 2 * kernel + 1),
+                        0)
+                    offset_x[i, j, :, :] = cv2.GaussianBlur(
+                        offset_x[i, j, :, :], (kernel, kernel), 0)
+                    offset_y[i, j, :, :] = cv2.GaussianBlur(
+                        offset_y[i, j, :, :], (kernel, kernel), 0)
 
-    if post_process:
-        if unbiased:  # alleviate biased coordinate
-            assert kernel > 0
-            # apply Gaussian distribution modulation.
-            heatmaps = _gaussian_blur(heatmaps, kernel)
-            heatmaps = np.maximum(heatmaps, 1e-10)
-            heatmaps = np.log(heatmaps)
-            for n in range(N):
-                for k in range(K):
-                    preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
+            coords, maxvals = _get_max_preds(heatmaps)
+            for n in range(coords.shape[0]):
+                for p in range(coords.shape[1]):
+                    px = int(coords[n][p][0])
+                    py = int(coords[n][p][1])
+                    coords[n][p][0] += offset_x[n, p, py, px]
+                    coords[n][p][1] += offset_y[n, p, py, px]
         else:
-            # add +/-0.25 shift to the predicted locations for higher acc.
-            for n in range(N):
-                for k in range(K):
-                    heatmap = heatmaps[n][k]
-                    px = int(preds[n][k][0])
-                    py = int(preds[n][k][1])
-                    if 1 < px < W - 1 and 1 < py < H - 1:
-                        diff = np.array([
-                            heatmap[py][px + 1] - heatmap[py][px - 1],
-                            heatmap[py + 1][px] - heatmap[py - 1][px]
-                        ])
-                        preds[n][k] += np.sign(diff) * .25
+            assert False
+        preds = coords.copy()
+    else:
+        preds, maxvals = _get_max_preds(heatmaps)
+        if post_process:
+            if unbiased:  # alleviate biased coordinate
+                assert kernel > 0
+                # apply Gaussian distribution modulation.
+                heatmaps = _gaussian_blur(heatmaps, kernel)
+                heatmaps = np.maximum(heatmaps, 1e-10)
+                heatmaps = np.log(heatmaps)
+                for n in range(N):
+                    for k in range(K):
+                        preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
+            else:
+                # add +/-0.25 shift to the predicted locations for higher acc.
+                for n in range(N):
+                    for k in range(K):
+                        heatmap = heatmaps[n][k]
+                        px = int(preds[n][k][0])
+                        py = int(preds[n][k][1])
+                        if 1 < px < W - 1 and 1 < py < H - 1:
+                            diff = np.array([
+                                heatmap[py][px + 1] - heatmap[py][px - 1],
+                                heatmap[py + 1][px] - heatmap[py - 1][px]
+                            ])
+                            preds[n][k] += np.sign(diff) * .25
 
     # Transform back to the image
     for i in range(N):
-        preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
+        preds[i] = transform_preds(
+            preds[i], center[i], scale[i], [W, H], use_udp=use_udp)
 
     return preds, maxvals
