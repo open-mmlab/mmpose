@@ -203,7 +203,7 @@ def test_top_down_pipeline():
         keys=['img', 'target', 'target_weight'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
-            'flip_pairs'
+            'flip_pairs', 'bbox_id'
         ])
     results_final = collect(results_target)
     assert 'img_size' not in results_final['img_metas'].data

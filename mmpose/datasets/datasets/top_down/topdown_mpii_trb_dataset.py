@@ -72,6 +72,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             data = json.load(f)
         tmpl = dict(
             image_file=None,
+            bbox_id=None,
             center=None,
             scale=None,
             rotation=0,
@@ -90,6 +91,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         for anno in data['annotations']:
             newitem = cp.deepcopy(tmpl)
             image_id = anno['image_id']
+            newitem['bbox_id'] = anno['id']
             newitem['image_file'] = os.path.join(
                 self.img_prefix, imid2info[image_id]['file_name'])
 
@@ -115,6 +117,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             if 'headbox' in anno:
                 newitem['headbox'] = anno['headbox']
             gt_db.append(newitem)
+        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db
 
@@ -158,6 +161,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                 * image_path(list[str]): For example, ['data/coco/val2017
                     /000000393226.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                * bbox_ids (list[str]): For example, ['27407']
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
@@ -174,7 +178,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
-        for preds, boxes, image_path, _ in outputs:
+        for preds, boxes, image_path, _, bbox_ids in outputs:
             batch_size = len(image_path)
             for i in range(batch_size):
                 str_image_path = image_path[i]
@@ -187,8 +191,10 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                     'area': float(boxes[i][4]),
                     'score': float(boxes[i][5]),
                     'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
                 })
-
+        kpts = sorted(kpts, key=lambda x: x['bbox_id'])
+        kpts = self._drop_repeated(kpts)
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)
         name_value = OrderedDict(info_str)
@@ -213,8 +219,6 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
-        data_len = len(self.db)
-        preds = preds[:data_len]
         assert len(preds) == len(
             self.db), f'len(preds)={len(preds)}, len(self.db)={len(self.db)}'
         for pred, item in zip(preds, self.db):
@@ -232,3 +236,11 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         info_str.append(('Contour_acc', contour.item()))
         info_str.append(('PCKh', mean.item()))
         return info_str
+
+    def _drop_repeated(self, kpts):
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i]['bbox_id'] == kpts[i - 1]['bbox_id']:
+                del kpts[i]
+
+        return kpts

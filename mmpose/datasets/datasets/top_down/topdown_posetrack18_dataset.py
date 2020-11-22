@@ -134,6 +134,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                     , scale[1],area, score]
                 :image_path (list[str]): For example, ['data/coco/val2017
                     /000000393226.jpg']
+                :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                :bbox_id (list(int))
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
@@ -154,7 +156,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
         kpts = defaultdict(list)
 
-        for preds, boxes, image_path, _ in outputs:
+        for preds, boxes, image_path, _, bbox_ids in outputs:
             batch_size = len(image_path)
             for i in range(batch_size):
                 image_id = self.name2id[image_path[i][len(self.img_prefix):]]
@@ -165,7 +167,9 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                     'area': boxes[i][4],
                     'score': boxes[i][5],
                     'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
                 })
+        kpts = self._drop_repeated(kpts)
 
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
