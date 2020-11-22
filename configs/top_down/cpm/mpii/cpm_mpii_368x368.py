@@ -86,7 +86,7 @@ train_pipeline = [
         keys=['img', 'target', 'target_weight'],
         meta_keys=[
             'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
-            'rotation', 'flip_pairs'
+            'rotation', 'flip_pairs', 'bbox_id'
         ]),
 ]
 
@@ -101,7 +101,10 @@ val_pipeline = [
     dict(
         type='Collect',
         keys=['img'],
-        meta_keys=['image_file', 'center', 'scale', 'rotation', 'flip_pairs']),
+        meta_keys=[
+            'image_file', 'center', 'scale', 'rotation', 'flip_pairs',
+            'bbox_id'
+        ]),
 ]
 
 test_pipeline = val_pipeline

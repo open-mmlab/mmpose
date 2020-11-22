@@ -187,10 +187,8 @@ class TopDown(BasePose):
         output = self.backbone(img)
 
         # process head
-        all_preds, all_boxes, image_path, heatmap = self.process_head(
+        return self.process_head(
             output, img, img_metas, return_heatmap=return_heatmap)
-
-        return all_preds, all_boxes, image_path, heatmap
 
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
@@ -224,6 +222,9 @@ class TopDown(BasePose):
         s = np.zeros((batch_size, 2))
         image_path = []
         score = np.ones(batch_size)
+        bbox_ids = None
+        if 'bbox_id' in img_metas[0]:
+            bbox_ids = []
         for i in range(batch_size):
             c[i, :] = img_metas[i]['center']
             s[i, :] = img_metas[i]['scale']
@@ -231,6 +232,8 @@ class TopDown(BasePose):
 
             if 'bbox_score' in img_metas[i]:
                 score[i] = np.array(img_metas[i]['bbox_score']).reshape(-1)
+            if bbox_ids is not None:
+                bbox_ids.append(img_metas[i]['bbox_id'])
 
         preds, maxvals = keypoints_from_heatmaps(
             output_heatmap,
@@ -252,8 +255,10 @@ class TopDown(BasePose):
         all_boxes[:, 5] = score
         if not return_heatmap:
             output_heatmap = None
-
-        return all_preds, all_boxes, image_path, output_heatmap
+        if bbox_ids is not None:
+            return all_preds, all_boxes, image_path, output_heatmap, bbox_ids
+        else:
+            return all_preds, all_boxes, image_path, output_heatmap
 
     def show_result(self,
                     img,

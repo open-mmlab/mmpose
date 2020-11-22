@@ -85,6 +85,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         gt_db = []
         for a in anno:
             image_name = a['image']
+            bbox_id = a['id']
 
             center = np.array(a['center'], dtype=np.float)
             scale = np.array([a['scale'], a['scale']], dtype=np.float)
@@ -115,6 +116,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             gt_db.append({
                 'image_file':
                 os.path.join(self.img_prefix, image_name),
+                'bbox_id':
+                bbox_id,
                 'center':
                 center,
                 'scale':
@@ -130,6 +133,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 'bbox_score':
                 1
             })
+        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db
 
@@ -169,11 +173,15 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        num_joints = outputs[0][0].shape[1]
-        preds = np.empty((0, num_joints, 3), dtype=np.float32)
+        kpts = []
+        for preds, _, _, _, bbox_ids in outputs:
+            batch_size = len(bbox_ids)
+            for i in range(batch_size):
+                kpts.append({'keypoints': preds[i], 'bbox_id': bbox_ids[i]})
+        kpts = sorted(kpts, key=lambda x: x['bbox_id'])
+        kpts = self._drop_repeated(kpts)
 
-        for kpts, _, _, _ in outputs:
-            preds = np.concatenate([preds, kpts], axis=0)
+        preds = np.stack([kpt['keypoints'] for kpt in kpts])
 
         # convert 0-based index to 1-based index,
         # and get the first two dimensions.
@@ -195,8 +203,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         headboxes_src = gt_dict['headboxes_src']
 
         pos_pred_src = np.transpose(preds, [1, 2, 0])
-        data_len = pos_gt_src.shape[2]
-        pos_pred_src = pos_pred_src[..., :data_len]
+        assert pos_pred_src.shape[2] == pos_gt_src.shape[2], \
+            f'len(preds)={pos_pred_src.shape[2]}, ' \
+            f'len(gt)={pos_gt_src.shape[2]}'
 
         head = np.where(dataset_joints == 'head')[1][0]
         lsho = np.where(dataset_joints == 'lsho')[1][0]
@@ -254,3 +263,11 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         name_value = OrderedDict(name_value)
 
         return name_value
+
+    def _drop_repeated(self, kpts):
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i]['bbox_id'] == kpts[i - 1]['bbox_id']:
+                del kpts[i]
+
+        return kpts

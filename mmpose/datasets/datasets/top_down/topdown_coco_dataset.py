@@ -189,6 +189,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 valid_objs.append(obj)
         objs = valid_objs
 
+        num = 0
         rec = []
         for obj in objs:
             if 'keypoints' not in obj:
@@ -215,8 +216,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
-                'bbox_score': 1
+                'bbox_score': 1,
+                'bbox_id': num
             })
+            num = num + 1
 
         return rec
 
@@ -277,8 +280,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             if score < self.image_thr:
                 continue
 
-            num_boxes = num_boxes + 1
-
             center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
@@ -290,8 +291,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'bbox_score': score,
                 'dataset': self.dataset_name,
                 'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible
+                'joints_3d_visible': joints_3d_visible,
+                'bbox_id': num_boxes
             })
+            num_boxes = num_boxes + 1
         print(f'=> Total boxes after filter '
               f'low score@{self.image_thr}: {num_boxes}')
         return kpt_db
@@ -315,6 +318,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 :image_path (list[str]): For example, ['data/coco/val2017
                     /000000393226.jpg']
                 :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                :bbox_id (list(int))
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
@@ -331,7 +335,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         kpts = defaultdict(list)
 
-        for preds, boxes, image_path, _ in outputs:
+        for preds, boxes, image_path, _, bbox_ids in outputs:
             batch_size = len(image_path)
             for i in range(batch_size):
                 image_id = self.name2id[image_path[i][len(self.img_prefix):]]
@@ -342,7 +346,9 @@ class TopDownCocoDataset(TopDownBaseDataset):
                     'area': boxes[i][4],
                     'score': boxes[i][5],
                     'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
                 })
+        kpts = self._drop_repeated(kpts)
 
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
@@ -442,3 +448,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
         info_str = list(zip(stats_names, coco_eval.stats))
 
         return info_str
+
+    def _drop_repeated(self, kpts):
+        for img_id, bboxes in kpts.items():
+            num = len(bboxes)
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x['bbox_id'])
+            for i in range(num - 1, 0, -1):
+                if kpts[img_id][i]['bbox_id'] == kpts[img_id][i -
+                                                              1]['bbox_id']:
+                    del kpts[img_id][i]
+
+        return kpts
