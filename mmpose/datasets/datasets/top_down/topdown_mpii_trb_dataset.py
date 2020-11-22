@@ -170,7 +170,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
-        """Evaluate MPII-TRB keypoint results."""
+
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
