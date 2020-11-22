@@ -167,7 +167,7 @@ def _flip_joints_3d(joints_3d, joints_3d_visible, flip_pairs):
 
 
 @PIPELINES.register_module()
-class LoadIUVFromFile(object):
+class LoadIUVFromFile():
     """Loading IUV image from file."""
 
     def __init__(self, to_float32=False):
