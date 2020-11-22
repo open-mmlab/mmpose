@@ -32,10 +32,6 @@ class BasePose(nn.Module):
         """Defines the computation performed at testing."""
 
     @abstractmethod
-    def simple_test(self, img, img_metas, **kwargs):
-        """Simple test function."""
-
-    @abstractmethod
     def forward(self, img, img_metas, return_loss=True, **kwargs):
         """Forward function."""
 
