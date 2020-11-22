@@ -26,8 +26,8 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-target_type='CombinedTarget'
-# target_type='GaussianHeatMap'
+target_type = 'CombinedTarget'
+# target_type = 'GaussianHeatMap'
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
@@ -116,14 +116,16 @@ train_pipeline = [
         num_joints_half_body=8,
         prob_half_body=0.3),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=45, scale_factor=0.35),
+        type='TopDownGetRandomScaleRotation', rot_factor=45,
+        scale_factor=0.35),
     dict(type='TopDownAffine', use_udp=True),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', encoding='UDP', target_type=target_type),
+    dict(type='TopDownGenerateTarget', encoding='UDP',
+         target_type=target_type),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
