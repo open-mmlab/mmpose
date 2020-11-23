@@ -36,6 +36,7 @@ class BasePose(nn.Module):
         x = self.backbone(imgs)
         return x
 
+    @auto_fp16()
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):
         """Defines the computation performed at training."""
