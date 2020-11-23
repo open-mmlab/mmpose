@@ -26,22 +26,27 @@ def load_json_to_output(json_name, prefix=''):
     return outputs
 
 
-def convert_db_to_output(db):
+def convert_db_to_output(db, batch_size=2):
     outputs = []
-    bbox_id = 0
-    for item in db:
-        keypoints = item['joints_3d'].reshape((1, -1, 3))
-        center = item['center']
-        scale = item['scale']
-        bbox_ids = [bbox_id]
-        bbox_id = bbox_id + 1
-        box = np.array([
-            center[0], center[1], scale[0], scale[1],
-            scale[0] * scale[1] * 200 * 200, 1.0
-        ],
-                       dtype=np.float32).reshape(1, -1)
-        img_path = []
-        img_path.append(item['image_file'])
+    len_db = len(db)
+    for i in range(0, len_db, batch_size):
+        keypoints = np.stack([
+            db[j]['joints_3d'].reshape((-1, 3))
+            for j in range(i, min(i + batch_size, len_db))
+        ])
+        img_path = [
+            db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
+        ]
+        bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
+        box = np.stack(
+            np.array([
+                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
+                db[j]['scale'][1], db[j]['scale'][0] * db[j]['scale'][1] *
+                200 * 200, 1.0
+            ],
+                     dtype=np.float32)
+            for j in range(i, min(i + batch_size, len_db)))
+
         output = (keypoints, box, img_path, None, bbox_ids)
         outputs.append(output)
 
