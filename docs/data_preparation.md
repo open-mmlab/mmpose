@@ -309,7 +309,7 @@ mmpose
 
 ## sub-JHMDB dataset
 
-For sub-JHMDB data, please download the images from [JHMDB](http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz),
+For sub-JHMDB data, please download the [images]((http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
 Move them under $MMPOSE/data, and make them look like this:
 
