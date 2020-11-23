@@ -1,3 +1,5 @@
+import warnings
+
 import cv2
 import numpy as np
 
@@ -295,9 +297,8 @@ def _gaussian_blur(heatmaps, kernel=11):
 def keypoints_from_heatmaps(heatmaps,
                             center,
                             scale,
-                            post_process=True,
                             unbiased=False,
-                            megvii=False,
+                            post_process='default',
                             kernel=11):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
@@ -313,14 +314,15 @@ def keypoints_from_heatmaps(heatmaps,
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        post_process (bool): Option to use post processing or not.
+        post_process (str/None): Choice of methods to post-process
+            heatmaps. Currently supported: 'default', 'unbiased',
+            'megvii'.
         unbiased (bool): Option to use unbiased decoding. Mutually
             exclusive with megvii.
+            Note: this arg is deprecated and unbiased=True can be replaced
+            by post_process='unbiased'
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
-        megvii (bool):  Option to use megvii's way of post processing.
-            Currently used in RSN and MSPN. Default: False. Mutually
-            exclusive with unbiased.
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
@@ -331,13 +333,39 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-
-    assert not (megvii and unbiased)
+    # resolve conflicts and raise deprecation warnings
+    assert not (post_process is False and unbiased is True)
+    assert not (post_process is None and unbiased is True)
+    assert not (post_process == 'megvii' and unbiased is True)
+    if post_process is False:
+        warnings.warn(
+            'post_process=False is deprecated, '
+            'please use post_process=None instead', DeprecationWarning)
+        post_process = None
+    if post_process is True:
+        if unbiased is True:
+            warnings.warn(
+                'post_process=True, unbiased=True is deprecated,'
+                " please use post_process='unbiased' instead",
+                DeprecationWarning)
+            post_process = 'unbiased'
+        else:
+            warnings.warn(
+                'post_process=True, unbiased=False is deprecated, '
+                "please use post_process='default' instead",
+                DeprecationWarning)
+            post_process = 'default'
+    if post_process == 'default':
+        if unbiased is True:
+            warnings.warn(
+                'unbiased=True is deprecated, please use '
+                "post_process='unbiased' instead", DeprecationWarning)
+            post_process = 'unbiased'
 
     N, K, H, W = heatmaps.shape
 
-    if post_process:
-        if unbiased:  # alleviate biased coordinate
+    if post_process is not None:
+        if post_process == 'unbiased':  # alleviate biased coordinate
             preds, maxvals = _get_max_preds(heatmaps)
             assert kernel > 0
             # apply Gaussian distribution modulation.
@@ -348,7 +376,7 @@ def keypoints_from_heatmaps(heatmaps,
                 for k in range(K):
                     preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
         else:
-            if megvii:
+            if post_process == 'megvii':
                 assert kernel > 0
                 heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
             preds, maxvals = _get_max_preds(heatmaps)
@@ -364,7 +392,7 @@ def keypoints_from_heatmaps(heatmaps,
                             heatmap[py + 1][px] - heatmap[py - 1][px]
                         ])
                         preds[n][k] += np.sign(diff) * .25
-                        if megvii:
+                        if post_process == 'megvii':
                             preds[n][k] += 0.5
 
     else:
@@ -373,7 +401,8 @@ def keypoints_from_heatmaps(heatmaps,
     # Transform back to the image
     for i in range(N):
         preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
-    if post_process and megvii:
+
+    if post_process == 'megvii':
         maxvals = maxvals / 255 + 0.5
 
     return preds, maxvals
