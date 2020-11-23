@@ -36,7 +36,6 @@ class BasePose(nn.Module):
         x = self.backbone(imgs)
         return x
 
-    @auto_fp16()
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):
         """Defines the computation performed at training."""
@@ -45,6 +44,7 @@ class BasePose(nn.Module):
     def forward_test(self, img, img_metas, **kwargs):
         """Defines the computation performed at testing."""
 
+    @auto_fp16(apply_to=('img', ))
     @abstractmethod
     def forward(self, img, img_metas, return_loss=True, **kwargs):
         """Forward function."""

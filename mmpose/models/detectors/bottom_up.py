@@ -134,9 +134,9 @@ class BottomUp(BasePose):
             img(torch.Tensor[NxCximgHximgW]): Input image.
             targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
             masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
+                                              heatmaps.
             joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
+                                                 heatmaps for ae loss.
             img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
