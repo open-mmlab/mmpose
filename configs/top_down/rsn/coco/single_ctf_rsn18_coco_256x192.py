@@ -61,7 +61,6 @@ model = dict(
         post_process=True,
         shift_heatmap=False,
         unbiased_decoding=False,
-        megvii_decoding=True,
         modulate_kernel=5),
     loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)] * 3 +
     [dict(type='JointsOHKMMSELoss', use_target_weight=True)])

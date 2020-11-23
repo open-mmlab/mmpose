@@ -225,19 +225,12 @@ class TopDown(BasePose):
         if 'bbox_score' in img_metas:
             score = np.array(img_metas['bbox_score']).reshape(-1)
 
-        if 'megvii_decoding' in self.test_cfg and self.test_cfg[
-                'megvii_decoding']:
-            megvii_decoding = True
-        else:
-            megvii_decoding = False
-
         preds, maxvals = keypoints_from_heatmaps(
             output_heatmap,
             c,
             s,
             post_process=self.test_cfg['post_process'],
             unbiased=self.test_cfg['unbiased_decoding'],
-            megvii=megvii_decoding,
             kernel=self.test_cfg['modulate_kernel'])
 
         all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)
