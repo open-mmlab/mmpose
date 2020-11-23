@@ -201,6 +201,8 @@ def _inference_single_pose_model(model,
     data = {
         'img_or_path':
         img_or_path,
+        'bbox_id':
+        0,
         'center':
         center,
         'scale':
@@ -232,7 +234,7 @@ def _inference_single_pose_model(model,
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _, heatmap = model(
+        all_preds, _, _, heatmap, _ = model(
             img=data['img'],
             img_metas=data['img_metas'],
             return_loss=False,
