@@ -4,8 +4,8 @@ import time
 import torch
 from mmcv import Config
 from mmcv.parallel import MMDataParallel
+from mmcv.runner.fp16_utils import wrap_fp16_model
 
-from mmpose.core import wrap_fp16_model
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
 

@@ -151,7 +151,7 @@ class BottomUp(BasePose):
             dict: The total loss for bottom-up
         """
 
-        output = self.backbone(img)
+        output = self.extract_feat(img)
 
         if self.with_keypoint:
             output = self.keypoint_head(output)
@@ -210,12 +210,13 @@ class BottomUp(BasePose):
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
-            outputs = self.backbone(image_resized)
+            outputs = self.extract_feat(image_resized)
             outputs = self.keypoint_head(outputs)
 
             if self.test_cfg['flip_test']:
                 # use flip test
-                outputs_flip = self.backbone(torch.flip(image_resized, [3]))
+                outputs_flip = self.extract_feat(
+                    torch.flip(image_resized, [3]))
                 outputs_flip = self.keypoint_head(outputs_flip)
             else:
                 outputs_flip = None

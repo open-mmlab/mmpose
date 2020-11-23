@@ -112,7 +112,7 @@ class TopDown(BasePose):
 
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
-        output = self.backbone(img)
+        output = self.extract_feat(img)
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
@@ -185,7 +185,7 @@ class TopDown(BasePose):
         img_metas = img_metas[0]
 
         # compute backbone features
-        output = self.backbone(img)
+        output = self.extract_feat(img)
 
         # process head
         all_preds, all_boxes, image_path, heatmap = self.process_head(
@@ -207,7 +207,7 @@ class TopDown(BasePose):
         if self.test_cfg['flip_test']:
             img_flipped = img.flip(3)
 
-            output_flipped = self.backbone(img_flipped)
+            output_flipped = self.extract_feat(img_flipped)
             if self.with_keypoint:
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):

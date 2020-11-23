@@ -4,6 +4,7 @@ from collections import OrderedDict
 import torch
 import torch.distributed as dist
 import torch.nn as nn
+from mmcv.runner import auto_fp16
 
 
 class BasePose(nn.Module):
@@ -22,6 +23,18 @@ class BasePose(nn.Module):
     """
 
     __metaclass__ = ABCMeta
+
+    @auto_fp16()
+    def extract_feat(self, imgs):
+        """Extract features through a backbone.
+
+        Args:
+            imgs (torch.Tensor): The input images.
+        Returns:
+            torch.tensor: The extracted features.
+        """
+        x = self.backbone(imgs)
+        return x
 
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):

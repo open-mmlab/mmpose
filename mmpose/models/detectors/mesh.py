@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from mmcv.runner import auto_fp16
 from smplx import SMPL
 
 from .. import builder
@@ -82,6 +83,18 @@ class ParametricMesh(BasePose):
 
         self.fp16_enabled = False
 
+    @auto_fp16()
+    def generate(self, imgs):
+        """Extract features through a backbone.
+
+        Args:
+            imgs (torch.Tensor): The input images.
+        Returns:
+            torch.tensor: The extracted features.
+        """
+        x = self.generator(imgs)
+        return x
+
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
@@ -114,7 +127,7 @@ class ParametricMesh(BasePose):
         """
 
         img = data_batch['img']
-        pred_smpl = self.generator(img)
+        pred_smpl = self.generate(img)
         pred_pose, pred_beta, pred_camera = pred_smpl
 
         # optimize discriminator (if have)
@@ -227,7 +240,7 @@ class ParametricMesh(BasePose):
         assert img.size(0) == 1
         assert len(img_metas) == 1
 
-        pred_smpl = self.generator(img)
+        pred_smpl = self.generate(img)
         pred_pose, pred_beta, pred_camera = pred_smpl
         pred_out = self.smpl(
             betas=pred_beta,
