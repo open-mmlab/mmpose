@@ -178,10 +178,7 @@ class TopDown(BasePose):
 
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
-        # assert img.size(0) == 1
-        # assert len(img_metas) == 1
         assert img.size(0) == len(img_metas)
-        # img_metas = img_metas[0]
 
         # compute backbone features
         output = self.backbone(img)

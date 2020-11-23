@@ -193,7 +193,6 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                     'image_id': image_id,
                     'bbox_id': bbox_ids[i]
                 })
-        kpts = sorted(kpts, key=lambda x: x['bbox_id'])
         kpts = self._drop_repeated(kpts)
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)
@@ -237,10 +236,11 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         info_str.append(('PCKh', mean.item()))
         return info_str
 
-    def _drop_repeated(self, kpts):
+    def _drop_repeated(self, kpts, key='bbox_id'):
+        kpts = sorted(kpts, key=lambda x: x[key])
         num = len(kpts)
         for i in range(num - 1, 0, -1):
-            if kpts[i]['bbox_id'] == kpts[i - 1]['bbox_id']:
+            if kpts[i][key] == kpts[i - 1][key]:
                 del kpts[i]
 
         return kpts

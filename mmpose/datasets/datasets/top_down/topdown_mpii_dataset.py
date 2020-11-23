@@ -179,7 +179,6 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             batch_size = len(bbox_ids)
             for i in range(batch_size):
                 kpts.append({'keypoints': preds[i], 'bbox_id': bbox_ids[i]})
-        kpts = sorted(kpts, key=lambda x: x['bbox_id'])
         kpts = self._drop_repeated(kpts)
 
         preds = np.stack([kpt['keypoints'] for kpt in kpts])
@@ -265,10 +264,11 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
         return name_value
 
-    def _drop_repeated(self, kpts):
+    def _drop_repeated(self, kpts, key='bbox_id'):
+        kpts = sorted(kpts, key=lambda x: x[key])
         num = len(kpts)
         for i in range(num - 1, 0, -1):
-            if kpts[i]['bbox_id'] == kpts[i - 1]['bbox_id']:
+            if kpts[i][key] == kpts[i - 1][key]:
                 del kpts[i]
 
         return kpts

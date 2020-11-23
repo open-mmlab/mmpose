@@ -449,13 +449,12 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         return info_str
 
-    def _drop_repeated(self, kpts):
+    def _drop_repeated(self, kpts, key='bbox_id'):
         for img_id, bboxes in kpts.items():
             num = len(bboxes)
-            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x['bbox_id'])
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
             for i in range(num - 1, 0, -1):
-                if kpts[img_id][i]['bbox_id'] == kpts[img_id][i -
-                                                              1]['bbox_id']:
+                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
                     del kpts[img_id][i]
 
         return kpts
