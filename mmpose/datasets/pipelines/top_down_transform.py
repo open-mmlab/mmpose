@@ -7,7 +7,7 @@ from mmpose.datasets.registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class TopDownRandomFlip():
+class TopDownRandomFlip:
     """Data augmentation with random image flip.
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
@@ -46,7 +46,7 @@ class TopDownRandomFlip():
 
 
 @PIPELINES.register_module()
-class TopDownHalfBodyTransform():
+class TopDownHalfBodyTransform:
     """Data augmentation with half-body transform. Keep only the upper body or
     the lower body at random.
 
@@ -126,7 +126,7 @@ class TopDownHalfBodyTransform():
 
 
 @PIPELINES.register_module()
-class TopDownGetRandomScaleRotation():
+class TopDownGetRandomScaleRotation:
     """Data augmentation with random scaling & rotating.
 
     Required key: 'scale'. Modifies key: 'scale' and 'rotation'.
@@ -162,7 +162,7 @@ class TopDownGetRandomScaleRotation():
 
 
 @PIPELINES.register_module()
-class TopDownAffine():
+class TopDownAffine:
     """Affine transform the image to make input.
 
     Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
@@ -198,7 +198,7 @@ class TopDownAffine():
 
 
 @PIPELINES.register_module()
-class TopDownGenerateTarget():
+class TopDownGenerateTarget:
     """Generate the target heatmap.
 
     Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
