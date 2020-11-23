@@ -200,7 +200,7 @@ class TopDown(BasePose):
             img (torch.Tensor): Input image.
 
         Returns:
-            Tensor: Class score.
+            Tensor: Output heatmaps.
         """
         output = self.backbone(img)
         if self.with_keypoint:

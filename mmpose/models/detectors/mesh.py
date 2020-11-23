@@ -220,6 +220,20 @@ class ParametricMesh(BasePose):
         output = self.forward_test(**data_batch, **kwargs)
         return output
 
+    def forward_dummy(self, img):
+        """Used for computing network FLOPs.
+
+        See ``tools/get_flops.py``.
+
+        Args:
+            img (torch.Tensor): Input image.
+
+        Returns:
+            Tensor: Outputs.
+        """
+        output = self.generator(img)
+        return output
+
     def forward_test(self, img, img_metas, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == 1
