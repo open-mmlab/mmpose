@@ -28,19 +28,21 @@ def load_json_to_output(json_name, prefix=''):
 
 def convert_db_to_output(db):
     outputs = []
-
+    bbox_id = 0
     for item in db:
         keypoints = item['joints_3d'].reshape((1, -1, 3))
         center = item['center']
         scale = item['scale']
+        bbox_ids = [bbox_id]
+        bbox_id = bbox_id + 1
         box = np.array([
             center[0], center[1], scale[0], scale[1],
             scale[0] * scale[1] * 200 * 200, 1.0
         ],
                        dtype=np.float32).reshape(1, -1)
         img_path = []
-        img_path[:0] = item['image_file']
-        output = (keypoints, box, img_path, None)
+        img_path.append(item['image_file'])
+        output = (keypoints, box, img_path, None, bbox_ids)
         outputs.append(output)
 
     return outputs
