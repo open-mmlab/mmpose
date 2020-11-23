@@ -90,6 +90,7 @@ class MeshLoss(nn.Module):
         self.smpl_beta_loss_weight = smpl_beta_loss_weight
         self.focal_length = focal_length
         self.img_res = img_res
+        self.fp16_enabled = False
 
     def joints_2d_loss(self, pred_joints_2d, gt_joints_2d, joints_2d_visible):
         """Compute 2D reprojection loss on the joints.
@@ -283,6 +284,8 @@ class GANLoss(nn.Module):
         else:
             raise NotImplementedError(
                 f'GAN type {self.gan_type} is not implemented.')
+
+        self.fp16_enabled = False
 
     @staticmethod
     def _wgan_loss(input, target):

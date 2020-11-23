@@ -18,6 +18,7 @@ class JointsMSELoss(nn.Module):
         super().__init__()
         self.criterion = nn.MSELoss()
         self.use_target_weight = use_target_weight
+        self.fp16_enabled = False
 
     @force_fp32(apply_to=('output', 'target', 'target_weight'))
     def forward(self, output, target, target_weight):
@@ -60,6 +61,7 @@ class JointsOHKMMSELoss(nn.Module):
         self.criterion = nn.MSELoss(reduction='none')
         self.use_target_weight = use_target_weight
         self.topk = topk
+        self.fp16_enabled = False
 
     def _ohkm(self, loss):
         """Online hard keypoint mining."""

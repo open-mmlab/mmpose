@@ -30,7 +30,6 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
 class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch."""
 
-    @force_fp32(apply_to=('pred', 'gt', 'mask'))
     @staticmethod
     def forward(pred, gt, mask):
         """
@@ -206,6 +205,8 @@ class MultiLossFactory(nn.Module):
                     for with_ae_loss in self.with_ae_loss
                 ]
             )
+
+        self.fp16_enabled = False
 
     @force_fp32(apply_to=('outputs', 'heatmaps', 'masks', 'joints'))
     def forward(self, outputs, heatmaps, masks, joints):
