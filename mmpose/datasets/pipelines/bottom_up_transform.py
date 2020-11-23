@@ -76,7 +76,7 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
     return image_resized, center, scale
 
 
-class HeatmapGenerator():
+class HeatmapGenerator:
     """Generate heatmaps for bottom-up models.
 
     Args:
@@ -126,7 +126,7 @@ class HeatmapGenerator():
         return hms
 
 
-class JointsEncoder():
+class JointsEncoder:
     """Encodes the visible joints into (coordinates, score); The coordinate of
     one joint and its score are of `int` type.
 
