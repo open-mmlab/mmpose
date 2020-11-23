@@ -5,6 +5,7 @@
 
 import torch
 import torch.nn as nn
+from mmcv.runner import force_fp32
 
 from ..registry import LOSSES
 
@@ -29,6 +30,7 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
 class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch."""
 
+    @force_fp32(apply_to=('pred', 'gt', 'mask'))
     @staticmethod
     def forward(pred, gt, mask):
         """
@@ -119,6 +121,7 @@ class AELoss(nn.Module):
 
         return push_loss, pull_loss
 
+    @force_fp32(apply_to=('tags', 'joints'))
     def forward(self, tags, joints):
         """Accumulate the tag loss for each image in the batch.
 
@@ -204,6 +207,7 @@ class MultiLossFactory(nn.Module):
                 ]
             )
 
+    @force_fp32(apply_to=('outputs', 'heatmaps', 'masks', 'joints'))
     def forward(self, outputs, heatmaps, masks, joints):
         """Forward function to calculate losses.
 

@@ -5,6 +5,7 @@ import mmcv
 import numpy as np
 import torch
 from mmcv.image import imwrite
+from mmcv.runner import auto_fp16
 from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_results, get_group_preds,
@@ -117,6 +118,7 @@ class BottomUp(BasePose):
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
+    @auto_fp16(apply_to=('img', ))
     def forward_train(self, img, targets, masks, joints, img_metas, **kwargs):
         """Forward the bottom-up model and calculate the loss.
 

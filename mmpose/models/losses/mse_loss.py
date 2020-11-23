@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from mmcv.runner import force_fp32
 
 from ..registry import LOSSES
 
@@ -18,6 +19,7 @@ class JointsMSELoss(nn.Module):
         self.criterion = nn.MSELoss()
         self.use_target_weight = use_target_weight
 
+    @force_fp32(apply_to=('output', 'target', 'target_weight'))
     def forward(self, output, target, target_weight):
         """Forward function."""
         batch_size = output.size(0)
@@ -72,6 +74,7 @@ class JointsOHKMMSELoss(nn.Module):
         ohkm_loss /= N
         return ohkm_loss
 
+    @force_fp32(apply_to=('output', 'target', 'target_weight'))
     def forward(self, output, target, target_weight):
         """Forward function."""
         batch_size = output.size(0)

@@ -111,7 +111,7 @@ class TopDown(BasePose):
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
-    @auto_fp16(apply_to=('img', 'target', 'target_weight'))
+    @auto_fp16(apply_to=('img', ))
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
         output = self.extract_feat(img)

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from mmcv.runner import force_fp32
 
 from ..mesh_heads.geometric_layers import batch_rodrigues
 from ..registry import LOSSES
@@ -180,6 +181,7 @@ class MeshLoss(nn.Module):
             camera_center=camera_center)
         return joints_2d
 
+    @force_fp32(apply_to=('output', 'target'))
     def forward(self, output, target):
         """Forward function.
 
@@ -313,6 +315,7 @@ class GANLoss(nn.Module):
             self.real_label_val if target_is_real else self.fake_label_val)
         return input.new_ones(input.size()) * target_val
 
+    @force_fp32(apply_to=('input', ))
     def forward(self, input, target_is_real, is_disc=False):
         """
         Args:
