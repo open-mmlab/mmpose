@@ -180,6 +180,7 @@ def test_topdown_forward():
     # Test forward test
     with torch.no_grad():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
 
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
