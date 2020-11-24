@@ -158,7 +158,7 @@ class HeatmapParser:
         """
 
         maxm = self.pool(heatmaps)
-        maxm = torch.eq(maxm, heatmaps).float()
+        maxm = torch.eq(maxm, heatmaps).to(heatmaps.dtype)
         heatmaps = heatmaps * maxm
 
         return heatmaps
