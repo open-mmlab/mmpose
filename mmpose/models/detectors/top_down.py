@@ -191,6 +191,22 @@ class TopDown(BasePose):
 
         return all_preds, all_boxes, image_path, heatmap
 
+    def forward_dummy(self, img):
+        """Used for computing network FLOPs.
+
+        See ``tools/get_flops.py``.
+
+        Args:
+            img (torch.Tensor): Input image.
+
+        Returns:
+            Tensor: Output heatmaps.
+        """
+        output = self.backbone(img)
+        if self.with_keypoint:
+            output = self.keypoint_head(output)
+        return output
+
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas['flip_pairs']
