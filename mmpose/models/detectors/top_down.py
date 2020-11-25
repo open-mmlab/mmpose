@@ -154,7 +154,7 @@ class TopDown(BasePose):
             # target_weight: [batch_size, num_joints, 1]
             losses['mse_loss'] = self.loss(output, target, target_weight)
 
-        if not self.target_type == 'CombinedTarget':
+        if self.target_type == 'GaussianHeatMap':
             if isinstance(output, list):
                 if target.dim() == 5 and target_weight.dim() == 4:
                     _, avg_acc, _ = pose_pck_accuracy(
@@ -174,9 +174,7 @@ class TopDown(BasePose):
                     output.detach().cpu().numpy(),
                     target.detach().cpu().numpy(),
                     target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-        else:
-            avg_acc = 0.0
-        losses['acc_pose'] = float(avg_acc)
+            losses['acc_pose'] = float(avg_acc)
 
         return losses
 
