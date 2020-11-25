@@ -220,12 +220,22 @@ class TopDownGenerateTarget():
         sigma: Sigma of heatmap gaussian for 'MSRA' approach.
         kernel: Kernel of heatmap gaussian for 'Megvii' approach.
         encoding (str): Approach to generate target heatmaps.
-            Currently supported approaches: 'MSRA', 'Megvii'. Default:'MSRA'
+            Currently supported approaches: 'MSRA', 'Megvii', 'UDP'.
+            Default:'MSRA'
 
         unbiased_encoding (bool): Option to use unbiased
             encoding methods.
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
+        kpd: hyper-parameter for UDP to design the supervision.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+        target_type (str): supported targets: 'GaussianHeatMap',
+            'CombinedTarget'. Default:'GaussianHeatMap'
+            CombinedTarget: The combination of classification target
+            (response map) and regression target (offset map).
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self,

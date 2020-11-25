@@ -253,10 +253,13 @@ def _taylor(heatmap, coord):
 def post_dark(coords, batch_heatmaps):
     """DARK post-pocessing.
 
+    Note:
+        batch_size: N
+        num_keypoints: K
+
     Args:
-        coords (np.ndarray): Coords in shape of batchsize*num_kps*2.
-        batch_heatmaps (np.ndarray): batch_heatmaps in shape of
-                batchsize*num_kps*high*width.
+        coords (np.ndarray[N, K, 2]): Coords in shape of batchsize*num_kps*2.
+        batch_heatmaps (np.ndarray[N, K, H, W]): batch_heatmaps
 
     Returns:
         res (np.ndarray): Refined coords in shape of batchsize*num_kps*2.
@@ -310,10 +313,10 @@ def post_dark(coords, batch_heatmaps):
                                                coords[i, j, 0]]
     dx = 0.5 * (ix1 - ix1_)
     dy = 0.5 * (iy1 - iy1_)
-    D = np.zeros((coord_shape[0], coord_shape[1], 2))
-    D[:, :, 0] = dx
-    D[:, :, 1] = dy
-    D.reshape((coord_shape[0], coord_shape[1], 2, 1))
+    derivative = np.zeros((coord_shape[0], coord_shape[1], 2))
+    derivative[:, :, 0] = dx
+    derivative[:, :, 1] = dy
+    derivative.reshape((coord_shape[0], coord_shape[1], 2, 1))
     dxx = ix1 - 2 * i_ + ix1_
     dyy = iy1 - 2 * i_ + iy1_
     dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
@@ -327,16 +330,13 @@ def post_dark(coords, batch_heatmaps):
         for j in range(coord_shape[1]):
             hessian_tmp = hessian[i, j, :, :] + 1e-8 * np.eye(2)
             inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
-    res = np.zeros(coords.shape)
     coords = coords.astype(np.float)
     for i in range(coord_shape[0]):
         for j in range(coord_shape[1]):
-            D_tmp = D[i, j, :]
-            D_tmp = D_tmp[:, np.newaxis]
-            shift = np.matmul(inv_hessian[i, j, :, :], D_tmp)
-            res_tmp = coords[i, j, :] - shift.reshape((-1))
-            res[i, j, :] = res_tmp
-    return res
+            derivative_tmp = derivative[i, j, :][:, np.newaxis]
+            shift = np.matmul(inv_hessian[i, j, :, :], derivative_tmp)
+            coords[i, j, :] = coords[i, j, :] - shift.reshape((-1))
+    return coords
 
 
 def _gaussian_blur(heatmaps, kernel=11):
@@ -413,7 +413,12 @@ def keypoints_from_heatmaps(heatmaps,
             K=17 for sigma=3 and k=11 for sigma=2.
         kpd (float): Keypoint pose distance for UDP.
         use_udp (bool): Use unbiased data processing.
-        target_type (str): GaussianHeatMap or CombinedTarget.
+        target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
+            CombinedTarget: The combination of classification target
+            (response map) and regression target (offset map).
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+
 
     Returns:
         tuple: A tuple containing keypoint predictions and scores.
