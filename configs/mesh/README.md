@@ -1,4 +1,8 @@
-# Human Mesh Estimation
+# Human Mesh Recovery
+
+This task aims at recovering the full 3D mesh representation (parameterized by shape and 3D joint angles) of a
+human body from a single RGB image.
+
 
 ## Data preparation
 ### Human3.6M
