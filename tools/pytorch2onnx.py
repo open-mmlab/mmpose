@@ -81,7 +81,7 @@ def pytorch2onnx(model,
 
         # check the numerical value
         # get pytorch output
-        pytorch_result = model(one_img)[0].detach().numpy()
+        pytorch_result = model(one_img).detach().numpy()
 
         # get onnx output
         input_all = [node.name for node in onnx_model.graph.input]
@@ -95,8 +95,8 @@ def pytorch2onnx(model,
             None, {net_feed_input[0]: one_img.detach().numpy()})[0]
         # only compare part of results
         assert np.allclose(
-            pytorch_result[:, 4], onnx_result[:, 4]
-        ), 'The outputs are different between Pytorch and ONNX'
+            pytorch_result[:, 4], onnx_result[:, 4],
+            atol=1.e-5), 'The outputs are different between Pytorch and ONNX'
         print('The numerical values are same between Pytorch and ONNX')
 
 
@@ -113,15 +113,11 @@ def parse_args():
         action='store_true',
         help='verify the onnx model output against pytorch output')
     parser.add_argument(
-        '--is-localizer',
-        action='store_true',
-        help='whether it is a localizer')
-    parser.add_argument(
         '--shape',
         type=int,
         nargs='+',
         default=[1, 3, 256, 192],
-        help='input video size')
+        help='input size')
     args = parser.parse_args()
     return args
 
@@ -132,11 +128,6 @@ if __name__ == '__main__':
     assert args.opset_version == 11, 'MMPose only supports opset 11 now'
 
     cfg = mmcv.Config.fromfile(args.config)
-    # import modules from string list.
-
-    if not args.is_localizer:
-        cfg.model.backbone.pretrained = None
-
     # build the model
     model = build_posenet(cfg.model)
     model = _convert_batchnorm(model)
@@ -144,8 +135,6 @@ if __name__ == '__main__':
     # onnx.export does not support kwargs
     if hasattr(model, 'forward_dummy'):
         model.forward = model.forward_dummy
-    elif hasattr(model, '_forward') and args.is_localizer:
-        model.forward = model._forward
     else:
         raise NotImplementedError(
             'Please implement the forward method for exporting.')

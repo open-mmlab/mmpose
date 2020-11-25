@@ -14,6 +14,7 @@ Open Neural Network Exchange [(ONNX)](https://onnx.ai/) is an open ecosystem tha
 So far, our codebase supports onnx exporting from pytorch models trained with MMPose. The supported models are:
 
 + ResNet
++ HRNet
 
 ## Usage
 For simple exporting, you can use the [script](/tools/pytorch2onnx.py) here. Note that the package `onnx` and `onnxruntime` are required for verification after exporting.
@@ -24,7 +25,7 @@ First, install onnx.
 pip install onnx onnxruntime
 ```
 
-We provide a python script to export the pytorch model trained by MMAction2 to ONNX.
+We provide a python script to export the pytorch model trained by MMPose to ONNX.
 ```shell
 python tools/pytorch2onnx.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--shape ${SHAPE}] \
     [--verify] [--show] [--output-file ${OUTPUT_FILE}] [--opset-version ${VERSION}]
