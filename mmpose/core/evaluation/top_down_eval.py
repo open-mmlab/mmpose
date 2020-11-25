@@ -250,7 +250,7 @@ def _taylor(heatmap, coord):
     return coord
 
 
-def post_dark(coords, batch_heatmaps):
+def post_dark(coords, batch_heatmaps, share_heatmap=True):
     """DARK post-pocessing.
 
     Note:
@@ -260,82 +260,69 @@ def post_dark(coords, batch_heatmaps):
     Args:
         coords (np.ndarray[N, K, 2]): Coords in shape of batchsize*num_kps*2.
         batch_heatmaps (np.ndarray[N, K, H, W]): batch_heatmaps
+        share_heatmap (bool) : True for bottom_up paradigm where all persons
+                    share the same heatmap while False for top_down paradigm
+                    where each person has its own heatmaps.
 
     Returns:
         res (np.ndarray): Refined coords in shape of batchsize*num_kps*2.
     """
     if not isinstance(batch_heatmaps, np.ndarray):
         batch_heatmaps = batch_heatmaps.cpu().numpy()
-    shape_pad = list(batch_heatmaps.shape)
-    shape_pad[2] = shape_pad[2] + 2
-    shape_pad[3] = shape_pad[3] + 2
-    coord_shape = list(coords.shape)
-    for i in range(shape_pad[0]):
-        for j in range(shape_pad[1]):
+    batch, num_kps, h, w = batch_heatmaps.shape
+    persons = coords.shape[0]
+    if share_heatmap:
+        assert batch == 1
+    else:
+        assert batch == persons
+    for i in range(batch):
+        for j in range(num_kps):
             mapij = batch_heatmaps[0, j, :, :]
             mapij = cv2.GaussianBlur(mapij, (3, 3), 0)
             batch_heatmaps[0, j, :, :] = mapij
     batch_heatmaps = np.clip(batch_heatmaps, 0.001, 50)
     batch_heatmaps = np.log(batch_heatmaps)
-    batch_heatmaps_pad = np.zeros(shape_pad, dtype=float)
-    batch_heatmaps_pad[:, :, 1:-1, 1:-1] = batch_heatmaps
-    batch_heatmaps_pad[:, :, 1:-1, -1] = batch_heatmaps[:, :, :, -1]
-    batch_heatmaps_pad[:, :, -1, 1:-1] = batch_heatmaps[:, :, -1, :]
-    batch_heatmaps_pad[:, :, 1:-1, 0] = batch_heatmaps[:, :, :, 0]
-    batch_heatmaps_pad[:, :, 0, 1:-1] = batch_heatmaps[:, :, 0, :]
-    batch_heatmaps_pad[:, :, -1, -1] = batch_heatmaps[:, :, -1, -1]
-    batch_heatmaps_pad[:, :, 0, 0] = batch_heatmaps[:, :, 0, 0]
-    batch_heatmaps_pad[:, :, 0, -1] = batch_heatmaps[:, :, 0, -1]
-    batch_heatmaps_pad[:, :, -1, 0] = batch_heatmaps[:, :, -1, 0]
-    i_ = np.zeros((coord_shape[0], coord_shape[1]))
-    ix1 = np.zeros((coord_shape[0], coord_shape[1]))
-    iy1 = np.zeros((coord_shape[0], coord_shape[1]))
-    ix1y1 = np.zeros((coord_shape[0], coord_shape[1]))
-    ix1_y1_ = np.zeros((coord_shape[0], coord_shape[1]))
-    ix1_ = np.zeros((coord_shape[0], coord_shape[1]))
-    iy1_ = np.zeros((coord_shape[0], coord_shape[1]))
-    coords = coords.astype(np.int32)
-    for i in range(coord_shape[0]):
-        for j in range(coord_shape[1]):
-            i_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
-                                          coords[i, j, 0] + 1]
-            ix1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
-                                           coords[i, j, 0] + 2]
-            ix1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 1,
-                                            coords[i, j, 0]]
-            iy1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
-                                           coords[i, j, 0] + 1]
-            iy1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
-                                            coords[i, j, 0] + 1]
-            ix1y1[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1] + 2,
-                                             coords[i, j, 0] + 2]
-            ix1_y1_[i, j] = batch_heatmaps_pad[0, j, coords[i, j, 1],
-                                               coords[i, j, 0]]
+    batch_heatmaps = np.transpose(batch_heatmaps, (2, 3, 0, 1)).reshape(
+        (h, w, batch * num_kps))
+    batch_heatmaps_pad = cv2.copyMakeBorder(
+        batch_heatmaps, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
+    batch_heatmaps_pad = np.transpose(
+        batch_heatmaps_pad.reshape((h + 2, w + 2, batch, num_kps)),
+        (2, 3, 0, 1))
+    index = coords[:, :, 0] + 1 + (coords[:, :, 1] + 1) * (w + 2)
+
+    index = index.reshape((persons, -1))
+    if share_heatmap:
+        offset = np.arange(0, num_kps) * (w + 2) * (h + 2)
+        index = index + offset[None, :]
+    else:
+        offset = np.arange(0, batch * num_kps) * (w + 2) * (h + 2)
+        index = index + offset.reshape((persons, -1))
+    index = index.astype(np.int).reshape((-1, 1))
+    batch_heatmaps_pad = batch_heatmaps_pad.reshape((-1, ))
+    i_ = batch_heatmaps_pad[index]
+    ix1 = batch_heatmaps_pad[index + 1]
+    iy1 = batch_heatmaps_pad[index + w + 2]
+    ix1y1 = batch_heatmaps_pad[index + w + 3]
+    ix1_y1_ = batch_heatmaps_pad[index - w - 3]
+    ix1_ = batch_heatmaps_pad[index - 1]
+    iy1_ = batch_heatmaps_pad[index - 2 - w]
+
     dx = 0.5 * (ix1 - ix1_)
     dy = 0.5 * (iy1 - iy1_)
-    derivative = np.zeros((coord_shape[0], coord_shape[1], 2))
-    derivative[:, :, 0] = dx
-    derivative[:, :, 1] = dy
-    derivative.reshape((coord_shape[0], coord_shape[1], 2, 1))
+    derivative = np.concatenate([dx, dy], axis=1).reshape(
+        (persons, num_kps, 2, 1))
     dxx = ix1 - 2 * i_ + ix1_
     dyy = iy1 - 2 * i_ + iy1_
     dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
-    hessian = np.zeros((coord_shape[0], coord_shape[1], 2, 2))
-    hessian[:, :, 0, 0] = dxx
-    hessian[:, :, 1, 0] = dxy
-    hessian[:, :, 0, 1] = dxy
-    hessian[:, :, 1, 1] = dyy
-    inv_hessian = np.zeros(hessian.shape)
-    for i in range(coord_shape[0]):
-        for j in range(coord_shape[1]):
+    hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1).reshape(
+        (persons, num_kps, 2, 2))
+    for i in range(persons):
+        for j in range(num_kps):
             hessian_tmp = hessian[i, j, :, :] + \
                           np.finfo(np.float32).eps * np.eye(2)
-            inv_hessian[i, j, :, :] = np.linalg.inv(hessian_tmp)
-    coords = coords.astype(np.float)
-    for i in range(coord_shape[0]):
-        for j in range(coord_shape[1]):
-            derivative_tmp = derivative[i, j, :][:, np.newaxis]
-            shift = np.matmul(inv_hessian[i, j, :, :], derivative_tmp)
+            derivative_tmp = derivative[i, j, :, :]
+            shift = np.matmul(np.linalg.inv(hessian_tmp), derivative_tmp)
             coords[i, j, :] = coords[i, j, :] - shift.reshape((-1))
     return coords
 
@@ -433,7 +420,7 @@ def keypoints_from_heatmaps(heatmaps,
         if target_type == 'GaussianHeatMap':
             coords, maxvals = _get_max_preds(heatmaps)
             if post_process:
-                coords = post_dark(coords, heatmaps)
+                coords = post_dark(coords, heatmaps, share_heatmap=False)
         elif target_type == 'CombinedTarget':
             net_output = heatmaps.copy()
             kps_pos_distance_x = kpd / 64 * H
