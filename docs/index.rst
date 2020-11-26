@@ -15,6 +15,7 @@ Welcome to MMPose's documentation!
    :caption: Datasets
 
    data_preparation.md
+   mesh_task.md
 
 .. toctree::
    :maxdepth: 2

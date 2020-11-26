@@ -5,10 +5,12 @@ sed -i '$a\\n' ../configs/top_down/*/*.md
 sed -i '$a\\n' ../demo/*_demo.md
 sed -i '$a\\n' ../configs/hand/*/*.md
 
-cat  ../configs/bottom_up/*/*.md > bottom_up_models.md
-cat  ../configs/top_down/*/*.md > top_down_models.md
-cat  ../demo/*_demo.md > demo.md
-cat  ../configs/hand/*/*.md > hand_models.md
+cp ../configs/mesh/README.md mesh_task.md
+
+cat ../configs/bottom_up/*/*.md >bottom_up_models.md
+cat ../configs/top_down/*/*.md >top_down_models.md
+cat ../demo/*_demo.md >demo.md
+cat ../configs/hand/*/*.md >hand_models.md
 
 sed -i "s/#/#&/" bottom_up_models.md
 sed -i "s/#/#&/" top_down_models.md
