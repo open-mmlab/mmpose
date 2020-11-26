@@ -7,7 +7,7 @@
 - PyTorch 1.3+
 - CUDA 9.2+ (If you build PyTorch from source, CUDA 9.0 is also compatible)
 - GCC 5+
-- [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version)
+- [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version of mmcv-full)
 - Numpy
 - cv2
 - json_tricks
@@ -75,6 +75,8 @@ It is recommended that you run step d each time you pull some updates from githu
 
 3. If you would like to use `opencv-python-headless` instead of `opencv-python`,
 you can install it before installing MMCV.
+
+4. If you have `mmcv` installed, you need to firstly uninstall `mmcv`, and then install `mmcv-full`.
 
 ### A from-scratch setup script
 
