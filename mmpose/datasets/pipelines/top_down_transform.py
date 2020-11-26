@@ -241,7 +241,7 @@ class TopDownGenerateTarget():
     def __init__(self,
                  sigma=2,
                  kernel=(11, 11),
-                 kpd=3.5,
+                 kpd=0.0546875,
                  target_type='GaussianHeatMap',
                  encoding='MSRA',
                  unbiased_encoding=False):
@@ -406,6 +406,8 @@ class TopDownGenerateTarget():
         target_weight = np.ones((num_joints, 1), dtype=np.float32)
         target_weight[:, 0] = joints_3d_visible[:, 0]
 
+        assert target_type in ['GaussianHeatMap', 'CombinedTarget']
+
         if target_type == 'GaussianHeatMap':
             target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
                               dtype=np.float32)
@@ -458,16 +460,15 @@ class TopDownGenerateTarget():
             feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
             feat_x_int = feat_x_int.reshape((-1, ))
             feat_y_int = feat_y_int.reshape((-1, ))
-            kps_pos_distance_x = factor / 64.0 * heatmap_size[1]
-            kps_pos_distance_y = factor / 64.0 * heatmap_size[1]
+            kps_pos_distance = factor * heatmap_size[1]
             feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
             for joint_id in range(num_joints):
                 mu_x = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y = joints_3d[joint_id][1] / feat_stride[1]
-                x_offset = (mu_x - feat_x_int) / kps_pos_distance_x
-                y_offset = (mu_y - feat_y_int) / kps_pos_distance_y
+                x_offset = (mu_x - feat_x_int) / kps_pos_distance
+                y_offset = (mu_y - feat_y_int) / kps_pos_distance
                 dis = x_offset**2 + y_offset**2
-                keep_pos = np.where((dis <= 1) & (dis >= 0))[0]
+                keep_pos = np.where(dis <= 1)[0]
                 v = target_weight[joint_id]
                 if v > 0.5:
                     target[joint_id, 0, keep_pos] = 1
@@ -475,8 +476,6 @@ class TopDownGenerateTarget():
                     target[joint_id, 2, keep_pos] = y_offset[keep_pos]
             target = target.reshape(
                 (num_joints * 3, heatmap_size[1], heatmap_size[0]))
-        else:
-            assert False
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
@@ -537,8 +536,6 @@ class TopDownGenerateTarget():
             elif self.target_type == 'GaussianHeatMap':
                 factors = self.sigma
                 channel_factor = 1
-            else:
-                assert False
             if isinstance(factors, list):
                 num_factors = len(self.kernel)
                 cfg = results['ann_info']

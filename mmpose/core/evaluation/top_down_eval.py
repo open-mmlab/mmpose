@@ -375,7 +375,7 @@ def keypoints_from_heatmaps(heatmaps,
                             post_process=True,
                             unbiased=False,
                             kernel=11,
-                            kpd=3.5,
+                            kpd=0.0546875,
                             use_udp=False,
                             target_type='GaussianHeatMap'):
     """Get final keypoint predictions from heatmaps and transform them back to
@@ -417,17 +417,17 @@ def keypoints_from_heatmaps(heatmaps,
 
     N, K, H, W = heatmaps.shape
     if use_udp:
+        assert target_type in ['GaussianHeatMap', 'CombinedTarget']
         if target_type == 'GaussianHeatMap':
             coords, maxvals = _get_max_preds(heatmaps)
             if post_process:
                 coords = post_dark(coords, heatmaps, share_heatmap=False)
         elif target_type == 'CombinedTarget':
             net_output = heatmaps.copy()
-            kps_pos_distance_x = kpd / 64 * H
-            kps_pos_distance_y = kpd / 64 * H
+            kps_pos_distance = kpd * H
             heatmaps = net_output[:, ::3, :]
-            offset_x = net_output[:, 1::3, :] * kps_pos_distance_x
-            offset_y = net_output[:, 2::3, :] * kps_pos_distance_y
+            offset_x = net_output[:, 1::3, :] * kps_pos_distance
+            offset_y = net_output[:, 2::3, :] * kps_pos_distance
             for i in range(heatmaps.shape[0]):
                 for j in range(heatmaps.shape[1]):
                     heatmaps[i, j, :, :] = cv2.GaussianBlur(
@@ -445,8 +445,6 @@ def keypoints_from_heatmaps(heatmaps,
                     py = int(coords[n][p][1])
                     coords[n][p][0] += offset_x[n, p, py, px]
                     coords[n][p][1] += offset_y[n, p, py, px]
-        else:
-            assert False
         preds = coords.copy()
     else:
         preds, maxvals = _get_max_preds(heatmaps)
