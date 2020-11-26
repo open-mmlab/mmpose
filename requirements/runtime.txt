@@ -6,6 +6,5 @@ numpy
 opencv-python
 pillow
 scipy
-torch
 torchvision
 xtcocotools>=1.6
