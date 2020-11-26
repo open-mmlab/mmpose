@@ -16,10 +16,15 @@ MMPose supported datasets:
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 - [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
+- [Human3.6M](http://vision.imar.ro/human3.6m/description.php)
+- [MPI-INF-3DHP](http://gvv.mpi-inf.mpg.de/3dhp-dataset/)
+- [LSP](https://sam.johnson.io/research/lsp.html)
+- [LSPET](https://sam.johnson.io/research/lspet.html)
 
 ## COCO
 
 For COCO data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
+2014 Train is needed for human mesh estimation training.
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -37,6 +42,11 @@ mmpose
         │   |-- person_keypoints_val2017.json
         |-- person_detection_results
         |   |-- COCO_val2017_detections_AP_H_56_person.json
+        │-- train2014
+        │   ├── COCO_train2014_000000000009.jpg
+        │   ├── COCO_train2014_000000000025.jpg
+        │   ├── COCO_train2014_000000000030.jpg
+            │-- ...
         │-- train2017
         │   │-- 000000000009.jpg
         │   │-- 000000000025.jpg
