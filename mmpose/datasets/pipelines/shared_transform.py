@@ -8,7 +8,7 @@ from ..registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class ToTensor():
+class ToTensor:
     """Transform image to Tensor.
 
     Required key: 'img'. Modifies key: 'img'.
@@ -23,7 +23,7 @@ class ToTensor():
 
 
 @PIPELINES.register_module()
-class NormalizeTensor():
+class NormalizeTensor:
     """Normalize the Tensor image (CxHxW), with mean and std.
 
     Required key: 'img'. Modifies key: 'img'.

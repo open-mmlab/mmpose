@@ -227,7 +227,7 @@ class HeatmapGenerator:
         return hms
 
 
-class JointsEncoder():
+class JointsEncoder:
     """Encodes the visible joints into (coordinates, score); The coordinate of
     one joint and its score are of `int` type.
 

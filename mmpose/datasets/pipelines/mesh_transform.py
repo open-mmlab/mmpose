@@ -167,7 +167,7 @@ def _flip_joints_3d(joints_3d, joints_3d_visible, flip_pairs):
 
 
 @PIPELINES.register_module()
-class LoadIUVFromFile(object):
+class LoadIUVFromFile:
     """Loading IUV image from file."""
 
     def __init__(self, to_float32=False):
@@ -195,7 +195,7 @@ class LoadIUVFromFile(object):
 
 
 @PIPELINES.register_module()
-class IUVToTensor():
+class IUVToTensor:
     """Transform IUV image to part index mask and uv coordinates image. The 3
     channels of IUV image means: part index, u coordinates, v coordinates.
 
@@ -222,7 +222,7 @@ class IUVToTensor():
 
 
 @PIPELINES.register_module()
-class MeshRandomChannelNoise():
+class MeshRandomChannelNoise:
     """Data augmentation with random channel noise.
 
     Required keys: 'img'
@@ -251,7 +251,7 @@ class MeshRandomChannelNoise():
 
 
 @PIPELINES.register_module()
-class MeshRandomFlip():
+class MeshRandomFlip:
     """Data augmentation with random image flip.
 
     Required keys: 'img', 'joints_2d','joints_2d_visible', 'joints_3d',
@@ -307,7 +307,7 @@ class MeshRandomFlip():
 
 
 @PIPELINES.register_module()
-class MeshGetRandomScaleRotation():
+class MeshGetRandomScaleRotation:
     """Data augmentation with random scaling & rotating.
 
     Required key: 'scale'. Modifies key: 'scale' and 'rotation'.
@@ -343,7 +343,7 @@ class MeshGetRandomScaleRotation():
 
 
 @PIPELINES.register_module()
-class MeshAffine():
+class MeshAffine:
     """Affine transform the image to get input image. Affine transform the 2D
     keypoints, 3D kepoints and IUV image too.
 

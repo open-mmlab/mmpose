@@ -174,6 +174,22 @@ class BottomUp(BasePose):
         losses['all_loss'] = loss
         return losses
 
+    def forward_dummy(self, img):
+        """Used for computing network FLOPs.
+
+        See ``tools/get_flops.py``.
+
+        Args:
+            img (torch.Tensor): Input image.
+
+        Returns:
+            Tensor: Outputs.
+        """
+        output = self.backbone(img)
+        if self.with_keypoint:
+            output = self.keypoint_head(output)
+        return output
+
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Inference the bottom-up model.
 
@@ -209,12 +225,14 @@ class BottomUp(BasePose):
             image_resized = aug_data[idx].to(img.device)
 
             outputs = self.backbone(image_resized)
-            outputs = self.keypoint_head(outputs)
+            if self.with_keypoint:
+                outputs = self.keypoint_head(outputs)
 
             if self.test_cfg['flip_test']:
                 # use flip test
                 outputs_flip = self.backbone(torch.flip(image_resized, [3]))
-                outputs_flip = self.keypoint_head(outputs_flip)
+                if self.with_keypoint:
+                    outputs_flip = self.keypoint_head(outputs_flip)
             else:
                 outputs_flip = None
 

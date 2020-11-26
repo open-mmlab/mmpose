@@ -36,7 +36,7 @@ def test_compose():
     # test Compose when forward data is None
     results = None
 
-    class ExamplePipeline():
+    class ExamplePipeline:
 
         def __call__(self, results):
             return None
