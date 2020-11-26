@@ -164,7 +164,7 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
     return image_resized, center, scale
 
 
-class HeatmapGenerator():
+class HeatmapGenerator:
     """Generate heatmaps for bottom-up models.
 
     Args:
