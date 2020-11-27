@@ -72,6 +72,7 @@ Supported methods for human pose estimation:
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [Hourglass](configs/top_down/hourglass/README.md)
 - [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [Associative Embedding](configs/bottom_up/hrnet/README.md)
 - [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
 - [x] [DarkPose](configs/top_down/darkpose/README.md)
 
