@@ -238,7 +238,7 @@ class TopDown(BasePose):
                 output_heatmap,
                 c,
                 s,
-                unbiased=self.test_cfg['unbiased_decoding'],
+                post_process=self.test_cfg['post_process'],
                 kernel=self.test_cfg['modulate_kernel'])
 
         all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)

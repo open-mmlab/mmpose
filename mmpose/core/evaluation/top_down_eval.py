@@ -403,6 +403,6 @@ def keypoints_from_heatmaps(heatmaps,
         preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
 
     if post_process == 'megvii':
-        maxvals = maxvals / 255 + 0.5
+        maxvals = maxvals / 255.0 + 0.5
 
     return preds, maxvals
