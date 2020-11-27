@@ -95,7 +95,7 @@ def pytorch2onnx(model,
             None, {net_feed_input[0]: one_img.detach().numpy()})[0]
         # only compare part of results
         assert np.allclose(
-            pytorch_result[:, 4], onnx_result[:, 4],
+            pytorch_result, onnx_result,
             atol=1.e-5), 'The outputs are different between Pytorch and ONNX'
         print('The numerical values are same between Pytorch and ONNX')
 
