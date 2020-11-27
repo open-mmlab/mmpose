@@ -45,6 +45,10 @@ class JointsMSELoss(nn.Module):
 @LOSSES.register_module()
 class JointsMSELoss_Combined(nn.Module):
     """MSE loss for combined target.
+            CombinedTarget: The combination of classification target
+            (response map) and regression target (offset map).
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
@@ -52,19 +56,19 @@ class JointsMSELoss_Combined(nn.Module):
     """
 
     def __init__(self, use_target_weight):
-        super(JointsMSELoss_Combined, self).__init__()
+        super().__init__()
         self.criterion = nn.MSELoss(reduction='mean')
         self.use_target_weight = use_target_weight
 
     def forward(self, output, target, target_weight):
         batch_size = output.size(0)
-        num_joints = output.size(1)
+        num_channels = output.size(1)
         heatmaps_pred = output.reshape(
-            (batch_size, num_joints, -1)).split(1, 1)
-        heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
-        loss_hm = 0.
-        loss_offset = 0.
-        num_joints = output.size(1) // 3
+            (batch_size, num_channels, -1)).split(1, 1)
+        heatmaps_gt = target.reshape(
+            (batch_size, num_channels, -1)).split(1, 1)
+        loss = 0.
+        num_joints = num_channels // 3
         for idx in range(num_joints):
             heatmap_pred = heatmaps_pred[idx * 3].squeeze()
             heatmap_gt = heatmaps_gt[idx * 3].squeeze()
@@ -73,15 +77,16 @@ class JointsMSELoss_Combined(nn.Module):
             offset_y_pred = heatmaps_pred[idx * 3 + 2].squeeze()
             offset_y_gt = heatmaps_gt[idx * 3 + 2].squeeze()
             if self.use_target_weight:
-                loss_hm += 0.5 * self.criterion(
-                    heatmap_pred.mul(target_weight[:, idx]),
-                    heatmap_gt.mul(target_weight[:, idx]))
-                loss_offset += 0.5 * self.criterion(heatmap_gt * offset_x_pred,
-                                                    heatmap_gt * offset_x_gt)
-                loss_offset += 0.5 * self.criterion(heatmap_gt * offset_y_pred,
-                                                    heatmap_gt * offset_y_gt)
-
-        return loss_hm / num_joints + loss_offset / num_joints
+                heatmap_pred = heatmap_pred.mul(target_weight[:, idx])
+                heatmap_gt = heatmap_gt.mul(target_weight[:, idx])
+            # classification loss
+            loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
+            # regression loss
+            loss += 0.5 * self.criterion(heatmap_gt * offset_x_pred,
+                                         heatmap_gt * offset_x_gt)
+            loss += 0.5 * self.criterion(heatmap_gt * offset_y_pred,
+                                         heatmap_gt * offset_y_gt)
+        return loss / num_joints
 
 
 @LOSSES.register_module()
