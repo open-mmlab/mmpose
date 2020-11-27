@@ -53,6 +53,10 @@ class TopDownCrowdPoseDataset(TopDownCocoDataset):
         self.bbox_file = data_cfg['bbox_file']
         self.image_thr = data_cfg['image_thr']
 
+        if 'use_nms' in data_cfg:
+            self.use_nms = data_cfg['use_nms']
+        else:
+            self.use_nms = True
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
