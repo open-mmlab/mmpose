@@ -107,7 +107,7 @@ The models are first pre-trained on COCO dataset, and then fine-tuned on PoseTra
 #### Results on Sub-JHMDB dataset.
 The models are pre-trained on MPII dataset only. *NO* test-time augmentation (multi-scale /rotation testing) is used.
 
-#####Normalized by Person Size
+##### Normalized by Person Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
@@ -120,7 +120,7 @@ The models are pre-trained on MPII dataset only. *NO* test-time augmentation (mu
 | Sub3 |  [pose_resnet_50 (2 Deconv.)](/configs/top_down/resnet/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py) | 256x256 | 92.5 | 99.4 | 95.7 |  94.4 | 93.4 | 98.1| 98.7 | 96.7 | [ckpt](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth) | [log](https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256_20201122.log.json) |
 | Average |  pose_resnet_50 (2 Deconv.)                                                                    | 256x256 | 97.0 | 95.6 | 95.9 |  94.9 | 93.8 | 96.2| 98.5 | 96.0 | -        | -       |
 
-#####Normalized by Torso Size
+##### Normalized by Torso Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |

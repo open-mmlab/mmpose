@@ -1,4 +1,5 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import json_tricks as json
@@ -234,7 +235,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
                     torso_thr = np.linalg.norm(
                         np.array(pred['keypoints'])[4, :2] -
                         np.array(pred['keypoints'])[5, :2])
-                    print('Torso Size < 1, may be an error....', flush=True)
+                    warnings.warn('Torso Size < 1.')
                 threshold_torso.append(np.array([torso_thr, torso_thr]))
 
         outputs = np.array(outputs)

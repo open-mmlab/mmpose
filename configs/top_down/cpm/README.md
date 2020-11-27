@@ -33,7 +33,7 @@
 #### Results on Sub-JHMDB dataset.
 The models are pre-trained on MPII dataset only. NO test-time augmentation (multi-scale /rotation testing) is used.
 
-#####Normalized by Person Size
+##### Normalized by Person Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
@@ -43,7 +43,7 @@ The models are pre-trained on MPII dataset only. NO test-time augmentation (mult
 | Average |  cpm                                                       | 368x368 | 97.7 | 90.1 | 88.4 |  84.3 | 84.7 | 86.8| 96.2 | 89.8 | -        | -       |
 
 
-#####Normalized by Torso Size
+##### Normalized by Torso Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
