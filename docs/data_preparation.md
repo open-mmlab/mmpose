@@ -12,6 +12,7 @@ MMPose supported datasets:
 - [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
 - [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
@@ -312,6 +313,38 @@ mmpose
             │-- 000001.jpg
             │-- 000002.jpg
             │-- 000003.jpg
+            │-- ...
+
+```
+
+## sub-JHMDB dataset
+
+For sub-JHMDB data, please download the [images]((http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
+Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
+Move them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── jhmdb
+        │-- annotations
+        │   │-- Sub1_train.json
+        │   |-- Sub1_test.json
+        │   │-- Sub2_train.json
+        │   |-- Sub2_test.json
+        │   │-- Sub3_train.json
+        │   |-- Sub3_test.json
+        |-- Rename_Images
+            │-- brush_hair
+            │   │--April_09_brush_hair_u_nm_np1_ba_goo_0
+            |   │   │--00001.png
+            |   │   │--00002.png
+            │-- catch
             │-- ...
 
 ```

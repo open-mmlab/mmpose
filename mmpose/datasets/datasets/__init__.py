@@ -7,8 +7,9 @@ from .mesh import (MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
                    MoshDataset)
 from .top_down import (TopDownAicDataset, TopDownCocoDataset,
                        TopDownCocoWholeBodyDataset, TopDownCrowdPoseDataset,
-                       TopDownMpiiDataset, TopDownMpiiTrbDataset,
-                       TopDownOCHumanDataset, TopDownPoseTrack18Dataset)
+                       TopDownJhmdbDataset, TopDownMpiiDataset,
+                       TopDownMpiiTrbDataset, TopDownOCHumanDataset,
+                       TopDownPoseTrack18Dataset)
 
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'TopDownMpiiDataset',
@@ -18,5 +19,6 @@ __all__ = [
     'MeshMixDataset', 'MoshDataset', 'MeshAdversarialDataset',
     'TopDownCrowdPoseDataset', 'BottomUpCrowdPoseDataset',
     'TopDownFreiHandDataset', 'TopDownOneHand10KDataset',
-    'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset'
+    'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset',
+    'TopDownJhmdbDataset'
 ]
