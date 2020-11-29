@@ -27,9 +27,8 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process=True,
+        post_process='unbiased',
         shift_heatmap=True,
-        unbiased_decoding=True,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
 ```
