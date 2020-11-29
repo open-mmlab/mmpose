@@ -315,7 +315,7 @@ def keypoints_from_heatmaps(heatmaps,
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
         post_process (str/None): Choice of methods to post-process
-            heatmaps. Currently supported: 'default', 'unbiased',
+            heatmaps. Currently supported: None, 'default', 'unbiased',
             'megvii'.
         unbiased (bool): Option to use unbiased decoding. Mutually
             exclusive with megvii.
@@ -333,16 +333,19 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-    # resolve conflicts and raise deprecation warnings
-    assert not (post_process is False and unbiased is True)
-    assert not (post_process is None and unbiased is True)
-    assert not (post_process == 'megvii' and unbiased is True)
+    # detact conflicts
+    if unbiased:
+        assert post_process not in [False, None, 'megvii']
+    if post_process in ['megvii', 'unbiased']:
+        assert kernel > 0
+
+    # normalize configs
     if post_process is False:
         warnings.warn(
             'post_process=False is deprecated, '
             'please use post_process=None instead', DeprecationWarning)
         post_process = None
-    if post_process is True:
+    elif post_process is True:
         if unbiased is True:
             warnings.warn(
                 'post_process=True, unbiased=True is deprecated,'
@@ -355,48 +358,41 @@ def keypoints_from_heatmaps(heatmaps,
                 "please use post_process='default' instead",
                 DeprecationWarning)
             post_process = 'default'
-    if post_process == 'default':
+    elif post_process == 'default':
         if unbiased is True:
             warnings.warn(
                 'unbiased=True is deprecated, please use '
                 "post_process='unbiased' instead", DeprecationWarning)
             post_process = 'unbiased'
 
+    # start processing
+    if post_process == 'megvii':
+        heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
+
+    preds, maxvals = _get_max_preds(heatmaps)
     N, K, H, W = heatmaps.shape
 
-    if post_process is not None:
-        if post_process == 'unbiased':  # alleviate biased coordinate
-            preds, maxvals = _get_max_preds(heatmaps)
-            assert kernel > 0
-            # apply Gaussian distribution modulation.
-            heatmaps = _gaussian_blur(heatmaps, kernel)
-            heatmaps = np.maximum(heatmaps, 1e-10)
-            heatmaps = np.log(heatmaps)
-            for n in range(N):
-                for k in range(K):
-                    preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
-        else:
-            if post_process == 'megvii':
-                assert kernel > 0
-                heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
-            preds, maxvals = _get_max_preds(heatmaps)
-            # add +/-0.25 shift to the predicted locations for higher acc.
-            for n in range(N):
-                for k in range(K):
-                    heatmap = heatmaps[n][k]
-                    px = int(preds[n][k][0])
-                    py = int(preds[n][k][1])
-                    if 1 < px < W - 1 and 1 < py < H - 1:
-                        diff = np.array([
-                            heatmap[py][px + 1] - heatmap[py][px - 1],
-                            heatmap[py + 1][px] - heatmap[py - 1][px]
-                        ])
-                        preds[n][k] += np.sign(diff) * .25
-                        if post_process == 'megvii':
-                            preds[n][k] += 0.5
-
-    else:
-        preds, maxvals = _get_max_preds(heatmaps)
+    if post_process == 'unbiased':  # alleviate biased coordinate
+        # apply Gaussian distribution modulation.
+        heatmaps = np.log(np.maximum(_gaussian_blur(heatmaps, kernel), 1e-10))
+        for n in range(N):
+            for k in range(K):
+                preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
+    elif post_process is not None:
+        # add +/-0.25 shift to the predicted locations for higher acc.
+        for n in range(N):
+            for k in range(K):
+                heatmap = heatmaps[n][k]
+                px = int(preds[n][k][0])
+                py = int(preds[n][k][1])
+                if 1 < px < W - 1 and 1 < py < H - 1:
+                    diff = np.array([
+                        heatmap[py][px + 1] - heatmap[py][px - 1],
+                        heatmap[py + 1][px] - heatmap[py - 1][px]
+                    ])
+                    preds[n][k] += np.sign(diff) * .25
+                    if post_process == 'megvii':
+                        preds[n][k] += 0.5
 
     # Transform back to the image
     for i in range(N):
