@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.9.0 (30/11/2020)
+
+**Highlights**
+
+1. Support more human pose estimation methods.
+    - [MSPN](https://arxiv.org/abs/1901.00148)
+    - [RSN](https://arxiv.org/abs/2003.04030)
+2. Support video pose estimation datasets.
+    - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
+
+**New Features**
+- Support MSPN ([#278](https://github.com/open-mmlab/mmpose/pull/278))
+- Support RSN ([#221](https://github.com/open-mmlab/mmpose/pull/221))
+- Support sub-JHMDB dataset ([#292]((https://github.com/open-mmlab/mmpose/pull/292)))
+- Support urls for pre-trained models in config files. ([#232](https://github.com/open-mmlab/mmpose/pull/232))
+
+**Bug Fixes**
+- Fix model download links in README ([#315](https://github.com/open-mmlab/mmpose/pull/315))
+
+**Improvements**
+- Upgrade mmcv maximum & minimum version ([#269](https://github.com/open-mmlab/mmpose/pull/269), [#313](https://github.com/open-mmlab/mmpose/pull/313))
+- Fix Pylint issues ([#258](https://github.com/open-mmlab/mmpose/pull/258), [#259](https://github.com/open-mmlab/mmpose/pull/259), [#260](https://github.com/open-mmlab/mmpose/pull/260), [#262](https://github.com/open-mmlab/mmpose/pull/262), [#265](https://github.com/open-mmlab/mmpose/pull/265), [#267](https://github.com/open-mmlab/mmpose/pull/267), [#268](https://github.com/open-mmlab/mmpose/pull/268), [#270](https://github.com/open-mmlab/mmpose/pull/270), [#271](https://github.com/open-mmlab/mmpose/pull/271), [#272](https://github.com/open-mmlab/mmpose/pull/272), [#273](https://github.com/open-mmlab/mmpose/pull/273), [#274](https://github.com/open-mmlab/mmpose/pull/274), [#275](https://github.com/open-mmlab/mmpose/pull/275), [#276](https://github.com/open-mmlab/mmpose/pull/276), [#283](https://github.com/open-mmlab/mmpose/pull/283), [#285](https://github.com/open-mmlab/mmpose/pull/285), [#293](https://github.com/open-mmlab/mmpose/pull/293), [#294](https://github.com/open-mmlab/mmpose/pull/294), [#295](https://github.com/open-mmlab/mmpose/pull/295))
+- Set the default map_location as 'cpu' to reduce gpu memory cost. ([#227](https://github.com/open-mmlab/mmpose/pull/227))
+- Improve README ([#226](https://github.com/open-mmlab/mmpose/pull/226), [#252](https://github.com/open-mmlab/mmpose/pull/252), [#255](https://github.com/open-mmlab/mmpose/pull/255), [#256](https://github.com/open-mmlab/mmpose/pull/256), [#257](https://github.com/open-mmlab/mmpose/pull/257), [#263](https://github.com/open-mmlab/mmpose/pull/263), [#264](https://github.com/open-mmlab/mmpose/pull/264), [#280](https://github.com/open-mmlab/mmpose/pull/280), [#296](https://github.com/open-mmlab/mmpose/pull/296))
+- Support return heatmaps and backbone features for bottom-up models ([#229](https://github.com/open-mmlab/mmpose/pull/229))
+
+
 ## v0.8.0 (31/10/2020)
 
 **Highlights**
