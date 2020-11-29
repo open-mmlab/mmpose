@@ -225,21 +225,13 @@ class TopDown(BasePose):
         if 'bbox_score' in img_metas:
             score = np.array(img_metas['bbox_score']).reshape(-1)
 
-        if 'unbiased_decoding' in self.test_cfg:
-            preds, maxvals = keypoints_from_heatmaps(
-                output_heatmap,
-                c,
-                s,
-                post_process=self.test_cfg['post_process'],
-                unbiased=self.test_cfg['unbiased_decoding'],
-                kernel=self.test_cfg['modulate_kernel'])
-        else:
-            preds, maxvals = keypoints_from_heatmaps(
-                output_heatmap,
-                c,
-                s,
-                post_process=self.test_cfg['post_process'],
-                kernel=self.test_cfg['modulate_kernel'])
+        preds, maxvals = keypoints_from_heatmaps(
+            output_heatmap,
+            c,
+            s,
+            post_process=self.test_cfg['post_process'],
+            unbiased=self.test_cfg.get('unbiased_decoding', False),
+            kernel=self.test_cfg['modulate_kernel'])
 
         all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((1, 6), dtype=np.float32)
