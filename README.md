@@ -130,8 +130,9 @@ Please refer to [data_preparation.md](docs/data_preparation.md) for a general kn
 ## Get Started
 
 Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
-There are also tutorials for [finetuning model](docs/tutorials/finetune.md),
-[adding new dataset](docs/tutorials/new_dataset.md), [adding new modules](docs/tutorials/new_modules.md).
+There are also tutorials: [finetune model](tutorials/1_finetune.md),
+[add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
+[add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
 
 ## License
 

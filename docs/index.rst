@@ -31,10 +31,12 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Tutorials
 
-   tutorials/finetune.md
-   tutorials/new_dataset.md
-   tutorials/data_pipeline.md
-   tutorials/new_modules.md
+   tutorials/1_finetune.md
+   tutorials/2_new_dataset.md
+   tutorials/3_data_pipeline.md
+   tutorials/4_new_modules.md
+   tutorials/5_export_model.md
+   tutorials/6_customize_runtime.md
 
 .. toctree::
    :maxdepth: 2
