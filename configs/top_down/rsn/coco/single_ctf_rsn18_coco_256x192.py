@@ -58,10 +58,9 @@ model = dict(
     train_cfg=dict(num_units=4, loss_weights=[0.25] * 3 + [1]),
     test_cfg=dict(
         flip_test=True,
-        post_process=True,
-        shift_heatmap=True,
-        unbiased_decoding=False,
-        modulate_kernel=11),
+        post_process='default',
+        shift_heatmap=False,
+        modulate_kernel=5),
     loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)] * 3 +
     [dict(type='JointsOHKMMSELoss', use_target_weight=True)])
 

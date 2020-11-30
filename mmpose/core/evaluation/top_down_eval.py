@@ -1,3 +1,5 @@
+import warnings
+
 import cv2
 import numpy as np
 
@@ -295,8 +297,8 @@ def _gaussian_blur(heatmaps, kernel=11):
 def keypoints_from_heatmaps(heatmaps,
                             center,
                             scale,
-                            post_process=True,
                             unbiased=False,
+                            post_process='default',
                             kernel=11):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
@@ -312,8 +314,13 @@ def keypoints_from_heatmaps(heatmaps,
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        post_process (bool): Option to use post processing or not.
-        unbiased (bool): Option to use unbiased decoding.
+        post_process (str/None): Choice of methods to post-process
+            heatmaps. Currently supported: None, 'default', 'unbiased',
+            'megvii'.
+        unbiased (bool): Option to use unbiased decoding. Mutually
+            exclusive with megvii.
+            Note: this arg is deprecated and unbiased=True can be replaced
+            by post_process='unbiased'
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
         kernel (int): Gaussian kernel size (K) for modulation, which should
@@ -326,36 +333,72 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
+    # detact conflicts
+    if unbiased:
+        assert post_process not in [False, None, 'megvii']
+    if post_process in ['megvii', 'unbiased']:
+        assert kernel > 0
+
+    # normalize configs
+    if post_process is False:
+        warnings.warn(
+            'post_process=False is deprecated, '
+            'please use post_process=None instead', DeprecationWarning)
+        post_process = None
+    elif post_process is True:
+        if unbiased is True:
+            warnings.warn(
+                'post_process=True, unbiased=True is deprecated,'
+                " please use post_process='unbiased' instead",
+                DeprecationWarning)
+            post_process = 'unbiased'
+        else:
+            warnings.warn(
+                'post_process=True, unbiased=False is deprecated, '
+                "please use post_process='default' instead",
+                DeprecationWarning)
+            post_process = 'default'
+    elif post_process == 'default':
+        if unbiased is True:
+            warnings.warn(
+                'unbiased=True is deprecated, please use '
+                "post_process='unbiased' instead", DeprecationWarning)
+            post_process = 'unbiased'
+
+    # start processing
+    if post_process == 'megvii':
+        heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
 
     preds, maxvals = _get_max_preds(heatmaps)
     N, K, H, W = heatmaps.shape
 
-    if post_process:
-        if unbiased:  # alleviate biased coordinate
-            assert kernel > 0
-            # apply Gaussian distribution modulation.
-            heatmaps = _gaussian_blur(heatmaps, kernel)
-            heatmaps = np.maximum(heatmaps, 1e-10)
-            heatmaps = np.log(heatmaps)
-            for n in range(N):
-                for k in range(K):
-                    preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
-        else:
-            # add +/-0.25 shift to the predicted locations for higher acc.
-            for n in range(N):
-                for k in range(K):
-                    heatmap = heatmaps[n][k]
-                    px = int(preds[n][k][0])
-                    py = int(preds[n][k][1])
-                    if 1 < px < W - 1 and 1 < py < H - 1:
-                        diff = np.array([
-                            heatmap[py][px + 1] - heatmap[py][px - 1],
-                            heatmap[py + 1][px] - heatmap[py - 1][px]
-                        ])
-                        preds[n][k] += np.sign(diff) * .25
+    if post_process == 'unbiased':  # alleviate biased coordinate
+        # apply Gaussian distribution modulation.
+        heatmaps = np.log(np.maximum(_gaussian_blur(heatmaps, kernel), 1e-10))
+        for n in range(N):
+            for k in range(K):
+                preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
+    elif post_process is not None:
+        # add +/-0.25 shift to the predicted locations for higher acc.
+        for n in range(N):
+            for k in range(K):
+                heatmap = heatmaps[n][k]
+                px = int(preds[n][k][0])
+                py = int(preds[n][k][1])
+                if 1 < px < W - 1 and 1 < py < H - 1:
+                    diff = np.array([
+                        heatmap[py][px + 1] - heatmap[py][px - 1],
+                        heatmap[py + 1][px] - heatmap[py - 1][px]
+                    ])
+                    preds[n][k] += np.sign(diff) * .25
+                    if post_process == 'megvii':
+                        preds[n][k] += 0.5
 
     # Transform back to the image
     for i in range(N):
         preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
+
+    if post_process == 'megvii':
+        maxvals = maxvals / 255.0 + 0.5
 
     return preds, maxvals
