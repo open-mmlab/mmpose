@@ -333,7 +333,7 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-    # detact conflicts
+    # detect conflicts
     if unbiased:
         assert post_process not in [False, None, 'megvii']
     if post_process in ['megvii', 'unbiased']:
