@@ -13,11 +13,11 @@ optimizer = dict(
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
-    policy='poly',
+    policy='step',
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    min_lr=5e-5)
+    step=[170, 200])
 total_epochs = 210
 log_config = dict(
     interval=50, hooks=[
@@ -41,9 +41,9 @@ model = dict(
     backbone=dict(
         type='RSN',
         unit_channels=256,
-        num_stages=1,
+        num_stages=3,
         num_units=4,
-        num_blocks=[2, 2, 2, 2],
+        num_blocks=[3, 4, 6, 3],
         num_steps=4,
         norm_cfg=dict(type='BN')),
     keypoint_head=dict(
@@ -51,18 +51,18 @@ model = dict(
         out_shape=(64, 48),
         unit_channels=256,
         out_channels=channel_cfg['num_output_channels'],
-        num_stages=1,
+        num_stages=3,
         num_units=4,
         use_prm=False,
         norm_cfg=dict(type='BN')),
-    train_cfg=dict(num_units=4, loss_weights=[0.25] * 3 + [1]),
+    train_cfg=dict(loss_weights=([0.25] * 3 + [1]) * 3),
     test_cfg=dict(
         flip_test=True,
-        post_process='default',
+        post_process='megvii',
         shift_heatmap=False,
         modulate_kernel=5),
-    loss_pose=[dict(type='JointsMSELoss', use_target_weight=True)] * 3 +
-    [dict(type='JointsOHKMMSELoss', use_target_weight=True)])
+    loss_pose=([dict(type='JointsMSELoss', use_target_weight=True)] * 3 +
+               [dict(type='JointsOHKMMSELoss', use_target_weight=True)]) * 3)
 
 data_cfg = dict(
     image_size=[192, 256],
@@ -72,6 +72,7 @@ data_cfg = dict(
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
     soft_nms=False,
+    use_nms=False,
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
@@ -99,7 +100,8 @@ train_pipeline = [
         std=[0.229, 0.224, 0.225]),
     dict(
         type='TopDownGenerateTarget',
-        kernel=[(11, 11), (9, 9), (7, 7), (5, 5)],
+        kernel=[(15, 15), (11, 11), (9, 9), (7, 7)] * 2 + [(11, 11), (9, 9),
+                                                           (7, 7), (5, 5)],
         encoding='Megvii'),
     dict(
         type='Collect',
@@ -134,7 +136,7 @@ test_pipeline = val_pipeline
 data_root = 'data/coco'
 data = dict(
     samples_per_gpu=32,
-    workers_per_gpu=2,
+    workers_per_gpu=4,
     train=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
