@@ -184,12 +184,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
                 keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-
-                if len(keep) == 0:
-                    valid_kpts[image_id].append(img_kpts)
-                else:
-                    valid_kpts[image_id].append(
-                        [img_kpts[_keep] for _keep in keep])
+                valid_kpts[image_id].append(
+                    [img_kpts[_keep] for _keep in keep])
             else:
                 valid_kpts[image_id].append(img_kpts)
 
