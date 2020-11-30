@@ -12,6 +12,7 @@
 3. Support Onnx model conversion
 
 **New Features**
+
 - Support MSPN ([#278](https://github.com/open-mmlab/mmpose/pull/278))
 - Support RSN ([#221](https://github.com/open-mmlab/mmpose/pull/221), [#318](https://github.com/open-mmlab/mmpose/pull/318))
 - Support new post-processing method for MSPN & RSN ([#288](https://github.com/open-mmlab/mmpose/pull/288))
@@ -20,12 +21,15 @@
 - Support Onnx ([#305](https://github.com/open-mmlab/mmpose/pull/305))
 
 **Bug Fixes**
+
 - Fix model download links in README ([#255](https://github.com/open-mmlab/mmpose/pull/255), [#315](https://github.com/open-mmlab/mmpose/pull/315))
 
-**Deprecated**
-- Add deprecation warnings for `post_process=True/False` and `unbiased_decoding=True/False` ([#288](https://github.com/open-mmlab/mmpose/pull/288)).
+**Breaking Changes**
+
+- `post_process=True|False` and `unbiased_decoding=True|False` are deprecated, use `post_process=None|default|unbiased` etc. instead. ([#288](https://github.com/open-mmlab/mmpose/pull/288)).
 
 **Improvements**
+
 - Enrich the model zoo ([#256](https://github.com/open-mmlab/mmpose/pull/256), [#320](https://github.com/open-mmlab/mmpose/pull/320))
 - Set the default map_location as 'cpu' to reduce gpu memory cost. ([#227](https://github.com/open-mmlab/mmpose/pull/227))
 - Support return heatmaps and backbone features for bottom-up models ([#229](https://github.com/open-mmlab/mmpose/pull/229))
