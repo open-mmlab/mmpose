@@ -64,7 +64,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.image_thr = data_cfg['image_thr']
-
+        self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
@@ -344,7 +344,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
-        oks_nmsed_kpts = []
+        valid_kpts = []
         for image_id in kpts.keys():
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
@@ -361,15 +361,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 # rescoring
                 n_p['score'] = kpt_score * box_score
 
-            nms = soft_oks_nms if self.soft_nms else oks_nms
-            keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-
-            if len(keep) == 0:
-                oks_nmsed_kpts.append(img_kpts)
+            if self.use_nms:
+                nms = soft_oks_nms if self.soft_nms else oks_nms
+                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+                valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
-                oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
+                valid_kpts.append(img_kpts)
 
-        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
+        self._write_coco_keypoint_results(valid_kpts, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)
