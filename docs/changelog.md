@@ -9,15 +9,15 @@
     - [RSN](https://arxiv.org/abs/2003.04030)
 2. Support video pose estimation datasets.
     - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
-3. Support Onnx model conversion
+3. Support Onnx model conversion.
 
 **New Features**
 
 - Support MSPN ([#278](https://github.com/open-mmlab/mmpose/pull/278))
 - Support RSN ([#221](https://github.com/open-mmlab/mmpose/pull/221), [#318](https://github.com/open-mmlab/mmpose/pull/318))
 - Support new post-processing method for MSPN & RSN ([#288](https://github.com/open-mmlab/mmpose/pull/288))
-- Support sub-JHMDB dataset ([#292]((https://github.com/open-mmlab/mmpose/pull/292)))
-- Support urls for pre-trained models in config files. ([#232](https://github.com/open-mmlab/mmpose/pull/232))
+- Support sub-JHMDB dataset ([#292](https://github.com/open-mmlab/mmpose/pull/292))
+- Support urls for pre-trained models in config files ([#232](https://github.com/open-mmlab/mmpose/pull/232))
 - Support Onnx ([#305](https://github.com/open-mmlab/mmpose/pull/305))
 
 **Bug Fixes**
@@ -26,12 +26,12 @@
 
 **Breaking Changes**
 
-- `post_process=True|False` and `unbiased_decoding=True|False` are deprecated, use `post_process=None|default|unbiased` etc. instead. ([#288](https://github.com/open-mmlab/mmpose/pull/288)).
+- `post_process=True|False` and `unbiased_decoding=True|False` are deprecated, use `post_process=None|default|unbiased` etc. instead ([#288](https://github.com/open-mmlab/mmpose/pull/288))
 
 **Improvements**
 
 - Enrich the model zoo ([#256](https://github.com/open-mmlab/mmpose/pull/256), [#320](https://github.com/open-mmlab/mmpose/pull/320))
-- Set the default map_location as 'cpu' to reduce gpu memory cost. ([#227](https://github.com/open-mmlab/mmpose/pull/227))
+- Set the default map_location as 'cpu' to reduce gpu memory cost ([#227](https://github.com/open-mmlab/mmpose/pull/227))
 - Support return heatmaps and backbone features for bottom-up models ([#229](https://github.com/open-mmlab/mmpose/pull/229))
 - Upgrade mmcv maximum & minimum version ([#269](https://github.com/open-mmlab/mmpose/pull/269), [#313](https://github.com/open-mmlab/mmpose/pull/313))
 - Automatically add modelzoo statistics to readthedocs ([#252](https://github.com/open-mmlab/mmpose/pull/252))
@@ -56,11 +56,11 @@
 
 **New Features**
 
-- Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195)).
-- Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220)).
-- Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202)).
-- Support adversarial training for 3D human shape recovery ([#192](https://github.com/open-mmlab/mmpose/pull/192)).
-- Support multi-stage losses ([#204](https://github.com/open-mmlab/mmpose/pull/204)).
+- Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195))
+- Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220))
+- Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202))
+- Support adversarial training for 3D human shape recovery ([#192](https://github.com/open-mmlab/mmpose/pull/192))
+- Support multi-stage losses ([#204](https://github.com/open-mmlab/mmpose/pull/204))
 
 **Bug Fixes**
 
@@ -84,7 +84,7 @@
 3. Support more 2D hand keypoint estimation datasets.
     - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
     - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
-4. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
+4. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
     - ShuffleNetv2
 5. Support hand demo and whole-body demo.
 
