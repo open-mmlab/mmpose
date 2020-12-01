@@ -16,17 +16,20 @@ def _calc_distances(preds, targets, mask, normalize):
     Args:
         preds (np.ndarray[N, K, 2]): Predicted keypoint location.
         targets (np.ndarray[N, K, 2]): Groundtruth keypoint location.
-        normalize (np.ndarray[N, 2]): Typical value is heatmap_size/10
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        normalize (np.ndarray[N, 2]): Typical value is heatmap_size
 
     Returns:
         np.ndarray[K, N]: The normalized distances.
           If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
-    distances = np.full((K, N), -1, dtype=np.float32)
-    distances[mask.T] = np.linalg.norm(
+    distances = np.full((N, K), -1, dtype=np.float32)
+    distances[mask] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
-    return distances
+    return distances.T
 
 
 def _distance_acc(distances, thr=0.5):
@@ -85,14 +88,16 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
-def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
+def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
     Note:
-        The PCK performance metric is the percentage of joints with
-        predicted locations that are no further than a normalized
-        distance of the ground truth. Here we use [w,h]/10.
+        PCK metric measures accuracy of the localization of the body joints.
+        The distances between predicted positions and the ground-truth ones
+        are typically normalized by the bounding box size.
+        The threshold (thr) of the normalized distance is commonly set
+        as 0.05, 0.1 or 0.2 etc.
 
         batch_size: N
         num_keypoints: K
@@ -105,7 +110,7 @@ def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
         mask (np.ndarray[N, K]): Visibility of the target. False for invisible
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
-        thr (float): Threshold of PCK calculation.
+        thr (float): Threshold of PCK calculation. Default 0.05.
         normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
     Returns:
@@ -119,7 +124,7 @@ def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
     if K == 0:
         return None, 0, 0
     if normalize is None:
-        normalize = np.tile(np.array([[H, W]]) / 10, (N, 1))
+        normalize = np.tile(np.array([[H, W]]), (N, 1))
 
     pred, _ = _get_max_preds(output)
     gt, _ = _get_max_preds(target)
@@ -131,6 +136,12 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
     averaged accuracy across all keypoints for coordinates.
 
     Note:
+        PCK metric measures accuracy of the localization of the body joints.
+        The distances between predicted positions and the ground-truth ones
+        are typically normalized by the bounding box size.
+        The threshold (thr) of the normalized distance is commonly set
+        as 0.05, 0.1 or 0.2 etc.
+
         batch_size: N
         num_keypoints: K
 
@@ -141,7 +152,7 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
         thr (float): Threshold of PCK calculation.
-        normalize (np.ndarray[N, 2]): Normalization factor.
+        normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
     Returns:
         tuple: A tuple containing keypoint accuracy.

@@ -52,10 +52,11 @@ def test_keypoints_from_heatmaps():
 
 
 def test_keypoint_pck_accuracy():
-    output = np.zeros((1, 5, 2))
-    target = np.zeros((1, 5, 2))
-    mask = np.array([[True, True, False, True, True]])
-    thr = np.full((1, 2), 10, dtype=np.float32)
+    output = np.zeros((2, 5, 2))
+    target = np.zeros((2, 5, 2))
+    mask = np.array([[True, True, False, True, True],
+                     [True, True, False, True, True]])
+    thr = np.full((2, 2), 10, dtype=np.float32)
     # first channnel
     output[0, 0] = [10, 0]
     target[0, 0] = [10, 0]
@@ -74,8 +75,8 @@ def test_keypoint_pck_accuracy():
 
     acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, mask, 0.5, thr)
 
-    assert_array_almost_equal(acc, np.array([1, 0, -1, 1, 1]), decimal=4)
-    assert abs(avg_acc - 0.75) < 1e-4
+    assert_array_almost_equal(acc, np.array([1, 0.5, -1, 1, 1]), decimal=4)
+    assert abs(avg_acc - 0.875) < 1e-4
     assert abs(cnt - 4) < 1e-4
 
 
