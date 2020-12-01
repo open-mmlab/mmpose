@@ -16,17 +16,20 @@ def _calc_distances(preds, targets, mask, normalize):
     Args:
         preds (np.ndarray[N, K, 2]): Predicted keypoint location.
         targets (np.ndarray[N, K, 2]): Groundtruth keypoint location.
-        normalize (np.ndarray[N, 2]): Typical value is heatmap_size/10
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        normalize (np.ndarray[N, 2]): Typical value is heatmap_size
 
     Returns:
         np.ndarray[K, N]: The normalized distances.
           If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
-    distances = np.full((K, N), -1, dtype=np.float32)
-    distances[mask.T] = np.linalg.norm(
+    distances = np.full((N, K), -1, dtype=np.float32)
+    distances[mask] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
-    return distances
+    return distances.T
 
 
 def _distance_acc(distances, thr=0.5):
