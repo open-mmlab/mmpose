@@ -74,7 +74,7 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
     channels = 1
     if target_type == 'CombinedTarget':
         channels = 3
-        output_flipped[:, 1::3, :, :] = -output_flipped[:, 1::3, :, :]
+        output_flipped[:, 1::3, ...] = -output_flipped[:, 1::3, ...]
     output_flipped = output_flipped.reshape(shape_ori[0], -1, channels,
                                             shape_ori[2], shape_ori[3])
     output_flipped_back = output_flipped.copy()

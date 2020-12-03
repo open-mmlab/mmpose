@@ -210,8 +210,8 @@ def get_group_preds(grouped_joints,
                 size_input=heatmap_size_t,
                 size_dst=scale,
                 size_target=heatmap_size_t)
-            grouped_joints[0][:, :, :2] = \
-                affine_joints(grouped_joints[0][:, :, :2], trans)
+            grouped_joints[0][..., :2] = \
+                affine_joints(grouped_joints[0][..., :2], trans)
         results = [person for person in grouped_joints[0]]
     else:
         results = []

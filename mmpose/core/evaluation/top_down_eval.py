@@ -250,80 +250,66 @@ def _taylor(heatmap, coord):
     return coord
 
 
-def post_dark(coords, batch_heatmaps, share_heatmap=True):
+def post_dark(coords, batch_heatmaps, kernel=3):
     """DARK post-pocessing.
 
     Note:
-        batch_size: N
+        batch_size: B
         num_keypoints: K
+        num_persons: N
+        hight_of_heatmaps: H
+        width_of_heatmaps: W
+        B=1 for bottom_up paradigm where all persons share the same heatmap.
+        B=N for top_down paradigm where each person has its own heatmaps.
 
     Args:
-        coords (np.ndarray[N, K, 2]): Coords in shape of batchsize*num_kps*2.
-        batch_heatmaps (np.ndarray[N, K, H, W]): batch_heatmaps
-        share_heatmap (bool) : True for bottom_up paradigm where all persons
-                    share the same heatmap while False for top_down paradigm
-                    where each person has its own heatmaps.
+        coords (np.ndarray[N, K, 2]): Initial coordinates of human pose.
+        batch_heatmaps (np.ndarray[B, K, H, W]): batch_heatmaps
+        kernel (int): Gaussian kernel size (K) for modulation.
 
     Returns:
-        res (np.ndarray): Refined coords in shape of batchsize*num_kps*2.
+        res (np.ndarray[N, K, 2]): Refined coordinates.
     """
     if not isinstance(batch_heatmaps, np.ndarray):
         batch_heatmaps = batch_heatmaps.cpu().numpy()
-    batch, num_kps, h, w = batch_heatmaps.shape
-    persons = coords.shape[0]
-    if share_heatmap:
-        assert batch == 1
-    else:
-        assert batch == persons
-    for i in range(batch):
-        for j in range(num_kps):
-            mapij = batch_heatmaps[0, j, :, :]
-            mapij = cv2.GaussianBlur(mapij, (3, 3), 0)
-            batch_heatmaps[0, j, :, :] = mapij
-    batch_heatmaps = np.clip(batch_heatmaps, 0.001, 50)
-    batch_heatmaps = np.log(batch_heatmaps)
+    B, K, H, W = batch_heatmaps.shape
+    N = coords.shape[0]
+    assert (B == 1 or B == N)
+    for heatmaps in batch_heatmaps:
+        for heatmap in heatmaps:
+            cv2.GaussianBlur(heatmap, (kernel, kernel), 0, heatmap)
+    np.clip(batch_heatmaps, 0.001, 50, batch_heatmaps)
+    np.log(batch_heatmaps, batch_heatmaps)
     batch_heatmaps = np.transpose(batch_heatmaps, (2, 3, 0, 1)).reshape(
-        (h, w, batch * num_kps))
+        (H, W, -1))
     batch_heatmaps_pad = cv2.copyMakeBorder(
         batch_heatmaps, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
     batch_heatmaps_pad = np.transpose(
-        batch_heatmaps_pad.reshape((h + 2, w + 2, batch, num_kps)),
-        (2, 3, 0, 1))
-    index = coords[:, :, 0] + 1 + (coords[:, :, 1] + 1) * (w + 2)
+        batch_heatmaps_pad.reshape((H + 2, W + 2, B, K)),
+        (2, 3, 0, 1)).flatten()
 
-    index = index.reshape((persons, -1))
-    if share_heatmap:
-        offset = np.arange(0, num_kps) * (w + 2) * (h + 2)
-        index = index + offset[None, :]
-    else:
-        offset = np.arange(0, batch * num_kps) * (w + 2) * (h + 2)
-        index = index + offset.reshape((persons, -1))
+    index = coords[..., 0] + 1 + (coords[..., 1] + 1) * (W + 2)
+    index += (W + 2) * (H + 2) * np.arange(0, B * K).reshape(-1, K)
     index = index.astype(np.int).reshape((-1, 1))
-    batch_heatmaps_pad = batch_heatmaps_pad.reshape((-1, ))
     i_ = batch_heatmaps_pad[index]
     ix1 = batch_heatmaps_pad[index + 1]
-    iy1 = batch_heatmaps_pad[index + w + 2]
-    ix1y1 = batch_heatmaps_pad[index + w + 3]
-    ix1_y1_ = batch_heatmaps_pad[index - w - 3]
+    iy1 = batch_heatmaps_pad[index + W + 2]
+    ix1y1 = batch_heatmaps_pad[index + W + 3]
+    ix1_y1_ = batch_heatmaps_pad[index - W - 3]
     ix1_ = batch_heatmaps_pad[index - 1]
-    iy1_ = batch_heatmaps_pad[index - 2 - w]
+    iy1_ = batch_heatmaps_pad[index - 2 - W]
 
     dx = 0.5 * (ix1 - ix1_)
     dy = 0.5 * (iy1 - iy1_)
-    derivative = np.concatenate([dx, dy], axis=1).reshape(
-        (persons, num_kps, 2, 1))
+    derivative = np.concatenate([dx, dy], axis=1)
+    derivative = derivative.reshape((N, K, 2, 1))
     dxx = ix1 - 2 * i_ + ix1_
     dyy = iy1 - 2 * i_ + iy1_
     dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
-    hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1).reshape(
-        (persons, num_kps, 2, 2))
-    for i in range(persons):
-        for j in range(num_kps):
-            hessian_tmp = hessian[i, j, :, :] + \
-                          np.finfo(np.float32).eps * np.eye(2)
-            derivative_tmp = derivative[i, j, :, :]
-            shift = np.matmul(np.linalg.inv(hessian_tmp), derivative_tmp)
-            coords[i, j, :] = coords[i, j, :] - shift.reshape((-1))
+    hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1)
+    hessian = hessian.reshape((N, K, 2, 2))
+    hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
+    coords -= np.einsum('ijmn,ijnk->ijmk', hessian, derivative).squeeze()
     return coords
 
 
@@ -419,33 +405,25 @@ def keypoints_from_heatmaps(heatmaps,
     if use_udp:
         assert target_type in ['GaussianHeatMap', 'CombinedTarget']
         if target_type == 'GaussianHeatMap':
-            coords, maxvals = _get_max_preds(heatmaps)
+            preds, maxvals = _get_max_preds(heatmaps)
             if post_process:
-                coords = post_dark(coords, heatmaps, share_heatmap=False)
+                preds = post_dark(preds, heatmaps, kernel=kernel)
         elif target_type == 'CombinedTarget':
-            net_output = heatmaps.copy()
+            for person_heatmaps in heatmaps:
+                for i, heatmap in enumerate(person_heatmaps):
+                    kt = 2 * kernel + 1 if i % 3 == 0 else kernel
+                    cv2.GaussianBlur(heatmap, (kt, kt), 0, heatmap)
             kps_pos_distance = kpd * H
-            heatmaps = net_output[:, ::3, :]
-            offset_x = net_output[:, 1::3, :] * kps_pos_distance
-            offset_y = net_output[:, 2::3, :] * kps_pos_distance
-            for i in range(heatmaps.shape[0]):
-                for j in range(heatmaps.shape[1]):
-                    heatmaps[i, j, :, :] = cv2.GaussianBlur(
-                        heatmaps[i, j, :, :], (2 * kernel + 1, 2 * kernel + 1),
-                        0)
-                    offset_x[i, j, :, :] = cv2.GaussianBlur(
-                        offset_x[i, j, :, :], (kernel, kernel), 0)
-                    offset_y[i, j, :, :] = cv2.GaussianBlur(
-                        offset_y[i, j, :, :], (kernel, kernel), 0)
-
-            coords, maxvals = _get_max_preds(heatmaps)
-            for n in range(coords.shape[0]):
-                for p in range(coords.shape[1]):
-                    px = int(coords[n][p][0])
-                    py = int(coords[n][p][1])
-                    coords[n][p][0] += offset_x[n, p, py, px]
-                    coords[n][p][1] += offset_y[n, p, py, px]
-        preds = coords.copy()
+            offset_x = heatmaps[:, 1::3, :] * kps_pos_distance
+            offset_y = heatmaps[:, 2::3, :] * kps_pos_distance
+            heatmaps = heatmaps[:, ::3, :]
+            preds, maxvals = _get_max_preds(heatmaps)
+            for n in range(preds.shape[0]):
+                for p in range(preds.shape[1]):
+                    px = int(preds[n][p][0])
+                    py = int(preds[n][p][1])
+                    preds[n][p][0] += offset_x[n, p, py, px]
+                    preds[n][p][1] += offset_y[n, p, py, px]
     else:
         preds, maxvals = _get_max_preds(heatmaps)
         if post_process:
