@@ -10,6 +10,8 @@ from .shared_transform import Compose
 
 def get_warpmatrix(theta, size_input, size_dst, size_target):
     """Calculate the transformation matrix under the constraint of unbiased.
+    Paper ref: Huang et al. The Devil is in the Details: Delving into Unbiased
+    Data Processing for Human Pose Estimation (CVPR 2020).
 
     Args:
         theta (float): Rotation angle in degrees.
@@ -65,6 +67,9 @@ def _get_multi_scale_size(image,
         input_size (int): Size of the image input.
         current_scale (float): Scale factor.
         min_scale (float): Minimal scale.
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Returns:
         tuple: A tuple containing multi-scale sizes.
@@ -171,6 +176,9 @@ class HeatmapGenerator:
         num_joints (int): Number of keypoints
         output_res (int): Size of feature map
         sigma (int): Sigma of the heatmaps.
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self, output_res, num_joints, sigma=-1, use_udp=False):
@@ -321,6 +329,9 @@ class BottomUpRandomAffine:
         scale_type: wrt ``long`` or ``short`` length of the image.
         trans_factor: Translation factor.
         scale_aware_sigma: Option to use scale-aware sigma
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self,
@@ -461,6 +472,9 @@ class BottomUpGenerateTarget:
     Args:
         sigma (int): Sigma of heatmap Gaussian
         max_num_people (int): Maximum number of people in an image
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self, sigma, max_num_people, use_udp=False):
@@ -513,6 +527,9 @@ class BottomUpGetImgSize:
     Args:
         test_scale_factor (List[float]): Multi scale
         current_scale (int): default 1
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self, test_scale_factor, current_scale=1, use_udp=False):
@@ -572,6 +589,9 @@ class BottomUpResizeAlign:
 
     Args:
         transforms (List): ToTensor & Normalize
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self, transforms, use_udp=False):

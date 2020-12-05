@@ -253,7 +253,8 @@ class TopDown(BasePose):
             unbiased=self.test_cfg['unbiased_decoding'],
             kernel=self.test_cfg['modulate_kernel'],
             use_udp=self.test_cfg.get('use_udp', False),
-            kpd=self.test_cfg.get('kpd', 0.0546875),
+            kps_pose_distance=self.test_cfg.get('kps_pose_distance',
+                                                0.0546875),
             target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
 
         all_preds = np.zeros((1, preds.shape[1], 3), dtype=np.float32)

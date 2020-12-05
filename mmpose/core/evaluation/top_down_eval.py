@@ -251,14 +251,17 @@ def _taylor(heatmap, coord):
 
 
 def post_dark(coords, batch_heatmaps, kernel=3):
-    """DARK post-pocessing.
+    """DARK post-pocessing. Implemented by udp. Paper ref: Huang et al. The
+    Devil is in the Details: Delving into Unbiased Data Processing for Human
+    Pose Estimation (CVPR 2020). Zhang et al. Distribution-Aware Coordinate
+    Representation for Human Pose Estimation (CVPR 2020).
 
     Note:
-        batch_size: B
-        num_keypoints: K
-        num_persons: N
-        hight_of_heatmaps: H
-        width_of_heatmaps: W
+        batch size: B
+        num keypoints: K
+        num persons: N
+        hight of heatmaps: H
+        width of heatmaps: W
         B=1 for bottom_up paradigm where all persons share the same heatmap.
         B=N for top_down paradigm where each person has its own heatmaps.
 
@@ -280,17 +283,17 @@ def post_dark(coords, batch_heatmaps, kernel=3):
             cv2.GaussianBlur(heatmap, (kernel, kernel), 0, heatmap)
     np.clip(batch_heatmaps, 0.001, 50, batch_heatmaps)
     np.log(batch_heatmaps, batch_heatmaps)
-    batch_heatmaps = np.transpose(batch_heatmaps, (2, 3, 0, 1)).reshape(
-        (H, W, -1))
+    batch_heatmaps = np.transpose(batch_heatmaps,
+                                  (2, 3, 0, 1)).reshape(H, W, -1)
     batch_heatmaps_pad = cv2.copyMakeBorder(
         batch_heatmaps, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
     batch_heatmaps_pad = np.transpose(
-        batch_heatmaps_pad.reshape((H + 2, W + 2, B, K)),
+        batch_heatmaps_pad.reshape(H + 2, W + 2, B, K),
         (2, 3, 0, 1)).flatten()
 
     index = coords[..., 0] + 1 + (coords[..., 1] + 1) * (W + 2)
     index += (W + 2) * (H + 2) * np.arange(0, B * K).reshape(-1, K)
-    index = index.astype(np.int).reshape((-1, 1))
+    index = index.astype(np.int).reshape(-1, 1)
     i_ = batch_heatmaps_pad[index]
     ix1 = batch_heatmaps_pad[index + 1]
     iy1 = batch_heatmaps_pad[index + W + 2]
@@ -302,12 +305,12 @@ def post_dark(coords, batch_heatmaps, kernel=3):
     dx = 0.5 * (ix1 - ix1_)
     dy = 0.5 * (iy1 - iy1_)
     derivative = np.concatenate([dx, dy], axis=1)
-    derivative = derivative.reshape((N, K, 2, 1))
+    derivative = derivative.reshape(N, K, 2, 1)
     dxx = ix1 - 2 * i_ + ix1_
     dyy = iy1 - 2 * i_ + iy1_
     dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
     hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1)
-    hessian = hessian.reshape((N, K, 2, 2))
+    hessian = hessian.reshape(N, K, 2, 2)
     hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
     coords -= np.einsum('ijmn,ijnk->ijmk', hessian, derivative).squeeze()
     return coords
@@ -361,15 +364,15 @@ def keypoints_from_heatmaps(heatmaps,
                             post_process=True,
                             unbiased=False,
                             kernel=11,
-                            kpd=0.0546875,
+                            kps_pose_distance=0.0546875,
                             use_udp=False,
                             target_type='GaussianHeatMap'):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
     Note:
-        batch_size: N
-        num_keypoints: K
+        batch size: N
+        num keypoints: K
         heatmap height: H
         heatmap width: W
 
@@ -385,9 +388,10 @@ def keypoints_from_heatmaps(heatmaps,
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
-        kpd (float): Keypoint pose distance for UDP.
+        kps_pose_distance (float): Keypoint pose distance for UDP.
         use_udp (bool): Use unbiased data processing.
         target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
+            GaussianHeatMap: Classification target with gaussian distribution.
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -413,17 +417,15 @@ def keypoints_from_heatmaps(heatmaps,
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
                     cv2.GaussianBlur(heatmap, (kt, kt), 0, heatmap)
-            kps_pos_distance = kpd * H
-            offset_x = heatmaps[:, 1::3, :] * kps_pos_distance
-            offset_y = heatmaps[:, 2::3, :] * kps_pos_distance
+            kps_pos_distance = kps_pose_distance * H
+            offset_x = heatmaps[:, 1::3, :].flatten() * kps_pos_distance
+            offset_y = heatmaps[:, 2::3, :].flatten() * kps_pos_distance
             heatmaps = heatmaps[:, ::3, :]
             preds, maxvals = _get_max_preds(heatmaps)
-            for n in range(preds.shape[0]):
-                for p in range(preds.shape[1]):
-                    px = int(preds[n][p][0])
-                    py = int(preds[n][p][1])
-                    preds[n][p][0] += offset_x[n, p, py, px]
-                    preds[n][p][1] += offset_y[n, p, py, px]
+            index = preds[..., 0] + preds[..., 1] * W
+            index += W * H * np.arange(0, N * K / 3)
+            index = index.astype(np.int).reshape(N, K // 3, 1)
+            preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
     else:
         preds, maxvals = _get_max_preds(heatmaps)
         if post_process:

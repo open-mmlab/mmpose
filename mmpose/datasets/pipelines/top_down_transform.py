@@ -169,6 +169,11 @@ class TopDownAffine:
     Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
     'rotation' and 'center'. Modified keys:'img', 'joints_3d', and
     'joints_3d_visible'.
+
+    Args:
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
     def __init__(self, use_udp=False):
@@ -384,18 +389,33 @@ class TopDownGenerateTarget:
 
     def _udp_generate_target(self, cfg, joints_3d, joints_3d_visible, factor,
                              target_type):
-        """Generate the target heatmap via 'UDP' approach.
+        """Generate the target heatmap via 'UDP' approach. Paper ref: Huang et
+        al. The Devil is in the Details: Delving into Unbiased Data Processing
+        for Human Pose Estimation (CVPR 2020).
+
+        Note:
+            num keypoints: K
+            heatmap height: H
+            heatmap width: W
+            num target channels: C
+            C = K if target_type=='GaussianHeatMap'
+            C = 3*K if target_type=='CombinedTarget'
 
         Args:
             cfg (dict): data config
-            joints_3d: np.ndarray ([num_joints, 3])
-            joints_3d_visible: np.ndarray ([num_joints, 3])
-
+            joints_3d (np.ndarray[K, 3]): Annotated keypoints.
+            joints_3d_visible (np.ndarray[K, 3]): Visibility of keypoints.
+            factor (float): kernel factor for GaussianHeatMap target or
+                keypoint pose distance for CombinedTarget.
+            target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
+                GaussianHeatMap: Heatmap target with gaussian distribution.
+                CombinedTarget: The combination of classification target
+                (response map) and regression target (offset map).
         Returns:
             tuple: A tuple containing targets.
 
-            - target: Target heatmaps.
-            - target_weight: (1: visible, 0: invisible)
+            - target (np.ndarray[C, H, W]): Target heatmaps.
+            - target_weight (np.ndarray[K, 1]): (1: visible, 0: invisible)
         """
         num_joints = cfg['num_joints']
         image_size = cfg['image_size']
@@ -430,7 +450,7 @@ class TopDownGenerateTarget:
                 # # Generate gaussian
                 size = 2 * tmp_size + 1
                 x = np.arange(0, size, 1, np.float32)
-                y = x[:, np.newaxis]
+                y = x[:, None]
                 mu_x_ac = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y_ac = joints_3d[joint_id][1] / feat_stride[1]
                 x0 = y0 = size // 2
@@ -458,8 +478,8 @@ class TopDownGenerateTarget:
             feat_x_int = np.arange(0, feat_width)
             feat_y_int = np.arange(0, feat_height)
             feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
-            feat_x_int = feat_x_int.reshape((-1, ))
-            feat_y_int = feat_y_int.reshape((-1, ))
+            feat_x_int = feat_x_int.flatten()
+            feat_y_int = feat_y_int.flatten()
             kps_pos_distance = factor * heatmap_size[1]
             feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
             for joint_id in range(num_joints):
@@ -474,8 +494,8 @@ class TopDownGenerateTarget:
                     target[joint_id, 0, keep_pos] = 1
                     target[joint_id, 1, keep_pos] = x_offset[keep_pos]
                     target[joint_id, 2, keep_pos] = y_offset[keep_pos]
-            target = target.reshape(
-                (num_joints * 3, heatmap_size[1], heatmap_size[0]))
+            target = target.reshape(num_joints * 3, heatmap_size[1],
+                                    heatmap_size[0])
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)

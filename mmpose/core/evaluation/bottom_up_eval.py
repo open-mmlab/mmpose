@@ -198,6 +198,8 @@ def get_group_preds(grouped_joints,
             wrt [width, height].
         heatmap_size (np.ndarray[2, ]): Size of the destination heatmaps.
         use_udp (bool): Unbiased data processing.
+             Paper ref: Huang et al. The Devil is in the Details: Delving into
+             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Returns:
         list: List of the pose result for each person.
