@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from munkres import Munkres
 
-from mmpose.core.evaluation import post_dark
+from mmpose.core.evaluation import post_dark_udp
 
 
 def _py_max_match(scores):
@@ -378,8 +378,8 @@ class HeatmapParser:
             if self.use_udp:
                 for i in range(len(ans)):
                     if ans[i].shape[0] > 0:
-                        ans[i][..., :2] = post_dark(ans[i][..., :2].copy(),
-                                                    heatmaps[i:i + 1, :])
+                        ans[i][..., :2] = post_dark_udp(
+                            ans[i][..., :2].copy(), heatmaps[i:i + 1, :])
             else:
                 ans = self.adjust(ans, heatmaps)
 

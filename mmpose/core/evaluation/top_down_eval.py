@@ -250,7 +250,7 @@ def _taylor(heatmap, coord):
     return coord
 
 
-def post_dark(coords, batch_heatmaps, kernel=3):
+def post_dark_udp(coords, batch_heatmaps, kernel=3):
     """DARK post-pocessing. Implemented by udp. Paper ref: Huang et al. The
     Devil is in the Details: Delving into Unbiased Data Processing for Human
     Pose Estimation (CVPR 2020). Zhang et al. Distribution-Aware Coordinate
@@ -364,7 +364,7 @@ def keypoints_from_heatmaps(heatmaps,
                             post_process=True,
                             unbiased=False,
                             kernel=11,
-                            kps_pose_distance=0.0546875,
+                            keypoint_pose_distance=0.0546875,
                             use_udp=False,
                             target_type='GaussianHeatMap'):
     """Get final keypoint predictions from heatmaps and transform them back to
@@ -388,7 +388,7 @@ def keypoints_from_heatmaps(heatmaps,
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
-        kps_pose_distance (float): Keypoint pose distance for UDP.
+        keypoint_pose_distance (float): Keypoint pose distance for UDP.
         use_udp (bool): Use unbiased data processing.
         target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
             GaussianHeatMap: Classification target with gaussian distribution.
@@ -396,7 +396,6 @@ def keypoints_from_heatmaps(heatmaps,
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
-
 
     Returns:
         tuple: A tuple containing keypoint predictions and scores.
@@ -411,13 +410,13 @@ def keypoints_from_heatmaps(heatmaps,
         if target_type == 'GaussianHeatMap':
             preds, maxvals = _get_max_preds(heatmaps)
             if post_process:
-                preds = post_dark(preds, heatmaps, kernel=kernel)
+                preds = post_dark_udp(preds, heatmaps, kernel=kernel)
         elif target_type == 'CombinedTarget':
             for person_heatmaps in heatmaps:
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
                     cv2.GaussianBlur(heatmap, (kt, kt), 0, heatmap)
-            kps_pos_distance = kps_pose_distance * H
+            kps_pos_distance = keypoint_pose_distance * H
             offset_x = heatmaps[:, 1::3, :].flatten() * kps_pos_distance
             offset_y = heatmaps[:, 2::3, :].flatten() * kps_pos_distance
             heatmaps = heatmaps[:, ::3, :]

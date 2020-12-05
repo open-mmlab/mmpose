@@ -232,7 +232,7 @@ class TopDownGenerateTarget:
             encoding methods.
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
-        kpd: hyper-parameter for UDP to design the supervision.
+        keypoint_pose_distance: Keypoint pose distance for UDP.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
         target_type (str): supported targets: 'GaussianHeatMap',
@@ -246,14 +246,14 @@ class TopDownGenerateTarget:
     def __init__(self,
                  sigma=2,
                  kernel=(11, 11),
-                 kpd=0.0546875,
+                 keypoint_pose_distance=0.0546875,
                  target_type='GaussianHeatMap',
                  encoding='MSRA',
                  unbiased_encoding=False):
         self.sigma = sigma
         self.unbiased_encoding = unbiased_encoding
         self.kernel = kernel
-        self.kpd = kpd
+        self.keypoint_pose_distance = keypoint_pose_distance
         self.target_type = target_type
         self.encoding = encoding
 
@@ -411,6 +411,7 @@ class TopDownGenerateTarget:
                 GaussianHeatMap: Heatmap target with gaussian distribution.
                 CombinedTarget: The combination of classification target
                 (response map) and regression target (offset map).
+
         Returns:
             tuple: A tuple containing targets.
 
@@ -551,7 +552,7 @@ class TopDownGenerateTarget:
                     self.kernel)
         elif self.encoding == 'UDP':
             if self.target_type == 'CombinedTarget':
-                factors = self.kpd
+                factors = self.keypoint_pose_distance
                 channel_factor = 3
             elif self.target_type == 'GaussianHeatMap':
                 factors = self.sigma
