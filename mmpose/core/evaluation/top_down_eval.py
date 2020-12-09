@@ -364,7 +364,7 @@ def keypoints_from_heatmaps(heatmaps,
                             post_process=True,
                             unbiased=False,
                             kernel=11,
-                            keypoint_pose_distance=0.0546875,
+                            valid_radius_factor=0.0546875,
                             use_udp=False,
                             target_type='GaussianHeatMap'):
     """Get final keypoint predictions from heatmaps and transform them back to
@@ -388,7 +388,8 @@ def keypoints_from_heatmaps(heatmaps,
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2.
-        keypoint_pose_distance (float): Keypoint pose distance for UDP.
+        valid_radius_factor (float): The radius factor of the positive area
+            in classification heatmap for UDP.
         use_udp (bool): Use unbiased data processing.
         target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
             GaussianHeatMap: Classification target with gaussian distribution.
@@ -416,9 +417,10 @@ def keypoints_from_heatmaps(heatmaps,
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
                     cv2.GaussianBlur(heatmap, (kt, kt), 0, heatmap)
-            kps_pos_distance = keypoint_pose_distance * H
-            offset_x = heatmaps[:, 1::3, :].flatten() * kps_pos_distance
-            offset_y = heatmaps[:, 2::3, :].flatten() * kps_pos_distance
+            # valid radius is in direct proportion to the height of heatmap.
+            valid_radius = valid_radius_factor * H
+            offset_x = heatmaps[:, 1::3, :].flatten() * valid_radius
+            offset_y = heatmaps[:, 2::3, :].flatten() * valid_radius
             heatmaps = heatmaps[:, ::3, :]
             preds, maxvals = _get_max_preds(heatmaps)
             index = preds[..., 0] + preds[..., 1] * W

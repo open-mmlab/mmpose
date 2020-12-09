@@ -8,7 +8,7 @@ from mmpose.datasets.registry import PIPELINES
 from .shared_transform import Compose
 
 
-def get_warpmatrix(theta, size_input, size_dst, size_target):
+def get_warp_matrix(theta, size_input, size_dst, size_target):
     """Calculate the transformation matrix under the constraint of unbiased.
     Paper ref: Huang et al. The Devil is in the Details: Delving into Unbiased
     Data Processing for Human Pose Estimation (CVPR 2020).
@@ -22,8 +22,7 @@ def get_warpmatrix(theta, size_input, size_dst, size_target):
     Returns:
         matrix (np.ndarray): A matrix for transformation.
     """
-    size_target = size_target
-    theta = theta / 180.0 * math.pi
+    theta = np.deg2rad(theta)
     matrix = np.zeros((2, 3), dtype=np.float32)
     scale_x = size_dst[0] / size_target[0]
     scale_y = size_dst[1] / size_target[1]
@@ -40,8 +39,17 @@ def get_warpmatrix(theta, size_input, size_dst, size_target):
     return matrix
 
 
-def affine_joints(joints, mat):
-    """Affine the joints by the transform matrix."""
+def warp_affine_joints(joints, mat):
+    """Apply affine transformation defined by the transform matrix on the
+    joints.
+
+    Args:
+        joints (np.ndarray[..., 2]): Origin coordinate of joints.
+        mat (np.ndarray[3, 2]): The affine matrix.
+
+    Returns:
+        matrix (np.ndarray[..., 2]): Result coordinate of joints.
+    """
     joints = np.array(joints)
     shape = joints.shape
     joints = joints.reshape(-1, 2)
@@ -158,7 +166,7 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
     _, center, scale = _get_multi_scale_size(image, input_size, min_scale,
                                              min_scale, True)
 
-    trans = get_warpmatrix(
+    trans = get_warp_matrix(
         theta=0,
         size_input=np.array(scale, dtype=np.float),
         size_dst=np.array(size_resized, dtype=np.float) - 1.0,
@@ -415,7 +423,7 @@ class BottomUpRandomAffine:
             center[1] += dy
         if self.use_udp:
             for i, _output_size in enumerate(self.output_size):
-                trans = get_warpmatrix(
+                trans = get_warp_matrix(
                     theta=aug_rot,
                     size_input=center * 2.0,
                     size_dst=np.array(
@@ -426,19 +434,18 @@ class BottomUpRandomAffine:
                     trans, (int(_output_size), int(_output_size)),
                     flags=cv2.INTER_LINEAR) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
-                joints[i][:, :,
-                          0:2] = affine_joints(joints[i][:, :, 0:2].copy(),
-                                               trans)
+                joints[i][:, :, 0:2] = \
+                    warp_affine_joints(joints[i][:, :, 0:2].copy(), trans)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-            mat_input = get_warpmatrix(
+            mat_input = get_warp_matrix(
                 theta=aug_rot,
                 size_input=center * 2.0,
                 size_dst=np.array(
                     (self.input_size, self.input_size), dtype=np.float) - 1.0,
                 size_target=np.array((scale, scale), dtype=np.float))
             image = cv2.warpAffine(
-                image.copy(),
+                image,
                 mat_input, (int(self.input_size), int(self.input_size)),
                 flags=cv2.INTER_LINEAR)
         else:
@@ -450,8 +457,8 @@ class BottomUpRandomAffine:
                     (_output_size, _output_size)) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
 
-                joints[i][:, :, 0:2] = affine_joints(joints[i][:, :, 0:2],
-                                                     mat_output)
+                joints[i][:, :, 0:2] = \
+                    warp_affine_joints(joints[i][:, :, 0:2], mat_output)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
             mat_input = self._get_affine_matrix(

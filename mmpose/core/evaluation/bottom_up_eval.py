@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from mmpose.core.post_processing import transform_preds
-from mmpose.datasets.pipelines import affine_joints, get_warpmatrix
+from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
 
 
 def get_multi_stage_outputs(outputs,
@@ -207,13 +207,13 @@ def get_group_preds(grouped_joints,
     if use_udp:
         if grouped_joints[0].shape[0] > 0:
             heatmap_size_t = np.array(heatmap_size, dtype=np.float32) - 1.0
-            trans = get_warpmatrix(
+            trans = get_warp_matrix(
                 theta=0,
                 size_input=heatmap_size_t,
                 size_dst=scale,
                 size_target=heatmap_size_t)
             grouped_joints[0][..., :2] = \
-                affine_joints(grouped_joints[0][..., :2], trans)
+                warp_affine_joints(grouped_joints[0][..., :2], trans)
         results = [person for person in grouped_joints[0]]
     else:
         results = []

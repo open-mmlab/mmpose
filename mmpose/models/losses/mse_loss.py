@@ -43,7 +43,7 @@ class JointsMSELoss(nn.Module):
 
 
 @LOSSES.register_module()
-class JointsMSELoss_Combined(nn.Module):
+class CombinedTargetMSELoss(nn.Module):
     """MSE loss for combined target.
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).

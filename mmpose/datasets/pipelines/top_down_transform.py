@@ -3,7 +3,7 @@ import numpy as np
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform)
-from mmpose.datasets.pipelines import affine_joints, get_warpmatrix
+from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
 from mmpose.datasets.registry import PIPELINES
 
 
@@ -190,12 +190,13 @@ class TopDownAffine:
         r = results['rotation']
 
         if self.use_udp:
-            trans = get_warpmatrix(r, c * 2.0, image_size - 1.0, s * 200.0)
+            trans = get_warp_matrix(r, c * 2.0, image_size - 1.0, s * 200.0)
             img = cv2.warpAffine(
-                img.copy(),
+                img,
                 trans, (int(image_size[0]), int(image_size[1])),
                 flags=cv2.INTER_LINEAR)
-            joints_3d[:, 0:2] = affine_joints(joints_3d[:, 0:2].copy(), trans)
+            joints_3d[:, 0:2] = \
+                warp_affine_joints(joints_3d[:, 0:2].copy(), trans)
         else:
             trans = get_affine_transform(c, s, r, image_size)
             img = cv2.warpAffine(
@@ -246,14 +247,14 @@ class TopDownGenerateTarget:
     def __init__(self,
                  sigma=2,
                  kernel=(11, 11),
-                 keypoint_pose_distance=0.0546875,
+                 valid_radius_factor=0.0546875,
                  target_type='GaussianHeatMap',
                  encoding='MSRA',
                  unbiased_encoding=False):
         self.sigma = sigma
         self.unbiased_encoding = unbiased_encoding
         self.kernel = kernel
-        self.keypoint_pose_distance = keypoint_pose_distance
+        self.valid_radius_factor = valid_radius_factor
         self.target_type = target_type
         self.encoding = encoding
 
@@ -406,7 +407,7 @@ class TopDownGenerateTarget:
             joints_3d (np.ndarray[K, 3]): Annotated keypoints.
             joints_3d_visible (np.ndarray[K, 3]): Visibility of keypoints.
             factor (float): kernel factor for GaussianHeatMap target or
-                keypoint pose distance for CombinedTarget.
+                valid radius factor for CombinedTarget.
             target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
                 GaussianHeatMap: Heatmap target with gaussian distribution.
                 CombinedTarget: The combination of classification target
@@ -481,13 +482,15 @@ class TopDownGenerateTarget:
             feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
             feat_x_int = feat_x_int.flatten()
             feat_y_int = feat_y_int.flatten()
-            kps_pos_distance = factor * heatmap_size[1]
+            # Calculate the radius of the positive area in classification
+            #   heatmap.
+            valid_radius = factor * heatmap_size[1]
             feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
             for joint_id in range(num_joints):
                 mu_x = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y = joints_3d[joint_id][1] / feat_stride[1]
-                x_offset = (mu_x - feat_x_int) / kps_pos_distance
-                y_offset = (mu_y - feat_y_int) / kps_pos_distance
+                x_offset = (mu_x - feat_x_int) / valid_radius
+                y_offset = (mu_y - feat_y_int) / valid_radius
                 dis = x_offset**2 + y_offset**2
                 keep_pos = np.where(dis <= 1)[0]
                 v = target_weight[joint_id]
@@ -552,7 +555,7 @@ class TopDownGenerateTarget:
                     self.kernel)
         elif self.encoding == 'UDP':
             if self.target_type == 'CombinedTarget':
-                factors = self.keypoint_pose_distance
+                factors = self.valid_radius_factor
                 channel_factor = 3
             elif self.target_type == 'GaussianHeatMap':
                 factors = self.sigma

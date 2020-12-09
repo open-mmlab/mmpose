@@ -253,8 +253,8 @@ class TopDown(BasePose):
             unbiased=self.test_cfg['unbiased_decoding'],
             kernel=self.test_cfg['modulate_kernel'],
             use_udp=self.test_cfg.get('use_udp', False),
-            keypoint_pose_distance=self.test_cfg.get('keypoint_pose_distance',
-                                                     0.0546875),
+            valid_radius_factor=self.test_cfg.get('valid_radius_factor',
+                                                  0.0546875),
             target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
 
         all_preds = np.zeros((1, preds.shape[1], 3), dtype=np.float32)

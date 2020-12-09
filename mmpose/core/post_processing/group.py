@@ -304,8 +304,8 @@ class HeatmapParser:
             if keypoints[i, 2] > 0:
                 # save tag value of detected keypoint
                 x, y = keypoints[i][:2].astype(int)
-                x = max(0, min(x, W - 1))
-                y = max(0, min(y, H - 1))
+                x = np.clip(x, 0, W - 1)
+                y = np.clip(y, 0, H - 1)
                 tags.append(tag[i, y, x])
 
         # mean tag of current detected people

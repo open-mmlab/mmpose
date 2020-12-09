@@ -69,7 +69,7 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
     """
     assert output_flipped.ndim == 4, \
         'output_flipped should be [batch_size, num_keypoints, height, width]'
-
+    assert target_type in ('GaussianHeatMap', 'CombinedTarget')
     shape_ori = output_flipped.shape
     channels = 1
     if target_type == 'CombinedTarget':
@@ -122,6 +122,8 @@ def transform_preds(coords, center, scale, output_size, use_udp=False):
     assert len(scale) == 2
     assert len(output_size) == 2
     if use_udp:
+        # The input scale is normalized by deviding a factor of 200.
+        # Here is a recover.
         scale = scale * 200.0
         scale_x = scale[0] / (output_size[0] - 1.0)
         scale_y = scale[1] / (output_size[1] - 1.0)
