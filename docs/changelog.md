@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.9.0 (30/11/2020)
+
+**Highlights**
+
+1. Support more human pose estimation methods.
+    - [MSPN](https://arxiv.org/abs/1901.00148)
+    - [RSN](https://arxiv.org/abs/2003.04030)
+2. Support video pose estimation datasets.
+    - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
+3. Support Onnx model conversion.
+
+**New Features**
+
+- Support MSPN ([#278](https://github.com/open-mmlab/mmpose/pull/278))
+- Support RSN ([#221](https://github.com/open-mmlab/mmpose/pull/221), [#318](https://github.com/open-mmlab/mmpose/pull/318))
+- Support new post-processing method for MSPN & RSN ([#288](https://github.com/open-mmlab/mmpose/pull/288))
+- Support sub-JHMDB dataset ([#292](https://github.com/open-mmlab/mmpose/pull/292))
+- Support urls for pre-trained models in config files ([#232](https://github.com/open-mmlab/mmpose/pull/232))
+- Support Onnx ([#305](https://github.com/open-mmlab/mmpose/pull/305))
+
+**Bug Fixes**
+
+- Fix model download links in README ([#255](https://github.com/open-mmlab/mmpose/pull/255), [#315](https://github.com/open-mmlab/mmpose/pull/315))
+
+**Breaking Changes**
+
+- `post_process=True|False` and `unbiased_decoding=True|False` are deprecated, use `post_process=None|default|unbiased` etc. instead ([#288](https://github.com/open-mmlab/mmpose/pull/288))
+
+**Improvements**
+
+- Enrich the model zoo ([#256](https://github.com/open-mmlab/mmpose/pull/256), [#320](https://github.com/open-mmlab/mmpose/pull/320))
+- Set the default map_location as 'cpu' to reduce gpu memory cost ([#227](https://github.com/open-mmlab/mmpose/pull/227))
+- Support return heatmaps and backbone features for bottom-up models ([#229](https://github.com/open-mmlab/mmpose/pull/229))
+- Upgrade mmcv maximum & minimum version ([#269](https://github.com/open-mmlab/mmpose/pull/269), [#313](https://github.com/open-mmlab/mmpose/pull/313))
+- Automatically add modelzoo statistics to readthedocs ([#252](https://github.com/open-mmlab/mmpose/pull/252))
+- Fix Pylint issues ([#258](https://github.com/open-mmlab/mmpose/pull/258), [#259](https://github.com/open-mmlab/mmpose/pull/259), [#260](https://github.com/open-mmlab/mmpose/pull/260), [#262](https://github.com/open-mmlab/mmpose/pull/262), [#265](https://github.com/open-mmlab/mmpose/pull/265), [#267](https://github.com/open-mmlab/mmpose/pull/267), [#268](https://github.com/open-mmlab/mmpose/pull/268), [#270](https://github.com/open-mmlab/mmpose/pull/270), [#271](https://github.com/open-mmlab/mmpose/pull/271), [#272](https://github.com/open-mmlab/mmpose/pull/272), [#273](https://github.com/open-mmlab/mmpose/pull/273), [#275](https://github.com/open-mmlab/mmpose/pull/275), [#276](https://github.com/open-mmlab/mmpose/pull/276), [#283](https://github.com/open-mmlab/mmpose/pull/283), [#285](https://github.com/open-mmlab/mmpose/pull/285), [#293](https://github.com/open-mmlab/mmpose/pull/293), [#294](https://github.com/open-mmlab/mmpose/pull/294), [#295](https://github.com/open-mmlab/mmpose/pull/295))
+- Improve README ([#226](https://github.com/open-mmlab/mmpose/pull/226), [#257](https://github.com/open-mmlab/mmpose/pull/257), [#264](https://github.com/open-mmlab/mmpose/pull/264), [#280](https://github.com/open-mmlab/mmpose/pull/280), [#296](https://github.com/open-mmlab/mmpose/pull/296))
+- Support PyTorch 1.7 in CI ([#274](https://github.com/open-mmlab/mmpose/pull/274))
+- Add docs/tutorials for running demos ([#263](https://github.com/open-mmlab/mmpose/pull/263))
+
 ## v0.8.0 (31/10/2020)
 
 **Highlights**
@@ -16,11 +56,11 @@
 
 **New Features**
 
-- Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195)).
-- Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220)).
-- Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202)).
-- Support adversarial training for 3D human shape recovery ([#192](https://github.com/open-mmlab/mmpose/pull/192)).
-- Support multi-stage losses ([#204](https://github.com/open-mmlab/mmpose/pull/204)).
+- Support [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) dataset ([#195](https://github.com/open-mmlab/mmpose/pull/195))
+- Support [PoseTrack18](https://posetrack.net/) dataset ([#220](https://github.com/open-mmlab/mmpose/pull/220))
+- Support [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M) dataset ([#202](https://github.com/open-mmlab/mmpose/pull/202))
+- Support adversarial training for 3D human shape recovery ([#192](https://github.com/open-mmlab/mmpose/pull/192))
+- Support multi-stage losses ([#204](https://github.com/open-mmlab/mmpose/pull/204))
 
 **Bug Fixes**
 
@@ -44,7 +84,7 @@
 3. Support more 2D hand keypoint estimation datasets.
     - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
     - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
-4. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html).
+4. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
     - ShuffleNetv2
 5. Support hand demo and whole-body demo.
 

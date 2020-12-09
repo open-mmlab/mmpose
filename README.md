@@ -3,10 +3,10 @@
 </div>
 
 ## Introduction
-
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
+[![PyPI](https://badge.fury.io/py/mmpose.svg)](https://pypi.org/project/mmpose/)
 [![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
@@ -72,8 +72,11 @@ Supported methods for human pose estimation:
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [Hourglass](configs/top_down/hourglass/README.md)
 - [x] [SCNet](configs/top_down/scnet/README.md)
+- [x] [Associative Embedding](configs/bottom_up/hrnet/README.md)
 - [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
 - [x] [DarkPose](configs/top_down/darkpose/README.md)
+- [x] [MSPN](configs/top_down/mspn/README.md)
+- [x] [RSN](configs/top_down/rsn/README.md)
 
 Supported datasets:
 
@@ -84,6 +87,7 @@ Supported datasets:
 - [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
 - [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [x] [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
 - [x] [H36m](http://vision.imar.ro/human3.6m/description.php)
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)

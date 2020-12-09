@@ -250,7 +250,7 @@ class TopDown(BasePose):
             c,
             s,
             post_process=self.test_cfg['post_process'],
-            unbiased=self.test_cfg['unbiased_decoding'],
+            unbiased=self.test_cfg.get('unbiased_decoding', False),
             kernel=self.test_cfg['modulate_kernel'],
             use_udp=self.test_cfg.get('use_udp', False),
             valid_radius_factor=self.test_cfg.get('valid_radius_factor',

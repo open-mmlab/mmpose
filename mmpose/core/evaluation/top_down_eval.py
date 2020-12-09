@@ -1,3 +1,5 @@
+import warnings
+
 import cv2
 import numpy as np
 
@@ -14,17 +16,20 @@ def _calc_distances(preds, targets, mask, normalize):
     Args:
         preds (np.ndarray[N, K, 2]): Predicted keypoint location.
         targets (np.ndarray[N, K, 2]): Groundtruth keypoint location.
-        normalize (np.ndarray[N, 2]): Typical value is heatmap_size/10
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        normalize (np.ndarray[N, 2]): Typical value is heatmap_size
 
     Returns:
         np.ndarray[K, N]: The normalized distances.
           If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
-    distances = np.full((K, N), -1, dtype=np.float32)
-    distances[mask.T] = np.linalg.norm(
+    distances = np.full((N, K), -1, dtype=np.float32)
+    distances[mask] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
-    return distances
+    return distances.T
 
 
 def _distance_acc(distances, thr=0.5):
@@ -83,14 +88,16 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
-def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
+def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
     Note:
-        The PCK performance metric is the percentage of joints with
-        predicted locations that are no further than a normalized
-        distance of the ground truth. Here we use [w,h]/10.
+        PCK metric measures accuracy of the localization of the body joints.
+        The distances between predicted positions and the ground-truth ones
+        are typically normalized by the bounding box size.
+        The threshold (thr) of the normalized distance is commonly set
+        as 0.05, 0.1 or 0.2 etc.
 
         batch_size: N
         num_keypoints: K
@@ -103,7 +110,7 @@ def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
         mask (np.ndarray[N, K]): Visibility of the target. False for invisible
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
-        thr (float): Threshold of PCK calculation.
+        thr (float): Threshold of PCK calculation. Default 0.05.
         normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
     Returns:
@@ -117,7 +124,7 @@ def pose_pck_accuracy(output, target, mask, thr=0.5, normalize=None):
     if K == 0:
         return None, 0, 0
     if normalize is None:
-        normalize = np.tile(np.array([[H, W]]) / 10, (N, 1))
+        normalize = np.tile(np.array([[H, W]]), (N, 1))
 
     pred, _ = _get_max_preds(output)
     gt, _ = _get_max_preds(target)
@@ -129,6 +136,12 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
     averaged accuracy across all keypoints for coordinates.
 
     Note:
+        PCK metric measures accuracy of the localization of the body joints.
+        The distances between predicted positions and the ground-truth ones
+        are typically normalized by the bounding box size.
+        The threshold (thr) of the normalized distance is commonly set
+        as 0.05, 0.1 or 0.2 etc.
+
         batch_size: N
         num_keypoints: K
 
@@ -139,7 +152,7 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
         thr (float): Threshold of PCK calculation.
-        normalize (np.ndarray[N, 2]): Normalization factor.
+        normalize (np.ndarray[N, 2]): Normalization factor for H&W.
 
     Returns:
         tuple: A tuple containing keypoint accuracy.
@@ -361,8 +374,8 @@ def _gaussian_blur(heatmaps, kernel=11):
 def keypoints_from_heatmaps(heatmaps,
                             center,
                             scale,
-                            post_process=True,
                             unbiased=False,
+                            post_process='default',
                             kernel=11,
                             valid_radius_factor=0.0546875,
                             use_udp=False,
@@ -381,8 +394,13 @@ def keypoints_from_heatmaps(heatmaps,
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        post_process (bool): Option to use post processing or not.
-        unbiased (bool): Option to use unbiased decoding.
+        post_process (str/None): Choice of methods to post-process
+            heatmaps. Currently supported: None, 'default', 'unbiased',
+            'megvii'.
+        unbiased (bool): Option to use unbiased decoding. Mutually
+            exclusive with megvii.
+            Note: this arg is deprecated and unbiased=True can be replaced
+            by post_process='unbiased'
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
         kernel (int): Gaussian kernel size (K) for modulation, which should
@@ -404,14 +422,50 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
+    # detect conflicts
+    if unbiased:
+        assert post_process not in [False, None, 'megvii']
+    if post_process in ['megvii', 'unbiased']:
+        assert kernel > 0
+    if use_udp:
+        assert not post_process == 'megvii'
+
+    # normalize configs
+    if post_process is False:
+        warnings.warn(
+            'post_process=False is deprecated, '
+            'please use post_process=None instead', DeprecationWarning)
+        post_process = None
+    elif post_process is True:
+        if unbiased is True:
+            warnings.warn(
+                'post_process=True, unbiased=True is deprecated,'
+                " please use post_process='unbiased' instead",
+                DeprecationWarning)
+            post_process = 'unbiased'
+        else:
+            warnings.warn(
+                'post_process=True, unbiased=False is deprecated, '
+                "please use post_process='default' instead",
+                DeprecationWarning)
+            post_process = 'default'
+    elif post_process == 'default':
+        if unbiased is True:
+            warnings.warn(
+                'unbiased=True is deprecated, please use '
+                "post_process='unbiased' instead", DeprecationWarning)
+            post_process = 'unbiased'
+
+    # start processing
+    if post_process == 'megvii':
+        heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
 
     N, K, H, W = heatmaps.shape
     if use_udp:
         assert target_type in ['GaussianHeatMap', 'CombinedTarget']
         if target_type == 'GaussianHeatMap':
             preds, maxvals = _get_max_preds(heatmaps)
-            if post_process:
-                preds = post_dark_udp(preds, heatmaps, kernel=kernel)
+            preds = post_dark_udp(preds, heatmaps, kernel=kernel)
         elif target_type == 'CombinedTarget':
             for person_heatmaps in heatmaps:
                 for i, heatmap in enumerate(person_heatmaps):
@@ -429,33 +483,35 @@ def keypoints_from_heatmaps(heatmaps,
             preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
     else:
         preds, maxvals = _get_max_preds(heatmaps)
-        if post_process:
-            if unbiased:  # alleviate biased coordinate
-                assert kernel > 0
-                # apply Gaussian distribution modulation.
-                heatmaps = _gaussian_blur(heatmaps, kernel)
-                heatmaps = np.maximum(heatmaps, 1e-10)
-                heatmaps = np.log(heatmaps)
-                for n in range(N):
-                    for k in range(K):
-                        preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
-            else:
-                # add +/-0.25 shift to the predicted locations for higher acc.
-                for n in range(N):
-                    for k in range(K):
-                        heatmap = heatmaps[n][k]
-                        px = int(preds[n][k][0])
-                        py = int(preds[n][k][1])
-                        if 1 < px < W - 1 and 1 < py < H - 1:
-                            diff = np.array([
-                                heatmap[py][px + 1] - heatmap[py][px - 1],
-                                heatmap[py + 1][px] - heatmap[py - 1][px]
-                            ])
-                            preds[n][k] += np.sign(diff) * .25
+        if post_process == 'unbiased':  # alleviate biased coordinate
+            # apply Gaussian distribution modulation.
+            heatmaps = np.log(
+                np.maximum(_gaussian_blur(heatmaps, kernel), 1e-10))
+            for n in range(N):
+                for k in range(K):
+                    preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
+        elif post_process is not None:
+            # add +/-0.25 shift to the predicted locations for higher acc.
+            for n in range(N):
+                for k in range(K):
+                    heatmap = heatmaps[n][k]
+                    px = int(preds[n][k][0])
+                    py = int(preds[n][k][1])
+                    if 1 < px < W - 1 and 1 < py < H - 1:
+                        diff = np.array([
+                            heatmap[py][px + 1] - heatmap[py][px - 1],
+                            heatmap[py + 1][px] - heatmap[py - 1][px]
+                        ])
+                        preds[n][k] += np.sign(diff) * .25
+                        if post_process == 'megvii':
+                            preds[n][k] += 0.5
 
     # Transform back to the image
     for i in range(N):
         preds[i] = transform_preds(
             preds[i], center[i], scale[i], [W, H], use_udp=use_udp)
+
+    if post_process == 'megvii':
+        maxvals = maxvals / 255.0 + 0.5
 
     return preds, maxvals

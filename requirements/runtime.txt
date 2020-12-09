@@ -1,10 +1,11 @@
+chumpy
 dataclasses; python_version == '3.6'
 json_tricks
 matplotlib
-mmcv>=1.1.1
 munkres
 numpy
 opencv-python
 pillow
 scipy
+torchvision
 xtcocotools>=1.6
