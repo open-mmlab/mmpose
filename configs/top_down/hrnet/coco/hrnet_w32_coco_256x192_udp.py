@@ -88,7 +88,7 @@ model = dict(
         target_type=target_type,
         modulate_kernel=7,
         use_udp=True),
-    loss_pose=dict(type='JointsMSELoss_Combined', use_target_weight=True))
+    loss_pose=dict(type='CombinedTargetMSELoss', use_target_weight=True))
 
 data_cfg = dict(
     image_size=[192, 256],
