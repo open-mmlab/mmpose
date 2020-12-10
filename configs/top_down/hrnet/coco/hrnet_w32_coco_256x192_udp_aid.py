@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(interval=150, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
@@ -41,7 +41,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained="hrnet_w32_coco_256x192_udp/epoch_210.pth",
+    pretrained="top_down_hrnet_w32_256x192_udp.pth",
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -118,7 +118,7 @@ train_pipeline = [
         type='TopDownGetRandomScaleRotation', rot_factor=45,
         scale_factor=0.35),
     dict(type='TopDownAffine', use_udp=True),
-    dict(type='AID',prob_cutout=1.0),
+    dict(type='AID', prob_cutout=1.0),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -154,26 +154,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = '/mnt/cfs/algorithm/users/junjie.huang/datasets/coco/'
+data_root = 'data/coco'
 data = dict(
     samples_per_gpu=48,
     workers_per_gpu=2,
     train=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/src/train2017/',
+        img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/src/val2017/',
+        img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/src/val2017/',
+        img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
