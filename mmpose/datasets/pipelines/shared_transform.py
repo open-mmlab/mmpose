@@ -194,28 +194,28 @@ class AID:
 
     def _cutout(self, img):
         height, width, _ = img.shape
-        img = img.reshape((height * width, -1))
+        img = img.reshape(height * width, -1)
         feat_x_int = np.arange(0, width)
         feat_y_int = np.arange(0, height)
         feat_x_int, feat_y_int = np.meshgrid(feat_x_int, feat_y_int)
-        feat_x_int = feat_x_int.reshape((-1, ))
-        feat_y_int = feat_y_int.reshape((-1, ))
+        feat_x_int = feat_x_int.flatten()
+        feat_y_int = feat_y_int.flatten()
         for _ in range(self.num_patch):
             center = [np.random.rand() * width, np.random.rand() * height]
             radius = self.radius_factor * (1 + np.random.rand(2)) * width
             x_offset = (center[0] - feat_x_int) / radius[0]
             y_offset = (center[1] - feat_y_int) / radius[1]
             dis = x_offset**2 + y_offset**2
-            keep_pos = np.where((dis <= 1) & (dis >= 0))[0]
-            img[keep_pos, :] = 0
-        img = img.reshape((height, width, -1))
+            indexes = np.where(dis <= 1)[0]
+            img[indexes, :] = 0
+        img = img.reshape(height, width, -1)
         return img
 
     def __call__(self, results):
         img = results['img']
         if np.random.rand() < self.prob_cutout:
-            img = self.cutout(img)
+            img = self._cutout(img)
         if np.random.rand() < self.prob_has:
-            img = self.hide_patch(img)
+            img = self._hide_and_seek(img)
         results['img'] = img
         return results
