@@ -1,6 +1,8 @@
+import numpy as np
 import torch
 
 from mmpose.core.post_processing import transform_preds
+from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
 
 
 def get_multi_stage_outputs(outputs,
@@ -11,7 +13,8 @@ def get_multi_stage_outputs(outputs,
                             tag_per_joint=True,
                             flip_index=None,
                             project2image=True,
-                            size_projected=None):
+                            size_projected=None,
+                            align_corners=False):
     """Inference the model to get multi-stage outputs (heatmaps & tags), and
     resize them to base sizes.
 
@@ -27,6 +30,7 @@ def get_multi_stage_outputs(outputs,
         flip_index (list[int]): Keypoint flip index.
         project2image (bool): Option to resize to base scale.
         size_projected ([w, h]): Base size of heatmaps.
+        align_corners (bool): Align corners when performing interpolation.
 
     Returns:
         tuple: A tuple containing multi-stage outputs.
@@ -53,7 +57,7 @@ def get_multi_stage_outputs(outputs,
                 output,
                 size=(outputs[-1].size(2), outputs[-1].size(3)),
                 mode='bilinear',
-                align_corners=False)
+                align_corners=align_corners)
 
         # staring index of the associative embeddings
         offset_feat = num_joints if with_heatmaps[i] else 0
@@ -79,7 +83,7 @@ def get_multi_stage_outputs(outputs,
                     output,
                     size=(outputs_flip[-1].size(2), outputs_flip[-1].size(3)),
                     mode='bilinear',
-                    align_corners=False)
+                    align_corners=align_corners)
             output = torch.flip(output, [3])
             outputs.append(output)
 
@@ -102,7 +106,7 @@ def get_multi_stage_outputs(outputs,
                 hms,
                 size=(size_projected[1], size_projected[0]),
                 mode='bilinear',
-                align_corners=False) for hms in heatmaps
+                align_corners=align_corners) for hms in heatmaps
         ]
 
         tags = [
@@ -110,14 +114,21 @@ def get_multi_stage_outputs(outputs,
                 tms,
                 size=(size_projected[1], size_projected[0]),
                 mode='bilinear',
-                align_corners=False) for tms in tags
+                align_corners=align_corners) for tms in tags
         ]
 
     return outputs, heatmaps, tags
 
 
-def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
-                      test_scale_factor, project2image, flip_test):
+def aggregate_results(scale,
+                      aggregated_heatmaps,
+                      tags_list,
+                      heatmaps,
+                      tags,
+                      test_scale_factor,
+                      project2image,
+                      flip_test,
+                      align_corners=False):
     """Aggregate multi-scale outputs.
 
     Note:
@@ -135,6 +146,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
         test_scale_factor (List(int)): Multi-scale factor for testing.
         project2image (bool): Option to resize to base scale.
         flip_test (bool): Option to use flip test.
+        align_corners (bool): Align corners when performing interpolation.
 
     Return:
         tuple: a tuple containing aggregated results.
@@ -150,7 +162,7 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
                     size=(aggregated_heatmaps.size(2),
                           aggregated_heatmaps.size(3)),
                     mode='bilinear',
-                    align_corners=False) for tms in tags
+                    align_corners=align_corners) for tms in tags
             ]
         for tms in tags:
             tags_list.append(torch.unsqueeze(tms, dim=4))
@@ -167,12 +179,16 @@ def aggregate_results(scale, aggregated_heatmaps, tags_list, heatmaps, tags,
             heatmaps_avg,
             size=(aggregated_heatmaps.size(2), aggregated_heatmaps.size(3)),
             mode='bilinear',
-            align_corners=False)
+            align_corners=align_corners)
 
     return aggregated_heatmaps, tags_list
 
 
-def get_group_preds(grouped_joints, center, scale, heatmap_size):
+def get_group_preds(grouped_joints,
+                    center,
+                    scale,
+                    heatmap_size,
+                    use_udp=False):
     """Transform the grouped joints back to the image.
 
     Args:
@@ -181,13 +197,28 @@ def get_group_preds(grouped_joints, center, scale, heatmap_size):
         scale (np.ndarray[2, ]): Scale of the bounding box
             wrt [width, height].
         heatmap_size (np.ndarray[2, ]): Size of the destination heatmaps.
+        use_udp (bool): Unbiased data processing.
+             Paper ref: Huang et al. The Devil is in the Details: Delving into
+             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Returns:
         list: List of the pose result for each person.
     """
-    results = []
-    for person in grouped_joints[0]:
-        joints = transform_preds(person, center, scale, heatmap_size)
-        results.append(joints)
+    if use_udp:
+        if grouped_joints[0].shape[0] > 0:
+            heatmap_size_t = np.array(heatmap_size, dtype=np.float32) - 1.0
+            trans = get_warp_matrix(
+                theta=0,
+                size_input=heatmap_size_t,
+                size_dst=scale,
+                size_target=heatmap_size_t)
+            grouped_joints[0][..., :2] = \
+                warp_affine_joints(grouped_joints[0][..., :2], trans)
+        results = [person for person in grouped_joints[0]]
+    else:
+        results = []
+        for person in grouped_joints[0]:
+            joints = transform_preds(person, center, scale, heatmap_size)
+            results.append(joints)
 
     return results
