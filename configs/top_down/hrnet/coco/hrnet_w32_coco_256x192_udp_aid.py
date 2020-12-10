@@ -41,7 +41,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained="top_down_hrnet_w32_256x192_udp.pth",
+    pretrained='top_down_hrnet_w32_256x192_udp.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,

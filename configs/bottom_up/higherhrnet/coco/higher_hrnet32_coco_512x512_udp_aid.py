@@ -50,7 +50,7 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='BottomUp',
-    pretrained="bottom_up_higher_hrnet_w32_512x512_udp.pth",
+    pretrained='bottom_up_higher_hrnet_w32_512x512_udp.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
