@@ -1,4 +1,4 @@
-mmcv==1.1.6
+mmcv==1.1.3
 munkres
 poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
