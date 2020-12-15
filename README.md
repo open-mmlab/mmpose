@@ -134,6 +134,10 @@ There are also tutorials: [finetune model](tutorials/1_finetune.md),
 [add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
 [add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
 
+## FAQ
+
+Please refer to [FAQ](docs/faq.md) for frequently asked questions.
+
 ## License
 
 This project is released under the [Apache 2.0 license](LICENSE).
