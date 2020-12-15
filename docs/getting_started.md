@@ -3,7 +3,25 @@
 This page provides basic tutorials about the usage of MMPose.
 For installation instructions, please see [install.md](install.md).
 
-## Prepare datasets
+
+<!-- TOC -->
+
+- [Prepare Datasets](#prepare-datasets)
+- [Inference with Pre-Trained Models](#inference-with-pre-trained-models)
+  * [Test a dataset](#test-a-dataset)
+  * [Run demos](#run-demos)
+- [Train a Model](#train-a-model)
+  * [Train with a single GPU](#train-with-a-single-gpu)
+  * [Train with multiple GPUs](#train-with-multiple-gpus)
+  * [Train with multiple machines](#train-with-multiple-machines)
+  * [Launch multiple jobs on a single machine](#launch-multiple-jobs-on-a-single-machine)
+- [Benchmark](#benchmark)
+- [Tutorials](#tutorials)
+
+<!-- TOC -->
+
+
+## Prepare Datasets
 
 MMPose supported datasets:
 
@@ -22,7 +40,7 @@ MMPose supported datasets:
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
 
-## Inference with pretrained models
+## Inference with Pre-trained Models
 
 We provide testing scripts to evaluate a whole dataset (COCO, etc.),
 and provide some high-level apis for easier integration to other projects.
@@ -223,5 +241,6 @@ python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 
 ## Tutorials
 
-Currently, we provide some tutorials for users to [finetune model](tutorials/finetune.md),
-[add new dataset](tutorials/new_dataset.md), [add new modules](tutorials/new_modules.md).
+Currently, we provide some tutorials for users to [finetune model](tutorials/1_finetune.md),
+[add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
+[add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
