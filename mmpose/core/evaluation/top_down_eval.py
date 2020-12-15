@@ -202,6 +202,42 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
     return auc
 
 
+def keypoint_nme(pred, gt, mask, normalize):
+    """Calculate the end-point error.
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+
+    if L == 19:  # aflw
+        interocular = meta['box_size'][i]
+    elif L == 29:  # cofw
+        interocular = np.linalg.norm(pts_gt[8,] - pts_gt[9,])
+    elif L == 68:  # 300w
+        # interocular
+        interocular = np.linalg.norm(pts_gt[36,] - pts_gt[45,])
+    elif L == 98:
+        interocular = np.linalg.norm(pts_gt[60,] - pts_gt[72,])
+    else:  # hand
+        interocular = meta['scale'][i] * 200
+
+    Args:
+        pred (np.ndarray[N, K, 2]): Predicted keypoint location.
+        gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        normalize (float): Normalization factor.
+
+    Returns:
+        float: normalized mean error
+    """
+    distances = _calc_distances(pred, gt, mask, normalize)
+    distance_valid = distances[distances != -1]
+    valid_num = len(distance_valid)
+    return distance_valid.sum() / valid_num
+
+
 def keypoint_epe(pred, gt, mask):
     """Calculate the end-point error.
 
