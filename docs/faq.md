@@ -7,6 +7,16 @@ If the contents here do not cover your issue, please create an issue using the [
 
 ## Installation
 
+- **Unable to install xtcocotools**
+
+    1. Try to install it using pypi mannually `pip install xtcocotools`.
+    2. If step1 does not work. Try to install it from source.
+    ```
+    git clone https://github.com/jin-s13/xtcocoapi
+    cd xtcocoapi
+    python setup.py install
+    ```
+
 - **"No module named 'mmcv.ops'"; "No module named 'mmcv._ext'"**
 
     1. Uninstall existing mmcv in the environment using `pip uninstall mmcv`.
