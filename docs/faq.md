@@ -65,7 +65,7 @@ If the contents here do not cover your issue, please create an issue using the [
     ```python
     log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
     ```
-    You can refer to [tutorials/6_customize_runtime.md](tutorials/6_customize_runtime.md#log-config), [config.md](config.md) and [this](/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
+    You can refer to [tutorials/6_customize_runtime.md](tutorials/6_customize_runtime.md#log-config) and the example [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
 
 
 ## Inference
