@@ -62,6 +62,10 @@ If the contents here do not cover your issue, please create an issue using the [
     ```
     You can refer to [tutorials/6_customize_runtime.md](tutorials/6_customize_runtime.md#log-config) and the example [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
 
+- **Log info is NOT printed**
+
+    Use smaller log interval. For example, change `interval=50` to `interval=1` in the [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L23).
+
 ## Evaluation
 
 - **How to evaluate on MPII test dataset?**
