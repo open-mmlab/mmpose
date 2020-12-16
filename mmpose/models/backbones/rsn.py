@@ -512,6 +512,7 @@ class RSN(BaseBackbone):
     """Residual Steps Network backbone.
               Paper ref: Cai et al. "Learning Delicate Local Representations
               for Multi-Person Pose Estimation" (ECCV 2020).
+
     Args:
         unit_channels (int): Number of Channels in an upsample unit.
             Default: 256
