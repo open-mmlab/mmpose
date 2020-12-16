@@ -53,13 +53,12 @@ class TopDownAicDataset(TopDownCocoDataset):
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
-        self.image_thr = data_cfg['image_thr']
+        self.det_bbox_thr = data_cfg['image_thr']
         self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10],
                                        [8, 11]]

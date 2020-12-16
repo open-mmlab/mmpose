@@ -74,9 +74,8 @@ def test_top_down_COCO_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='tests/data/coco/test_coco_det_AP_H_56.json',
     )
     # Test det bbox
@@ -148,9 +147,8 @@ def test_top_down_PoseTrack18_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='tests/data/posetrack18/'
         'test_posetrack18_human_detections.json',
     )
@@ -213,9 +211,8 @@ def test_top_down_CrowdPose_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='tests/data/crowdpose/test_crowdpose_det_AP_40.json',
     )
     # Test det bbox
@@ -285,9 +282,8 @@ def test_top_down_COCO_wholebody_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='tests/data/coco/test_coco_det_AP_H_56.json',
     )
     # Test det bbox
@@ -359,9 +355,8 @@ def test_top_down_OCHuman_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='',
     )
 
@@ -726,9 +721,8 @@ def test_top_down_AIC_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='')
 
     with pytest.raises(AssertionError):
@@ -799,9 +793,8 @@ def test_top_down_JHMDB_dataset():
         nms_thr=1.0,
         oks_thr=0.9,
         vis_thr=0.2,
-        bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='')
 
     with pytest.raises(AssertionError):

@@ -66,7 +66,6 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
                                        [11, 12], [13, 14], [15, 16]]

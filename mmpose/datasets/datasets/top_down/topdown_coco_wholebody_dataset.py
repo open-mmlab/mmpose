@@ -54,7 +54,6 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = self._make_flip_pairs()
 

@@ -95,9 +95,8 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    bbox_thr=1.0,
     use_gt_bbox=False,
-    image_thr=0.0,
+    det_bbox_thr=0.0,
     bbox_file='data/crowdpose/annotations/'
     'det_for_crowd_test_0.1_0.5.json',
 )
