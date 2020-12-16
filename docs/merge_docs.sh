@@ -46,6 +46,7 @@ sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' config.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' demo.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' mesh_task.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' faq.md
 sed -i 's/](\/docs\//](/g' ./tutorials/*.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tutorials/*.md
 sed -i 's/](\/docs\//](/g' data_preparation.md
