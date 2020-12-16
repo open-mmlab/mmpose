@@ -136,7 +136,7 @@ train_pipeline = [
         trans_factor=40,
         use_udp=True),
     dict(type='BottomUpRandomFlip', flip_prob=0.5),
-    dict(type='Hide_and_seek'),
+    dict(type='HideAndSeek'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',

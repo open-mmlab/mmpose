@@ -144,8 +144,8 @@ class Collect:
 
 
 @PIPELINES.register_module()
-class Hide_and_seek:
-    """Augmentation by Informantion Dropping in Hide-and-Seek Paradigm. Paper
+class HideAndSeek:
+    """Augmentation by informantion dropping in Hide-and-Seek paradigm. Paper
     ref: Huang et al. AID: Pushing the Performance Boundary of Human Pose
     Estimation with Information Dropping Augmentation (arXiv:2008.07139 2020).
 
@@ -188,7 +188,7 @@ class Hide_and_seek:
 
 @PIPELINES.register_module()
 class Cutout:
-    """Augmentation by Informantion Dropping in Cutout Paradigm. Paper ref:
+    """Augmentation by informantion dropping in Cutout paradigm. Paper ref:
     Huang et al. AID: Pushing the Performance Boundary of Human Pose Estimation
     with Information Dropping Augmentation (arXiv:2008.07139 2020).
 
