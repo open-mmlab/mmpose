@@ -144,33 +144,19 @@ class Collect:
 
 
 @PIPELINES.register_module()
-class AID:
-    """AID: Augmentation by Informantion Dropping.
-    Paper ref: Huang et al. AID: Pushing the Performance Boundary of Human Pose
-    Estimation with Information Dropping Augmentation ( arXiv:2008.07139 2020).
+class Hide_and_seek:
+    """Augmentation by Informantion Dropping in Hide-and-Seek Paradigm. Paper
+    ref: Huang et al. AID: Pushing the Performance Boundary of Human Pose
+    Estimation with Information Dropping Augmentation (arXiv:2008.07139 2020).
 
     Args:
-        transforms (list): ToTensor & Normalize
-        prob_cutout (float): Probability of performing cutout.
-        radius_factor (float): Size factor of cutout area.
-        num_patch (float): Number of patches to be cutout.
         prob_has (float): Probability of performing hide-and-seek.
         prob_has_hide (float): Probability of hiding patches.
     """
 
-    def __init__(self,
-                 prob_cutout=0.0,
-                 radius_factor=0.2,
-                 num_patch=1,
-                 prob_has=0.0,
-                 prob_has_hide=0.5):
-
-        self.prob_cutout = prob_cutout
-        self.radius_factor = radius_factor
-        self.num_patch = num_patch
+    def __init__(self, prob_has=1.0, prob_has_hide=0.5):
         self.prob_has = prob_has
         self.prob_has_hide = prob_has_hide
-        assert (self.prob_cutout + self.prob_has) > 0
 
     def _hide_and_seek(self, img):
         # get width and height of the image
@@ -191,6 +177,32 @@ class AID:
                     if np.random.rand() <= self.prob_has_hide:
                         img[x:x_end, y:y_end, :] = 0
         return img
+
+    def __call__(self, results):
+        img = results['img']
+        if np.random.rand() < self.prob_has:
+            img = self._hide_and_seek(img)
+        results['img'] = img
+        return results
+
+
+@PIPELINES.register_module()
+class Cutout:
+    """Augmentation by Informantion Dropping in Cutout Paradigm. Paper ref:
+    Huang et al. AID: Pushing the Performance Boundary of Human Pose Estimation
+    with Information Dropping Augmentation (arXiv:2008.07139 2020).
+
+    Args:
+        prob_cutout (float): Probability of performing cutout.
+        radius_factor (float): Size factor of cutout area.
+        num_patch (float): Number of patches to be cutout.
+    """
+
+    def __init__(self, prob_cutout=1.0, radius_factor=0.2, num_patch=1):
+
+        self.prob_cutout = prob_cutout
+        self.radius_factor = radius_factor
+        self.num_patch = num_patch
 
     def _cutout(self, img):
         height, width, _ = img.shape
@@ -215,7 +227,5 @@ class AID:
         img = results['img']
         if np.random.rand() < self.prob_cutout:
             img = self._cutout(img)
-        if np.random.rand() < self.prob_has:
-            img = self._hide_and_seek(img)
         results['img'] = img
         return results
