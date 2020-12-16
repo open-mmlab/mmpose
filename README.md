@@ -75,6 +75,7 @@ Supported methods for human pose estimation:
 - [x] [Associative Embedding](configs/bottom_up/hrnet/README.md)
 - [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
 - [x] [DarkPose](configs/top_down/darkpose/README.md)
+- [x] [UDP](configs/top_down/udp/README.md)
 - [x] [MSPN](configs/top_down/mspn/README.md)
 - [x] [RSN](configs/top_down/rsn/README.md)
 
