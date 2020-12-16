@@ -46,6 +46,10 @@ If the contents here do not cover your issue, please create an issue using the [
     Set the environment variables `MASTER_PORT=XXX`. For example,
     `MASTER_PORT=29517 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192`
 
+- **"Unexpected keys in source state dict" when loading pre-trained weights**
+
+    It's normal that some layers in the pretrained model are not used in the pose model. ImageNet-pretrained classification network and the pose network may have different architectures (e.g. no classification head). So some unexpected keys in source state dict is actually expected.
+
 - **How to use trained models for backbone pre-training ?**
 
     Refer to [Use Pre-Trained Model](https://github.com/open-mmlab/mmpose/blob/master/docs/tutorials/1_finetune.md#use-pre-trained-model),
