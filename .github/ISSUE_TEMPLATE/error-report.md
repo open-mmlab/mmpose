@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 Thanks for your error report and we appreciate it a lot.
-If you feel we have help you, give us a STAR! :satisfied:
+If you feel we have helped you, give us a STAR! :satisfied:
 
 **Checklist**
 
