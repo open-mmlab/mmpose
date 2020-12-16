@@ -16,7 +16,7 @@ for f in files:
 
     # count papers
     papers = set(x.lower().strip()
-                 for x in re.findall(r'\btitle={(.*)}', content))
+                 for x in re.findall(r'\btitle\s*=\s*{(.*)}', content))
     paperlist = '\n'.join(sorted('    - ' + x for x in papers))
     # count configs
     configs = set(x.lower().strip()
