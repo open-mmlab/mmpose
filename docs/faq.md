@@ -48,7 +48,7 @@ If the contents here do not cover your issue, please create an issue using the [
 
 - **"Unexpected keys in source state dict" when loading pre-trained weights**
 
-    That's normal. ImageNet-pretrained classification network and the pose network may have different architectures (e.g. classification head).
+    It's normal that some layers in the pretrained model are not used in the pose model. ImageNet-pretrained classification network and the pose network may have different architectures (e.g. no classification head). So some unexpected keys in source state dict is actually expected.
 
 - **How to use trained models for backbone pre-training ?**
 
