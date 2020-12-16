@@ -60,7 +60,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
-        self.det_bbox_thr = data_cfg['image_thr']
+        self.det_bbox_thr = data_cfg['det_bbox_thr']
 
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
