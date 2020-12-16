@@ -7,7 +7,6 @@ There are two steps to finetune a model on a new dataset.
 - Add support for the new dataset following [Tutorial 2: Adding New Dataset](new_dataset.md).
 - Modify the configs as will be discussed in this tutorial.
 
-
 To finetune on the custom datasets, the users need to modify four parts in the config.
 
 ## Modify Model
@@ -60,6 +59,6 @@ total_epochs = 20
 To use the pre-trained model, the new config add the link of pre-trained models in the `load_from`. The users might need to download the model weights before training to avoid the download time during training.
 
 ```python
-load_from = 'resnet50_coco.pth'  # noqa
-
+# use the pre-trained model for the whole Simple Baseline res50-backbone network
+load_from = 'https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth'  # model path can be found in model zoo
 ```
