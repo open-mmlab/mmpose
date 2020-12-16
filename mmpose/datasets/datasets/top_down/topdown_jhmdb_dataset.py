@@ -60,13 +60,16 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
-        self.image_thr = data_cfg['image_thr']
-
+        self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+        if 'image_thr' in data_cfg:
+            warnings.warn(
+                'image_thr is deprecated, '
+                'please use det_bbox_thr instead', DeprecationWarning)
+            self.det_bbox_thr = data_cfg['image_thr']
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = [[3, 4], [5, 6], [7, 8], [9, 10],
                                        [9, 10], [11, 12], [13, 14]]
