@@ -1,6 +1,5 @@
-mmcv==1.1.3
+mmcv==1.2.2
 munkres
-numpy==1.19.2
 poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
 smplx
