@@ -51,6 +51,8 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Upgrade pip
+        run: pip install pip --upgrade
       - name: Install onnx
         run: pip install onnx
       - name: Install PyTorch
