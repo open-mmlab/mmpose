@@ -3,6 +3,8 @@ import functools as func
 import glob
 import re
 
+import titlecase
+
 files = sorted(glob.glob('*_models.md'))
 
 stats = []
@@ -23,9 +25,10 @@ for f in files:
                   for x in re.findall(r'https.*configs/.*\.py', content))
 
     # count ckpts
-    ckpts = set(x.lower().strip()
-                for x in re.findall(r'https://download.*\.pth', content)
-                if 'mmpose' in x)
+    ckpts = set(
+        titlecase.titlecase(x.lower().strip())
+        for x in re.findall(r'https://download.*\.pth', content)
+        if 'mmpose' in x)
 
     statsmsg = f"""
 ## [{title}]({f})
