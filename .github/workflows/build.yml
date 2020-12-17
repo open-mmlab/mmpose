@@ -133,7 +133,7 @@ jobs:
         run: pip install torch==${{matrix.torch}} torchvision==${{matrix.torchvision}} -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install mmpose dependencies
         run: |
-          pip install mmcv-full===1.2.2 -f https://download.openmmlab.com/mmcv/dist/${{matrix.mmcv}}/index.html
+          pip install mmcv-full==1.2.2 -f https://download.openmmlab.com/mmcv/dist/${{matrix.mmcv}}/index.html
           pip install -r requirements.txt
       - name: Build and install
         run: |
