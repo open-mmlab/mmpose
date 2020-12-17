@@ -17,18 +17,18 @@ for f in files:
     title = content.split('\n')[0].replace('#', '')
 
     # count papers
-    papers = set(x.lower().strip()
-                 for x in re.findall(r'\btitle\s*=\s*{(.*)}', content))
+    papers = set(
+        titlecase.titlecase(x.lower().strip())
+        for x in re.findall(r'\btitle\s*=\s*{(.*)}', content))
     paperlist = '\n'.join(sorted('    - ' + x for x in papers))
     # count configs
     configs = set(x.lower().strip()
                   for x in re.findall(r'https.*configs/.*\.py', content))
 
     # count ckpts
-    ckpts = set(
-        titlecase.titlecase(x.lower().strip())
-        for x in re.findall(r'https://download.*\.pth', content)
-        if 'mmpose' in x)
+    ckpts = set(x.lower().strip()
+                for x in re.findall(r'https://download.*\.pth', content)
+                if 'mmpose' in x)
 
     statsmsg = f"""
 ## [{title}]({f})
