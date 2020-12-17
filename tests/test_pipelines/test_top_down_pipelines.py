@@ -6,9 +6,9 @@ import torch
 from numpy.testing import assert_array_almost_equal
 from xtcocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
-                                       NormalizeTensor, TopDownAffine,
-                                       TopDownGenerateTarget,
+from mmpose.datasets.pipelines import (Collect, Cutout, HideAndSeek,
+                                       LoadImageFromFile, NormalizeTensor,
+                                       TopDownAffine, TopDownGenerateTarget,
                                        TopDownGetRandomScaleRotation,
                                        TopDownHalfBodyTransform,
                                        TopDownRandomFlip, ToTensor)
@@ -139,12 +139,28 @@ def test_top_down_pipeline():
     results_halfbody = halfbody_transform(copy.deepcopy(results))
     assert (results_halfbody['scale'] <= results['scale']).all()
 
+    # test affine transform
     affine_transform = TopDownAffine()
     results['rotation'] = 90
     results_affine = affine_transform(copy.deepcopy(results))
     assert results_affine['img'].shape == (256, 192, 3)
-
     results = results_affine
+
+    # test cutout transform
+    cutout_transform = Cutout(prob_cutout=1.0)
+    results_cutout = copy.deepcopy(results)
+    results_cutout['img'] = np.ones(results_cutout['img'].shape)
+    results_cutout = cutout_transform(copy.deepcopy(results_cutout))
+    assert not (results_cutout['img'] == 1).all()
+
+    # test hide-and-seek transform
+    has_transform = HideAndSeek(grid_sizes=[16, 32, 44, 56])
+    results_has = copy.deepcopy(results)
+    results_has['img'] = np.ones(results_has['img'].shape)
+    results_has = has_transform(copy.deepcopy(results_has))
+    assert not (results_has['img'] == 1).all()
+
+    # test ToTensor transform
     to_tensor = ToTensor()
     results_tensor = to_tensor(copy.deepcopy(results))
     assert isinstance(results_tensor['img'], torch.Tensor)

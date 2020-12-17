@@ -152,21 +152,24 @@ class HideAndSeek:
     Args:
         prob_has (float): Probability of performing hide-and-seek.
         prob_has_hide (float): Probability of hiding patches.
+        grid_sizes (list): List of optional grid sizes.
     """
 
-    def __init__(self, prob_has=1.0, prob_has_hide=0.5):
+    def __init__(self,
+                 prob_has=1.0,
+                 prob_has_hide=0.5,
+                 grid_sizes=(0, 16, 32, 44, 56)):
         self.prob_has = prob_has
         self.prob_has_hide = prob_has_hide
+        self.grid_sizes = grid_sizes
 
     def _hide_and_seek(self, img):
         # get width and height of the image
         ht, wd, _ = img.shape
 
-        # possible grid size, 0 means no hiding
-        grid_sizes = [0, 16, 32, 44, 56]
-
         # randomly choose one grid size
-        grid_size = grid_sizes[np.random.randint(0, len(grid_sizes) - 1)]
+        index = np.random.randint(0, len(self.grid_sizes) - 1)
+        grid_size = self.grid_sizes[index]
 
         # hide the patches
         if grid_size != 0:
