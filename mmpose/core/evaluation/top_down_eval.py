@@ -203,7 +203,7 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
 
 
 def keypoint_nme(pred, gt, mask, normalize):
-    """Calculate the end-point error.
+    """Calculate the normalized mean error (NME).
 
     Note:
         batch_size: N
