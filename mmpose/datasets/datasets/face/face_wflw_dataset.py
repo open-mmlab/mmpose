@@ -8,8 +8,8 @@ from .face_base_dataset import FaceBaseDataset
 
 
 @DATASETS.register_module()
-class Face300WDataset(FaceBaseDataset):
-    """Face300W dataset for top-down face keypoint localization.
+class FaceWFLWDataset(FaceBaseDataset):
+    """Face WFLW dataset for top-down face keypoint localization.
 
     `300 faces In-the-wild challenge: Database and results.
     Image and Vision Computing (IMAVIS) 2019`.
@@ -40,20 +40,23 @@ class Face300WDataset(FaceBaseDataset):
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 68
+        assert self.ann_info['num_joints'] == 98
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.ann_info['flip_pairs'] = [[1, 17], [2, 16], [3, 15], [4, 14],
-                                       [5, 13], [6, 12], [7, 11], [8, 10],
-                                       [18, 27], [19, 26], [20, 25], [21, 24],
-                                       [22, 23], [32, 36], [33, 35], [37, 46],
-                                       [38, 45], [39, 44], [40, 43], [41, 48],
-                                       [42, 47], [49, 55], [50, 54], [51, 53],
-                                       [62, 64], [61, 65], [68, 66], [59, 57],
-                                       [60, 56]]
+        self.ann_info['flip_pairs'] = [[1, 33], [2, 32], [3, 31], [4, 30],
+                                       [5, 29], [6, 28], [7, 27], [8, 26],
+                                       [9, 25], [10, 24], [11, 23], [12, 22],
+                                       [13, 21], [14, 20], [15, 19], [16, 18],
+                                       [34, 47], [35, 46], [36, 45], [37, 44],
+                                       [38, 43], [39, 51], [40, 50], [41, 49],
+                                       [42, 48], [61, 73], [62, 72], [63, 71],
+                                       [64, 70], [65, 69], [66, 76], [67, 75],
+                                       [68, 74], [56, 60], [57, 59], [77, 83],
+                                       [78, 82], [79, 81], [88, 84], [87, 85],
+                                       [89, 93], [90, 92], [96, 94], [97, 98]]
 
-        self.dataset_name = '300w'
+        self.dataset_name = 'wflw'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -111,7 +114,7 @@ class Face300WDataset(FaceBaseDataset):
             np.ndarray[N, 2]: normalized factor
         """
 
-        interocular = np.linalg.norm(gt[:, 36, :] - gt[:, 45, :], axis=1)
+        interocular = np.linalg.norm(gt[:, 60, :] - gt[:, 72, :], axis=1)
         return np.tile(np.expand_dims(interocular, 1), [1, 2])
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
