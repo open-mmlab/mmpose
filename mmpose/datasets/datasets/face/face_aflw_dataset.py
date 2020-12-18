@@ -94,7 +94,7 @@ class FaceAFLWDataset(FaceBaseDataset):
                     'joints_3d_visible': joints_3d_visible,
                     'dataset': self.dataset_name,
                     'bbox': obj['bbox'],
-                    'box_size': obj['box_size'],  # normalization factor
+                    'box_size': obj['box_size'],  # normalize factor
                     'bbox_score': 1
                 })
             gt_db.extend(rec)
