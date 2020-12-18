@@ -6,7 +6,6 @@ import numpy as np
 from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
-from mmpose.core.evaluation.top_down_eval import keypoint_nme
 from mmpose.datasets.pipelines import Compose
 
 
@@ -127,47 +126,6 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
 
         with open(res_file, 'w') as f:
             json.dump(keypoints, f, sort_keys=True, indent=4)
-
-    def _get_normalize_factor(self, gts, *args, **kwargs):
-        """Get normalize factor for evaluation."""
-        raise NotImplementedError
-
-    def _report_metric(self, res_file, metrics):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'NME'.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-
-        if 'NME' in metrics:
-            normalize = self._get_normalize_factor(gts)
-            info_str.append(('NME', keypoint_nme(outputs, gts, masks,
-                                                 normalize)))
-
-        return info_str
 
     def __len__(self):
         """Get the size of the dataset."""

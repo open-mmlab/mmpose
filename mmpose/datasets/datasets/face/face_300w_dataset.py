@@ -1,8 +1,10 @@
 import os
 from collections import OrderedDict
 
+import json_tricks as json
 import numpy as np
 
+from mmpose.core.evaluation.top_down_eval import keypoint_nme
 from mmpose.datasets.builder import DATASETS
 from .face_base_dataset import FaceBaseDataset
 
@@ -101,18 +103,55 @@ class Face300WDataset(FaceBaseDataset):
             gt_db.extend(rec)
         return gt_db
 
-    def _get_normalize_factor(self, gt, *args, **kwargs):
+    def _get_normalize_factor(self, gts):
         """Get normalize factor for evaluation.
 
         Args:
-            gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+            gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
 
         Return:
             np.ndarray[N, 2]: normalized factor
         """
 
-        interocular = np.linalg.norm(gt[:, 36, :] - gt[:, 45, :], axis=1)
+        interocular = np.linalg.norm(gts[:, 36, :] - gts[:, 45, :], axis=1)
         return np.tile(np.expand_dims(interocular, 1), [1, 2])
+
+    def _report_metric(self, res_file, metrics):
+        """Keypoint evaluation.
+
+        Args:
+            res_file (str): Json file stored prediction results.
+            metrics (str | list[str]): Metric to be performed.
+                Options: 'NME'.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
+        """
+        info_str = []
+
+        with open(res_file, 'r') as fin:
+            preds = json.load(fin)
+        assert len(preds) == len(self.db)
+
+        outputs = []
+        gts = []
+        masks = []
+
+        for pred, item in zip(preds, self.db):
+            outputs.append(np.array(pred['keypoints'])[:, :-1])
+            gts.append(np.array(item['joints_3d'])[:, :-1])
+            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
+
+        outputs = np.array(outputs)
+        gts = np.array(gts)
+        masks = np.array(masks)
+
+        if 'NME' in metrics:
+            normalize_factor = self._get_normalize_factor(gts)
+            info_str.append(
+                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
+
+        return info_str
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will

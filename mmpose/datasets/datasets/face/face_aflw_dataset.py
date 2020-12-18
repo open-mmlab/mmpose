@@ -10,11 +10,13 @@ from .face_base_dataset import FaceBaseDataset
 
 
 @DATASETS.register_module()
-class FaceWFLWDataset(FaceBaseDataset):
-    """Face WFLW dataset for top-down face keypoint localization.
+class FaceAFLWDataset(FaceBaseDataset):
+    """Face AFLW dataset for top-down face keypoint localization.
 
-    `Look at Boundary: A Boundary-Aware Face Alignment Algorithm.
-    CVPR'2018`
+    `Annotated Facial Landmarks in the Wild: A Large-scale,
+    Real-world Database for Facial Landmark Localization.
+    In Proc. First IEEE International Workshop on Benchmarking
+    Facial Image Analysis Technologies, 2011`
 
     The dataset loads raw images and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -42,23 +44,14 @@ class FaceWFLWDataset(FaceBaseDataset):
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 98
+        assert self.ann_info['num_joints'] == 19
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.ann_info['flip_pairs'] = [[1, 33], [2, 32], [3, 31], [4, 30],
-                                       [5, 29], [6, 28], [7, 27], [8, 26],
-                                       [9, 25], [10, 24], [11, 23], [12, 22],
-                                       [13, 21], [14, 20], [15, 19], [16, 18],
-                                       [34, 47], [35, 46], [36, 45], [37, 44],
-                                       [38, 43], [39, 51], [40, 50], [41, 49],
-                                       [42, 48], [61, 73], [62, 72], [63, 71],
-                                       [64, 70], [65, 69], [66, 76], [67, 75],
-                                       [68, 74], [56, 60], [57, 59], [77, 83],
-                                       [78, 82], [79, 81], [88, 84], [87, 85],
-                                       [89, 93], [90, 92], [96, 94], [97, 98]]
+        self.ann_info['flip_pairs'] = [[1, 6], [2, 5], [3, 4], [7, 12],
+                                       [8, 11], [9, 10], [13, 15], [16, 18]]
 
-        self.dataset_name = 'wflw'
+        self.dataset_name = 'aflw'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -101,23 +94,23 @@ class FaceWFLWDataset(FaceBaseDataset):
                     'joints_3d_visible': joints_3d_visible,
                     'dataset': self.dataset_name,
                     'bbox': obj['bbox'],
+                    'box_size': obj['box_size'],  # normalization factor
                     'bbox_score': 1
                 })
             gt_db.extend(rec)
         return gt_db
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, box_sizes):
         """Get normalize factor for evaluation.
 
         Args:
-            gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+            box_sizes (np.ndarray[N, 1]): box size
 
         Return:
             np.ndarray[N, 2]: normalized factor
         """
 
-        interocular = np.linalg.norm(gts[:, 60, :] - gts[:, 72, :], axis=1)
-        return np.tile(np.expand_dims(interocular, 1), [1, 2])
+        return np.tile(box_sizes, [1, 2])
 
     def _report_metric(self, res_file, metrics):
         """Keypoint evaluation.
@@ -139,18 +132,21 @@ class FaceWFLWDataset(FaceBaseDataset):
         outputs = []
         gts = []
         masks = []
+        box_sizes = []
 
         for pred, item in zip(preds, self.db):
             outputs.append(np.array(pred['keypoints'])[:, :-1])
             gts.append(np.array(item['joints_3d'])[:, :-1])
             masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
+            box_sizes.append(item['box_size'])
 
         outputs = np.array(outputs)
         gts = np.array(gts)
         masks = np.array(masks)
+        box_sizes = np.array(box_sizes)
 
         if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(gts)
+            normalize_factor = self._get_normalize_factor(box_sizes)
             info_str.append(
                 ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
 
