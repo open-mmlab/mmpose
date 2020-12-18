@@ -165,7 +165,7 @@ class HideAndSeek:
 
     def _hide_and_seek(self, img):
         # get width and height of the image
-        ht, wd, _ = img.shape
+        height, width, _ = img.shape
 
         # randomly choose one grid size
         index = np.random.randint(0, len(self.grid_sizes) - 1)
@@ -173,10 +173,10 @@ class HideAndSeek:
 
         # hide the patches
         if grid_size != 0:
-            for x in range(0, wd, grid_size):
-                for y in range(0, ht, grid_size):
-                    x_end = min(wd, x + grid_size)
-                    y_end = min(ht, y + grid_size)
+            for x in range(0, width, grid_size):
+                for y in range(0, height, grid_size):
+                    x_end = min(width, x + grid_size)
+                    y_end = min(height, y + grid_size)
                     if np.random.rand() <= self.prob_has_hide:
                         img[x:x_end, y:y_end, :] = 0
         return img
