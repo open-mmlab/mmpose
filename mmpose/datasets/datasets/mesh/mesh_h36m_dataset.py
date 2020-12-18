@@ -4,8 +4,8 @@ from collections import OrderedDict
 import json_tricks as json
 import numpy as np
 
+from mmpose.core.evaluation import compute_similarity_transform
 from mmpose.datasets.builder import DATASETS
-from ....core.evaluation import compute_similarity_transform
 from .mesh_base_dataset import MeshBaseDataset
 
 
