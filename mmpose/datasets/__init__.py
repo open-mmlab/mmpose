@@ -1,6 +1,7 @@
 from .builder import build_dataloader, build_dataset
 from .datasets import (BottomUpCocoDataset, BottomUpCrowdPoseDataset,
-                       BottomUpMhpDataset, FreiHandDataset, InterHand2DDataset,
+                       BottomUpMhpDataset, DeepFashionDataset, Face300WDataset,
+                       FreiHandDataset, InterHand2DDataset,
                        MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
                        MoshDataset, OneHand10KDataset, PanopticDataset,
                        TopDownAicDataset, TopDownCocoDataset,
@@ -19,11 +20,12 @@ __all__ = [
     'TopDownMpiiDataset', 'TopDownMpiiTrbDataset', 'OneHand10KDataset',
     'PanopticDataset', 'FreiHandDataset', 'InterHand2DDataset',
     'TopDownOCHumanDataset', 'TopDownAicDataset',
-    'TopDownCocoWholeBodyDataset', 'MeshH36MDataset', 'MeshMixDataset',
-    'MoshDataset', 'MeshAdversarialDataset', 'TopDownCrowdPoseDataset',
-    'BottomUpCrowdPoseDataset', 'TopDownFreiHandDataset',
-    'TopDownOneHand10KDataset', 'TopDownPanopticDataset',
-    'TopDownPoseTrack18Dataset', 'TopDownJhmdbDataset', 'TopDownMhpDataset',
+    'TopDownCocoWholeBodyDataset', 'DeepFashionDataset', 'MeshH36MDataset',
+    'MeshMixDataset', 'MoshDataset', 'MeshAdversarialDataset',
+    'TopDownCrowdPoseDataset', 'BottomUpCrowdPoseDataset',
+    'TopDownFreiHandDataset', 'TopDownOneHand10KDataset',
+    'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset',
+    'TopDownJhmdbDataset', 'TopDownMhpDataset', 'Face300WDataset',
     'build_dataloader', 'build_dataset', 'Compose', 'DistributedSampler',
     'DATASETS', 'PIPELINES'
 ]

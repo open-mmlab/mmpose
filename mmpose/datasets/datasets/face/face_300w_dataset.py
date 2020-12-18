@@ -44,7 +44,16 @@ class Face300WDataset(FaceBaseDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.dataset_name = 'freihand'
+        self.ann_info['flip_pairs'] = [[1, 17], [2, 16], [3, 15], [4, 14],
+                                       [5, 13], [6, 12], [7, 11], [8, 10],
+                                       [18, 27], [19, 26], [20, 25], [21, 24],
+                                       [22, 23], [32, 36], [33, 35], [37, 46],
+                                       [38, 45], [39, 44], [40, 43], [41, 48],
+                                       [42, 47], [49, 55], [50, 54], [51, 53],
+                                       [62, 64], [61, 65], [68, 66], [59, 57],
+                                       [60, 56]]
+
+        self.dataset_name = '300w'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -70,8 +79,11 @@ class Face300WDataset(FaceBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the ori image is 224x224
-                center, scale = self._xywh2cs(0, 0, 224, 224, 0.8)
+                if 'center' in obj and 'scale' in obj:
+                    center = obj['center']
+                    scale = obj['scale'] * 1.25
+                else:
+                    center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
@@ -89,7 +101,20 @@ class Face300WDataset(FaceBaseDataset):
             gt_db.extend(rec)
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
+    def _get_normalize_factor(self, gt, *args, **kwargs):
+        """Get normalize factor for evaluation.
+
+        Args:
+            gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+
+        Return:
+            np.ndarray[N, 2]: normalized factor
+        """
+
+        interocular = np.linalg.norm(gt[:, 36, :] - gt[:, 45, :], axis=1)
+        return np.tile(np.expand_dims(interocular, 1), [1, 2])
+
+    def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
         be saved in `${res_folder}/result_keypoints.json`.
 
@@ -105,20 +130,19 @@ class Face300WDataset(FaceBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ 't', 'r', 'a', 'i',
-                    'n', 'i', 'n', 'g', '/', 'r', 'g', 'b', '/', '0', '0',
-                    '0', '3', '1', '4', '2', '6', '.', 'j', 'p', 'g']
+                :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
+                    'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
+                    '1', '8', '.', 'j', 'p', 'g']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
-
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'AUC', 'EPE'.
+                Options: 'NME'.
 
         Returns:
             dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['PCK', 'AUC', 'EPE']
+        allowed_metrics = ['NME']
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
