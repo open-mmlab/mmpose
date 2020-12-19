@@ -188,6 +188,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 valid_objs.append(obj)
         objs = valid_objs
 
+        num_boxes = 0
         rec = []
         for obj in objs:
             if 'keypoints' not in obj:
@@ -215,8 +216,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
-                'bbox_score': 1
+                'bbox_score': 1,
+                'bbox_id': num_boxes
             })
+            num_boxes = num_boxes + 1
 
         return rec
 
@@ -277,8 +280,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             if score < self.det_bbox_thr:
                 continue
 
-            num_boxes = num_boxes + 1
-
             center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
@@ -291,8 +292,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'bbox_score': score,
                 'dataset': self.dataset_name,
                 'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible
+                'joints_3d_visible': joints_3d_visible,
+                'bbox_id': num_boxes
             })
+            num_boxes = num_boxes + 1
         print(f'=> Total boxes after filter '
               f'low score@{self.det_bbox_thr}: {num_boxes}')
         return kpt_db
@@ -313,10 +316,10 @@ class TopDownCocoDataset(TopDownBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
-                :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                :image_path (list[str]): For example, ['data/coco/val2017
+                    /000000393226.jpg']
+                :heatmap (np.ndarray[N, K, H, W]): model output heatmap
+                :bbox_id (list(int)).
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 

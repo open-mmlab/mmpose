@@ -180,9 +180,7 @@ class TopDown(BasePose):
 
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
-        assert img.size(0) == 1
-        assert len(img_metas) == 1
-        img_metas = img_metas[0]
+        assert img.size(0) == len(img_metas)
 
         # compute backbone features
         output = self.backbone(img)
@@ -211,7 +209,8 @@ class TopDown(BasePose):
 
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
-        flip_pairs = img_metas['flip_pairs']
+        flip_pairs = img_metas[0]['flip_pairs']
+        batch_size = img.size(0)
 
         if self.with_keypoint:
             output = self.keypoint_head(output)
@@ -228,51 +227,55 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
-            output_flipped = flip_back(
-                output_flipped.detach().cpu().numpy(),
-                flip_pairs,
-                target_type=self.target_type)
+            output_flipped = flip_back(output_flipped.detach().cpu().numpy(),
+                                       flip_pairs)
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:
                 output_flipped[:, :, :, 1:] = output_flipped[:, :, :, :-1]
             output_heatmap = (output_heatmap + output_flipped) * 0.5
 
-        c = img_metas['center'].reshape(1, -1)
-        s = img_metas['scale'].reshape(1, -1)
+        c = np.zeros((batch_size, 2))
+        s = np.zeros((batch_size, 2))
+        image_path = []
+        score = np.ones(batch_size)
+        bbox_ids = None
+        if 'bbox_id' in img_metas[0]:
+            bbox_ids = []
+        for i in range(batch_size):
+            c[i, :] = img_metas[i]['center']
+            s[i, :] = img_metas[i]['scale']
+            image_path.append(img_metas[i]['image_file'])
 
-        score = 1.0
-        if 'bbox_score' in img_metas:
-            score = np.array(img_metas['bbox_score']).reshape(-1)
+            if 'bbox_score' in img_metas[i]:
+                score[i] = np.array(img_metas[i]['bbox_score']).reshape(-1)
+            if bbox_ids is not None:
+                bbox_ids.append(img_metas[i]['bbox_id'])
 
         preds, maxvals = keypoints_from_heatmaps(
             output_heatmap,
             c,
             s,
             post_process=self.test_cfg['post_process'],
-            unbiased=self.test_cfg.get('unbiased_decoding', False),
-            kernel=self.test_cfg['modulate_kernel'],
-            use_udp=self.test_cfg.get('use_udp', False),
-            valid_radius_factor=self.test_cfg.get('valid_radius_factor',
-                                                  0.0546875),
-            target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
+            unbiased=self.test_cfg['unbiased_decoding'],
+            kernel=self.test_cfg['modulate_kernel'])
 
-        all_preds = np.zeros((1, preds.shape[1], 3), dtype=np.float32)
-        all_boxes = np.zeros((1, 6), dtype=np.float32)
-        image_path = []
+        all_preds = np.zeros((batch_size, output.shape[1], 3),
+                             dtype=np.float32)
+        all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
 
-        all_preds[0, :, 0:2] = preds[:, :, 0:2]
-        all_preds[0, :, 2:3] = maxvals
-        all_boxes[0, 0:2] = c[:, 0:2]
-        all_boxes[0, 2:4] = s[:, 0:2]
-        all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
-        all_boxes[0, 5] = score
-        image_path.extend(img_metas['image_file'])
-
+        all_preds[:, :, 0:2] = preds[:, :, 0:2]
+        all_preds[:, :, 2:3] = maxvals
+        all_boxes[:, 0:2] = c[:, 0:2]
+        all_boxes[:, 2:4] = s[:, 0:2]
+        all_boxes[:, 4] = np.prod(s * 200.0, axis=1)
+        all_boxes[:, 5] = score
         if not return_heatmap:
             output_heatmap = None
-
-        return all_preds, all_boxes, image_path, output_heatmap
+        if bbox_ids is not None:
+            return all_preds, all_boxes, image_path, output_heatmap, bbox_ids
+        else:
+            return all_preds, all_boxes, image_path, output_heatmap
 
     def show_result(self,
                     img,
