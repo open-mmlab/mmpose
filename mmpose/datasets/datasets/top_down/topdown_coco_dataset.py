@@ -335,18 +335,20 @@ class TopDownCocoDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = defaultdict(list)
-        for preds, boxes, image_path, _ in outputs:
-            str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
-
-            kpts[image_id].append({
-                'keypoints': preds[0],
-                'center': boxes[0][0:2],
-                'scale': boxes[0][2:4],
-                'area': boxes[0][4],
-                'score': boxes[0][5],
-                'image_id': image_id,
-            })
+        for preds, boxes, image_paths, _, bbox_ids in outputs:
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+                kpts[image_id].append({
+                    'keypoints': preds[i],
+                    'center': boxes[i][0:2],
+                    'scale': boxes[i][2:4],
+                    'area': boxes[i][4],
+                    'score': boxes[i][5],
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        kpts = self._sort_and_unique_bboxes(kpts)
 
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
