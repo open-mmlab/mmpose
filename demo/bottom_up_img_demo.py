@@ -41,7 +41,7 @@ def main():
     coco = COCO(args.json_file)
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        args.pose_config, args.pose_checkpoint, device=args.device)
+        args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
     dataset = pose_model.cfg.data['test']['type']
     assert (dataset == 'BottomUpCocoDataset')

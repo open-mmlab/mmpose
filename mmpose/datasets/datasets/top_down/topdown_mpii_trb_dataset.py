@@ -21,6 +21,50 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
+    MPII-TRB keypoint indexes::
+
+        0: 'left_shoulder'
+        1: 'right_shoulder'
+        2: 'left_elbow'
+        3: 'right_elbow'
+        4: 'left_wrist'
+        5: 'right_wrist'
+        6: 'left_hip'
+        7: 'right_hip'
+        8: 'left_knee'
+        9: 'right_knee'
+        10: 'left_ankle'
+        11: 'right_ankle'
+        12: 'head'
+        13: 'neck'
+
+        14: 'right_neck'
+        15: 'left_neck'
+        16: 'medial_right_shoulder'
+        17: 'lateral_right_shoulder'
+        18: 'medial_right_bow'
+        19: 'lateral_right_bow'
+        20: 'medial_right_wrist'
+        21: 'lateral_right_wrist'
+        22: 'medial_left_shoulder'
+        23: 'lateral_left_shoulder'
+        24: 'medial_left_bow'
+        25: 'lateral_left_bow'
+        26: 'medial_left_wrist'
+        27: 'lateral_left_wrist'
+        28: 'medial_right_hip'
+        29: 'lateral_right_hip'
+        30: 'medial_right_knee'
+        31: 'lateral_right_knee'
+        32: 'medial_right_ankle'
+        33: 'lateral_right_ankle'
+        34: 'medial_left_hip'
+        35: 'lateral_left_hip'
+        36: 'medial_left_knee'
+        37: 'lateral_left_knee'
+        38: 'medial_left_ankle'
+        39: 'lateral_left_ankle'
+
     Args:
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
@@ -43,10 +87,10 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
 
         # flip_pairs in MPII-TRB
         self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
-                                       [10, 11], [14, 15]]
-        for i in range(6):
-            self.ann_info['flip_pairs'].append([16 + i, 22 + i])
-            self.ann_info['flip_pairs'].append([28 + i, 34 + i])
+                                       [10, 11], [14, 15], [16, 22], [28, 34],
+                                       [17, 23], [29, 35], [18, 24], [30, 36],
+                                       [19, 25], [31, 37], [20, 26], [32, 38],
+                                       [21, 27], [33, 39]]
 
         self.ann_info['upper_body_ids'] = [0, 1, 2, 3, 4, 5, 12, 13]
         self.ann_info['lower_body_ids'] = [6, 7, 8, 9, 10, 11]

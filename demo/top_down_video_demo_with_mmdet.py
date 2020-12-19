@@ -60,10 +60,10 @@ def main():
     assert args.det_checkpoint is not None
 
     det_model = init_detector(
-        args.det_config, args.det_checkpoint, device=args.device)
+        args.det_config, args.det_checkpoint, device=args.device.lower())
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        args.pose_config, args.pose_checkpoint, device=args.device)
+        args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
     dataset = pose_model.cfg.data['test']['type']
 
