@@ -50,3 +50,19 @@ def test_mse_loss():
     fake_pred[0, 0] += 1
     fake_label = torch.zeros((1, 3, 64, 64))
     assert torch.allclose(loss(fake_pred, fake_label, None), torch.tensor(0.5))
+
+    loss_cfg = dict(type='CombinedTargetMSELoss', use_target_weight=True)
+    loss = build_loss(loss_cfg)
+    fake_pred = torch.ones((1, 3, 64, 64))
+    fake_label = torch.zeros((1, 3, 64, 64))
+    target_weight = torch.ones((1, 1, 1))
+    assert torch.allclose(
+        loss(fake_pred, fake_label, target_weight), torch.tensor(0.5))
+
+    loss_cfg = dict(type='CombinedTargetMSELoss', use_target_weight=True)
+    loss = build_loss(loss_cfg)
+    fake_pred = torch.ones((1, 3, 64, 64))
+    fake_label = torch.zeros((1, 3, 64, 64))
+    target_weight = torch.zeros((1, 1, 1))
+    assert torch.allclose(
+        loss(fake_pred, fake_label, target_weight), torch.tensor(0.))
