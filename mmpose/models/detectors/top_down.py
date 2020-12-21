@@ -255,7 +255,8 @@ class TopDown(BasePose):
             use_udp=self.test_cfg.get('use_udp', False),
             valid_radius_factor=self.test_cfg.get('valid_radius_factor',
                                                   0.0546875),
-            target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
+            target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'),
+            heatmap_tensor=output)
 
         all_preds = np.zeros((1, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((1, 6), dtype=np.float32)

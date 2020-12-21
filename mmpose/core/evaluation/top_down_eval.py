@@ -2,6 +2,9 @@ import warnings
 
 import cv2
 import numpy as np
+import torch
+import torch.nn as nn
+from scipy import ndimage
 
 from mmpose.core.post_processing import transform_preds
 
@@ -71,9 +74,9 @@ def _get_max_preds(heatmaps):
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-    assert isinstance(heatmaps,
-                      np.ndarray), ('heatmaps should be numpy.ndarray')
-    assert heatmaps.ndim == 4, 'batch_images should be 4-ndim'
+    # assert isinstance(heatmaps,
+    #                   np.ndarray), ('heatmaps should be numpy.ndarray')
+    # assert heatmaps.ndim == 4, 'batch_images should be 4-ndim'
 
     N, K, _, W = heatmaps.shape
     heatmaps_reshaped = heatmaps.reshape((N, K, -1))
@@ -329,6 +332,38 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     return coords
 
 
+class GaussianLayer(nn.Module):
+
+    def __init__(self, num_keypoints=17, kernel=11):
+        super(GaussianLayer, self).__init__()
+        self.kernel = kernel
+        self.seq = nn.Sequential(
+            nn.ReflectionPad2d(kernel // 2),
+            nn.Conv2d(
+                num_keypoints,
+                num_keypoints,
+                kernel,
+                stride=1,
+                padding=0,
+                bias=None,
+                groups=num_keypoints))
+        self.weights_init()
+
+    def forward(self, x):
+        return self.seq(x)
+
+    def weights_init(self):
+        sigma = 0.3 * ((self.kernel - 1) * 0.5 - 1) + 0.8
+        n = np.zeros((self.kernel, self.kernel))
+        n[self.kernel // 2, self.kernel // 2] = 1
+        k = ndimage.gaussian_filter(n, sigma=sigma)
+        for name, f in self.named_parameters():
+            f.data.copy_(torch.from_numpy(k))
+
+
+Gaussian_blur = GaussianLayer().to('cuda')
+
+
 def _gaussian_blur(heatmaps, kernel=11):
     """Modulate heatmap distribution with Gaussian.
      sigma = 0.3*((kernel_size-1)*0.5-1)+0.8
@@ -352,23 +387,23 @@ def _gaussian_blur(heatmaps, kernel=11):
     Returns:
         np.ndarray[N, K, H, W]: Modulated heatmap distribution.
     """
-    assert kernel % 2 == 1
+    # assert kernel % 2 == 1
 
-    border = (kernel - 1) // 2
-    batch_size = heatmaps.shape[0]
-    num_joints = heatmaps.shape[1]
-    height = heatmaps.shape[2]
-    width = heatmaps.shape[3]
-    for i in range(batch_size):
-        for j in range(num_joints):
-            origin_max = np.max(heatmaps[i, j])
-            dr = np.zeros((height + 2 * border, width + 2 * border),
-                          dtype=np.float32)
-            dr[border:-border, border:-border] = heatmaps[i, j].copy()
-            dr = cv2.GaussianBlur(dr, (kernel, kernel), 0)
-            heatmaps[i, j] = dr[border:-border, border:-border].copy()
-            heatmaps[i, j] *= origin_max / np.max(heatmaps[i, j])
-    return heatmaps
+    # border = (kernel - 1) // 2
+    # batch_size = heatmaps.shape[0]
+    # num_joints = heatmaps.shape[1]
+    # height = heatmaps.shape[2]
+    # width = heatmaps.shape[3]
+    # for i in range(batch_size):
+    #     for j in range(num_joints):
+    #         origin_max = np.max(heatmaps[i, j])
+    #         dr = np.zeros((height + 2 * border, width + 2 * border),
+    #                       dtype=np.float32)
+    #         dr[border:-border, border:-border] = heatmaps[i, j].copy()
+    #         dr = cv2.GaussianBlur(dr, (kernel, kernel), 0)
+    #         heatmaps[i, j] = dr[border:-border, border:-border].copy()
+    #         heatmaps[i, j] *= origin_max / np.max(heatmaps[i, j])
+    return Gaussian_blur(heatmaps).detach().cpu().numpy()
 
 
 def keypoints_from_heatmaps(heatmaps,
@@ -379,7 +414,8 @@ def keypoints_from_heatmaps(heatmaps,
                             kernel=11,
                             valid_radius_factor=0.0546875,
                             use_udp=False,
-                            target_type='GaussianHeatMap'):
+                            target_type='GaussianHeatMap',
+                            heatmap_tensor=None):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -458,7 +494,7 @@ def keypoints_from_heatmaps(heatmaps,
 
     # start processing
     if post_process == 'megvii':
-        heatmaps = _gaussian_blur(heatmaps, kernel=kernel)
+        heatmaps = _gaussian_blur(heatmap_tensor, kernel=kernel)
 
     N, K, H, W = heatmaps.shape
     if use_udp:
@@ -486,7 +522,7 @@ def keypoints_from_heatmaps(heatmaps,
         if post_process == 'unbiased':  # alleviate biased coordinate
             # apply Gaussian distribution modulation.
             heatmaps = np.log(
-                np.maximum(_gaussian_blur(heatmaps, kernel), 1e-10))
+                np.maximum(_gaussian_blur(heatmap_tensor, kernel), 1e-10))
             for n in range(N):
                 for k in range(K):
                     preds[n][k] = _taylor(heatmaps[n][k], preds[n][k])
