@@ -57,8 +57,8 @@ A placeholder for the config.
 
 1. Please run `PYTHONPATH=${PWD}:$PYTHONPATH python mmpose/utils/collect_env.py` to collect necessary environment information and paste it here.
 1. You may add addition that may be helpful for locating the problem, such as
-   1. How you installed PyTorch [e.g., pip, conda, source]
-   1. Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
+  - How you installed PyTorch [e.g., pip, conda, source]
+  - Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
 
 **Results**
 
