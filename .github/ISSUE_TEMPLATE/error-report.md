@@ -1,4 +1,5 @@
 ______________________________________________________________________
+
 ```
 name: Error report
 about: Create a report to help us improve
@@ -6,6 +7,7 @@ title: ''
 labels: ''
 assignees: ''
 ```
+
 ______________________________________________________________________
 
 Thanks for your error report and we appreciate it a lot.
@@ -23,13 +25,17 @@ A clear and concise description of what the bug is.
 **Reproduction**
 
 - What command or script did you run?
+
 ```
 A placeholder for the command.
 ```
+
 - What config did you run?
+
 ```
 A placeholder for the config.
 ```
+
 - Did you make any modifications on the code or config? Did you understand what you have modified?
 - What dataset did you use?
 
@@ -37,8 +43,8 @@ A placeholder for the config.
 
 1. Please run `PYTHONPATH=${PWD}:$PYTHONPATH python mmpose/utils/collect_env.py` to collect necessary environment information and paste it here.
 1. You may add addition that may be helpful for locating the problem, such as
-   - How you installed PyTorch [e.g., pip, conda, source]
-   - Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
+  - How you installed PyTorch [e.g., pip, conda, source]
+  - Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
 
 **Error traceback**
 

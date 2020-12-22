@@ -23,7 +23,7 @@
 | [pose_mobilenetv2](/configs/top_down/mobilenet_v2/coco/mobilenetv2_coco_256x192.py)  | 256x192 | 0.646 | 0.874 | 0.723 | 0.707 | 0.917 | [ckpt](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_256x192-d1e58e7b_20200727.pth) | [log](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_256x192_20200727.log.json) |
 | [pose_mobilenetv2](/configs/top_down/mobilenet_v2/coco/mobilenetv2_coco_384x288.py)  | 384x288 | 0.673 | 0.879 | 0.743 | 0.729 | 0.916 | [ckpt](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_384x288-26be4816_20200727.pth) | [log](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_384x288_20200727.log.json) |
 
-#### Results on MPII val set.
+#### Results on MPII val set
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |

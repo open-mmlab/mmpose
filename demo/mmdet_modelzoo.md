@@ -9,7 +9,7 @@ MMDetection provides 80-class COCO-pretrained models, which already includes the
 
 For hand bounding box detection, we simply train our hand box models on onehand10k dataset using MMDetection.
 
-#### Hand detection results on OneHand10K test set.
+#### Hand detection results on OneHand10K test set
 
 | Arch  | Box AP |   ckpt | log |
 | :-------------- | :-----------: | :------: | :------: |
