@@ -5,10 +5,10 @@
 **Highlights**
 
 1. Support more human pose estimation methods.
-   - [MSPN](https://arxiv.org/abs/1901.00148)
-   - [RSN](https://arxiv.org/abs/2003.04030)
+  - [MSPN](https://arxiv.org/abs/1901.00148)
+  - [RSN](https://arxiv.org/abs/2003.04030)
 1. Support video pose estimation datasets.
-   - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
+  - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
 1. Support Onnx model conversion.
 
 **New Features**
@@ -45,10 +45,10 @@
 **Highlights**
 
 1. Support more human pose estimation datasets.
-   - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
-   - [PoseTrack18](https://posetrack.net/)
+  - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+  - [PoseTrack18](https://posetrack.net/)
 1. Support more 2D hand keypoint estimation datasets.
-   - [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M)
+  - [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M)
 1. Support adversarial training for 3D human shape recovery.
 1. Support multi-stage losses.
 1. Support mpii demo.
@@ -78,12 +78,12 @@
 
 1. Support HMR for 3D human shape recovery.
 1. Support WholeBody human pose estimation.
-   - [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody)
+  - [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody)
 1. Support more 2D hand keypoint estimation datasets.
-   - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
-   - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+  - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
-   - ShuffleNetv2
+  - ShuffleNetv2
 1. Support hand demo and whole-body demo.
 
 **New Features**
@@ -117,19 +117,19 @@
 **Highlights**
 
 1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
-   - ResNext
-   - SEResNet
-   - ResNetV1D
-   - MobileNetv2
-   - ShuffleNetv1
-   - CPM (Convolutional Pose Machine)
+  - ResNext
+  - SEResNet
+  - ResNetV1D
+  - MobileNetv2
+  - ShuffleNetv1
+  - CPM (Convolutional Pose Machine)
 1. Add more popular datasets:
-   - [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
-   - [MPII](http://human-pose.mpi-inf.mpg.de/)
-   - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-   - [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
+  - [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
+  - [MPII](http://human-pose.mpi-inf.mpg.de/)
+  - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+  - [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
 1. Support 2d hand keypoint estimation.
-   - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 1. Support bottom-up inference.
 
 **New Features**
