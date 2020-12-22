@@ -1,6 +1,7 @@
 # The Devil is in the Details: Delving into Unbiased Data Processing for Human Pose Estimation
 
 ## Introduction
+
 ```
 @InProceedings{Huang_2020_CVPR,
 author = {Huang, Junjie and Zhu, Zheng and Guo, Feng and Huang, Guan},

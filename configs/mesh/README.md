@@ -3,8 +3,8 @@
 This task aims at recovering the full 3D mesh representation (parameterized by shape and 3D joint angles) of a
 human body from a single RGB image.
 
-
 ## Data preparation
+
 ### Human3.6M
 
 For Human3.6M, we use the MoShed data provided in [HMR](https://github.com/akanazawa/hmr) for training.
@@ -196,10 +196,10 @@ mmpose
 ```
 
 ## Prepare Pretrained Models
+
 Please download the pretrained HMR model from
 [here](https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth),
 and make it looks llike this:
-
 
 ```
 mmpose
@@ -212,6 +212,7 @@ mmpose
 ## Inference with pretrained models
 
 ### Test a Dataset
+
 You can use the following commands to test the pretrained model on Human3.6M test set and
 evaluate the joint error.
 
@@ -226,6 +227,7 @@ models/pytorch/hmr/hmr_mesh_224x224-c21e8229_20201015.pth 8 --eval=joint_error
 ```
 
 ## Train the model
+
 In order to train the model, please download the
 [zip file](https://drive.google.com/file/d/1JrwfHYIFdQPO7VeBEG9Kk3xsZMVJmhtv/view?usp=sharing)
 of the sampled train images of Human3.6M dataset.
@@ -292,7 +294,9 @@ mmpose
 ```
 
 ### Train with multiple GPUs
+
 Here is the code of using 8 GPUs to train HMR net:
+
 ```shell
 ./tools/dist_train.sh configs/mesh/hmr/hmr_resnet_50.py 8 --work-dir work_dirs/hmr --no-validate
 ```

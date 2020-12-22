@@ -11,7 +11,6 @@ For each model setting, we kept the same data pre-processing methods to make sur
 In addition, we also used Memcached, a distributed memory-caching system, to load the data in all the compared toolboxes.
 This minimizes the IO time during benchmark.
 
-
 The time we measured is the average training time for an iteration, including data processing and model training.
 The training speed is measure with s/iter. The lower, the better.
 
@@ -32,7 +31,6 @@ The mAP (the mean average precision) is used as the evaluation metric.
 | hrnet_w32  | 384x288  | **0.76** | 2.00 | **0.760** | 0.758 |
 | hrnet_w48  | 256x192  | **0.66** | 1.55 | **0.756** | 0.751 |
 | hrnet_w48  | 384x288  | **1.23** | 2.20 | **0.767** | 0.763 |
-
 
 ## Hardware
 

@@ -7,11 +7,11 @@ Apart from training/testing scripts, We provide lots of useful tools under the `
 - [Log Analysis](#log-analysis)
 - [Model Complexity (experimental)](#model-complexity)
 - [Model Conversion](#model-conversion)
-  * [MMPose model to ONNX (experimental)](#mmpose-model-to-onnx--experimental-)
-  * [Prepare a model for publishing](#prepare-a-model-for-publishing)
+  - [MMPose model to ONNX (experimental)](#mmpose-model-to-onnx--experimental-)
+  - [Prepare a model for publishing](#prepare-a-model-for-publishing)
 - [Miscellaneous](#miscellaneous)
-  * [Evaluating a metric](#evaluating-a-metric)
-  * [Print the entire config](#print-the-entire-config)
+  - [Evaluating a metric](#evaluating-a-metric)
+  - [Print the entire config](#print-the-entire-config)
 
 <!-- TOC -->
 
@@ -29,21 +29,21 @@ Examples:
 
 - Plot the mse loss of some run.
 
-    ```shell
-    python tools/analysis/analyze_logs.py plot_curve log.json --keys mse_loss --legend mse_loss
-    ```
+  ```shell
+  python tools/analysis/analyze_logs.py plot_curve log.json --keys mse_loss --legend mse_loss
+  ```
 
 - Plot the acc of some run, and save the figure to a pdf.
 
-    ```shell
-    python tools/analysis/analyze_logs.py plot_curve log.json --keys acc_pose --out results.pdf
-    ```
+  ```shell
+  python tools/analysis/analyze_logs.py plot_curve log.json --keys acc_pose --out results.pdf
+  ```
 
 - Compare the acc of two runs in the same figure.
 
-    ```shell
-    python tools/analysis/analyze_logs.py plot_curve log1.json log2.json --keys acc_pose --legend run1 run2
-    ```
+  ```shell
+  python tools/analysis/analyze_logs.py plot_curve log1.json log2.json --keys acc_pose --legend run1 run2
+  ```
 
 You can also compute the average training speed.
 
@@ -53,19 +53,19 @@ python tools/analysis/analyze_logs.py cal_train_time ${JSON_LOGS} [--include-out
 
 - Compute the average training speed for a config file
 
-    ```shell
-    python tools/analysis/analyze_logs.py cal_train_time log.json
-    ```
+  ```shell
+  python tools/analysis/analyze_logs.py cal_train_time log.json
+  ```
 
-    The output is expected to be like the following.
+  The output is expected to be like the following.
 
-    ```text
-    -----Analyze train time of log.json-----
-    slowest epoch 114, average time is 0.9662
-    fastest epoch 16, average time is 0.7532
-    time std over epochs is 0.0426
-    average iter time: 0.8406 s/iter
-    ```
+  ```text
+  -----Analyze train time of log.json-----
+  slowest epoch 114, average time is 0.9662
+  fastest epoch 16, average time is 0.7532
+  time std over epochs is 0.0426
+  average iter time: 0.8406 s/iter
+  ```
 
 ## Model Complexity
 
