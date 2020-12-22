@@ -1,4 +1,5 @@
 ## 2D Human Pose Demo
+
 ### 2D Human Pose Top-Down Image Demo
 
 #### Using gt human bounding boxes as input
@@ -139,14 +140,17 @@ python demo/bottom_up_video_demo.py \
 ```
 
 ### Speed Up Inference
+
 Some tips to speed up MMPose inference:
 
 For top-down models, try to edit the config file. For example,
+
 1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-2. set `unbiased_decoding=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+1. set `unbiased_decoding=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
 
 For bottom-up models, try to edit the config file. For example,
+
 1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L80).
-2. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L78).
-3. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L79).
-4. use smaller input image size in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
+1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L78).
+1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L79).
+1. use smaller input image size in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).

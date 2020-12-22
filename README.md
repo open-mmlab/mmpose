@@ -3,6 +3,7 @@
 </div>
 
 ## Introduction
+
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
@@ -48,7 +49,6 @@ The master branch works with **PyTorch 1.3+**.
   We decompose MMPose into different components and one can easily construct a customized
   pose estimation framework by combining different modules.
   We provide detailed documentation and API reference, as well as unittests.
-
 
 ## [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
 

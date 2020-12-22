@@ -1,6 +1,7 @@
 # Distribution-aware coordinate representation for human pose estimation
 
 ## Introduction
+
 ```
 @inproceedings{zhang2020distribution,
   title={Distribution-aware coordinate representation for human pose estimation},
@@ -36,8 +37,7 @@
 
 Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on COCO-WholeBody dataset. We find this will lead to better performance.
 
-
-#### Results on MPII val set.
+#### Results on MPII val set
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |

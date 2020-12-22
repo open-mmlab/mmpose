@@ -1,4 +1,5 @@
 ## 2D Hand Keypoint Demo
+
 ### 2D Hand Image Demo
 
 #### Using gt hand bounding boxes as input
@@ -8,7 +9,6 @@ We provide a demo script to test a single image, given gt json file.
 *Hand Pose Model Preparation:*
 The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/pretrained.html).
 Take [onehand10k model](https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) as an example:
-
 
 ```shell
 python demo/top_down_img_demo.py \
@@ -102,8 +102,10 @@ python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_
 ```
 
 ### Speed Up Inference
+
 Some tips to speed up MMPose inference:
 
 For 2D hand pose estimation models, try to edit the config file. For example,
+
 1. set `flip_test=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L56).
-2. set `unbiased_decoding=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L59).
+1. set `unbiased_decoding=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L59).

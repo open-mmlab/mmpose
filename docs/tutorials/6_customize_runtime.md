@@ -5,25 +5,25 @@ In this tutorial, we will introduce some methods about how to customize optimiza
 <!-- TOC -->
 
 - [Customize Optimization Methods](#customize-optimization-methods)
-  * [Customize optimizer supported by PyTorch](#customize-optimizer-supported-by-pytorch)
-  * [Customize self-implemented optimizer](#customize-self-implemented-optimizer)
-    + [1. Define a new optimizer](#1-define-a-new-optimizer)
-    + [2. Add the optimizer to registry](#2-add-the-optimizer-to-registry)
-    + [3. Specify the optimizer in the config file](#3-specify-the-optimizer-in-the-config-file)
-  * [Customize optimizer constructor](#customize-optimizer-constructor)
-  * [Additional settings](#additional-settings)
+  - [Customize optimizer supported by PyTorch](#customize-optimizer-supported-by-pytorch)
+  - [Customize self-implemented optimizer](#customize-self-implemented-optimizer)
+    - [1. Define a new optimizer](#1-define-a-new-optimizer)
+    - [2. Add the optimizer to registry](#2-add-the-optimizer-to-registry)
+    - [3. Specify the optimizer in the config file](#3-specify-the-optimizer-in-the-config-file)
+  - [Customize optimizer constructor](#customize-optimizer-constructor)
+  - [Additional settings](#additional-settings)
 - [Customize Training Schedules](#customize-training-schedules)
 - [Customize Workflow](#customize-workflow)
 - [Customize Hooks](#customize-hooks)
-  * [Customize self-implemented hooks](#customize-self-implemented-hooks)
-    + [1. Implement a new hook](#1-implement-a-new-hook)
-    + [2. Register the new hook](#2-register-the-new-hook)
-    + [3. Modify the config](#3-modify-the-config)
-  * [Use hooks implemented in MMCV](#use-hooks-implemented-in-mmcv)
-  * [Modify default runtime hooks](#modify-default-runtime-hooks)
-    + [Checkpoint config](#checkpoint-config)
-    + [Log config](#log-config)
-    + [Evaluation config](#evaluation-config)
+  - [Customize self-implemented hooks](#customize-self-implemented-hooks)
+    - [1. Implement a new hook](#1-implement-a-new-hook)
+    - [2. Register the new hook](#2-register-the-new-hook)
+    - [3. Modify the config](#3-modify-the-config)
+  - [Use hooks implemented in MMCV](#use-hooks-implemented-in-mmcv)
+  - [Modify default runtime hooks](#modify-default-runtime-hooks)
+    - [Checkpoint config](#checkpoint-config)
+    - [Log config](#log-config)
+    - [Evaluation config](#evaluation-config)
 
 <!-- TOC -->
 
@@ -76,8 +76,8 @@ To find the above module defined above, this module should be imported into the 
 
 - Modify `mmpose/core/optimizer/__init__.py` to import it.
 
-    The newly defined module should be imported in `mmpose/core/optimizer/__init__.py` so that the registry will
-    find the new module and add it:
+  The newly defined module should be imported in `mmpose/core/optimizer/__init__.py` so that the registry will
+  find the new module and add it:
 
 ```python
 from .my_optimizer import MyOptimizer
@@ -140,32 +140,32 @@ Tricks not implemented by the optimizer should be implemented through optimizer 
 We list some common settings that could stabilize the training or accelerate the training. Feel free to create PR, issue for more settings.
 
 - __Use gradient clip to stabilize training__:
-    Some models need gradient clip to clip the gradients to stabilize the training process. An example is as below:
+  Some models need gradient clip to clip the gradients to stabilize the training process. An example is as below:
 
-    ```python
-    optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
-    ```
+  ```python
+  optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+  ```
 
 - __Use momentum schedule to accelerate model convergence__:
-    We support momentum scheduler to modify model's momentum according to learning rate, which could make the model converge in a faster way.
-    Momentum scheduler is usually used with LR scheduler, for example, the following config is used in 3D detection to accelerate convergence.
-    For more details, please refer to the implementation of [CyclicLrUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L327)
-    and [CyclicMomentumUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/momentum_updater.py#L130).
+  We support momentum scheduler to modify model's momentum according to learning rate, which could make the model converge in a faster way.
+  Momentum scheduler is usually used with LR scheduler, for example, the following config is used in 3D detection to accelerate convergence.
+  For more details, please refer to the implementation of [CyclicLrUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L327)
+  and [CyclicMomentumUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/momentum_updater.py#L130).
 
-    ```python
-    lr_config = dict(
-        policy='cyclic',
-        target_ratio=(10, 1e-4),
-        cyclic_times=1,
-        step_ratio_up=0.4,
-    )
-    momentum_config = dict(
-        policy='cyclic',
-        target_ratio=(0.85 / 0.95, 1),
-        cyclic_times=1,
-        step_ratio_up=0.4,
-    )
-    ```
+  ```python
+  lr_config = dict(
+      policy='cyclic',
+      target_ratio=(10, 1e-4),
+      cyclic_times=1,
+      step_ratio_up=0.4,
+  )
+  momentum_config = dict(
+      policy='cyclic',
+      target_ratio=(0.85 / 0.95, 1),
+      cyclic_times=1,
+      step_ratio_up=0.4,
+  )
+  ```
 
 ## Customize Training Schedules
 
@@ -174,20 +174,20 @@ We support many other learning rate schedule [here](https://github.com/open-mmla
 
 - Poly schedule:
 
-    ```python
-    lr_config = dict(policy='poly', power=0.9, min_lr=1e-4, by_epoch=False)
-    ```
+  ```python
+  lr_config = dict(policy='poly', power=0.9, min_lr=1e-4, by_epoch=False)
+  ```
 
 - ConsineAnnealing schedule:
 
-    ```python
-    lr_config = dict(
-        policy='CosineAnnealing',
-        warmup='linear',
-        warmup_iters=1000,
-        warmup_ratio=1.0 / 10,
-        min_lr_ratio=1e-5)
-    ```
+  ```python
+  lr_config = dict(
+      policy='CosineAnnealing',
+      warmup='linear',
+      warmup_iters=1000,
+      warmup_ratio=1.0 / 10,
+      min_lr_ratio=1e-5)
+  ```
 
 ## Customize Workflow
 
@@ -212,9 +212,9 @@ so that 1 epoch for training and 1 epoch for validation will be run iteratively.
 **Note**:
 
 1. The parameters of model will not be updated during val epoch.
-2. Keyword `total_epochs` in the config only controls the number of training epochs and will not affect the validation workflow.
-3. Workflows `[('train', 1), ('val', 1)]` and `[('train', 1)]` will not change the behavior of `EpochEvalHook` because `EpochEvalHook` is called by `after_train_epoch` and validation workflow only affect hooks that are called through `after_val_epoch`.
-Therefore, the only difference between `[('train', 1), ('val', 1)]` and ``[('train', 1)]`` is that the runner will calculate losses on validation set after each training epoch.
+1. Keyword `total_epochs` in the config only controls the number of training epochs and will not affect the validation workflow.
+1. Workflows `[('train', 1), ('val', 1)]` and `[('train', 1)]` will not change the behavior of `EpochEvalHook` because `EpochEvalHook` is called by `after_train_epoch` and validation workflow only affect hooks that are called through `after_val_epoch`.
+   Therefore, the only difference between `[('train', 1), ('val', 1)]` and `[('train', 1)]` is that the runner will calculate losses on validation set after each training epoch.
 
 ## Customize Hooks
 
@@ -261,8 +261,8 @@ Then we need to make `MyHook` imported. Assuming the file is in `mmpose/core/uti
 
 - Modify `mmpose/core/utils/__init__.py` to import it.
 
-    The newly defined module should be imported in `mmpose/core/utils/__init__.py` so that the registry will
-    find the new module and add it:
+  The newly defined module should be imported in `mmpose/core/utils/__init__.py` so that the registry will
+  find the new module and add it:
 
 ```python
 from .my_hook import MyHook
@@ -291,7 +291,6 @@ custom_hooks = [
 ```
 
 By default the hook's priority is set as `NORMAL` during registration.
-
 
 ### Use hooks implemented in MMCV
 
