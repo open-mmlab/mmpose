@@ -1,6 +1,7 @@
 # Improving Convolutional Networks with Self-Calibrated Convolutions
 
 ## Introduction
+
 ```
 @inproceedings{liu2020improving,
   title={Improving Convolutional Networks with Self-Calibrated Convolutions},
@@ -23,7 +24,6 @@
 | [pose_scnet_50](/configs/top_down/scnet/coco/scnet50_coco_384x288.py)   | 384x288 | 0.751 | 0.906 | 0.818 | 0.802 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288_20200709.log.json) |
 | [pose_scnet_101](/configs/top_down/scnet/coco/scnet101_coco_256x192.py)  | 256x192 | 0.733 | 0.903 | 0.813 | 0.790 | 0.941 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192_20200709.log.json) |
 | [pose_scnet_101](/configs/top_down/scnet/coco/scnet101_coco_384x288.py)  | 384x288 | 0.752 | 0.906 | 0.823 | 0.804 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288-0b6e631b_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288_20200709.log.json) |
-
 
 #### Results on MPII val set.
 

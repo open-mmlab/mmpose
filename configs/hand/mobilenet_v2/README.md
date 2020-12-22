@@ -1,6 +1,7 @@
 # Simple baselines for human pose estimation and tracking
 
 ## Introduction
+
 ```
 @inproceedings{sandler2018mobilenetv2,
   title={Mobilenetv2: Inverted residuals and linear bottlenecks},

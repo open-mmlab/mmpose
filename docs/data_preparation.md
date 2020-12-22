@@ -26,7 +26,7 @@ MMPose supported datasets:
 
 For COCO data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 2014 Train is needed for human mesh estimation training.
-[HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
+[HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results. Please download from [OneDrive](https://1drv.ms/f/s%21AhIXJn_J-blWzzDXoz5BeFl8sWM-).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -65,7 +65,7 @@ mmpose
 
 For COCO-WholeBody datatset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).
-Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-).
+Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s%21AhIXJn_J-blWzzDXoz5BeFl8sWM-).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```
@@ -94,9 +94,10 @@ mmpose
             │-- ...
 
 ```
+
 Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support COCO-WholeBody evaluation:
 
-```pip install xtcocotools```
+`pip install xtcocotools`
 
 ## MPII
 
@@ -126,10 +127,13 @@ mmpose
 ```
 
 During training and inference, the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this '.mat' to more readable '.json' format.
+
 ```shell
 python tools/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTPUT_PRED_JSON_FILE}
 ```
+
 For example,
+
 ```shell
 python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
 ```
@@ -287,10 +291,10 @@ mmpose
 ```
 
 The official evaluation tool for PoseTrack should be installed from GitHub.
+
 ```
 pip install git+https://github.com/svenkreiss/poseval.git
 ```
-
 
 ## OCHuman
 
@@ -319,7 +323,7 @@ mmpose
 
 ## sub-JHMDB dataset
 
-For sub-JHMDB data, please download the [images]((http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
+For sub-JHMDB data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
 Move them under $MMPOSE/data, and make them look like this:
 
@@ -378,7 +382,6 @@ mmpose
                 |── 1.jpg
 
 ```
-
 
 ## FreiHAND Dataset
 

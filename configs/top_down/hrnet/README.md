@@ -1,6 +1,7 @@
 # Deep high-resolution representation learning for human pose estimation
 
 ## Introduction
+
 ```
 @inproceedings{sun2019deep,
   title={Deep high-resolution representation learning for human pose estimation},
@@ -39,7 +40,6 @@
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_hrnet_w32](/configs/top_down/hrnet/aic/hrnet_w32_aic_256x192.py) | 256x192 | 0.675 | 0.957 | 0.751 | 0.703 | 0.961 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192_20200826.log.json) |
 
-
 #### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
@@ -47,13 +47,11 @@
 | [pose_hrnet_w32](/configs/top_down/hrnet/mpii/hrnet_w32_mpii_256x256.py) | 256x256 | 0.900 | 0.379 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256-6c4f923f_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_20200812.log.json) |
 | [pose_hrnet_w48](/configs/top_down/hrnet/mpii/hrnet_w48_mpii_256x256.py) | 256x256 | 0.900 | 0.383 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256-92cab7bd_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_20200812.log.json) |
 
-
 #### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector.
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
 | [pose_hrnet_w32](/configs/top_down/hrnet/crowdpose/hrnet_w32_crowdpose_256x192.py)  | 256x192 | 0.675 | 0.825 | 0.729 | 0.768 | 0.687 | 0.554 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-9b538d47_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192_20201017.log.json) |
-
 
 #### Results on PoseTrack2018 val with ground-truth bounding boxes.
 
@@ -62,7 +60,6 @@
 | [pose_hrnet_w32](/configs/top_down/hrnet/posetrack18/hrnet_w32_posetrack18_256x192.py) | 256x192 | 87.4 | 88.6 | 84.3 | 78.5 | 79.7 | 81.8 | 78.8 | 83.0 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192_20201028.log.json) |
 
 The models are first pre-trained on COCO dataset, and then fine-tuned on PoseTrack18.
-
 
 #### Results on PoseTrack2018 val with [MMDetection](https://github.com/open-mmlab/mmdetection) pre-trained [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) human detector.
 

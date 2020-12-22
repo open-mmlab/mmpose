@@ -1,6 +1,7 @@
 # Simple baselines for human pose estimation and tracking
 
 ## Introduction
+
 ```
 @inproceedings{xiao2018simple,
   title={Simple baselines for human pose estimation and tracking},

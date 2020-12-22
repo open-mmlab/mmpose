@@ -1,6 +1,7 @@
 # Distribution-aware coordinate representation for human pose estimation
 
 ## Introduction
+
 ```
 @inproceedings{zhang2020distribution,
   title={Distribution-aware coordinate representation for human pose estimation},
@@ -35,7 +36,6 @@
 | [dark_pose_hrnet_w48+](/configs/top_down/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py)  | 384x288 | 0.742 | 0.807 | 0.705 | 0.804 | 0.840 | 0.892 | 0.602 | 0.694 | 0.661 | 0.743 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark_20200918.log.json) |
 
 Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on COCO-WholeBody dataset. We find this will lead to better performance.
-
 
 #### Results on MPII val set.
 
