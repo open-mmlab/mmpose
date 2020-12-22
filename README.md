@@ -106,7 +106,7 @@ If you have any feature requests, please feel free to leave a comment in [Issues
 We demonstrate the superiority of our MMPose framework in terms of speed and accuracy on the standard COCO keypoint detection benchmark.
 
 | Model | Input size| MMPose (s/iter) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (s/iter) | MMPose (mAP) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (mAP) |
-| :--- | :---------------: | :---------------: |:-----------------\---: | :--------------------------\--: | :--------------\---: |
+| :--- | :---------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: |
 | resnet_50  | 256x192  | **0.28** | 0.64 | **0.718** | 0.704 |
 | resnet_50  | 384x288  | **0.81** | 1.24 | **0.731** | 0.722 |
 | resnet_101 | 256x192  | **0.36** | 0.84 | **0.726** | 0.714 |
