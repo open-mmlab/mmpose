@@ -55,10 +55,12 @@ The master branch works with **PyTorch 1.3+**.
 Supported backbones for human pose estimation:
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md)
+- [x] [VGG](configs/top_down/vgg/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
 - [x] [ResNet](configs/top_down/resnet/README.md)
 - [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
+- [x] [ResNeSt](configs/top_down/resnest/README.md)
 - [x] [ResNext](configs/top_down/resnext/README.md)
 - [x] [SCNet](configs/top_down/scnet/README.md)
 - [x] [SEResNet](configs/top_down/seresnet/README.md)
