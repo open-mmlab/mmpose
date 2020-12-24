@@ -1,4 +1,4 @@
-#ResNeSt: Split-Attention Networks
+# ResNeSt: Split-Attention Networks
 
 ## Introduction
 
