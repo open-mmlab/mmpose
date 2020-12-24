@@ -4,9 +4,10 @@ from argparse import ArgumentParser
 import cv2
 from mmdet.apis import inference_detector, init_detector
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model)
+from mmpose.apis import inference_top_down_pose_model, init_pose_model
 from mmpose.apis.inference_tracking import (get_track_id_SpatialConsistency,
                                             vis_pose_tracking_result)
+
 
 def process_mmdet_results(mmdet_results, cat_id=0):
     """Process mmdet results, and return a list of bboxes.
@@ -118,9 +119,7 @@ def main():
 
         # get track id using IOU Tracker
         pose_results, next_id = get_track_id_SpatialConsistency(
-            pose_results,
-            pose_results_last,
-            next_id)
+            pose_results, pose_results_last, next_id)
 
         # show the results
         vis_img = vis_pose_tracking_result(

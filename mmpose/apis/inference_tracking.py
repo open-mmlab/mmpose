@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def iou(boxA, boxB):
     # box: (x1, y1, x2, y2)
     # determine the (x, y)-coordinates of the intersection rectangle
@@ -24,6 +25,7 @@ def iou(boxA, boxB):
     # return the intersection over union value
     return iou
 
+
 def iou_tracker(res, results_last, thresh):
 
     bbox = list(res['bbox'][0])
@@ -47,10 +49,15 @@ def iou_tracker(res, results_last, thresh):
 
     return track_id, results_last
 
-def get_track_id_SpatialConsistency(results, results_last, next_id, iou_thresh = 0.3):
+
+def get_track_id_SpatialConsistency(results,
+                                    results_last,
+                                    next_id,
+                                    iou_thresh=0.3):
 
     for i in range(len(results)):
-        track_id, results_last = iou_tracker(results[i], results_last, iou_thresh)
+        track_id, results_last = iou_tracker(results[i], results_last,
+                                             iou_thresh)
 
         if track_id == -1:
             results[i]['track_id'] = next_id
@@ -62,12 +69,12 @@ def get_track_id_SpatialConsistency(results, results_last, next_id, iou_thresh =
 
 
 def vis_pose_tracking_result(model,
-                    img,
-                    result,
-                    kpt_score_thr=0.3,
-                    dataset='TopDownCocoDataset',
-                    show=False,
-                    out_file=None):
+                             img,
+                             result,
+                             kpt_score_thr=0.3,
+                             dataset='TopDownCocoDataset',
+                             show=False,
+                             out_file=None):
     """Visualize the detection results on the image.
 
     Args:
@@ -150,13 +157,10 @@ def vis_pose_tracking_result(model,
 
     for res in result:
         track_id = res['track_id']
-        pose_kpt_color = palette[
-            [track_id % len(palette)] * kpt_num]
-        pose_limb_color = palette[
-            [track_id % len(palette)] * len(skeleton)]
+        pose_kpt_color = palette[[track_id % len(palette)] * kpt_num]
+        pose_limb_color = palette[[track_id % len(palette)] * len(skeleton)]
         img = model.show_result(
-            img,
-            [res],
+            img, [res],
             skeleton,
             radius=radius,
             pose_kpt_color=pose_kpt_color,
