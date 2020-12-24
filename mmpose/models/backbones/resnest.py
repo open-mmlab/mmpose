@@ -64,7 +64,7 @@ class SplitAttentionConv2d(nn.Module):
                  reduction_factor=4,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN')):
-        super(SplitAttentionConv2d, self).__init__()
+        super().__init__()
         inter_channels = max(in_channels * radix // reduction_factor, 32)
         self.radix = radix
         self.groups = groups
@@ -168,7 +168,7 @@ class Bottleneck(_Bottleneck):
                  reduction_factor=4,
                  avg_down_stride=True,
                  **kwargs):
-        super(Bottleneck, self).__init__(in_channels, out_channels, **kwargs)
+        super().__init__(in_channels, out_channels, **kwargs)
 
         self.groups = groups
         self.width_per_group = width_per_group
@@ -324,7 +324,7 @@ class ResNeSt(ResNetV1d):
         self.radix = radix
         self.reduction_factor = reduction_factor
         self.avg_down_stride = avg_down_stride
-        super(ResNeSt, self).__init__(depth=depth, **kwargs)
+        super().__init__(depth=depth, **kwargs)
 
     def make_res_layer(self, **kwargs):
         return ResLayer(

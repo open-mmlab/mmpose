@@ -86,7 +86,7 @@ class VGG(BaseBackbone):
                  norm_eval=False,
                  ceil_mode=False,
                  with_last_pool=True):
-        super(VGG, self).__init__()
+        super().__init__()
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for vgg')
         assert num_stages >= 1 and num_stages <= 5
@@ -145,7 +145,7 @@ class VGG(BaseBackbone):
             )
 
     def init_weights(self, pretrained=None):
-        super(VGG, self).init_weights(pretrained)
+        super().init_weights(pretrained)
         if pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
@@ -185,7 +185,7 @@ class VGG(BaseBackbone):
                     param.requires_grad = False
 
     def train(self, mode=True):
-        super(VGG, self).train(mode)
+        super().train(mode)
         self._freeze_stages()
         if mode and self.norm_eval:
             for m in self.modules():
