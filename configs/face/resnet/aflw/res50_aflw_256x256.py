@@ -13,7 +13,7 @@ optimizer = dict(
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(policy='step', step=[30, 50])
-total_epochs = 100
+total_epochs = 60
 log_config = dict(
     interval=20,
     hooks=[

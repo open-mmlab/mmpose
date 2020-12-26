@@ -22,22 +22,52 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=98,
-    dataset_joints=98,
+    num_output_channels=68,
+    dataset_joints=68,
     dataset_channel=[
-        list(range(98)),
+        list(range(68)),
     ],
-    inference_channel=list(range(98)))
+    inference_channel=list(range(68)))
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='msra/hrnetv2_w18',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(18, 38)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(18, 36, 72)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(18, 36, 72, 144))),
+    ),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=2048,
+        in_channels=18,
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
@@ -93,26 +123,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/wflw'
+data_root = 'data/300w'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_train.json',
-        img_prefix=f'{data_root}/',
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_train.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/',
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/',
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
