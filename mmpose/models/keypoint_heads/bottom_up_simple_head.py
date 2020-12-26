@@ -109,13 +109,22 @@ class BottomUpSimpleHead(nn.Module):
         for idx in range(len(targets)):
             if heatmaps_losses[idx] is not None:
                 heatmaps_loss = heatmaps_losses[idx].mean(dim=0)
-                losses['heatmap_loss'] += heatmaps_loss
+                if 'heatmap_loss' not in losses:
+                    losses['heatmap_loss'] = heatmaps_loss
+                else:
+                    losses['heatmap_loss'] += heatmaps_loss
             if push_losses[idx] is not None:
                 push_loss = push_losses[idx].mean(dim=0)
-                losses['push_loss'] += push_loss
+                if 'push_loss' not in losses:
+                    losses['push_loss'] = push_loss
+                else:
+                    losses['push_loss'] += push_loss
             if pull_losses[idx] is not None:
                 pull_loss = pull_losses[idx].mean(dim=0)
-                losses['pull_loss'] += pull_loss
+                if 'pull_loss' not in losses:
+                    losses['pull_loss'] = pull_loss
+                else:
+                    losses['pull_loss'] += pull_loss
 
         return losses
 

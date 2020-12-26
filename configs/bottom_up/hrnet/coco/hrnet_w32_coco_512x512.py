@@ -88,7 +88,17 @@ model = dict(
         num_deconv_layers=0,
         tag_per_joint=True,
         with_ae_loss=[True],
-        extra=dict(final_conv_kernel=1, )),
+        extra=dict(final_conv_kernel=1, ),
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0])),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         img_size=data_cfg['image_size']),
@@ -108,19 +118,7 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True),
-    loss_pose=dict(
-        type='MultiLossFactory',
-        num_joints=17,
-        num_stages=1,
-        ae_loss_type='exp',
-        with_ae_loss=[True],
-        push_loss_factor=[0.001],
-        pull_loss_factor=[0.001],
-        with_heatmaps_loss=[True],
-        heatmaps_loss_factor=[1.0],
-    ),
-)
+        flip_test=True))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
