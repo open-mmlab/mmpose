@@ -3,7 +3,6 @@ import math
 import cv2
 import mmcv
 import numpy as np
-import torch.nn as nn
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
@@ -25,7 +24,6 @@ class TopDown(BasePose):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
-        loss_pose (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
@@ -33,8 +31,7 @@ class TopDown(BasePose):
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
-                 pretrained=None,
-                 loss_pose=None):
+                 pretrained=None):
         super().__init__()
 
         self.backbone = builder.build_backbone(backbone)
@@ -43,7 +40,6 @@ class TopDown(BasePose):
             self.keypoint_head = builder.build_head(keypoint_head)
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
-        self.loss = builder.build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
         self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
 
@@ -117,42 +113,10 @@ class TopDown(BasePose):
 
         # if return loss
         losses = dict()
-        if isinstance(output, list):
-            if target.dim() == 5 and target_weight.dim() == 4:
-                # target: [batch_size, num_outputs, num_joints, h, w]
-                # target_weight: [batch_size, num_outputs, num_joints, 1]
-                assert target.size(1) == len(output)
-            if isinstance(self.loss, nn.Sequential):
-                assert len(self.loss) == len(output)
-            if 'loss_weights' in self.train_cfg and self.train_cfg[
-                    'loss_weights'] is not None:
-                assert len(self.train_cfg['loss_weights']) == len(output)
-            for i in range(len(output)):
-                if target.dim() == 5 and target_weight.dim() == 4:
-                    target_i = target[:, i, :, :, :]
-                    target_weight_i = target_weight[:, i, :, :]
-                else:
-                    target_i = target
-                    target_weight_i = target_weight
-                if isinstance(self.loss, nn.Sequential):
-                    loss_func = self.loss[i]
-                else:
-                    loss_func = self.loss
-
-                loss_i = loss_func(output[i], target_i, target_weight_i)
-                if 'loss_weights' in self.train_cfg and self.train_cfg[
-                        'loss_weights']:
-                    loss_i = loss_i * self.train_cfg['loss_weights'][i]
-                if 'mse_loss' not in losses:
-                    losses['mse_loss'] = loss_i
-                else:
-                    losses['mse_loss'] += loss_i
-        else:
-            assert not isinstance(self.loss, nn.Sequential)
-            assert target.dim() == 4 and target_weight.dim() == 3
-            # target: [batch_size, num_joints, h, w]
-            # target_weight: [batch_size, num_joints, 1]
-            losses['mse_loss'] = self.loss(output, target, target_weight)
+        if self.with_keypoint:
+            keypoint_losses = self.keypoint_head.get_loss(
+                output, target, target_weight, self.train_cfg)
+            losses.update(keypoint_losses)
 
         if self.target_type == 'GaussianHeatMap':
             if isinstance(output, list):
@@ -185,27 +149,6 @@ class TopDown(BasePose):
         # compute backbone features
         output = self.backbone(img)
 
-        return self.process_head(
-            output, img, img_metas, return_heatmap=return_heatmap)
-
-    def forward_dummy(self, img):
-        """Used for computing network FLOPs.
-
-        See ``tools/get_flops.py``.
-
-        Args:
-            img (torch.Tensor): Input image.
-
-        Returns:
-            Tensor: Output heatmaps.
-        """
-        output = self.backbone(img)
-        if self.with_keypoint:
-            output = self.keypoint_head(output)
-        return output
-
-    def process_head(self, output, img, img_metas, return_heatmap=False):
-        """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas[0]['flip_pairs']
         batch_size = img.size(0)
         if batch_size > 1:
@@ -281,6 +224,22 @@ class TopDown(BasePose):
             return all_preds, all_boxes, image_path, output_heatmap, bbox_ids
         else:
             return all_preds, all_boxes, image_path, output_heatmap
+
+    def forward_dummy(self, img):
+        """Used for computing network FLOPs.
+
+        See ``tools/get_flops.py``.
+
+        Args:
+            img (torch.Tensor): Input image.
+
+        Returns:
+            Tensor: Output heatmaps.
+        """
+        output = self.backbone(img)
+        if self.with_keypoint:
+            output = self.keypoint_head(output)
+        return output
 
     def show_result(self,
                     img,

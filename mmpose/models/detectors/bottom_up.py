@@ -10,7 +10,6 @@ from mmcv.visualization.image import imshow
 from mmpose.core.evaluation import (aggregate_results, get_group_preds,
                                     get_multi_stage_outputs)
 from mmpose.core.post_processing.group import HeatmapParser
-from mmpose.models.builder import build_loss
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
@@ -26,7 +25,6 @@ class BottomUp(BasePose):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
-        loss_pose (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
@@ -34,8 +32,7 @@ class BottomUp(BasePose):
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
-                 pretrained=None,
-                 loss_pose=None):
+                 pretrained=None):
         super().__init__()
 
         self.backbone = builder.build_backbone(backbone)
@@ -47,8 +44,6 @@ class BottomUp(BasePose):
         self.test_cfg = test_cfg
         self.use_udp = test_cfg.get('use_udp', False)
         self.parser = HeatmapParser(self.test_cfg)
-
-        self.loss = build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
 
     @property
@@ -154,24 +149,13 @@ class BottomUp(BasePose):
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
-        heatmaps_losses, push_losses, pull_losses = self.loss(
-            output, targets, masks, joints)
-
+        # if return loss
         losses = dict()
+        if self.with_keypoint:
+            keypoint_losses = self.keypoint_head.get_loss(
+                output, targets, masks, joints)
+            losses.update(keypoint_losses)
 
-        loss = 0
-        for idx in range(len(targets)):
-            if heatmaps_losses[idx] is not None:
-                heatmaps_loss = heatmaps_losses[idx].mean(dim=0)
-                loss = loss + heatmaps_loss
-                if push_losses[idx] is not None:
-                    push_loss = push_losses[idx].mean(dim=0)
-                    loss = loss + push_loss
-                if pull_losses[idx] is not None:
-                    pull_loss = pull_losses[idx].mean(dim=0)
-                    loss = loss + pull_loss
-
-        losses['all_loss'] = loss
         return losses
 
     def forward_dummy(self, img):
