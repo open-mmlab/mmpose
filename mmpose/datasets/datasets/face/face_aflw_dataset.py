@@ -48,8 +48,8 @@ class FaceAFLWDataset(FaceBaseDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.ann_info['flip_pairs'] = [[1, 6], [2, 5], [3, 4], [7, 12],
-                                       [8, 11], [9, 10], [13, 15], [16, 18]]
+        self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [6, 11],
+                                       [7, 10], [8, 9], [12, 14], [15, 17]]
 
         self.dataset_name = 'aflw'
         self.db = self._get_db()
@@ -78,8 +78,8 @@ class FaceAFLWDataset(FaceBaseDataset):
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
                 if 'center' in obj and 'scale' in obj:
-                    center = obj['center']
-                    scale = obj['scale'] * 1.25
+                    center = np.array(obj['center'])
+                    scale = np.array([obj['scale'], obj['scale']]) * 1.25
                 else:
                     center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 

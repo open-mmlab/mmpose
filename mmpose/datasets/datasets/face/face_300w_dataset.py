@@ -46,14 +46,14 @@ class Face300WDataset(FaceBaseDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.ann_info['flip_pairs'] = [[1, 17], [2, 16], [3, 15], [4, 14],
-                                       [5, 13], [6, 12], [7, 11], [8, 10],
-                                       [18, 27], [19, 26], [20, 25], [21, 24],
-                                       [22, 23], [32, 36], [33, 35], [37, 46],
-                                       [38, 45], [39, 44], [40, 43], [41, 48],
-                                       [42, 47], [49, 55], [50, 54], [51, 53],
-                                       [62, 64], [61, 65], [68, 66], [59, 57],
-                                       [60, 56]]
+        self.ann_info['flip_pairs'] = [[0, 16], [1, 15], [2, 14], [3, 13],
+                                       [4, 12], [5, 11], [6, 10], [7, 9],
+                                       [17, 26], [18, 25], [19, 24], [20, 23],
+                                       [21, 22], [31, 35], [32, 34], [36, 45],
+                                       [37, 44], [38, 43], [39, 42], [40, 47],
+                                       [41, 46], [48, 54], [49, 53], [50, 52],
+                                       [61, 63], [60, 64], [67, 65], [58, 56],
+                                       [59, 55]]
 
         self.dataset_name = '300w'
         self.db = self._get_db()
@@ -82,8 +82,8 @@ class Face300WDataset(FaceBaseDataset):
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
                 if 'center' in obj and 'scale' in obj:
-                    center = obj['center']
-                    scale = obj['scale'] * 1.25
+                    center = np.array(obj['center'])
+                    scale = np.array([obj['scale'], obj['scale']]) * 1.25
                 else:
                     center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
