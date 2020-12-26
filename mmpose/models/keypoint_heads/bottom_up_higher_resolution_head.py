@@ -27,7 +27,7 @@ class BottomUpHigherResolutionHead(nn.Module):
         num_deconv_kernels (list|tuple): Kernel sizes.
         cat_output (list[bool]): Option to concat outputs.
         with_ae_loss (list[bool]): Option to use ae loss.
-        loss_pose (dict): Config for loss. Default: None.
+        loss_keypoint (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
@@ -41,10 +41,10 @@ class BottomUpHigherResolutionHead(nn.Module):
                  num_basic_blocks=4,
                  cat_output=None,
                  with_ae_loss=None,
-                 loss_pose=None):
+                 loss_keypoint=None):
         super().__init__()
 
-        self.loss = build_loss(loss_pose)
+        self.loss = build_loss(loss_keypoint)
         dim_tag = num_joints if tag_per_joint else 1
 
         self.num_deconvs = num_deconv_layers

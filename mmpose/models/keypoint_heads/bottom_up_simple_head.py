@@ -23,7 +23,7 @@ class BottomUpSimpleHead(nn.Module):
             the dimension of tags equals to num_joints,
             else the dimension of tags is 1. Default: True
         with_ae_loss (list[bool]): Option to use ae loss or not.
-        loss_pose (dict): Config for loss. Default: None.
+        loss_keypoint (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
@@ -35,10 +35,10 @@ class BottomUpSimpleHead(nn.Module):
                  tag_per_joint=True,
                  with_ae_loss=None,
                  extra=None,
-                 loss_pose=None):
+                 loss_keypoint=None):
         super().__init__()
 
-        self.loss = build_loss(loss_pose)
+        self.loss = build_loss(loss_keypoint)
 
         self.in_channels = in_channels
         dim_tag = num_joints if tag_per_joint else 1
