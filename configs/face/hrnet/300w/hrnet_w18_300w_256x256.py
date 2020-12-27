@@ -32,7 +32,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='msra/hrnetv2_w18',
+    pretrained='open-mmlab://msra/hrnetv2_w18',
     backbone=dict(
         type='HRNet',
         in_channels=3,

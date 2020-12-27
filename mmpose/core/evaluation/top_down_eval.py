@@ -222,11 +222,7 @@ def keypoint_nme(pred, gt, mask, normalize_factor):
     """
     distances = _calc_distances(pred, gt, mask, normalize_factor)
     distance_valid = distances[distances != -1]
-    valid_num = len(distance_valid)
-    if valid_num == 0:
-        return 0
-    else:
-        return distance_valid.sum() / valid_num
+    return distance_valid.sum() / max(1, len(distance_valid))
 
 
 def keypoint_epe(pred, gt, mask):
@@ -249,11 +245,7 @@ def keypoint_epe(pred, gt, mask):
     distances = _calc_distances(
         pred, gt, mask, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
     distance_valid = distances[distances != -1]
-    valid_num = len(distance_valid)
-    if valid_num == 0:
-        return 0
-    else:
-        return distance_valid.sum() / valid_num
+    return distance_valid.sum() / max(1, len(distance_valid))
 
 
 def _taylor(heatmap, coord):

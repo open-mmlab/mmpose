@@ -113,8 +113,9 @@ class Face300WDataset(FaceBaseDataset):
             np.ndarray[N, 2]: normalized factor
         """
 
-        interocular = np.linalg.norm(gts[:, 36, :] - gts[:, 45, :], axis=1)
-        return np.tile(np.expand_dims(interocular, 1), [1, 2])
+        interocular = np.linalg.norm(
+            gts[:, 36, :] - gts[:, 45, :], axis=1, keepdims=True)
+        return np.tile(interocular, [1, 2])
 
     def _report_metric(self, res_file, metrics):
         """Keypoint evaluation.
@@ -180,6 +181,7 @@ class Face300WDataset(FaceBaseDataset):
         Returns:
             dict: Evaluation results for evaluation metric.
         """
+        assert len(kwargs) == 0
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['NME']
         for metric in metrics:
