@@ -51,7 +51,7 @@
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
-| [pose_hrnet_w32](/configs/top_down/hrnet/crowdpose/hrnet_w32_crowdpose_256x192.py)  | 256x192 | 0.675 | 0.825 | 0.729 | 0.768 | 0.687 | 0.554 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-9b538d47_20201017.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192_20201017.log.json) |
+| [pose_hrnet_w32](/configs/top_down/hrnet/crowdpose/hrnet_w32_crowdpose_256x192.py)  | 256x192 | 0.675 | 0.825 | 0.729 | 0.770 | 0.687 | 0.553 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-960be101_20201227.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192_20201227.log.json) |
 
 #### Results on PoseTrack2018 val with ground-truth bounding boxes
 
