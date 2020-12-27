@@ -1,14 +1,11 @@
-______________________________________________________________________
-
-```
+---
 name: Reimplementation Questions
 about: Ask about questions during model reimplementation
 title: ''
 labels: 'reimplementation'
 assignees: ''
-```
 
-______________________________________________________________________
+---
 
 If you feel we have helped you, give us a STAR! :satisfied:
 
