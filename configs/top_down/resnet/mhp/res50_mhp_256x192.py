@@ -27,20 +27,18 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=17,
-    dataset_joints=17,
+    num_output_channels=16,
+    dataset_joints=16,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-    ])
+    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet101',
-    backbone=dict(type='ResNet', depth=101),
+    pretrained='torchvision://resnet50',
+    backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -49,7 +47,7 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='unbiased',
+        post_process='default',
         shift_heatmap=True,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
@@ -66,10 +64,9 @@ data_cfg = dict(
     oks_thr=0.9,
     vis_thr=0.2,
     bbox_thr=1.0,
-    use_gt_bbox=False,
+    use_gt_bbox=True,
     image_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
-    'COCO_val2017_detections_AP_H_56_person.json',
+    bbox_file='',
 )
 
 train_pipeline = [
@@ -87,7 +84,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2, unbiased_encoding=True),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -116,26 +113,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/mhp'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='TopDownMhpDataset',
+        ann_file=f'{data_root}/annotations/train_annos.json',
+        img_prefix=f'{data_root}/train/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='TopDownMhpDataset',
+        ann_file=f'{data_root}/annotations/val_annos.json',
+        img_prefix=f'{data_root}/val/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='TopDownMhpDataset',
+        ann_file=f'{data_root}/annotations/val_annos.json',
+        img_prefix=f'{data_root}/val/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

@@ -8,7 +8,7 @@ evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.0015,
+    lr=0.005,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[200, 260])
-total_epochs = 300
+    step=[400, 550])
+total_epochs = 600
 log_config = dict(
     interval=50,
     hooks=[
@@ -27,13 +27,11 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    dataset_joints=17,
+    dataset_joints=16,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-    ])
+    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 
 data_cfg = dict(
     image_size=512,
@@ -84,7 +82,7 @@ model = dict(
     keypoint_head=dict(
         type='BottomUpSimpleHead',
         in_channels=48,
-        num_joints=17,
+        num_joints=16,
         num_deconv_layers=0,
         tag_per_joint=True,
         with_ae_loss=[True],
@@ -111,12 +109,12 @@ model = dict(
         flip_test=True),
     loss_pose=dict(
         type='MultiLossFactory',
-        num_joints=17,
+        num_joints=16,
         num_stages=1,
         ae_loss_type='exp',
         with_ae_loss=[True],
-        push_loss_factor=[0.001],
-        pull_loss_factor=[0.001],
+        push_loss_factor=[0.01],
+        pull_loss_factor=[0.01],
         with_heatmaps_loss=[True],
         heatmaps_loss_factor=[1.0],
     ),
@@ -170,26 +168,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/mhp'
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=16,
     workers_per_gpu=1,
     train=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='BottomUpMhpDataset',
+        ann_file=f'{data_root}/annotations/train_annos.json',
+        img_prefix=f'{data_root}/train/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpMhpDataset',
+        ann_file=f'{data_root}/annotations/val_annos.json',
+        img_prefix=f'{data_root}/val/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpMhpDataset',
+        ann_file=f'{data_root}/annotations/val_annos.json',
+        img_prefix=f'{data_root}/val/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

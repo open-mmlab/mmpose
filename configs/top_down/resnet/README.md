@@ -60,6 +60,13 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_101](/configs/top_down/resnet/aic/res101_aic_256x192.py) | 256x192 | 0.650 | 0.947 | 0.726 | 0.680 | 0.954 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
 
 
+#### Results on MHP v2.0 validation set.
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_101](/configs/top_down/resnet/mhp/res50_mhp_256x192.py) | 256x192 | 0.583 | 0.897 | 0.669 | 0.636 | 0.918 | [ckpt]| [log]|
+
+
 #### Results on MPII val set.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |

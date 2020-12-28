@@ -35,3 +35,17 @@
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [HRNet-w32](/configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py)  | 512x512 | 0.698 | 0.877 | 0.760 | 0.748 | 0.907 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512_20200816.log.json) |
 | [HRNet-w48](/configs/bottom_up/hrnet/coco/hrnet_w48_coco_512x512.py)  | 512x512 | 0.712 | 0.880 | 0.771 | 0.757 | 0.909 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512-cf72fcdf_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512_20200816.log.json) |
+
+
+#### Results on MHP v2.0 validation set without multi-scale test
+
+| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [HRNet-w48](/configs/bottom_up/hrnet/coco/hrnet_w48_mhp_512x512.py)  | 512x512 | 0.583 | 0.895 | 0.666 | 0.656 | 0.931 | [ckpt] | [log] |
+
+
+#### Results on MHP v2.0 validation set with multi-scale test. 3 default scales ([2, 1, 0.5]) are used.
+
+| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [HRNet-w48](/configs/bottom_up/hrnet/coco/hrnet_w48_mhp_512x512.py)  | 512x512 | 0.592 | 0.898 | 0.673 | 0.664 | 0.932 | [ckpt] | [log] |
