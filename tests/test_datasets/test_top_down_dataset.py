@@ -980,37 +980,37 @@ def test_deepfashion_dataset():
     dataset_class.coco = MagicMock()
 
     channel_cfg = dict(
-        num_output_channels=8,
-        dataset_joints=8,
-        dataset_channel=[
-            [0, 1, 2, 3, 4, 5, 6, 7],
-        ],
-        inference_channel=[0, 1, 2, 3, 4, 5, 6, 7])
+        num_output_channels = 8,
+        dataset_joints = 8,
+        dataset_channel = [
+                              [0, 1, 2, 3, 4, 5, 6, 7],
+                          ],
+        inference_channel = [0, 1, 2, 3, 4, 5, 6, 7])
 
     data_cfg = dict(
-        image_size=[192, 256],
-        heatmap_size=[48, 64],
-        num_output_channels=channel_cfg['num_output_channels'],
-        num_joints=channel_cfg['dataset_joints'],
-        dataset_channel=channel_cfg['dataset_channel'],
-        inference_channel=channel_cfg['inference_channel'],
-        soft_nms=False,
-        nms_thr=1.0,
-        oks_thr=0.9,
-        vis_thr=0.2,
-        use_gt_bbox=True,
-        det_bbox_thr=0.0,
-        image_thr=0.0,
-        bbox_file='')
+    image_size = [192, 256],
+    heatmap_size = [48, 64],
+    num_output_channels = channel_cfg['num_output_channels'],
+    num_joints = channel_cfg['dataset_joints'],
+    dataset_channel = channel_cfg['dataset_channel'],
+    inference_channel = channel_cfg['inference_channel'],
+    soft_nms = False,
+    nms_thr = 1.0,
+    oks_thr = 0.9,
+    vis_thr = 0.2,
+    use_gt_bbox = True,
+    det_bbox_thr = 0.0,
+    image_thr = 0.0,
+    bbox_file = '')
 
     # Test gt bbox
     custom_dataset = dataset_class(
-        ann_file='tests/data/fld/test_fld.json',
-        img_prefix='tests/data/fld/',
-        subset='full',
-        data_cfg=data_cfg,
-        pipeline=[],
-        test_mode=True)
+    ann_file = 'tests/data/fld/test_fld.json',
+    img_prefix = 'tests/data/fld/',
+    subset = 'full',
+    data_cfg = data_cfg,
+    pipeline = [],
+    test_mode = True)
 
     assert custom_dataset.test_mode is True
     assert custom_dataset.dataset_name == 'deepfashion_full'
@@ -1021,12 +1021,64 @@ def test_deepfashion_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/fld/test_fld.json',
-                                  'tests/data/fld/')
+    'tests/data/fld/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
+
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+def test_face_300W_dataset():
+    dataset = 'Face300WDataset'
+    # test Face 300W datasets
+
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=68,
+        dataset_joints=68,
+        dataset_channel=[
+            list(range(68)),
+        ],
+        inference_channel=list(range(68)))
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/300w/test_300w.json',
+        img_prefix='tests/data/300w/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/300w/test_300w.json',
+        img_prefix='tests/data/300w/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 2
+    _ = custom_dataset[0]
+
+    outputs = load_json_to_output('tests/data/300w/test_300w.json',
+                                  'tests/data/300w/')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
+        assert_almost_equal(infos['NME'], 0.0)
 
         with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
