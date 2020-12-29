@@ -57,6 +57,7 @@ data_cfg_base = dict(
 )
 
 data_cfg_coco = dict(
+    **data_cfg_base,
     num_output_channels=num_output_channels,
     num_joints=17,
     dataset_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
@@ -67,16 +68,14 @@ data_cfg_coco = dict(
     bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json')
 
-data_cfg_coco.update(data_cfg_base)
-
 data_cfg_aic = dict(
+    **data_cfg_base,
     num_output_channels=num_output_channels,
     num_joints=14,
     dataset_channel=[17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
     inference_channel=[17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
     use_gt_bbox=True,
     bbox_file='')
-data_cfg_aic.update(data_cfg_base)
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
