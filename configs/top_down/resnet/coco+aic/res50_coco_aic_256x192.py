@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+evaluation = dict(interval=1, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
@@ -32,8 +32,7 @@ num_output_channels=17+14
 # model settings
 model = dict(
     type='TopDown',
-    # pretrained='torchvision://resnet50',
-    pretrained=None,
+    pretrained='torchvision://resnet50',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='TopDownSimpleHead',
@@ -141,14 +140,14 @@ test_pipeline = val_pipeline
 data_root_coco = 'data/coco'
 data_root_aic = 'data/aic'
 
-train_A=dict(
+train_coco=dict(
         type='TopDownCocoDataset',
-        ann_file=f'{data_root_coco}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root_coco}/val2017/',
+        ann_file=f'{data_root_coco}/annotations/person_keypoints_train2017.json',
+        img_prefix=f'{data_root_coco}/train2017/',
         data_cfg=data_cfg_coco,
         pipeline=train_pipeline),
 
-train_B=dict(
+train_aic=dict(
         type='TopDownAicDataset',
         ann_file=f'{data_root_aic}/annotations/aic_train.json',
         img_prefix=f'{data_root_aic}/ai_challenger_keypoint_train_20170902/'
@@ -159,8 +158,7 @@ train_B=dict(
 data = dict(
     samples_per_gpu=10,
     workers_per_gpu=2,
-    train=[train_A, train_B],
-    # train=train_A,
+    train=[train_coco, train_aic],
     val=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root_coco}/annotations/person_keypoints_val2017.json',
