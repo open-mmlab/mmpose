@@ -4,9 +4,8 @@ from argparse import ArgumentParser
 import cv2
 from mmdet.apis import inference_detector, init_detector
 
-from mmpose.apis import inference_top_down_pose_model, init_pose_model
-from mmpose.apis.inference_tracking import (get_track_id_SpatialConsistency,
-                                            vis_pose_tracking_result)
+from mmpose.apis import (get_track_id, inference_top_down_pose_model,
+                         init_pose_model, vis_pose_tracking_result)
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -53,6 +52,8 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+    parser.add_argument(
+        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
 
     args = parser.parse_args()
 
@@ -117,9 +118,9 @@ def main():
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
-        # get track id using IOU Tracker
-        pose_results, next_id = get_track_id_SpatialConsistency(
-            pose_results, pose_results_last, next_id)
+        # get track id for each person instance
+        pose_results, next_id = get_track_id(
+            pose_results, pose_results_last, next_id, iou_thresh=args.iou_thr)
 
         # show the results
         vis_img = vis_pose_tracking_result(

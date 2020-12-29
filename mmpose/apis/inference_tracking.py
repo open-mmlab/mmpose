@@ -2,31 +2,45 @@ import numpy as np
 
 
 def iou(boxA, boxB):
-    # box: (x1, y1, x2, y2)
-    # determine the (x, y)-coordinates of the intersection rectangle
+    """Compute the Intersection over Union (IoU) between two boxes .
+
+    Args:
+        boxA (list): The first box info (left, top, right, bottom, score).
+        boxB (list): The second box info (left, top, right, bottom, score).
+
+    Returns:
+        float: The IoU value.
+    """
+
     xA = max(boxA[0], boxB[0])
     yA = max(boxA[1], boxB[1])
     xB = min(boxA[2], boxB[2])
     yB = min(boxA[3], boxB[3])
 
-    # compute the area of intersection rectangle
     interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
 
-    # compute the area of both the prediction and ground-truth
-    # rectangles
     boxAArea = (boxA[2] - boxA[0] + 1) * (boxA[3] - boxA[1] + 1)
     boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
 
-    # compute the intersection over union by taking the intersection
-    # area and dividing it by the sum of prediction + ground-truth
-    # areas - the interesection area
     iou = interArea / float(boxAArea + boxBArea - interArea)
 
-    # return the intersection over union value
     return iou
 
 
-def iou_tracker(res, results_last, thresh):
+def get_track_id_spatial_consistency(res, results_last, thresh):
+    """Get track id using IoU tracking greedily.
+
+    Args:
+        res (dict): The bbox & pose results of the person instance.
+        results_last (list[dict]): The bbox & pose & track_id info of the
+                last frame (bbox_result, pose_result, track_id).
+        thresh (float): The threshold for iou tracking.
+
+    Returns:
+        int: The track id for the new person instance.
+        list[dict]: The bbox & pose & track_id info of the persons
+                that have not been matched on the last frame.
+    """
 
     bbox = list(res['bbox'][0])
 
@@ -50,14 +64,26 @@ def iou_tracker(res, results_last, thresh):
     return track_id, results_last
 
 
-def get_track_id_SpatialConsistency(results,
-                                    results_last,
-                                    next_id,
-                                    iou_thresh=0.3):
+def get_track_id(results, results_last, next_id, iou_thresh=0.3):
+    """Get track id for each person instance on the current frame.
+
+    Args:
+        results (list[dict]): The bbox & pose results of the current frame
+                (bbox_result, pose_result).
+        results_last (list[dict]): The bbox & pose & track_id info of the
+                last frame (bbox_result, pose_result, track_id).
+        next_id (int): The track id for the new person instance.
+        iou_thresh (float): The threshold for iou tracking.
+
+    Returns:
+        list[dict]: The bbox & pose & track_id info of the
+                current frame (bbox_result, pose_result, track_id).
+        int: The track id for the new person instance.
+    """
 
     for i in range(len(results)):
-        track_id, results_last = iou_tracker(results[i], results_last,
-                                             iou_thresh)
+        track_id, results_last = get_track_id_spatial_consistency(
+            results[i], results_last, iou_thresh)
 
         if track_id == -1:
             results[i]['track_id'] = next_id
@@ -75,7 +101,7 @@ def vis_pose_tracking_result(model,
                              dataset='TopDownCocoDataset',
                              show=False,
                              out_file=None):
-    """Visualize the detection results on the image.
+    """Visualize the pose tracking results on the image.
 
     Args:
         model (nn.Module): The loaded detector.
@@ -102,14 +128,12 @@ def vis_pose_tracking_result(model,
 
     if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
                    'TopDownOCHumanDataset'):
-        # show the results
         kpt_num = 17
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                     [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
                     [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
     elif dataset == 'TopDownCocoWholeBodyDataset':
-        # show the results
         kpt_num = 133
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                     [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
