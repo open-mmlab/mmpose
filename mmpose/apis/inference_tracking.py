@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def iou(boxA, boxB):
+def _compute_iou(boxA, boxB):
     """Compute the Intersection over Union (IoU) between two boxes .
 
     Args:
@@ -27,14 +27,14 @@ def iou(boxA, boxB):
     return iou
 
 
-def get_track_id_spatial_consistency(res, results_last, thresh):
+def _track_by_iou(res, results_last, thr):
     """Get track id using IoU tracking greedily.
 
     Args:
         res (dict): The bbox & pose results of the person instance.
         results_last (list[dict]): The bbox & pose & track_id info of the
                 last frame (bbox_result, pose_result, track_id).
-        thresh (float): The threshold for iou tracking.
+        thr (float): The threshold for iou tracking.
 
     Returns:
         int: The track id for the new person instance.
@@ -50,12 +50,12 @@ def get_track_id_spatial_consistency(res, results_last, thresh):
     for index, res_last in enumerate(results_last):
         bbox_last = list(res_last['bbox'][0])
 
-        iou_score = iou(bbox, bbox_last)
+        iou_score = _compute_iou(bbox, bbox_last)
         if iou_score > max_iou_score:
             max_iou_score = iou_score
             max_index = index
 
-    if max_iou_score > thresh:
+    if max_iou_score > thr:
         track_id = results_last[max_index]['track_id']
         del results_last[max_index]
     else:
@@ -64,7 +64,7 @@ def get_track_id_spatial_consistency(res, results_last, thresh):
     return track_id, results_last
 
 
-def get_track_id(results, results_last, next_id, iou_thresh=0.3):
+def get_track_id(results, results_last, next_id, iou_thr=0.3):
     """Get track id for each person instance on the current frame.
 
     Args:
@@ -73,7 +73,7 @@ def get_track_id(results, results_last, next_id, iou_thresh=0.3):
         results_last (list[dict]): The bbox & pose & track_id info of the
                 last frame (bbox_result, pose_result, track_id).
         next_id (int): The track id for the new person instance.
-        iou_thresh (float): The threshold for iou tracking.
+        iou_thr (float): The threshold for iou tracking.
 
     Returns:
         list[dict]: The bbox & pose & track_id info of the
@@ -81,15 +81,14 @@ def get_track_id(results, results_last, next_id, iou_thresh=0.3):
         int: The track id for the new person instance.
     """
 
-    for i in range(len(results)):
-        track_id, results_last = get_track_id_spatial_consistency(
-            results[i], results_last, iou_thresh)
+    for result in results:
+        track_id, results_last = _track_by_iou(result, results_last, iou_thr)
 
         if track_id == -1:
-            results[i]['track_id'] = next_id
+            result['track_id'] = next_id
             next_id += 1
         else:
-            results[i]['track_id'] = track_id
+            result['track_id'] = track_id
 
     return results, next_id
 

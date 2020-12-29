@@ -120,7 +120,7 @@ def main():
 
         # get track id for each person instance
         pose_results, next_id = get_track_id(
-            pose_results, pose_results_last, next_id, iou_thresh=args.iou_thr)
+            pose_results, pose_results_last, next_id, iou_thr=args.iou_thr)
 
         # show the results
         vis_img = vis_pose_tracking_result(
