@@ -4,6 +4,6 @@ poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
 smplx
 titlecase
-torch
-torchvision
+#torch
+#torchvision
 xtcocotools>=1.6
