@@ -212,12 +212,15 @@ class TopDown(BasePose):
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas['flip_pairs']
-        assert 0, img_metas
+        inference_channel = img_metas['ann_info']['inference_channel']
+
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
         if isinstance(output, list):
             output = output[-1]
+        
+        output = output[inference_channel]
 
         output_heatmap = output.detach().cpu().numpy()
         if self.test_cfg['flip_test']:
@@ -228,6 +231,7 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
+            output_flipped = output_flipped[inference_channel]
             output_flipped = flip_back(
                 output_flipped.detach().cpu().numpy(),
                 flip_pairs,
