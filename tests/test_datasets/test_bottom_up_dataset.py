@@ -46,7 +46,7 @@ def test_bottom_up_COCO_dataset():
 
 def test_bottom_up_CrowdPose_dataset():
     dataset = 'BottomUpCrowdPoseDataset'
-    # test COCO datasets
+    # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -83,6 +83,52 @@ def test_bottom_up_CrowdPose_dataset():
         test_mode=True)
 
     image_id = 103319
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 2
+    _ = custom_dataset[0]
+
+
+def test_bottom_up_MHP_dataset():
+    dataset = 'BottomUpMhpDataset'
+    # test MHP datasets
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        dataset_joints=16,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ])
+
+    data_cfg = dict(
+        image_size=512,
+        base_size=256,
+        base_sigma=2,
+        heatmap_size=[128],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        num_scales=1,
+        scale_aware_sigma=False,
+    )
+
+    _ = dataset_class(
+        ann_file='tests/data/mhp/test_mhp.json',
+        img_prefix='tests/data/mhp/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=False)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/mhp/test_mhp.json',
+        img_prefix='tests/data/mhp/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    image_id = 2889
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
