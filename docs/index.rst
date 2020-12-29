@@ -15,6 +15,7 @@ Welcome to MMPose's documentation!
    :caption: Datasets
 
    data_preparation.md
+   mesh_task.md
 
 .. toctree::
    :maxdepth: 2
@@ -24,21 +25,31 @@ Welcome to MMPose's documentation!
    top_down_models.md
    bottom_up_models.md
    hand_models.md
+   mesh_models.md
 
 .. toctree::
    :maxdepth: 2
    :caption: Tutorials
 
-   tutorials/finetune.md
-   tutorials/new_dataset.md
-   tutorials/data_pipeline.md
-   tutorials/new_modules.md
+   tutorials/1_finetune.md
+   tutorials/2_new_dataset.md
+   tutorials/3_data_pipeline.md
+   tutorials/4_new_modules.md
+   tutorials/5_export_model.md
+   tutorials/6_customize_runtime.md
 
 .. toctree::
    :maxdepth: 2
-   :caption: Updates
+   :caption: Useful Tools and Scripts
+
+   useful_tools.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Notes
 
    changelog.md
+   faq.md
 
 .. toctree::
    :caption: API Reference

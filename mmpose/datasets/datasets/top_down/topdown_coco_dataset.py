@@ -1,4 +1,5 @@
 import os
+import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -63,13 +64,17 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
-        self.image_thr = data_cfg['image_thr']
-
+        self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+        if 'image_thr' in data_cfg:
+            warnings.warn(
+                'image_thr is deprecated, '
+                'please use det_bbox_thr instead', DeprecationWarning)
+            self.det_bbox_thr = data_cfg['image_thr']
+        self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
                                        [11, 12], [13, 14], [15, 16]]
@@ -205,6 +210,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'image_file': image_file,
                 'center': center,
                 'scale': scale,
+                'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
@@ -268,7 +274,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             box = det_res['bbox']
             score = det_res['score']
 
-            if score < self.image_thr:
+            if score < self.det_bbox_thr:
                 continue
 
             num_boxes = num_boxes + 1
@@ -281,13 +287,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'center': center,
                 'scale': scale,
                 'rotation': 0,
+                'bbox': box[:4],
                 'bbox_score': score,
                 'dataset': self.dataset_name,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible
             })
         print(f'=> Total boxes after filter '
-              f'low score@{self.image_thr}: {num_boxes}')
+              f'low score@{self.det_bbox_thr}: {num_boxes}')
         return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
@@ -342,7 +349,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
-        oks_nmsed_kpts = []
+        valid_kpts = []
         for image_id in kpts.keys():
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
@@ -359,15 +366,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 # rescoring
                 n_p['score'] = kpt_score * box_score
 
-            nms = soft_oks_nms if self.soft_nms else oks_nms
-            keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-
-            if len(keep) == 0:
-                oks_nmsed_kpts.append(img_kpts)
+            if self.use_nms:
+                nms = soft_oks_nms if self.soft_nms else oks_nms
+                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+                valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
-                oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
+                valid_kpts.append(img_kpts)
 
-        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
+        self._write_coco_keypoint_results(valid_kpts, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)

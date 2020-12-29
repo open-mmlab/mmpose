@@ -7,15 +7,15 @@
 - PyTorch 1.3+
 - CUDA 9.2+ (If you build PyTorch from source, CUDA 9.0 is also compatible)
 - GCC 5+
-- [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version)
+- [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version of mmcv-full)
 - Numpy
 - cv2
 - json_tricks
 - [xtcocotools](https://github.com/jin-s13/xtcocoapi)
 
 Optional:
-- [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
 
+- [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
 
 ### Install mmpose
 
@@ -58,7 +58,6 @@ git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 ```
 
-
 d. Install build requirements and then install mmpose
 
 ```shell
@@ -69,12 +68,14 @@ python setup.py develop
 Note:
 
 1. The git commit id will be written to the version number with step d, e.g. 0.6.0+2e7045c. The version will also be saved in trained models.
-It is recommended that you run step d each time you pull some updates from github. If C++/CUDA codes are modified, then this step is compulsory.
+   It is recommended that you run step d each time you pull some updates from github. If C++/CUDA codes are modified, then this step is compulsory.
 
-2. Following the above instructions, mmpose is installed on `dev` mode, any local modifications made to the code will take effect without the need to reinstall it (unless you submit some commits and want to update the version number).
+1. Following the above instructions, mmpose is installed on `dev` mode, any local modifications made to the code will take effect without the need to reinstall it (unless you submit some commits and want to update the version number).
 
-3. If you would like to use `opencv-python-headless` instead of `opencv-python`,
-you can install it before installing MMCV.
+1. If you would like to use `opencv-python-headless` instead of `opencv-python`,
+   you can install it before installing MMCV.
+
+1. If you have `mmcv` installed, you need to firstly uninstall `mmcv`, and then install `mmcv-full`.
 
 ### A from-scratch setup script
 

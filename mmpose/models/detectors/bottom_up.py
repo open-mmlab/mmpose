@@ -45,7 +45,7 @@ class BottomUp(BasePose):
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
-
+        self.use_udp = test_cfg.get('use_udp', False)
         self.parser = HeatmapParser(self.test_cfg)
 
         self.loss = build_loss(loss_pose)
@@ -237,15 +237,27 @@ class BottomUp(BasePose):
                 outputs_flip = None
 
             _, heatmaps, tags = get_multi_stage_outputs(
-                outputs, outputs_flip, self.test_cfg['num_joints'],
-                self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
-                self.test_cfg['tag_per_joint'], img_metas['flip_index'],
-                self.test_cfg['project2image'], base_size)
+                outputs,
+                outputs_flip,
+                self.test_cfg['num_joints'],
+                self.test_cfg['with_heatmaps'],
+                self.test_cfg['with_ae'],
+                self.test_cfg['tag_per_joint'],
+                img_metas['flip_index'],
+                self.test_cfg['project2image'],
+                base_size,
+                align_corners=self.use_udp)
 
             aggregated_heatmaps, tags_list = aggregate_results(
-                s, aggregated_heatmaps, tags_list, heatmaps, tags,
-                test_scale_factor, self.test_cfg['project2image'],
-                self.test_cfg['flip_test'])
+                s,
+                aggregated_heatmaps,
+                tags_list,
+                heatmaps,
+                tags,
+                test_scale_factor,
+                self.test_cfg['project2image'],
+                self.test_cfg['flip_test'],
+                align_corners=self.use_udp)
 
         # average heatmaps of different scales
         aggregated_heatmaps = aggregated_heatmaps / float(
@@ -258,9 +270,11 @@ class BottomUp(BasePose):
                                             self.test_cfg['refine'])
 
         results = get_group_preds(
-            grouped, center, scale,
-            [aggregated_heatmaps.size(3),
-             aggregated_heatmaps.size(2)])
+            grouped,
+            center,
+            scale, [aggregated_heatmaps.size(3),
+                    aggregated_heatmaps.size(2)],
+            use_udp=self.use_udp)
 
         image_path = []
         image_path.extend(img_metas['image_file'])

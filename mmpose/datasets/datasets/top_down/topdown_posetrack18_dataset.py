@@ -1,5 +1,6 @@
 import os
 import os.path as osp
+import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -64,13 +65,17 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
-        self.image_thr = data_cfg['image_thr']
-
+        self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+        if 'image_thr' in data_cfg:
+            warnings.warn(
+                'image_thr is deprecated, '
+                'please use det_bbox_thr instead', DeprecationWarning)
+            self.det_bbox_thr = data_cfg['image_thr']
+        self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
 
         self.ann_info['flip_pairs'] = [[3, 4], [5, 6], [7, 8], [9, 10],
                                        [11, 12], [13, 14], [15, 16]]
@@ -165,7 +170,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
-        oks_nmsed_kpts = defaultdict(list)
+        valid_kpts = defaultdict(list)
         for image_id in kpts.keys():
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
@@ -181,17 +186,15 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                     kpt_score = kpt_score / valid_num
                 # rescoring
                 n_p['score'] = kpt_score * box_score
-
-            nms = soft_oks_nms if self.soft_nms else oks_nms
-            keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-
-            if len(keep) == 0:
-                oks_nmsed_kpts[image_id].append(img_kpts)
-            else:
-                oks_nmsed_kpts[image_id].append(
+            if self.use_nms:
+                nms = soft_oks_nms if self.soft_nms else oks_nms
+                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+                valid_kpts[image_id].append(
                     [img_kpts[_keep] for _keep in keep])
+            else:
+                valid_kpts[image_id].append(img_kpts)
 
-        self._write_posetrack18_keypoint_results(oks_nmsed_kpts, gt_folder,
+        self._write_posetrack18_keypoint_results(valid_kpts, gt_folder,
                                                  pred_folder)
 
         info_str = self._do_python_keypoint_eval(gt_folder, pred_folder)

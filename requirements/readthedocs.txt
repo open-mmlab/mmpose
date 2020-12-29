@@ -1,8 +1,9 @@
-mmcv==1.1.1
+mmcv==1.2.2
 munkres
 poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
 smplx
+titlecase
 torch
 torchvision
 xtcocotools>=1.6

@@ -45,6 +45,7 @@ class TopDown(BasePose):
         self.test_cfg = test_cfg
         self.loss = builder.build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
+        self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
 
     @property
     def with_keypoint(self):
@@ -153,26 +154,27 @@ class TopDown(BasePose):
             # target_weight: [batch_size, num_joints, 1]
             losses['mse_loss'] = self.loss(output, target, target_weight)
 
-        if isinstance(output, list):
-            if target.dim() == 5 and target_weight.dim() == 4:
-                _, avg_acc, _ = pose_pck_accuracy(
-                    output[-1].detach().cpu().numpy(),
-                    target[:, -1, ...].detach().cpu().numpy(),
-                    target_weight[:, -1,
-                                  ...].detach().cpu().numpy().squeeze(-1) > 0)
-                # Only use the last output for prediction
+        if self.target_type == 'GaussianHeatMap':
+            if isinstance(output, list):
+                if target.dim() == 5 and target_weight.dim() == 4:
+                    _, avg_acc, _ = pose_pck_accuracy(
+                        output[-1].detach().cpu().numpy(),
+                        target[:, -1, ...].detach().cpu().numpy(),
+                        target_weight[:, -1,
+                                      ...].detach().cpu().numpy().squeeze(-1) >
+                        0)
+                    # Only use the last output for prediction
+                else:
+                    _, avg_acc, _ = pose_pck_accuracy(
+                        output[-1].detach().cpu().numpy(),
+                        target.detach().cpu().numpy(),
+                        target_weight.detach().cpu().numpy().squeeze(-1) > 0)
             else:
                 _, avg_acc, _ = pose_pck_accuracy(
-                    output[-1].detach().cpu().numpy(),
+                    output.detach().cpu().numpy(),
                     target.detach().cpu().numpy(),
                     target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-        else:
-            _, avg_acc, _ = pose_pck_accuracy(
-                output.detach().cpu().numpy(),
-                target.detach().cpu().numpy(),
-                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-
-        losses['acc_pose'] = float(avg_acc)
+            losses['acc_pose'] = float(avg_acc)
 
         return losses
 
@@ -226,8 +228,10 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
-            output_flipped = flip_back(output_flipped.detach().cpu().numpy(),
-                                       flip_pairs)
+            output_flipped = flip_back(
+                output_flipped.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:
@@ -246,10 +250,14 @@ class TopDown(BasePose):
             c,
             s,
             post_process=self.test_cfg['post_process'],
-            unbiased=self.test_cfg['unbiased_decoding'],
-            kernel=self.test_cfg['modulate_kernel'])
+            unbiased=self.test_cfg.get('unbiased_decoding', False),
+            kernel=self.test_cfg['modulate_kernel'],
+            use_udp=self.test_cfg.get('use_udp', False),
+            valid_radius_factor=self.test_cfg.get('valid_radius_factor',
+                                                  0.0546875),
+            target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
 
-        all_preds = np.zeros((1, output_heatmap.shape[1], 3), dtype=np.float32)
+        all_preds = np.zeros((1, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((1, 6), dtype=np.float32)
         image_path = []
 

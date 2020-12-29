@@ -47,9 +47,8 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process=True,
+        post_process='default',
         shift_heatmap=True,
-        unbiased_decoding=False,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
@@ -64,9 +63,8 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    bbox_thr=1.0,
     use_gt_bbox=True,
-    image_thr=0.0,
+    det_bbox_thr=0.0,
     bbox_file='data/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
@@ -96,7 +94,7 @@ train_pipeline = [
         ]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -113,7 +111,7 @@ valid_pipeline = [
         ]),
 ]
 
-test_pipeline = valid_pipeline
+test_pipeline = val_pipeline
 
 data_root = 'data/aic'
 data = dict(
@@ -132,12 +130,12 @@ data = dict(
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
     test=dict(
         type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
 )

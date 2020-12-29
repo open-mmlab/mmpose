@@ -3,9 +3,10 @@ import time
 
 import torch
 from mmcv import Config
+from mmcv.cnn import fuse_conv_bn
 from mmcv.parallel import MMDataParallel
+from mmcv.runner.fp16_utils import wrap_fp16_model
 
-from mmpose.core import wrap_fp16_model
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
 
@@ -16,6 +17,11 @@ def parse_args():
     parser.add_argument('config', help='test config file path')
     parser.add_argument(
         '--log-interval', default=10, help='interval of logging')
+    parser.add_argument(
+        '--fuse-conv-bn',
+        action='store_true',
+        help='Whether to fuse conv and bn, this will slightly increase'
+        'the inference speed')
     args = parser.parse_args()
     return args
 
@@ -42,6 +48,8 @@ def main():
     fp16_cfg = cfg.get('fp16', None)
     if fp16_cfg is not None:
         wrap_fp16_model(model)
+    if args.fuse_conv_bn:
+        model = fuse_conv_bn(model)
     model = MMDataParallel(model, device_ids=[0])
 
     # the first several iterations may be very slow so skip them

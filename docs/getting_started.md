@@ -3,7 +3,23 @@
 This page provides basic tutorials about the usage of MMPose.
 For installation instructions, please see [install.md](install.md).
 
-## Prepare datasets
+<!-- TOC -->
+
+- [Prepare Datasets](#prepare-datasets)
+- [Inference with Pre-Trained Models](#inference-with-pre-trained-models)
+  - [Test a dataset](#test-a-dataset)
+  - [Run demos](#run-demos)
+- [Train a Model](#train-a-model)
+  - [Train with a single GPU](#train-with-a-single-gpu)
+  - [Train with multiple GPUs](#train-with-multiple-gpus)
+  - [Train with multiple machines](#train-with-multiple-machines)
+  - [Launch multiple jobs on a single machine](#launch-multiple-jobs-on-a-single-machine)
+- [Benchmark](#benchmark)
+- [Tutorials](#tutorials)
+
+<!-- TOC -->
+
+## Prepare Datasets
 
 MMPose supported datasets:
 
@@ -21,8 +37,7 @@ MMPose supported datasets:
 
 Please follow [DATA Preparation](data_preparation.md) to prepare the data.
 
-
-## Inference with pretrained models
+## Inference with Pre-trained Models
 
 We provide testing scripts to evaluate a whole dataset (COCO, etc.),
 and provide some high-level apis for easier integration to other projects.
@@ -47,6 +62,7 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESUL
 ```
 
 Optional arguments:
+
 - `RESULT_FILE`: Filename of the output results. If not specified, the results will not be saved to a file.
 - `EVAL_METRIC`: Items to be evaluated on the results. Allowed values depend on the dataset.
 - `NUM_PROC_PER_GPU`: Number of processes per GPU. If not specified, only one process will be assigned for a single gpu.
@@ -62,28 +78,28 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
 1. Test ResNet50 on COCO (without saving the test results) and evaluate the mAP.
 
-    ```shell
-    ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
-        checkpoints/SOME_CHECKPOINT.pth 1 \
-        --eval mAP
-    ```
+   ```shell
+   ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
+       checkpoints/SOME_CHECKPOINT.pth 1 \
+       --eval mAP
+   ```
 
-2. Test ResNet50 on COCO  with 8 GPUS, and evaluate the mAP.
+1. Test ResNet50 on COCO  with 8 GPUS, and evaluate the mAP.
 
-    ```shell
-    ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
-        checkpoints/SOME_CHECKPOINT.pth 8 \
-        --eval mAP
-    ```
+   ```shell
+   ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
+       checkpoints/SOME_CHECKPOINT.pth 8 \
+       --eval mAP
+   ```
 
-2. Test ResNet50 on COCO in slurm environment and evaluate the mAP.
+1. Test ResNet50 on COCO in slurm environment and evaluate the mAP.
 
-    ```shell
-    ./tools/slurm_test.sh slurm_partition test_job \
-        configs/top_down/resnet/coco/res50_coco_256x192.py \
-        checkpoints/SOME_CHECKPOINT.pth \
-        --eval mAP
-    ```
+   ```shell
+   ./tools/slurm_test.sh slurm_partition test_job \
+       configs/top_down/resnet/coco/res50_coco_256x192.py \
+       checkpoints/SOME_CHECKPOINT.pth \
+       --eval mAP
+   ```
 
 ### Run demos
 
@@ -120,11 +136,12 @@ All outputs (log files and checkpoints) will be saved to the working directory,
 which is specified by `work_dir` in the config file.
 
 By default we evaluate the model on the validation set after each epoch, you can change the evaluation interval by modifying the interval argument in the training config
+
 ```python
 evaluation = dict(interval=5)  # This evaluate the model per 5 epoch.
 ```
 
-According to the [Linear Scaling Rule](https://arxiv.org/abs/1706.02677), you need to set the learning rate proportional to the batch size if you use different GPUs or videos per GPU, e.g., lr=0.01 for 4 GPUs * 2 video/gpu and lr=0.08 for 16 GPUs * 4 video/gpu.
+According to the [Linear Scaling Rule](https://arxiv.org/abs/1706.02677), you need to set the learning rate proportional to the batch size if you use different GPUs or videos per GPU, e.g., lr=0.01 for 4 GPUs x 2 video/gpu and lr=0.08 for 16 GPUs x 4 video/gpu.
 
 ### Train with a single GPU
 
@@ -199,11 +216,13 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29501 ./tools/dist_train.sh ${CONFIG_FILE} 4
 If you use launch training jobs with slurm, you need to modify the config files (usually the 6th line from the bottom in config files) to set different communication ports.
 
 In `config1.py`,
+
 ```python
 dist_params = dict(backend='nccl', port=29500)
 ```
 
 In `config2.py`,
+
 ```python
 dist_params = dict(backend='nccl', port=29501)
 ```
@@ -216,12 +235,15 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} con
 ```
 
 ## Benchmark
+
 You can get average inference speed using the following script. Note that it does not include the IO time and the pre-processing time.
+
 ```shell
 python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 ```
 
 ## Tutorials
 
-Currently, we provide some tutorials for users to [finetune model](tutorials/finetune.md),
-[add new dataset](tutorials/new_dataset.md), [add new modules](tutorials/new_modules.md).
+Currently, we provide some tutorials for users to [finetune model](tutorials/1_finetune.md),
+[add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
+[add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
