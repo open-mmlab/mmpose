@@ -382,9 +382,9 @@ class ResNetTop(nn.Module):
 
 @BACKBONES.register_module()
 class MSPN(BaseBackbone):
-    """MSPN backbone.
-        Paper ref: Li et al. "Rethinking on Multi-Stage Networks
-              for Human Pose Estimation" (CVPR 2020).
+    """MSPN backbone. Paper ref: Li et al. "Rethinking on Multi-Stage Networks
+    for Human Pose Estimation" (CVPR 2020).
+
     Args:
         unit_channels (int): Number of Channels in an upsample unit.
             Default: 256
@@ -398,6 +398,7 @@ class MSPN(BaseBackbone):
             Default: dict(type='BN')
         res_top_channels (int): Number of channels of feature from ResNetTop.
             Default: 64.
+
     Example:
         >>> from mmpose.models import MSPN
         >>> import torch

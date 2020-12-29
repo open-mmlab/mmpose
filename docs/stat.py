@@ -3,6 +3,8 @@ import functools as func
 import glob
 import re
 
+import titlecase
+
 files = sorted(glob.glob('*_models.md'))
 
 stats = []
@@ -15,8 +17,9 @@ for f in files:
     title = content.split('\n')[0].replace('#', '')
 
     # count papers
-    papers = set(x.lower().strip()
-                 for x in re.findall(r'\btitle={(.*)}', content))
+    papers = set(
+        titlecase.titlecase(x.lower().strip())
+        for x in re.findall(r'\btitle\s*=\s*{(.*)}', content))
     paperlist = '\n'.join(sorted('    - ' + x for x in papers))
     # count configs
     configs = set(x.lower().strip()

@@ -1,4 +1,5 @@
 ## Pre-trained Detection Models
+
 ### Human Bounding Box Detection Models
 
 For human bounding box detection models, please download from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
@@ -8,7 +9,7 @@ MMDetection provides 80-class COCO-pretrained models, which already includes the
 
 For hand bounding box detection, we simply train our hand box models on onehand10k dataset using MMDetection.
 
-#### Hand detection results on OneHand10K test set.
+#### Hand detection results on OneHand10K test set
 
 | Arch  | Box AP |   ckpt | log |
 | :-------------- | :-----------: | :------: | :------: |

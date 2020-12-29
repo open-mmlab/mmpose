@@ -7,6 +7,7 @@
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
+[![PyPI](https://badge.fury.io/py/mmpose.svg)](https://pypi.org/project/mmpose/)
 [![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
@@ -49,16 +50,17 @@ The master branch works with **PyTorch 1.3+**.
   pose estimation framework by combining different modules.
   We provide detailed documentation and API reference, as well as unittests.
 
-
 ## [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
 
 Supported backbones for human pose estimation:
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md)
+- [x] [VGG](configs/top_down/vgg/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
 - [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
 - [x] [ResNet](configs/top_down/resnet/README.md)
 - [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
+- [x] [ResNeSt](configs/top_down/resnest/README.md)
 - [x] [ResNext](configs/top_down/resnext/README.md)
 - [x] [SCNet](configs/top_down/scnet/README.md)
 - [x] [SEResNet](configs/top_down/seresnet/README.md)
@@ -75,6 +77,7 @@ Supported methods for human pose estimation:
 - [x] [Associative Embedding](configs/bottom_up/hrnet/README.md)
 - [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md)
 - [x] [DarkPose](configs/top_down/darkpose/README.md)
+- [x] [UDP](configs/top_down/udp/README.md)
 - [x] [MSPN](configs/top_down/mspn/README.md)
 - [x] [RSN](configs/top_down/rsn/README.md)
 
@@ -130,8 +133,13 @@ Please refer to [data_preparation.md](docs/data_preparation.md) for a general kn
 ## Get Started
 
 Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
-There are also tutorials for [finetuning model](docs/tutorials/finetune.md),
-[adding new dataset](docs/tutorials/new_dataset.md), [adding new modules](docs/tutorials/new_modules.md).
+There are also tutorials: [finetune model](tutorials/1_finetune.md),
+[add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
+[add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
+
+## FAQ
+
+Please refer to [FAQ](docs/faq.md) for frequently asked questions.
 
 ## License
 

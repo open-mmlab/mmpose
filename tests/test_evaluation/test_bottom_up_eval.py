@@ -66,6 +66,13 @@ def test_get_multi_stage_outputs():
                                 with_ae=[True, False],
                                 size_projected=(8, 8))
     assert heatmaps[0].shape == torch.Size([1, 2, 8, 8])
+    outputs, heatmaps, tags = \
+        get_multi_stage_outputs(outputs=copy.deepcopy(fake_outputs),
+                                outputs_flip=fake_flip_outputs,
+                                num_joints=2, with_heatmaps=[True, True],
+                                with_ae=[True, False],
+                                align_corners=True)
+    assert torch.allclose(heatmaps[0], torch.tensor(0.5))
 
 
 def test_aggregate_results():
@@ -83,6 +90,13 @@ def test_aggregate_results():
                           tags_list=[], heatmaps=fake_heatmaps,
                           tags=fake_tags, test_scale_factor=[1],
                           project2image=True, flip_test=False)
+    assert torch.allclose(aggregated_heatmaps, torch.tensor(1.))
+    aggregated_heatmaps, tags_list = \
+        aggregate_results(scale=1, aggregated_heatmaps=fake_aggr_heatmaps,
+                          tags_list=[], heatmaps=fake_heatmaps,
+                          tags=fake_tags, test_scale_factor=[1],
+                          project2image=True, flip_test=False,
+                          align_corners=True)
     assert torch.allclose(aggregated_heatmaps, torch.tensor(1.))
     fake_heatmaps = [torch.zeros((1, 2, 2, 2)), torch.ones((1, 2, 2, 2))]
     fake_aggr_heatmaps = torch.ones(1, 2, 4, 4)
@@ -107,4 +121,12 @@ def test_get_group_preds():
         center=np.array([0, 0]),
         scale=np.array([1, 1]),
         heatmap_size=np.array([2, 2]))
+    assert not results == []
+
+    results = get_group_preds(
+        fake_grouped_joints,
+        center=np.array([0, 0]),
+        scale=np.array([1, 1]),
+        heatmap_size=np.array([2, 2]),
+        use_udp=True)
     assert not results == []

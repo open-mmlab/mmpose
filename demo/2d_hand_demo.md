@@ -1,4 +1,5 @@
 ## 2D Hand Keypoint Demo
+
 ### 2D Hand Image Demo
 
 #### Using gt hand bounding boxes as input
@@ -9,15 +10,16 @@ We provide a demo script to test a single image, given gt json file.
 The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/pretrained.html).
 Take [onehand10k model](https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) as an example:
 
-
 ```shell
 python demo/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
-    [--show --device ${GPU_ID}] \
+    [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
+
+Examples:
 
 ```shell
 python demo/top_down_img_demo.py \
@@ -27,6 +29,16 @@ python demo/top_down_img_demo.py \
     --out-img-root vis_results
 ```
 
+To run demos on CPU:
+
+```shell
+python demo/top_down_img_demo.py \
+    configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
+    --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
+    --out-img-root vis_results
+    --device=cpu
+```
 
 #### Using mmdet for hand bounding box detection
 
@@ -44,7 +56,7 @@ python demo/top_down_img_demo_with_mmdet.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --img ${IMG_FILE} \
     --out-img-root ${OUTPUT_DIR} \
-    [--show --device ${GPU_ID}] \
+    [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
@@ -74,7 +86,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --output-video-root ${OUTPUT_VIDEO_ROOT} \
-    [--show --device ${GPU_ID}] \
+    [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
@@ -90,8 +102,10 @@ python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_
 ```
 
 ### Speed Up Inference
+
 Some tips to speed up MMPose inference:
 
 For 2D hand pose estimation models, try to edit the config file. For example,
+
 1. set `flip_test=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L56).
-2. set `unbiased_decoding=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L59).
+1. set `unbiased_decoding=False` in [hand-res50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L59).

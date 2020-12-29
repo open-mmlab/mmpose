@@ -48,7 +48,7 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     return joints_3d_flipped, joints_3d_visible_flipped
 
 
-def flip_back(output_flipped, flip_pairs):
+def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
     """Flip the flipped heatmaps back to the original form.
 
     Note:
@@ -62,26 +62,34 @@ def flip_back(output_flipped, flip_pairs):
             from the flipped images.
         flip_pairs (list[tuple()): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
+        target_type (str): GaussianHeatMap or CombinedTarget
 
     Returns:
         np.ndarray: heatmaps that flipped back to the original image
     """
     assert output_flipped.ndim == 4, \
         'output_flipped should be [batch_size, num_keypoints, height, width]'
-
+    assert target_type in ('GaussianHeatMap', 'CombinedTarget')
+    shape_ori = output_flipped.shape
+    channels = 1
+    if target_type == 'CombinedTarget':
+        channels = 3
+        output_flipped[:, 1::3, ...] = -output_flipped[:, 1::3, ...]
+    output_flipped = output_flipped.reshape(shape_ori[0], -1, channels,
+                                            shape_ori[2], shape_ori[3])
     output_flipped_back = output_flipped.copy()
 
     # Swap left-right parts
     for left, right in flip_pairs:
         output_flipped_back[:, left, ...] = output_flipped[:, right, ...]
         output_flipped_back[:, right, ...] = output_flipped[:, left, ...]
-
+    output_flipped_back = output_flipped_back.reshape(shape_ori)
     # Flip horizontally
     output_flipped_back = output_flipped_back[..., ::-1]
     return output_flipped_back
 
 
-def transform_preds(coords, center, scale, output_size):
+def transform_preds(coords, center, scale, output_size, use_udp=False):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -104,6 +112,7 @@ def transform_preds(coords, center, scale, output_size):
         scale (np.ndarray[2, ]): Scale of the bounding box
             wrt [width, height].
         output_size (np.ndarray[2, ]): Size of the destination heatmaps.
+        use_udp (bool): Use unbiased data processing
 
     Returns:
         np.ndarray: Predicted coordinates in the images.
@@ -112,11 +121,22 @@ def transform_preds(coords, center, scale, output_size):
     assert len(center) == 2
     assert len(scale) == 2
     assert len(output_size) == 2
-
-    target_coords = coords.copy()
-    trans = get_affine_transform(center, scale, 0, output_size, inv=True)
-    for p in range(coords.shape[0]):
-        target_coords[p, 0:2] = affine_transform(coords[p, 0:2], trans)
+    if use_udp:
+        # The input scale is normalized by deviding a factor of 200.
+        # Here is a recover.
+        scale = scale * 200.0
+        scale_x = scale[0] / (output_size[0] - 1.0)
+        scale_y = scale[1] / (output_size[1] - 1.0)
+        target_coords = np.zeros(coords.shape)
+        target_coords[:,
+                      0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
+        target_coords[:,
+                      1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
+    else:
+        target_coords = coords.copy()
+        trans = get_affine_transform(center, scale, 0, output_size, inv=True)
+        for p in range(coords.shape[0]):
+            target_coords[p, 0:2] = affine_transform(coords[p, 0:2], trans)
     return target_coords
 
 

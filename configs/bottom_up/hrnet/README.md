@@ -1,6 +1,7 @@
 # Associative Embedding (AE) + HRNet
 
 ## Introduction
+
 ```
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
@@ -29,7 +30,7 @@
 | [HRNet-w32](/configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py)  | 512x512 | 0.654 | 0.863 | 0.720 | 0.710 | 0.892 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512_20200816.log.json) |
 | [HRNet-w48](/configs/bottom_up/hrnet/coco/hrnet_w48_coco_512x512.py)  | 512x512 | 0.665 | 0.860 | 0.727 | 0.716 | 0.889 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512-cf72fcdf_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512_20200816.log.json) |
 
-#### Results on COCO val2017 with multi-scale test. 3 default scales ([2, 1, 0.5]) are used.
+#### Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
