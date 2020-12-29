@@ -213,9 +213,9 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         Args:
             outputs (list(preds, scores, image_path, heatmap)):
 
-                * preds (list[images x np.ndarray(P, K, 3+tag_num)]):
+                * preds (list[np.ndarray(P, K, 3+tag_num)]):
                   Pose predictions for all people in images.
-                * scores (list[images x P]):
+                * scores (list[P]):
                 * image_path (list[str]): For example, [ 'c','o','c','o',
                   '/',i','m','a','g','e','s','/', 'v','a', 'l',
                   '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
