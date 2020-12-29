@@ -319,16 +319,11 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                 h = right_bottom[1] - left_top[1]
 
                 cat_results.append({
-                    'image_id':
-                    img_kpt['image_id'],
-                    'category_id':
-                    cat_id,
-                    'keypoints':
-                    list(key_point),
-                    'score':
-                    img_kpt['score'],
-                    'bbox':
-                    list([left_top[0], left_top[1], w, h])
+                    'image_id': img_kpt['image_id'],
+                    'category_id': cat_id,
+                    'keypoints': key_point.tolist(),
+                    'score': img_kpt['score'],
+                    'bbox': [left_top[0], left_top[1], w, h]
                 })
 
         return cat_results
