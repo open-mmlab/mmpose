@@ -212,7 +212,7 @@ class TopDown(BasePose):
     def process_head(self, output, img, img_metas, return_heatmap=False):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas['flip_pairs']
-
+        assert 0, img_metas
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
