@@ -28,7 +28,6 @@ python demo/top_down_pose_tracking_demo_with_mmdet.py \
     --out-video-root vis_results
 ```
 
-
 ### Speed Up Inference
 Some tips to speed up MMPose inference:
 
