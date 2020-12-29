@@ -335,17 +335,26 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
+
+        stats_names = [
+            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+            'AR .75', 'AR (M)', 'AR (L)'
+        ]
+
+        with open(res_file, 'r') as file:
+            res_json = json.load(file)
+            if not res_json:
+                info_str = list(zip(stats_names, [
+                    0,
+                ] * len(stats_names)))
+                return info_str
+
         coco_det = self.coco.loadRes(res_file)
         coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
-
-        stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AR (M)', 'AR (L)'
-        ]
 
         info_str = list(zip(stats_names, coco_eval.stats))
 

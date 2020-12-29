@@ -1,3 +1,4 @@
+import json_tricks as json
 import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -92,6 +93,20 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
+
+        stats_names = [
+            'AP', 'AP .5', 'AP .75', 'AR', 'AR .5', 'AR .75', 'AP(E)', 'AP(M)',
+            'AP(H)'
+        ]
+
+        with open(res_file, 'r') as file:
+            res_json = json.load(file)
+            if not res_json:
+                info_str = list(zip(stats_names, [
+                    0,
+                ] * len(stats_names)))
+                return info_str
+
         coco_det = self.coco.loadRes(res_file)
         coco_eval = COCOeval(
             self.coco,
@@ -103,11 +118,6 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
-
-        stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AR', 'AR .5', 'AR .75', 'AP(E)', 'AP(M)',
-            'AP(H)'
-        ]
 
         info_str = list(zip(stats_names, coco_eval.stats))
 
