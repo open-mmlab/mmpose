@@ -88,10 +88,9 @@ class AELoss(nn.Module):
 
         num_tags = len(tags)
         if num_tags == 0:
-            return (_make_input(
-                torch.zeros(1).float(), device=pred_tag.device),
-                    _make_input(
-                        torch.zeros(1).float(), device=pred_tag.device))
+            return (
+                _make_input(torch.zeros(1).float(), device=pred_tag.device),
+                _make_input(torch.zeros(1).float(), device=pred_tag.device))
         elif num_tags == 1:
             return (_make_input(
                 torch.zeros(1).float(), device=pred_tag.device), pull)
