@@ -156,7 +156,7 @@ train_aic=dict(
         pipeline=train_pipeline),
 
 data = dict(
-    samples_per_gpu=10,
+    samples_per_gpu=64,
     workers_per_gpu=2,
     train=[train_coco, train_aic],
     val=dict(
