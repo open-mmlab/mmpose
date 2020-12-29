@@ -141,20 +141,17 @@ train_aic = dict(
     data_cfg=data_cfg_aic,
     pipeline=train_pipeline),
 
+val_coco = dict(
+    type='TopDownCocoDataset',
+    ann_file=f'{data_root_coco}/annotations/person_keypoints_val2017.json',
+    img_prefix=f'{data_root_coco}/val2017/',
+    data_cfg=data_cfg_coco,
+    pipeline=val_pipeline),
+
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=[train_coco, train_aic],
-    val=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root_coco}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root_coco}/val2017/',
-        data_cfg=data_cfg_coco,
-        pipeline=val_pipeline),
-    test=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root_coco}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root_coco}/val2017/',
-        data_cfg=data_cfg_coco,
-        pipeline=val_pipeline),
+    val=val_coco,
+    test=val_coco,
 )
