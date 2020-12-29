@@ -26,8 +26,7 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-num_output_channels=17+14
-
+num_output_channels = 17 + 14
 
 # model settings
 model = dict(
@@ -47,8 +46,6 @@ model = dict(
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
-
-
 data_cfg_coco = dict(
     image_size=[192, 256],
     heatmap_size=[48, 64],
@@ -62,14 +59,11 @@ data_cfg_coco = dict(
     'COCO_val2017_detections_AP_H_56_person.json',
     num_output_channels=num_output_channels,
     num_joints=17,
-    dataset_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    dataset_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
     inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+    ],
 )
-
-
-
 
 data_cfg_aic = dict(
     image_size=[192, 256],
@@ -83,14 +77,9 @@ data_cfg_aic = dict(
     bbox_file='',
     num_output_channels=num_output_channels,
     num_joints=14,
-    dataset_channel=[
-        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
-    inference_channel=[
-        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    dataset_channel=[17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    inference_channel=[17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
 )
-
-
-
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -140,20 +129,20 @@ test_pipeline = val_pipeline
 data_root_coco = 'data/coco'
 data_root_aic = 'data/aic'
 
-train_coco=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root_coco}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root_coco}/train2017/',
-        data_cfg=data_cfg_coco,
-        pipeline=train_pipeline),
+train_coco = dict(
+    type='TopDownCocoDataset',
+    ann_file=f'{data_root_coco}/annotations/person_keypoints_train2017.json',
+    img_prefix=f'{data_root_coco}/train2017/',
+    data_cfg=data_cfg_coco,
+    pipeline=train_pipeline),
 
-train_aic=dict(
-        type='TopDownAicDataset',
-        ann_file=f'{data_root_aic}/annotations/aic_train.json',
-        img_prefix=f'{data_root_aic}/ai_challenger_keypoint_train_20170902/'
-        'keypoint_train_images_20170902/',
-        data_cfg=data_cfg_aic,
-        pipeline=train_pipeline),
+train_aic = dict(
+    type='TopDownAicDataset',
+    ann_file=f'{data_root_aic}/annotations/aic_train.json',
+    img_prefix=f'{data_root_aic}/ai_challenger_keypoint_train_20170902/'
+    'keypoint_train_images_20170902/',
+    data_cfg=data_cfg_aic,
+    pipeline=train_pipeline),
 
 data = dict(
     samples_per_gpu=64,

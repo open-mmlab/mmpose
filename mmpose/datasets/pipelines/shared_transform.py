@@ -1,6 +1,6 @@
-import numpy as np
 from collections.abc import Sequence
 
+import numpy as np
 from mmcv.parallel import DataContainer as DC
 from mmcv.utils import build_from_cfg
 from torchvision.transforms import functional as F
@@ -43,6 +43,7 @@ class NormalizeTensor:
             results['img'], mean=self.mean, std=self.std)
         return results
 
+
 @PIPELINES.register_module()
 class FuseDataset:
     """Normalize the Tensor image (CxHxW), with mean and std.
@@ -67,14 +68,14 @@ class FuseDataset:
         # print(results['target'].shape, type(results['target']))
         # print(results['target_weight'].shape)
 
-        fuse_target = np.zeros((num_output_channels, target.shape[1], target.shape[2]), dtype=np.float32)
+        fuse_target = np.zeros(
+            (num_output_channels, target.shape[1], target.shape[2]),
+            dtype=np.float32)
         fuse_target[dataset_channel] = target
 
-        fuse_target_weight = np.zeros((num_output_channels, target_weight.shape[1]), dtype=np.float32)
+        fuse_target_weight = np.zeros(
+            (num_output_channels, target_weight.shape[1]), dtype=np.float32)
         fuse_target_weight[dataset_channel] = target_weight
-
-
-        
 
         results['target'] = fuse_target
         results['target_weight'] = fuse_target_weight
@@ -86,6 +87,7 @@ class FuseDataset:
         # if 'target' in self.keys:
 
         # assert 0, results.keys()
+
 
 @PIPELINES.register_module()
 class Compose:

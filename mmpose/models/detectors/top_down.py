@@ -219,7 +219,7 @@ class TopDown(BasePose):
 
         if isinstance(output, list):
             output = output[-1]
-        
+
         output = output[:, inference_channel]
 
         output_heatmap = output.detach().cpu().numpy()

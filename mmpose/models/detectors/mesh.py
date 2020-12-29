@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-# from smplx import SMPL
+from smplx import SMPL
 
 from .. import builder
 from ..mesh_heads.discriminator import SMPLDiscriminator

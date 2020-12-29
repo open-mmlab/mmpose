@@ -8,7 +8,7 @@ from mmcv.runner import get_dist_info
 from mmcv.utils import build_from_cfg
 from mmcv.utils.parrots_wrapper import _get_dataloader
 
-from .dataset_wrappers import RepeatDataset, ConcatDataset
+from .dataset_wrappers import ConcatDataset, RepeatDataset
 from .registry import DATASETS
 from .samplers import DistributedSampler
 
