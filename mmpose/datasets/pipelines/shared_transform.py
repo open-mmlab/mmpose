@@ -1,3 +1,4 @@
+import numpy as np
 from collections.abc import Sequence
 
 from mmcv.parallel import DataContainer as DC
@@ -42,6 +43,49 @@ class NormalizeTensor:
             results['img'], mean=self.mean, std=self.std)
         return results
 
+@PIPELINES.register_module()
+class FuseDataset:
+    """Normalize the Tensor image (CxHxW), with mean and std.
+
+    Required key: 'img'. Modifies key: 'img'.
+
+    Args:
+        mean (list[float]): Mean values of 3 channels.
+        std (list[float]): Std values of 3 channels.
+    """
+
+    def __init__(self, keys):
+        self.keys = keys
+
+    def __call__(self, results):
+        num_output_channels = results['ann_info']['num_output_channels']
+        dataset_channel = results['ann_info']['dataset_channel']
+
+        target = results['target']
+        target_weight = results['target_weight']
+
+        # print(results['target'].shape, type(results['target']))
+        # print(results['target_weight'].shape)
+
+        fuse_target = np.zeros((num_output_channels, target.shape[1], target.shape[2]), dtype=np.float32)
+        fuse_target[dataset_channel] = target
+
+        fuse_target_weight = np.zeros((num_output_channels, target_weight.shape[1]), dtype=np.float32)
+        fuse_target_weight[dataset_channel] = target_weight
+
+
+        
+
+        results['target'] = fuse_target
+        results['target_weight'] = fuse_target_weight
+
+        # print(fuse_target.shape, target.shape)
+
+        return results
+
+        # if 'target' in self.keys:
+
+        # assert 0, results.keys()
 
 @PIPELINES.register_module()
 class Compose:
