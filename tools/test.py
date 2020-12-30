@@ -88,6 +88,9 @@ def main():
 
     # build the dataloader
     # TODO: support multiple images per gpu (only minor changes are needed)
+    if args.simple_inference:
+        cfg.data.test.simple_inference = True
+
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     dataloader_setting = dict(
         samples_per_gpu=1,
