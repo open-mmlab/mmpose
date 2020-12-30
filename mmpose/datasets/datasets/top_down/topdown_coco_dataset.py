@@ -3,6 +3,7 @@ import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
+import mmcv
 import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -51,6 +52,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
+        simple_inference (bool): If running the simple inference mode. In
+            simple inference mode, the ann_file contains a list of dict, each
+            dict contains two varibles: image_file and bbox (x, y, w, h).
+            In simple inference mode, all bboxes should be inside the image.
+            Default: False.
     """
 
     def __init__(self,
@@ -58,13 +64,15 @@ class TopDownCocoDataset(TopDownBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 simple_inference=False):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+        self.simple_inference = simple_inference
         if 'image_thr' in data_cfg:
             warnings.warn(
                 'image_thr is deprecated, '
@@ -94,6 +102,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
         ]) / 10.0
+
+        if self.simple_inference:
+            self.db = self._get_simple_inference(ann_file)
+            print(f'=> load {len(self.db)} samples')
+            return
 
         self.coco = COCO(ann_file)
 
@@ -147,6 +160,20 @@ class TopDownCocoDataset(TopDownBaseDataset):
             # use bbox from detection
             gt_db = self._load_coco_person_detection_results()
         return gt_db
+
+    def _get_simple_inference(self, ann_file):
+        db = mmcv.load(ann_file)
+        for obj in db:
+            obj['center'], obj['scale'] = self._xywh2cs(*obj['bbox'])
+            obj['rotation'] = 0
+            obj['bbox_score'] = 1
+            obj['dataset'] = 'simple_inference'
+            fake_joints = np.zeros((self.ann_info['num_joints'], 3),
+                                   dtype=np.float32)
+            fake_joints[0, :2] = 1.
+            obj['joints_3d'] = fake_joints
+            obj['joints_3d_visible'] = fake_joints
+        return db
 
     def _load_coco_keypoint_annotations(self):
         """Ground truth bbox and keypoints."""

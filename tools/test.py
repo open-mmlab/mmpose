@@ -39,6 +39,11 @@ def parse_args():
         '--return_heatmap',
         action='store_true',
         help='whether to store heatmap')
+    parser.add_argument(
+        '--simple_inference',
+        action='store_true',
+        help=('whether to set the dataset as simple_inference mode, '
+              'currently only compatible with TopDownCocoDataset'))
 
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -78,7 +83,11 @@ def main():
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
 
+    if args.simple_inference:
+        cfg.data.test.simple_inference = True
+
     # build the dataloader
+    # TODO: support multiple images per gpu (only minor changes are needed)
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     dataloader_setting = dict(
         samples_per_gpu=1,
@@ -119,7 +128,8 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
 
-        print(dataset.evaluate(outputs, args.work_dir, **eval_config))
+        if not args.simple_inference:
+            print(dataset.evaluate(outputs, args.work_dir, **eval_config))
 
 
 if __name__ == '__main__':
