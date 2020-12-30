@@ -21,9 +21,9 @@ def load_json_to_output(json_name, prefix='', batch_size=2, use_bbox_id=True):
                      dtype=np.float32).reshape((-1, 3))
             for j in range(i, min(i + batch_size, num_data))
         ])
-        box = np.zeros((batch_size,6), dtype=np.float32)
+        box = np.zeros((batch_size, 6), dtype=np.float32)
         img_path = [
-            os.path.join(prefix,data['images'][j]['file_name'])
+            os.path.join(prefix, data['images'][j]['file_name'])
             for j in range(i, min(i + batch_size, num_data))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, num_data))]
@@ -55,7 +55,7 @@ def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
             ],
                      dtype=np.float32)
             for j in range(i, min(i + batch_size, len_db)))
-        
+
         if use_bbox_id:
             output = (keypoints, box, img_path, None, bbox_ids)
         else:
