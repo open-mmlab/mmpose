@@ -63,11 +63,31 @@ def test_pose_tracking_demo():
     image_name = 'tests/data/interhand2d/image2017.jpg'
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
-        pose_model, image_name, [[50, 50, 50, 100]], format='xywh')
+        pose_model,
+        image_name, [[50, 50, 0, 0]],
+        format='xywh',
+        dataset='InterHand2DDataset')
     pose_results, next_id = get_track_id(pose_results, [], next_id=0)
     # show the results
     vis_pose_tracking_result(
         pose_model, image_name, pose_results, dataset='InterHand2DDataset')
+    pose_results_last = pose_results
+
+    # MPII demo
+    pose_model = init_pose_model(
+        'configs/top_down/resnet/mpii/res50_mpii_256x192.py', None, device='cpu')
+    image_name = 'tests/data/mpii/004645041.jpg'
+    # test a single image, with a list of bboxes.
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        image_name, [[50, 50, 0, 0]],
+        format='xywh',
+        dataset='TopDownMpiiDataset')
+    pose_results, next_id = get_track_id(pose_results, pose_results_last,
+                                         next_id)
+    # show the results
+    vis_pose_tracking_result(
+        pose_model, image_name, pose_results, dataset='TopDownMpiiDataset')
 
     with pytest.raises(NotImplementedError):
         vis_pose_tracking_result(
