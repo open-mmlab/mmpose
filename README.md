@@ -90,12 +90,14 @@ Supported datasets:
 - [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
 - [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [x] [PoseTrack18](https://posetrack.net/users/download.php)
+- [x] [MHP](https://lv-mhp.github.io/dataset)
 - [x] [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
-- [x] [H36m](http://vision.imar.ro/human3.6m/description.php)
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
+- [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/top_down_models.html) page.

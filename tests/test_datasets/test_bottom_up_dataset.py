@@ -1,4 +1,36 @@
+import tempfile
+
+import numpy as np
+import pytest
+from numpy.testing import assert_almost_equal
+
 from mmpose.datasets import DATASETS
+
+
+def convert_coco_to_output(coco):
+    outputs = []
+    for img_id in coco.getImgIds():
+        preds = []
+        scores = []
+        image = coco.imgs[img_id]
+        ann_ids = coco.getAnnIds(img_id)
+        for ann_id in ann_ids:
+            keypoints = np.array(coco.anns[ann_id]['keypoints']).reshape(
+                (-1, 3))
+            K = keypoints.shape[0]
+            if sum(keypoints[:, 2]) == 0:
+                continue
+            preds.append(
+                np.concatenate((keypoints[:, :2], np.ones(
+                    [K, 1]), np.ones([K, 1]) * ann_id),
+                               axis=1))
+            scores.append(1)
+        img_path = []
+        img_path[:0] = image['file_name']
+        output = (np.stack(preds), scores, img_path, None)
+        outputs.append(output)
+
+    return outputs
 
 
 def test_bottom_up_COCO_dataset():
@@ -43,10 +75,18 @@ def test_bottom_up_COCO_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
+    outputs = convert_coco_to_output(custom_dataset.coco)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
 
 def test_bottom_up_CrowdPose_dataset():
     dataset = 'BottomUpCrowdPoseDataset'
-    # test COCO datasets
+    # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -86,3 +126,65 @@ def test_bottom_up_CrowdPose_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
+
+    outputs = convert_coco_to_output(custom_dataset.coco)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+
+def test_bottom_up_MHP_dataset():
+    dataset = 'BottomUpMhpDataset'
+    # test MHP datasets
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        dataset_joints=16,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+        ])
+
+    data_cfg = dict(
+        image_size=512,
+        base_size=256,
+        base_sigma=2,
+        heatmap_size=[128],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        num_scales=1,
+        scale_aware_sigma=False,
+    )
+
+    _ = dataset_class(
+        ann_file='tests/data/mhp/test_mhp.json',
+        img_prefix='tests/data/mhp/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=False)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/mhp/test_mhp.json',
+        img_prefix='tests/data/mhp/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    image_id = 2889
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 2
+    _ = custom_dataset[0]
+
+    outputs = convert_coco_to_output(custom_dataset.coco)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
