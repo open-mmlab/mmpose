@@ -68,6 +68,9 @@ class FaceAFLWDataset(FaceBaseDataset):
 
             rec = []
             for obj in objs:
+                if self.test_mode:
+                    # 'box_size' is used as normalization factor
+                    assert 'box_size' in obj
                 if max(obj['keypoints']) == 0:
                     continue
                 joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
@@ -85,6 +88,7 @@ class FaceAFLWDataset(FaceBaseDataset):
 
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
+
                 rec.append({
                     'image_file': image_file,
                     'center': center,
@@ -94,8 +98,7 @@ class FaceAFLWDataset(FaceBaseDataset):
                     'joints_3d_visible': joints_3d_visible,
                     'dataset': self.dataset_name,
                     'bbox': obj['bbox'],
-                    'box_size':
-                    obj['box_size'],  # used as normalization factor
+                    'box_size': obj['box_size'],
                     'bbox_score': 1
                 })
             gt_db.extend(rec)
