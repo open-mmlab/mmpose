@@ -446,3 +446,14 @@ class TopDownCocoDataset(TopDownBaseDataset):
         info_str = list(zip(stats_names, coco_eval.stats))
 
         return info_str
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        for img_id, bboxes in kpts.items():
+            num = len(bboxes)
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
+            for i in range(num - 1, 0, -1):
+                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
+                    del kpts[img_id][i]
+
+        return kpts

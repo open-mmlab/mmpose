@@ -1,3 +1,5 @@
+import warnings
+
 import torch
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, OptimizerHook
@@ -30,11 +32,20 @@ def train_model(model,
             Default: None
     """
     logger = get_root_logger(cfg.log_level)
+    samples_per_gpu_train = cfg.data.get('samples_per_gpu', -1)
+    if samples_per_gpu_train == -1:
+        samples_per_gpu_train = cfg.data.get('samples_per_gpu_train', {})
+    else:
+        warnings.warn(
+            'samples_per_gpu is deprecated, '
+            'please use samples_per_gpu_train instead', DeprecationWarning)
+        samples_per_gpu_train = cfg.data.get('samples_per_gpu_train',
+                                             samples_per_gpu_train)
 
     # prepare data loaders
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
     dataloader_setting = dict(
-        samples_per_gpu=cfg.data.get('samples_per_gpu', {}),
+        samples_per_gpu=samples_per_gpu_train,
         workers_per_gpu=cfg.data.get('workers_per_gpu', {}),
         # cfg.gpus will be ignored if distributed
         num_gpus=len(cfg.gpu_ids),
@@ -111,9 +122,9 @@ def train_model(model,
     if validate:
         eval_cfg = cfg.get('evaluation', {})
         val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
+        samples_per_gpu_val = cfg.data.get('samples_per_gpu_test', 1)
         dataloader_setting = dict(
-            # samples_per_gpu=cfg.data.get('samples_per_gpu', {}),
-            samples_per_gpu=1,
+            samples_per_gpu=samples_per_gpu_val,
             workers_per_gpu=cfg.data.get('workers_per_gpu', {}),
             # cfg.gpus will be ignored if distributed
             num_gpus=len(cfg.gpu_ids),

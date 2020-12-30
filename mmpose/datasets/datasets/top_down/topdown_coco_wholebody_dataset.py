@@ -182,6 +182,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         objs = valid_objs
 
         rec = []
+        num_boxes = 0
         for obj in objs:
             if max(obj['keypoints']) == 0:
                 continue
@@ -205,8 +206,10 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
-                'bbox_score': 1
+                'bbox_score': 1,
+                'bbox_id': num_boxes
             })
+            num_boxes = num_boxes + 1
 
         return rec
 

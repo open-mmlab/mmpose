@@ -126,14 +126,15 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             num_keypoints: K
 
         Args:
-            outputs (list(preds, boxes, image_path))
+            outputs (list(preds, boxes, image_paths))
                 :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ '/', 'v','a', 'l',
-                    '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
-                    '0', '3', '9', '7', '1', '3', '3', '.', 'j', 'p', 'g']
+                :image_paths (list[str]): For example, ['data/coco/val2017
+                    /000000393226.jpg']
+                :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                :bbox_id (list(int))
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
@@ -153,24 +154,27 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             osp.splitext(self.annotations_path.split('_')[-1])[0])
 
         kpts = defaultdict(list)
-        for preds, boxes, image_path, _ in outputs:
-            str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
-            kpts[image_id].append({
-                'keypoints': preds[0],
-                'center': boxes[0][0:2],
-                'scale': boxes[0][2:4],
-                'area': boxes[0][4],
-                'score': boxes[0][5],
-                'image_id': image_id,
-            })
+        for preds, boxes, image_paths, _, bbox_ids in outputs:
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+                kpts[image_id].append({
+                    'keypoints': preds[i],
+                    'center': boxes[i][0:2],
+                    'scale': boxes[i][2:4],
+                    'area': boxes[i][4],
+                    'score': boxes[i][5],
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        kpts = self._sort_and_unique_bboxes(kpts)
 
         # rescoring and oks nms
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
-        valid_kpts = defaultdict(list)
+        oks_nmsed_kpts = defaultdict(list)
         for image_id in kpts.keys():
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
@@ -186,15 +190,28 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                     kpt_score = kpt_score / valid_num
                 # rescoring
                 n_p['score'] = kpt_score * box_score
+
+            nms = soft_oks_nms if self.soft_nms else oks_nms
+            keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
+
+            if len(keep) == 0:
+                oks_nmsed_kpts[image_id].append(img_kpts)
+            else:
+                oks_nmsed_kpts[image_id].append(
+                    [img_kpts[_keep] for _keep in keep])
+
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
                 keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-                valid_kpts[image_id].append(
-                    [img_kpts[_keep] for _keep in keep])
+                if len(keep) == 0:
+                    oks_nmsed_kpts[image_id].append(img_kpts)
+                else:
+                    oks_nmsed_kpts[image_id].append(
+                        [img_kpts[_keep] for _keep in keep])
             else:
-                valid_kpts[image_id].append(img_kpts)
+                oks_nmsed_kpts[image_id].append(img_kpts)
 
-        self._write_posetrack18_keypoint_results(valid_kpts, gt_folder,
+        self._write_posetrack18_keypoint_results(oks_nmsed_kpts, gt_folder,
                                                  pred_folder)
 
         info_str = self._do_python_keypoint_eval(gt_folder, pred_folder)

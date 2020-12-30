@@ -185,11 +185,8 @@ class TopDown(BasePose):
         # compute backbone features
         output = self.backbone(img)
 
-        # process head
-        all_preds, all_boxes, image_path, heatmap = self.process_head(
+        return self.process_head(
             output, img, img_metas, return_heatmap=return_heatmap)
-
-        return all_preds, all_boxes, image_path, heatmap
 
     def forward_dummy(self, img):
         """Used for computing network FLOPs.
@@ -257,8 +254,12 @@ class TopDown(BasePose):
             c,
             s,
             post_process=self.test_cfg['post_process'],
-            unbiased=self.test_cfg['unbiased_decoding'],
-            kernel=self.test_cfg['modulate_kernel'])
+            unbiased=self.test_cfg.get('unbiased_decoding', False),
+            kernel=self.test_cfg['modulate_kernel'],
+            use_udp=self.test_cfg.get('use_udp', False),
+            valid_radius_factor=self.test_cfg.get('valid_radius_factor',
+                                                  0.0546875),
+            target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
 
         all_preds = np.zeros((batch_size, output.shape[1], 3),
                              dtype=np.float32)
