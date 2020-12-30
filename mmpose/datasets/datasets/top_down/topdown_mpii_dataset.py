@@ -83,7 +83,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             anno = json.load(anno_file)
 
         gt_db = []
-        num_boxes = 0
+        bbox_id = 0
         for a in anno:
             image_name = a['image']
 
@@ -117,7 +117,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 'image_file':
                 os.path.join(self.img_prefix, image_name),
                 'bbox_id':
-                num_boxes,
+                bbox_id,
                 'center':
                 center,
                 'scale':
@@ -133,7 +133,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 'bbox_score':
                 1
             })
-            num_boxes = num_boxes + 1
+            bbox_id = bbox_id + 1
         gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db

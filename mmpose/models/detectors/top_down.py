@@ -224,8 +224,10 @@ class TopDown(BasePose):
                 output_flipped = self.keypoint_head(output_flipped)
             if isinstance(output_flipped, list):
                 output_flipped = output_flipped[-1]
-            output_flipped = flip_back(output_flipped.detach().cpu().numpy(),
-                                       flip_pairs)
+            output_flipped = flip_back(
+                output_flipped.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
 
             # feature is not aligned, shift flipped heatmap for higher accuracy
             if self.test_cfg['shift_heatmap']:

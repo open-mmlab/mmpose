@@ -188,7 +188,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 valid_objs.append(obj)
         objs = valid_objs
 
-        num_boxes = 0
+        bbox_id = 0
         rec = []
         for obj in objs:
             if 'keypoints' not in obj:
@@ -217,9 +217,9 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
                 'bbox_score': 1,
-                'bbox_id': num_boxes
+                'bbox_id': bbox_id
             })
-            num_boxes = num_boxes + 1
+            bbox_id = bbox_id + 1
 
         return rec
 
@@ -267,7 +267,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         print(f'=> Total boxes: {len(all_boxes)}')
 
         kpt_db = []
-        num_boxes = 0
+        bbox_id = 0
         for det_res in all_boxes:
             if det_res['category_id'] != 1:
                 continue
@@ -293,11 +293,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
                 'dataset': self.dataset_name,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
-                'bbox_id': num_boxes
+                'bbox_id': bbox_id
             })
-            num_boxes = num_boxes + 1
+            bbox_id = bbox_id + 1
         print(f'=> Total boxes after filter '
-              f'low score@{self.det_bbox_thr}: {num_boxes}')
+              f'low score@{self.det_bbox_thr}: {bbox_id}')
         return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):

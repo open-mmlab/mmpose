@@ -11,36 +11,55 @@ from numpy.testing import assert_almost_equal
 from mmpose.datasets import DATASETS
 
 
-def load_json_to_output(json_name, prefix=''):
+def load_json_to_output(json_name, prefix='', batch_size=2, use_bbox_id=True):
     data = json.load(open(json_name, 'r'))
     outputs = []
-
-    for image_info, anno in zip(data['images'], data['annotations']):
-        keypoints = np.array(
-            anno['keypoints'], dtype=np.float32).reshape((1, -1, 3))
-        box = np.array([0, 0, 0, 0, 0, 0], dtype=np.float32).reshape(1, -1)
-        img_path = []
-        img_path[:0] = os.path.join(prefix, image_info['file_name'])
-        output = (keypoints, box, img_path, None)
+    num_data = len(data['images'])
+    for i in range(0, num_data, batch_size):
+        keypoints = np.stack([
+            np.array(data['annotations'][j]['keypoints'],
+                     dtype=np.float32).reshape((-1, 3))
+            for j in range(i, min(i + batch_size, num_data))
+        ])
+        box = np.zeros((batch_size,6), dtype=np.float32)
+        img_path = [
+            os.path.join(prefix,data['images'][j]['file_name'])
+            for j in range(i, min(i + batch_size, num_data))
+        ]
+        bbox_ids = [j for j in range(i, min(i + batch_size, num_data))]
+        if use_bbox_id:
+            output = (keypoints, box, img_path, None, bbox_ids)
+        else:
+            output = (keypoints, box, img_path, None)
         outputs.append(output)
     return outputs
 
 
-def convert_db_to_output(db):
+def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
     outputs = []
-
-    for item in db:
-        keypoints = item['joints_3d'].reshape((1, -1, 3))
-        center = item['center']
-        scale = item['scale']
-        box = np.array([
-            center[0], center[1], scale[0], scale[1],
-            scale[0] * scale[1] * 200 * 200, 1.0
-        ],
-                       dtype=np.float32).reshape(1, -1)
-        img_path = []
-        img_path[:0] = item['image_file']
-        output = (keypoints, box, img_path, None)
+    len_db = len(db)
+    for i in range(0, len_db, batch_size):
+        keypoints = np.stack([
+            db[j]['joints_3d'].reshape((-1, 3))
+            for j in range(i, min(i + batch_size, len_db))
+        ])
+        img_path = [
+            db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
+        ]
+        bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
+        box = np.stack(
+            np.array([
+                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
+                db[j]['scale'][1], db[j]['scale'][0] * db[j]['scale'][1] *
+                200 * 200, 1.0
+            ],
+                     dtype=np.float32)
+            for j in range(i, min(i + batch_size, len_db)))
+        
+        if use_bbox_id:
+            output = (keypoints, box, img_path, None, bbox_ids)
+        else:
+            output = (keypoints, box, img_path, None)
         outputs.append(output)
 
     return outputs
@@ -523,7 +542,7 @@ def test_top_down_OneHand10K_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json',
-                                  'tests/data/onehand10k/')
+                                  'tests/data/onehand10k/', 1, False)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -580,7 +599,7 @@ def test_top_down_FreiHand_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/freihand/test_freihand.json',
-                                  'tests/data/freihand/')
+                                  'tests/data/freihand/', 1, False)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -637,7 +656,7 @@ def test_top_down_Panoptic_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/panoptic/test_panoptic.json',
-                                  'tests/data/panoptic/')
+                                  'tests/data/panoptic/', 1, False)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir,
                                         ['PCKh', 'EPE', 'AUC'])
