@@ -53,7 +53,7 @@ def test_pose_tracking_demo():
                                          next_id)
     # show the results
     vis_pose_tracking_result(
-        pose_model, image_name, pose_results, dataset='TopDownAicDataset')
+        pose_model, image_name, pose_results, dataset='OneHand10KDataset')
 
     # InterHand2D demo
     pose_model = init_pose_model(
