@@ -51,6 +51,9 @@ def test_pose_tracking_demo():
         dataset='OneHand10KDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,
                                          next_id)
+    # show the results
+    vis_pose_tracking_result(
+        pose_model, image_name, pose_results, dataset='TopDownAicDataset')
 
     # InterHand2D demo
     pose_model = init_pose_model(
@@ -62,8 +65,6 @@ def test_pose_tracking_demo():
     pose_results, _ = inference_top_down_pose_model(
         pose_model, image_name, [[50, 50, 50, 100]], format='xywh')
     pose_results, next_id = get_track_id(pose_results, [], next_id=0)
-    # show the results
-    vis_pose_tracking_result(pose_model, image_name, pose_results)
     # show the results
     vis_pose_tracking_result(
         pose_model, image_name, pose_results, dataset='InterHand2DDataset')
