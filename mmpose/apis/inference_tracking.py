@@ -1,28 +1,34 @@
+import warnings
+
 import numpy as np
 
 
-def _compute_iou(boxA, boxB):
+def _compute_iou(bboxA, bboxB):
     """Compute the Intersection over Union (IoU) between two boxes .
 
     Args:
-        boxA (list): The first box info (left, top, right, bottom, score).
-        boxB (list): The second box info (left, top, right, bottom, score).
+        bboxA (list): The first bbox info (left, top, right, bottom, score).
+        bboxB (list): The second bbox info (left, top, right, bottom, score).
 
     Returns:
         float: The IoU value.
     """
 
-    xA = max(boxA[0], boxB[0])
-    yA = max(boxA[1], boxB[1])
-    xB = min(boxA[2], boxB[2])
-    yB = min(boxA[3], boxB[3])
+    x1 = max(bboxA[0], bboxB[0])
+    y1 = max(bboxA[1], bboxB[1])
+    x2 = min(bboxA[2], bboxB[2])
+    y2 = min(bboxA[3], bboxB[3])
 
-    inter_area = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+    inter_area = max(0, x2 - x1) * max(0, y2 - y1)
 
-    boxA_area = (boxA[2] - boxA[0] + 1) * (boxA[3] - boxA[1] + 1)
-    boxB_area = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
+    boxA_area = (bboxA[2] - bboxA[0]) * (bboxA[3] - bboxA[1])
+    boxB_area = (bboxB[2] - bboxB[0]) * (bboxB[3] - bboxB[1])
+    union_area = float(boxA_area + boxB_area - inter_area)
+    if union_area == 0:
+        union_area = 1e-5
+        warnings.warn('union_area=0 is unexpected')
 
-    iou = inter_area / float(boxA_area + boxB_area - inter_area)
+    iou = inter_area / union_area
 
     return iou
 
