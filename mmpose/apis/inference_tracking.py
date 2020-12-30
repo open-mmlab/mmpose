@@ -21,9 +21,9 @@ def _compute_iou(bboxA, bboxB):
 
     inter_area = max(0, x2 - x1) * max(0, y2 - y1)
 
-    boxA_area = (bboxA[2] - bboxA[0]) * (bboxA[3] - bboxA[1])
-    boxB_area = (bboxB[2] - bboxB[0]) * (bboxB[3] - bboxB[1])
-    union_area = float(boxA_area + boxB_area - inter_area)
+    bboxA_area = (bboxA[2] - bboxA[0]) * (bboxA[3] - bboxA[1])
+    bboxB_area = (bboxB[2] - bboxB[0]) * (bboxB[3] - bboxB[1])
+    union_area = float(bboxA_area + bboxB_area - inter_area)
     if union_area == 0:
         union_area = 1e-5
         warnings.warn('union_area=0 is unexpected')
