@@ -75,7 +75,9 @@ def test_pose_tracking_demo():
 
     # MPII demo
     pose_model = init_pose_model(
-        'configs/top_down/resnet/mpii/res50_mpii_256x192.py', None, device='cpu')
+        'configs/top_down/resnet/mpii/res50_mpii_256x192.py',
+        None,
+        device='cpu')
     image_name = 'tests/data/mpii/004645041.jpg'
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
