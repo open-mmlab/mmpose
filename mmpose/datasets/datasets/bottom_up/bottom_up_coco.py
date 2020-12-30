@@ -213,9 +213,9 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         Args:
             outputs (list(preds, scores, image_path, heatmap)):
 
-                * preds (list[images x np.ndarray(P, K, 3+tag_num)]):
+                * preds (list[np.ndarray(P, K, 3+tag_num)]):
                   Pose predictions for all people in images.
-                * scores (list[images x P]):
+                * scores (list[P]):
                 * image_path (list[str]): For example, [ 'c','o','c','o',
                   '/',i','m','a','g','e','s','/', 'v','a', 'l',
                   '2', '0', '1', '7', '/', '0', '0', '0', '0', '0',
@@ -319,33 +319,37 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                 h = right_bottom[1] - left_top[1]
 
                 cat_results.append({
-                    'image_id':
-                    img_kpt['image_id'],
-                    'category_id':
-                    cat_id,
-                    'keypoints':
-                    list(key_point),
-                    'score':
-                    img_kpt['score'],
-                    'bbox':
-                    list([left_top[0], left_top[1], w, h])
+                    'image_id': img_kpt['image_id'],
+                    'category_id': cat_id,
+                    'keypoints': key_point.tolist(),
+                    'score': img_kpt['score'],
+                    'bbox': [left_top[0], left_top[1], w, h]
                 })
 
         return cat_results
 
     def _do_python_keypoint_eval(self, res_file):
         """Keypoint evaluation using COCOAPI."""
+
+        stats_names = [
+            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+            'AR .75', 'AR (M)', 'AR (L)'
+        ]
+
+        with open(res_file, 'r') as file:
+            res_json = json.load(file)
+            if not res_json:
+                info_str = list(zip(stats_names, [
+                    0,
+                ] * len(stats_names)))
+                return info_str
+
         coco_det = self.coco.loadRes(res_file)
         coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
-
-        stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
-            'AR .75', 'AR (M)', 'AR (L)'
-        ]
 
         info_str = list(zip(stats_names, coco_eval.stats))
 

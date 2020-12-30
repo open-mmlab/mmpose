@@ -125,7 +125,7 @@ train_pipeline = [
         ]),
 ]
 
-valid_pipeline = [
+val_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -142,7 +142,7 @@ valid_pipeline = [
         ]),
 ]
 
-test_pipeline = valid_pipeline
+test_pipeline = val_pipeline
 
 data_root = 'data/aic'
 data = dict(
@@ -161,12 +161,12 @@ data = dict(
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
     test=dict(
         type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=valid_pipeline),
+        pipeline=val_pipeline),
 )

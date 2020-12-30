@@ -305,8 +305,9 @@ class TopDownGenerateTarget:
                 y = y[:, None]
 
                 if target_weight[joint_id] > 0.5:
-                    target[joint_id] = np.exp(
-                        -((x - mu_x)**2 + (y - mu_y)**2) / (2 * sigma**2))
+                    target[joint_id] = np.exp(-((x - mu_x)**2 +
+                                                (y - mu_y)**2) /
+                                              (2 * sigma**2))
         else:
             for joint_id in range(num_joints):
                 target_weight[joint_id] = joints_3d_visible[joint_id, 0]

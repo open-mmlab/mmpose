@@ -227,10 +227,10 @@ class HeatmapGenerator:
                     else:
                         g = self.g
 
-                    ul = int(np.round(x - 3 * sigma - 1)), int(
-                        np.round(y - 3 * sigma - 1))
-                    br = int(np.round(x + 3 * sigma + 2)), int(
-                        np.round(y + 3 * sigma + 2))
+                    ul = int(np.round(x - 3 * sigma -
+                                      1)), int(np.round(y - 3 * sigma - 1))
+                    br = int(np.round(x + 3 * sigma +
+                                      2)), int(np.round(y + 3 * sigma + 2))
 
                     c, d = max(0, -ul[0]), min(br[0], self.output_res) - ul[0]
                     a, b = max(0, -ul[1]), min(br[1], self.output_res) - ul[1]
@@ -450,8 +450,10 @@ class BottomUpRandomAffine:
                 flags=cv2.INTER_LINEAR)
         else:
             for i, _output_size in enumerate(self.output_size):
-                mat_output = self._get_affine_matrix(
-                    center, scale, (_output_size, _output_size), aug_rot)[:2]
+                mat_output = self._get_affine_matrix(center, scale,
+                                                     (_output_size,
+                                                      _output_size),
+                                                     aug_rot)[:2]
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8), mat_output,
                     (_output_size, _output_size)) / 255
@@ -461,8 +463,9 @@ class BottomUpRandomAffine:
                     warp_affine_joints(joints[i][:, :, 0:2], mat_output)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-            mat_input = self._get_affine_matrix(
-                center, scale, (self.input_size, self.input_size), aug_rot)[:2]
+            mat_input = self._get_affine_matrix(center, scale,
+                                                (self.input_size,
+                                                 self.input_size), aug_rot)[:2]
             image = cv2.warpAffine(image, mat_input,
                                    (self.input_size, self.input_size))
 

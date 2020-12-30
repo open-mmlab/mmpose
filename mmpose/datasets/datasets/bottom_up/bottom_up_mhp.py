@@ -8,28 +8,36 @@ from .bottom_up_coco import BottomUpCocoDataset
 
 
 @DATASETS.register_module()
-class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
-    """CrowdPose dataset for bottom-up pose estimation.
+class BottomUpMhpDataset(BottomUpCocoDataset):
+    """MHPv2.0 dataset for top-down pose estimation.
+
+    `The Multi-Human Parsing project of Learning and Vision (LV) Group,
+    National University of Singapore (NUS) is proposed to push the frontiers
+    of fine-grained visual understanding of humans in crowd scene.
+    <https://lv-mhp.github.io/>`
+
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    CrowdPose keypoint indexes::
+    MHP keypoint indexes::
 
-        0: 'left_shoulder',
-        1: 'right_shoulder',
-        2: 'left_elbow',
-        3: 'right_elbow',
-        4: 'left_wrist',
-        5: 'right_wrist',
-        6: 'left_hip',
-        7: 'right_hip',
-        8: 'left_knee',
-        9: 'right_knee',
-        10: 'left_ankle',
-        11: 'right_ankle',
-        12: 'top_head',
-        13: 'neck'
+        0: "right ankle",
+        1: "right knee",
+        2: "right hip",
+        3: "left hip",
+        4: "left knee",
+        5: "left ankle",
+        6: "pelvis",
+        7: "thorax",
+        8: "upper neck",
+        9: "head top",
+        10: "right wrist",
+        11: "right elbow",
+        12: "right shoulder",
+        13: "left shoulder",
+        14: "left elbow",
+        15: "left wrist",
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -51,20 +59,20 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.ann_info['flip_index'] = [
-            1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 12, 13
+            5, 4, 3, 2, 1, 0, 6, 7, 8, 9, 15, 14, 13, 12, 11, 10
         ]
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [
-                0.2, 0.2, 0.2, 1.3, 1.5, 0.2, 1.3, 1.5, 0.2, 0.2, 0.5, 0.2,
-                0.2, 0.5
+                1.5, 1.2, 1., 1., 1.2, 1.5, 1., 1., 1., 1., 1.5, 1.2, 1., 1.,
+                1.2, 1.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
         self.sigmas = np.array([
-            .79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79,
-            .79
+            .89, .83, 1.07, 1.07, .83, .89, .26, .26, .26, .26, .62, .72, 1.79,
+            1.79, .72, .62
         ]) / 10.0
 
         self.coco = COCO(ann_file)
@@ -87,7 +95,7 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
             ]
         self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'crowdpose'
+        self.dataset_name = 'mhp'
 
         print(f'=> num_images: {self.num_images}')
 
@@ -95,8 +103,8 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
         """Keypoint evaluation using COCOAPI."""
 
         stats_names = [
-            'AP', 'AP .5', 'AP .75', 'AR', 'AR .5', 'AR .75', 'AP(E)', 'AP(M)',
-            'AP(H)'
+            'AP', 'AP .5', 'AP .75', 'AP (M)', 'AP (L)', 'AR', 'AR .5',
+            'AR .75', 'AR (M)', 'AR (L)'
         ]
 
         with open(res_file, 'r') as file:
@@ -108,12 +116,9 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
                 return info_str
 
         coco_det = self.coco.loadRes(res_file)
+
         coco_eval = COCOeval(
-            self.coco,
-            coco_det,
-            'keypoints_crowd',
-            self.sigmas,
-            use_area=False)
+            self.coco, coco_det, 'keypoints', self.sigmas, use_area=False)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
         coco_eval.accumulate()

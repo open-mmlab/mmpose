@@ -91,8 +91,9 @@ def pytorch2onnx(model,
         net_feed_input = list(set(input_all) - set(input_initializer))
         assert len(net_feed_input) == 1
         sess = rt.InferenceSession(output_file)
-        onnx_result = sess.run(
-            None, {net_feed_input[0]: one_img.detach().numpy()})[0]
+        onnx_result = sess.run(None,
+                               {net_feed_input[0]: one_img.detach().numpy()
+                                })[0]
         # only compare part of results
         assert np.allclose(
             pytorch_result, onnx_result,

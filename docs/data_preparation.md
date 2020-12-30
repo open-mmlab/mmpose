@@ -12,6 +12,8 @@ MMPose supported datasets:
 - [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
 - [OCHuman](https://github.com/liruilong940607/OCHumanApi)
 - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+- [PoseTrack18](https://posetrack.net/users/download.php)
+- [MHP](https://lv-mhp.github.io/dataset)
 - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
 - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 - [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
@@ -220,6 +222,44 @@ mmpose
             │-- 100001.jpg
             │-- 100002.jpg
             │-- ...
+```
+
+## MHP
+
+For MHP data, please download from [MHP](https://lv-mhp.github.io/dataset).
+Please download the annotation files from [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz).
+Please download and extract them under $MMPOSE/data, and make them look like this:
+
+```
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mhp
+        │-- annotations
+        │   │-- mhp_train.json
+        │   │-- mhp_val.json
+        │
+        `-- train
+        │   │-- images
+        │   │   │-- 1004.jpg
+        │   │   │-- 10050.jpg
+        │   │   │-- ...
+        │
+        `-- val
+        │   │-- images
+        │   │   │-- 10059.jpg
+        │   │   │-- 10068.jpg
+        │   │   │-- ...
+        │
+        `-- test
+        │   │-- images
+        │   │   │-- 1005.jpg
+        │   │   │-- 10052.jpg
+        │   │   │-- ...~~~~
 ```
 
 ## PoseTrack18
