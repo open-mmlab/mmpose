@@ -35,8 +35,10 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
-    parser.add_argument('--return_heatmap', action='store_true',
-                        help='whether to store heatmap')
+    parser.add_argument(
+        '--return_heatmap',
+        action='store_true',
+        help='whether to store heatmap')
 
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
