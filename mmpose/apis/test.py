@@ -9,7 +9,7 @@ import torch.distributed as dist
 from mmcv.runner import get_dist_info
 
 
-def single_gpu_test(model, data_loader):
+def single_gpu_test(model, data_loader, return_heatmap=False):
     """Test model with a single gpu.
 
     This method tests model with a single gpu and displays test progress bar.
@@ -29,7 +29,8 @@ def single_gpu_test(model, data_loader):
     prog_bar = mmcv.ProgressBar(len(dataset))
     for data in data_loader:
         with torch.no_grad():
-            result = model(return_loss=False, **data)
+            result = model(return_loss=False, return_heatmap=return_heatmap,
+                           **data)
         results.append(result)
 
         # use the first key as main key to calculate the batch size
@@ -39,7 +40,8 @@ def single_gpu_test(model, data_loader):
     return results
 
 
-def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
+def multi_gpu_test(model, data_loader, return_heatmap=False, tmpdir=None,
+                   gpu_collect=False):
     """Test model with multiple gpus.
 
     This method tests model with multiple gpus and collects the results
@@ -66,7 +68,8 @@ def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
         prog_bar = mmcv.ProgressBar(len(dataset))
     for data in data_loader:
         with torch.no_grad():
-            result = model(return_loss=False, **data)
+            result = model(return_loss=False, return_heatmap=return_heatmap,
+                           **data)
         results.append(result)
 
         if rank == 0:
