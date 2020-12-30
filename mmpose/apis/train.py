@@ -122,7 +122,7 @@ def train_model(model,
     if validate:
         eval_cfg = cfg.get('evaluation', {})
         val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
-        samples_per_gpu_val = cfg.data.get('samples_per_gpu_test', 1)
+        samples_per_gpu_val = cfg.data.get('samples_per_gpu_val', 1)
         dataloader_setting = dict(
             samples_per_gpu=samples_per_gpu_val,
             workers_per_gpu=cfg.data.get('workers_per_gpu', {}),

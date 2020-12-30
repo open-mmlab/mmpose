@@ -120,7 +120,6 @@ test_pipeline = val_pipeline
 data_root = 'data/posetrack18'
 data = dict(
     samples_per_gpu=64,
-    samples_per_gpu_test=32,
     workers_per_gpu=2,
     train=dict(
         type='TopDownPoseTrack18Dataset',
