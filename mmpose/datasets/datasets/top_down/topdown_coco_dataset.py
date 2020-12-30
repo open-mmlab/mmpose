@@ -1,4 +1,5 @@
 import os
+import os.path as osp
 import warnings
 from collections import OrderedDict, defaultdict
 
@@ -164,6 +165,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
     def _get_simple_inference(self, ann_file):
         db = mmcv.load(ann_file)
         for obj in db:
+            obj['image_file'] = osp.join(self.img_prefix, obj['image_file'])
             obj['center'], obj['scale'] = self._xywh2cs(*obj['bbox'])
             obj['rotation'] = 0
             obj['bbox_score'] = 1
