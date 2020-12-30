@@ -136,3 +136,13 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
         results = copy.deepcopy(self.db[idx])
         results['ann_info'] = self.ann_info
         return self.pipeline(results)
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        kpts = sorted(kpts, key=lambda x: x[key])
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i][key] == kpts[i - 1][key]:
+                del kpts[i]
+
+        return kpts

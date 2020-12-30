@@ -21,7 +21,7 @@ class FaceAFLWDataset(FaceBaseDataset):
     The dataset loads raw images and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    The landmark annotations follow the 68 points mark-up.
+    The landmark annotations follow the 19 points mark-up.
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -60,13 +60,13 @@ class FaceAFLWDataset(FaceBaseDataset):
     def _get_db(self):
         """Load dataset."""
         gt_db = []
+        bbox_id = 0
+        num_joints = self.ann_info['num_joints']
         for img_id in self.img_ids:
-            num_joints = self.ann_info['num_joints']
 
             ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
             objs = self.coco.loadAnns(ann_ids)
 
-            rec = []
             for obj in objs:
                 if self.test_mode:
                     # 'box_size' is used as normalization factor
@@ -89,7 +89,7 @@ class FaceAFLWDataset(FaceBaseDataset):
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
 
-                rec.append({
+                gt_db.append({
                     'image_file': image_file,
                     'center': center,
                     'scale': scale,
@@ -99,9 +99,12 @@ class FaceAFLWDataset(FaceBaseDataset):
                     'dataset': self.dataset_name,
                     'bbox': obj['bbox'],
                     'box_size': obj['box_size'],
-                    'bbox_score': 1
+                    'bbox_score': 1,
+                    'bbox_id': bbox_id
                 })
-            gt_db.extend(rec)
+                bbox_id = bbox_id + 1
+        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
+
         return gt_db
 
     def _get_normalize_factor(self, box_sizes):
@@ -147,7 +150,7 @@ class FaceAFLWDataset(FaceBaseDataset):
         outputs = np.array(outputs)
         gts = np.array(gts)
         masks = np.array(masks)
-        box_sizes = np.array(box_sizes)
+        box_sizes = np.array(box_sizes).reshape([-1, 1])
 
         if 'NME' in metrics:
             normalize_factor = self._get_normalize_factor(box_sizes)
@@ -193,19 +196,26 @@ class FaceAFLWDataset(FaceBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
 
-        for preds, boxes, image_path, _ in outputs:
-            str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
 
-            kpts.append({
-                'keypoints': preds[0].tolist(),
-                'center': boxes[0][0:2].tolist(),
-                'scale': boxes[0][2:4].tolist(),
-                'area': float(boxes[0][4]),
-                'score': float(boxes[0][5]),
-                'image_id': image_id,
-            })
+                kpts.append({
+                    'keypoints': preds[i].tolist(),
+                    'center': boxes[i][0:2].tolist(),
+                    'scale': boxes[i][2:4].tolist(),
+                    'area': float(boxes[i][4]),
+                    'score': float(boxes[i][5]),
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        kpts = self._sort_and_unique_bboxes(kpts)
 
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
