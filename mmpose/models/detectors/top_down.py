@@ -115,7 +115,7 @@ class TopDown(BasePose):
         losses = dict()
         if self.with_keypoint:
             keypoint_losses = self.keypoint_head.get_loss(
-                output, target, target_weight, self.train_cfg)
+                output, target, target_weight)
             losses.update(keypoint_losses)
 
         if self.target_type == 'GaussianHeatMap':

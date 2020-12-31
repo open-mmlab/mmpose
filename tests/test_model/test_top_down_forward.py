@@ -94,9 +94,13 @@ def test_topdown_forward():
             num_stages=1,
             num_deconv_layers=0,
             extra=dict(final_conv_kernel=1, ),
-            loss_keypoint=[dict(type='JointsMSELoss',
-                                use_target_weight=True)]),
-        train_cfg=dict(loss_weights=([1])),
+            loss_keypoint=[
+                dict(
+                    type='JointsMSELoss',
+                    use_target_weight=True,
+                    loss_weight=1.)
+            ]),
+        train_cfg=dict(),
         test_cfg=dict(
             flip_test=True,
             post_process='default',
@@ -110,7 +114,7 @@ def test_topdown_forward():
     detector.init_weights()
 
     input_shape = (1, 3, 256, 256)
-    mm_inputs = _demo_mm_inputs(input_shape, num_outputs=1)
+    mm_inputs = _demo_mm_inputs(input_shape, num_outputs=None)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')

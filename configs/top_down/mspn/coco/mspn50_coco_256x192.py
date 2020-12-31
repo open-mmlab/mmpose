@@ -55,9 +55,16 @@ model = dict(
         num_units=4,
         use_prm=False,
         norm_cfg=dict(type='BN'),
-        loss_keypoint=[dict(type='JointsMSELoss', use_target_weight=True)] * 3
-        + [dict(type='JointsOHKMMSELoss', use_target_weight=True)]),
-    train_cfg=dict(loss_weights=[0.25] * 3 + [1]),
+        loss_keypoint=[
+            dict(
+                type='JointsMSELoss', use_target_weight=True, loss_weight=0.25)
+        ] * 3 + [
+            dict(
+                type='JointsOHKMMSELoss',
+                use_target_weight=True,
+                loss_weight=1.)
+        ]),
+    train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
         post_process='megvii',

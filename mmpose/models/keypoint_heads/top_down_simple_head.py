@@ -81,7 +81,7 @@ class TopDownSimpleHead(nn.Module):
                 stride=1,
                 padding=padding)
 
-    def get_loss(self, output, target, target_weight, train_cfg):
+    def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
 
         Note:
@@ -98,46 +98,15 @@ class TopDownSimpleHead(nn.Module):
                 Target heatmaps.
             target_weight (torch.Tensor[NxKx1] | torch.Tensor[NxOxKx1]):
                 Weights across different joint types.
-            train_cfg (dict): Config for training. Default: None.
         """
 
         losses = dict()
 
-        if isinstance(output, list):
-            if target.dim() == 5 and target_weight.dim() == 4:
-                # target: [N, O, K, H, W]
-                # target_weight: [N, O, K, 1]
-                assert target.size(1) == len(output)
-            if isinstance(self.loss, nn.Sequential):
-                assert len(self.loss) == len(output)
-            if 'loss_weights' in train_cfg and train_cfg[
-                    'loss_weights'] is not None:
-                assert len(train_cfg['loss_weights']) == len(output)
-            for i in range(len(output)):
-                if target.dim() == 5 and target_weight.dim() == 4:
-                    target_i = target[:, i, :, :, :]
-                    target_weight_i = target_weight[:, i, :, :]
-                else:
-                    target_i = target
-                    target_weight_i = target_weight
-                if isinstance(self.loss, nn.Sequential):
-                    loss_func = self.loss[i]
-                else:
-                    loss_func = self.loss
-
-                loss_i = loss_func(output[i], target_i, target_weight_i)
-                if 'loss_weights' in train_cfg and train_cfg['loss_weights']:
-                    loss_i = loss_i * train_cfg['loss_weights'][i]
-                if 'mse_loss' not in losses:
-                    losses['mse_loss'] = loss_i
-                else:
-                    losses['mse_loss'] += loss_i
-        else:
-            assert not isinstance(self.loss, nn.Sequential)
-            assert target.dim() == 4 and target_weight.dim() == 3
-            # target: [N, K, H, W]
-            # target_weight: [N, K, 1]
-            losses['mse_loss'] = self.loss(output, target, target_weight)
+        assert not isinstance(self.loss, nn.Sequential)
+        assert target.dim() == 4 and target_weight.dim() == 3
+        # target: [N, K, H, W]
+        # target_weight: [N, K, 1]
+        losses['mse_loss'] = self.loss(output, target, target_weight)
 
         return losses
 
