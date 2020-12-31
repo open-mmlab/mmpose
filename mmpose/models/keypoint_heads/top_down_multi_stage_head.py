@@ -107,11 +107,11 @@ class TopDownMultiStageHead(nn.Module):
             heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
+            output (torch.Tensor[NxKxHxW]):
                 Output heatmaps.
-            target (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
+            target (torch.Tensor[NxKxHxW]):
                 Target heatmaps.
-            target_weight (torch.Tensor[NxKx1] | torch.Tensor[NxOxKx1]):
+            target_weight (torch.Tensor[NxKx1]):
                 Weights across different joint types.
         """
 
@@ -119,8 +119,6 @@ class TopDownMultiStageHead(nn.Module):
 
         assert isinstance(output, list)
         assert target.dim() == 4 and target_weight.dim() == 3
-        # target: [N, K, H, W]
-        # target_weight: [N, K, 1]
 
         if isinstance(self.loss, nn.Sequential):
             assert len(self.loss) == len(output)
@@ -400,11 +398,9 @@ class TopDownMSMUHead(nn.Module):
             heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
-                Output heatmaps.
-            target (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
-                Target heatmaps.
-            target_weight (torch.Tensor[NxKx1] | torch.Tensor[NxOxKx1]):
+            output (torch.Tensor[NxOxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxOxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxOxKx1]):
                 Weights across different joint types.
         """
 
@@ -412,8 +408,6 @@ class TopDownMSMUHead(nn.Module):
 
         assert isinstance(output, list)
         assert target.dim() == 5 and target_weight.dim() == 4
-        # target: [N, O, K, H, W]
-        # target_weight: [N, O, K, 1]
         assert target.size(1) == len(output)
 
         if isinstance(self.loss, nn.Sequential):

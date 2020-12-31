@@ -92,11 +92,9 @@ class TopDownSimpleHead(nn.Module):
             heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
-                Output heatmaps.
-            target (torch.Tensor[NxKxHxW] | torch.Tensor[NxOxKxHxW]):
-                Target heatmaps.
-            target_weight (torch.Tensor[NxKx1] | torch.Tensor[NxOxKx1]):
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
                 Weights across different joint types.
         """
 
@@ -104,8 +102,6 @@ class TopDownSimpleHead(nn.Module):
 
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 4 and target_weight.dim() == 3
-        # target: [N, K, H, W]
-        # target_weight: [N, K, 1]
         losses['mse_loss'] = self.loss(output, target, target_weight)
 
         return losses
