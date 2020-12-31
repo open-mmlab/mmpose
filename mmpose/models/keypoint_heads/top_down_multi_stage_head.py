@@ -118,7 +118,7 @@ class TopDownMultiStageHead(nn.Module):
         losses = dict()
 
         assert isinstance(output, list)
-        assert target.dim() == 5 and target_weight.dim() == 4
+        assert target.dim() == 4 and target_weight.dim() == 3
         # target: [N, K, H, W]
         # target_weight: [N, K, 1]
 
