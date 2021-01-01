@@ -16,7 +16,7 @@ For [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) data,
 Please download the annotation files from [onehand10k_annotations](https://download.openmmlab.com/mmpose/datasets/onehand10k_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -47,7 +47,7 @@ Since the official dataset does not provide validation set, we randomly split th
 Please download the annotation files from [freihand_annotations](https://download.openmmlab.com/mmpose/datasets/frei_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -78,7 +78,7 @@ Following [Simon et al](https://arxiv.org/abs/1704.07809), panoptic images (hand
 Please download the annotation files from [panoptic_annotations](https://download.openmmlab.com/mmpose/datasets/panoptic_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -115,7 +115,7 @@ For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download f
 Please download the annotation files from [annotations](https://github.com/facebookresearch/InterHand2.6M/releases/download/v0.0/InterHand2.6M.annotations.5.fps.zip).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs

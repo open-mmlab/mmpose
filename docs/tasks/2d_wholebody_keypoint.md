@@ -14,7 +14,7 @@ Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](h
 Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
