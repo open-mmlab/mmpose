@@ -7,4 +7,4 @@ or the rough location (or the bounding box) of the hand is provided.
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_hand_keypoint/data_preparation.md) to prepare data.
+Please follow [DATA Preparation](/docs/tasks/2d_hand_keypoint.md) to prepare data.

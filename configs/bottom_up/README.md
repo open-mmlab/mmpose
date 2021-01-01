@@ -5,4 +5,4 @@ Bottom-up approaches first detect all the keypoints and then group/associate the
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_body_keypoint/data_preparation.md) to prepare data.
+Please follow [DATA Preparation](/docs/tasks/2d_body_keypointmd) to prepare data.

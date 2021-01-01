@@ -6,4 +6,4 @@ They perform human detection first, followed by single-person pose estimation gi
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_body_keypoint/data_preparation.md) to prepare data.
+Please follow [DATA Preparation](/docs/tasks/2d_body_keypoint.md) to prepare data.
