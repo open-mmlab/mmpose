@@ -3,10 +3,11 @@ import os
 import time
 
 import cv2
-from hdf5storage import loadmat
+import h5py
+import numpy as np
 
 mat_files = ['COFW_train_color.mat', 'COFW_test_color.mat']
-dataset_dir = 'data/cofw/'
+dataset_dir = '/Users/apple/Desktop/cofw/'
 
 image_root = os.path.join(dataset_dir, 'images/')
 annotation_root = os.path.join(dataset_dir, 'annotations/')
@@ -16,7 +17,7 @@ os.makedirs(annotation_root, exist_ok=True)
 
 cnt = 0
 for mat_file in mat_files:
-    mat = loadmat(os.path.join(dataset_dir, mat_file))
+    mat = h5py.File(os.path.join(dataset_dir, mat_file), 'r')
 
     if 'train' in mat_file:
         imgs = mat['IsTr']
@@ -34,16 +35,16 @@ for mat_file in mat_files:
     images = []
     annotations = []
 
-    num = len(pts)
+    num = pts.shape[1]
     for idx in range(0, num):
         cnt += 1
-        img = imgs[idx, 0]
-        keypoints = pts[idx].reshape(3, -1).transpose()
+        img = np.array(mat[imgs[0, idx]]).transpose()
+        keypoints = pts[:, idx].reshape(3, -1).transpose()
         # 2 for valid and 1 for occlusion
         keypoints[:, 2] = 2 - keypoints[:, 2]
         # matlab 1-index to python 0-index
         keypoints[:, :2] -= 1
-        bbox = bboxes[idx]
+        bbox = bboxes[:, idx]
 
         # check nonnegativity
         bbox[bbox < 0] = 0
