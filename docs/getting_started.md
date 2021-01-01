@@ -21,21 +21,12 @@ For installation instructions, please see [install.md](install.md).
 
 ## Prepare Datasets
 
-MMPose supported datasets:
+MMPose supports multiple tasks. Please follow the corresponding guidelines for data preparation.
 
-- [COCO](http://cocodataset.org/)
-- [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
-- [MPII](http://human-pose.mpi-inf.mpg.de/)
-- [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-- [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017)
-- [OCHuman](https://github.com/liruilong940607/OCHumanApi)
-- [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
-- [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
-- [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
-- [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
-- [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
-
-Please follow [DATA Preparation](data_preparation.md) to prepare the data.
+- [2D Body Keypoint](/tasks/2d_body_keypoint/data_preparation.md)
+- [2D Hand Keypoint](/tasks/2d_hand_keypoint/data_preparation.md)
+- [2D WholeBody Keypoint](/tasks/2d_wholebody_keypoint/data_preparation.md)
+- [3D Human Mesh Recovery](/tasks/3d_body_mesh/data_preparation.md)
 
 ## Inference with Pre-trained Models
 
