@@ -174,7 +174,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         num_joints = self.ann_info['num_joints']
         vis_thr = self.vis_thr
         oks_thr = self.oks_thr
-        oks_nmsed_kpts = defaultdict(list)
+        valid_kpts = defaultdict(list)
         for image_id in kpts.keys():
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
@@ -191,21 +191,15 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                 # rescoring
                 n_p['score'] = kpt_score * box_score
 
-            nms = soft_oks_nms if self.soft_nms else oks_nms
-            keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
                 keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
-                if len(keep) == 0:
-                    oks_nmsed_kpts[image_id].append(img_kpts)
-                else:
-                    oks_nmsed_kpts[image_id].append(
-                        [img_kpts[_keep] for _keep in keep])
+                valid_kpts[image_id].append(
+                    [img_kpts[_keep] for _keep in keep])
             else:
-                oks_nmsed_kpts[image_id].append(img_kpts)
+                valid_kpts[image_id].append(img_kpts)
 
-        self._write_posetrack18_keypoint_results(oks_nmsed_kpts, gt_folder,
+        self._write_posetrack18_keypoint_results(valid_kpts, gt_folder,
                                                  pred_folder)
 
         info_str = self._do_python_keypoint_eval(gt_folder, pred_folder)

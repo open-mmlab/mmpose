@@ -187,7 +187,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
                 'bbox_score': 1,
-                'bbox_id': str(img_id) + str(bbox_id)
+                'bbox_id': f'{img_id}_{bbox_id:03}'
             })
             bbox_id = bbox_id + 1
 
