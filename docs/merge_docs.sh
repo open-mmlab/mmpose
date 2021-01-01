@@ -6,8 +6,6 @@ sed -i '$a\\n' ../demo/*_demo.md
 sed -i '$a\\n' ../configs/hand/*/*.md
 sed -i '$a\\n' ../configs/mesh/*/*.md
 
-cp ../configs/mesh/README.md mesh_task.md
-
 cat ../configs/bottom_up/*/*.md >bottom_up_models.md
 cat ../configs/top_down/*/*.md >top_down_models.md
 cat ../demo/*_demo.md >demo.md
@@ -37,7 +35,7 @@ sed -i 's/](\/docs\//](/g' hand_models.md
 sed -i 's/](\/docs\//](/g' mesh_models.md
 sed -i 's/](\/docs\//](/g' ./tutorials/*.md
 sed -i 's/](\/docs\//](/g' data_preparation.md
-sed -i 's/](\/docs\//](/g' ./tasks/*/*.md
+sed -i 's/](\/docs\//](/g' ./tasks/*.md
 
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' bottom_up_models.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' top_down_models.md
@@ -49,8 +47,7 @@ sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' benchmark.m
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' config.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' demo.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' mesh_task.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' faq.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tutorials/*.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' data_preparation.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tasks/*/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tasks/*.md

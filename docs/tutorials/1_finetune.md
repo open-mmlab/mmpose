@@ -5,7 +5,7 @@ This tutorial provides instruction for users to use the models provided in the [
 
 There are two steps to finetune a model on a new dataset.
 
-- Add support for the new dataset following [Tutorial 2: Adding New Dataset](new_dataset.md).
+- Add support for the new dataset following [Tutorial 2: Adding New Dataset](tutorials/../2_new_dataset.md).
 - Modify the configs as will be discussed in this tutorial.
 
 To finetune on the custom datasets, the users need to modify four parts in the config.

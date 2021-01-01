@@ -1,4 +1,4 @@
-# Prepare datasets for 2d wholebody keypoint localization
+# 2D Wholebody Keypoint Datasets
 
 It is recommended to symlink the dataset root to `$MMPOSE/data`.
 If your folder structure is different, you may need to change the corresponding paths in config files.
@@ -14,7 +14,7 @@ Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](h
 Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```
+```bash
 mmpose
 ├── mmpose
 ├── docs

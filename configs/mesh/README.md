@@ -19,7 +19,7 @@ Please download the pretrained HMR model from
 [here](https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth),
 and make it looks like this:
 
-```
+```bash
 mmpose
 `-- models
     `-- pytorch
@@ -51,7 +51,7 @@ In order to train the model, please download the
 of the sampled train images of Human3.6M dataset.
 Extract the images and make them look like this：
 
-```
+```bash
 mmpose
 ├── mmpose
 ├── docs
@@ -98,7 +98,7 @@ Please also download the preprocessed annotation file for Human3.6M train set fr
 [here](https://drive.google.com/file/d/1NveJQGS4IYaASaJbLHT_zOGqm6Lo_gh5/view?usp=sharing)
 under `$MMPOSE/data/mesh_annotation_files`, and make it like this:
 
-```
+```bash
 mmpose
 ├── mmpose
 ├── docs
