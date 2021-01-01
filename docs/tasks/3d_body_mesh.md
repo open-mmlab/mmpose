@@ -28,7 +28,7 @@ The following items should be prepared for human mesh training:
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download). COCO'2014 Train is needed for human mesh estimation training.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -56,7 +56,7 @@ of SPIN to extract test images from
 [Human3.6M](http://vision.imar.ro/human3.6m/description.php) original videos,
 and make it look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -84,7 +84,7 @@ For [MPI-INF-3DHP](http://gvv.mpi-inf.mpg.de/3dhp-dataset/), please follow the
 [preprocess procedure](https://github.com/nkolot/SPIN/tree/master/datasets/preprocess)
 of SPIN to sample images, and make them like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -131,7 +131,7 @@ For [LSP](https://sam.johnson.io/research/lsp.html), please download the high re
 [LSP dataset original](http://sam.johnson.io/research/lsp_dataset_original.zip).
 Extract them under `$MMPOSE/data`, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -152,7 +152,7 @@ For [LSPET](https://sam.johnson.io/research/lspet.html), please download its hig
 [HR-LSPET](http://datasets.d2.mpi-inf.mpg.de/hr-lspet/hr-lspet.zip).
 Extract them under `$MMPOSE/data`, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -176,7 +176,7 @@ The MoShed data provided in [HMR](https://github.com/akanazawa/hmr) is included 
 [zip file](https://download.openmmlab.com/mmpose/datasets/mesh_annotation_files.zip).
 Please download and extract it under `$MMPOSE/data`, and make it look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -198,7 +198,7 @@ of SPIN to generate the annotation files or download the processed files from
 [here](https://download.openmmlab.com/mmpose/datasets/mesh_annotation_files.zip),
 and make it look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -224,7 +224,7 @@ Please download the [gender neutral SMPL model](http://smplify.is.tue.mpg.de/),
 and [mean parameters](https://download.openmmlab.com/mmpose/datasets/smpl_mean_params.npz)
 under `$MMPOSE/models/smpl`, and make it look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── ...

@@ -24,7 +24,7 @@ For [COCO](http://cocodataset.org/) data, please download from [COCO download](h
 Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -57,7 +57,7 @@ For [MPII](http://human-pose.mpi-inf.mpg.de/) data, please download from [MPII H
 We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -96,7 +96,7 @@ For [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human
 Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -120,7 +120,7 @@ For [AIC](https://github.com/AIChallenger/AI_Challenger_2017) data, please downl
 Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -152,7 +152,7 @@ For top-down approaches, we follow [CrowdPose](https://arxiv.org/abs/1812.00324)
 For model training, we follow [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation) to train models on CrowdPose train/val dataset, and evaluate models on CrowdPose test dataset.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -179,7 +179,7 @@ mmpose
 For [OCHuman](https://github.com/liruilong940607/OCHumanApi) data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
 Move them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -205,7 +205,7 @@ For [MHP](https://lv-mhp.github.io/dataset) data, please download from [MHP](htt
 Please download the annotation files from [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz).
 Please download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -245,7 +245,7 @@ We have merged the video-wise separated official annotation files into two json 
 For top-down approaches, we use [MMDetection](https://github.com/open-mmlab/mmdetection) pre-trained [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) to generate the detected human bounding boxes.
 Please download and extract them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
@@ -307,7 +307,7 @@ mmpose
 
 The official evaluation tool for PoseTrack should be installed from GitHub.
 
-```bash
+```shell
 pip install git+https://github.com/svenkreiss/poseval.git
 ```
 
@@ -317,7 +317,7 @@ For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [i
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
 Move them under $MMPOSE/data, and make them look like this:
 
-```bash
+```text
 mmpose
 ├── mmpose
 ├── docs
