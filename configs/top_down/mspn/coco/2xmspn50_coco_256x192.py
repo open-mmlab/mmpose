@@ -38,7 +38,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='models/pytorch/imagenet/resnet50-renamed.pth',
+    pretrained='torchvision://resnet50',
     backbone=dict(
         type='MSPN',
         unit_channels=256,
