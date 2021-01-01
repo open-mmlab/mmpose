@@ -20,7 +20,7 @@ class Face300WDataset(FaceBaseDataset):
     to return a dict containing the image tensors and other information.
 
     The landmark annotations follow the 68 points mark-up. The definition
-    can be found in `https://wywu.github.io/projects/LAB/WFLW.html`.
+    can be found in `https://ibug.doc.ic.ac.uk/resources/300-W/`.
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -108,7 +108,8 @@ class Face300WDataset(FaceBaseDataset):
         return gt_db
 
     def _get_normalize_factor(self, gts):
-        """Get normalize factor for evaluation.
+        """Get inter-ocular distance as the normalize factor, measured as the
+        Euclidean distance between the outer corners of the eyes.
 
         Args:
             gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
