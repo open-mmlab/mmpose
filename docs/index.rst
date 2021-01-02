@@ -17,6 +17,7 @@ Welcome to MMPose's documentation!
    datasets.md
    tasks/2d_body_keypoint.md
    tasks/2d_hand_keypoint.md
+   tasks/2d_face_keypoint.md
    tasks/2d_wholebody_keypoint.md
    tasks/2d_fashion_landmark.md
    tasks/3d_body_mesh.md
