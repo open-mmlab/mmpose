@@ -1,5 +1,50 @@
 # Changelog
 
+## v0.10.0 (31/12/2020)
+
+**Highlights**
+
+1. Support more human pose estimation methods.
+  - [UDP](https://arxiv.org/abs/1911.07524)
+1. Support pose tracking.
+1. Support multi-batch inference.
+1. Add some useful tools, including `analyze_logs`, `get_flops`, `print_config`.
+1. Support more backbone networks.
+  - [ResNest](https://arxiv.org/pdf/2004.08955.pdf)
+  - [VGG](https://arxiv.org/abs/1409.1556)
+
+**New Features**
+
+- Support UDP ([\#353](https://github.com/open-mmlab/mmpose/pull/353), [\#371](https://github.com/open-mmlab/mmpose/pull/371), [\#402](https://github.com/open-mmlab/mmpose/pull/402))
+- Support multi-batch inference ([\#390](https://github.com/open-mmlab/mmpose/pull/390))
+- Support MHP dataset ([\#386](https://github.com/open-mmlab/mmpose/pull/386))
+- Support pose tracking demo ([\#380](https://github.com/open-mmlab/mmpose/pull/380))
+- Support mpii-trb demo ([\#372](https://github.com/open-mmlab/mmpose/pull/372))
+- Support mobilenet for hand pose estimation ([\#377](https://github.com/open-mmlab/mmpose/pull/377))
+- Support ResNest backbone ([\#370](https://github.com/open-mmlab/mmpose/pull/370))
+- Support VGG backbone ([\#370](https://github.com/open-mmlab/mmpose/pull/370))
+- Add some useful tools, including `analyze_logs`, `get_flops`, `print_config` ([\#324](https://github.com/open-mmlab/mmpose/pull/324))
+
+**Bug Fixes**
+
+- Fix bugs in pck evaluation ([\#328](https://github.com/open-mmlab/mmpose/pull/328))
+- Fix model download links in README ([\#396](https://github.com/open-mmlab/mmpose/pull/396), [\#397](https://github.com/open-mmlab/mmpose/pull/397))
+- Fix CrowdPose annotations and update benchmarks ([\#384](https://github.com/open-mmlab/mmpose/pull/384))
+- Fix modelzoo stat ([\#354](https://github.com/open-mmlab/mmpose/pull/354), [\#360](https://github.com/open-mmlab/mmpose/pull/360), [\#362](https://github.com/open-mmlab/mmpose/pull/362))
+- Fix config files for aic datasets ([\#340](https://github.com/open-mmlab/mmpose/pull/340))
+
+**Breaking Changes**
+
+- Rename `image_thr` to `det_bbox_thr` for top-down methods.
+
+**Improvements**
+
+- Organize the readme files ([\#398](https://github.com/open-mmlab/mmpose/pull/398), [\#399](https://github.com/open-mmlab/mmpose/pull/399), [\#400](https://github.com/open-mmlab/mmpose/pull/400))
+- Check linting for markdown ([\#379](https://github.com/open-mmlab/mmpose/pull/379))
+- Add faq.md ([\#350](https://github.com/open-mmlab/mmpose/pull/350))
+- Remove PyTorch 1.4 in CI ([\#338](https://github.com/open-mmlab/mmpose/pull/338))
+- Add pypi badge in readme ([\#329](https://github.com/open-mmlab/mmpose/pull/329))
+
 ## v0.9.0 (30/11/2020)
 
 **Highlights**
