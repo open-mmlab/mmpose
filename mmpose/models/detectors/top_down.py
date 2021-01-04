@@ -9,7 +9,7 @@ from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
-from mmpose.core.post_processing import flip_back
+from mmpose.core.post_processing import compact_heatmaps, flip_back
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
@@ -185,8 +185,15 @@ class TopDown(BasePose):
         # compute backbone features
         output = self.backbone(img)
 
-        return self.process_head(
+        all_preds, all_boxes, image_path, heatmap = self.process_head(
             output, img, img_metas, return_heatmap=return_heatmap)
+
+        # convert the dtype of heatmap to np.float16 and only keep value > 3e-3
+        # (to save space)
+        if heatmap is not None:
+            heatmap = compact_heatmaps(heatmap[0])
+
+        return all_preds, all_boxes, image_path, heatmap
 
     def forward_dummy(self, img):
         """Used for computing network FLOPs.
