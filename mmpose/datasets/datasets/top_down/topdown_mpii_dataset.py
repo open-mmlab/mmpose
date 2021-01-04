@@ -166,7 +166,9 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 raise KeyError(f'metric {metric} is not supported')
 
         kpts = []
-        for preds, _, _, _, bbox_ids in outputs:
+        for output in outputs:
+            preds = output['preds']
+            bbox_ids = output['bbox_ids']
             batch_size = len(bbox_ids)
             for i in range(batch_size):
                 kpts.append({'keypoints': preds[i], 'bbox_id': bbox_ids[i]})

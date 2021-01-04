@@ -330,7 +330,12 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
         kpts = []
 
-        for preds, boxes, image_paths, _, bbox_ids in outputs:
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
+
             # convert 0-based index to 1-based index,
             # and get the first two dimensions.
             preds[..., :2] += 1.0

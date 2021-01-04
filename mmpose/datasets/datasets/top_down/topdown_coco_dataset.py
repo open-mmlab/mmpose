@@ -311,7 +311,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
             heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, heatmap))
+            outputs (list(dict))
                 :preds (np.ndarray[1,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
@@ -335,7 +335,13 @@ class TopDownCocoDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = defaultdict(list)
-        for preds, boxes, image_paths, _, bbox_ids in outputs:
+
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
+
             batch_size = len(image_paths)
             for i in range(batch_size):
                 image_id = self.name2id[image_paths[i][len(self.img_prefix):]]

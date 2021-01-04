@@ -222,7 +222,12 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
-        for preds, boxes, image_paths, _, bbox_ids in outputs:
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
+
             batch_size = len(image_paths)
             for i in range(batch_size):
                 str_image_path = image_paths[i]
@@ -238,6 +243,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                     'bbox_id': bbox_ids[i]
                 })
         kpts = self._sort_and_unique_bboxes(kpts)
+
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)
         name_value = OrderedDict(info_str)

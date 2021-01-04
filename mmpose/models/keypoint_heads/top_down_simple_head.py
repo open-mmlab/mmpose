@@ -3,12 +3,14 @@ from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
 from mmpose.core.evaluation import pose_pck_accuracy
+from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from ..registry import HEADS
+from .top_down_base_head import TopDownBaseHead
 
 
 @HEADS.register_module()
-class TopDownSimpleHead(nn.Module):
+class TopDownSimpleHead(TopDownBaseHead):
     """Top-down model head of simple baseline paper ref: Bin Xiao. ``Simple
     Baselines for Human Pose Estimation and Tracking``.
 
@@ -128,31 +130,16 @@ class TopDownSimpleHead(nn.Module):
                 Weights across different joint types.
         """
 
-        losses = dict()
+        accuracy = dict()
 
         if self.target_type == 'GaussianHeatMap':
-            if isinstance(output, list):
-                if target.dim() == 5 and target_weight.dim() == 4:
-                    _, avg_acc, _ = pose_pck_accuracy(
-                        output[-1].detach().cpu().numpy(),
-                        target[:, -1, ...].detach().cpu().numpy(),
-                        target_weight[:, -1,
-                                      ...].detach().cpu().numpy().squeeze(-1) >
-                        0)
-                    # Only use the last output for prediction
-                else:
-                    _, avg_acc, _ = pose_pck_accuracy(
-                        output[-1].detach().cpu().numpy(),
-                        target.detach().cpu().numpy(),
-                        target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            else:
-                _, avg_acc, _ = pose_pck_accuracy(
-                    output.detach().cpu().numpy(),
-                    target.detach().cpu().numpy(),
-                    target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            losses['acc_pose'] = float(avg_acc)
+            _, avg_acc, _ = pose_pck_accuracy(
+                output.detach().cpu().numpy(),
+                target.detach().cpu().numpy(),
+                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+            accuracy['acc_pose'] = float(avg_acc)
 
-        return losses
+        return accuracy
 
     def forward(self, x):
         """Forward function."""
@@ -162,8 +149,30 @@ class TopDownSimpleHead(nn.Module):
         x = self.final_layer(x)
         return x
 
-    def inference_model(self, x):
-        return self.forward(x)
+    def inference_model(self, x, flip_pairs=None):
+        """Inference function.
+
+        Returns:
+            output_heatmap (np.ndarray): Output heatmaps.
+
+        Args:
+            x (torch.Tensor[NxKxHxW]): Input features.
+            flip_pairs (None | list[tuple()):
+                Pairs of keypoints which are mirrored.
+        """
+        output = self.forward(x)
+
+        if flip_pairs is not None:
+            output_heatmap = flip_back(
+                output.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
+            # feature is not aligned, shift flipped heatmap for higher accuracy
+            if self.test_cfg['shift_heatmap']:
+                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
+        else:
+            output_heatmap = output.detach().cpu().numpy()
+        return output_heatmap
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""
@@ -197,23 +206,6 @@ class TopDownSimpleHead(nn.Module):
             self.in_channels = planes
 
         return nn.Sequential(*layers)
-
-    @staticmethod
-    def _get_deconv_cfg(deconv_kernel):
-        """Get configurations for deconv layers."""
-        if deconv_kernel == 4:
-            padding = 1
-            output_padding = 0
-        elif deconv_kernel == 3:
-            padding = 1
-            output_padding = 1
-        elif deconv_kernel == 2:
-            padding = 0
-            output_padding = 0
-        else:
-            raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
-
-        return deconv_kernel, padding, output_padding
 
     def init_weights(self):
         """Initialize model weights."""

@@ -155,7 +155,12 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
         kpts = defaultdict(list)
 
-        for preds, boxes, image_paths, _, bbox_ids in outputs:
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
+
             batch_size = len(image_paths)
             for i in range(batch_size):
                 image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
