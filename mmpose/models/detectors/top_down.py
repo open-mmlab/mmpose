@@ -147,7 +147,7 @@ class TopDown(BasePose):
 
         if self.with_keypoint:
             keypoint_result = self.keypoint_head.decode_keypoints(
-                img_metas, output_heatmap, return_heatmap)
+                img_metas, output_heatmap)
             result.update(keypoint_result)
 
             if not return_heatmap:

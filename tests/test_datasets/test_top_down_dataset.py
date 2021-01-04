@@ -22,15 +22,21 @@ def load_json_to_output(json_name, prefix='', batch_size=2, use_bbox_id=True):
             for j in range(i, min(i + batch_size, num_data))
         ])
         box = np.zeros((batch_size, 6), dtype=np.float32)
-        img_path = [
+        image_paths = [
             os.path.join(prefix, data['images'][j]['file_name'])
             for j in range(i, min(i + batch_size, num_data))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, num_data))]
+
+        output = {}
+        output['preds'] = keypoints
+        output['boxes'] = box
+        output['image_paths'] = image_paths
+        output['output_heatmap'] = None
+
         if use_bbox_id:
-            output = (keypoints, box, img_path, None, bbox_ids)
-        else:
-            output = (keypoints, box, img_path, None)
+            output['bbox_ids'] = bbox_ids
+
         outputs.append(output)
     return outputs
 
@@ -43,7 +49,7 @@ def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
             db[j]['joints_3d'].reshape((-1, 3))
             for j in range(i, min(i + batch_size, len_db))
         ])
-        img_path = [
+        image_paths = [
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
@@ -56,10 +62,15 @@ def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
                      dtype=np.float32)
             for j in range(i, min(i + batch_size, len_db)))
 
+        output = {}
+        output['preds'] = keypoints
+        output['boxes'] = box
+        output['image_paths'] = image_paths
+        output['output_heatmap'] = None
+
         if use_bbox_id:
-            output = (keypoints, box, img_path, None, bbox_ids)
-        else:
-            output = (keypoints, box, img_path, None)
+            output['bbox_ids'] = bbox_ids
+
         outputs.append(output)
 
     return outputs

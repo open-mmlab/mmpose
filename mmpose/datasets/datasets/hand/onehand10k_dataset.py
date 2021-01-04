@@ -151,7 +151,10 @@ class OneHand10KDataset(HandBaseDataset):
 
         kpts = []
 
-        for preds, boxes, image_path, _ in outputs:
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_path = output['image_path']
             str_image_path = ''.join(image_path)
             image_id = self.name2id[str_image_path[len(self.img_prefix):]]
 
