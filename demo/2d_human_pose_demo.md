@@ -146,7 +146,7 @@ Some tips to speed up MMPose inference:
 For top-down models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-1. set `unbiased_decoding=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+1. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L52).
 
 For bottom-up models, try to edit the config file. For example,
 
