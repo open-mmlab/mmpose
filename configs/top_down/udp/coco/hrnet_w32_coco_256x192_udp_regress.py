@@ -26,8 +26,8 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-# target_type = 'CombinedTarget'
-target_type = 'GaussianHeatMap'
+target_type = 'CombinedTarget'
+# target_type = 'GaussianHeatMap'
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
@@ -75,7 +75,7 @@ model = dict(
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=32,
-        out_channels=channel_cfg['num_output_channels'],
+        out_channels=3 * channel_cfg['num_output_channels'],
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
     ),
@@ -84,11 +84,10 @@ model = dict(
         flip_test=True,
         post_process='default',
         shift_heatmap=False,
-        unbiased_decoding=False,
         target_type=target_type,
-        modulate_kernel=13,
+        modulate_kernel=7,
         use_udp=True),
-    loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
+    loss_pose=dict(type='CombinedTargetMSELoss', use_target_weight=True))
 
 data_cfg = dict(
     image_size=[192, 256],

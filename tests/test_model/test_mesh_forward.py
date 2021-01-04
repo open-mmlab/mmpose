@@ -56,9 +56,8 @@ def test_parametric_mesh_forward():
         train_cfg=dict(disc_step=1),
         test_cfg=dict(
             flip_test=False,
-            post_process=True,
+            post_process='default',
             shift_heatmap=True,
-            unbiased_decoding=False,
             modulate_kernel=11),
         loss_mesh=dict(
             type='MeshLoss',
