@@ -2,6 +2,7 @@ import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
+from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.models.builder import build_loss
 from ..registry import HEADS
 
@@ -33,11 +34,17 @@ class TopDownSimpleHead(nn.Module):
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
                  extra=None,
-                 loss_keypoint=None):
+                 loss_keypoint=None,
+                 train_cfg=None,
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
         self.loss = build_loss(loss_keypoint)
+
+        self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
+        self.train_cfg = train_cfg
+        self.test_cfg = test_cfg
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -87,7 +94,6 @@ class TopDownSimpleHead(nn.Module):
         Note:
             batch_size: N
             num_keypoints: K
-            num_outputs: O
             heatmaps height: H
             heatmaps weight: W
 
@@ -106,6 +112,48 @@ class TopDownSimpleHead(nn.Module):
 
         return losses
 
+    def get_accuracy(self, output, target, target_weight):
+        """Calculate accuracy for top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        losses = dict()
+
+        if self.target_type == 'GaussianHeatMap':
+            if isinstance(output, list):
+                if target.dim() == 5 and target_weight.dim() == 4:
+                    _, avg_acc, _ = pose_pck_accuracy(
+                        output[-1].detach().cpu().numpy(),
+                        target[:, -1, ...].detach().cpu().numpy(),
+                        target_weight[:, -1,
+                                      ...].detach().cpu().numpy().squeeze(-1) >
+                        0)
+                    # Only use the last output for prediction
+                else:
+                    _, avg_acc, _ = pose_pck_accuracy(
+                        output[-1].detach().cpu().numpy(),
+                        target.detach().cpu().numpy(),
+                        target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+            else:
+                _, avg_acc, _ = pose_pck_accuracy(
+                    output.detach().cpu().numpy(),
+                    target.detach().cpu().numpy(),
+                    target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+            losses['acc_pose'] = float(avg_acc)
+
+        return losses
+
     def forward(self, x):
         """Forward function."""
         if isinstance(x, list):
@@ -113,6 +161,9 @@ class TopDownSimpleHead(nn.Module):
         x = self.deconv_layers(x)
         x = self.final_layer(x)
         return x
+
+    def inference_model(self, x):
+        return self.forward(x)
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""

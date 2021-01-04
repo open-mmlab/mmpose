@@ -39,12 +39,18 @@ class TopDownMultiStageHead(nn.Module):
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
                  extra=None,
-                 loss_keypoint=None):
+                 loss_keypoint=None,
+                 train_cfg=None,
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
         self.num_stages = num_stages
         self.loss = build_loss(loss_keypoint)
+
+        self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
+        self.train_cfg = train_cfg
+        self.test_cfg = test_cfg
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -150,6 +156,11 @@ class TopDownMultiStageHead(nn.Module):
             y = self.multi_final_layers[i](y)
             out.append(y)
         return out
+
+    def inference_model(self, x):
+        out = self.forward(x)
+        assert isinstance(out, list)
+        return out[-1]
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""

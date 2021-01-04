@@ -6,7 +6,6 @@ import numpy as np
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
-from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
 from mmpose.core.post_processing import flip_back
 from .. import builder
@@ -36,12 +35,15 @@ class TopDown(BasePose):
 
         self.backbone = builder.build_backbone(backbone)
 
-        if keypoint_head is not None:
-            self.keypoint_head = builder.build_head(keypoint_head)
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
+
+        if keypoint_head is not None:
+            keypoint_head['train_cfg'] = train_cfg
+            keypoint_head['test_cfg'] = test_cfg
+            self.keypoint_head = builder.build_head(keypoint_head)
+
         self.init_weights(pretrained=pretrained)
-        self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
 
     @property
     def with_keypoint(self):
@@ -117,28 +119,9 @@ class TopDown(BasePose):
             keypoint_losses = self.keypoint_head.get_loss(
                 output, target, target_weight)
             losses.update(keypoint_losses)
-
-        if self.target_type == 'GaussianHeatMap':
-            if isinstance(output, list):
-                if target.dim() == 5 and target_weight.dim() == 4:
-                    _, avg_acc, _ = pose_pck_accuracy(
-                        output[-1].detach().cpu().numpy(),
-                        target[:, -1, ...].detach().cpu().numpy(),
-                        target_weight[:, -1,
-                                      ...].detach().cpu().numpy().squeeze(-1) >
-                        0)
-                    # Only use the last output for prediction
-                else:
-                    _, avg_acc, _ = pose_pck_accuracy(
-                        output[-1].detach().cpu().numpy(),
-                        target.detach().cpu().numpy(),
-                        target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            else:
-                _, avg_acc, _ = pose_pck_accuracy(
-                    output.detach().cpu().numpy(),
-                    target.detach().cpu().numpy(),
-                    target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            losses['acc_pose'] = float(avg_acc)
+            keypoint_accuracy = self.keypoint_head.get_accuracy(
+                output, target, target_weight)
+            losses.update(keypoint_accuracy)
 
         return losses
 
@@ -154,11 +137,10 @@ class TopDown(BasePose):
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
+        # process head
         if self.with_keypoint:
-            output = self.keypoint_head(output)
-
-        if isinstance(output, list):
-            output = output[-1]
+            output = self.keypoint_head.inference_model(
+                output, flip_pairs=None)
 
         output_heatmap = output.detach().cpu().numpy()
         if self.test_cfg['flip_test']:
