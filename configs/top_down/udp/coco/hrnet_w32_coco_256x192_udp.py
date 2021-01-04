@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(interval=210, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
@@ -26,8 +26,8 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-target_type = 'CombinedTarget'
-# target_type = 'GaussianHeatMap'
+# target_type = 'CombinedTarget'
+target_type = 'GaussianHeatMap'
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
@@ -75,20 +75,19 @@ model = dict(
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=32,
-        out_channels=3 * channel_cfg['num_output_channels'],
+        out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
     ),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process=True,
+        post_process='default',
         shift_heatmap=False,
-        unbiased_decoding=False,
         target_type=target_type,
-        modulate_kernel=7,
+        modulate_kernel=13,
         use_udp=True),
-    loss_pose=dict(type='CombinedTargetMSELoss', use_target_weight=True))
+    loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
 
 data_cfg = dict(
     image_size=[192, 256],
