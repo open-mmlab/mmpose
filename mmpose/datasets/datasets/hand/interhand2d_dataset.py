@@ -1,5 +1,5 @@
 import os
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
@@ -252,8 +252,7 @@ class InterHand2DDataset(HandBaseDataset):
 
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
-        kpts = defaultdict(list)
-
+        kpts = []
         for output in outputs:
             preds = output['preds']
             boxes = output['boxes']
@@ -264,7 +263,7 @@ class InterHand2DDataset(HandBaseDataset):
             for i in range(batch_size):
                 image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
 
-                kpts[image_id].append({
+                kpts.append({
                     'keypoints': preds[i].tolist(),
                     'center': boxes[i][0:2].tolist(),
                     'scale': boxes[i][2:4].tolist(),

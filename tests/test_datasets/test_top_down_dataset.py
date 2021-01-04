@@ -548,7 +548,7 @@ def test_top_down_OneHand10K_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json',
-                                  'tests/data/onehand10k/', 1, False)
+                                  'tests/data/onehand10k/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -605,7 +605,7 @@ def test_top_down_FreiHand_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/freihand/test_freihand.json',
-                                  'tests/data/freihand/', 1, False)
+                                  'tests/data/freihand/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
         assert_almost_equal(infos['PCK'], 1.0)
@@ -662,7 +662,7 @@ def test_top_down_Panoptic_dataset():
     _ = custom_dataset[0]
 
     outputs = load_json_to_output('tests/data/panoptic/test_panoptic.json',
-                                  'tests/data/panoptic/', 1, False)
+                                  'tests/data/panoptic/')
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir,
                                         ['PCKh', 'EPE', 'AUC'])
