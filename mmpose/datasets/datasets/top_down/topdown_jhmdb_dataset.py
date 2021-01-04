@@ -156,6 +156,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
         objs = valid_objs
 
         rec = []
+        bbox_id = 0
         for obj in objs:
             if 'keypoints' not in obj:
                 continue
@@ -185,8 +186,10 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
                 'dataset': self.dataset_name,
-                'bbox_score': 1
+                'bbox_score': 1,
+                'bbox_id': f'{img_id}_{bbox_id:03}'
             })
+            bbox_id = bbox_id + 1
 
         return rec
 
@@ -327,25 +330,36 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
         kpts = []
 
-        for preds, boxes, image_path, _ in outputs:
+        for preds, boxes, image_paths, _, bbox_ids in outputs:
             # convert 0-based index to 1-based index,
             # and get the first two dimensions.
             preds[..., :2] += 1.0
-
-            str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
-
-            kpts.append({
-                'keypoints': preds[0].tolist(),
-                'center': boxes[0][0:2].tolist(),
-                'scale': boxes[0][2:4].tolist(),
-                'area': float(boxes[0][4]),
-                'score': float(boxes[0][5]),
-                'image_id': image_id,
-            })
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+                kpts.append({
+                    'keypoints': preds[i],
+                    'center': boxes[i][0:2],
+                    'scale': boxes[i][2:4],
+                    'area': boxes[i][4],
+                    'score': boxes[i][5],
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        kpts = self._sort_and_unique_bboxes(kpts)
 
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
 
         return name_value
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        kpts = sorted(kpts, key=lambda x: x[key])
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i][key] == kpts[i - 1][key]:
+                del kpts[i]
+
+        return kpts

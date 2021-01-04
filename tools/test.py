@@ -74,14 +74,16 @@ def main():
         init_dist(args.launcher, **cfg.dist_params)
 
     # build the dataloader
-    # TODO: support multiple images per gpu (only minor changes are needed)
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
-    data_loader = build_dataloader(
-        dataset,
+    dataloader_setting = dict(
         samples_per_gpu=1,
-        workers_per_gpu=cfg.data.workers_per_gpu,
+        workers_per_gpu=cfg.data.get('workers_per_gpu', 1),
         dist=distributed,
-        shuffle=False)
+        shuffle=False,
+        drop_last=False)
+    dataloader_setting = dict(dataloader_setting,
+                              **cfg.data.get('test_dataloader', {}))
+    data_loader = build_dataloader(dataset, **dataloader_setting)
 
     # build the model and load checkpoint
     model = build_posenet(cfg.model)

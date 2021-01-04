@@ -128,11 +128,13 @@ class Collect:
         for key in self.keys:
             data[key] = results[key]
 
+        meta = {}
         if len(self.meta_keys) != 0:
-            meta = {}
             for key in self.meta_keys:
                 meta[key] = results[key]
-            data[self.meta_name] = DC(meta, cpu_only=True)
+        if 'bbox_id' in results:
+            meta['bbox_id'] = results['bbox_id']
+        data[self.meta_name] = DC(meta, cpu_only=True)
 
         return data
 
