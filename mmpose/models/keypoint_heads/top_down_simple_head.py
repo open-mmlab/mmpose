@@ -44,9 +44,9 @@ class TopDownSimpleHead(TopDownBaseHead):
         self.in_channels = in_channels
         self.loss = build_loss(loss_keypoint)
 
-        self.target_type = test_cfg.get('target_type', 'GaussianHeatMap')
-        self.train_cfg = train_cfg
-        self.test_cfg = test_cfg
+        self.train_cfg = {} if train_cfg is None else train_cfg
+        self.test_cfg = {} if test_cfg is None else test_cfg
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -168,7 +168,7 @@ class TopDownSimpleHead(TopDownBaseHead):
                 flip_pairs,
                 target_type=self.target_type)
             # feature is not aligned, shift flipped heatmap for higher accuracy
-            if self.test_cfg['shift_heatmap']:
+            if self.test_cfg.get('shift_heatmap', False):
                 output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
         else:
             output_heatmap = output.detach().cpu().numpy()
