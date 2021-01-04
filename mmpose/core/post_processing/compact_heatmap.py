@@ -18,13 +18,20 @@ def compact_heatmap(heatmap, threshold=3e-3):
         - new_heatmap (np.ndarray([h, w])): The cropped heatmap.
         - quadruple (np.ndarray([4])): The crop info.
     """
+
+    h, w = heatmap.shape
     y, x = np.where(heatmap > threshold)
+
+    # In which case not a single element is larger than threshold
+    if x.shape[0] == 0:
+        new_heatmap = np.zeros([0, 0], dtype=np.float16)
+        return new_heatmap, np.array([0, 0, w, h], dtype=np.int16)
     min_x, max_x = min(x), max(x)
     min_y, max_y = min(y), max(y)
     new_heatmap = heatmap[min_y:max_y, min_x:max_x]
     new_heatmap = new_heatmap.astype(np.float16)
-    h, w = heatmap.shape
-    quadruple = np.array([min_x, min_y, w, h]).astype(np.int16)
+
+    quadruple = np.array([min_x, min_y, w, h], dtype=np.int16)
     return new_heatmap, quadruple
 
 
