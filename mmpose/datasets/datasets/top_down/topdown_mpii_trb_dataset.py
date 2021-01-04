@@ -202,8 +202,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                   coordinates, score is the third dimension of the array.
                 * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_paths(list[str]): For example, ['data/coco/val2017
-                    /000000393226.jpg']
+                * image_paths(list[str]): For example, ['/val2017/000000
+                  397133.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
                 * bbox_ids (list[str]): For example, ['27407']
             res_folder(str): Path of directory to save the results.

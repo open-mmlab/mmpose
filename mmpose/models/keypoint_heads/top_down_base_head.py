@@ -69,15 +69,14 @@ class TopDownBaseHead(nn.Module):
             use_udp=self.test_cfg.get('use_udp', False),
             target_type=self.test_cfg.get('target_type', 'GaussianHeatMap'))
 
-        all_preds = np.zeros((batch_size, preds.shape[1], 3),
-                             dtype=np.float32)
+        all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
-        all_preds[0, :, 0:2] = preds[:, :, 0:2]
-        all_preds[0, :, 2:3] = maxvals
-        all_boxes[0, 0:2] = c[:, 0:2]
-        all_boxes[0, 2:4] = s[:, 0:2]
-        all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
-        all_boxes[0, 5] = score
+        all_preds[:, :, 0:2] = preds[:, :, 0:2]
+        all_preds[:, :, 2:3] = maxvals
+        all_boxes[:, 0:2] = c[:, 0:2]
+        all_boxes[:, 2:4] = s[:, 0:2]
+        all_boxes[:, 4] = np.prod(s * 200.0, axis=1)
+        all_boxes[:, 5] = score
 
         result = {}
 

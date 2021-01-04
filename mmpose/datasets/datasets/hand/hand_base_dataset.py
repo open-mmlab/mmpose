@@ -207,3 +207,14 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         results = copy.deepcopy(self.db[idx])
         results['ann_info'] = self.ann_info
         return self.pipeline(results)
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        for img_id, persons in kpts.items():
+            num = len(persons)
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
+            for i in range(num - 1, 0, -1):
+                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
+                    del kpts[img_id][i]
+
+        return kpts
