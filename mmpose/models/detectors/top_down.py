@@ -208,6 +208,8 @@ class TopDown(BasePose):
         """Process heatmap and keypoints from backbone features."""
         flip_pairs = img_metas[0]['flip_pairs']
         batch_size = img.size(0)
+        if batch_size > 1:
+            assert 'bbox_id' in img_metas[0]
 
         if self.with_keypoint:
             output = self.keypoint_head(output)
