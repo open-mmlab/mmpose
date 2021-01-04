@@ -103,6 +103,7 @@ def test_top_down_pipeline():
     results['center'] = center
     results['scale'] = scale
     results['bbox_score'] = 1
+    results['bbox_id'] = 0
 
     results['ann_info'] = {}
     results['ann_info']['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8],

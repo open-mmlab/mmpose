@@ -83,6 +83,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             anno = json.load(anno_file)
 
         gt_db = []
+        bbox_id = 0
         for a in anno:
             image_name = a['image']
 
@@ -111,25 +112,20 @@ class TopDownMpiiDataset(TopDownBaseDataset):
 
                 joints_3d[:, 0:2] = joints[:, 0:2] - 1
                 joints_3d_visible[:, :2] = joints_vis[:, None]
-
+            image_file = os.path.join(self.img_prefix, image_name)
             gt_db.append({
-                'image_file':
-                os.path.join(self.img_prefix, image_name),
-                'center':
-                center,
-                'scale':
-                scale,
-                'rotation':
-                0,
-                'joints_3d':
-                joints_3d,
-                'joints_3d_visible':
-                joints_3d_visible,
-                'dataset':
-                'mpii',
-                'bbox_score':
-                1
+                'image_file': image_file,
+                'bbox_id': bbox_id,
+                'center': center,
+                'scale': scale,
+                'rotation': 0,
+                'joints_3d': joints_3d,
+                'joints_3d_visible': joints_3d_visible,
+                'dataset': 'mpii',
+                'bbox_score': 1
             })
+            bbox_id = bbox_id + 1
+        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db
 
@@ -151,8 +147,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                   coordinates, score is the third dimension of the array.
                 * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_path(list[str]): For example, ['0', '0',
-                  '0', '0', '0', '1', '1', '6', '3', '.', 'j', 'p', 'g']
+                * image_path(list[str]): For example, ['/val2017/000000
+                  397133.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
 
             res_folder(str): Path of directory to save the results.
@@ -169,7 +165,14 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        preds = np.stack([kpts[0] for kpts, _, _, _ in outputs])
+        kpts = []
+        for preds, _, _, _, bbox_ids in outputs:
+            batch_size = len(bbox_ids)
+            for i in range(batch_size):
+                kpts.append({'keypoints': preds[i], 'bbox_id': bbox_ids[i]})
+        kpts = self._sort_and_unique_bboxes(kpts)
+
+        preds = np.stack([kpt['keypoints'] for kpt in kpts])
 
         # convert 0-based index to 1-based index,
         # and get the first two dimensions.
@@ -248,3 +251,13 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         name_value = OrderedDict(name_value)
 
         return name_value
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        kpts = sorted(kpts, key=lambda x: x[key])
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i][key] == kpts[i - 1][key]:
+                del kpts[i]
+
+        return kpts

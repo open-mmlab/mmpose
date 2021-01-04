@@ -204,6 +204,7 @@ def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
         'center': np.array([W / 2, H / 2]),
         'scale': np.array([0.5, 0.5]),
         'bbox_score': 1.0,
+        'bbox_id': 0,
         'flip_pairs': [],
         'inference_channel': np.arange(17),
         'image_file': '<demo>.png',
