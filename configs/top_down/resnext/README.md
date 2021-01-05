@@ -4,7 +4,7 @@
 
 ```
 @inproceedings{xie2017aggregated,
-  title={Aggregated residual transformations for deep neural networks},
+  title="{Aggregated residual transformations for deep neural networks}",
   author={Xie, Saining and Girshick, Ross and Doll{\'a}r, Piotr and Tu, Zhuowen and He, Kaiming},
   booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
   pages={1492--1500},
