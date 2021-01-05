@@ -25,9 +25,15 @@ def convert_coco_to_output(coco):
                     [K, 1]), np.ones([K, 1]) * ann_id),
                                axis=1))
             scores.append(1)
-        img_path = []
-        img_path[:0] = image['file_name']
-        output = (np.stack(preds), scores, img_path, None)
+        image_paths = []
+        image_paths.append(image['file_name'])
+
+        output = {}
+        output['preds'] = np.stack(preds)
+        output['scores'] = scores
+        output['image_paths'] = image_paths
+        output['output_heatmap'] = None
+
         outputs.append(output)
 
     return outputs

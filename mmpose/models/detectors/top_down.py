@@ -132,17 +132,17 @@ class TopDown(BasePose):
 
         result = {}
 
-        output = self.backbone(img)
+        features = self.backbone(img)
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
-                output, flip_pairs=None)
+                features, flip_pairs=None)
 
         if self.test_cfg['flip_test']:
             img_flipped = img.flip(3)
-            output_flipped = self.backbone(img_flipped)
+            features_flipped = self.backbone(img_flipped)
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
-                    output_flipped, img_metas[0]['flip_pairs'])
+                    features_flipped, img_metas[0]['flip_pairs'])
                 output_heatmap = (output_heatmap +
                                   output_flipped_heatmap) * 0.5
 

@@ -203,26 +203,29 @@ class BottomUp(BasePose):
         center = img_metas['center']
         scale = img_metas['scale']
 
+        result = {}
+
         aggregated_heatmaps = None
         tags_list = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
-            outputs = self.backbone(image_resized)
+            features = self.backbone(image_resized)
             if self.with_keypoint:
-                outputs = self.keypoint_head(outputs)
+                outputs = self.keypoint_head(features)
 
             if self.test_cfg['flip_test']:
                 # use flip test
-                outputs_flip = self.backbone(torch.flip(image_resized, [3]))
+                features_flipped = self.backbone(
+                    torch.flip(image_resized, [3]))
                 if self.with_keypoint:
-                    outputs_flip = self.keypoint_head(outputs_flip)
+                    outputs_flipped = self.keypoint_head(features_flipped)
             else:
-                outputs_flip = None
+                outputs_flipped = None
 
             _, heatmaps, tags = get_multi_stage_outputs(
                 outputs,
-                outputs_flip,
+                outputs_flipped,
                 self.test_cfg['num_joints'],
                 self.test_cfg['with_heatmaps'],
                 self.test_cfg['with_ae'],
@@ -253,22 +256,27 @@ class BottomUp(BasePose):
                                             self.test_cfg['adjust'],
                                             self.test_cfg['refine'])
 
-        results = get_group_preds(
+        preds = get_group_preds(
             grouped,
             center,
             scale, [aggregated_heatmaps.size(3),
                     aggregated_heatmaps.size(2)],
             use_udp=self.use_udp)
 
-        image_path = []
-        image_path.extend(img_metas['image_file'])
+        image_paths = []
+        image_paths.append(img_metas['image_file'])
 
         if return_heatmap:
             output_heatmap = aggregated_heatmaps.detach().cpu().numpy()
         else:
             output_heatmap = None
 
-        return results, scores, image_path, output_heatmap
+        result['preds'] = preds
+        result['scores'] = scores
+        result['image_paths'] = image_paths
+        result['output_heatmap'] = output_heatmap
+
+        return result
 
     def show_result(self,
                     img,
