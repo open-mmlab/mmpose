@@ -37,7 +37,10 @@ class TopDownBaseHead(nn.Module):
     def decode_keypoints(self, img_metas, output_heatmap):
         batch_size = len(img_metas)
 
-        bbox_ids = []
+        if 'bbox_id' in img_metas[0]:
+            bbox_ids = []
+        else:
+            bbox_ids = None
 
         c = np.zeros((batch_size, 2))
         s = np.zeros((batch_size, 2))
@@ -50,7 +53,8 @@ class TopDownBaseHead(nn.Module):
 
             if 'bbox_score' in img_metas[i]:
                 score[i] = np.array(img_metas[i]['bbox_score']).reshape(-1)
-            bbox_ids.append(img_metas[i]['bbox_id'])
+            if bbox_ids is not None:
+                bbox_ids.append(img_metas[i]['bbox_id'])
 
         preds, maxvals = keypoints_from_heatmaps(
             output_heatmap,
