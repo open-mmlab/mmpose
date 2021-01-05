@@ -1,14 +1,59 @@
 # Changelog
 
+## v0.10.0 (31/12/2020)
+
+**Highlights**
+
+1. Support more human pose estimation methods.
+   - [UDP](https://arxiv.org/abs/1911.07524)
+1. Support pose tracking.
+1. Support multi-batch inference.
+1. Add some useful tools, including `analyze_logs`, `get_flops`, `print_config`.
+1. Support more backbone networks.
+   - [ResNest](https://arxiv.org/pdf/2004.08955.pdf)
+   - [VGG](https://arxiv.org/abs/1409.1556)
+
+**New Features**
+
+- Support UDP ([\#353](https://github.com/open-mmlab/mmpose/pull/353), [\#371](https://github.com/open-mmlab/mmpose/pull/371), [\#402](https://github.com/open-mmlab/mmpose/pull/402))
+- Support multi-batch inference ([\#390](https://github.com/open-mmlab/mmpose/pull/390))
+- Support MHP dataset ([\#386](https://github.com/open-mmlab/mmpose/pull/386))
+- Support pose tracking demo ([\#380](https://github.com/open-mmlab/mmpose/pull/380))
+- Support mpii-trb demo ([\#372](https://github.com/open-mmlab/mmpose/pull/372))
+- Support mobilenet for hand pose estimation ([\#377](https://github.com/open-mmlab/mmpose/pull/377))
+- Support ResNest backbone ([\#370](https://github.com/open-mmlab/mmpose/pull/370))
+- Support VGG backbone ([\#370](https://github.com/open-mmlab/mmpose/pull/370))
+- Add some useful tools, including `analyze_logs`, `get_flops`, `print_config` ([\#324](https://github.com/open-mmlab/mmpose/pull/324))
+
+**Bug Fixes**
+
+- Fix bugs in pck evaluation ([\#328](https://github.com/open-mmlab/mmpose/pull/328))
+- Fix model download links in README ([\#396](https://github.com/open-mmlab/mmpose/pull/396), [\#397](https://github.com/open-mmlab/mmpose/pull/397))
+- Fix CrowdPose annotations and update benchmarks ([\#384](https://github.com/open-mmlab/mmpose/pull/384))
+- Fix modelzoo stat ([\#354](https://github.com/open-mmlab/mmpose/pull/354), [\#360](https://github.com/open-mmlab/mmpose/pull/360), [\#362](https://github.com/open-mmlab/mmpose/pull/362))
+- Fix config files for aic datasets ([\#340](https://github.com/open-mmlab/mmpose/pull/340))
+
+**Breaking Changes**
+
+- Rename `image_thr` to `det_bbox_thr` for top-down methods.
+
+**Improvements**
+
+- Organize the readme files ([\#398](https://github.com/open-mmlab/mmpose/pull/398), [\#399](https://github.com/open-mmlab/mmpose/pull/399), [\#400](https://github.com/open-mmlab/mmpose/pull/400))
+- Check linting for markdown ([\#379](https://github.com/open-mmlab/mmpose/pull/379))
+- Add faq.md ([\#350](https://github.com/open-mmlab/mmpose/pull/350))
+- Remove PyTorch 1.4 in CI ([\#338](https://github.com/open-mmlab/mmpose/pull/338))
+- Add pypi badge in readme ([\#329](https://github.com/open-mmlab/mmpose/pull/329))
+
 ## v0.9.0 (30/11/2020)
 
 **Highlights**
 
 1. Support more human pose estimation methods.
-  - [MSPN](https://arxiv.org/abs/1901.00148)
-  - [RSN](https://arxiv.org/abs/2003.04030)
+   - [MSPN](https://arxiv.org/abs/1901.00148)
+   - [RSN](https://arxiv.org/abs/2003.04030)
 1. Support video pose estimation datasets.
-  - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
+   - [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset)
 1. Support Onnx model conversion.
 
 **New Features**
@@ -45,10 +90,10 @@
 **Highlights**
 
 1. Support more human pose estimation datasets.
-  - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
-  - [PoseTrack18](https://posetrack.net/)
+   - [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose)
+   - [PoseTrack18](https://posetrack.net/)
 1. Support more 2D hand keypoint estimation datasets.
-  - [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M)
+   - [InterHand2.6](https://github.com/facebookresearch/InterHand2.6M)
 1. Support adversarial training for 3D human shape recovery.
 1. Support multi-stage losses.
 1. Support mpii demo.
@@ -78,12 +123,12 @@
 
 1. Support HMR for 3D human shape recovery.
 1. Support WholeBody human pose estimation.
-  - [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody)
+   - [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody)
 1. Support more 2D hand keypoint estimation datasets.
-  - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
-  - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
+   - [Frei-hand](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+   - [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
-  - ShuffleNetv2
+   - ShuffleNetv2
 1. Support hand demo and whole-body demo.
 
 **New Features**
@@ -117,19 +162,19 @@
 **Highlights**
 
 1. Add more popular backbones & enrich the [modelzoo](https://mmpose.readthedocs.io/en/latest/model_zoo.html)
-  - ResNext
-  - SEResNet
-  - ResNetV1D
-  - MobileNetv2
-  - ShuffleNetv1
-  - CPM (Convolutional Pose Machine)
+   - ResNext
+   - SEResNet
+   - ResNetV1D
+   - MobileNetv2
+   - ShuffleNetv1
+   - CPM (Convolutional Pose Machine)
 1. Add more popular datasets:
-  - [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
-  - [MPII](http://human-pose.mpi-inf.mpg.de/)
-  - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
-  - [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
+   - [AIChallenger](https://arxiv.org/abs/1711.06475?context=cs.CV)
+   - [MPII](http://human-pose.mpi-inf.mpg.de/)
+   - [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)
+   - [OCHuman](http://www.liruilong.cn/projects/pose2seg/index.html)
 1. Support 2d hand keypoint estimation.
-  - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
+   - [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)
 1. Support bottom-up inference.
 
 **New Features**
