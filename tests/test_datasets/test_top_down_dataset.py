@@ -11,7 +11,7 @@ from numpy.testing import assert_almost_equal
 from mmpose.datasets import DATASETS
 
 
-def load_json_to_output(json_name, prefix='', batch_size=2, use_bbox_id=True):
+def load_json_to_output(json_name, prefix='', batch_size=2):
     data = json.load(open(json_name, 'r'))
     outputs = []
     num_data = len(data['images'])
@@ -33,15 +33,13 @@ def load_json_to_output(json_name, prefix='', batch_size=2, use_bbox_id=True):
         output['boxes'] = box
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
-
-        if use_bbox_id:
-            output['bbox_ids'] = bbox_ids
+        output['bbox_ids'] = bbox_ids
 
         outputs.append(output)
     return outputs
 
 
-def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
+def convert_db_to_output(db, batch_size=2):
     outputs = []
     len_db = len(db)
     for i in range(0, len_db, batch_size):
@@ -67,9 +65,7 @@ def convert_db_to_output(db, batch_size=2, use_bbox_id=True):
         output['boxes'] = box
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
-
-        if use_bbox_id:
-            output['bbox_ids'] = bbox_ids
+        output['bbox_ids'] = bbox_ids
 
         outputs.append(output)
 
@@ -546,6 +542,16 @@ def test_top_down_OneHand10K_dataset():
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
+
+    outputs = load_json_to_output(
+        'tests/data/onehand10k/test_onehand10k.json',
+        'tests/data/onehand10k/',
+        batch_size=1)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
 
     outputs = load_json_to_output('tests/data/onehand10k/test_onehand10k.json',
                                   'tests/data/onehand10k/')
