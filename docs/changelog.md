@@ -5,7 +5,7 @@
 **Highlights**
 
 1. Support more human pose estimation methods.
-  - [UDP](https://arxiv.org/abs/1911.07524)
+   - [UDP](https://arxiv.org/abs/1911.07524)
 1. Support pose tracking.
 1. Support multi-batch inference.
 1. Add some useful tools, including `analyze_logs`, `get_flops`, `print_config`.
