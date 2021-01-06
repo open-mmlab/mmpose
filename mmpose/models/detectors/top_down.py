@@ -185,15 +185,16 @@ class TopDown(BasePose):
         # compute backbone features
         output = self.backbone(img)
 
-        all_preds, all_boxes, image_path, heatmap = self.process_head(
-            output, img, img_metas, return_heatmap=return_heatmap)
+        ret = list(
+            self.process_head(
+                output, img, img_metas, return_heatmap=return_heatmap))
 
         # convert the dtype of heatmap to np.float16 and only keep value > 3e-3
-        # (to save space)
-        if heatmap is not None:
-            heatmap = compact_heatmaps(heatmap[0])
-
-        return all_preds, all_boxes, image_path, heatmap
+        # to save space, heatmap is the 4th element of ret
+        if ret[3] is not None:
+            assert ret[3].shape[0] == 0, 'batch size should be 1'
+            ret[3] = compact_heatmaps(ret[3][0])
+        return tuple(ret)
 
     def forward_dummy(self, img):
         """Used for computing network FLOPs.

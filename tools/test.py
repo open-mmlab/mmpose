@@ -83,9 +83,6 @@ def main():
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
 
-    if args.simple_inference:
-        cfg.data.test.simple_inference = True
-
     # build the dataloader
     # TODO: support multiple images per gpu (only minor changes are needed)
     if args.simple_inference:
