@@ -47,7 +47,7 @@ class ExampleModel(nn.Module):
         self.conv = nn.Linear(1, 1)
         self.test_cfg = None
 
-    def forward(self, imgs, return_loss=False):
+    def forward(self, imgs, return_loss=False, return_heatmap=False):
         return imgs
 
     def train_step(self, data_batch, optimizer, **kwargs):
