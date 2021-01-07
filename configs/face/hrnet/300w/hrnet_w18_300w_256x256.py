@@ -64,7 +64,9 @@ model = dict(
     ),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=18,
+        in_channels=[18, 36, 72, 144],
+        in_index=(0, 1, 2, 3),
+        input_transform='resize_concat',
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
