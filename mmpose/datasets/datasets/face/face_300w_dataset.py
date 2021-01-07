@@ -186,7 +186,6 @@ class Face300WDataset(FaceBaseDataset):
         Returns:
             dict: Evaluation results for evaluation metric.
         """
-        assert len(kwargs) == 0
         metrics = metric if isinstance(metric, list) else [metric]
         allowed_metrics = ['NME']
         for metric in metrics:
