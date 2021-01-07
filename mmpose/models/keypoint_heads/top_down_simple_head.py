@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
-                      normal_init)
+from mmcv.cnn import (build_conv_layer, build_norm_layer, build_upsample_layer,
+                      constant_init, normal_init)
 
 from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.post_processing import flip_back
@@ -102,14 +102,38 @@ class TopDownSimpleHead(TopDownBaseHead):
         if identity_final_layer:
             self.final_layer = nn.Identity()
         else:
-            self.final_layer = build_conv_layer(
-                cfg=dict(type='Conv2d'),
-                in_channels=num_deconv_filters[-1]
-                if num_deconv_layers > 0 else self.in_channels,
-                out_channels=out_channels,
-                kernel_size=kernel_size,
-                stride=1,
-                padding=padding)
+            conv_channels = num_deconv_filters[
+                -1] if num_deconv_layers > 0 else self.in_channels
+
+            layers = []
+            if extra is not None:
+                num_conv_layers = extra.get('num_conv_layers', 0)
+                num_conv_kernels = extra.get('num_conv_kernels',
+                                             [1] * num_conv_layers)
+
+                for i in range(num_conv_layers):
+                    layers.append(
+                        build_conv_layer(
+                            dict(type='Conv2d'),
+                            in_channels=conv_channels,
+                            out_channels=conv_channels,
+                            kernel_size=num_conv_kernels[i],
+                            stride=1,
+                            padding=padding))
+                    layers.append(
+                        build_norm_layer(dict(type='BN'), conv_channels)[1])
+                    layers.append(nn.ReLU(inplace=True))
+
+            layers.append(
+                build_conv_layer(
+                    cfg=dict(type='Conv2d'),
+                    in_channels=conv_channels,
+                    out_channels=out_channels,
+                    kernel_size=kernel_size,
+                    stride=1,
+                    padding=padding))
+
+            self.final_layer = nn.Sequential(*layers)
 
     def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
