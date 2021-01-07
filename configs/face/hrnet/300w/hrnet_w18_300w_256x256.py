@@ -60,9 +60,8 @@ model = dict(
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(18, 36, 72, 144)),
-            multiscale_output=True),
-    ),
+                num_channels=(18, 36, 72, 144),
+                multiscale_output=True))),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=[18, 36, 72, 144],
