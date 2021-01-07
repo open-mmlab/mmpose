@@ -200,6 +200,14 @@ def _inference_single_pose_model(model,
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset', 'PanopticDataset',
                      'InterHand2DDataset'):
         flip_pairs = []
+    elif dataset in 'Face300WDataset':
+        flip_pairs = [[0, 16], [1, 15], [2, 14], [3, 13], [4, 12], [5, 11],
+                      [6, 10], [7, 9], [17, 26], [18, 25], [19, 24], [20, 23],
+                      [21, 22], [31, 35], [32, 34], [36, 45], [37,
+                                                               44], [38, 43],
+                      [39, 42], [40, 47], [41, 46], [48, 54], [49,
+                                                               53], [50, 52],
+                      [61, 63], [60, 64], [67, 65], [58, 56], [59, 55]]
     else:
         raise NotImplementedError()
 
@@ -552,6 +560,17 @@ def vis_pose_result(model,
             0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16, 16,
             0
         ]]
+
+    elif dataset == 'Face300WDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[
+            19,
+        ] * (68)]
+        radius = 3
+        kpt_score_thr = 0
 
     else:
         raise NotImplementedError()

@@ -8,7 +8,7 @@ evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=5e-5,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -67,7 +67,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=1),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
