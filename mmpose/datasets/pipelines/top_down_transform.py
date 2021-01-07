@@ -437,6 +437,11 @@ class TopDownGenerateTarget:
 
             tmp_size = factor * 3
 
+            # prepare for gaussian
+            size = 2 * tmp_size + 1
+            x = np.arange(0, size, 1, np.float32)
+            y = x[:, None]
+
             for joint_id in range(num_joints):
                 feat_stride = (image_size - 1.0) / (heatmap_size - 1.0)
                 mu_x = int(joints_3d[joint_id][0] / feat_stride[0] + 0.5)
@@ -451,9 +456,6 @@ class TopDownGenerateTarget:
                     continue
 
                 # # Generate gaussian
-                size = 2 * tmp_size + 1
-                x = np.arange(0, size, 1, np.float32)
-                y = x[:, None]
                 mu_x_ac = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y_ac = joints_3d[joint_id][1] / feat_stride[1]
                 x0 = y0 = size // 2
