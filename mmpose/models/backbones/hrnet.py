@@ -360,8 +360,12 @@ class HRNet(nn.Module):
         ]
         self.transition3 = self._make_transition_layer(pre_stage_channels,
                                                        num_channels)
+
+        self.stage4_cfg.get('multiscale_output', False)
         self.stage4, pre_stage_channels = self._make_stage(
-            self.stage4_cfg, num_channels, multiscale_output=False)
+            self.stage4_cfg,
+            num_channels,
+            multiscale_output=self.stage4_cfg['multiscale_output'])
 
     @property
     def norm1(self):
