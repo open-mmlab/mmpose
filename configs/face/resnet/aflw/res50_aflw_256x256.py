@@ -15,7 +15,7 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[30, 50])
 total_epochs = 60
 log_config = dict(
-    interval=20,
+    interval=5,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
