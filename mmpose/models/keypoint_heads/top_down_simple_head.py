@@ -105,7 +105,7 @@ class TopDownSimpleHead(TopDownBaseHead):
             self.final_layer = build_conv_layer(
                 cfg=dict(type='Conv2d'),
                 in_channels=num_deconv_filters[-1]
-                if num_deconv_layers > 0 else in_channels,
+                if num_deconv_layers > 0 else self.in_channels,
                 out_channels=out_channels,
                 kernel_size=kernel_size,
                 stride=1,
