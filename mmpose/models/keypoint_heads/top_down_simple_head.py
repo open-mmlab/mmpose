@@ -200,7 +200,8 @@ class TopDownSimpleHead(TopDownBaseHead):
         The in_channels, in_index and input_transform must match.
         Specifically, when input_transform is None, only single feature map
         will be selected. So in_channels and in_index must be of type int.
-        When input_transform
+        When input_transform is not None, in_channels and in_index must be
+        list or tuple, with the same length.
 
         Args:
             in_channels (int|Sequence[int]): Input channels.

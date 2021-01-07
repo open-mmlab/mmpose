@@ -161,7 +161,7 @@ mmpose
         |── COFW_test_color.mat
 ```
 
-Run the following script under `$MMPOSE`
+Run the following script under `{MMPose}/data`
 
 `python tools/dataset/parse_cofw_dataset.py`
 
