@@ -119,7 +119,7 @@ class TopDownSimpleHead(TopDownBaseHead):
                             out_channels=conv_channels,
                             kernel_size=num_conv_kernels[i],
                             stride=1,
-                            padding=padding))
+                            padding=1 if num_conv_kernels[i] == 3 else 0))
                     layers.append(
                         build_norm_layer(dict(type='BN'), conv_channels)[1])
                     layers.append(nn.ReLU(inplace=True))
@@ -329,3 +329,5 @@ class TopDownSimpleHead(TopDownBaseHead):
         for m in self.final_layer.modules():
             if isinstance(m, nn.Conv2d):
                 normal_init(m, std=0.001, bias=0)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
