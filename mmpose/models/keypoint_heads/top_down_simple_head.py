@@ -119,7 +119,7 @@ class TopDownSimpleHead(TopDownBaseHead):
                             out_channels=conv_channels,
                             kernel_size=num_conv_kernels[i],
                             stride=1,
-                            padding=1 if num_conv_kernels[i] == 3 else 0))
+                            padding=(num_conv_kernels[i] - 1) // 2))
                     layers.append(
                         build_norm_layer(dict(type='BN'), conv_channels)[1])
                     layers.append(nn.ReLU(inplace=True))

@@ -8,7 +8,7 @@ evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-5,
+    lr=5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
