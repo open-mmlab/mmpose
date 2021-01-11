@@ -6,9 +6,9 @@ from mmcv.cnn import (build_conv_layer, build_norm_layer, build_upsample_layer,
 from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
-from ..registry import HEADS
 from .top_down_base_head import TopDownBaseHead
-from .utils.ops import resize
+from mmpose.models.utils.ops import resize
+from ..registry import HEADS
 
 
 @HEADS.register_module()

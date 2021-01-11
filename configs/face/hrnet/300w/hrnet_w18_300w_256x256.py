@@ -61,7 +61,8 @@ model = dict(
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
                 num_channels=(18, 36, 72, 144),
-                multiscale_output=True))),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False))),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=[18, 36, 72, 144],
