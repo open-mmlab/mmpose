@@ -1,7 +1,7 @@
 from mmcv.utils import build_from_cfg
 from torch import nn
 
-from .registry import BACKBONES, HEADS, LOSSES, POSENETS
+from .registry import BACKBONES, HEADS, LOSSES, NECKS, POSENETS
 
 
 def build(cfg, registry, default_args=None):
@@ -30,6 +30,11 @@ def build(cfg, registry, default_args=None):
 def build_backbone(cfg):
     """Build backbone."""
     return build(cfg, BACKBONES)
+
+
+def build_neck(cfg):
+    """Build neck."""
+    return build(cfg, NECKS)
 
 
 def build_head(cfg):
