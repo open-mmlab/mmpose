@@ -192,7 +192,7 @@ class TopDown(BasePose):
         # convert the dtype of heatmap to np.float16 and only keep value > 3e-3
         # to save space, heatmap is the 4th element of ret
         if ret[3] is not None:
-            assert ret[3].shape[0] == 0, 'batch size should be 1'
+            assert ret[3].shape[0] == 1, 'batch size should be 1'
             ret[3] = compact_heatmaps(ret[3][0])
         return tuple(ret)
 
