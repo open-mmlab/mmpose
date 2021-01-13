@@ -2,6 +2,7 @@
 import functools as func
 import glob
 import re
+import numpy as np
 
 import titlecase
 
@@ -18,9 +19,9 @@ for f in files:
 
     # count papers
     papers = set(
-        titlecase.titlecase(x.lower().strip())
-        for x in re.findall(r'\btitle\s*=\s*{(.*)}', content))
-    paperlist = '\n'.join(sorted('    - ' + x for x in papers))
+        (papertype, titlecase.titlecase(paper.lower().strip()))
+        for (papertype, paper) in re.findall(r'\[([A-Z]*?)\].*?\btitle\s*=\s*{(.*?)}', content, re.DOTALL))
+    paperlist = '\n'.join(sorted(f'    - [{t}] {x}' for t, x in papers))
     # count configs
     configs = set(x.lower().strip()
                   for x in re.findall(r'https.*configs/.*\.py', content))
@@ -46,6 +47,8 @@ allpapers = func.reduce(lambda a, b: a.union(b), [p for p, _, _, _ in stats])
 allconfigs = func.reduce(lambda a, b: a.union(b), [c for _, c, _, _ in stats])
 allckpts = func.reduce(lambda a, b: a.union(b), [c for _, _, c, _ in stats])
 msglist = '\n'.join(x for _, _, _, x in stats)
+papertypes, papercounts = np.unique([t for t, _ in allpapers], return_counts=True)
+countstr = '\n'.join([f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
 
 modelzoo = f"""
 # Model Zoo Statistics
@@ -53,6 +56,7 @@ modelzoo = f"""
 * Number of checkpoints: {len(allckpts)}
 * Number of configs: {len(allconfigs)}
 * Number of papers: {len(allpapers)}
+{countstr}
 
 {msglist}
 
