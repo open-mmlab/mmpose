@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[ALGORITHM]
+
+```latex
 @InProceedings{Huang_2020_CVPR,
 author = {Huang, Junjie and Zhu, Zheng and Guo, Feng and Huang, Guan},
 title = {The Devil Is in the Details: Delving Into Unbiased Data Processing for Human Pose Estimation},
