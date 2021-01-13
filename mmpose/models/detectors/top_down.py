@@ -37,9 +37,10 @@ class TopDown(BasePose):
 
         if loss_pose is not None:
             warnings.warn(
-                '`loss_pose` for BottomUp is deprecated, '
-                'please use `loss_keypoint` for heads instead',
-                DeprecationWarning)
+                '`loss_pose` for TopDown is deprecated, '
+                'use `loss_keypoint` for heads instead. See '
+                'https://github.com/open-mmlab/mmpose/pull/382'
+                ' for more information.', DeprecationWarning)
 
         self.backbone = builder.build_backbone(backbone)
 
