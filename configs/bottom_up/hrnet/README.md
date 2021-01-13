@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[ALGORITHM]
+
+```latex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
   author={Newell, Alejandro and Huang, Zhiao and Deng, Jia},
@@ -10,6 +12,11 @@
   pages={2277--2287},
   year={2017}
 }
+```
+
+[ALGORITHM]
+
+```latex
 @inproceedings{sun2019deep,
   title={Deep high-resolution representation learning for human pose estimation},
   author={Sun, Ke and Xiao, Bin and Liu, Dong and Wang, Jingdong},
