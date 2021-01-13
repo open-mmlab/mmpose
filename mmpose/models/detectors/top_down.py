@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import cv2
 import mmcv
@@ -21,6 +22,8 @@ class TopDown(BasePose):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
+        loss_pose (None): Deprecated arguments. Please use
+            `loss_keypoint` for heads instead.
     """
 
     def __init__(self,
@@ -28,8 +31,15 @@ class TopDown(BasePose):
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
-                 pretrained=None):
+                 pretrained=None,
+                 loss_pose=None):
         super().__init__()
+
+        if loss_pose is not None:
+            warnings.warn(
+                '`loss_pose` for BottomUp is deprecated, '
+                'please use `loss_keypoint` for heads instead',
+                DeprecationWarning)
 
         self.backbone = builder.build_backbone(backbone)
 
