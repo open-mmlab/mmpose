@@ -6,7 +6,7 @@
 
 ```latex
 @inproceedings{ma2018shufflenet,
-  title="{Shufflenet v2: Practical guidelines for efficient cnn architecture design}",
+  title={Shufflenet v2: Practical guidelines for efficient cnn architecture design},
   author={Ma, Ningning and Zhang, Xiangyu and Zheng, Hai-Tao and Sun, Jian},
   booktitle={Proceedings of the European conference on computer vision (ECCV)},
   pages={116--131},
