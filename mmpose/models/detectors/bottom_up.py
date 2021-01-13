@@ -39,16 +39,18 @@ class BottomUp(BasePose):
                  loss_pose=None):
         super().__init__()
 
-        if loss_pose is not None:
-            warnings.warn(
-                '`loss_pose` for BottomUp is deprecated, '
-                'use `loss_keypoint` for heads instead. See '
-                'https://github.com/open-mmlab/mmpose/pull/382'
-                ' for more information.', DeprecationWarning)
-
         self.backbone = builder.build_backbone(backbone)
 
         if keypoint_head is not None:
+
+            if 'loss_keypoint' not in keypoint_head and loss_pose is not None:
+                warnings.warn(
+                    '`loss_pose` for BottomUp is deprecated, '
+                    'use `loss_keypoint` for heads instead. See '
+                    'https://github.com/open-mmlab/mmpose/pull/382'
+                    ' for more information.', DeprecationWarning)
+                keypoint_head['loss_keypoint'] = loss_pose
+
             self.keypoint_head = builder.build_head(keypoint_head)
 
         self.train_cfg = train_cfg
