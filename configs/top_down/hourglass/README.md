@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[ALGORITHM]
+
+```latex
 @inproceedings{newell2016stacked,
   title={Stacked hourglass networks for human pose estimation},
   author={Newell, Alejandro and Yang, Kaiyu and Deng, Jia},

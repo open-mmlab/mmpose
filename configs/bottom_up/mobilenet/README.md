@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[ALGORITHM]
+
+```latex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
   author={Newell, Alejandro and Huang, Zhiao and Deng, Jia},
@@ -10,6 +12,11 @@
   pages={2277--2287},
   year={2017}
 }
+```
+
+[BACKBONE]
+
+```latex
 @inproceedings{sandler2018mobilenetv2,
   title="{Mobilenetv2: Inverted residuals and linear bottlenecks}",
   author={Sandler, Mark and Howard, Andrew and Zhu, Menglong and Zhmoginov, Andrey and Chen, Liang-Chieh},

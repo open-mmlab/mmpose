@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[BACKBONE]
+
+```latex
 @inproceedings{krizhevsky2012imagenet,
   title="{Imagenet classification with deep convolutional neural networks}",
   author={Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E},

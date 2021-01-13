@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[ALGORITHM]
+
+```latex
 @inproceedings{sun2019deep,
   title={Deep high-resolution representation learning for human pose estimation},
   author={Sun, Ke and Xiao, Bin and Liu, Dong and Wang, Jingdong},

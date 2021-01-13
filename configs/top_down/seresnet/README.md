@@ -2,7 +2,9 @@
 
 ## Introduction
 
-```
+[BACKBONE]
+
+```latex
 @inproceedings{hu2018squeeze,
   title="{Squeeze-and-excitation networks}",
   author={Hu, Jie and Shen, Li and Sun, Gang},
