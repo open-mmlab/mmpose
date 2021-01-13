@@ -2,8 +2,8 @@
 import functools as func
 import glob
 import re
-import numpy as np
 
+import numpy as np
 import titlecase
 
 files = sorted(glob.glob('*_models.md'))
@@ -20,7 +20,8 @@ for f in files:
     # count papers
     papers = set(
         (papertype, titlecase.titlecase(paper.lower().strip()))
-        for (papertype, paper) in re.findall(r'\[([A-Z]*?)\].*?\btitle\s*=\s*{(.*?)}', content, re.DOTALL))
+        for (papertype, paper) in re.findall(
+            r'\[([A-Z]*?)\].*?\btitle\s*=\s*{(.*?)}', content, re.DOTALL))
     paperlist = '\n'.join(sorted(f'    - [{t}] {x}' for t, x in papers))
     # count configs
     configs = set(x.lower().strip()
@@ -47,8 +48,10 @@ allpapers = func.reduce(lambda a, b: a.union(b), [p for p, _, _, _ in stats])
 allconfigs = func.reduce(lambda a, b: a.union(b), [c for _, c, _, _ in stats])
 allckpts = func.reduce(lambda a, b: a.union(b), [c for _, _, c, _ in stats])
 msglist = '\n'.join(x for _, _, _, x in stats)
-papertypes, papercounts = np.unique([t for t, _ in allpapers], return_counts=True)
-countstr = '\n'.join([f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
+papertypes, papercounts = np.unique([t for t, _ in allpapers],
+                                    return_counts=True)
+countstr = '\n'.join(
+    [f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
 
 modelzoo = f"""
 # Model Zoo Statistics
