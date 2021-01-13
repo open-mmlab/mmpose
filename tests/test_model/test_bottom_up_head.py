@@ -11,30 +11,85 @@ def test_bottom_up_simple_head():
     with pytest.raises(TypeError):
         # extra
         _ = BottomUpSimpleHead(
-            in_channels=512, num_joints=17, with_ae_loss=[True], extra=[])
+            in_channels=512,
+            num_joints=17,
+            with_ae_loss=[True],
+            extra=[],
+            loss_keypoint=dict(
+                type='MultiLossFactory',
+                num_joints=17,
+                num_stages=1,
+                ae_loss_type='exp',
+                with_ae_loss=[True],
+                push_loss_factor=[0.001],
+                pull_loss_factor=[0.001],
+                with_heatmaps_loss=[True],
+                heatmaps_loss_factor=[1.0]))
     # test final_conv_kernel
     with pytest.raises(AssertionError):
         _ = BottomUpSimpleHead(
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True],
-            extra={'final_conv_kernel': 0})
+            extra={'final_conv_kernel': 0},
+            loss_keypoint=dict(
+                type='MultiLossFactory',
+                num_joints=17,
+                num_stages=1,
+                ae_loss_type='exp',
+                with_ae_loss=[True],
+                push_loss_factor=[0.001],
+                pull_loss_factor=[0.001],
+                with_heatmaps_loss=[True],
+                heatmaps_loss_factor=[1.0]))
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     assert head.final_layer.padding == (1, 1)
     head = BottomUpSimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
-        extra={'final_conv_kernel': 1})
+        extra={'final_conv_kernel': 1},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     assert head.final_layer.padding == (0, 0)
     head = BottomUpSimpleHead(
-        in_channels=512, num_joints=17, with_ae_loss=[True])
+        in_channels=512,
+        num_joints=17,
+        with_ae_loss=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     assert head.final_layer.padding == (0, 0)
     # test with_ae_loss
@@ -43,7 +98,17 @@ def test_bottom_up_simple_head():
         num_joints=17,
         num_deconv_layers=0,
         with_ae_loss=[True],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -54,7 +119,17 @@ def test_bottom_up_simple_head():
         num_joints=17,
         num_deconv_layers=0,
         with_ae_loss=[False],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -67,7 +142,17 @@ def test_bottom_up_simple_head():
         num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[False],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -79,7 +164,17 @@ def test_bottom_up_simple_head():
         num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -91,7 +186,17 @@ def test_bottom_up_simple_head():
         num_deconv_layers=0,
         tag_per_joint=False,
         with_ae_loss=[True],
-        extra={'final_conv_kernel': 3})
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=1,
+            ae_loss_type='exp',
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -108,13 +213,33 @@ def test_bottom_up_higherresolution_head():
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True, False],
-            extra={'final_conv_kernel': 0})
+            extra={'final_conv_kernel': 0},
+            loss_keypoint=dict(
+                type='MultiLossFactory',
+                num_joints=17,
+                num_stages=2,
+                ae_loss_type='exp',
+                with_ae_loss=[True, False],
+                push_loss_factor=[0.001, 0.001],
+                pull_loss_factor=[0.001, 0.001],
+                with_heatmaps_loss=[True, True],
+                heatmaps_loss_factor=[1.0, 1.0]))
     head = BottomUpHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
         extra={'final_conv_kernel': 3},
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.final_layers[0].padding == (1, 1)
     head = BottomUpHigherResolutionHead(
@@ -122,14 +247,34 @@ def test_bottom_up_higherresolution_head():
         num_joints=17,
         with_ae_loss=[True, False],
         extra={'final_conv_kernel': 1},
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.final_layers[0].padding == (0, 0)
     head = BottomUpHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.final_layers[0].padding == (0, 0)
     # test deconv layers
@@ -139,13 +284,33 @@ def test_bottom_up_higherresolution_head():
             num_joints=17,
             with_ae_loss=[True, False],
             num_deconv_kernels=[1],
-            cat_output=[True])
+            cat_output=[True],
+            loss_keypoint=dict(
+                type='MultiLossFactory',
+                num_joints=17,
+                num_stages=2,
+                ae_loss_type='exp',
+                with_ae_loss=[True, False],
+                push_loss_factor=[0.001, 0.001],
+                pull_loss_factor=[0.001, 0.001],
+                with_heatmaps_loss=[True, True],
+                heatmaps_loss_factor=[1.0, 1.0]))
     head = BottomUpHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
         num_deconv_kernels=[4],
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (0, 0)
     head = BottomUpHigherResolutionHead(
@@ -153,7 +318,17 @@ def test_bottom_up_higherresolution_head():
         num_joints=17,
         with_ae_loss=[True, False],
         num_deconv_kernels=[3],
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (1, 1)
     head = BottomUpHigherResolutionHead(
@@ -161,7 +336,17 @@ def test_bottom_up_higherresolution_head():
         num_joints=17,
         with_ae_loss=[True, False],
         num_deconv_kernels=[2],
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (0, 0)
     # test tag_per_joint & ae loss
@@ -171,7 +356,17 @@ def test_bottom_up_higherresolution_head():
         tag_per_joint=False,
         with_ae_loss=[False, False],
         extra={'final_conv_kernel': 3},
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[False, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -184,7 +379,17 @@ def test_bottom_up_higherresolution_head():
         tag_per_joint=False,
         with_ae_loss=[True, False],
         extra={'final_conv_kernel': 3},
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, False],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -197,7 +402,17 @@ def test_bottom_up_higherresolution_head():
         tag_per_joint=True,
         with_ae_loss=[True, True],
         extra={'final_conv_kernel': 3},
-        cat_output=[True])
+        cat_output=[True],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, True],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -211,7 +426,17 @@ def test_bottom_up_higherresolution_head():
         tag_per_joint=True,
         with_ae_loss=[True, True],
         extra={'final_conv_kernel': 3},
-        cat_output=[False])
+        cat_output=[False],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, True],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)
@@ -224,7 +449,17 @@ def test_bottom_up_higherresolution_head():
         tag_per_joint=True,
         with_ae_loss=[True, True],
         extra={'final_conv_kernel': 3},
-        cat_output=[False])
+        cat_output=[False],
+        loss_keypoint=dict(
+            type='MultiLossFactory',
+            num_joints=17,
+            num_stages=2,
+            ae_loss_type='exp',
+            with_ae_loss=[True, True],
+            push_loss_factor=[0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001],
+            with_heatmaps_loss=[True, True],
+            heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     input_shape = (1, 512, 32, 32)
     inputs = _demo_inputs(input_shape)

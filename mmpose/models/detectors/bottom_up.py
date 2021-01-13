@@ -1,4 +1,5 @@
 import math
+import warnings
 
 import cv2
 import mmcv
@@ -10,7 +11,6 @@ from mmcv.visualization.image import imshow
 from mmpose.core.evaluation import (aggregate_results, get_group_preds,
                                     get_multi_stage_outputs)
 from mmpose.core.post_processing.group import HeatmapParser
-from mmpose.models.builder import build_loss
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
@@ -26,7 +26,8 @@ class BottomUp(BasePose):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
-        loss_pose (dict): Config for loss. Default: None.
+        loss_pose (None): Deprecated arguments. Please use
+            `loss_keypoint` for heads instead.
     """
 
     def __init__(self,
@@ -41,14 +42,21 @@ class BottomUp(BasePose):
         self.backbone = builder.build_backbone(backbone)
 
         if keypoint_head is not None:
+
+            if 'loss_keypoint' not in keypoint_head and loss_pose is not None:
+                warnings.warn(
+                    '`loss_pose` for BottomUp is deprecated, '
+                    'use `loss_keypoint` for heads instead. See '
+                    'https://github.com/open-mmlab/mmpose/pull/382'
+                    ' for more information.', DeprecationWarning)
+                keypoint_head['loss_keypoint'] = loss_pose
+
             self.keypoint_head = builder.build_head(keypoint_head)
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.use_udp = test_cfg.get('use_udp', False)
         self.parser = HeatmapParser(self.test_cfg)
-
-        self.loss = build_loss(loss_pose)
         self.init_weights(pretrained=pretrained)
 
     @property
@@ -154,24 +162,13 @@ class BottomUp(BasePose):
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
-        heatmaps_losses, push_losses, pull_losses = self.loss(
-            output, targets, masks, joints)
-
+        # if return loss
         losses = dict()
+        if self.with_keypoint:
+            keypoint_losses = self.keypoint_head.get_loss(
+                output, targets, masks, joints)
+            losses.update(keypoint_losses)
 
-        loss = 0
-        for idx in range(len(targets)):
-            if heatmaps_losses[idx] is not None:
-                heatmaps_loss = heatmaps_losses[idx].mean(dim=0)
-                loss = loss + heatmaps_loss
-                if push_losses[idx] is not None:
-                    push_loss = push_losses[idx].mean(dim=0)
-                    loss = loss + push_loss
-                if pull_losses[idx] is not None:
-                    pull_loss = pull_losses[idx].mean(dim=0)
-                    loss = loss + pull_loss
-
-        losses['all_loss'] = loss
         return losses
 
     def forward_dummy(self, img):
@@ -219,26 +216,29 @@ class BottomUp(BasePose):
         center = img_metas['center']
         scale = img_metas['scale']
 
+        result = {}
+
         aggregated_heatmaps = None
         tags_list = []
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
-            outputs = self.backbone(image_resized)
+            features = self.backbone(image_resized)
             if self.with_keypoint:
-                outputs = self.keypoint_head(outputs)
+                outputs = self.keypoint_head(features)
 
             if self.test_cfg['flip_test']:
                 # use flip test
-                outputs_flip = self.backbone(torch.flip(image_resized, [3]))
+                features_flipped = self.backbone(
+                    torch.flip(image_resized, [3]))
                 if self.with_keypoint:
-                    outputs_flip = self.keypoint_head(outputs_flip)
+                    outputs_flipped = self.keypoint_head(features_flipped)
             else:
-                outputs_flip = None
+                outputs_flipped = None
 
             _, heatmaps, tags = get_multi_stage_outputs(
                 outputs,
-                outputs_flip,
+                outputs_flipped,
                 self.test_cfg['num_joints'],
                 self.test_cfg['with_heatmaps'],
                 self.test_cfg['with_ae'],
@@ -269,22 +269,27 @@ class BottomUp(BasePose):
                                             self.test_cfg['adjust'],
                                             self.test_cfg['refine'])
 
-        results = get_group_preds(
+        preds = get_group_preds(
             grouped,
             center,
             scale, [aggregated_heatmaps.size(3),
                     aggregated_heatmaps.size(2)],
             use_udp=self.use_udp)
 
-        image_path = []
-        image_path.extend(img_metas['image_file'])
+        image_paths = []
+        image_paths.append(img_metas['image_file'])
 
         if return_heatmap:
             output_heatmap = aggregated_heatmaps.detach().cpu().numpy()
         else:
             output_heatmap = None
 
-        return results, scores, image_path, output_heatmap
+        result['preds'] = preds
+        result['scores'] = scores
+        result['image_paths'] = image_paths
+        result['output_heatmap'] = output_heatmap
+
+        return result
 
     def show_result(self,
                     img,

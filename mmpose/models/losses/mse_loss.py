@@ -11,12 +11,14 @@ class JointsMSELoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
-    def __init__(self, use_target_weight=False):
+    def __init__(self, use_target_weight=False, loss_weight=1.):
         super().__init__()
         self.criterion = nn.MSELoss()
         self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
 
     def forward(self, output, target, target_weight):
         """Forward function."""
@@ -39,26 +41,28 @@ class JointsMSELoss(nn.Module):
             else:
                 loss += self.criterion(heatmap_pred, heatmap_gt)
 
-        return loss / num_joints
+        return loss / num_joints * self.loss_weight
 
 
 @LOSSES.register_module()
 class CombinedTargetMSELoss(nn.Module):
     """MSE loss for combined target.
-            CombinedTarget: The combination of classification target
-            (response map) and regression target (offset map).
-            Paper ref: Huang et al. The Devil is in the Details: Delving into
-            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+        CombinedTarget: The combination of classification target
+        (response map) and regression target (offset map).
+        Paper ref: Huang et al. The Devil is in the Details: Delving into
+        Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
-    def __init__(self, use_target_weight):
+    def __init__(self, use_target_weight, loss_weight=1.):
         super().__init__()
         self.criterion = nn.MSELoss(reduction='mean')
         self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
 
     def forward(self, output, target, target_weight):
         batch_size = output.size(0)
@@ -86,7 +90,7 @@ class CombinedTargetMSELoss(nn.Module):
                                          heatmap_gt * offset_x_gt)
             loss += 0.5 * self.criterion(heatmap_gt * offset_y_pred,
                                          heatmap_gt * offset_y_gt)
-        return loss / num_joints
+        return loss / num_joints * self.loss_weight
 
 
 @LOSSES.register_module()
@@ -97,14 +101,16 @@ class JointsOHKMMSELoss(nn.Module):
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
         topk (int): Only top k joint losses are kept.
+        loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
-    def __init__(self, use_target_weight=False, topk=8):
+    def __init__(self, use_target_weight=False, topk=8, loss_weight=1.):
         super().__init__()
         assert topk > 0
         self.criterion = nn.MSELoss(reduction='none')
         self.use_target_weight = use_target_weight
         self.topk = topk
+        self.loss_weight = loss_weight
 
     def _ohkm(self, loss):
         """Online hard keypoint mining."""
@@ -145,4 +151,4 @@ class JointsOHKMMSELoss(nn.Module):
         losses = [loss.mean(dim=1).unsqueeze(dim=1) for loss in losses]
         losses = torch.cat(losses, dim=1)
 
-        return self._ohkm(losses)
+        return self._ohkm(losses) * self.loss_weight

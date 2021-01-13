@@ -16,7 +16,17 @@ def test_bottomup_forward():
             num_deconv_layers=0,
             tag_per_joint=True,
             with_ae_loss=[True],
-            extra=dict(final_conv_kernel=1, )),
+            extra=dict(final_conv_kernel=1, ),
+            loss_keypoint=dict(
+                type='MultiLossFactory',
+                num_joints=17,
+                num_stages=1,
+                ae_loss_type='exp',
+                with_ae_loss=[True],
+                push_loss_factor=[0.001],
+                pull_loss_factor=[0.001],
+                with_heatmaps_loss=[True],
+                heatmaps_loss_factor=[1.0])),
         train_cfg=dict(),
         test_cfg=dict(
             num_joints=17,
@@ -41,23 +51,11 @@ def test_bottomup_forward():
             use_gt_bbox=True,
             flip_pairs=[[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12],
                         [13, 14], [15, 16]],
-        ),
-        loss_pose=dict(
-            type='MultiLossFactory',
-            num_joints=17,
-            num_stages=1,
-            ae_loss_type='exp',
-            with_ae_loss=[True],
-            push_loss_factor=[0.001],
-            pull_loss_factor=[0.001],
-            with_heatmaps_loss=[True],
-            heatmaps_loss_factor=[1.0],
-        ),
-    )
+        ))
 
     detector = BottomUp(model_cfg['backbone'], model_cfg['keypoint_head'],
                         model_cfg['train_cfg'], model_cfg['test_cfg'],
-                        model_cfg['pretrained'], model_cfg['loss_pose'])
+                        model_cfg['pretrained'])
 
     detector.init_weights()
 

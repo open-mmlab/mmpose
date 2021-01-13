@@ -3,6 +3,7 @@ import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
+from mmpose.models.builder import build_loss
 from ..backbones.resnet import BasicBlock
 from ..builder import HEADS
 
@@ -26,6 +27,7 @@ class BottomUpHigherResolutionHead(nn.Module):
         num_deconv_kernels (list|tuple): Kernel sizes.
         cat_output (list[bool]): Option to concat outputs.
         with_ae_loss (list[bool]): Option to use ae loss.
+        loss_keypoint (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
@@ -38,9 +40,11 @@ class BottomUpHigherResolutionHead(nn.Module):
                  num_deconv_kernels=(4, ),
                  num_basic_blocks=4,
                  cat_output=None,
-                 with_ae_loss=None):
+                 with_ae_loss=None,
+                 loss_keypoint=None):
         super().__init__()
 
+        self.loss = build_loss(loss_keypoint)
         dim_tag = num_joints if tag_per_joint else 1
 
         self.num_deconvs = num_deconv_layers
@@ -164,6 +168,52 @@ class BottomUpHigherResolutionHead(nn.Module):
             raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
 
         return deconv_kernel, padding, output_padding
+
+    def get_loss(self, output, targets, masks, joints):
+        """Calculate bottom-up keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_outputs: O
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
+                                              heatmaps
+            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+                                                 heatmaps for ae loss
+        """
+
+        losses = dict()
+
+        heatmaps_losses, push_losses, pull_losses = self.loss(
+            output, targets, masks, joints)
+
+        for idx in range(len(targets)):
+            if heatmaps_losses[idx] is not None:
+                heatmaps_loss = heatmaps_losses[idx].mean(dim=0)
+                if 'heatmap_loss' not in losses:
+                    losses['heatmap_loss'] = heatmaps_loss
+                else:
+                    losses['heatmap_loss'] += heatmaps_loss
+            if push_losses[idx] is not None:
+                push_loss = push_losses[idx].mean(dim=0)
+                if 'push_loss' not in losses:
+                    losses['push_loss'] = push_loss
+                else:
+                    losses['push_loss'] += push_loss
+            if pull_losses[idx] is not None:
+                pull_loss = pull_losses[idx].mean(dim=0)
+                if 'pull_loss' not in losses:
+                    losses['pull_loss'] = pull_loss
+                else:
+                    losses['pull_loss'] += pull_loss
+
+        return losses
 
     def forward(self, x):
         """Forward function."""

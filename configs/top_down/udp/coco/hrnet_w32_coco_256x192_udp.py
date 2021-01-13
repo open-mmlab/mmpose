@@ -78,7 +78,7 @@ model = dict(
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
-    ),
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
@@ -86,8 +86,7 @@ model = dict(
         shift_heatmap=False,
         target_type=target_type,
         modulate_kernel=13,
-        use_udp=True),
-    loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
+        use_udp=True))
 
 data_cfg = dict(
     image_size=[192, 256],

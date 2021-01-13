@@ -77,13 +77,13 @@ class OneHand10KDataset(HandBaseDataset):
     def _get_db(self):
         """Load dataset."""
         gt_db = []
+        bbox_id = 0
         num_joints = self.ann_info['num_joints']
         for img_id in self.img_ids:
 
             ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
             objs = self.coco.loadAnns(ann_ids)
 
-            rec = []
             for obj in objs:
                 if max(obj['keypoints']) == 0:
                     continue
@@ -94,23 +94,27 @@ class OneHand10KDataset(HandBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # use 1.25bbox as input
+                # use 1.25 padded bbox as input
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
 
-                rec.append({
+                gt_db.append({
                     'image_file': image_file,
                     'center': center,
                     'scale': scale,
                     'rotation': 0,
                     'joints_3d': joints_3d,
                     'joints_3d_visible': joints_3d_visible,
+                    'dataset': self.dataset_name,
                     'bbox': obj['bbox'],
-                    'bbox_score': 1
+                    'bbox_score': 1,
+                    'bbox_id': bbox_id
                 })
-            gt_db.extend(rec)
+                bbox_id = bbox_id + 1
+        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
+
         return gt_db
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
@@ -129,9 +133,7 @@ class OneHand10KDataset(HandBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, [ 'T', 'e', 's', 't',
-                    '/', 's', 'o', 'u', 'r', 'c', 'e', '/', '0', '.', 'j',
-                    'p', 'g']
+                :image_path (list[str]): For example, ['Test/source/0.jpg']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.
@@ -150,19 +152,26 @@ class OneHand10KDataset(HandBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
 
-        for preds, boxes, image_path, _ in outputs:
-            str_image_path = ''.join(image_path)
-            image_id = self.name2id[str_image_path[len(self.img_prefix):]]
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
 
-            kpts.append({
-                'keypoints': preds[0].tolist(),
-                'center': boxes[0][0:2].tolist(),
-                'scale': boxes[0][2:4].tolist(),
-                'area': float(boxes[0][4]),
-                'score': float(boxes[0][5]),
-                'image_id': image_id,
-            })
+                kpts.append({
+                    'keypoints': preds[i].tolist(),
+                    'center': boxes[i][0:2].tolist(),
+                    'scale': boxes[i][2:4].tolist(),
+                    'area': float(boxes[i][4]),
+                    'score': float(boxes[i][5]),
+                    'image_id': image_id,
+                    'bbox_id': bbox_ids[i]
+                })
+        kpts = self._sort_and_unique_bboxes(kpts)
 
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
