@@ -28,7 +28,9 @@ class TopDown(BasePose):
 
     def __init__(self,
                  backbone,
+                 neck=None,
                  keypoint_head=None,
+                 regression_head=None,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None,
@@ -39,6 +41,12 @@ class TopDown(BasePose):
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
+
+        if neck is not None:
+            self.neck = builder.build_head(neck)
+
+        if neck is not None:
+            self.neck = builder.build_head(neck)
 
         if keypoint_head is not None:
             keypoint_head['train_cfg'] = train_cfg

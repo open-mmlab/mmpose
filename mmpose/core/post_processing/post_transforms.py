@@ -48,6 +48,35 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     return joints_3d_flipped, joints_3d_visible_flipped
 
 
+def fliplr_regression(regression, flip_pairs):
+    """Flip human joints horizontally.
+
+    Note:
+        num_keypoints: K
+
+    Args:
+        regression (np.ndarray([K, 3])): Coordinates of keypoints.
+        flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
+            (for example, left ear -- right ear).
+
+    Returns:
+        tuple: Flipped human joints.
+
+        - regression_flipped (np.ndarray([K, 3])): Flipped joints.
+    """
+
+    regression_flipped = regression.copy()
+    # Swap left-right parts
+    for left, right in flip_pairs:
+        regression_flipped[left, :] = regression[right, :]
+        regression_flipped[right, :] = regression[left, :]
+
+    # Flip horizontally
+    regression_flipped[:, 0] = 1 - regression_flipped[:, 0]
+
+    return regression_flipped
+
+
 def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
     """Flip the flipped heatmaps back to the original form.
 

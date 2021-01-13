@@ -9,8 +9,10 @@ from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
 class TopDownBaseHead(nn.Module):
     """Base class for top-down keypoint heads.
 
-    All top-down keypoint heads should subclass it. All subclass should
-    overwrite:     Methods:`get_loss`, supporting to calculate loss.
+    All top-down keypoint heads should subclass it.
+    All subclass should overwrite:
+
+    Methods:`get_loss`, supporting to calculate loss.
     Methods:`get_accuracy`, supporting to calculate accuracy.
     Methods:`forward`, supporting to forward model.
     Methods:`inference_model`, supporting to inference model.
