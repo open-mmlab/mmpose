@@ -238,12 +238,13 @@ def _inference_single_pose_model(model,
 
     # forward the model
     with torch.no_grad():
-        all_preds, _, _, heatmap = model(
+        result = model(
             img=data['img'],
             img_metas=data['img_metas'],
             return_loss=False,
             return_heatmap=return_heatmap)
-    return all_preds[0], heatmap
+
+    return result['preds'][0], result['output_heatmap']
 
 
 def inference_top_down_pose_model(model,
@@ -385,18 +386,18 @@ def inference_bottom_up_pose_model(model,
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
         # forward the model
         with torch.no_grad():
-            all_preds, _, _, heatmap = model(
+            result = model(
                 img=data['img'],
                 img_metas=data['img_metas'],
                 return_loss=False,
                 return_heatmap=return_heatmap)
 
         if return_heatmap:
-            h.layer_outputs['heatmap'] = heatmap
+            h.layer_outputs['heatmap'] = result['output_heatmap']
 
         returned_outputs.append(h.layer_outputs)
 
-        for pred in all_preds:
+        for pred in result['preds']:
             pose_results.append({
                 'keypoints': pred[:, :3],
             })

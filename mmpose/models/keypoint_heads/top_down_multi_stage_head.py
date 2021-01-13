@@ -6,11 +6,15 @@ from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule, Linear,
                       build_norm_layer, build_upsample_layer, constant_init,
                       kaiming_init, normal_init)
 
+from mmpose.core.evaluation import pose_pck_accuracy
+from mmpose.core.post_processing import flip_back
+from mmpose.models.builder import build_loss
 from ..registry import HEADS
+from .top_down_base_head import TopDownBaseHead
 
 
 @HEADS.register_module()
-class TopDownMultiStageHead(nn.Module):
+class TopDownMultiStageHead(TopDownBaseHead):
     """Heads for multi-stage pose models.
 
     TopDownMultiStageHead is consisted of multiple branches, each of
@@ -27,6 +31,7 @@ class TopDownMultiStageHead(nn.Module):
         num_deconv_filters (list|tuple): Number of filters.
             If num_deconv_layers > 0, the length of
         num_deconv_kernels (list|tuple): Kernel sizes.
+        loss_keypoint (dict): Config for keypoint loss. Default: None.
     """
 
     def __init__(self,
@@ -36,11 +41,19 @@ class TopDownMultiStageHead(nn.Module):
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
-                 extra=None):
+                 extra=None,
+                 loss_keypoint=None,
+                 train_cfg=None,
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
         self.num_stages = num_stages
+        self.loss = build_loss(loss_keypoint)
+
+        self.train_cfg = {} if train_cfg is None else train_cfg
+        self.test_cfg = {} if test_cfg is None else test_cfg
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -92,6 +105,74 @@ class TopDownMultiStageHead(nn.Module):
                     padding=padding)
             self.multi_final_layers.append(final_layer)
 
+    def get_loss(self, output, target, target_weight):
+        """Calculate top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_outputs: O
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]):
+                Output heatmaps.
+            target (torch.Tensor[NxKxHxW]):
+                Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        losses = dict()
+
+        assert isinstance(output, list)
+        assert target.dim() == 4 and target_weight.dim() == 3
+
+        if isinstance(self.loss, nn.Sequential):
+            assert len(self.loss) == len(output)
+        for i in range(len(output)):
+            target_i = target
+            target_weight_i = target_weight
+            if isinstance(self.loss, nn.Sequential):
+                loss_func = self.loss[i]
+            else:
+                loss_func = self.loss
+            loss_i = loss_func(output[i], target_i, target_weight_i)
+            if 'mse_loss' not in losses:
+                losses['mse_loss'] = loss_i
+            else:
+                losses['mse_loss'] += loss_i
+
+        return losses
+
+    def get_accuracy(self, output, target, target_weight):
+        """Calculate accuracy for top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        accuracy = dict()
+
+        if self.target_type == 'GaussianHeatMap':
+            _, avg_acc, _ = pose_pck_accuracy(
+                output[-1].detach().cpu().numpy(),
+                target.detach().cpu().numpy(),
+                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+            accuracy['acc_pose'] = float(avg_acc)
+
+        return accuracy
+
     def forward(self, x):
         """Forward function.
 
@@ -105,6 +186,35 @@ class TopDownMultiStageHead(nn.Module):
             y = self.multi_final_layers[i](y)
             out.append(y)
         return out
+
+    def inference_model(self, x, flip_pairs=None):
+        """Inference function.
+
+        Returns:
+            output_heatmap (np.ndarray): Output heatmaps.
+
+        Args:
+            x (List[torch.Tensor[NxKxHxW]]): Input features.
+            flip_pairs (None | list[tuple()):
+                Pairs of keypoints which are mirrored.
+        """
+        output = self.forward(x)
+        assert isinstance(output, list)
+        output = output[-1]
+
+        if flip_pairs is not None:
+            # perform flip
+            output_heatmap = flip_back(
+                output.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
+            # feature is not aligned, shift flipped heatmap for higher accuracy
+            if self.test_cfg.get('shift_heatmap', False):
+                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
+        else:
+            output_heatmap = output.detach().cpu().numpy()
+
+        return output_heatmap
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""
@@ -138,23 +248,6 @@ class TopDownMultiStageHead(nn.Module):
             self.in_channels = planes
 
         return nn.Sequential(*layers)
-
-    @staticmethod
-    def _get_deconv_cfg(deconv_kernel):
-        """Get configurations for deconv layers."""
-        if deconv_kernel == 4:
-            padding = 1
-            output_padding = 0
-        elif deconv_kernel == 3:
-            padding = 1
-            output_padding = 1
-        elif deconv_kernel == 2:
-            padding = 0
-            output_padding = 0
-        else:
-            raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
-
-        return deconv_kernel, padding, output_padding
 
     def init_weights(self):
         """Initialize model weights."""
@@ -293,7 +386,7 @@ class PRM(nn.Module):
 
 
 @HEADS.register_module()
-class TopDownMSMUHead(nn.Module):
+class TopDownMSMUHead(TopDownBaseHead):
     """Heads for multi-stage multi-unit heads used in Multi-Stage Pose
     estimation Network (MSPN), and Residual Steps Networks (RSN).
 
@@ -307,6 +400,7 @@ class TopDownMSMUHead(nn.Module):
             Default: False.
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        loss_keypoint (dict): Config for keypoint loss. Default: None.
     """
 
     def __init__(self,
@@ -316,16 +410,26 @@ class TopDownMSMUHead(nn.Module):
                  num_stages=4,
                  num_units=4,
                  use_prm=False,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 loss_keypoint=None,
+                 train_cfg=None,
+                 test_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
         super().__init__()
+
+        self.train_cfg = {} if train_cfg is None else train_cfg
+        self.test_cfg = {} if test_cfg is None else test_cfg
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
 
         self.out_shape = out_shape
         self.unit_channels = unit_channels
         self.out_channels = out_channels
         self.num_stages = num_stages
         self.num_units = num_units
+
+        self.loss = build_loss(loss_keypoint)
+
         self.predict_layers = nn.ModuleList([])
         for i in range(self.num_stages):
             for j in range(self.num_units):
@@ -336,6 +440,78 @@ class TopDownMSMUHead(nn.Module):
                         out_shape,
                         use_prm,
                         norm_cfg=norm_cfg))
+
+    def get_loss(self, output, target, target_weight):
+        """Calculate top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_outputs: O
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxOxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxOxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxOxKx1]):
+                Weights across different joint types.
+        """
+
+        losses = dict()
+
+        assert isinstance(output, list)
+        assert target.dim() == 5 and target_weight.dim() == 4
+        assert target.size(1) == len(output)
+
+        if isinstance(self.loss, nn.Sequential):
+            assert len(self.loss) == len(output)
+        for i in range(len(output)):
+            target_i = target[:, i, :, :, :]
+            target_weight_i = target_weight[:, i, :, :]
+
+            if isinstance(self.loss, nn.Sequential):
+                loss_func = self.loss[i]
+            else:
+                loss_func = self.loss
+
+            loss_i = loss_func(output[i], target_i, target_weight_i)
+            if 'mse_loss' not in losses:
+                losses['mse_loss'] = loss_i
+            else:
+                losses['mse_loss'] += loss_i
+
+        return losses
+
+    def get_accuracy(self, output, target, target_weight):
+        """Calculate accuracy for top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        accuracy = dict()
+
+        if self.target_type == 'GaussianHeatMap':
+            assert isinstance(output, list)
+            assert target.dim() == 5 and target_weight.dim() == 4
+            _, avg_acc, _ = pose_pck_accuracy(
+                output[-1].detach().cpu().numpy(),
+                target[:, -1, ...].detach().cpu().numpy(),
+                target_weight[:, -1,
+                              ...].detach().cpu().numpy().squeeze(-1) > 0)
+            accuracy['acc_pose'] = float(avg_acc)
+
+        return accuracy
 
     def forward(self, x):
         """Forward function.
@@ -356,6 +532,32 @@ class TopDownMSMUHead(nn.Module):
                 out.append(y)
 
         return out
+
+    def inference_model(self, x, flip_pairs=None):
+        """Inference function.
+
+        Returns:
+            output_heatmap (np.ndarray): Output heatmaps.
+
+        Args:
+            x (List[torch.Tensor[NxKxHxW]]): Input features.
+            flip_pairs (None | list[tuple()):
+                Pairs of keypoints which are mirrored.
+        """
+        output = self.forward(x)
+        assert isinstance(output, list)
+        output = output[-1]
+        if flip_pairs is not None:
+            output_heatmap = flip_back(
+                output.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
+            # feature is not aligned, shift flipped heatmap for higher accuracy
+            if self.test_cfg.get('shift_heatmap', False):
+                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
+        else:
+            output_heatmap = output.detach().cpu().numpy()
+        return output_heatmap
 
     def init_weights(self):
         """Initialize model weights."""

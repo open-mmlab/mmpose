@@ -31,7 +31,7 @@ model = dict(
         post_process='unbiased',
         shift_heatmap=True,
         modulate_kernel=11),
-    loss_pose=dict(type='JointsMSELoss', use_target_weight=False))
+    loss_keypoint=dict(type='JointsMSELoss', use_target_weight=False))
 ```
 
 ## Modify dataset

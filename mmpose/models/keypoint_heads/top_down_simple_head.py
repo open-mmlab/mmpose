@@ -2,11 +2,15 @@ import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
+from mmpose.core.evaluation import pose_pck_accuracy
+from mmpose.core.post_processing import flip_back
+from mmpose.models.builder import build_loss
 from ..registry import HEADS
+from .top_down_base_head import TopDownBaseHead
 
 
 @HEADS.register_module()
-class TopDownSimpleHead(nn.Module):
+class TopDownSimpleHead(TopDownBaseHead):
     """Top-down model head of simple baseline paper ref: Bin Xiao. ``Simple
     Baselines for Human Pose Estimation and Tracking``.
 
@@ -22,6 +26,7 @@ class TopDownSimpleHead(nn.Module):
         num_deconv_filters (list|tuple): Number of filters.
             If num_deconv_layers > 0, the length of
         num_deconv_kernels (list|tuple): Kernel sizes.
+        loss_keypoint (dict): Config for keypoint loss. Default: None.
     """
 
     def __init__(self,
@@ -30,10 +35,18 @@ class TopDownSimpleHead(nn.Module):
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
-                 extra=None):
+                 extra=None,
+                 loss_keypoint=None,
+                 train_cfg=None,
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
+        self.loss = build_loss(loss_keypoint)
+
+        self.train_cfg = {} if train_cfg is None else train_cfg
+        self.test_cfg = {} if test_cfg is None else test_cfg
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -77,6 +90,57 @@ class TopDownSimpleHead(nn.Module):
                 stride=1,
                 padding=padding)
 
+    def get_loss(self, output, target, target_weight):
+        """Calculate top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        losses = dict()
+
+        assert not isinstance(self.loss, nn.Sequential)
+        assert target.dim() == 4 and target_weight.dim() == 3
+        losses['mse_loss'] = self.loss(output, target, target_weight)
+
+        return losses
+
+    def get_accuracy(self, output, target, target_weight):
+        """Calculate accuracy for top-down keypoint loss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps.
+            target_weight (torch.Tensor[NxKx1]):
+                Weights across different joint types.
+        """
+
+        accuracy = dict()
+
+        if self.target_type == 'GaussianHeatMap':
+            _, avg_acc, _ = pose_pck_accuracy(
+                output.detach().cpu().numpy(),
+                target.detach().cpu().numpy(),
+                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+            accuracy['acc_pose'] = float(avg_acc)
+
+        return accuracy
+
     def forward(self, x):
         """Forward function."""
         if isinstance(x, list):
@@ -84,6 +148,31 @@ class TopDownSimpleHead(nn.Module):
         x = self.deconv_layers(x)
         x = self.final_layer(x)
         return x
+
+    def inference_model(self, x, flip_pairs=None):
+        """Inference function.
+
+        Returns:
+            output_heatmap (np.ndarray): Output heatmaps.
+
+        Args:
+            x (torch.Tensor[NxKxHxW]): Input features.
+            flip_pairs (None | list[tuple()):
+                Pairs of keypoints which are mirrored.
+        """
+        output = self.forward(x)
+
+        if flip_pairs is not None:
+            output_heatmap = flip_back(
+                output.detach().cpu().numpy(),
+                flip_pairs,
+                target_type=self.target_type)
+            # feature is not aligned, shift flipped heatmap for higher accuracy
+            if self.test_cfg.get('shift_heatmap', False):
+                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
+        else:
+            output_heatmap = output.detach().cpu().numpy()
+        return output_heatmap
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""
@@ -117,23 +206,6 @@ class TopDownSimpleHead(nn.Module):
             self.in_channels = planes
 
         return nn.Sequential(*layers)
-
-    @staticmethod
-    def _get_deconv_cfg(deconv_kernel):
-        """Get configurations for deconv layers."""
-        if deconv_kernel == 4:
-            padding = 1
-            output_padding = 0
-        elif deconv_kernel == 3:
-            padding = 1
-            output_padding = 1
-        elif deconv_kernel == 2:
-            padding = 0
-            output_padding = 0
-        else:
-            raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
-
-        return deconv_kernel, padding, output_padding
 
     def init_weights(self):
         """Initialize model weights."""

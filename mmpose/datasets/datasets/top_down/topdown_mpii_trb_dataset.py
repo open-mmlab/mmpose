@@ -202,8 +202,8 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                   coordinates, score is the third dimension of the array.
                 * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_paths(list[str]): For example, ['data/coco/val2017
-                    /000000393226.jpg']
+                * image_paths(list[str]): For example, ['/val2017/000000
+                  397133.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
                 * bbox_ids (list[str]): For example, ['27407']
             res_folder(str): Path of directory to save the results.
@@ -222,7 +222,12 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         res_file = os.path.join(res_folder, 'result_keypoints.json')
 
         kpts = []
-        for preds, boxes, image_paths, _, bbox_ids in outputs:
+        for output in outputs:
+            preds = output['preds']
+            boxes = output['boxes']
+            image_paths = output['image_paths']
+            bbox_ids = output['bbox_ids']
+
             batch_size = len(image_paths)
             for i in range(batch_size):
                 str_image_path = image_paths[i]
@@ -238,6 +243,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                     'bbox_id': bbox_ids[i]
                 })
         kpts = self._sort_and_unique_bboxes(kpts)
+
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)
         name_value = OrderedDict(info_str)

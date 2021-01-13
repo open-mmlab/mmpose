@@ -206,8 +206,8 @@ from .my_loss import MyLoss, my_loss
 
 ```
 
-To use it, modify the `loss_pose` field in the model.
+To use it, modify the `loss_keypoint` field in the model.
 
 ```python
-loss_pose=dict(type='MyLoss', use_target_weight=False)
+loss_keypoint=dict(type='MyLoss', use_target_weight=False)
 ```
