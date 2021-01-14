@@ -12,6 +12,20 @@ MMPose supported datasets:
 
 ## 300W Dataset
 
+[DATASET]
+
+```latex
+@article{sagonas2016300,
+  title={300 faces in-the-wild challenge: Database and results},
+  author={Sagonas, Christos and Antonakos, Epameinondas and Tzimiropoulos, Georgios and Zafeiriou, Stefanos and Pantic, Maja},
+  journal={Image and vision computing},
+  volume={47},
+  pages={3--18},
+  year={2016},
+  publisher={Elsevier}
+}
+```
+
 For 300W data, please download images from [300W Dataset](https://ibug.doc.ic.ac.uk/resources/300-W/).
 Please download the annotation files from [300w_annotations](https://download.openmmlab.com/mmpose/datasets/300w_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -71,6 +85,18 @@ mmpose
 
 ## WFLW Dataset
 
+[DATASET]
+
+```latex
+@inproceedings{wu2018look,
+  title={Look at boundary: A boundary-aware face alignment algorithm},
+  author={Wu, Wayne and Qian, Chen and Yang, Shuo and Wang, Quan and Cai, Yici and Zhou, Qiang},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={2129--2138},
+  year={2018}
+}
+```
+
 For WFLW data, please download images from [WFLW Dataset](https://wywu.github.io/projects/LAB/WFLW.html).
 Please download the annotation files from [wflw_annotations](https://download.openmmlab.com/mmpose/datasets/wflw_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -110,6 +136,19 @@ mmpose
 
 ## AFLW Dataset
 
+[DATASET]
+
+```latex
+@inproceedings{koestinger2011annotated,
+  title={Annotated facial landmarks in the wild: A large-scale, real-world database for facial landmark localization},
+  author={Koestinger, Martin and Wohlhart, Paul and Roth, Peter M and Bischof, Horst},
+  booktitle={2011 IEEE international conference on computer vision workshops (ICCV workshops)},
+  pages={2144--2151},
+  year={2011},
+  organization={IEEE}
+}
+```
+
 For AFLW data, please download images from [AFLW Dataset](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/).
 Please download the annotation files from [aflw_annotations](https://download.openmmlab.com/mmpose/datasets/aflw_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -144,6 +183,18 @@ mmpose
 ```
 
 ## COFW Dataset
+
+[DATASET]
+
+```latex
+@inproceedings{burgos2013robust,
+  title={Robust face landmark estimation under occlusion},
+  author={Burgos-Artizzu, Xavier P and Perona, Pietro and Doll{\'a}r, Piotr},
+  booktitle={Proceedings of the IEEE international conference on computer vision},
+  pages={1513--1520},
+  year={2013}
+}
+```
 
 For COFW data, please download from [COFW Dataset (Color Images)](http://www.vision.caltech.edu/xpburgos/ICCV13/Data/COFW_color.zip).
 Move `COFW_train_color.mat` and `COFW_test_color.mat` to `data/cofw/` and make them look like:
