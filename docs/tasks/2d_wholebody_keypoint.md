@@ -9,6 +9,17 @@ MMPose supported datasets:
 
 ## COCO-WholeBody
 
+[DATASET]
+
+```latex
+@inproceedings{jin2020whole,
+  title={Whole-Body Human Pose Estimation in the Wild},
+  author={Jin, Sheng and Xu, Lumin and Xu, Jin and Wang, Can and Liu, Wentao and Qian, Chen and Ouyang, Wanli and Luo, Ping},
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+  year={2020}
+}
+```
+
 For [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) datatset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).
 Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).

@@ -25,6 +25,19 @@ The following items should be prepared for human mesh training:
 
 ### COCO
 
+[DATASET]
+
+```latex
+@inproceedings{lin2014microsoft,
+  title={Microsoft coco: Common objects in context},
+  author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
+  booktitle={European conference on computer vision},
+  pages={740--755},
+  year={2014},
+  organization={Springer}
+}
+```
+
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download). COCO'2014 Train is needed for human mesh estimation training.
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -46,6 +59,21 @@ mmpose
 ```
 
 ### Human3.6M
+
+[DATASET]
+
+```latex
+@article{ionescu2013human3,
+  title={Human3. 6m: Large scale datasets and predictive methods for 3d human sensing in natural environments},
+  author={Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
+  journal={IEEE transactions on pattern analysis and machine intelligence},
+  volume={36},
+  number={7},
+  pages={1325--1339},
+  year={2013},
+  publisher={IEEE}
+}
+```
 
 For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), we use the MoShed data provided in [HMR](https://github.com/akanazawa/hmr) for training.
 However, due to license limitations, we are not allowed to redistribute the MoShed data.
@@ -79,6 +107,20 @@ redistribute the images either. So the users need to download the original video
 extract the images by themselves.
 
 ### MPI-INF-3DHP
+
+[DATASET]
+
+```latex
+@inproceedings{mono-3dhp2017,
+ author = {Mehta, Dushyant and Rhodin, Helge and Casas, Dan and Fua, Pascal and Sotnychenko, Oleksandr and Xu, Weipeng and Theobalt, Christian},
+ title = {Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision},
+ booktitle = {3D Vision (3DV), 2017 Fifth International Conference on},
+ url = {http://gvv.mpi-inf.mpg.de/3dhp_dataset},
+ year = {2017},
+ organization={IEEE},
+ doi={10.1109/3dv.2017.00064},
+}
+```
 
 For [MPI-INF-3DHP](http://gvv.mpi-inf.mpg.de/3dhp-dataset/), please follow the
 [preprocess procedure](https://github.com/nkolot/SPIN/tree/master/datasets/preprocess)
@@ -127,6 +169,21 @@ mmpose
 
 ### LSP
 
+[DATASET]
+
+```latex
+@inproceedings{johnson2010clustered,
+  title={Clustered Pose and Nonlinear Appearance Models for Human Pose Estimation.},
+  author={Johnson, Sam and Everingham, Mark},
+  booktitle={bmvc},
+  volume={2},
+  number={4},
+  pages={5},
+  year={2010},
+  organization={Citeseer}
+}
+```
+
 For [LSP](https://sam.johnson.io/research/lsp.html), please download the high resolution version
 [LSP dataset original](http://sam.johnson.io/research/lsp_dataset_original.zip).
 Extract them under `$MMPOSE/data`, and make them look like this:
@@ -147,6 +204,19 @@ mmpose
 ```
 
 ### LSPET
+
+[DATASET]
+
+```latex
+@inproceedings{johnson2011learning,
+  title={Learning effective human pose estimation from inaccurate annotation},
+  author={Johnson, Sam and Everingham, Mark},
+  booktitle={CVPR 2011},
+  pages={1465--1472},
+  year={2011},
+  organization={IEEE}
+}
+```
 
 For [LSPET](https://sam.johnson.io/research/lspet.html), please download its high resolution form
 [HR-LSPET](http://datasets.d2.mpi-inf.mpg.de/hr-lspet/hr-lspet.zip).
@@ -170,6 +240,18 @@ mmpose
 ```
 
 ### CMU MoShed Data
+
+[DATASET]
+
+```latex
+@inproceedings{kanazawa2018end,
+  title={End-to-end recovery of human shape and pose},
+  author={Kanazawa, Angjoo and Black, Michael J and Jacobs, David W and Malik, Jitendra},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={7122--7131},
+  year={2018}
+}
+```
 
 Real-world SMPL parameters are used for the adversarial training in human mesh estimation.
 The MoShed data provided in [HMR](https://github.com/akanazawa/hmr) is included in this
@@ -217,6 +299,19 @@ mmpose
 ```
 
 ## SMPL Model
+
+```latex
+@article{loper2015smpl,
+  title={SMPL: A skinned multi-person linear model},
+  author={Loper, Matthew and Mahmood, Naureen and Romero, Javier and Pons-Moll, Gerard and Black, Michael J},
+  journal={ACM transactions on graphics (TOG)},
+  volume={34},
+  number={6},
+  pages={1--16},
+  year={2015},
+  publisher={ACM New York, NY, USA}
+}
+```
 
 For human mesh estimation, SMPL model is used to generate the human mesh.
 Please download the [gender neutral SMPL model](http://smplify.is.tue.mpg.de/),
