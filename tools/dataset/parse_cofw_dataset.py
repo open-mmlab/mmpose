@@ -7,7 +7,7 @@ import h5py
 import numpy as np
 
 mat_files = ['COFW_train_color.mat', 'COFW_test_color.mat']
-dataset_dir = '/Users/apple/Desktop/cofw/'
+dataset_dir = 'data/cofw/'
 
 image_root = os.path.join(dataset_dir, 'images/')
 annotation_root = os.path.join(dataset_dir, 'annotations/')
