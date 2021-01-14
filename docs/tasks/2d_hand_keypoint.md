@@ -12,6 +12,21 @@ MMPose supported datasets:
 
 ## OneHand10K
 
+[DATASET]
+
+```latex
+@article{wang2018mask,
+  title={Mask-pose cascaded cnn for 2d hand pose estimation from single color image},
+  author={Wang, Yangang and Peng, Cong and Liu, Yebin},
+  journal={IEEE Transactions on Circuits and Systems for Video Technology},
+  volume={29},
+  number={11},
+  pages={3258--3268},
+  year={2018},
+  publisher={IEEE}
+}
+```
+
 For [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) data, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
 Please download the annotation files from [onehand10k_annotations](https://download.openmmlab.com/mmpose/datasets/onehand10k_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -41,6 +56,18 @@ mmpose
 ```
 
 ## FreiHAND Dataset
+
+[DATASET]
+
+```latex
+@inproceedings{zimmermann2019freihand,
+  title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
+  author={Zimmermann, Christian and Ceylan, Duygu and Yang, Jimei and Russell, Bryan and Argus, Max and Brox, Thomas},
+  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
+  pages={813--822},
+  year={2019}
+}
+```
 
 For [FreiHAND](https://lmb.informatik.uni-freiburg.de/projects/freihand/) data, please download from [FreiHand Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html).
 Since the official dataset does not provide validation set, we randomly split the training data into 8:1:1 for train/val/test.
@@ -72,6 +99,18 @@ mmpose
 ```
 
 ## CMU Panoptic HandDB
+
+[DATASET]
+
+```latex
+@inproceedings{simon2017hand,
+  title={Hand keypoint detection in single images using multiview bootstrapping},
+  author={Simon, Tomas and Joo, Hanbyul and Matthews, Iain and Sheikh, Yaser},
+  booktitle={Proceedings of the IEEE conference on Computer Vision and Pattern Recognition},
+  pages={1145--1153},
+  year={2017}
+}
+```
 
 For [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html), please download from [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html).
 Following [Simon et al](https://arxiv.org/abs/1704.07809), panoptic images (hand143_panopticdb) and MPII & NZSL training sets (manual_train) are used for training, while MPII & NZSL test set (manual_test) for testing.
@@ -110,6 +149,18 @@ mmpose
 ```
 
 ## InterHand2.6M
+
+[DATASET]
+
+```latex
+@article{moon2020interhand2,
+  title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
+  author={Moon, Gyeongsik and Yu, Shoou-I and Wen, He and Shiratori, Takaaki and Lee, Kyoung Mu},
+  journal={arXiv preprint arXiv:2008.09309},
+  year={2020},
+  publisher={Springer}
+}
+```
 
 For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
 Please download the annotation files from [annotations](https://github.com/facebookresearch/InterHand2.6M/releases/download/v0.0/InterHand2.6M.annotations.5.fps.zip).
