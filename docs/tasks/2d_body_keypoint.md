@@ -19,6 +19,19 @@ MMPose supported datasets:
 
 ## COCO
 
+[DATASET]
+
+```latex
+@inproceedings{lin2014microsoft,
+  title={Microsoft coco: Common objects in context},
+  author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
+  booktitle={European conference on computer vision},
+  pages={740--755},
+  year={2014},
+  organization={Springer}
+}
+```
+
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results.
 Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
@@ -52,6 +65,18 @@ mmpose
 ```
 
 ## MPII
+
+[DATASET]
+
+```latex
+@inproceedings{andriluka14cvpr,
+   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}
+   title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
+   booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+   year = {2014},
+   month = {June}
+}
+```
 
 For [MPII](http://human-pose.mpi-inf.mpg.de/) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
@@ -92,6 +117,18 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 
 ## MPII-TRB
 
+[DATASET]
+
+```latex
+@inproceedings{duan2019trb,
+  title={TRB: A Novel Triplet Representation for Understanding 2D Human Body},
+  author={Duan, Haodong and Lin, Kwan-Yee and Jin, Sheng and Liu, Wentao and Qian, Chen and Ouyang, Wanli},
+  booktitle={Proceedings of the IEEE International Conference on Computer Vision},
+  pages={9479--9488},
+  year={2019}
+}
+```
+
 For [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
 Extract them under {MMPose}/data, and make them look like this:
@@ -115,6 +152,17 @@ mmpose
 ```
 
 ## AIC
+
+[DATASET]
+
+```latex
+@article{wu2017ai,
+  title={Ai challenger: A large-scale dataset for going deeper in image understanding},
+  author={Wu, Jiahong and Zheng, He and Zhao, Bo and Li, Yixin and Yan, Baoming and Liang, Rui and Wang, Wenjia and Zhou, Shipei and Lin, Guosen and Fu, Yanwei and others},
+  journal={arXiv preprint arXiv:1711.06475},
+  year={2017}
+}
+```
 
 For [AIC](https://github.com/AIChallenger/AI_Challenger_2017) data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
 Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
@@ -146,6 +194,17 @@ mmpose
 
 ## CrowdPose
 
+[DATASET]
+
+```latex
+@article{li2018crowdpose,
+  title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
+  author={Li, Jiefeng and Wang, Can and Zhu, Hao and Mao, Yihuan and Fang, Hao-Shu and Lu, Cewu},
+  journal={arXiv preprint arXiv:1812.00324},
+  year={2018}
+}
+```
+
 For [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
 Please download the annotation files from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
 For top-down approaches, we follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
@@ -176,6 +235,18 @@ mmpose
 
 ## OCHuman
 
+[DATASET]
+
+```latex
+@inproceedings{zhang2019pose2seg,
+  title={Pose2seg: Detection free human instance segmentation},
+  author={Zhang, Song-Hai and Li, Ruilong and Dong, Xin and Rosin, Paul and Cai, Zixi and Han, Xi and Yang, Dingcheng and Huang, Haozhi and Hu, Shi-Min},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={889--898},
+  year={2019}
+}
+```
+
 For [OCHuman](https://github.com/liruilong940607/OCHumanApi) data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
 Move them under $MMPOSE/data, and make them look like this:
 
@@ -200,6 +271,18 @@ mmpose
 ```
 
 ## MHP
+
+[DATASET]
+
+```latex
+@inproceedings{zhao2018understanding,
+  title={Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing},
+  author={Zhao, Jian and Li, Jianshu and Cheng, Yu and Sim, Terence and Yan, Shuicheng and Feng, Jiashi},
+  booktitle={Proceedings of the 26th ACM international conference on Multimedia},
+  pages={792--800},
+  year={2018}
+}
+```
 
 For [MHP](https://lv-mhp.github.io/dataset) data, please download from [MHP](https://lv-mhp.github.io/dataset).
 Please download the annotation files from [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz).
@@ -238,6 +321,18 @@ mmpose
 ```
 
 ## PoseTrack18
+
+[DATASET]
+
+```latex
+@inproceedings{andriluka2018posetrack,
+  title={Posetrack: A benchmark for human pose estimation and tracking},
+  author={Andriluka, Mykhaylo and Iqbal, Umar and Insafutdinov, Eldar and Pishchulin, Leonid and Milan, Anton and Gall, Juergen and Schiele, Bernt},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={5167--5176},
+  year={2018}
+}
+```
 
 For [PoseTrack18](https://posetrack.net/users/download.php) data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
 Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
@@ -312,6 +407,19 @@ pip install git+https://github.com/svenkreiss/poseval.git
 ```
 
 ## sub-JHMDB dataset
+
+[DATASET]
+
+```latex
+@inproceedings{Jhuang:ICCV:2013,
+    title = {Towards understanding action recognition},
+    author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
+    booktitle = {International Conf. on Computer Vision (ICCV)},
+    month = Dec,
+    pages = {3192-3199},
+    year = {2013}
+}
+```
 
 For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
