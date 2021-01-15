@@ -2,11 +2,19 @@
 import functools as func
 import glob
 import re
+from os.path import basename, splitext
 
 import numpy as np
 import titlecase
 
+
+def anchor(name):
+    return re.sub(r'-+', '-', re.sub(r'[^a-zA-Z0-9]', '-',
+                                     name.strip().lower()))
+
+
 files = sorted(glob.glob('*_models.md'))
+# files = sorted(glob.glob('docs/*_models.md'))
 
 stats = []
 
@@ -22,7 +30,19 @@ for f in files:
         (papertype, titlecase.titlecase(paper.lower().strip()))
         for (papertype, paper) in re.findall(
             r'\[([A-Z]*?)\].*?\btitle\s*=\s*{(.*?)}', content, re.DOTALL))
-    paperlist = '\n'.join(sorted(f'    - [{t}] {x}' for t, x in papers))
+    # paper links
+    revcontent = '\n'.join(list(reversed(content.splitlines())))
+    paperlinks = {}
+    for _, p in papers:
+        print(p)
+        paperlinks[p] = ' '.join(
+            (f'[⇨]({splitext(basename(f))[0]}.html#{anchor(paperlink)})'
+             for paperlink in re.findall(
+                 rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
+                 revcontent, re.DOTALL | re.IGNORECASE)))
+        print('   ', paperlinks[p])
+    paperlist = '\n'.join(
+        sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
     configs = set(x.lower().strip()
                   for x in re.findall(r'https.*configs/.*\.py', content))
