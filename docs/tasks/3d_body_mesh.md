@@ -9,21 +9,80 @@ The following items should be prepared for human mesh training:
 <!-- TOC -->
 
 - [3D Body Mesh Recovery Datasets](#3d-body-mesh-recovery-datasets)
-  - [Datasets](#datasets)
-    - [COCO](#coco)
-    - [Human3.6M](#human36m)
-    - [MPI-INF-3DHP](#mpi-inf-3dhp)
-    - [LSP](#lsp)
-    - [LSPET](#lspet)
-    - [CMU MoShed Data](#cmu-moshed-data)
-  - [Annotation Files for Human Mesh Estimation](#annotation-files-for-human-mesh-estimation)
-  - [SMPL Model](#smpl-model)
+  - [Notes](#notes)
+    - [Annotation Files for Human Mesh Estimation](#annotation-files-for-human-mesh-estimation)
+    - [SMPL Model](#smpl-model)
+  - [COCO](#coco)
+  - [Human3.6M](#human36m)
+  - [MPI-INF-3DHP](#mpi-inf-3dhp)
+  - [LSP](#lsp)
+  - [LSPET](#lspet)
+  - [CMU MoShed Data](#cmu-moshed-data)
 
 <!-- TOC -->
 
-## Datasets
+## Notes
 
-### COCO
+### Annotation Files for Human Mesh Estimation
+
+For human mesh estimation, we use multiple datasets for training.
+The annotation of different datasets are preprocessed to the same format. Please
+follow the [preprocess procedure](https://github.com/nkolot/SPIN/tree/master/datasets/preprocess)
+of SPIN to generate the annotation files or download the processed files from
+[here](https://download.openmmlab.com/mmpose/datasets/mesh_annotation_files.zip),
+and make it look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── mesh_annotation_files
+        ├── coco_2014_train.npz
+        ├── h36m_valid_protocol1.npz
+        ├── h36m_valid_protocol2.npz
+        ├── hr-lspet_train.npz
+        ├── lsp_dataset_original_train.npz
+        ├── mpi_inf_3dhp_train.npz
+        └── mpii_train.npz
+```
+
+### SMPL Model
+
+```latex
+@article{loper2015smpl,
+  title={SMPL: A skinned multi-person linear model},
+  author={Loper, Matthew and Mahmood, Naureen and Romero, Javier and Pons-Moll, Gerard and Black, Michael J},
+  journal={ACM transactions on graphics (TOG)},
+  volume={34},
+  number={6},
+  pages={1--16},
+  year={2015},
+  publisher={ACM New York, NY, USA}
+}
+```
+
+For human mesh estimation, SMPL model is used to generate the human mesh.
+Please download the [gender neutral SMPL model](http://smplify.is.tue.mpg.de/),
+[joints regressor](https://download.openmmlab.com/mmpose/datasets/joints_regressor_cmr.npy)
+and [mean parameters](https://download.openmmlab.com/mmpose/datasets/smpl_mean_params.npz)
+under `$MMPOSE/models/smpl`, and make it look like this:
+
+```text
+mmpose
+├── mmpose
+├── ...
+├── models
+    │── smpl
+        ├── joints_regressor_cmr.npy
+        ├── smpl_mean_params.npz
+        └── SMPL_NEUTRAL.pkl
+```
+
+## COCO
 
 [DATASET]
 
@@ -58,7 +117,7 @@ mmpose
 
 ```
 
-### Human3.6M
+## Human3.6M
 
 [DATASET]
 
@@ -106,7 +165,7 @@ of the test images. However, due to the license limitations, we are not allowed 
 redistribute the images either. So the users need to download the original video and
 extract the images by themselves.
 
-### MPI-INF-3DHP
+## MPI-INF-3DHP
 
 [DATASET]
 
@@ -167,7 +226,7 @@ mmpose
         └── Seq2
 ```
 
-### LSP
+## LSP
 
 [DATASET]
 
@@ -203,7 +262,7 @@ mmpose
             └── ...
 ```
 
-### LSPET
+## LSPET
 
 [DATASET]
 
@@ -239,7 +298,7 @@ mmpose
         └── joints.mat
 ```
 
-### CMU MoShed Data
+## CMU MoShed Data
 
 [DATASET]
 
@@ -269,63 +328,4 @@ mmpose
     │── mesh_annotation_files
         ├── CMU_mosh.npz
         └── ...
-```
-
-## Annotation Files for Human Mesh Estimation
-
-For human mesh estimation, we use multiple datasets for training.
-The annotation of different datasets are preprocessed to the same format. Please
-follow the [preprocess procedure](https://github.com/nkolot/SPIN/tree/master/datasets/preprocess)
-of SPIN to generate the annotation files or download the processed files from
-[here](https://download.openmmlab.com/mmpose/datasets/mesh_annotation_files.zip),
-and make it look like this:
-
-```text
-mmpose
-├── mmpose
-├── docs
-├── tests
-├── tools
-├── configs
-`── data
-    │── mesh_annotation_files
-        ├── coco_2014_train.npz
-        ├── h36m_valid_protocol1.npz
-        ├── h36m_valid_protocol2.npz
-        ├── hr-lspet_train.npz
-        ├── lsp_dataset_original_train.npz
-        ├── mpi_inf_3dhp_train.npz
-        └── mpii_train.npz
-```
-
-## SMPL Model
-
-```latex
-@article{loper2015smpl,
-  title={SMPL: A skinned multi-person linear model},
-  author={Loper, Matthew and Mahmood, Naureen and Romero, Javier and Pons-Moll, Gerard and Black, Michael J},
-  journal={ACM transactions on graphics (TOG)},
-  volume={34},
-  number={6},
-  pages={1--16},
-  year={2015},
-  publisher={ACM New York, NY, USA}
-}
-```
-
-For human mesh estimation, SMPL model is used to generate the human mesh.
-Please download the [gender neutral SMPL model](http://smplify.is.tue.mpg.de/),
-[joints regressor](https://download.openmmlab.com/mmpose/datasets/joints_regressor_cmr.npy)
-and [mean parameters](https://download.openmmlab.com/mmpose/datasets/smpl_mean_params.npz)
-under `$MMPOSE/models/smpl`, and make it look like this:
-
-```text
-mmpose
-├── mmpose
-├── ...
-├── models
-    │── smpl
-        ├── joints_regressor_cmr.npy
-        ├── smpl_mean_params.npz
-        └── SMPL_NEUTRAL.pkl
 ```
