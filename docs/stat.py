@@ -86,6 +86,8 @@ modelzoo = f"""
 * Number of papers: {len(allpapers)}
 {countstr}
 
+For supported datasets, see [datasets overview](datasets.md).
+
 {msglist}
 
 """
@@ -161,6 +163,8 @@ modelzoo = f"""
 
 * Number of papers: {len(alldatapapers)}
 {countstr}
+
+For supported pose algorithms, see [modelzoo overview](modelzoo.md).
 
 {datamsglist}
 """
