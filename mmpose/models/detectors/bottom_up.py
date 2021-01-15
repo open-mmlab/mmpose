@@ -303,7 +303,7 @@ class BottomUp(BasePose):
                     font_scale=0.5,
                     win_name='',
                     show=False,
-                    add_keypoint_weight=False,
+                    show_keypoint_weight=False,
                     wait_time=0,
                     out_file=None):
         """Draw `result` over `img`.
@@ -346,7 +346,7 @@ class BottomUp(BasePose):
                     x_coord, y_coord, kpt_score = int(kpt[0]), int(
                         kpt[1]), kpt[2]
                     if kpt_score > kpt_score_thr:
-                        if add_keypoint_weight:
+                        if show_keypoint_weight:
                             img_copy = img.copy()
                             r, g, b = pose_kpt_color[kid]
                             cv2.circle(img_copy, (int(x_coord), int(y_coord)),
@@ -377,7 +377,7 @@ class BottomUp(BasePose):
                             and kpts[sk[0] - 1, 2] > kpt_score_thr
                             and kpts[sk[1] - 1, 2] > kpt_score_thr):
                         r, g, b = pose_limb_color[sk_id]
-                        if add_keypoint_weight:
+                        if show_keypoint_weight:
                             img_copy = img.copy()
                             X = (pos1[0], pos2[0])
                             Y = (pos1[1], pos2[1])
