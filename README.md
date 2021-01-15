@@ -147,6 +147,19 @@ Please refer to [FAQ](docs/faq.md) for frequently asked questions.
 
 This project is released under the [Apache 2.0 license](LICENSE).
 
+## Citation
+
+If you find this project useful in your research, please consider cite:
+
+```latex
+@misc{mmpose2020,
+    title={OpenMMLab Pose Estimation Toolbox and Benchmark},
+    author={MMPose Contributors},
+    howpublished = {\url{https://github.com/open-mmlab/mmpose}},
+    year={2020}
+}
+```
+
 ## Contributing
 
 We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md](https://github.com/open-mmlab/mmpose/blob/master/.github/CONTRIBUTING.md) for the contributing guideline.
