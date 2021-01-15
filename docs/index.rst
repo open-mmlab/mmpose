@@ -14,7 +14,7 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Datasets
 
-   data_preparation.md
+   datasets.md
    tasks/2d_body_keypoint.md
    tasks/2d_hand_keypoint.md
    tasks/2d_wholebody_keypoint.md
