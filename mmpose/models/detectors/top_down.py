@@ -201,6 +201,7 @@ class TopDown(BasePose):
                     font_scale=0.5,
                     win_name='',
                     show=False,
+                    show_keypoint_weight=False,
                     wait_time=0,
                     out_file=None):
         """Draw `result` over `img`.
@@ -261,18 +262,26 @@ class TopDown(BasePose):
                         x_coord, y_coord, kpt_score = int(kpt[0]), int(
                             kpt[1]), kpt[2]
                         if kpt_score > kpt_score_thr:
-                            img_copy = img.copy()
-                            r, g, b = pose_kpt_color[kid]
-                            cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                       radius, (int(r), int(g), int(b)), -1)
-                            transparency = max(0, min(1, kpt_score))
-                            cv2.addWeighted(
-                                img_copy,
-                                transparency,
-                                img,
-                                1 - transparency,
-                                0,
-                                dst=img)
+                            if show_keypoint_weight:
+                                img_copy = img.copy()
+                                r, g, b = pose_kpt_color[kid]
+                                cv2.circle(img_copy,
+                                           (int(x_coord), int(y_coord)),
+                                           radius, (int(r), int(g), int(b)),
+                                           -1)
+                                transparency = max(0, min(1, kpt_score))
+                                cv2.addWeighted(
+                                    img_copy,
+                                    transparency,
+                                    img,
+                                    1 - transparency,
+                                    0,
+                                    dst=img)
+                            else:
+                                r, g, b = pose_kpt_color[kid]
+                                cv2.circle(img, (int(x_coord), int(y_coord)),
+                                           radius, (int(r), int(g), int(b)),
+                                           -1)
 
                 # draw limbs
                 if skeleton is not None and pose_limb_color is not None:
@@ -288,35 +297,42 @@ class TopDown(BasePose):
                                 and pos2[1] < img_h
                                 and kpts[sk[0] - 1, 2] > kpt_score_thr
                                 and kpts[sk[1] - 1, 2] > kpt_score_thr):
-                            img_copy = img.copy()
-                            X = (pos1[0], pos2[0])
-                            Y = (pos1[1], pos2[1])
-                            mX = np.mean(X)
-                            mY = np.mean(Y)
-                            length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
-                            angle = math.degrees(
-                                math.atan2(Y[0] - Y[1], X[0] - X[1]))
-                            stickwidth = 2
-                            polygon = cv2.ellipse2Poly(
-                                (int(mX), int(mY)),
-                                (int(length / 2), int(stickwidth)), int(angle),
-                                0, 360, 1)
-
                             r, g, b = pose_limb_color[sk_id]
-                            cv2.fillConvexPoly(img_copy, polygon,
-                                               (int(r), int(g), int(b)))
-                            transparency = max(
-                                0,
-                                min(
-                                    1, 0.5 *
-                                    (kpts[sk[0] - 1, 2] + kpts[sk[1] - 1, 2])))
-                            cv2.addWeighted(
-                                img_copy,
-                                transparency,
-                                img,
-                                1 - transparency,
-                                0,
-                                dst=img)
+                            if show_keypoint_weight:
+                                img_copy = img.copy()
+                                X = (pos1[0], pos2[0])
+                                Y = (pos1[1], pos2[1])
+                                mX = np.mean(X)
+                                mY = np.mean(Y)
+                                length = ((Y[0] - Y[1])**2 +
+                                          (X[0] - X[1])**2)**0.5
+                                angle = math.degrees(
+                                    math.atan2(Y[0] - Y[1], X[0] - X[1]))
+                                stickwidth = 2
+                                polygon = cv2.ellipse2Poly(
+                                    (int(mX), int(mY)),
+                                    (int(length / 2), int(stickwidth)),
+                                    int(angle), 0, 360, 1)
+                                cv2.fillConvexPoly(img_copy, polygon,
+                                                   (int(r), int(g), int(b)))
+                                transparency = max(
+                                    0,
+                                    min(
+                                        1, 0.5 * (kpts[sk[0] - 1, 2] +
+                                                  kpts[sk[1] - 1, 2])))
+                                cv2.addWeighted(
+                                    img_copy,
+                                    transparency,
+                                    img,
+                                    1 - transparency,
+                                    0,
+                                    dst=img)
+                            else:
+                                cv2.line(
+                                    img,
+                                    pos1,
+                                    pos2, (int(r), int(g), int(b)),
+                                    thickness=thickness)
 
         if show:
             imshow(img, win_name, wait_time)
