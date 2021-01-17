@@ -9,9 +9,9 @@ from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
 try:
     from mmtrack.apis import inference_mot
     from mmtrack.apis import init_model as init_tracking_model
-    with_mmtrack = True
+    has_mmtrack = True
 except (ImportError, ModuleNotFoundError):
-    with_mmtrack = False
+    has_mmtrack = False
 
 
 def process_mmtracking_results(mmtracking_results):
@@ -59,7 +59,7 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
 
-    assert with_mmtrack, 'Please install mmtrack to run the demo.'
+    assert has_mmtrack, 'Please install mmtrack to run the demo.'
 
     args = parser.parse_args()
 

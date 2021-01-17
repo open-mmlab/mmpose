@@ -6,9 +6,9 @@ from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
 
 try:
     from mmdet.apis import inference_detector, init_detector
-    with_mmdet = True
+    has_mmdet = True
 except (ImportError, ModuleNotFoundError):
-    with_mmdet = False
+    has_mmdet = False
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -67,7 +67,7 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
 
-    assert with_mmdet, 'Please install mmdet to run the demo.'
+    assert has_mmdet, 'Please install mmdet to run the demo.'
 
     args = parser.parse_args()
 

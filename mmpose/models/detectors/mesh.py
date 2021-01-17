@@ -8,9 +8,9 @@ from .base import BasePose
 
 try:
     from smplx import SMPL
-    with_smpl = True
+    has_smpl = True
 except (ImportError, ModuleNotFoundError):
-    with_smpl = False
+    has_smpl = False
 
 
 def set_requires_grad(nets, requires_grad=False):
@@ -58,7 +58,7 @@ class ParametricMesh(BasePose):
                  pretrained=None):
         super().__init__()
 
-        assert with_smpl, 'Please install smplx to use SMPL.'
+        assert has_smpl, 'Please install smplx to use SMPL.'
 
         self.backbone = builder.build_backbone(backbone)
         self.mesh_head = builder.build_head(mesh_head)

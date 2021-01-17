@@ -8,9 +8,9 @@ from mmpose.apis import (get_track_id, inference_top_down_pose_model,
 
 try:
     from mmdet.apis import inference_detector, init_detector
-    with_mmdet = True
+    has_mmdet = True
 except (ImportError, ModuleNotFoundError):
-    with_mmdet = False
+    has_mmdet = False
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -69,7 +69,7 @@ def main():
     parser.add_argument(
         '--iou-thr', type=float, default=0.3, help='IoU score threshold')
 
-    assert with_mmdet, 'Please install mmdet to run the demo.'
+    assert has_mmdet, 'Please install mmdet to run the demo.'
 
     args = parser.parse_args()
 
