@@ -13,9 +13,12 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/coco/000000000785.jpg'
+
+    person_result = []
+    person_result.append({'bbox': [50, 50, 50, 100]})
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
-        pose_model, image_name, [[50, 50, 50, 100]], format='xywh')
+        pose_model, image_name, person_result, format='xywh')
     # show the results
     vis_pose_result(pose_model, image_name, pose_results)
 
@@ -26,7 +29,8 @@ def test_top_down_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[50, 50, 50, 100]],
+        image_name,
+        person_result,
         format='xywh',
         dataset='TopDownAicDataset')
     # show the results
@@ -43,7 +47,8 @@ def test_top_down_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[50, 50, 50, 100]],
+        image_name,
+        person_result,
         format='xywh',
         dataset='OneHand10KDataset')
     # show the results
@@ -53,7 +58,8 @@ def test_top_down_demo():
     with pytest.raises(NotImplementedError):
         pose_results, _ = inference_top_down_pose_model(
             pose_model,
-            image_name, [[50, 50, 50, 100]],
+            image_name,
+            person_result,
             format='xywh',
             dataset='test')
 
