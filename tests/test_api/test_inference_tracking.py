@@ -12,9 +12,12 @@ def test_pose_tracking_demo():
         None,
         device='cpu')
     image_name = 'tests/data/coco/000000000785.jpg'
+
+    person_result = [{'bbox': [50, 50, 50, 100]}]
+
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
-        pose_model, image_name, [[50, 50, 50, 100]], format='xywh')
+        pose_model, image_name, person_result, format='xywh')
     pose_results, next_id = get_track_id(pose_results, [], next_id=0)
     # show the results
     vis_pose_tracking_result(pose_model, image_name, pose_results)
@@ -27,7 +30,8 @@ def test_pose_tracking_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[50, 50, 50, 100]],
+        image_name,
+        person_result,
         format='xywh',
         dataset='TopDownAicDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,
@@ -46,7 +50,9 @@ def test_pose_tracking_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[10, 10, 30, 30]],
+        image_name, [{
+            'bbox': [10, 10, 30, 30]
+        }],
         format='xywh',
         dataset='OneHand10KDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,
@@ -64,7 +70,9 @@ def test_pose_tracking_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[50, 50, 0, 0]],
+        image_name, [{
+            'bbox': [50, 50, 0, 0]
+        }],
         format='xywh',
         dataset='InterHand2DDataset')
     pose_results, next_id = get_track_id(pose_results, [], next_id=0)
@@ -82,7 +90,9 @@ def test_pose_tracking_demo():
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
-        image_name, [[50, 50, 0, 0]],
+        image_name, [{
+            'bbox': [50, 50, 0, 0]
+        }],
         format='xywh',
         dataset='TopDownMpiiDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,

@@ -48,13 +48,13 @@ def _track_by_iou(res, results_last, thr):
                 that have not been matched on the last frame.
     """
 
-    bbox = list(res['bbox'][0])
+    bbox = list(res['bbox'])
 
     max_iou_score = -1
     max_index = -1
 
     for index, res_last in enumerate(results_last):
-        bbox_last = list(res_last['bbox'][0])
+        bbox_last = list(res_last['bbox'])
 
         iou_score = _compute_iou(bbox, bbox_last)
         if iou_score > max_iou_score:
@@ -186,6 +186,7 @@ def vis_pose_tracking_result(model,
 
     for res in result:
         track_id = res['track_id']
+        bbox_color = palette[track_id % len(palette)]
         pose_kpt_color = palette[[track_id % len(palette)] * kpt_num]
         pose_limb_color = palette[[track_id % len(palette)] * len(skeleton)]
         img = model.show_result(
@@ -194,6 +195,7 @@ def vis_pose_tracking_result(model,
             radius=radius,
             pose_kpt_color=pose_kpt_color,
             pose_limb_color=pose_limb_color,
+            bbox_color=tuple(bbox_color.tolist()),
             kpt_score_thr=kpt_score_thr,
             show=show,
             out_file=out_file)
