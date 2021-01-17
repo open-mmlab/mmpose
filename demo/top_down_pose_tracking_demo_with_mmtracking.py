@@ -1,5 +1,4 @@
 import os
-import warnings
 from argparse import ArgumentParser
 
 import cv2
@@ -10,8 +9,9 @@ from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
 try:
     from mmtrack.apis import inference_mot
     from mmtrack.apis import init_model as init_tracking_model
+    with_mmtrack = True
 except (ImportError, ModuleNotFoundError):
-    warnings.warn('Please install mmtrack to run the demo.')
+    with_mmtrack = False
 
 
 def process_mmtracking_results(mmtracking_results):
@@ -58,6 +58,8 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+
+    assert with_mmtrack, 'Please install mmtrack to run the demo.'
 
     args = parser.parse_args()
 

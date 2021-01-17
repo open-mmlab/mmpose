@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 import torch
 
@@ -10,8 +8,9 @@ from .base import BasePose
 
 try:
     from smplx import SMPL
+    with_smpl = True
 except (ImportError, ModuleNotFoundError):
-    warnings.warn('Please install smplx to use SMPL.')
+    with_smpl = False
 
 
 def set_requires_grad(nets, requires_grad=False):
@@ -58,6 +57,8 @@ class ParametricMesh(BasePose):
                  test_cfg=None,
                  pretrained=None):
         super().__init__()
+
+        assert with_smpl, 'Please install smplx to use SMPL.'
 
         self.backbone = builder.build_backbone(backbone)
         self.mesh_head = builder.build_head(mesh_head)

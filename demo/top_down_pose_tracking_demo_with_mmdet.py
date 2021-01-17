@@ -1,5 +1,4 @@
 import os
-import warnings
 from argparse import ArgumentParser
 
 import cv2
@@ -9,8 +8,9 @@ from mmpose.apis import (get_track_id, inference_top_down_pose_model,
 
 try:
     from mmdet.apis import inference_detector, init_detector
+    with_mmdet = True
 except (ImportError, ModuleNotFoundError):
-    warnings.warn('Please install mmdet to run the demo.')
+    with_mmdet = False
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -68,6 +68,8 @@ def main():
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+
+    assert with_mmdet, 'Please install mmdet to run the demo.'
 
     args = parser.parse_args()
 
