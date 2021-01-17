@@ -2,32 +2,25 @@ import os
 from argparse import ArgumentParser
 
 import cv2
-from mmdet.apis import inference_detector, init_detector
+from mmtrack.apis import inference_mot
+from mmtrack.apis import init_model as init_tracking_model
 
-from mmpose.apis import (get_track_id, inference_top_down_pose_model,
-                         init_pose_model, vis_pose_tracking_result)
+from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
+                         vis_pose_tracking_result)
 
 
-def process_mmdet_results(mmdet_results, cat_id=0):
-    """Process mmdet results, and return a list of bboxes.
+def process_mmtracking_results(mmtracking_results):
+    """Process mmtracking results.
 
-    :param mmdet_results:
-    :param cat_id: category id (default: 0 for human)
-    :return: a list of detected bounding boxes
+    :param mmtracking_results:
+    :return: a list of tracked bounding boxes
     """
-    if isinstance(mmdet_results, tuple):
-        det_results = mmdet_results[0]
-    else:
-        det_results = mmdet_results
-
-    bboxes = det_results[cat_id]
-
     person_results = []
-    for bbox in bboxes:
+    for track in mmtracking_results['track_results'][0]:
         person = {}
-        person['bbox'] = bbox
+        person['track_id'] = int(track[0])
+        person['bbox'] = track[1:]
         person_results.append(person)
-
     return person_results
 
 
@@ -37,8 +30,7 @@ def main():
     Using mmdet to detect the human.
     """
     parser = ArgumentParser()
-    parser.add_argument('det_config', help='Config file for detection')
-    parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
+    parser.add_argument('tracking_config', help='Config file for tracking')
     parser.add_argument('pose_config', help='Config file for pose')
     parser.add_argument('pose_checkpoint', help='Checkpoint file for pose')
     parser.add_argument('--video-path', type=str, help='Video path')
@@ -61,17 +53,14 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
-    parser.add_argument(
-        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
 
     args = parser.parse_args()
 
     assert args.show or (args.out_video_root != '')
-    assert args.det_config is not None
-    assert args.det_checkpoint is not None
+    assert args.tracking_config is not None
 
-    det_model = init_detector(
-        args.det_config, args.det_checkpoint, device=args.device.lower())
+    tracking_model = init_tracking_model(
+        args.tracking_config, None, device=args.device.lower())
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
@@ -102,19 +91,17 @@ def main():
     # e.g. use ('backbone', ) to return backbone feature
     output_layer_names = None
 
-    next_id = 0
-    pose_results = []
+    frame_id = 0
     while (cap.isOpened()):
-        pose_results_last = pose_results
-
         flag, img = cap.read()
         if not flag:
             break
-        # test a single image, the resulting box is (x1, y1, x2, y2)
-        mmdet_results = inference_detector(det_model, img)
+
+        mmtracking_results = inference_mot(
+            tracking_model, img, frame_id=frame_id)
 
         # keep the person class bounding boxes.
-        person_results = process_mmdet_results(mmdet_results)
+        person_results = process_mmtracking_results(mmtracking_results)
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
@@ -126,10 +113,6 @@ def main():
             dataset=dataset,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
-
-        # get track id for each person instance
-        pose_results, next_id = get_track_id(
-            pose_results, pose_results_last, next_id, iou_thr=args.iou_thr)
 
         # show the results
         vis_img = vis_pose_tracking_result(
@@ -148,6 +131,8 @@ def main():
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        frame_id += 1
 
     cap.release()
     if save_out_video:

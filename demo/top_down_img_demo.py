@@ -65,18 +65,19 @@ def main():
         ann_ids = coco.getAnnIds(image_id)
 
         # make person bounding boxes
-        person_bboxes = []
+        person_results = []
         for ann_id in ann_ids:
+            person = {}
             ann = coco.anns[ann_id]
             # bbox format is 'xywh'
-            bbox = ann['bbox']
-            person_bboxes.append(bbox)
+            person['bbox'] = ann['bbox']
+            person_results.append(person)
 
         # test a single image, with a list of bboxes
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             image_name,
-            person_bboxes,
+            person_results,
             bbox_thr=None,
             format='xywh',
             dataset=dataset,
