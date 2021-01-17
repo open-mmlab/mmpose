@@ -249,7 +249,7 @@ def _inference_single_pose_model(model,
 
 def inference_top_down_pose_model(model,
                                   img_or_path,
-                                  person_bboxes,
+                                  person_results,
                                   bbox_thr=None,
                                   format='xywh',
                                   dataset='TopDownCocoDataset',
@@ -265,8 +265,11 @@ def inference_top_down_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         image_name (str| np.ndarray): Image_name
-        person_bboxes: (np.ndarray[P x 4] or [P x 5]): Each person bounding box
-            shaped (4, ) or (5, ), contains 4 box coordinates (and score).
+        person_results (List(dict)): the item in the dict may contain
+            'bbox' and/or 'track_id'.
+            'bbox' (4, ) or (5, ): The person bounding box, which contains
+            4 box coordinates (and score).
+            'track_id' (int): The unique id for each human instance.
         bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
             will be fed into the pose detector. If bbox_thr is None, ignore it.
         format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
@@ -288,37 +291,42 @@ def inference_top_down_pose_model(model,
     """
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
-    # transform the bboxes format to xywh
-    if format == 'xyxy':
-        person_bboxes = _xyxy2xywh(np.array(person_bboxes))
 
     pose_results = []
     returned_outputs = []
 
-    if len(person_bboxes) > 0:
-        if bbox_thr is not None:
-            assert person_bboxes.shape[1] == 5
-            person_bboxes = person_bboxes[person_bboxes[:, 4] > bbox_thr]
+    with OutputHook(model, outputs=outputs, as_tensor=False) as h:
+        for person_result in person_results:
+            if format == 'xyxy':
+                bbox_xyxy = np.expand_dims(np.array(person_result['bbox']), 0)
+                bbox_xywh = _xyxy2xywh(bbox_xyxy)
+            else:
+                bbox_xywh = np.expand_dims(np.array(person_result['bbox']), 0)
+                bbox_xyxy = _xywh2xyxy(bbox_xywh)
 
-        with OutputHook(model, outputs=outputs, as_tensor=False) as h:
-            for bbox in person_bboxes:
-                pose, heatmap = _inference_single_pose_model(
-                    model,
-                    img_or_path,
-                    bbox,
-                    dataset,
-                    return_heatmap=return_heatmap)
+            if bbox_thr is not None:
+                assert bbox_xywh.shape[1] == 5
+                if bbox_xywh[0, 4] < bbox_thr:
+                    continue
 
-                if return_heatmap:
-                    h.layer_outputs['heatmap'] = heatmap
+            pose, heatmap = _inference_single_pose_model(
+                model,
+                img_or_path,
+                bbox_xywh[0],
+                dataset,
+                return_heatmap=return_heatmap)
 
-                returned_outputs.append(h.layer_outputs)
-                pose_results.append({
-                    'bbox':
-                    _xywh2xyxy(np.expand_dims(np.array(bbox), 0)),
-                    'keypoints':
-                    pose
-                })
+            if return_heatmap:
+                h.layer_outputs['heatmap'] = heatmap
+
+            returned_outputs.append(h.layer_outputs)
+
+            person_result['keypoints'] = pose
+
+            if format == 'xywh':
+                person_result['bbox'] = bbox_xyxy[0]
+
+            pose_results.append(person_result)
 
     return pose_results, returned_outputs
 

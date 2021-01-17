@@ -2,7 +2,6 @@ mmcv==1.2.2
 munkres
 poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
-smplx
 titlecase
 torch
 torchvision

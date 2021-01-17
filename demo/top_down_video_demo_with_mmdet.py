@@ -2,10 +2,15 @@ import os
 from argparse import ArgumentParser
 
 import cv2
-from mmdet.apis import inference_detector, init_detector
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
+
+try:
+    from mmdet.apis import inference_detector, init_detector
+    has_mmdet = True
+except (ImportError, ModuleNotFoundError):
+    has_mmdet = False
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -19,7 +24,16 @@ def process_mmdet_results(mmdet_results, cat_id=0):
         det_results = mmdet_results[0]
     else:
         det_results = mmdet_results
-    return det_results[cat_id]
+
+    bboxes = det_results[cat_id]
+
+    person_results = []
+    for bbox in bboxes:
+        person = {}
+        person['bbox'] = bbox
+        person_results.append(person)
+
+    return person_results
 
 
 def main():
@@ -52,6 +66,8 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+
+    assert has_mmdet, 'Please install mmdet to run the demo.'
 
     args = parser.parse_args()
 
@@ -99,13 +115,13 @@ def main():
         mmdet_results = inference_detector(det_model, img)
 
         # keep the person class bounding boxes.
-        person_bboxes = process_mmdet_results(mmdet_results)
+        person_results = process_mmdet_results(mmdet_results)
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             img,
-            person_bboxes,
+            person_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
             dataset=dataset,
