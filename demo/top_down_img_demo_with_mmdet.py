@@ -1,10 +1,14 @@
 import os
+import warnings
 from argparse import ArgumentParser
-
-from mmdet.apis import inference_detector, init_detector
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
+
+try:
+    from mmdet.apis import inference_detector, init_detector
+except (ImportError, ModuleNotFoundError):
+    warnings.warn('Please install mmdet to run the demo.')
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):

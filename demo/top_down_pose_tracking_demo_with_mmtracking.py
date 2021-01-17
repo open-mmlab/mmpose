@@ -1,12 +1,17 @@
 import os
+import warnings
 from argparse import ArgumentParser
 
 import cv2
-from mmtrack.apis import inference_mot
-from mmtrack.apis import init_model as init_tracking_model
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_tracking_result)
+
+try:
+    from mmtrack.apis import inference_mot
+    from mmtrack.apis import init_model as init_tracking_model
+except (ImportError, ModuleNotFoundError):
+    warnings.warn('Please install mmtrack to run the demo.')
 
 
 def process_mmtracking_results(mmtracking_results):
