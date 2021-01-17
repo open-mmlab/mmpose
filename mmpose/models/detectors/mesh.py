@@ -1,11 +1,17 @@
+import warnings
+
 import numpy as np
 import torch
-from smplx import SMPL
 
 from .. import builder
 from ..mesh_heads.discriminator import SMPLDiscriminator
 from ..registry import POSENETS
 from .base import BasePose
+
+try:
+    from smplx import SMPL
+except (ImportError, ModuleNotFoundError):
+    warnings.warn('Please install smplx to use SMPL.')
 
 
 def set_requires_grad(nets, requires_grad=False):

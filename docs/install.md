@@ -15,7 +15,8 @@
 
 Optional:
 
-- [mmdet](https://github.com/open-mmlab/mmdetection) (to run demos)
+- [mmdet](https://github.com/open-mmlab/mmdetection) (to run pose demos)
+- [mmtrack](https://github.com/open-mmlab/mmtracking) (to run pose tracking demos)
 
 ### Install mmpose
 
