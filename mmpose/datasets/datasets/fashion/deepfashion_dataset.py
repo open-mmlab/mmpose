@@ -8,7 +8,7 @@ from .fashion_base_dataset import FashionBaseDataset
 
 
 @DATASETS.register_module()
-class DeepFashionFullDataset(FashionBaseDataset):
+class DeepFashionDataset(FashionBaseDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
     `DeepFashion: Powering Robust Clothes Recognition
@@ -17,6 +17,24 @@ class DeepFashionFullDataset(FashionBaseDataset):
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
+
+    The dataset contains 3 categories for full-body, upper-body and lower-body.
+
+    Fashion landmark indexes for upper-body clothes::
+
+        0: 'left collar',
+        1: 'right collar',
+        2: 'left sleeve',
+        3: 'right sleeve',
+        4: 'left hem',
+        5: 'right hem'
+
+    Fashion landmark indexes for lower-body clothes::
+
+        0: 'left waistline',
+        1: 'right waistline',
+        2: 'left hem',
+        3: 'right hem'
 
     Fashion landmark indexes for full-body clothes::
 
@@ -42,6 +60,7 @@ class DeepFashionFullDataset(FashionBaseDataset):
     def __init__(self,
                  ann_file,
                  img_prefix,
+                 subset,
                  data_cfg,
                  pipeline,
                  test_mode=False):
@@ -49,14 +68,25 @@ class DeepFashionFullDataset(FashionBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
-        assert self.ann_info['num_joints'] == 8
-        self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7]]
+        if subset == 'upper':
+            assert self.ann_info['num_joints'] == 6
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5]]
+            self.dataset_name = 'deepfashion_upper'
+        elif subset == 'lower':
+            assert self.ann_info['num_joints'] == 4
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3]]
+            self.dataset_name = 'deepfashion_lower'
+        elif subset == 'full':
+            assert self.ann_info['num_joints'] == 8
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7]]
+            self.dataset_name = 'deepfashion_full'
+        else:
+            NotImplementedError()
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.dataset_name = 'deepfashion_upper'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -65,8 +95,8 @@ class DeepFashionFullDataset(FashionBaseDataset):
     def _get_db(self):
         """Load dataset."""
         gt_db = []
+        num_joints = self.ann_info['num_joints']
         for img_id in self.img_ids:
-            num_joints = self.ann_info['num_joints']
 
             ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
             objs = self.coco.loadAnns(ann_ids)
@@ -82,8 +112,8 @@ class DeepFashionFullDataset(FashionBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the ori image is 224x224
-                center, scale = self._xywh2cs(0, 0, 224, 224, 0.8)
+                # use 1.25bbox as input
+                center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
