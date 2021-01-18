@@ -147,7 +147,7 @@ def test_top_down_pipeline():
     results = results_affine
 
     # test cutout transform
-    cutout_transform = Cutout(prob_cutout=1.0)
+    cutout_transform = Cutout()
     results_cutout = copy.deepcopy(results)
     results_cutout['img'] = np.ones(results_cutout['img'].shape)
     results_cutout = cutout_transform(copy.deepcopy(results_cutout))

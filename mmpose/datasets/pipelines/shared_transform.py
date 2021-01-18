@@ -150,17 +150,17 @@ class HideAndSeek:
     Estimation with Information Dropping Augmentation (arXiv:2008.07139 2020).
 
     Args:
-        prob_has (float): Probability of performing hide-and-seek.
-        prob_has_hide (float): Probability of hiding patches.
+        prob (float): Probability of performing hide-and-seek.
+        prob_hiding_patches (float): Probability of hiding patches.
         grid_sizes (list): List of optional grid sizes.
     """
 
     def __init__(self,
-                 prob_has=1.0,
-                 prob_has_hide=0.5,
+                 prob=1.0,
+                 prob_hiding_patches=0.5,
                  grid_sizes=(0, 16, 32, 44, 56)):
-        self.prob_has = prob_has
-        self.prob_has_hide = prob_has_hide
+        self.prob = prob
+        self.prob_hiding_patches = prob_hiding_patches
         self.grid_sizes = grid_sizes
 
     def _hide_and_seek(self, img):
@@ -177,13 +177,13 @@ class HideAndSeek:
                 for y in range(0, height, grid_size):
                     x_end = min(width, x + grid_size)
                     y_end = min(height, y + grid_size)
-                    if np.random.rand() <= self.prob_has_hide:
+                    if np.random.rand() <= self.prob_hiding_patches:
                         img[x:x_end, y:y_end, :] = 0
         return img
 
     def __call__(self, results):
         img = results['img']
-        if np.random.rand() < self.prob_has:
+        if np.random.rand() < self.prob:
             img = self._hide_and_seek(img)
         results['img'] = img
         return results
@@ -196,14 +196,14 @@ class Cutout:
     with Information Dropping Augmentation (arXiv:2008.07139 2020).
 
     Args:
-        prob_cutout (float): Probability of performing cutout.
+        prob (float): Probability of performing cutout.
         radius_factor (float): Size factor of cutout area.
         num_patch (float): Number of patches to be cutout.
     """
 
-    def __init__(self, prob_cutout=1.0, radius_factor=0.2, num_patch=1):
+    def __init__(self, prob=1.0, radius_factor=0.2, num_patch=1):
 
-        self.prob_cutout = prob_cutout
+        self.prob = prob
         self.radius_factor = radius_factor
         self.num_patch = num_patch
 
@@ -228,7 +228,7 @@ class Cutout:
 
     def __call__(self, results):
         img = results['img']
-        if np.random.rand() < self.prob_cutout:
+        if np.random.rand() < self.prob:
             img = self._cutout(img)
         results['img'] = img
         return results
