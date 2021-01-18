@@ -5,7 +5,6 @@ from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.models.utils.ops import Upsample
 from mmpose.utils import get_root_logger
 from ..registry import BACKBONES
 from .resnet import BasicBlock, Bottleneck, get_expansion
@@ -149,7 +148,7 @@ class HRModule(nn.Module):
                                 padding=0,
                                 bias=False),
                             build_norm_layer(self.norm_cfg, in_channels[i])[1],
-                            Upsample(
+                            nn.Upsample(
                                 scale_factor=2**(j - i),
                                 mode=self.upsample_cfg['mode'],
                                 align_corners=self.
