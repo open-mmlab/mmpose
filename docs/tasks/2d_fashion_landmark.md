@@ -7,7 +7,7 @@ MMPose supported datasets:
 
 - [DeepFashion](#deepfashion) \[ [Homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) \]
 
-## DeepFashion
+## DeepFashion (Fashion Landmark Detection, FLD)
 
 For [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) datatset, images can be downloaded from [download](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html).
 Please download the annotation files from [fld_annotations](https://download.openmmlab.com/mmpose/datasets/fld_annotations.tar).
@@ -21,7 +21,7 @@ mmpose
 ├── tools
 ├── configs
 `── data
-    │── coco
+    │── fld
         │-- annotations
         │   │-- fld_upper_train.json
         │   |-- fld_upper_val.json
