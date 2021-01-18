@@ -87,7 +87,8 @@ class FashionBaseDataset(Dataset, metaclass=ABCMeta):
         """This encodes bbox(x,y,w,w) into (center, scale)
 
         Args:
-            x, y, w, h
+            x, y, w, h (float): left, top, width and height
+            padding (float): bounding box padding factor
 
         Returns:
             center (np.ndarray[float32](2,)): center of the bbox (x, y).

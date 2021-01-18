@@ -51,6 +51,8 @@ class DeepFashionDataset(FashionBaseDataset):
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
             Default: None.
+        subset (str): The FLD dataset has 3 subsets, 'upper', 'lower',
+            and 'full', denoting different types of clothes.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
