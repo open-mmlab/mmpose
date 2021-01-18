@@ -147,7 +147,7 @@ class FashionBaseDataset(Dataset, metaclass=ABCMeta):
             auc_nor (float): AUC normalization factor, default as 30 pixel.
 
         Returns:
-            dict: Evaluation results for evaluation metric.
+            List: Evaluation results for evaluation metric.
         """
         info_str = []
 
