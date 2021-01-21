@@ -101,7 +101,7 @@ class FcHead(nn.Module):
             output_regression (np.ndarray): Output regression.
 
         Args:
-            x (torch.Tensor[NxKxHxW]): Input features.
+            x (torch.Tensor[NxC]): Input features.
             flip_pairs (None | list[tuple()):
                 Pairs of keypoints which are mirrored.
         """
