@@ -106,7 +106,6 @@ class BottomUpAicDataset(BottomUpCocoDataset):
                 return info_str
 
         coco_det = self.coco.loadRes(res_file)
-
         coco_eval = COCOeval(
             self.coco, coco_det, 'keypoints', self.sigmas, use_area=False)
         coco_eval.params.useSegm = None

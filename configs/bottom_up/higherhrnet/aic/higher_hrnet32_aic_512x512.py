@@ -3,12 +3,12 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=20)
-evaluation = dict(interval=20, metric='mAP', key_indicator='AP')
+checkpoint_config = dict(interval=50)
+evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.005,
+    lr=0.0015,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[400, 550])
-total_epochs = 600
+    step=[200, 260])
+total_epochs = 300
 log_config = dict(
     interval=50,
     hooks=[
@@ -27,6 +27,7 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
+    num_output_channels=14,
     dataset_joints=14,
     dataset_channel=[
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
@@ -98,7 +99,7 @@ model = dict(
             ae_loss_type='exp',
             with_ae_loss=[True, False],
             push_loss_factor=[0.01, 0.01],
-            pull_loss_factor=[0.01, 0.01],
+            pull_loss_factor=[0.001, 0.001],
             with_heatmaps_loss=[True, True],
             heatmaps_loss_factor=[1.0, 1.0])),
     train_cfg=dict(
