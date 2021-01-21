@@ -30,7 +30,6 @@ class TopDown(BasePose):
                  backbone,
                  neck=None,
                  keypoint_head=None,
-                 regression_head=None,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None,
