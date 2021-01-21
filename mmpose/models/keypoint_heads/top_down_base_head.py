@@ -37,6 +37,18 @@ class TopDownBaseHead(nn.Module):
         """Inference function."""
 
     def decode_keypoints(self, img_metas, output_heatmap):
+        """Decode keypoints from heatmaps.
+
+        Args:
+            img_metas (list(dict)): Information about data augmentation
+                By default this includes:
+                - "image_file: path to the image file
+                - "center": center of the bbox
+                - "scale": scale of the bbox
+                - "rotation": rotation of the bbox
+                - "bbox_score": score of bbox
+            output_heatmap (np.ndarray[N, K, H, W]): model predicted heatmaps.
+        """
         batch_size = len(img_metas)
 
         if 'bbox_id' in img_metas[0]:

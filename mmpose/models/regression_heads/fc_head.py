@@ -98,7 +98,7 @@ class FcHead(nn.Module):
         """Inference function.
 
         Returns:
-            output_heatmap (np.ndarray): Output heatmaps.
+            output_regression (np.ndarray): Output regression.
 
         Args:
             x (torch.Tensor[NxKxHxW]): Input features.
@@ -114,7 +114,20 @@ class FcHead(nn.Module):
             output_regression = output.detach().cpu().numpy()
         return output_regression
 
-    def decode_keypoints(self, img_metas, output_heatmap):
+    def decode_keypoints(self, img_metas, output_regression):
+        """Decode keypoints from output regression.
+
+        Args:
+            img_metas (list(dict)): Information about data augmentation
+                By default this includes:
+                - "image_file: path to the image file
+                - "center": center of the bbox
+                - "scale": scale of the bbox
+                - "rotation": rotation of the bbox
+                - "bbox_score": score of bbox
+            output_regression (np.ndarray[N, K, 3]): model
+                predicted regression vector.
+        """
         batch_size = len(img_metas)
 
         if 'bbox_id' in img_metas[0]:
@@ -139,7 +152,8 @@ class FcHead(nn.Module):
         # require heatmap size to decode keypoints
         W, H = img_metas[0]['heatmap_size']
 
-        preds, maxvals = keypoints_from_regression(output_heatmap, c, s, H, W)
+        preds, maxvals = keypoints_from_regression(output_regression, c, s, H,
+                                                   W)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
