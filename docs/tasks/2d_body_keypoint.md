@@ -36,6 +36,7 @@ For [COCO](http://cocodataset.org/) data, please download from [COCO download](h
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results.
 Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
 Download and extract them under $MMPOSE/data, and make them look like this:
+Optionally, to evaluate on COCO'2017 test-dev, please download the [image-info](https://download.openmmlab.com/mmpose/datasets/person_keypoints_test-dev-2017.json).
 
 ```text
 mmpose
@@ -49,8 +50,10 @@ mmpose
         │-- annotations
         │   │-- person_keypoints_train2017.json
         │   |-- person_keypoints_val2017.json
+        │   |-- person_keypoints_test-dev-2017.json
         |-- person_detection_results
         |   |-- COCO_val2017_detections_AP_H_56_person.json
+        |   |-- COCO_test-dev2017_detections_AP_H_609_person.json
         │-- train2017
         │   │-- 000000000009.jpg
         │   │-- 000000000025.jpg
