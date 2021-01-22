@@ -129,11 +129,11 @@ class OneHand10KDataset(HandBaseDataset):
 
         Args:
             outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, ['Test/source/0.jpg']
+                :image_paths (list[str]): For example, ['Test/source/0.jpg']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.
