@@ -27,12 +27,12 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=8,
-    dataset_joints=8,
+    num_output_channels=4,
+    dataset_joints=4,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7],
+        [0, 1, 2, 3],
     ],
-    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7])
+    inference_channel=[0, 1, 2, 3])
 
 # model settings
 model = dict(
@@ -119,21 +119,21 @@ data = dict(
         type='DeepFashionDataset',
         ann_file=f'{data_root}/annotations/fld_lower_train.json',
         img_prefix=f'{data_root}/img/',
-        subset='full',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='DeepFashionDataset',
         ann_file=f'{data_root}/annotations/fld_lower_val.json',
         img_prefix=f'{data_root}/img/',
-        subset='full',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='DeepFashionDataset',
         ann_file=f'{data_root}/annotations/fld_lower_test.json',
         img_prefix=f'{data_root}/img/',
-        subset='full',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
