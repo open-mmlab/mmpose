@@ -130,6 +130,7 @@ def test_top_down_COCO_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'coco'
 
     image_id = 785
     assert image_id in custom_dataset.img_ids
@@ -207,6 +208,7 @@ def test_top_down_MHP_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'mhp'
 
     image_id = 2889
     assert image_id in custom_dataset.img_ids
@@ -281,6 +283,7 @@ def test_top_down_PoseTrack18_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'posetrack18'
 
     image_id = 10128340000
     assert image_id in custom_dataset.img_ids
@@ -344,6 +347,7 @@ def test_top_down_CrowdPose_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'crowdpose'
 
     image_id = 103319
     assert image_id in custom_dataset.img_ids
@@ -415,6 +419,7 @@ def test_top_down_COCO_wholebody_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'coco_wholebody'
 
     image_id = 785
     assert image_id in custom_dataset.img_ids
@@ -483,6 +488,7 @@ def test_top_down_OCHuman_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'ochuman'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids
@@ -540,6 +546,7 @@ def test_top_down_OneHand10K_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'onehand10k'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
@@ -607,6 +614,7 @@ def test_top_down_FreiHand_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'freihand'
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
 
@@ -664,6 +672,7 @@ def test_top_down_Panoptic_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'panoptic'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
@@ -728,6 +737,7 @@ def test_top_down_InterHand2D_dataset():
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     assert len(custom_dataset.db) == 6
+    assert custom_dataset.dataset_name == 'interhand2d'
 
     _ = custom_dataset[0]
 
@@ -767,6 +777,7 @@ def test_top_down_MPII_dataset():
         pipeline=[])
 
     assert len(custom_dataset) == 5
+    assert custom_dataset.dataset_name == 'mpii'
     _ = custom_dataset[0]
 
 
@@ -805,6 +816,7 @@ def test_top_down_MPII_TRB_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'mpii_trb'
     _ = custom_dataset[0]
 
 
@@ -866,6 +878,7 @@ def test_top_down_AIC_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'aic'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids
@@ -939,6 +952,7 @@ def test_top_down_JHMDB_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'jhmdb'
 
     image_id = 2290001
     assert image_id in custom_dataset.img_ids

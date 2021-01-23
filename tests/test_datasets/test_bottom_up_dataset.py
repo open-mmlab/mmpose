@@ -80,6 +80,7 @@ def test_bottom_up_COCO_dataset():
 
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
+    assert custom_dataset.dataset_name == 'coco'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -132,6 +133,7 @@ def test_bottom_up_CrowdPose_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
+    assert custom_dataset.dataset_name == 'crowdpose'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -186,6 +188,7 @@ def test_bottom_up_MHP_dataset():
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
+    assert custom_dataset.dataset_name == 'mhp'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:

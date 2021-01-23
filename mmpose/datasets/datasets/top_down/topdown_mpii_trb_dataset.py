@@ -103,6 +103,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
         self.ann_info['joint_weights'] = np.ones(
             (self.ann_info['num_joints'], 1), dtype=np.float32)
 
+        self.dataset_name = 'mpii_trb'
         self.db = self._get_db(ann_file)
         self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)
@@ -122,7 +123,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             rotation=0,
             joints_3d=None,
             joints_3d_visible=None,
-            dataset='mpii_trb')
+            dataset=self.dataset_name)
 
         imid2info = {
             int(osp.splitext(x['file_name'])[0]): x
