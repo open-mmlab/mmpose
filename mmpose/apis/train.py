@@ -117,6 +117,7 @@ def train_model(model,
             # cfg.gpus will be ignored if distributed
             num_gpus=len(cfg.gpu_ids),
             dist=distributed,
+            drop_last=False,
             shuffle=False)
         dataloader_setting = dict(dataloader_setting,
                                   **cfg.data.get('val_dataloader', {}))
