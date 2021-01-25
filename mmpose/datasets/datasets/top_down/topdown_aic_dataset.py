@@ -80,7 +80,7 @@ class TopDownAicDataset(TopDownCocoDataset):
 
         # 'https://github.com/AIChallenger/AI_Challenger_2017/blob/master/'
         # 'Evaluation/keypoint_eval/keypoint_eval.py#L50'
-        # note: delta equals to two times of sigma
+        # delta = 2 x sigma
         self.sigmas = np.array([
             0.01388152, 0.01515228, 0.01057665, 0.01417709, 0.01497891,
             0.01402144, 0.03909642, 0.03686941, 0.01981803, 0.03843971,
