@@ -76,6 +76,8 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.left_hand_num = 21
         self.right_hand_num = 21
 
+        # 'https://github.com/jin-s13/COCO-WholeBody/blob/master/'
+        # 'evaluation/myeval_wholebody.py#L170'
         self.sigmas_body = [
             0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072,
             0.062, 0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089

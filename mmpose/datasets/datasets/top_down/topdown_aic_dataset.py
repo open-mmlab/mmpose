@@ -78,11 +78,14 @@ class TopDownAicDataset(TopDownCocoDataset):
             [1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # 'https://github.com/AIChallenger/AI_Challenger_2017/blob/master/'
+        # 'Evaluation/keypoint_eval/keypoint_eval.py#L50'
+        # delta = 2 x sigma
         self.sigmas = np.array([
             0.01388152, 0.01515228, 0.01057665, 0.01417709, 0.01497891,
             0.01402144, 0.03909642, 0.03686941, 0.01981803, 0.03843971,
             0.03412318, 0.02415081, 0.01291456, 0.01236173
-        ]) * 2
+        ])
 
         self.coco = COCO(ann_file)
 
