@@ -8,11 +8,16 @@ evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=2e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
-lr_config = dict(policy='step', step=[30, 50])
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.001,
+    step=[40, 55])
 total_epochs = 60
 log_config = dict(
     interval=5,
@@ -22,60 +27,27 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=68,
-    dataset_joints=68,
+    num_output_channels=29,
+    dataset_joints=29,
     dataset_channel=[
-        list(range(68)),
+        list(range(29)),
     ],
-    inference_channel=list(range(68)))
+    inference_channel=list(range(29)))
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='open-mmlab://msra/hrnetv2_w18',
-    backbone=dict(
-        type='HRNet',
-        in_channels=3,
-        extra=dict(
-            stage1=dict(
-                num_modules=1,
-                num_branches=1,
-                block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
-            stage2=dict(
-                num_modules=1,
-                num_branches=2,
-                block='BASIC',
-                num_blocks=(4, 4),
-                num_channels=(18, 36)),
-            stage3=dict(
-                num_modules=4,
-                num_branches=3,
-                block='BASIC',
-                num_blocks=(4, 4, 4),
-                num_channels=(18, 36, 72)),
-            stage4=dict(
-                num_modules=3,
-                num_branches=4,
-                block='BASIC',
-                num_blocks=(4, 4, 4, 4),
-                num_channels=(18, 36, 72, 144),
-                multiscale_output=True),
-            upsample=dict(mode='bilinear', align_corners=False))),
+    pretrained='torchvision://resnet50',
+    backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=[18, 36, 72, 144],
-        in_index=(0, 1, 2, 3),
-        input_transform='resize_concat',
+        in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
-        num_deconv_layers=0,
-        extra=dict(
-            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, ))),
+    ),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='unbiased',
+        post_process='default',
         shift_heatmap=True,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
@@ -100,7 +72,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=1, unbiased_encoding=True),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -126,25 +98,25 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/300w'
+data_root = 'data/cofw'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='Face300WDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_300w_train.json',
+        type='FaceCOFWDataset',
+        ann_file=f'{data_root}/annotations/cofw_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='Face300WDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        type='FaceCOFWDataset',
+        ann_file=f'{data_root}/annotations/cofw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='Face300WDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        type='FaceCOFWDataset',
+        ann_file=f'{data_root}/annotations/cofw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

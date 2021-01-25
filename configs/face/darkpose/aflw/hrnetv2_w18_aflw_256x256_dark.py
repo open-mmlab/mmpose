@@ -8,11 +8,16 @@ evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=2e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
-lr_config = dict(policy='step', step=[30, 50])
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.001,
+    step=[40, 55])
 total_epochs = 60
 log_config = dict(
     interval=5,
@@ -22,12 +27,12 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=29,
-    dataset_joints=29,
+    num_output_channels=19,
+    dataset_joints=19,
     dataset_channel=[
-        list(range(29)),
+        list(range(19)),
     ],
-    inference_channel=list(range(29)))
+    inference_channel=list(range(19)))
 
 # model settings
 model = dict(
@@ -75,7 +80,7 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='default',
+        post_process='unbiased',
         shift_heatmap=True,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
@@ -100,7 +105,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=1),
+    dict(type='TopDownGenerateTarget', sigma=2, unbiased_encoding=True),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -126,25 +131,25 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/cofw'
+data_root = 'data/aflw'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_train.json',
+        type='FaceAFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_aflw_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_test.json',
+        type='FaceAFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_aflw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_test.json',
+        type='FaceAFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_aflw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
