@@ -1,13 +1,12 @@
-import copy
 import tempfile
 from unittest.mock import MagicMock
-import json_tricks as json
-import os
+
 import numpy as np
 import pytest
 from numpy.testing import assert_almost_equal
 
 from mmpose.datasets import DATASETS
+
 
 def convert_db_to_output(db, batch_size=2):
     outputs = []
@@ -40,6 +39,7 @@ def convert_db_to_output(db, batch_size=2):
         outputs.append(output)
 
     return outputs
+
 
 def test_deepfashion_dataset():
     dataset = 'DeepFashionDataset'
