@@ -32,7 +32,7 @@ The master branch works with **PyTorch 1.3+**.
 
 - **Support diverse tasks**
 
-  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 133 keypoint whole-body human pose estimation, and 3d human mesh recovery.
+  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 133 keypoint whole-body human pose estimation, fashion landmark detection and 3d human mesh recovery.
 
 - **Higher efficiency and higher accuracy**
 
@@ -98,6 +98,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html)
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 - [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php)
+- [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/modelzoo.html) page.
