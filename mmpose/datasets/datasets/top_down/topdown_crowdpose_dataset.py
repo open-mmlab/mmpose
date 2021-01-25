@@ -84,6 +84,8 @@ class TopDownCrowdPoseDataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # 'https://github.com/Jeff-sjtu/CrowdPose/blob/master/crowdpose-api/'
+        # 'PythonAPI/crowdposetools/cocoeval.py#L224'
         self.sigmas = np.array([
             .79, .79, .72, .72, .62, .62, 1.07, 1.07, .87, .87, .89, .89, .79,
             .79

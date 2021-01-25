@@ -36,11 +36,11 @@
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco-wholebody/hrnet_w48_coco_wholebody_256x192.py)  | 256x192 | 0.700 | 0.776 | 0.672 | 0.785 | 0.656 | 0.743 | 0.534 | 0.639 | 0.579 | 0.681 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_256x192-643e18cb_20200922.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_256x192_20200922.log.json) |
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco-wholebody/hrnet_w48_coco_wholebody_384x288.py)  | 384x288 | 0.722 | 0.790 | 0.694 | 0.799 | 0.777 | 0.834 | 0.587 | 0.679 | 0.631 | 0.716 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288-6e061c6a_20200922.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_20200922.log.json) |
 
-#### Results on AIC val set
+#### Results on AIC val set with ground-truth bounding boxes
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_hrnet_w32](/configs/top_down/hrnet/aic/hrnet_w32_aic_256x192.py) | 256x192 | 0.675 | 0.957 | 0.751 | 0.703 | 0.961 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192_20200826.log.json) |
+| [pose_hrnet_w32](/configs/top_down/hrnet/aic/hrnet_w32_aic_256x192.py) | 256x192 | 0.323 | 0.762 | 0.219 | 0.366 | 0.789 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192_20200826.log.json) |
 
 #### Results on MPII val set
 
