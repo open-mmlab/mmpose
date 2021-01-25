@@ -123,7 +123,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.img_ids = self.coco.getImgIds()
         self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'coco'
+        self.dataset_name = 'coco_wholebody'
 
         self.db = self._get_db()
 

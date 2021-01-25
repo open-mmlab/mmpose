@@ -70,6 +70,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         self.ann_info['joint_weights'] = np.ones(
             (self.ann_info['num_joints'], 1), dtype=np.float32)
 
+        self.dataset_name = 'mpii'
+
         self.db = self._get_db()
         self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)
@@ -121,7 +123,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
-                'dataset': 'mpii',
+                'dataset': self.dataset_name,
                 'bbox_score': 1
             })
             bbox_id = bbox_id + 1
@@ -143,11 +145,11 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         Args:
             outputs(list(preds, boxes, image_path, heatmap)):
 
-                * preds(np.ndarray[1,K,3]): The first two dimensions are
+                * preds (np.ndarray[N,K,3]): The first two dimensions are
                   coordinates, score is the third dimension of the array.
-                * boxes(np.ndarray[1,6]): [center[0], center[1], scale[0]
+                * boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                   , scale[1],area, score]
-                * image_path(list[str]): For example, ['/val2017/000000
+                * image_paths (list[str]): For example, ['/val2017/000000
                   397133.jpg']
                 * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
 

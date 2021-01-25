@@ -211,7 +211,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
             auc_nor (float): AUC normalization factor, default as 30 pixel.
 
         Returns:
-            dict: Evaluation results for evaluation metric.
+            List: Evaluation results for evaluation metric.
         """
         info_str = []
 
@@ -304,9 +304,9 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
 
         Args:
             outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
                 :image_path (list[str])
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.

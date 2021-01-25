@@ -130,6 +130,7 @@ def test_top_down_COCO_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'coco'
 
     image_id = 785
     assert image_id in custom_dataset.img_ids
@@ -207,6 +208,7 @@ def test_top_down_MHP_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'mhp'
 
     image_id = 2889
     assert image_id in custom_dataset.img_ids
@@ -281,6 +283,7 @@ def test_top_down_PoseTrack18_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'posetrack18'
 
     image_id = 10128340000
     assert image_id in custom_dataset.img_ids
@@ -344,6 +347,7 @@ def test_top_down_CrowdPose_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'crowdpose'
 
     image_id = 103319
     assert image_id in custom_dataset.img_ids
@@ -415,6 +419,7 @@ def test_top_down_COCO_wholebody_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'coco_wholebody'
 
     image_id = 785
     assert image_id in custom_dataset.img_ids
@@ -483,6 +488,7 @@ def test_top_down_OCHuman_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'ochuman'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids
@@ -540,6 +546,7 @@ def test_top_down_OneHand10K_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'onehand10k'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
@@ -607,6 +614,7 @@ def test_top_down_FreiHand_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'freihand'
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
 
@@ -664,6 +672,7 @@ def test_top_down_Panoptic_dataset():
         test_mode=False)
 
     assert custom_dataset.test_mode is False
+    assert custom_dataset.dataset_name == 'panoptic'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
@@ -728,6 +737,7 @@ def test_top_down_InterHand2D_dataset():
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     assert len(custom_dataset.db) == 6
+    assert custom_dataset.dataset_name == 'interhand2d'
 
     _ = custom_dataset[0]
 
@@ -767,6 +777,7 @@ def test_top_down_MPII_dataset():
         pipeline=[])
 
     assert len(custom_dataset) == 5
+    assert custom_dataset.dataset_name == 'mpii'
     _ = custom_dataset[0]
 
 
@@ -805,6 +816,7 @@ def test_top_down_MPII_TRB_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'mpii_trb'
     _ = custom_dataset[0]
 
 
@@ -866,6 +878,7 @@ def test_top_down_AIC_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'aic'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids
@@ -939,6 +952,7 @@ def test_top_down_JHMDB_dataset():
         test_mode=True)
 
     assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'jhmdb'
 
     image_id = 2290001
     assert image_id in custom_dataset.img_ids
@@ -956,3 +970,63 @@ def test_top_down_JHMDB_dataset():
 
         with pytest.raises(KeyError):
             _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_deepfashion_dataset():
+    dataset = 'DeepFashionDataset'
+    # test JHMDB datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=8,
+        dataset_joints=8,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7],
+        ],
+        inference_channel=[0, 1, 2, 3, 4, 5, 6, 7])
+
+    data_cfg = dict(
+        image_size=[192, 256],
+        heatmap_size=[48, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        use_gt_bbox=True,
+        det_bbox_thr=0.0,
+        image_thr=0.0,
+        bbox_file='')
+
+    # Test gt bbox
+    custom_dataset = dataset_class(
+        ann_file='tests/data/fld/test_fld.json',
+        img_prefix='tests/data/fld/',
+        subset='full',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'deepfashion_full'
+
+    image_id = 128
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 2
+    _ = custom_dataset[0]
+
+    outputs = load_json_to_output('tests/data/fld/test_fld.json',
+                                  'tests/data/fld/')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')

@@ -4,49 +4,55 @@ from collections import OrderedDict
 import numpy as np
 
 from mmpose.datasets.builder import DATASETS
-from .hand_base_dataset import HandBaseDataset
+from .fashion_base_dataset import FashionBaseDataset
 
 
 @DATASETS.register_module()
-class OneHand10KDataset(HandBaseDataset):
-    """OneHand10K dataset for top-down hand pose estimation.
+class DeepFashionDataset(FashionBaseDataset):
+    """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
-    `Mask-pose Cascaded CNN for 2D Hand Pose Estimation from
-    Single Color Images' TCSVT'2019
-    More details can be found in the `paper
-    <https://www.yangangwang.com/papers/WANG-MCC-2018-10.pdf>`__ .
+    `DeepFashion: Powering Robust Clothes Recognition
+    and Retrieval with Rich Annotations' CVPR'2016 and
+    `Fashion Landmark Detection in the Wild' ECCV'2016
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    OneHand10K keypoint indexes::
+    The dataset contains 3 categories for full-body, upper-body and lower-body.
 
-        0: 'wrist',
-        1: 'thumb1',
-        2: 'thumb2',
-        3: 'thumb3',
-        4: 'thumb4',
-        5: 'forefinger1',
-        6: 'forefinger2',
-        7: 'forefinger3',
-        8: 'forefinger4',
-        9: 'middle_finger1',
-        10: 'middle_finger2',
-        11: 'middle_finger3',
-        12: 'middle_finger4',
-        13: 'ring_finger1',
-        14: 'ring_finger2',
-        15: 'ring_finger3',
-        16: 'ring_finger4',
-        17: 'pinky_finger1',
-        18: 'pinky_finger2',
-        19: 'pinky_finger3',
-        20: 'pinky_finger4'
+    Fashion landmark indexes for upper-body clothes::
+
+        0: 'left collar',
+        1: 'right collar',
+        2: 'left sleeve',
+        3: 'right sleeve',
+        4: 'left hem',
+        5: 'right hem'
+
+    Fashion landmark indexes for lower-body clothes::
+
+        0: 'left waistline',
+        1: 'right waistline',
+        2: 'left hem',
+        3: 'right hem'
+
+    Fashion landmark indexes for full-body clothes::
+
+        0: 'left collar',
+        1: 'right collar',
+        2: 'left sleeve',
+        3: 'right sleeve',
+        4: 'left waistline',
+        5: 'right waistline',
+        6: 'left hem',
+        7: 'right hem'
 
     Args:
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
             Default: None.
+        subset (str): The FLD dataset has 3 subsets, 'upper', 'lower',
+            and 'full', denoting different types of clothes.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
@@ -56,6 +62,7 @@ class OneHand10KDataset(HandBaseDataset):
     def __init__(self,
                  ann_file,
                  img_prefix,
+                 subset,
                  data_cfg,
                  pipeline,
                  test_mode=False):
@@ -63,12 +70,26 @@ class OneHand10KDataset(HandBaseDataset):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
+        if subset == 'upper':
+            assert self.ann_info['num_joints'] == 6
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5]]
+            self.dataset_name = 'deepfashion_upper'
+        elif subset == 'lower':
+            assert self.ann_info['num_joints'] == 4
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3]]
+            self.dataset_name = 'deepfashion_lower'
+        elif subset == 'full':
+            assert self.ann_info['num_joints'] == 8
+            self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7]]
+            self.dataset_name = 'deepfashion_full'
+        else:
+            NotImplementedError()
+
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 21
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.dataset_name = 'onehand10k'
+        self.dataset_name = 'deepfashion_' + subset
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -94,12 +115,11 @@ class OneHand10KDataset(HandBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # use 1.25 padded bbox as input
+                # use 1.25bbox as input
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
                 image_file = os.path.join(self.img_prefix,
                                           self.id2name[img_id])
-
                 gt_db.append({
                     'image_file': image_file,
                     'center': center,
@@ -118,8 +138,8 @@ class OneHand10KDataset(HandBaseDataset):
         return gt_db
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
-        """Evaluate onehand10k keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        """Evaluate freihand keypoint results. The pose prediction results will
+        be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             batch_size: N
@@ -133,7 +153,7 @@ class OneHand10KDataset(HandBaseDataset):
                     coordinates, score is the third dimension of the array.
                 :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_paths (list[str]): For example, ['Test/source/0.jpg']
+                :image_paths (list[str]): For example, [ 'img_00000001.jpg']
                 :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
 
             res_folder (str): Path of directory to save the results.
