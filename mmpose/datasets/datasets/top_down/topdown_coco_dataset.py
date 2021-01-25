@@ -312,11 +312,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         Args:
             outputs (list(dict))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, ['data/coco/val2017
+                :image_paths (list[str]): For example, ['data/coco/val2017
                     /000000393226.jpg']
                 :heatmap (np.ndarray[N, K, H, W]): model output heatmap
                 :bbox_id (list(int)).

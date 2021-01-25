@@ -11,10 +11,10 @@ from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
 from mmpose.datasets.pipelines import Compose
 
 
-class HandBaseDataset(Dataset, metaclass=ABCMeta):
-    """Base class for hand datasets.
+class FashionBaseDataset(Dataset, metaclass=ABCMeta):
+    """Base class for fashion landmark datasets.
 
-    All hand datasets should subclass it.
+    All fashion datasets should subclass it.
     All subclasses should overwrite:
         Methods:`_get_db`, 'evaluate'
 
@@ -87,7 +87,8 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
         """This encodes bbox(x,y,w,w) into (center, scale)
 
         Args:
-            x, y, w, h
+            x, y, w, h (float): left, top, width and height
+            padding (float): bounding box padding factor
 
         Returns:
             center (np.ndarray[float32](2,)): center of the bbox (x, y).

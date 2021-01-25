@@ -225,11 +225,11 @@ class InterHand2DDataset(HandBaseDataset):
 
         Args:
             outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+                :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
+                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
-                :image_path (list[str]): For example, ['C', 'a', 'p', 't',
+                :image_paths (list[str]): For example, ['C', 'a', 'p', 't',
                     'u', 'r', 'e', '1', '2', '/', '0', '3', '9', '0', '_',
                     'd', 'h', '_', 't', 'o', 'u', 'c', 'h', 'R', 'O', 'M',
                     '/', 'c', 'a', 'm', '4', '1', '0', '2', '0', '9', '/',
