@@ -85,6 +85,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # Adapted from COCO dataset
         self.sigmas = np.array([
             .25, 1.07, .25, .79, .79, 1.07, 1.07, .72, .72, .87, .87, .62, .62,
             .89, .89

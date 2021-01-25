@@ -68,6 +68,8 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
+        # 'pycocotools/cocoeval.py#L523'
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89

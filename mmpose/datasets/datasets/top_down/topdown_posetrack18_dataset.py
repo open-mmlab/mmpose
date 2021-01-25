@@ -91,6 +91,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # Adapted from COCO dataset
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89

@@ -88,6 +88,8 @@ class TopDownOCHumanDataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
+        # 'https://github.com/liruilong940607/Pose2Seg/blob/'
+        # '64fcc5e0ee7b85c32f4be2771ce810a41b9fcb38/test.py#L50'
         self.sigmas = np.array([
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
