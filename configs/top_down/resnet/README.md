@@ -53,17 +53,20 @@ Following the common setting, the models are trained on COCO train dataset, and 
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_256x192.py) | 256x192 | 0.570 | 0.725 | 0.617 | 0.616 | 0.754 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192_20200709.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.582 | 0.723 | 0.627 | 0.627 | 0.752 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
 
-#### Results on AIC val set
+#### Results on AIC val set with ground-truth bounding boxes
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_101](/configs/top_down/resnet/aic/res101_aic_256x192.py) | 256x192 | 0.650 | 0.947 | 0.726 | 0.680 | 0.954 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
+| [pose_resnet_101](/configs/top_down/resnet/aic/res101_aic_256x192.py) | 256x192 | 0.294 | 0.736 | 0.174 | 0.337 | 0.763 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
 
 #### Results on MHP v2.0 val set
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_resnet_101](/configs/top_down/resnet/mhp/res50_mhp_256x192.py) | 256x192 | 0.583 | 0.897 | 0.669 | 0.636 | 0.918 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mhp_256x192-28c5b818_20201229.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mhp_256x192_20201229.log.json) |
+
+Note that, the evaluation metric used here is mAP (adapted from COCO), which may be different from the official evaluation [codes](https://github.com/ZhaoJ9014/Multi-Human-Parsing/tree/master/Evaluation/Multi-Human-Pose).
+Please be cautious if you use the results in papers.
 
 #### Results on MPII val set
 

@@ -15,6 +15,11 @@ class TopDownMhpDataset(TopDownCocoDataset):
     of fine-grained visual understanding of humans in crowd scene.
     <https://lv-mhp.github.io/>`
 
+    Note that, the evaluation metric used here is mAP (adapted from COCO),
+    which may be different from the official evaluation codes.
+    'https://github.com/ZhaoJ9014/Multi-Human-Parsing/tree/master/'
+    'Evaluation/Multi-Human-Pose'
+    Please be cautious if you use the results in papers.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -81,7 +86,7 @@ class TopDownMhpDataset(TopDownCocoDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
-        # Adapted from COCO dataset
+        # Adapted from COCO dataset.
         self.sigmas = np.array([
             .89, .83, 1.07, 1.07, .83, .89, .26, .26, .26, .26, .62, .72, 1.79,
             1.79, .72, .62
