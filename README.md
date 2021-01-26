@@ -54,6 +54,9 @@ The master branch works with **PyTorch 1.3+**.
 
 Supported algorithms:
 
+<details open>
+<summary>(click to collapse)</summary>
+
 - [x] [CPM](configs/top_down/cpm/README.md)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
@@ -67,7 +70,12 @@ Supported algorithms:
 - [x] [MSPN](configs/top_down/mspn/README.md)
 - [x] [RSN](configs/top_down/rsn/README.md)
 
+</details>
+
 Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
+
+<details open>
+<summary>(click to collapse)</summary>
 
 - [x] [COCO](http://cocodataset.org/)
 - [x] [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/)
@@ -89,6 +97,8 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
 - [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)
 - [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+
+</details>
 
 Supported backbones:
 
