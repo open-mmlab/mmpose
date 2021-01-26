@@ -515,9 +515,7 @@ def vis_pose_result(model,
             ]]
         pose_kpt_color = palette[
             [16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0] +
-            [0, 0, 0, 0, 0, 0] + [
-                19,
-            ] * (68 + 42)]
+            [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
         radius = 1
 
     elif dataset == 'TopDownAicDataset':
