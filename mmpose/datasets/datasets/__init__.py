@@ -2,6 +2,8 @@ from ...deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
                            TopDownPanopticDataset)
 from .bottom_up import (BottomUpCocoDataset, BottomUpCrowdPoseDataset,
                         BottomUpMhpDataset)
+from .face import (Face300WDataset, FaceAFLWDataset, FaceCOFWDataset,
+                   FaceWFLWDataset)
 from .fashion import DeepFashionDataset
 from .hand import (FreiHandDataset, InterHand2DDataset, OneHand10KDataset,
                    PanopticDataset)
@@ -23,5 +25,6 @@ __all__ = [
     'BottomUpCrowdPoseDataset', 'TopDownFreiHandDataset',
     'TopDownOneHand10KDataset', 'TopDownPanopticDataset',
     'TopDownPoseTrack18Dataset', 'TopDownJhmdbDataset', 'TopDownMhpDataset',
-    'DeepFashionDataset'
+    'DeepFashionDataset', 'Face300WDataset', 'FaceAFLWDataset',
+    'FaceWFLWDataset', 'FaceCOFWDataset'
 ]

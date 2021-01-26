@@ -27,7 +27,8 @@ class HRModule(nn.Module):
                  multiscale_output=False,
                  with_cp=False,
                  conv_cfg=None,
-                 norm_cfg=dict(type='BN')):
+                 norm_cfg=dict(type='BN'),
+                 upsample_cfg=dict(mode='nearest', align_corners=None)):
 
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -41,6 +42,7 @@ class HRModule(nn.Module):
         self.multiscale_output = multiscale_output
         self.norm_cfg = norm_cfg
         self.conv_cfg = conv_cfg
+        self.upsample_cfg = upsample_cfg
         self.with_cp = with_cp
         self.branches = self._make_branches(num_branches, blocks, num_blocks,
                                             num_channels)
@@ -130,6 +132,7 @@ class HRModule(nn.Module):
         in_channels = self.in_channels
         fuse_layers = []
         num_out_branches = num_branches if self.multiscale_output else 1
+
         for i in range(num_out_branches):
             fuse_layer = []
             for j in range(num_branches):
@@ -146,7 +149,10 @@ class HRModule(nn.Module):
                                 bias=False),
                             build_norm_layer(self.norm_cfg, in_channels[i])[1],
                             nn.Upsample(
-                                scale_factor=2**(j - i), mode='nearest')))
+                                scale_factor=2**(j - i),
+                                mode=self.upsample_cfg['mode'],
+                                align_corners=self.
+                                upsample_cfg['align_corners'])))
                 elif j == i:
                     fuse_layer.append(None)
                 else:
@@ -310,6 +316,11 @@ class HRNet(nn.Module):
         self.add_module(self.norm2_name, norm2)
         self.relu = nn.ReLU(inplace=True)
 
+        self.upsample_cfg = self.extra.get('upsample', {
+            'mode': 'nearest',
+            'align_corners': None
+        })
+
         # stage 1
         self.stage1_cfg = self.extra['stage1']
         num_channels = self.stage1_cfg['num_channels'][0]
@@ -360,8 +371,11 @@ class HRNet(nn.Module):
         ]
         self.transition3 = self._make_transition_layer(pre_stage_channels,
                                                        num_channels)
+
         self.stage4, pre_stage_channels = self._make_stage(
-            self.stage4_cfg, num_channels, multiscale_output=False)
+            self.stage4_cfg,
+            num_channels,
+            multiscale_output=self.stage4_cfg.get('multiscale_output', False))
 
     @property
     def norm1(self):
@@ -481,7 +495,8 @@ class HRNet(nn.Module):
                     reset_multiscale_output,
                     with_cp=self.with_cp,
                     norm_cfg=self.norm_cfg,
-                    conv_cfg=self.conv_cfg))
+                    conv_cfg=self.conv_cfg,
+                    upsample_cfg=self.upsample_cfg))
 
             in_channels = hr_modules[-1].in_channels
 
