@@ -98,7 +98,6 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)
 - [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
 
-
 </details>
 
 Supported backbones:
