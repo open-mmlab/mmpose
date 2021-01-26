@@ -202,6 +202,29 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
     return auc
 
 
+def keypoint_nme(pred, gt, mask, normalize_factor):
+    """Calculate the normalized mean error (NME).
+
+    Note:
+        batch_size: N
+        num_keypoints: K
+
+    Args:
+        pred (np.ndarray[N, K, 2]): Predicted keypoint location.
+        gt (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        normalize_factor (np.ndarray[N, 2]): Normalization factor.
+
+    Returns:
+        float: normalized mean error
+    """
+    distances = _calc_distances(pred, gt, mask, normalize_factor)
+    distance_valid = distances[distances != -1]
+    return distance_valid.sum() / max(1, len(distance_valid))
+
+
 def keypoint_epe(pred, gt, mask):
     """Calculate the end-point error.
 
@@ -222,8 +245,7 @@ def keypoint_epe(pred, gt, mask):
     distances = _calc_distances(
         pred, gt, mask, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
     distance_valid = distances[distances != -1]
-    valid_num = len(distance_valid)
-    return distance_valid.sum() / valid_num
+    return distance_valid.sum() / max(1, len(distance_valid))
 
 
 def _taylor(heatmap, coord):

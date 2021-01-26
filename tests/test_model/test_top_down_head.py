@@ -16,6 +16,10 @@ def test_top_down_simple_head():
             extra=[],
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
+    with pytest.raises(TypeError):
+        head = TopDownSimpleHead(
+            out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
+
     # test num deconv layers
     with pytest.raises(ValueError):
         _ = TopDownSimpleHead(
@@ -77,18 +81,26 @@ def test_top_down_simple_head():
         extra={'final_conv_kernel': 3},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     head.init_weights()
-    assert head.final_layer.padding == (1, 1)
+    assert head.final_layer[0].padding == (1, 1)
     head = TopDownSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 1},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
-    assert head.final_layer.padding == (0, 0)
+    assert head.final_layer[0].padding == (0, 0)
     _ = TopDownSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 0},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    head = TopDownSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
+        extra=dict(
+            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )))
+    assert len(head.final_layer) == 4
 
     head = TopDownSimpleHead(
         out_channels=3,

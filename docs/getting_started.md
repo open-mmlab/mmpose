@@ -25,6 +25,7 @@ MMPose supports multiple tasks. Please follow the corresponding guidelines for d
 
 - [2D Body Keypoint](/docs/tasks/2d_body_keypoint.md)
 - [2D Hand Keypoint](/docs/tasks/2d_hand_keypoint.md)
+- [2D Face Keypoint](/docs/tasks/2d_face_keypoint.md)
 - [2D WholeBody Keypoint](/docs/tasks/2d_wholebody_keypoint.md)
 - [3D Human Mesh Recovery](/docs/tasks/3d_body_mesh.md)
 
