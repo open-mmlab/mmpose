@@ -52,7 +52,7 @@ The master branch works with **PyTorch 1.3+**.
 
 ## [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
 
-Supported backbones for human pose estimation:
+Supported backbones:
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md)
 - [x] [VGG](configs/top_down/vgg/README.md)
@@ -67,11 +67,12 @@ Supported backbones for human pose estimation:
 - [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
 - [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md)
 
-Supported methods for human pose estimation:
+Supported methods:
 
 - [x] [CPM](configs/top_down/cpm/README.md)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
 - [x] [HRNet](configs/top_down/hrnet/README.md)
+- [x] [HRNetv2](configs/face/hrnetv2/README.md)
 - [x] [Hourglass](configs/top_down/hourglass/README.md)
 - [x] [SCNet](configs/top_down/scnet/README.md)
 - [x] [Associative Embedding](configs/bottom_up/hrnet/README.md)
@@ -99,6 +100,10 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/)
 - [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php)
 - [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)
+- [x] [300W](https://ibug.doc.ic.ac.uk/resources/300-W/)
+- [x] [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
+- [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)
+- [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/modelzoo.html) page.
