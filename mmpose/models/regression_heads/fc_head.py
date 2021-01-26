@@ -52,16 +52,15 @@ class FcHead(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[NxKx2]): Output keypoints.
-            target (torch.Tensor[NxKx2]): Target keypoints.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[Nx2K]): Output keypoints.
+            target (torch.Tensor[Nx2K]): Target keypoints.
+            target_weight (torch.Tensor[Nx2K]):
                 Weights across different joint types.
         """
 
         losses = dict()
-
         assert not isinstance(self.loss, nn.Sequential)
-        assert target.dim() == 3 and target_weight.dim() == 3
+        assert target.dim() == 2 and target_weight.dim() == 2
         losses['reg_loss'] = self.loss(output, target, target_weight)
 
         return losses
@@ -74,20 +73,22 @@ class FcHead(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[NxKx2]): Output keypoints.
-            target (torch.Tensor[NxKx2]): Target keypoints.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[Nx2K]): Output keypoints.
+            target (torch.Tensor[Nx2K]): Target keypoints.
+            target_weight (torch.Tensor[Nx2K]):
                 Weights across different joint types.
         """
 
         accuracy = dict()
 
-        N = output.shape[0]
+        N, C = output.shape
+        K = C // 2
 
         _, avg_acc, cnt = keypoint_pck_accuracy(
-            output.detach().cpu().numpy(),
-            target.detach().cpu().numpy(),
-            target_weight.detach().cpu().numpy().squeeze(-1) > 0,
+            output.reshape([N, K, 2]).detach().cpu().numpy(),
+            target.reshape([N, K, 2]).detach().cpu().numpy(),
+            target_weight.reshape([N, K, 2])[:, :, 0].detach().cpu().numpy() >
+            0,
             thr=0.05,
             normalize=np.ones((N, 2)))
         accuracy['acc_pose'] = avg_acc

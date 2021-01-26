@@ -7,6 +7,7 @@ from .losses import *  # noqa
 from .mesh_heads import *  # noqa
 from .necks import *  # noqa
 from .registry import BACKBONES, HEADS, LOSSES, POSENETS
+from .regression_heads import *  # noqa
 
 __all__ = [
     'BACKBONES', 'HEADS', 'LOSSES', 'POSENETS', 'build_backbone', 'build_head',
