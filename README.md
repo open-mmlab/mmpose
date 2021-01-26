@@ -52,21 +52,6 @@ The master branch works with **PyTorch 1.3+**.
 
 ## [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
 
-Supported backbones:
-
-- [x] [AlexNet](configs/top_down/alexnet/README.md)
-- [x] [VGG](configs/top_down/vgg/README.md)
-- [x] [HRNet](configs/top_down/hrnet/README.md)
-- [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
-- [x] [ResNet](configs/top_down/resnet/README.md)
-- [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
-- [x] [ResNeSt](configs/top_down/resnest/README.md)
-- [x] [ResNext](configs/top_down/resnext/README.md)
-- [x] [SCNet](configs/top_down/scnet/README.md)
-- [x] [SEResNet](configs/top_down/seresnet/README.md)
-- [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
-- [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md)
-
 Supported algorithms:
 
 - [x] [CPM](configs/top_down/cpm/README.md)
@@ -104,6 +89,24 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [WFLW](https://wywu.github.io/projects/LAB/WFLW.html)
 - [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)
 - [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/)
+
+<details>
+  <summary>Supported backbones (click to expand):</summary>
+
+    - [x] [AlexNet](configs/top_down/alexnet/README.md)
+    - [x] [VGG](configs/top_down/vgg/README.md)
+    - [x] [HRNet](configs/top_down/hrnet/README.md)
+    - [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md)
+    - [x] [ResNet](configs/top_down/resnet/README.md)
+    - [x] [ResNetV1D](configs/top_down/resnetv1d/README.md)
+    - [x] [ResNeSt](configs/top_down/resnest/README.md)
+    - [x] [ResNext](configs/top_down/resnext/README.md)
+    - [x] [SCNet](configs/top_down/scnet/README.md)
+    - [x] [SEResNet](configs/top_down/seresnet/README.md)
+    - [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
+    - [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md)
+
+</details>
 
 Results and models are available in the *README.md* of each method's config directory.
 A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/modelzoo.html) page.
