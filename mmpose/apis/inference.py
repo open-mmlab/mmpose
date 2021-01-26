@@ -208,6 +208,28 @@ def _inference_single_pose_model(model,
                       [39, 42], [40, 47], [41, 46], [48, 54], [49,
                                                                53], [50, 52],
                       [61, 63], [60, 64], [67, 65], [58, 56], [59, 55]]
+
+    elif dataset in 'FaceAFLWDataset':
+        flip_pairs = [[0, 5], [1, 4], [2, 3], [6, 11], [7, 10], [8, 9],
+                      [12, 14], [15, 17]]
+
+    elif dataset in 'FaceCOFWDataset':
+        flip_pairs = [[0, 1], [4, 6], [2, 3], [5, 7], [8, 9], [10, 11],
+                      [12, 14], [16, 17], [13, 15], [18, 19], [22, 23]]
+
+    elif dataset in 'FaceWFLWDataset':
+        flip_pairs = [[0, 32], [1, 31], [2, 30], [3, 29], [4, 28], [5, 27],
+                      [6, 26], [7, 25], [8, 24], [9, 23], [10, 22], [11, 21],
+                      [12, 20], [13, 19], [14, 18], [15, 17], [33,
+                                                               46], [34, 45],
+                      [35, 44], [36, 43], [37, 42], [38, 50], [39,
+                                                               49], [40, 48],
+                      [41, 47], [60, 72], [61, 71], [62, 70], [63,
+                                                               69], [64, 68],
+                      [65, 75], [66, 74], [67, 73], [55, 59], [56,
+                                                               58], [76, 82],
+                      [77, 81], [78, 80], [87, 83], [86, 84], [88, 92],
+                      [89, 91], [95, 93], [96, 97]]
     else:
         raise NotImplementedError()
 
@@ -493,9 +515,7 @@ def vis_pose_result(model,
             ]]
         pose_kpt_color = palette[
             [16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0] +
-            [0, 0, 0, 0, 0, 0] + [
-                19,
-            ] * (68 + 42)]
+            [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
         radius = 1
 
     elif dataset == 'TopDownAicDataset':
@@ -566,9 +586,34 @@ def vis_pose_result(model,
         skeleton = []
 
         pose_limb_color = palette[[]]
-        pose_kpt_color = palette[[
-            19,
-        ] * (68)]
+        pose_kpt_color = palette[[19] * 68]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceAFLWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 19]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceCOFWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 29]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'FaceWFLWDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 98]
         radius = 3
         kpt_score_thr = 0
 

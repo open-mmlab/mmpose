@@ -133,7 +133,10 @@ class TopDownSimpleHead(TopDownBaseHead):
                     stride=1,
                     padding=padding))
 
-            self.final_layer = nn.Sequential(*layers)
+            if len(layers) > 1:
+                self.final_layer = nn.Sequential(*layers)
+            else:
+                self.final_layer = layers[0]
 
     def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
