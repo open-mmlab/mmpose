@@ -591,3 +591,61 @@ class TopDownGenerateTarget:
         results['target_weight'] = target_weight
 
         return results
+
+
+@PIPELINES.register_module()
+class TopDownGenerateTargetRegression():
+    """Generate the target regression vector (coordinates).
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+    """
+
+    def __init__(self):
+        pass
+
+    def _generate_target(self, cfg, joints_3d, joints_3d_visible):
+        """Generate the target regression vector.
+
+        Args:
+            cfg (dict): data config
+            joints_3d: np.ndarray([num_joints, 3])
+            joints_3d_visible: np.ndarray([num_joints, 3])
+        Returns:
+             target, target_weight(1: visible, 0: invisible)
+        """
+        image_size = cfg['image_size']
+        heatmap_size = cfg['heatmap_size']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        feat_stride = image_size / heatmap_size
+
+        assert abs(feat_stride[0] - feat_stride[1]) < 1e-5
+
+        target = joints_3d[:, :2] / image_size
+        target = target.reshape([-1]).astype(np.float32)
+        target_weight = joints_3d_visible[:, :2]
+
+        if use_different_joint_weights:
+            target_weight = np.multiply(target_weight, joint_weights)
+
+        target_weight = target_weight.reshape([-1])
+
+        return target, target_weight
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+
+        target, target_weight = self._generate_target(results['ann_info'],
+                                                      joints_3d,
+                                                      joints_3d_visible)
+
+        results['target'] = target
+        results['target_weight'] = target_weight
+
+        return results

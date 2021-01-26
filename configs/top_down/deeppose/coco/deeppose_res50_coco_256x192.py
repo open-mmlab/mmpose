@@ -86,7 +86,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTargetRegression'),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -109,7 +109,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
-            'flip_pairs'
+            'flip_pairs', 'heatmap_size'
         ]),
 ]
 
