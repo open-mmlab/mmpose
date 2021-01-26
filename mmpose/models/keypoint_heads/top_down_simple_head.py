@@ -124,16 +124,13 @@ class TopDownSimpleHead(TopDownBaseHead):
                         build_norm_layer(dict(type='BN'), conv_channels)[1])
                     layers.append(nn.ReLU(inplace=True))
 
-            layers.append(
-                build_conv_layer(
-                    cfg=dict(type='Conv2d'),
-                    in_channels=conv_channels,
-                    out_channels=out_channels,
-                    kernel_size=kernel_size,
-                    stride=1,
-                    padding=padding))
-
-            self.final_layer = nn.Sequential(*layers)
+            self.final_layer = build_conv_layer(
+                cfg=dict(type='Conv2d'),
+                in_channels=conv_channels,
+                out_channels=out_channels,
+                kernel_size=kernel_size,
+                stride=1,
+                padding=padding)
 
     def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
