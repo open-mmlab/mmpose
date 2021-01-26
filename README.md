@@ -67,7 +67,7 @@ Supported backbones:
 - [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md)
 - [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md)
 
-Supported methods:
+Supported algorithms:
 
 - [x] [CPM](configs/top_down/cpm/README.md)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md)
