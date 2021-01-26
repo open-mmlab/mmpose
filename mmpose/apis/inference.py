@@ -590,7 +590,7 @@ def vis_pose_result(model,
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[
             19,
-        ] * (68)]
+        ] * 68]
         radius = 3
         kpt_score_thr = 0
 
@@ -601,7 +601,7 @@ def vis_pose_result(model,
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[
             19,
-        ] * (19)]
+        ] * 19]
         radius = 3
         kpt_score_thr = 0
 
@@ -612,7 +612,7 @@ def vis_pose_result(model,
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[
             19,
-        ] * (29)]
+        ] * 29]
         radius = 3
         kpt_score_thr = 0
 
@@ -623,7 +623,7 @@ def vis_pose_result(model,
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[
             19,
-        ] * (98)]
+        ] * 98]
         radius = 3
         kpt_score_thr = 0
 
