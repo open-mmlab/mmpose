@@ -81,13 +81,13 @@ def test_top_down_simple_head():
         extra={'final_conv_kernel': 3},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     head.init_weights()
-    assert head.final_layer[0].padding == (1, 1)
+    assert head.final_layer.padding == (1, 1)
     head = TopDownSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 1},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
-    assert head.final_layer[0].padding == (0, 0)
+    assert head.final_layer.padding == (0, 0)
     _ = TopDownSimpleHead(
         out_channels=3,
         in_channels=512,
