@@ -8,14 +8,19 @@ from ..registry import LOSSES
 class SmoothL1Loss(nn.Module):
     """SmoothL1Loss loss ."""
 
-    def __init__(self):
+    def __init__(self, use_target_weight=False, loss_weight=1.):
         super().__init__()
         self.criterion = F.smooth_l1_loss
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
 
     def forward(self, output, target, target_weight):
         """Forward function."""
         num_joints = output.size(1)
-        loss = self.criterion(
-            output.mul(target_weight), target.mul(target_weight))
+        if self.use_target_weight:
+            loss = self.criterion(
+                output.mul(target_weight), target.mul(target_weight))
+        else:
+            loss = self.criterion(output, target)
 
-        return loss / num_joints
+        return loss / num_joints * self.loss_weight
