@@ -42,7 +42,9 @@ class FcHead(nn.Module):
 
     def forward(self, x):
         """Forward function."""
-        return self.fc(x)
+        output = self.fc(x)
+        N, C = output.shape
+        return output.reshape([N, C // 2, 2])
 
     def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
@@ -52,15 +54,15 @@ class FcHead(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[Nx2K]): Output keypoints.
-            target (torch.Tensor[Nx2K]): Target keypoints.
-            target_weight (torch.Tensor[Nx2K]):
+            output (torch.Tensor[N, K, 2]): Output keypoints.
+            target (torch.Tensor[N, K, 2]): Target keypoints.
+            target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
         """
 
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
-        assert target.dim() == 2 and target_weight.dim() == 2
+        assert target.dim() == 3 and target_weight.dim() == 3
         losses['reg_loss'] = self.loss(output, target, target_weight)
 
         return losses
@@ -73,22 +75,20 @@ class FcHead(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[Nx2K]): Output keypoints.
-            target (torch.Tensor[Nx2K]): Target keypoints.
-            target_weight (torch.Tensor[Nx2K]):
+            output (torch.Tensor[N, K, 2]): Output keypoints.
+            target (torch.Tensor[N, K, 2]): Target keypoints.
+            target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
         """
 
         accuracy = dict()
 
-        N, C = output.shape
-        K = C // 2
+        N = output.shape[0]
 
         _, avg_acc, cnt = keypoint_pck_accuracy(
-            output.reshape([N, K, 2]).detach().cpu().numpy(),
-            target.reshape([N, K, 2]).detach().cpu().numpy(),
-            target_weight.reshape([N, K, 2])[:, :, 0].detach().cpu().numpy() >
-            0,
+            output.detach().cpu().numpy(),
+            target.detach().cpu().numpy(),
+            target_weight[:, :, 0].detach().cpu().numpy() > 0,
             thr=0.05,
             normalize=np.ones((N, 2)))
         accuracy['acc_pose'] = avg_acc
@@ -102,7 +102,7 @@ class FcHead(nn.Module):
             output_regression (np.ndarray): Output regression.
 
         Args:
-            x (torch.Tensor[NxC]): Input features.
+            x (torch.Tensor[N, K, 2]): Input features.
             flip_pairs (None | list[tuple()):
                 Pairs of keypoints which are mirrored.
         """
@@ -126,7 +126,7 @@ class FcHead(nn.Module):
                 - "scale": scale of the bbox
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
-            output_regression (np.ndarray[N, K, 3]): model
+            output_regression (np.ndarray[N, K, 2]): model
                 predicted regression vector.
         """
         batch_size = len(img_metas)

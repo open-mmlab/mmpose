@@ -400,11 +400,9 @@ def keypoints_from_regression(regression, center, scale):
     Note:
         batch_size: N
         num_keypoints: K
-        heatmap height: H
-        heatmap width: W
 
     Args:
-        regression (np.ndarray[N, 2K]): model prediction.
+        regression (np.ndarray[N, K, 2]): model prediction.
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
@@ -414,9 +412,7 @@ def keypoints_from_regression(regression, center, scale):
         preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-    N, C = regression.shape
-    K = C // 2
-    regression = regression.reshape([N, K, 2])
+    N, K, _ = regression.shape
     preds, maxvals = regression, np.ones((N, K, 1), dtype=np.float32)
 
     # Transform back to the image

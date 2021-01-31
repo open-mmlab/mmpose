@@ -626,13 +626,11 @@ class TopDownGenerateTargetRegression():
         assert abs(feat_stride[0] - feat_stride[1]) < 1e-5
 
         target = joints_3d[:, :2] / image_size
-        target = target.reshape([-1]).astype(np.float32)
+        target = target.astype(np.float32)
         target_weight = joints_3d_visible[:, :2]
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
-
-        target_weight = target_weight.reshape([-1])
 
         return target, target_weight
 
