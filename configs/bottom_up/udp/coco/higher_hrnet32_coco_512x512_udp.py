@@ -167,9 +167,7 @@ val_pipeline = [
         use_udp=True),
     dict(
         type='Collect',
-        keys=[
-            'img',
-        ],
+        keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
             'center', 'scale', 'flip_index'
@@ -181,7 +179,7 @@ test_pipeline = val_pipeline
 data_root = 'data/coco'
 data = dict(
     samples_per_gpu=12,
-    workers_per_gpu=1,
+    workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',

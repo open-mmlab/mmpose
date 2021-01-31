@@ -8,7 +8,7 @@ evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.0015,
+    lr=0.001,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -27,22 +27,23 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=14,
-    dataset_joints=14,
+    dataset_joints=17,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
     ],
-    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+    inference_channel=[
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+    ])
 
 data_cfg = dict(
     image_size=512,
     base_size=256,
     base_sigma=2,
-    heatmap_size=[128, 256],
+    heatmap_size=[128],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    num_scales=2,
+    num_scales=1,
     scale_aware_sigma=False,
 )
 
@@ -81,27 +82,23 @@ model = dict(
                 num_channels=(48, 96, 192, 384))),
     ),
     keypoint_head=dict(
-        type='BottomUpHigherResolutionHead',
+        type='BottomUpSimpleHead',
         in_channels=48,
-        num_joints=14,
+        num_joints=17,
+        num_deconv_layers=0,
         tag_per_joint=True,
+        with_ae_loss=[True],
         extra=dict(final_conv_kernel=1, ),
-        num_deconv_layers=1,
-        num_deconv_filters=[48],
-        num_deconv_kernels=[4],
-        num_basic_blocks=4,
-        cat_output=[True],
-        with_ae_loss=[True, False],
         loss_keypoint=dict(
             type='MultiLossFactory',
-            num_joints=14,
-            num_stages=2,
+            num_joints=17,
+            num_stages=1,
             ae_loss_type='exp',
-            with_ae_loss=[True, False],
-            push_loss_factor=[0.001, 0.001],
-            pull_loss_factor=[0.001, 0.001],
-            with_heatmaps_loss=[True, True],
-            heatmaps_loss_factor=[1.0, 1.0])),
+            with_ae_loss=[True],
+            push_loss_factor=[0.001],
+            pull_loss_factor=[0.001],
+            with_heatmaps_loss=[True],
+            heatmaps_loss_factor=[1.0])),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         img_size=data_cfg['image_size']),
@@ -109,9 +106,9 @@ model = dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
         scale_factor=[1],
-        with_heatmaps=[True, True],
-        with_ae=[True, False],
-        project2image=True,
+        with_heatmaps=[True],
+        with_ae=[True],
+        project2image=False,
         nms_kernel=5,
         nms_padding=2,
         tag_per_joint=True,
@@ -121,7 +118,8 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True))
+        flip_test=True,
+        use_udp=True))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -130,7 +128,8 @@ train_pipeline = [
         rot_factor=30,
         scale_factor=[0.75, 1.5],
         scale_type='short',
-        trans_factor=40),
+        trans_factor=40,
+        use_udp=True),
     dict(type='BottomUpRandomFlip', flip_prob=0.5),
     dict(type='ToTensor'),
     dict(
@@ -141,6 +140,7 @@ train_pipeline = [
         type='BottomUpGenerateTarget',
         sigma=2,
         max_num_people=30,
+        use_udp=True,
     ),
     dict(
         type='Collect',
@@ -150,7 +150,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1], use_udp=True),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
@@ -158,8 +158,9 @@ val_pipeline = [
             dict(
                 type='NormalizeTensor',
                 mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]),
-        ]),
+                std=[0.229, 0.224, 0.225])
+        ],
+        use_udp=True),
     dict(
         type='Collect',
         keys=['img'],
@@ -171,26 +172,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/crowdpose'
+data_root = 'data/coco'
 data = dict(
     samples_per_gpu=16,
-    workers_per_gpu=2,
+    workers_per_gpu=1,
     train=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
+        img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpCocoDataset',
+        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline),
+        pipeline=val_pipeline),
 )

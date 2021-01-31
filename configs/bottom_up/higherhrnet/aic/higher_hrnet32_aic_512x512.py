@@ -50,7 +50,7 @@ data_cfg = dict(
 model = dict(
     type='BottomUp',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w48-8ef0771d.pth',
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -66,28 +66,28 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(48, 96)),
+                num_channels=(32, 64)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(48, 96, 192)),
+                num_channels=(32, 64, 128)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(48, 96, 192, 384))),
+                num_channels=(32, 64, 128, 256))),
     ),
     keypoint_head=dict(
         type='BottomUpHigherResolutionHead',
-        in_channels=48,
+        in_channels=32,
         num_joints=14,
         tag_per_joint=True,
         extra=dict(final_conv_kernel=1, ),
         num_deconv_layers=1,
-        num_deconv_filters=[48],
+        num_deconv_filters=[32],
         num_deconv_kernels=[4],
         num_basic_blocks=4,
         cat_output=[True],
@@ -98,7 +98,7 @@ model = dict(
             num_stages=2,
             ae_loss_type='exp',
             with_ae_loss=[True, False],
-            push_loss_factor=[0.001, 0.001],
+            push_loss_factor=[0.01, 0.01],
             pull_loss_factor=[0.001, 0.001],
             with_heatmaps_loss=[True, True],
             heatmaps_loss_factor=[1.0, 1.0])),
@@ -171,26 +171,29 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/crowdpose'
+data_root = 'data/aic'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=24,
     workers_per_gpu=2,
     train=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_train.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_train_20170902/'
+        'keypoint_train_images_20170902/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_val.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
+        'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='BottomUpCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_val.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
+        'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline),
+        pipeline=val_pipeline),
 )

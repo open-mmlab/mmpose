@@ -55,3 +55,9 @@
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [HRNet-w48](/configs/bottom_up/hrnet/coco/hrnet_w48_mhp_512x512.py)  | 512x512 | 0.592 | 0.898 | 0.673 | 0.664 | 0.932 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512_20201229.log.json) |
+
+#### Results on AIC validation set without multi-scale test
+
+| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [HRNet-w32](/configs/bottom_up/hrnet/aic/hrnet_w32_aic_512x512.py)  | 512x512 | 0.303 | 0.697 | 0.225 | 0.373 | 0.755 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_aic_512x512-77e2a98a_20210131.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_aic_512x512_20210131.log.json) |
