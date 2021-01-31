@@ -35,4 +35,3 @@ class SmoothL1Loss(nn.Module):
             loss = self.criterion(output, target)
 
         return loss / num_joints * self.loss_weight
-

@@ -150,11 +150,7 @@ class FcHead(nn.Module):
             if bbox_ids is not None:
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
-        # require heatmap size to decode keypoints
-        W, H = img_metas[0]['heatmap_size']
-
-        preds, maxvals = keypoints_from_regression(output_regression, c, s, H,
-                                                   W)
+        preds, maxvals = keypoints_from_regression(output_regression, c, s)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)

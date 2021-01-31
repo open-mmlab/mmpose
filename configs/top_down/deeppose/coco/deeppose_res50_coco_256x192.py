@@ -109,7 +109,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'center', 'scale', 'rotation', 'bbox_score',
-            'flip_pairs', 'heatmap_size'
+            'flip_pairs'
         ]),
 ]
 
