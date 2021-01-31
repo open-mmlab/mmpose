@@ -597,10 +597,8 @@ class TopDownGenerateTarget:
 class TopDownGenerateTargetRegression():
     """Generate the target regression vector (coordinates).
 
-    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
-    Modified keys: 'target', and 'target_weight'.
-
-    Args:
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified keys:
+    'target', and 'target_weight'.
     """
 
     def __init__(self):
@@ -617,13 +615,8 @@ class TopDownGenerateTargetRegression():
              target, target_weight(1: visible, 0: invisible)
         """
         image_size = cfg['image_size']
-        heatmap_size = cfg['heatmap_size']
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
-
-        feat_stride = image_size / heatmap_size
-
-        assert abs(feat_stride[0] - feat_stride[1]) < 1e-5
 
         target = joints_3d[:, :2] / image_size
         target = target.astype(np.float32)
