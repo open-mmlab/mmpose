@@ -393,7 +393,7 @@ def _gaussian_blur(heatmaps, kernel=11):
     return heatmaps
 
 
-def keypoints_from_regression(regression, center, scale, H, W):
+def keypoints_from_regression(regression, center, scale):
     """Get final keypoint predictions from regression vectors and transform
     them back to the image.
 
@@ -408,8 +408,6 @@ def keypoints_from_regression(regression, center, scale, H, W):
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        H (int): Height of the heatmaps.
-        W (int): Width of the heatmaps.
 
 
     Returns:
@@ -421,12 +419,9 @@ def keypoints_from_regression(regression, center, scale, H, W):
     regression = regression.reshape([N, K, 2])
     preds, maxvals = regression, np.ones((N, K, 1), dtype=np.float32)
 
-    preds[:, :, 0] *= W
-    preds[:, :, 1] *= H
-
     # Transform back to the image
     for i in range(N):
-        preds[i] = transform_preds(preds[i], center[i], scale[i], [W, H])
+        preds[i] = transform_preds(preds[i], center[i], scale[i], [1, 1])
 
     return preds, maxvals
 

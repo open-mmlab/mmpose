@@ -52,10 +52,11 @@ def fliplr_regression(regression, flip_pairs):
     """Flip human joints horizontally.
 
     Note:
-        num_keypoints: K
+        batch_size: N
+        channels: C=2K (K is the number of keypoints)
 
     Args:
-        regression (np.ndarray([K, 3])): Coordinates of keypoints.
+        regression (np.ndarray([N, C])): Coordinates of keypoints.
         flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
 
@@ -65,14 +66,22 @@ def fliplr_regression(regression, flip_pairs):
         - regression_flipped (np.ndarray([K, 3])): Flipped joints.
     """
 
+    N, C = regression.shape
+    K = C // 2
+
+    # [N, C] --> [N, K, 2]
+    regression = regression.reshape([N, K, 2])
+
     regression_flipped = regression.copy()
     # Swap left-right parts
     for left, right in flip_pairs:
-        regression_flipped[left, :] = regression[right, :]
-        regression_flipped[right, :] = regression[left, :]
+        regression_flipped[:, left, :] = regression[:, right, :]
+        regression_flipped[:, right, :] = regression[:, left, :]
 
     # Flip horizontally
-    regression_flipped[:, 0] = 1 - regression_flipped[:, 0]
+    regression_flipped[:, :, 0] = 1 - regression_flipped[:, :, 0]
+    # [N, K, 2] -> [N, C]
+    regression_flipped = regression_flipped.reshape([N, C])
 
     return regression_flipped
 
