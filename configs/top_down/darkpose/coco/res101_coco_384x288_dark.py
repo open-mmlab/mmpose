@@ -51,11 +51,9 @@ model = dict(
         flip_test=True,
         post_process='unbiased',
         shift_heatmap=True,
-        modulate_kernel=11))
+        modulate_kernel=17))
 
 data_cfg = dict(
-    # image_size=[192, 256],
-    # heatmap_size=[48, 64],
     image_size=[288, 384],
     heatmap_size=[72, 96],
     num_output_channels=channel_cfg['num_output_channels'],
@@ -87,7 +85,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2, unbiased_encoding=True),
+    dict(type='TopDownGenerateTarget', sigma=3, unbiased_encoding=True),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
