@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.11.0 (31/01/2020)
+
+**Highlights**
+
+1. Support fashion landmark detection.
+1. Support face keypoint detection.
+1. Support pose tracking with MMTracking.
+
+**New Features**
+
+- Support fashion landmark detection (DeepFashion) ([\#413](https://github.com/open-mmlab/mmpose/pull/413))
+- Support face keypoint detection (300W, AFLW, COFW, WFLW) ([\#367](https://github.com/open-mmlab/mmpose/pull/367))
+- Support pose tracking demo with MMTracking ([\#427](https://github.com/open-mmlab/mmpose/pull/427))
+- Support face demo ([\#443](https://github.com/open-mmlab/mmpose/pull/443))
+- Support AIC dataset for bottom-up methods ([\#438](https://github.com/open-mmlab/mmpose/pull/438), [\#449](https://github.com/open-mmlab/mmpose/pull/449))
+
+**Bug Fixes**
+
+- Fix multi-batch training ([\#434](https://github.com/open-mmlab/mmpose/pull/434))
+- Fix sigmas in AIC dataset ([\#441](https://github.com/open-mmlab/mmpose/pull/441))
+- Fix config file ([\#420](https://github.com/open-mmlab/mmpose/pull/420))
+
+**Breaking Changes**
+
+- Refactor Heads ([\#382](https://github.com/open-mmlab/mmpose/pull/382))
+
+**Improvements**
+
+- Update readme ([\#409](https://github.com/open-mmlab/mmpose/pull/409), [\#412](https://github.com/open-mmlab/mmpose/pull/412), [\#415](https://github.com/open-mmlab/mmpose/pull/415), [\#416](https://github.com/open-mmlab/mmpose/pull/416), [\#419](https://github.com/open-mmlab/mmpose/pull/419), [\#421](https://github.com/open-mmlab/mmpose/pull/421), [\#422](https://github.com/open-mmlab/mmpose/pull/422), [\#424](https://github.com/open-mmlab/mmpose/pull/424), [\#425](https://github.com/open-mmlab/mmpose/pull/425), [\#435](https://github.com/open-mmlab/mmpose/pull/435), [\#436](https://github.com/open-mmlab/mmpose/pull/436), [\#437](https://github.com/open-mmlab/mmpose/pull/437), [\#444](https://github.com/open-mmlab/mmpose/pull/444), [\#445](https://github.com/open-mmlab/mmpose/pull/445))
+- Add GAP (global average pooling) neck ([\#414](https://github.com/open-mmlab/mmpose/pull/414))
+- Speed up ([\#411](https://github.com/open-mmlab/mmpose/pull/411), [\#423](https://github.com/open-mmlab/mmpose/pull/423))
+- Support COCO test-dev test ([\#433](https://github.com/open-mmlab/mmpose/pull/433))
+
 ## v0.10.0 (31/12/2020)
 
 **Highlights**
