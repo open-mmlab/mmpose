@@ -4,8 +4,8 @@
 
 **Highlights**
 
-1. Support Fashion Landmark Detection (FLD).
-1. Support Face Landmark Detection (300W, AFLW, COFW, WFLW).
+1. Support Fashion Landmark Detection.
+1. Support Face Landmark Detection.
 1. Support PoseTracking with MMTracking.
 
 **New Features**
