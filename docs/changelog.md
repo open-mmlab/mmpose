@@ -14,6 +14,7 @@
 - Support Face Landmark Detection (300W, AFLW, COFW, WFLW) ([\#367](https://github.com/open-mmlab/mmpose/pull/367))
 - Support pose tracking demo with MMTracking ([\#427](https://github.com/open-mmlab/mmpose/pull/427))
 - Support face demo ([\#443](https://github.com/open-mmlab/mmpose/pull/443))
+- Support AIC dataset for bottom-up methods ([\#438](https://github.com/open-mmlab/mmpose/pull/438))
 
 **Bug Fixes**
 
