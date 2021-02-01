@@ -4,14 +4,14 @@
 
 **Highlights**
 
-1. Support Fashion Landmark Detection.
-1. Support Face Landmark Detection.
-1. Support PoseTracking with MMTracking.
+1. Support fashion landmark detection.
+1. Support face keypoint detection.
+1. Support pose tracking with MMTracking.
 
 **New Features**
 
-- Support Fashion Landmark Detection (DeepFashion) ([\#413](https://github.com/open-mmlab/mmpose/pull/413))
-- Support Face Landmark Detection (300W, AFLW, COFW, WFLW) ([\#367](https://github.com/open-mmlab/mmpose/pull/367))
+- Support fashion landmark detection (DeepFashion) ([\#413](https://github.com/open-mmlab/mmpose/pull/413))
+- Support face keypoint detection (300W, AFLW, COFW, WFLW) ([\#367](https://github.com/open-mmlab/mmpose/pull/367))
 - Support pose tracking demo with MMTracking ([\#427](https://github.com/open-mmlab/mmpose/pull/427))
 - Support face demo ([\#443](https://github.com/open-mmlab/mmpose/pull/443))
 - Support AIC dataset for bottom-up methods ([\#438](https://github.com/open-mmlab/mmpose/pull/438))
