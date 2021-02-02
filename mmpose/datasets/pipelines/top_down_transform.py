@@ -619,8 +619,11 @@ class TopDownGenerateTargetRegression():
         use_different_joint_weights = cfg['use_different_joint_weights']
 
         target = joints_3d[:, :2] / image_size
+        mask = (target[:, 0] > 0) * (target[:, 0] < 1) * (target[:, 1] > 0) * (
+            target[:, 1] < 1)
+
         target = target.astype(np.float32)
-        target_weight = joints_3d_visible[:, :2]
+        target_weight = joints_3d_visible[:, :2] * mask[:, None]
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
