@@ -169,12 +169,12 @@ class TopDownCocoDataset(TopDownBaseDataset):
             obj['center'], obj['scale'] = self._xywh2cs(*obj['bbox'])
             obj['rotation'] = 0
             obj['bbox_score'] = 1
-            obj['dataset'] = 'simple_inference'
-            fake_joints = np.zeros((self.ann_info['num_joints'], 3),
-                                   dtype=np.float32)
-            fake_joints[0, :2] = 1.
-            obj['joints_3d'] = fake_joints
-            obj['joints_3d_visible'] = fake_joints
+            obj['dataset'] = 'smp_inf'
+            # fake_joints = np.zeros((self.ann_info['num_joints'], 3),
+            #                        dtype=np.float32)
+            # fake_joints[0, :2] = 1.
+            # obj['joints_3d'] = fake_joints
+            # obj['joints_3d_visible'] = fake_joints
         return db
 
     def _load_coco_keypoint_annotations(self):
