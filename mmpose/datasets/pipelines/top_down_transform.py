@@ -183,8 +183,10 @@ class TopDownAffine:
         image_size = results['ann_info']['image_size']
 
         img = results['img']
-        joints_3d = results['joints_3d']
-        joints_3d_visible = results['joints_3d_visible']
+        joints_available = 'joints_3d' in results
+        if joints_available:
+            joints_3d = results['joints_3d']
+            joints_3d_visible = results['joints_3d_visible']
         c = results['center']
         s = results['scale']
         r = results['rotation']
@@ -195,22 +197,25 @@ class TopDownAffine:
                 img,
                 trans, (int(image_size[0]), int(image_size[1])),
                 flags=cv2.INTER_LINEAR)
-            joints_3d[:, 0:2] = \
-                warp_affine_joints(joints_3d[:, 0:2].copy(), trans)
+            if joints_available:
+                joints_3d[:, 0:2] = \
+                    warp_affine_joints(joints_3d[:, 0:2].copy(), trans)
         else:
             trans = get_affine_transform(c, s, r, image_size)
             img = cv2.warpAffine(
                 img,
                 trans, (int(image_size[0]), int(image_size[1])),
                 flags=cv2.INTER_LINEAR)
-            for i in range(results['ann_info']['num_joints']):
-                if joints_3d_visible[i, 0] > 0.0:
-                    joints_3d[i,
-                              0:2] = affine_transform(joints_3d[i, 0:2], trans)
+            if joints_available:
+                for i in range(results['ann_info']['num_joints']):
+                    if joints_3d_visible[i, 0] > 0.0:
+                        joints_3d[i, 0:2] = \
+                            affine_transform(joints_3d[i, 0:2], trans)
 
         results['img'] = img
-        results['joints_3d'] = joints_3d
-        results['joints_3d_visible'] = joints_3d_visible
+        if joints_available:
+            results['joints_3d'] = joints_3d
+            results['joints_3d_visible'] = joints_3d_visible
 
         return results
 
