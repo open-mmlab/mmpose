@@ -107,7 +107,7 @@ class HandBaseDataset(Dataset, metaclass=ABCMeta):
 
         # pixel std is 200.0
         scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
+        # padding to include proper amount of context
         scale = scale * padding
 
         return center, scale
