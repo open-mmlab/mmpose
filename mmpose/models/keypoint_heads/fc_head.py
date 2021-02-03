@@ -115,7 +115,7 @@ class FcHead(nn.Module):
             output_regression = output.detach().cpu().numpy()
         return output_regression
 
-    def decode_keypoints(self, img_metas, output_regression):
+    def decode_keypoints(self, img_metas, output_regression, img_size):
         """Decode keypoints from output regression.
 
         Args:
@@ -128,6 +128,7 @@ class FcHead(nn.Module):
                 - "bbox_score": score of bbox
             output_regression (np.ndarray[N, K, 2]): model
                 predicted regression vector.
+            img_size (tuple(img_width, img_height)): model input image size.
         """
         batch_size = len(img_metas)
 
@@ -150,7 +151,8 @@ class FcHead(nn.Module):
             if bbox_ids is not None:
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
-        preds, maxvals = keypoints_from_regression(output_regression, c, s)
+        preds, maxvals = keypoints_from_regression(output_regression, c, s,
+                                                   img_size)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)

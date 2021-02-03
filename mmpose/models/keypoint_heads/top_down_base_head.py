@@ -36,7 +36,7 @@ class TopDownBaseHead(nn.Module):
     def inference_model(self, **kwargs):
         """Inference function."""
 
-    def decode_keypoints(self, img_metas, output_heatmap):
+    def decode_keypoints(self, img_metas, output_heatmap, img_size):
         """Decode keypoints from heatmaps.
 
         Args:
@@ -48,6 +48,7 @@ class TopDownBaseHead(nn.Module):
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
             output_heatmap (np.ndarray[N, K, H, W]): model predicted heatmaps.
+            img_size (tuple(img_width, img_height)): model input image size.
         """
         batch_size = len(img_metas)
 

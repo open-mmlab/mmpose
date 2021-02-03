@@ -622,7 +622,7 @@ class TopDownGenerateTargetRegression():
             joints_3d[:, 0] <= image_size[0] - 1) * (joints_3d[:, 1] >= 0) * (
                 joints_3d[:, 1] <= image_size[1] - 1)
 
-        target = joints_3d[:, :2] / min(image_size)
+        target = joints_3d[:, :2] / image_size
 
         target = target.astype(np.float32)
         target_weight = joints_3d_visible[:, :2] * mask[:, None]

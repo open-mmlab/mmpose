@@ -152,7 +152,7 @@ class TopDown(BasePose):
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == len(img_metas)
-        batch_size = img.size(0)
+        batch_size, _, img_height, img_width = img.shape
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
@@ -178,7 +178,7 @@ class TopDown(BasePose):
 
         if self.with_keypoint:
             keypoint_result = self.keypoint_head.decode_keypoints(
-                img_metas, output_heatmap)
+                img_metas, output_heatmap, (img_width, img_height))
             result.update(keypoint_result)
 
             if not return_heatmap:
