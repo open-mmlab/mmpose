@@ -80,7 +80,7 @@ model = dict(
         flip_test=True,
         post_process='unbiased',
         shift_heatmap=True,
-        modulate_kernel=11))
+        modulate_kernel=17))
 
 data_cfg = dict(
     image_size=[288, 384],
