@@ -645,4 +645,3 @@ class TopDownGenerateTargetRegression():
         results['target_weight'] = target_weight
 
         return results
-

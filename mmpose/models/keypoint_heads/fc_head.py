@@ -90,7 +90,7 @@ class FcHead(nn.Module):
             target.detach().cpu().numpy(),
             target_weight[:, :, 0].detach().cpu().numpy() > 0,
             thr=0.05,
-            normalize=np.ones((N, 2), dtype=np.float32))
+            normalize=np.ones((N, 2)))
         accuracy['acc_pose'] = avg_acc
 
         return accuracy
@@ -137,8 +137,8 @@ class FcHead(nn.Module):
         else:
             bbox_ids = None
 
-        c = np.zeros((batch_size, 2), dtype=np.float32)
-        s = np.zeros((batch_size, 2), dtype=np.float32)
+        c = np.zeros((batch_size, 2))
+        s = np.zeros((batch_size, 2))
         image_paths = []
         score = np.ones(batch_size)
         for i in range(batch_size):
