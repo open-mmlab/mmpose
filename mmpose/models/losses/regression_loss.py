@@ -9,7 +9,13 @@ from ..registry import LOSSES
 
 @LOSSES.register_module()
 class SmoothL1Loss(nn.Module):
-    """SmoothL1Loss loss ."""
+    """SmoothL1Loss loss .
+
+    Args:
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
+    """
 
     def __init__(self, use_target_weight=False, loss_weight=1.):
         super().__init__()
@@ -43,14 +49,18 @@ class SmoothL1Loss(nn.Module):
 @LOSSES.register_module()
 class WingLoss(nn.Module):
     """Wing Loss 'Wing Loss for Robust Facial Landmark Localisation with
-    Convolutional Neural Networks' Feng et al.
+    Convolutional Neural Networks' Feng et al. CVPR'2018.
 
-    CVPR'2018
+    Args:
+        omega (float), epsilon (float) are hyper-parameters.
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
     """
 
     def __init__(self,
-                 omega=10,
-                 epsilon=2,
+                 omega=10.0,
+                 epsilon=2.0,
                  use_target_weight=False,
                  loss_weight=1.):
         super().__init__()
