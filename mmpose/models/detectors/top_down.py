@@ -28,6 +28,7 @@ class TopDown(BasePose):
 
     def __init__(self,
                  backbone,
+                 neck=None,
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
@@ -39,6 +40,9 @@ class TopDown(BasePose):
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
+
+        if neck is not None:
+            self.neck = builder.build_neck(neck)
 
         if keypoint_head is not None:
             keypoint_head['train_cfg'] = train_cfg
@@ -57,6 +61,11 @@ class TopDown(BasePose):
         self.init_weights(pretrained=pretrained)
 
     @property
+    def with_neck(self):
+        """Check if has keypoint_head."""
+        return hasattr(self, 'neck')
+
+    @property
     def with_keypoint(self):
         """Check if has keypoint_head."""
         return hasattr(self, 'keypoint_head')
@@ -64,6 +73,8 @@ class TopDown(BasePose):
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
+        if self.with_neck:
+            self.neck.init_weights()
         if self.with_keypoint:
             self.keypoint_head.init_weights()
 
@@ -121,6 +132,8 @@ class TopDown(BasePose):
     def forward_train(self, img, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
         output = self.backbone(img)
+        if self.with_neck:
+            output = self.neck(output)
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
@@ -139,13 +152,15 @@ class TopDown(BasePose):
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
         assert img.size(0) == len(img_metas)
-        batch_size = img.size(0)
+        batch_size, _, img_height, img_width = img.shape
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
         result = {}
 
         features = self.backbone(img)
+        if self.with_neck:
+            features = self.neck(features)
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
                 features, flip_pairs=None)
@@ -153,6 +168,8 @@ class TopDown(BasePose):
         if self.test_cfg['flip_test']:
             img_flipped = img.flip(3)
             features_flipped = self.backbone(img_flipped)
+            if self.with_neck:
+                features_flipped = self.neck(features_flipped)
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
                     features_flipped, img_metas[0]['flip_pairs'])
@@ -161,7 +178,7 @@ class TopDown(BasePose):
 
         if self.with_keypoint:
             keypoint_result = self.keypoint_head.decode_keypoints(
-                img_metas, output_heatmap)
+                img_metas, output_heatmap, [img_width, img_height])
             result.update(keypoint_result)
 
             if not return_heatmap:
@@ -183,6 +200,8 @@ class TopDown(BasePose):
             Tensor: Output heatmaps.
         """
         output = self.backbone(img)
+        if self.with_neck:
+            output = self.neck(output)
         if self.with_keypoint:
             output = self.keypoint_head(output)
         return output

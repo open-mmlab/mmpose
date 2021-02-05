@@ -9,8 +9,10 @@ from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
 class TopDownBaseHead(nn.Module):
     """Base class for top-down keypoint heads.
 
-    All top-down keypoint heads should subclass it. All subclass should
-    overwrite:     Methods:`get_loss`, supporting to calculate loss.
+    All top-down keypoint heads should subclass it.
+    All subclass should overwrite:
+
+    Methods:`get_loss`, supporting to calculate loss.
     Methods:`get_accuracy`, supporting to calculate accuracy.
     Methods:`forward`, supporting to forward model.
     Methods:`inference_model`, supporting to inference model.
@@ -34,7 +36,20 @@ class TopDownBaseHead(nn.Module):
     def inference_model(self, **kwargs):
         """Inference function."""
 
-    def decode_keypoints(self, img_metas, output_heatmap):
+    def decode_keypoints(self, img_metas, output_heatmap, img_size):
+        """Decode keypoints from heatmaps.
+
+        Args:
+            img_metas (list(dict)): Information about data augmentation
+                By default this includes:
+                - "image_file: path to the image file
+                - "center": center of the bbox
+                - "scale": scale of the bbox
+                - "rotation": rotation of the bbox
+                - "bbox_score": score of bbox
+            output_heatmap (np.ndarray[N, K, H, W]): model predicted heatmaps.
+            img_size (tuple(img_width, img_height)): model input image size.
+        """
         batch_size = len(img_metas)
 
         if 'bbox_id' in img_metas[0]:
@@ -42,8 +57,8 @@ class TopDownBaseHead(nn.Module):
         else:
             bbox_ids = None
 
-        c = np.zeros((batch_size, 2))
-        s = np.zeros((batch_size, 2))
+        c = np.zeros((batch_size, 2), dtype=np.float32)
+        s = np.zeros((batch_size, 2), dtype=np.float32)
         image_paths = []
         score = np.ones(batch_size)
         for i in range(batch_size):

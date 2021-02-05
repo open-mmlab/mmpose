@@ -191,8 +191,8 @@ class MyLoss(nn.Module):
             heatmap_gt = heatmaps_gt[idx].squeeze(1)
             if self.use_target_weight:
                 loss += self.criterion(
-                    heatmap_pred.mul(target_weight[:, idx]),
-                    heatmap_gt.mul(target_weight[:, idx]))
+                    heatmap_pred * target_weight[:, idx],
+                    heatmap_gt * target_weight[:, idx])
             else:
                 loss += self.criterion(heatmap_pred, heatmap_gt)
 
