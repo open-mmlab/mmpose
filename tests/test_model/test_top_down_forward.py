@@ -21,7 +21,7 @@ def test_topdown_forward():
             shift_heatmap=True,
             modulate_kernel=11))
 
-    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+    detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
                        model_cfg['pretrained'])
 
@@ -67,7 +67,7 @@ def test_topdown_forward():
             shift_heatmap=True,
             modulate_kernel=11))
 
-    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+    detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
                        model_cfg['pretrained'])
 
@@ -107,7 +107,7 @@ def test_topdown_forward():
             shift_heatmap=True,
             modulate_kernel=11))
 
-    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+    detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
                        model_cfg['pretrained'])
 
@@ -159,7 +159,7 @@ def test_topdown_forward():
             unbiased_decoding=False,
             modulate_kernel=5))
 
-    detector = TopDown(model_cfg['backbone'], model_cfg['keypoint_head'],
+    detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
                        model_cfg['pretrained'])
 
