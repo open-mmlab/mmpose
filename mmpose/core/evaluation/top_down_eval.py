@@ -393,7 +393,7 @@ def _gaussian_blur(heatmaps, kernel=11):
     return heatmaps
 
 
-def keypoints_from_regression(regression, center, scale, img_size):
+def keypoints_from_regression(regression_preds, center, scale, img_size):
     """Get final keypoint predictions from regression vectors and transform
     them back to the image.
 
@@ -402,29 +402,25 @@ def keypoints_from_regression(regression, center, scale, img_size):
         num_keypoints: K
 
     Args:
-        regression (np.ndarray[N, K, 2]): model prediction.
+        regression_preds (np.ndarray[N, K, 2]): model prediction.
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        img_size (tuple(img_width, img_height)): model input image size.
+        img_size (list(img_width, img_height)): model input image size.
 
 
     Returns:
         preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
-    N, K, _ = regression.shape
-    preds, maxvals = regression, np.ones((N, K, 1), dtype=np.float32)
+    N, K, _ = regression_preds.shape
+    preds, maxvals = regression_preds, np.ones((N, K, 1), dtype=np.float32)
 
-    img_width, img_height = img_size
-
-    preds[:, :, 0] *= img_width
-    preds[:, :, 1] *= img_height
+    preds = preds * img_size
 
     # Transform back to the image
     for i in range(N):
-        preds[i] = transform_preds(preds[i], center[i], scale[i],
-                                   [img_width, img_height])
+        preds[i] = transform_preds(preds[i], center[i], scale[i], img_size)
 
     return preds, maxvals
 

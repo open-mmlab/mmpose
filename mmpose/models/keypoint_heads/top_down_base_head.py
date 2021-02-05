@@ -57,8 +57,8 @@ class TopDownBaseHead(nn.Module):
         else:
             bbox_ids = None
 
-        c = np.zeros((batch_size, 2))
-        s = np.zeros((batch_size, 2))
+        c = np.zeros((batch_size, 2), dtype=np.float32)
+        s = np.zeros((batch_size, 2), dtype=np.float32)
         image_paths = []
         score = np.ones(batch_size)
         for i in range(batch_size):

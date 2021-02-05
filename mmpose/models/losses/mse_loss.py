@@ -35,9 +35,8 @@ class JointsMSELoss(nn.Module):
             heatmap_pred = heatmaps_pred[idx].squeeze(1)
             heatmap_gt = heatmaps_gt[idx].squeeze(1)
             if self.use_target_weight:
-                loss += self.criterion(
-                    heatmap_pred.mul(target_weight[:, idx]),
-                    heatmap_gt.mul(target_weight[:, idx]))
+                loss += self.criterion(heatmap_pred * target_weight[:, idx],
+                                       heatmap_gt * target_weight[:, idx])
             else:
                 loss += self.criterion(heatmap_pred, heatmap_gt)
 
@@ -81,8 +80,8 @@ class CombinedTargetMSELoss(nn.Module):
             offset_y_pred = heatmaps_pred[idx * 3 + 2].squeeze()
             offset_y_gt = heatmaps_gt[idx * 3 + 2].squeeze()
             if self.use_target_weight:
-                heatmap_pred = heatmap_pred.mul(target_weight[:, idx])
-                heatmap_gt = heatmap_gt.mul(target_weight[:, idx])
+                heatmap_pred = heatmap_pred * target_weight[:, idx]
+                heatmap_gt = heatmap_gt * target_weight[:, idx]
             # classification loss
             loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
             # regression loss
@@ -142,9 +141,8 @@ class JointsOHKMMSELoss(nn.Module):
             heatmap_gt = heatmaps_gt[idx].squeeze(1)
             if self.use_target_weight:
                 losses.append(
-                    self.criterion(
-                        heatmap_pred.mul(target_weight[:, idx]),
-                        heatmap_gt.mul(target_weight[:, idx])))
+                    self.criterion(heatmap_pred * target_weight[:, idx],
+                                   heatmap_gt * target_weight[:, idx]))
             else:
                 losses.append(self.criterion(heatmap_pred, heatmap_gt))
 
