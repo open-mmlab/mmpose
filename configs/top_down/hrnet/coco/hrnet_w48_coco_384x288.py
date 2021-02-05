@@ -14,10 +14,9 @@ optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
-    warmup=None,
-    # warmup='linear',
-    # warmup_iters=500,
-    # warmup_ratio=0.001,
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.001,
     step=[170, 200])
 total_epochs = 210
 log_config = dict(
