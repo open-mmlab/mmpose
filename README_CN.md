@@ -4,7 +4,7 @@
 
 ## Introduction
 
-English | [简体中文](README_cn.md)
+[English](./README.md) | 简体中文
 
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
@@ -14,50 +14,48 @@ English | [简体中文](README_cn.md)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-MMPose is an open-source toolbox for pose estimation based on PyTorch.
-It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
+MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
-The master branch works with **PyTorch 1.3+**.
+主分支代码目前支持 **PyTorch 1.3 以上**的版本
 
 <div align="center">
     <img src="demo/demo_coco.gif" width="600px" alt><br>
-    COCO 17-keypoint pose estimation
+    COCO 17关键点 多人姿态估计
 </div>
 <div align="center">
 <img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
 
-133-keypoint whole-body pose estimation ([full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
+133关键点-多人全身姿态估计 ([高清完整版](https://www.youtube.com/watch?v=pIJpQg8mXUU))
 
 </div>
 
-### Major Features
+### 主要特性
 
-- **Support diverse tasks**
+- **支持多种人体姿态分析相关任务**
 
-  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and 3d human mesh recovery.
+  MMPose 支持当前学界广泛关注的主流人体姿态分析任务：主要包括 2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点的全身人体姿态估计、服饰关键点检测，3D人体形状恢复等。
 
-- **Higher efficiency and higher accuracy**
+- **更高的精度和更快的速度**
+  MMPose 复现了多种学界最先进的人体姿态分析模型，包括“自顶向下”和“自底向上”两大类算法。MMPose 相比于其他主流的代码库，具有更高的模型精度和训练速度。
+  具体请参考 [基准测试](docs/benchmark.md)。
 
-  MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
-  See [benchmark.md](docs/benchmark.md) for more information.
+- **支持多样的数据集**
 
-- **Support for various datasets**
+  MMPose 支持了很多主流数据集的准备和构建，如 COCO、 MPII 等。 具体请参考 [数据集准备](docs/data_preparation.md)。
 
-  The toolbox directly supports multiple popular and representative datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
-  See [data_preparation.md](docs/data_preparation.md) for more information.
+- **模块化设计**
 
-- **Well designed, tested and documented**
+  MMPose 将统一的人体姿态分析框架解耦成不同的模块组件，通过组合不同的模块组件，用户可以便捷地构建自定义的人体姿态分析模型。
 
-  We decompose MMPose into different components and one can easily construct a customized
-  pose estimation framework by combining different modules.
-  We provide detailed documentation and API reference, as well as unittests.
+- **详尽的单元测试和文档**
+  MMPose 提供了详尽的说明文档，API 接口说明，全面的单元测试，以供社区参考。
 
-## [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
+## [模型库](https://mmpose.readthedocs.io/en/latest/modelzoo.html)
 
-Supported algorithms:
+支持的算法:
 
 <details open>
-<summary>(click to collapse)</summary>
+<summary>(点击收起)</summary>
 
 - [x] [CPM](configs/top_down/cpm/README.md) (CVPR'2016)
 - [x] [Hourglass](configs/top_down/hourglass/README.md) (ECCV'2016)
@@ -75,10 +73,10 @@ Supported algorithms:
 
 </details>
 
-Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
+支持的 [数据集](https://mmpose.readthedocs.io/en/latest/datasets.html):
 
 <details open>
-<summary>(click to collapse)</summary>
+<summary>(点击收起)</summary>
 
 - [x] [COCO](http://cocodataset.org/) (ECCV'2014)
 - [x] [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) (ECCV'2020)
@@ -103,10 +101,10 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 
 </details>
 
-Supported backbones:
+支持的骨干网络:
 
 <details>
-<summary>(click to expand)</summary>
+<summary>(点击打开)</summary>
 
 - [x] [AlexNet](configs/top_down/alexnet/README.md) (NeurIPS'2012)
 - [x] [VGG](configs/top_down/vgg/README.md) (ICLR'2015)
@@ -123,17 +121,16 @@ Supported backbones:
 
 </details>
 
-Results and models are available in the *README.md* of each method's config directory.
-A summary can be found in the [**model zoo**](https://mmpose.readthedocs.io/en/latest/modelzoo.html) page.
-We will keep up with the latest progress of the community, and support more popular algorithms and frameworks.
+各个模型的结果和设置都可以在对应的 config（配置）目录下的 *README.md* 中查看。
+整体的概况也可也在 [模型库](https://mmaction2.readthedocs.io/en/latest/recognition_models.html) 页面中查看。
 
-If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
+我们将跟进学界的最新进展，并支持更多算法和框架。如果您对 MMPose 有任何功能需求，请随时在 [问题](https://github.com/open-mmlab/mmpose/issues/9) 中留言。
 
-## Benchmark
+## 基准测试
 
-We demonstrate the superiority of our MMPose framework in terms of speed and accuracy on the standard COCO keypoint detection benchmark.
+在主流的 COCO 姿态估计数据集上，进行基准测试。结果展示 MMPose 框架 具有更高的精度和训练速度。
 
-| Model | Input size| MMPose (s/iter) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (s/iter) | MMPose (mAP) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (mAP) |
+| 骨干模型 | 输入分辨率 | MMPose (s/iter) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (s/iter) | MMPose (mAP) | [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch) (mAP) |
 | :--- | :---------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: |
 | resnet_50  | 256x192  | **0.28** | 0.64 | **0.718** | 0.704 |
 | resnet_50  | 384x288  | **0.81** | 1.24 | **0.731** | 0.722 |
@@ -146,39 +143,39 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 | hrnet_w48  | 256x192  | **0.66** | 1.55 | **0.756** | 0.751 |
 | hrnet_w48  | 384x288  | **1.23** | 2.20 | **0.767** | 0.763 |
 
-More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
+更多详情可见 [基准测试](docs/benchmark.md)。
 
-## Installation
+## 安装
 
-Please refer to [install.md](docs/install.md) for installation.
+请参考 [安装指南](docs/install.md) 进行安装。
 
-## Data Preparation
+## 数据准备
 
-Please refer to [data_preparation.md](docs/data_preparation.md) for a general knowledge of data preparation.
+请参考 [data_preparation.md](docs/data_preparation.md) 进行数据集准备。
 
-## Get Started
+## 教程
 
-Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
-There are also tutorials:
+请参考 [getting_started.md](docs/getting_started.md) 了解 MMPose 的基本使用。
+MMPose 也提供了其他更详细的教程:
 
-- [finetune model](docs/tutorials/1_finetune.md)
-- [add new dataset](docs/tutorials/2_new_dataset.md),
-- [customize data pipelines](docs/tutorials/3_data_pipeline.md),
-- [add new modules](docs/tutorials/4_new_modules.md),
-- [export a model to ONNX](docs/tutorials/5_export_model.md)
-- [customize runtime settings](docs/tutorials/6_customize_runtime.md).
+- [如何微调模型](docs/tutorials/1_finetune.md)
+- [如何增加新数据集](docs/tutorials/2_new_dataset.md),
+- [如何设计数据处理流程](docs/tutorials/3_data_pipeline.md),
+- [如何增加新模块](docs/tutorials/4_new_modules.md),
+- [如何导出模型为 onnx 格式](docs/tutorials/5_export_model.md)
+- [如何自定义模型运行参数](docs/tutorials/6_customize_runtime.md).
 
-## FAQ
+## 常见问题
 
-Please refer to [FAQ](docs/faq.md) for frequently asked questions.
+请参考 [FAQ](docs/faq.md) 了解其他用户的常见问题
 
-## License
+## 许可
 
-This project is released under the [Apache 2.0 license](LICENSE).
+该项目开源自 [Apache 2.0 license](LICENSE)
 
-## Citation
+## 引用
 
-If you find this project useful in your research, please consider cite:
+如果您觉得 MMPose 对您的研究有所帮助，请考虑引用它：
 
 ```latex
 @misc{mmpose2020,
@@ -189,24 +186,23 @@ If you find this project useful in your research, please consider cite:
 }
 ```
 
-## Contributing
+## 参与贡献
 
-We appreciate all contributions to improve MMPose. Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the contributing guideline.
+我们非常欢迎用户任何对于 MMAction2 做出的贡献，可以参考 [CONTRIBUTION.md](.github/CONTRIBUTING.md) 文件了解更多细节。
 
-## Acknowledgement
+## 致谢
 
-MMPose is an open source project that is contributed by researchers and engineers from various colleges and companies.
-We appreciate all the contributors who implement their methods or add new features, as well as users who give valuable feedbacks.
-We wish that the toolbox and benchmark could serve the growing research community by providing a flexible toolkit to reimplement existing methods and develop their own new models.
+MMPose 是一款由不同学校和公司共同贡献的开源项目。我们感谢所有为项目提供算法复现和新功能支持的贡献者，以及提供宝贵反馈的用户。
+我们希望该工具箱和基准测试可以为社区提供灵活的代码工具，供用户复现现有算法并开发自己的新模型，从而不断为开源社区提供贡献。
 
-## Projects in OpenMMLab
+## OpenMMLab的其他项目
 
-- [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab foundational library for computer vision.
-- [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab image classification toolbox and benchmark.
-- [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab detection toolbox and benchmark.
-- [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab's next-generation platform for general 3D object detection.
-- [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab semantic segmentation toolbox and benchmark.
-- [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab's next-generation action understanding toolbox and benchmark.
-- [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab video perception toolbox and benchmark.
-- [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
-- [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
+- [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab 计算机视觉基础库
+- [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab 图像分类工具箱与测试基准
+- [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab 检测工具箱与测试基准
+- [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab's 新一代通用3D目标检测平台
+- [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab 语义分割工具箱与测试基准
+- [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab's 新一代视频理解工具箱与测试基准
+- [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab 一体化视频目标感知平台
+- [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab 姿态估计工具箱与测试基准
+- [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab 图像视频编辑工具箱
