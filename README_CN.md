@@ -122,7 +122,7 @@ MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [Op
 </details>
 
 各个模型的结果和设置都可以在对应的 config（配置）目录下的 *README.md* 中查看。
-整体的概况也可也在 [模型库](https://mmaction2.readthedocs.io/en/latest/recognition_models.html) 页面中查看。
+整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/en/latest/recognition_models.html) 页面中查看。
 
 我们将跟进学界的最新进展，并支持更多算法和框架。如果您对 MMPose 有任何功能需求，请随时在 [问题](https://github.com/open-mmlab/mmpose/issues/9) 中留言。
 
@@ -188,7 +188,7 @@ MMPose 也提供了其他更详细的教程:
 
 ## 参与贡献
 
-我们非常欢迎用户任何对于 MMAction2 做出的贡献，可以参考 [CONTRIBUTION.md](.github/CONTRIBUTING.md) 文件了解更多细节。
+我们非常欢迎用户对于 MMPose 做出的任何贡献，可以参考 [CONTRIBUTION.md](.github/CONTRIBUTING.md) 文件了解更多细节。
 
 ## 致谢
 
