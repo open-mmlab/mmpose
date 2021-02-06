@@ -162,11 +162,11 @@ Please see [getting_started.md](docs/getting_started.md) for the basic usage of 
 There are also tutorials:
 
 - [finetune model](docs/tutorials/1_finetune.md)
-- [add new dataset](docs/tutorials/2_new_dataset.md),
-- [customize data pipelines](docs/tutorials/3_data_pipeline.md),
-- [add new modules](docs/tutorials/4_new_modules.md),
+- [add new dataset](docs/tutorials/2_new_dataset.md)
+- [customize data pipelines](docs/tutorials/3_data_pipeline.md)
+- [add new modules](docs/tutorials/4_new_modules.md)
 - [export a model to ONNX](docs/tutorials/5_export_model.md)
-- [customize runtime settings](docs/tutorials/6_customize_runtime.md).
+- [customize runtime settings](docs/tutorials/6_customize_runtime.md)
 
 ## FAQ
 
