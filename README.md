@@ -59,6 +59,7 @@ Supported algorithms:
 <details open>
 <summary>(click to collapse)</summary>
 
+- [x] [DeepPose](configs/top_down/deeppose/README.md) (CVPR'2014)
 - [x] [CPM](configs/top_down/cpm/README.md) (CVPR'2016)
 - [x] [Hourglass](configs/top_down/hourglass/README.md) (ECCV'2016)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md) (ECCV'2018)
