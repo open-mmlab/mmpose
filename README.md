@@ -4,7 +4,7 @@
 
 ## Introduction
 
-English | [简体中文](README_cn.md)
+English | [简体中文](README_CN.md)
 
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
