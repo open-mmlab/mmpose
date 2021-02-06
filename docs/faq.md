@@ -17,6 +17,11 @@ If the contents here do not cover your issue, please create an issue using the [
   python setup.py install
   ```
 
+- **No matching distribution found for xtcocotools>=1.6**
+
+  1. Install cython by `pip install cython`.
+  1. Install xtcocotools from source.
+
 - **"No module named 'mmcv.ops'"; "No module named 'mmcv._ext'"**
 
   1. Uninstall existing mmcv in the environment using `pip uninstall mmcv`.
