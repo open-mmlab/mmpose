@@ -161,6 +161,7 @@ Please refer to [data_preparation.md](docs/data_preparation.md) for a general kn
 Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
 There are also tutorials:
 
+- [learn about configs](docs/tutorials/0_config.md)
 - [finetune model](docs/tutorials/1_finetune.md)
 - [add new dataset](docs/tutorials/2_new_dataset.md)
 - [customize data pipelines](docs/tutorials/3_data_pipeline.md)
