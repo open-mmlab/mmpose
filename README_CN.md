@@ -161,6 +161,7 @@ MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [Op
 请参考 [getting_started.md](docs/getting_started.md) 了解 MMPose 的基本使用。
 MMPose 也提供了其他更详细的教程:
 
+- [如何编写配置文件](docs/tutorials/0_config.md)
 - [如何微调模型](docs/tutorials/1_finetune.md)
 - [如何增加新数据集](docs/tutorials/2_new_dataset.md)
 - [如何设计数据处理流程](docs/tutorials/3_data_pipeline.md)

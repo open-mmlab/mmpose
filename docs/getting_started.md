@@ -236,6 +236,6 @@ python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 
 ## Tutorials
 
-Currently, we provide some tutorials for users to [finetune model](tutorials/1_finetune.md),
+Currently, we provide some tutorials for users to [learn about configs](tutorials/0_config.md), [finetune model](tutorials/1_finetune.md),
 [add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
 [add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
