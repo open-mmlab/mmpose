@@ -9,7 +9,7 @@ If the contents here do not cover your issue, please create an issue using the [
 - **Unable to install xtcocotools**
 
   1. Try to install it using pypi mannually `pip install xtcocotools`.
-  1. If step1 does not work. Try to install it from source.
+  1. If step1 does not work. Try to install it from [source](https://github.com/jin-s13/xtcocoapi).
 
   ```
   git clone https://github.com/jin-s13/xtcocoapi
@@ -20,7 +20,13 @@ If the contents here do not cover your issue, please create an issue using the [
 - **No matching distribution found for xtcocotools>=1.6**
 
   1. Install cython by `pip install cython`.
-  1. Install xtcocotools from source.
+  1. Install xtcocotools from [source](https://github.com/jin-s13/xtcocoapi).
+
+  ```
+  git clone https://github.com/jin-s13/xtcocoapi
+  cd xtcocoapi
+  python setup.py install
+  ```
 
 - **"No module named 'mmcv.ops'"; "No module named 'mmcv._ext'"**
 
