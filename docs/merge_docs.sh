@@ -58,7 +58,6 @@ sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' fashion_mod
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' getting_started.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' install.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' benchmark.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' config.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' demo.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' faq.md

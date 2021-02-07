@@ -8,7 +8,6 @@ Welcome to MMPose's documentation!
    getting_started.md
    demo.md
    benchmark.md
-   config.md
 
 .. toctree::
    :maxdepth: 2
@@ -38,6 +37,7 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Tutorials
 
+   tutorials/0_config.md
    tutorials/1_finetune.md
    tutorials/2_new_dataset.md
    tutorials/3_data_pipeline.md
