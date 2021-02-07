@@ -291,11 +291,7 @@ class InterHand3DDataset(HandBaseDataset):
 
         return gt_db
 
-    def evaluate(self,
-                 outputs,
-                 res_folder,
-                 metric=['MRRPE', 'MPJPE', 'Handedness_acc'],
-                 **kwargs):
+    def evaluate(self, outputs, res_folder, metric='MPJPE', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
         will be saved in `${res_folder}/result_keypoints.json`.
 
@@ -389,7 +385,7 @@ class InterHand3DDataset(HandBaseDataset):
         return name_value
 
     @staticmethod
-    def _cal_acc(outputs, gts, masks):
+    def _get_accuracy(outputs, gts, masks):
         """Get accuracy of multi-label classification.
 
         Note:
@@ -399,19 +395,14 @@ class InterHand3DDataset(HandBaseDataset):
         Args:
             outputs (np.array[N, C]): predicted multi-label.
             gts (np.array[N, C]): Groundtruth muti-label.
-            masks (np.array[N])
+            masks (np.array[N, ]): masked outputs will be ignored for
+                accuracy calculation.
 
         Returns:
             accuracy (float)
         """
-        acc_cnt = 0
-        sum_cnt = 0
-        for pred, gt, mask in zip(outputs, gts, masks):
-            if mask:
-                sum_cnt += 1
-                acc_cnt += 1 if (pred == gt).all() else 0
-
-        return acc_cnt / sum_cnt
+        acc = (outputs == gts).all(axis=1)
+        return np.mean(acc[masks])
 
     def _report_metric(self, res_file, metrics):
         """Keypoint evaluation.
@@ -537,7 +528,7 @@ class InterHand3DDataset(HandBaseDataset):
 
         if 'Handedness_acc' in metrics:
             info_str.append(('Handedness_acc',
-                             self._cal_acc(preds_hand_type, gts_hand_type,
-                                           hand_type_masks)))
+                             self._get_accuracy(preds_hand_type, gts_hand_type,
+                                                hand_type_masks)))
 
         return info_str
