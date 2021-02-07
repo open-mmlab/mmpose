@@ -242,8 +242,11 @@ def keypoint_epe(pred, gt, mask):
     Returns:
         float: Average end-point error.
     """
+
     distances = _calc_distances(
-        pred, gt, mask, np.tile(np.array([[1, 1]]), (pred.shape[0], 1)))
+        pred, gt, mask,
+        np.tile(
+            np.array([[1 for i in range(pred.shape[2])]]), (pred.shape[0], 1)))
     distance_valid = distances[distances != -1]
     return distance_valid.sum() / max(1, len(distance_valid))
 
