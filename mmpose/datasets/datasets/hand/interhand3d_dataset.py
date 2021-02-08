@@ -100,7 +100,7 @@ class InterHand3DDataset(HandBaseDataset):
         self.joint_file = joint_file
 
         self.use_gt_root_depth = use_gt_root_depth
-        if self.use_gt_root_depth:
+        if not self.use_gt_root_depth:
             assert rootnet_result_file is not None
             self.rootnet_result_file = rootnet_result_file
 
@@ -163,13 +163,13 @@ class InterHand3DDataset(HandBaseDataset):
             N: number of joints
 
         Args:
-            pixel_coord (ndarray[3, N]): 3D joints coordinates
+            pixel_coord (ndarray[N, 3]): 3D joints coordinates
                 in the pixel coordinate system
             f (ndarray[2]): focal length of x and y axis
             c (ndarray[2]): principal point of x and y axis
 
         Returns:
-            cam_coord (ndarray[3, N]): 3D joints coordinates
+            cam_coord (ndarray[N, 3]): 3D joints coordinates
                 in the camera coordinate system
         """
         x = (pixel_coord[:, 0] - c[0]) / f[0] * pixel_coord[:, 2]
@@ -201,7 +201,7 @@ class InterHand3DDataset(HandBaseDataset):
         with open(self.joint_file, 'r') as f:
             joints = json.load(f)
 
-        if self.use_gt_root_depth:
+        if not self.use_gt_root_depth:
             rootnet_result = {}
             with open(self.rootnet_result_file, 'r') as f:
                 rootnet_annot = json.load(f)
@@ -263,8 +263,8 @@ class InterHand3DDataset(HandBaseDataset):
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d[:, :2] = joint_img
-            joints_3d[:21, 3] = joint_cam[:21, 3] - joint_cam[20, 3]
-            joints_3d[21:, 3] = joint_cam[21:, 3] - joint_cam[41, 3]
+            joints_3d[:21, 2] = joint_cam[:21, 2] - joint_cam[20, 2]
+            joints_3d[21:, 2] = joint_cam[21:, 2] - joint_cam[41, 2]
             joints_3d_visible[...] = np.minimum(1, joint_valid.reshape(-1, 1))
 
             gt_db.append({
@@ -373,7 +373,7 @@ class InterHand3DDataset(HandBaseDataset):
                     kpt['hand_type'] = hand_type[i][0:2].tolist()
                     kpt['hand_type_score'] = hand_type[i][2:4].tolist()
                 if rel_root_depth is not None:
-                    kpt['rel_root_depth'] = float(rel_root_depth[i][0])
+                    kpt['rel_root_depth'] = float(rel_root_depth[i])
 
                 kpts.append(kpt)
         kpts = self._sort_and_unique_bboxes(kpts)
@@ -440,19 +440,21 @@ class InterHand3DDataset(HandBaseDataset):
                         20, 0] and item['joints_3d_visible'][41, 0]:
                     rel_root_masks.append(True)
 
-                    pred_left_root_img = pred['keypoints'][41].copy()
-                    pred_left_root_img[
-                        2] += item['abs_depth'][0] + pred['rel_root_depth']
+                    pred_left_root_img = np.array(
+                        pred['keypoints'][41], dtype=np.float32)[None, :]
+                    pred_left_root_img[:, 2] += item['abs_depth'][0] + pred[
+                        'rel_root_depth']
                     pred_left_root_cam = self._pixel2cam(
                         pred_left_root_img, item['focal'], item['princpt'])
 
-                    pred_right_root_img = pred['keypoints'][20].copy()
-                    pred_right_root_img[2] += item['abs_depth'][0]
+                    pred_right_root_img = np.array(
+                        pred['keypoints'][20], dtype=np.float32)[None, :]
+                    pred_right_root_img[:, 2] += item['abs_depth'][0]
                     pred_right_root_cam = self._pixel2cam(
                         pred_right_root_img, item['focal'], item['princpt'])
 
-                    preds_rel_root.append(
-                        [pred_left_root_cam - pred_right_root_cam])
+                    preds_rel_root.append(pred_left_root_cam -
+                                          pred_right_root_cam)
                     gts_rel_root.append(
                         [item['joints_cam'][41] - item['joints_cam'][20]])
                 else:
@@ -461,7 +463,8 @@ class InterHand3DDataset(HandBaseDataset):
                     gts_rel_root.append([[0., 0., 0.]])
 
             if 'MPJPE' in metrics:
-                pred_joint_coord_img = np.array(pred['keypoints'])
+                pred_joint_coord_img = np.array(
+                    pred['keypoints'], dtype=np.float32)
                 gt_joint_coord_cam = item['joints_cam'].copy()
 
                 pred_joint_coord_img[:21, 2] += item['abs_depth'][0]

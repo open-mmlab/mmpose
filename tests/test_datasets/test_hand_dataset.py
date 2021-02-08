@@ -8,7 +8,7 @@ from numpy.testing import assert_almost_equal
 from mmpose.datasets import DATASETS
 
 
-def convert_db_to_output(db, batch_size=2):
+def convert_db_to_output(db, batch_size=2, keys=None):
     outputs = []
     len_db = len(db)
     for i in range(0, len_db, batch_size):
@@ -35,6 +35,13 @@ def convert_db_to_output(db, batch_size=2):
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
         output['bbox_ids'] = bbox_ids
+
+        if keys is not None:
+            keys = keys if isinstance(keys, list) else [keys]
+            for key in keys:
+                output[key] = [
+                    db[j][key] for j in range(i, min(i + batch_size, len_db))
+                ]
 
         outputs.append(output)
 
@@ -238,19 +245,19 @@ def test_top_down_InterHand2D_dataset():
     # Test
     data_cfg_copy = copy.deepcopy(data_cfg)
     _ = dataset_class(
-        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
-        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
-        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
-        img_prefix='tests/data/interhand2d/',
+        ann_file='tests/data/interhand2.6m/test_interhand2.6m_data.json',
+        camera_file='tests/data/interhand2.6m/test_interhand2.6m_camera.json',
+        joint_file='tests/data/interhand2.6m/test_interhand2.6m_joint_3d.json',
+        img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=True)
 
     custom_dataset = dataset_class(
-        ann_file='tests/data/interhand2d/test_interhand2d_data.json',
-        camera_file='tests/data/interhand2d/test_interhand2d_camera.json',
-        joint_file='tests/data/interhand2d/test_interhand2d_joint_3d.json',
-        img_prefix='tests/data/interhand2d/',
+        ann_file='tests/data/interhand2.6m/test_interhand2.6m_data.json',
+        camera_file='tests/data/interhand2.6m/test_interhand2.6m_camera.json',
+        joint_file='tests/data/interhand2.6m/test_interhand2.6m_joint_3d.json',
+        img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
         test_mode=False)
@@ -260,3 +267,82 @@ def test_top_down_InterHand2D_dataset():
     assert len(custom_dataset.db) == 6
 
     _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        print(infos, flush=True)
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_top_down_InterHand3D_dataset():
+    dataset = 'InterHand3DDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=42,
+        dataset_joints=42,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                34, 35, 36, 37, 38, 39, 40, 41
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+            36, 37, 38, 39, 40, 41
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/interhand2.6m/test_interhand2.6m_data.json',
+        camera_file='tests/data/interhand2.6m/test_interhand2.6m_camera.json',
+        joint_file='tests/data/interhand2.6m/test_interhand2.6m_joint_3d.json',
+        img_prefix='tests/data/interhand2.6m/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/interhand2.6m/test_interhand2.6m_data.json',
+        camera_file='tests/data/interhand2.6m/test_interhand2.6m_camera.json',
+        joint_file='tests/data/interhand2.6m/test_interhand2.6m_joint_3d.json',
+        img_prefix='tests/data/interhand2.6m/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 4
+    assert len(custom_dataset.db) == 4
+
+    _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(
+        custom_dataset.db, keys=['rel_root_depth', 'hand_type'])
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir,
+                                        ['MRRPE', 'MPJPE', 'Handedness_acc'])
+        assert_almost_equal(infos['MRRPE'], 0.0, decimal=5)
+        assert_almost_equal(infos['MPJPE_all'], 0.0, decimal=5)
+        assert_almost_equal(infos['MPJPE_single'], 0.0, decimal=5)
+        assert_almost_equal(infos['MPJPE_interacting'], 0.0, decimal=5)
+        assert_almost_equal(infos['Handedness_acc'], 1.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')

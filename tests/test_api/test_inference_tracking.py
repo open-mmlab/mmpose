@@ -66,7 +66,7 @@ def test_pose_tracking_demo():
         'configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py',
         None,
         device='cpu')
-    image_name = 'tests/data/interhand2d/image2017.jpg'
+    image_name = 'tests/data/interhand2.6m/image2017.jpg'
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
