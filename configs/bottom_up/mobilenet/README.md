@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
   author={Newell, Alejandro and Huang, Zhiao and Deng, Jia},
@@ -16,7 +16,7 @@
 
 [BACKBONE]
 
-```latex
+```bibtex
 @inproceedings{sandler2018mobilenetv2,
   title={Mobilenetv2: Inverted residuals and linear bottlenecks},
   author={Sandler, Mark and Howard, Andrew and Zhu, Menglong and Zhmoginov, Andrey and Chen, Liang-Chieh},

@@ -14,7 +14,7 @@ MMPose supported datasets:
 
 [DATASET]
 
-```latex
+```bibtex
 @article{sagonas2016300,
   title={300 faces in-the-wild challenge: Database and results},
   author={Sagonas, Christos and Antonakos, Epameinondas and Tzimiropoulos, Georgios and Zafeiriou, Stefanos and Pantic, Maja},
@@ -87,7 +87,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{wu2018look,
   title={Look at boundary: A boundary-aware face alignment algorithm},
   author={Wu, Wayne and Qian, Chen and Yang, Shuo and Wang, Quan and Cai, Yici and Zhou, Qiang},
@@ -138,7 +138,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{koestinger2011annotated,
   title={Annotated facial landmarks in the wild: A large-scale, real-world database for facial landmark localization},
   author={Koestinger, Martin and Wohlhart, Paul and Roth, Peter M and Bischof, Horst},
@@ -186,7 +186,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{burgos2013robust,
   title={Robust face landmark estimation under occlusion},
   author={Burgos-Artizzu, Xavier P and Perona, Pietro and Doll{\'a}r, Piotr},

@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @inproceedings{wei2016convolutional,
   title={Convolutional pose machines},
   author={Wei, Shih-En and Ramakrishna, Varun and Kanade, Takeo and Sheikh, Yaser},

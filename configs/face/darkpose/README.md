@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @inproceedings{zhang2020distribution,
   title={Distribution-aware coordinate representation for human pose estimation},
   author={Zhang, Feng and Zhu, Xiatian and Dai, Hanbin and Ye, Mao and Zhu, Ce},

@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @misc{cai2020learning,
     title={Learning Delicate Local Representations for Multi-Person Pose Estimation},
     author={Yuanhao Cai and Zhicheng Wang and Zhengxiong Luo and Binyi Yin and Angang Du and Haoqian Wang and Xinyu Zhou and Erjin Zhou and Xiangyu Zhang and Jian Sun},

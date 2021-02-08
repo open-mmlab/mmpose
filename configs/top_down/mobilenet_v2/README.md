@@ -4,7 +4,7 @@
 
 [BACKBONE]
 
-```latex
+```bibtex
 @inproceedings{sandler2018mobilenetv2,
   title={Mobilenetv2: Inverted residuals and linear bottlenecks},
   author={Sandler, Mark and Howard, Andrew and Zhu, Menglong and Zhmoginov, Andrey and Chen, Liang-Chieh},

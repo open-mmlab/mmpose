@@ -11,7 +11,7 @@ MMPose supported datasets:
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
  author = {Liu, Ziwei and Luo, Ping and Qiu, Shi and Wang, Xiaogang and Tang, Xiaoou},
  title = {DeepFashion: Powering Robust Clothes Recognition and Retrieval with Rich Annotations},
@@ -23,7 +23,7 @@ MMPose supported datasets:
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,
  author = {Liu, Ziwei and Yan, Sijie and Luo, Ping and Wang, Xiaogang and Tang, Xiaoou},
  title = {Fashion Landmark Detection in the Wild},

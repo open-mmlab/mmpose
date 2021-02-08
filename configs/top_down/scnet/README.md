@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @inproceedings{liu2020improving,
   title={Improving Convolutional Networks with Self-Calibrated Convolutions},
   author={Liu, Jiang-Jiang and Hou, Qibin and Cheng, Ming-Ming and Wang, Changhu and Feng, Jiashi},

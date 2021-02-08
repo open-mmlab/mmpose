@@ -52,7 +52,7 @@ mmpose
 
 ### SMPL Model
 
-```latex
+```bibtex
 @article{loper2015smpl,
   title={SMPL: A skinned multi-person linear model},
   author={Loper, Matthew and Mahmood, Naureen and Romero, Javier and Pons-Moll, Gerard and Black, Michael J},
@@ -86,7 +86,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
   author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
@@ -121,7 +121,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @article{ionescu2013human3,
   title={Human3. 6m: Large scale datasets and predictive methods for 3d human sensing in natural environments},
   author={Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
@@ -169,7 +169,7 @@ extract the images by themselves.
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{mono-3dhp2017,
  author = {Mehta, Dushyant and Rhodin, Helge and Casas, Dan and Fua, Pascal and Sotnychenko, Oleksandr and Xu, Weipeng and Theobalt, Christian},
  title = {Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision},
@@ -230,7 +230,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{johnson2010clustered,
   title={Clustered Pose and Nonlinear Appearance Models for Human Pose Estimation.},
   author={Johnson, Sam and Everingham, Mark},
@@ -266,7 +266,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{johnson2011learning,
   title={Learning effective human pose estimation from inaccurate annotation},
   author={Johnson, Sam and Everingham, Mark},
@@ -302,7 +302,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{kanazawa2018end,
   title={End-to-end recovery of human shape and pose},
   author={Kanazawa, Angjoo and Black, Michael J and Jacobs, David W and Malik, Jitendra},
