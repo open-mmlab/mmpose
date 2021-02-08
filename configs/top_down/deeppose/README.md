@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @inproceedings{toshev2014deeppose,
   title={Deeppose: Human pose estimation via deep neural networks},
   author={Toshev, Alexander and Szegedy, Christian},

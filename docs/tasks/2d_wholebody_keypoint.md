@@ -11,7 +11,7 @@ MMPose supported datasets:
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{jin2020whole,
   title={Whole-Body Human Pose Estimation in the Wild},
   author={Jin, Sheng and Xu, Lumin and Xu, Jin and Wang, Can and Liu, Wentao and Qian, Chen and Ouyang, Wanli and Luo, Ping},

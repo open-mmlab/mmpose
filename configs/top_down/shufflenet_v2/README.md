@@ -4,7 +4,7 @@
 
 [BACKBONE]
 
-```latex
+```bibtex
 @inproceedings{ma2018shufflenet,
   title={Shufflenet v2: Practical guidelines for efficient cnn architecture design},
   author={Ma, Ningning and Zhang, Xiangyu and Zheng, Hai-Tao and Sun, Jian},
