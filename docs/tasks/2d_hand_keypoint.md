@@ -14,7 +14,7 @@ MMPose supported datasets:
 
 [DATASET]
 
-```latex
+```bibtex
 @article{wang2018mask,
   title={Mask-pose cascaded cnn for 2d hand pose estimation from single color image},
   author={Wang, Yangang and Peng, Cong and Liu, Yebin},
@@ -59,7 +59,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{zimmermann2019freihand,
   title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
   author={Zimmermann, Christian and Ceylan, Duygu and Yang, Jimei and Russell, Bryan and Argus, Max and Brox, Thomas},
@@ -102,7 +102,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @inproceedings{simon2017hand,
   title={Hand keypoint detection in single images using multiview bootstrapping},
   author={Simon, Tomas and Joo, Hanbyul and Matthews, Iain and Sheikh, Yaser},
@@ -152,7 +152,7 @@ mmpose
 
 [DATASET]
 
-```latex
+```bibtex
 @article{moon2020interhand2,
   title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
   author={Moon, Gyeongsik and Yu, Shoou-I and Wen, He and Shiratori, Takaaki and Lee, Kyoung Mu},

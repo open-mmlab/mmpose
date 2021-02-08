@@ -182,7 +182,7 @@ This project is released under the [Apache 2.0 license](LICENSE).
 
 If you find this project useful in your research, please consider cite:
 
-```latex
+```bibtex
 @misc{mmpose2020,
     title={OpenMMLab Pose Estimation Toolbox and Benchmark},
     author={MMPose Contributors},

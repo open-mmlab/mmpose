@@ -4,7 +4,7 @@
 
 [ALGORITHM]
 
-```latex
+```bibtex
 @article{WangSCJDZLMTWLX19,
   title={Deep High-Resolution Representation Learning for Visual Recognition},
   author={Jingdong Wang and Ke Sun and Tianheng Cheng and

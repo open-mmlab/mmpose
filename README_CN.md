@@ -181,7 +181,7 @@ MMPose 也提供了其他更详细的教程:
 
 如果您觉得 MMPose 对您的研究有所帮助，请考虑引用它：
 
-```latex
+```bibtex
 @misc{mmpose2020,
     title={OpenMMLab Pose Estimation Toolbox and Benchmark},
     author={MMPose Contributors},

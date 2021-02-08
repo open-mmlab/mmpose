@@ -4,7 +4,7 @@
 
 [BACKBONE]
 
-```latex
+```bibtex
 @inproceedings{zhang2018shufflenet,
   title={Shufflenet: An extremely efficient convolutional neural network for mobile devices},
   author={Zhang, Xiangyu and Zhou, Xinyu and Lin, Mengxiao and Sun, Jian},

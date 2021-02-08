@@ -4,7 +4,7 @@
 
 [BACKBONE]
 
-```latex
+```bibtex
 @inproceedings{xie2017aggregated,
   title={Aggregated residual transformations for deep neural networks},
   author={Xie, Saining and Girshick, Ross and Doll{\'a}r, Piotr and Tu, Zhuowen and He, Kaiming},
