@@ -2,7 +2,6 @@ import warnings
 from collections.abc import Sequence
 
 import mmcv
-import numpy as np
 from mmcv.parallel import DataContainer as DC
 from mmcv.utils import build_from_cfg
 from torchvision.transforms import functional as F
@@ -150,38 +149,6 @@ class Collect:
         """Compute the string representation."""
         return (f'{self.__class__.__name__}('
                 f'keys={self.keys}, meta_keys={self.meta_keys})')
-
-
-@PIPELINES.register_module()
-class Normalize(object):
-    """Normalize image.
-
-    Args:
-        mean (sequence): Mean values of 3 channels.
-        std (sequence): Std values of 3 channels.
-        to_rgb (bool): Whether to convert the image from BGR to RGB,
-            default is true.
-    """
-
-    def __init__(self, mean, std, to_rgb=True):
-        self.mean = np.array(mean, dtype=np.float32)
-        self.std = np.array(std, dtype=np.float32)
-        self.to_rgb = to_rgb
-
-    def __call__(self, results):
-        for key in results.get('img_fields', ['img']):
-            results[key] = mmcv.imnormalize(results[key], self.mean, self.std,
-                                            self.to_rgb)
-        results['img_norm_cfg'] = dict(
-            mean=self.mean, std=self.std, to_rgb=self.to_rgb)
-        return results
-
-    def __repr__(self):
-        repr_str = self.__class__.__name__
-        repr_str += f'(mean={list(self.mean)}, '
-        repr_str += f'std={list(self.std)}, '
-        repr_str += f'to_rgb={self.to_rgb})'
-        return repr_str
 
 
 @PIPELINES.register_module()
