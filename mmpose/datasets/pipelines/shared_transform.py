@@ -181,7 +181,8 @@ class Albumentation(object):
         ]
     Args:
         transforms (list[dict]): A list of Albumentation transformations
-        keymap (dict): Contains {'input key':'albumentation-style key'}
+        keymap (dict): Contains {'input key':'albumentation-style key'},
+            e.g., {'img': 'image'}.
     """
 
     def __init__(self, transforms, keymap=None):
