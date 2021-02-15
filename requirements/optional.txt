@@ -1,3 +1,4 @@
+albumentations>=0.3.2
 onnx
 onnxruntime
 poseval@git+https://github.com/svenkreiss/poseval.git

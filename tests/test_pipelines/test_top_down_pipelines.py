@@ -209,6 +209,3 @@ def test_top_down_pipeline():
     results_final = collect(results_target)
     assert 'img_size' not in results_final['img_metas'].data
     assert 'image_file' in results_final['img_metas'].data
-
-
-test_top_down_pipeline()
