@@ -152,7 +152,7 @@ class Collect:
 
 
 @PIPELINES.register_module()
-class Albu(object):
+class Albumentation(object):
     """Albumentation augmentation (pixel-level transforms only). Adds custom
     pixel-level transformations from Albumentations library. Please visit
     `https://albumentations.readthedocs.io` to get more information.
@@ -180,7 +180,7 @@ class Albu(object):
                 p=0.1),
         ]
     Args:
-        transforms (list[dict]): A list of albu transformations
+        transforms (list[dict]): A list of Albumentation transformations
         keymap (dict): Contains {'input key':'albumentation-style key'}
     """
 

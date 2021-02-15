@@ -15,7 +15,7 @@ def test_albu_transform():
     load = build_from_cfg(load, PIPELINES)
 
     albu_transform = dict(
-        type='Albu',
+        type='Albumentation',
         transforms=[
             dict(type='RandomBrightnessContrast', p=0.2),
             dict(type='ToFloat')
