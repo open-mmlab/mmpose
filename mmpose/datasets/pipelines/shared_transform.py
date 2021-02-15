@@ -153,8 +153,8 @@ class Collect:
 
 @PIPELINES.register_module()
 class Albu(object):
-    """Albumentation augmentation (pixel-level transforms only) Adds custom
-    pixel-level transformations from Albumentations library. Please, visit
+    """Albumentation augmentation (pixel-level transforms only). Adds custom
+    pixel-level transformations from Albumentations library. Please visit
     `https://albumentations.readthedocs.io` to get more information.
 
     Note: we only support pixel-level transforms.
@@ -185,7 +185,7 @@ class Albu(object):
     """
 
     def __init__(self, transforms, keymap=None):
-        self.allowed_metrics = [
+        self.allowed_transforms = [
             'Blur', 'CLAHE', 'ChannelDropout', 'ChannelShuffle', 'ColorJitter',
             'Downscale', 'Emboss', 'Equalize', 'FDA', 'FancyPCA', 'FromFloat',
             'GaussNoise', 'GaussianBlur', 'GlassBlur', 'HistogramMatching',
@@ -218,7 +218,7 @@ class Albu(object):
     def albu_builder(self, cfg):
         """Import a module from albumentations.
 
-        It inherits some of :func:`build_from_cfg` logic.
+        It resembles some of :func:`build_from_cfg` logic.
         Args:
             cfg (dict): Config dict. It should at least contain the key "type".
         Returns:
@@ -232,7 +232,7 @@ class Albu(object):
         if mmcv.is_str(obj_type):
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')
-            if obj_type not in self.allowed_metrics:
+            if obj_type not in self.allowed_transforms:
                 warnings.warn(
                     '{obj_type} is not supported. Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
@@ -259,10 +259,7 @@ class Albu(object):
             dict: new dict.
         """
 
-        updated_dict = {}
-        for k, v in zip(d.keys(), d.values()):
-            new_k = keymap.get(k, k)
-            updated_dict[new_k] = d[k]
+        updated_dict = {keymap.get(k, k): v for k, v in d.items()}
         return updated_dict
 
     def __call__(self, results):
