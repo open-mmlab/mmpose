@@ -4,6 +4,7 @@ from collections import OrderedDict, defaultdict
 import json_tricks as json
 import numpy as np
 import xtcocotools
+from mmcv import load
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
@@ -46,6 +47,11 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
+        simple_inference (bool): If running the simple inference mode. In
+            simple inference mode, the ann_file contains a list of dict, each
+            dict contains two varibles: image_file and bbox (x, y, w, h).
+            In simple inference mode, all bboxes should be inside the image.
+            Default: False.
     """
 
     def __init__(self,
@@ -53,7 +59,8 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 simple_inference=False):
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
         self.ann_info['flip_index'] = [
@@ -72,6 +79,14 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
             .87, .87, .89, .89
         ]) / 10.0
+
+        self.simple_inference = simple_inference
+        if self.simple_inference:
+            self.db = load(ann_file)
+            # Since we get dataset length by img_ids
+            self.img_ids = self.db
+            print(f'=> load {len(self.db)} samples')
+            return
 
         self.coco = COCO(ann_file)
 
@@ -127,6 +142,14 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         Returns:
             dict: info for model training
         """
+        if self.simple_inference:
+            db_rec = {}
+            db_rec['dataset'] = 'simple_inference'
+            db_rec['image_file'] = self.db[idx]['image_file']
+            db_rec['mask'] = []
+            db_rec['joints'] = []
+            return db_rec
+
         coco = self.coco
         img_id = self.img_ids[idx]
         ann_ids = coco.getAnnIds(imgIds=img_id)
