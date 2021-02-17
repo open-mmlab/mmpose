@@ -145,7 +145,8 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         if self.simple_inference:
             db_rec = {}
             db_rec['dataset'] = 'simple_inference'
-            db_rec['image_file'] = self.db[idx]['image_file']
+            db_rec['image_file'] = os.path.join(self.img_prefix,
+                                                self.db[idx]['image_file'])
             db_rec['mask'] = []
             db_rec['joints'] = []
             return db_rec
