@@ -288,7 +288,7 @@ class HeatmapParser:
             heatmap: np.ndarray of size (K, H, W).
             tag: np.ndarray of size (K, H, W) if not flip.
             keypoints: np.ndarray of size (K, 4) if not flip,
-                        last dim is (x, y, heatmap score, tag score).
+                        last dim is (x, y, heatmap score, tag).
             use_udp: bool-unbiased data processing
 
         Returns:
