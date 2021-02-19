@@ -148,7 +148,7 @@ class InterHand3DDataset(HandBaseDataset):
             world_coord (ndarray[3, N]): 3D joints coordinates
                 in the world coordinate system
             R (ndarray[3, 3]): camera rotation matrix
-            T (ndarray[3]): camera position (x, y, z)
+            T (ndarray[3, 1]): camera position (x, y, z)
 
         Returns:
             cam_coord (ndarray[3, N]): 3D joints coordinates
