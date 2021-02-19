@@ -245,7 +245,7 @@ def keypoint_epe(pred, gt, mask):
 
     distances = _calc_distances(
         pred, gt, mask,
-        np.tile(np.array([[1] * pred.shape[2]]), (pred.shape[0], 1)))
+        np.ones((pred.shape[0], pred.shape[2]), dtype=np.float32))
     distance_valid = distances[distances != -1]
     return distance_valid.sum() / max(1, len(distance_valid))
 

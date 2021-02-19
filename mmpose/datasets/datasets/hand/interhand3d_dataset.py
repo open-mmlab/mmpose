@@ -72,6 +72,9 @@ class InterHand3DDataset(HandBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        use_gt_root_depth (bool): Using the ground truth depth of the wrist
+            or given depth from rootnet_result_file.
+        rootnet_result_file (str): Path to the wrist depth file.
         test_mode (str): Store True when building test or
             validation dataset. Default: False.
     """
@@ -302,10 +305,13 @@ class InterHand3DDataset(HandBaseDataset):
             heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                outputs (list(preds, boxes, image_path, output_heatmap))
+            outputs (list(dict))
                 :preds (np.ndarray[N,K,3]): The first two dimensions are
                     coordinates, score is the third dimension of the array.
+                :hand_type (np.ndarray[N, 4]): The first two dimensions are
+                    hand type, scores is the last two dimensions.
+                :rel_root_depth (np.ndarray[N]): The relative depth of left
+                    wrist and right wrist.
                 :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
                 :image_paths (list[str]): For example, ['Capture6/
@@ -329,26 +335,17 @@ class InterHand3DDataset(HandBaseDataset):
 
         kpts = []
         for output in outputs:
-            if 'preds' in output:
-                preds = output['preds']
-            else:
-                preds = None
-                if 'MPJPE' in metrics:
-                    raise KeyError('metric MPJPE is not supported')
+            preds = output.get('preds')
+            if preds is None and 'MPJPE' in metrics:
+                raise KeyError('metric MPJPE is not supported')
 
-            if 'hand_type' in output:
-                hand_type = output['hand_type']
-            else:
-                hand_type = None
-                if 'Handedness_acc' in metrics:
-                    raise KeyError('metric Handedness_acc is not supported')
+            hand_type = output.get('hand_type')
+            if hand_type is None and 'Handedness_acc' in metrics:
+                raise KeyError('metric Handedness_acc is not supported')
 
-            if 'rel_root_depth' in output:
-                rel_root_depth = output['rel_root_depth']
-            else:
-                rel_root_depth = None
-                if 'MRRPE' in metrics:
-                    raise KeyError('metric MRRPE is not supported')
+            rel_root_depth = output.get('rel_root_depth')
+            if rel_root_depth is None and 'MRRPE' in metrics:
+                raise KeyError('metric MRRPE is not supported')
 
             boxes = output['boxes']
             image_paths = output['image_paths']
