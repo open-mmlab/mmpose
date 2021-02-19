@@ -182,7 +182,7 @@ class InterHand3DDataset(HandBaseDataset):
         return cam_coord
 
     @staticmethod
-    def _process_handtype(hand_type):
+    def _encode_handtype(hand_type):
         if hand_type == 'right':
             return np.array([1, 0], dtype=int)
         elif hand_type == 'left':
@@ -190,7 +190,7 @@ class InterHand3DDataset(HandBaseDataset):
         elif hand_type == 'interacting':
             return np.array([1, 1], dtype=int)
         else:
-            assert 0, print('Not support hand type: ' + hand_type)
+            assert 0, f'Not support hand type: {hand_type}'
 
     def _get_db(self):
         """Load dataset.
@@ -226,16 +226,14 @@ class InterHand3DDataset(HandBaseDataset):
             frame_idx = str(img['frame_idx'])
             image_file = os.path.join(self.img_prefix, self.id2name[img_id])
 
-            camera_pos, camera_rot = np.array(
-                cameras[capture_id]['campos'][camera_name],
-                dtype=np.float32), np.array(
-                    cameras[capture_id]['camrot'][camera_name],
-                    dtype=np.float32)
-            focal, principal_pt = np.array(
-                cameras[capture_id]['focal'][camera_name],
-                dtype=np.float32), np.array(
-                    cameras[capture_id]['princpt'][camera_name],
-                    dtype=np.float32)
+            camera_pos = np.array(
+                cameras[capture_id]['campos'][camera_name], dtype=np.float32)
+            camera_rot = np.array(
+                cameras[capture_id]['camrot'][camera_name], dtype=np.float32)
+            focal = np.array(
+                cameras[capture_id]['focal'][camera_name], dtype=np.float32)
+            principal_pt = np.array(
+                cameras[capture_id]['princpt'][camera_name], dtype=np.float32)
             joint_world = np.array(
                 joints[capture_id][frame_idx]['world_coord'], dtype=np.float32)
             joint_cam = self._world2cam(
@@ -244,17 +242,19 @@ class InterHand3DDataset(HandBaseDataset):
             joint_img = self._cam2pixel(joint_cam, focal, principal_pt)[:, :2]
 
             joint_valid = np.array(
-                ann['joint_valid'], dtype=np.float32).reshape(-1)
-            hand_type = self._process_handtype(ann['hand_type'])
+                ann['joint_valid'], dtype=np.float32).flatten()
+            hand_type = self._encode_handtype(ann['hand_type'])
             hand_type_valid = ann['hand_type_valid']
 
             if self.use_gt_root_depth:
                 bbox = np.array(ann['bbox'], dtype=np.float32)
+                # extend the bbox to include some context
                 center, scale = self._xywh2cs(*bbox, 1.25)
                 abs_depth = [joint_cam[20, 2], joint_cam[41, 2]]
             else:
                 rootnet_ann_data = rootnet_result[str(ann_id[0])]
                 bbox = np.array(rootnet_ann_data['bbox'], dtype=np.float32)
+                # the bboxes have been extended
                 center, scale = self._xywh2cs(*bbox, 1.0)
                 abs_depth = rootnet_ann_data['abs_depth']
             rel_root_depth = joint_cam[41, 2] - joint_cam[20, 2]
