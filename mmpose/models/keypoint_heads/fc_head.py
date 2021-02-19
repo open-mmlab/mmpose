@@ -115,6 +115,25 @@ class FcHead(nn.Module):
             output_regression = output.detach().cpu().numpy()
         return output_regression
 
+    def decode(self, img_metas, output, **kwargs):
+        """Decode the output.
+
+        Args:
+            img_metas (list(dict)): Information about data augmentation
+                By default this includes:
+                - "image_file: path to the image file
+                - "center": center of the bbox
+                - "scale": scale of the bbox
+                - "rotation": rotation of the bbox
+                - "bbox_score": score of bbox
+            output (np.ndarray[N, K, H, W]): model predicted heatmaps.
+            kwargs: dict contains 'img_size'.
+        """
+        return self.decode_keypoints(
+            img_metas=img_metas,
+            output_regression=output,
+            img_size=kwargs['img_size'])
+
     def decode_keypoints(self, img_metas, output_regression, img_size):
         """Decode keypoints from output regression.
 
