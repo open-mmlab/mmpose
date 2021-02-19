@@ -5,8 +5,8 @@ from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
 from .face import (Face300WDataset, FaceAFLWDataset, FaceCOFWDataset,
                    FaceWFLWDataset)
 from .fashion import DeepFashionDataset
-from .hand import (FreiHandDataset, InterHand2DDataset, OneHand10KDataset,
-                   PanopticDataset)
+from .hand import (FreiHandDataset, InterHand2DDataset, InterHand3DDataset,
+                   OneHand10KDataset, PanopticDataset)
 from .mesh import (MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
                    MoshDataset)
 from .top_down import (TopDownAicDataset, TopDownCocoDataset,
@@ -19,12 +19,12 @@ __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'BottomUpMhpDataset',
     'BottomUpAicDataset', 'TopDownMpiiDataset', 'TopDownMpiiTrbDataset',
     'OneHand10KDataset', 'PanopticDataset', 'FreiHandDataset',
-    'InterHand2DDataset', 'TopDownOCHumanDataset', 'TopDownAicDataset',
-    'TopDownCocoWholeBodyDataset', 'MeshH36MDataset', 'MeshMixDataset',
-    'MoshDataset', 'MeshAdversarialDataset', 'TopDownCrowdPoseDataset',
-    'BottomUpCrowdPoseDataset', 'TopDownFreiHandDataset',
-    'TopDownOneHand10KDataset', 'TopDownPanopticDataset',
-    'TopDownPoseTrack18Dataset', 'TopDownJhmdbDataset', 'TopDownMhpDataset',
-    'DeepFashionDataset', 'Face300WDataset', 'FaceAFLWDataset',
-    'FaceWFLWDataset', 'FaceCOFWDataset'
+    'InterHand2DDataset', 'InterHand3DDataset', 'TopDownOCHumanDataset',
+    'TopDownAicDataset', 'TopDownCocoWholeBodyDataset', 'MeshH36MDataset',
+    'MeshMixDataset', 'MoshDataset', 'MeshAdversarialDataset',
+    'TopDownCrowdPoseDataset', 'BottomUpCrowdPoseDataset',
+    'TopDownFreiHandDataset', 'TopDownOneHand10KDataset',
+    'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset',
+    'TopDownJhmdbDataset', 'TopDownMhpDataset', 'DeepFashionDataset',
+    'Face300WDataset', 'FaceAFLWDataset', 'FaceWFLWDataset', 'FaceCOFWDataset'
 ]
