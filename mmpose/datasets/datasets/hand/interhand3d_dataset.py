@@ -497,17 +497,18 @@ class InterHand3DDataset(HandBaseDataset):
                 gts_hand_type.append(item['hand_type'])
                 hand_type_masks.append(item['hand_type_valid'] > 0)
 
-        gts_rel_root = np.array(gts_rel_root)
-        preds_rel_root = np.array(preds_rel_root)
-        rel_root_masks = np.array(rel_root_masks)
-        gts_joint_coord_cam = np.array(gts_joint_coord_cam)
-        preds_joint_coord_cam = np.array(preds_joint_coord_cam)
-        single_masks = np.array(single_masks)
-        interacting_masks = np.array(interacting_masks)
-        all_masks = np.array(all_masks)
-        gts_hand_type = np.array(gts_hand_type)
-        preds_hand_type = np.array(preds_hand_type)
-        hand_type_masks = np.array(hand_type_masks)
+        gts_rel_root = np.array(gts_rel_root, dtype=np.float32)
+        preds_rel_root = np.array(preds_rel_root, dtype=np.float32)
+        rel_root_masks = np.array(rel_root_masks, dtype=bool)
+        gts_joint_coord_cam = np.array(gts_joint_coord_cam, dtype=np.float32)
+        preds_joint_coord_cam = np.array(
+            preds_joint_coord_cam, dtype=np.float32)
+        single_masks = np.array(single_masks, dtype=bool)
+        interacting_masks = np.array(interacting_masks, dtype=bool)
+        all_masks = np.array(all_masks, dtype=bool)
+        gts_hand_type = np.array(gts_hand_type, dtype=int)
+        preds_hand_type = np.array(preds_hand_type, dtype=int)
+        hand_type_masks = np.array(hand_type_masks, dtype=bool)
 
         if 'MRRPE' in metrics:
             info_str.append(('MRRPE',
