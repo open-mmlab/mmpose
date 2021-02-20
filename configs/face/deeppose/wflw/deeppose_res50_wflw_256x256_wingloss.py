@@ -3,12 +3,12 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='PCKh', key_indicator='PCKh')
+checkpoint_config = dict(interval=1)
+evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=2e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,30 +17,34 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[40, 55])
+total_epochs = 60
 log_config = dict(
-    interval=50, hooks=[
+    interval=5,
+    hooks=[
         dict(type='TextLoggerHook'),
+        # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=16,
-    dataset_joints=16,
-    dataset_channel=list(range(16)),
-    inference_channel=list(range(16)))
+    num_output_channels=98,
+    dataset_joints=98,
+    dataset_channel=[
+        list(range(98)),
+    ],
+    inference_channel=list(range(98)))
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet152',
-    backbone=dict(type='ResNet', depth=152, num_stages=4, out_indices=(3, )),
+    pretrained='torchvision://resnet50',
+    backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
         type='FcHead',
         in_channels=2048,
         num_joints=channel_cfg['num_output_channels'],
-        loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True)),
+        loss_keypoint=dict(type='WingLoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict())
 
@@ -50,16 +54,14 @@ data_cfg = dict(
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
-    inference_channel=channel_cfg['inference_channel'],
-    use_gt_bbox=True,
-    bbox_file=None,
-)
+    inference_channel=channel_cfg['inference_channel'])
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+        type='TopDownGetRandomScaleRotation', rot_factor=30,
+        scale_factor=0.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -92,26 +94,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/mpii'
+data_root = 'data/wflw'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_train.json',
+        type='FaceWFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_wflw_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
+        type='FaceWFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
+        type='FaceWFLWDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline),
+        pipeline=val_pipeline),
 )
