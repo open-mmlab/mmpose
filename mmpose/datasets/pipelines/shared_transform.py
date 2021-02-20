@@ -188,19 +188,6 @@ class Albumentation:
     """
 
     def __init__(self, transforms, keymap=None):
-        self.allowed_transforms = [
-            'Blur', 'CLAHE', 'ChannelDropout', 'ChannelShuffle', 'ColorJitter',
-            'Downscale', 'Emboss', 'Equalize', 'FDA', 'FancyPCA', 'FromFloat',
-            'GaussNoise', 'GaussianBlur', 'GlassBlur', 'HistogramMatching',
-            'HueSaturationValue', 'IAAAdditiveGaussianNoise', 'IAAEmboss',
-            'IAASharpen', 'IAASuperpixels', 'ISONoise', 'ImageCompression',
-            'InvertImg', 'MedianBlur', 'MotionBlur', 'MultiplicativeNoise',
-            'Normalize', 'Posterize', 'RGBShift', 'RandomBrightnessContrast',
-            'RandomFog', 'RandomGamma', 'RandomRain', 'RandomShadow',
-            'RandomSnow', 'RandomSunFlare', 'Sharpen', 'Solarize', 'ToFloat',
-            'ToGray', 'ToSepia'
-        ]
-
         if albumentations is None:
             raise RuntimeError('albumentations is not installed')
 
@@ -235,9 +222,9 @@ class Albumentation:
         if mmcv.is_str(obj_type):
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')
-            if obj_type not in self.allowed_transforms:
-                warnings.warn(
-                    '{obj_type} is not supported. Please use with caution.')
+            if not hasattr(albumentations.augmentations.transforms, obj_type):
+                warnings.warn('{obj_type} is not pixel-level transformations. '
+                              'Please use with caution.')
             obj_cls = getattr(albumentations, obj_type)
         else:
             raise TypeError(f'type must be a str, but got {type(obj_type)}')
