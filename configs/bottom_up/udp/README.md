@@ -14,6 +14,8 @@ year = {2020}
 }
 ```
 
+Note that, UDP also adopts the unbiased encoding/decoding algorithm of [DARK](/configs/top_down/darkpose/README.md).
+
 ## Results and models
 
 ### 2d Human Pose Estimation
