@@ -29,11 +29,12 @@ class SmoothL1Loss(nn.Module):
         Note:
             batch_size: N
             num_keypoints: K
+            dimension of keypoints: D (D=2 or D=3)
 
         Args:
-            output (torch.Tensor[N, K, 2]): Output regression.
-            target (torch.Tensor[N, K, 2]): Target regression.
-            target_weight (torch.Tensor[N, K, 2]):
+            output (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
         num_joints = output.size(1)
@@ -83,11 +84,12 @@ class WingLoss(nn.Module):
         Note:
             batch_size: N
             num_keypoints: K
+            dimension of keypoints: D (D=2 or D=3)
 
         Args:
-            output (torch.Tensor[N, K, 2]): Output regression.
-            target (torch.Tensor[N, K, 2]): Target regression.
-            target_weight (torch.Tensor[N, K, 2]):
+            output (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
         num_joints = output.size(1)
