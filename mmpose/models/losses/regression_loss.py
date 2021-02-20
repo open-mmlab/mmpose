@@ -94,8 +94,8 @@ class WingLoss(nn.Module):
         """
         num_joints = output.size(1)
         if self.use_target_weight:
-            loss = self.criterion(
-                output.mul(target_weight), target.mul(target_weight))
+            loss = self.criterion(output * target_weight,
+                                  target * target_weight)
         else:
             loss = self.criterion(output, target)
 
