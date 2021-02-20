@@ -37,14 +37,13 @@ class SmoothL1Loss(nn.Module):
             target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        num_joints = output.size(1)
         if self.use_target_weight:
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
             loss = self.criterion(output, target)
 
-        return loss / num_joints * self.loss_weight
+        return loss * self.loss_weight
 
 
 @LOSSES.register_module()
@@ -92,11 +91,10 @@ class WingLoss(nn.Module):
             target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        num_joints = output.size(1)
         if self.use_target_weight:
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
             loss = self.criterion(output, target)
 
-        return loss / num_joints * self.loss_weight
+        return loss * self.loss_weight
