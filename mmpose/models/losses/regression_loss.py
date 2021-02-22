@@ -74,6 +74,17 @@ class WingLoss(nn.Module):
         self.C = self.omega * (1.0 - math.log(1.0 + self.omega / self.epsilon))
 
     def criterion(self, pred, target):
+        """Criterion of wingloss.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            pred (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+        """
         delta = (target - pred).abs()
         losses = torch.where(
             delta < self.omega,
