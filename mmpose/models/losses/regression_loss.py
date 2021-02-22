@@ -69,12 +69,15 @@ class WingLoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
+        # constant that smoothly links the piecewise-defined linear
+        # and nonlinear parts
+        self.C = self.omega * (1.0 - math.log(1.0 + self.omega / self.epsilon))
+
     def criterion(self, pred, target):
         delta = (target - pred).abs()
-        c = self.omega * (1.0 - math.log(1.0 + self.omega / self.epsilon))
         losses = torch.where(
-            torch.lt(delta, self.omega),
-            self.omega * torch.log(1.0 + delta / self.epsilon), delta - c)
+            delta < self.omega,
+            self.omega * torch.log(1.0 + delta / self.epsilon), delta - self.C)
         return torch.mean(torch.sum(losses, dim=[1, 2]), dim=0)
 
     def forward(self, output, target, target_weight):
