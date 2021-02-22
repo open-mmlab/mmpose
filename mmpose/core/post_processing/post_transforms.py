@@ -131,9 +131,9 @@ def transform_preds(coords, center, scale, output_size, use_udp=False):
         coords (np.ndarray[K, ndims]):
 
             * If ndims=2, corrds are predicted keypoint location.
-            * If ndims=4, corrds are composed of (x, y, tags, scores)
-            * If ndims=5, corrds are composed of (x, y, tags,
-              flipped_tags, scores)
+            * If ndims=4, corrds are composed of (x, y, scores, tags)
+            * If ndims=5, corrds are composed of (x, y, scores, tags,
+              flipped_tags)
 
         center (np.ndarray[2, ]): Center of the bounding box (x, y).
         scale (np.ndarray[2, ]): Scale of the bounding box
@@ -150,7 +150,7 @@ def transform_preds(coords, center, scale, output_size, use_udp=False):
     assert len(scale) == 2
     assert len(output_size) == 2
     if use_udp:
-        # The input scale is normalized by deviding a factor of 200.
+        # The input scale is normalized by dividing a factor of 200.
         # Here is a recover.
         scale = scale * 200.0
         scale_x = scale[0] / (output_size[0] - 1.0)

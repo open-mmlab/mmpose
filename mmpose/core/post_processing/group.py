@@ -31,8 +31,9 @@ def _match_by_tag(inp, params):
 
     Note:
         number of keypoints: K
-        max number of a image: M
-        L: 2 if use flip test else 1
+        max number of people in an image: M (M=30 by default)
+        dim of tags: L
+            If use flip testing, L=2; else L=1.
 
     Args:
         inp(tuple):
@@ -195,7 +196,8 @@ class HeatmapParser:
             heatmap height: H
             heatmap width: W
             max number of people: M
-            If use flip testing, L=2; else L=1.
+            dim of tags: L
+                If use flip testing, L=2; else L=1.
 
         Args:
             heatmaps (torch.Tensor[NxKxHxW])
@@ -205,12 +207,12 @@ class HeatmapParser:
             dict: A dict containing top_k values.
 
             - tag_k (np.ndarray[NxKxMxL]):
-              tag corresponding to the top k values of
-              feature map per keypoint.
+                tag corresponding to the top k values of
+                feature map per keypoint.
             - loc_k (np.ndarray[NxKxMx2]):
-              top k location of feature map per keypoint.
+                top k location of feature map per keypoint.
             - val_k (np.ndarray[NxKxM]):
-              top k value of feature map per keypoint.
+                top k value of feature map per keypoint.
         """
         heatmaps = self.nms(heatmaps)
         N, K, H, W = heatmaps.size()
@@ -283,12 +285,14 @@ class HeatmapParser:
             number of keypoints: K
             heatmap height: H
             heatmap width: W
+            dim of tags: L
+                If use flip testing, L=2; else L=1.
 
         Args:
-            heatmap: np.ndarray of size (K, H, W).
-            tag: np.ndarray of size (K, H, W) if not flip.
-            keypoints: np.ndarray of size (K, 4) if not flip,
-                        last dim is (x, y, heatmap score, tag score).
+            heatmap: np.ndarray(K, H, W).
+            tag: np.ndarray(K, H, W) |  np.ndarray(K, H, W, L)
+            keypoints: np.ndarray of size (K, 3 + L)
+                        last dim is (x, y, score, tag).
             use_udp: bool-unbiased data processing
 
         Returns:
@@ -360,7 +364,8 @@ class HeatmapParser:
             number of keypoints: K
             heatmap height: H
             heatmap width: W
-            L: 2 if use flip test else 1
+            dim of tags: L
+                If use flip testing, L=2; else L=1.
 
         Args:
             heatmaps (torch.Tensor[NxKxHxW]): model output heatmaps.
