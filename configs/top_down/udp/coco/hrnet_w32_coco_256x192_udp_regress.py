@@ -27,7 +27,6 @@ log_config = dict(
     ])
 
 target_type = 'CombinedTarget'
-# target_type = 'GaussianHeatMap'
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
