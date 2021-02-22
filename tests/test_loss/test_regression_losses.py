@@ -63,6 +63,3 @@ def test_wing_loss():
     assert torch.gt(
         loss(fake_pred, fake_label, torch.ones_like(fake_label)),
         torch.tensor(.5))
-
-
-test_wing_loss()
