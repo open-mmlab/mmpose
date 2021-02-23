@@ -28,6 +28,7 @@ Welcome to MMPose's documentation!
    modelzoo.md
    top_down_models.md
    bottom_up_models.md
+   wholebody_models.md
    hand_models.md
    face_models.md
    fashion_models.md
