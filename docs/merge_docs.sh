@@ -36,7 +36,7 @@ sed -i "s/md###t/html#t/g" fashion_models.md
 
 sed -i '1i\# Bottom Up Models' bottom_up_models.md
 sed -i '1i\# Top Down Models' top_down_models.md
-sed -i '1i\# Top Down Models' wholebody_models.md
+sed -i '1i\# Whole-Body Models' wholebody_models.md
 sed -i '1i\# Demo' demo.md
 sed -i '1i\# Hand Models' hand_models.md
 sed -i '1i\# Face Models' face_models.md
