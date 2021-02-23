@@ -335,28 +335,18 @@ class PhotometricDistortion:
                 alpha=random.uniform(self.contrast_lower, self.contrast_upper))
         return img
 
-    def saturation_hue(self, img):
-        # Apply saturation and/or hue distortion
-        dice = random.randint(4)
-        if dice == 0:
-            return img
-        else:
-            img = mmcv.bgr2hsv(img)
+    def saturation(self, img):
+        # Apply saturation distortion to hsv-formatted img
+        img[:, :, 1] = self.convert(
+            img[:, :, 1],
+            alpha=random.uniform(self.saturation_lower, self.saturation_upper))
+        return img
 
-            if dice == 1 or dice == 3:
-                # Random saturation distortion
-                img[:, :, 1] = self.convert(
-                    img[:, :, 1],
-                    alpha=random.uniform(self.saturation_lower,
-                                         self.saturation_upper))
-
-            if dice == 2 or dice == 3:
-                # Random hue distortion
-                img[:, :, 0] = (img[:, :, 0].astype(int) + random.randint(
-                    -self.hue_delta, self.hue_delta)) % 180
-
-            img = mmcv.hsv2bgr(img)
-            return img
+    def hue(self, img):
+        # Apply hue distortion to hsv-formatted img
+        img[:, :, 0] = (img[:, :, 0].astype(int) +
+                        random.randint(-self.hue_delta, self.hue_delta)) % 180
+        return img
 
     def __call__(self, results):
         """Call function to perform photometric distortion on images.
@@ -378,8 +368,15 @@ class PhotometricDistortion:
         if mode == 1:
             img = self.contrast(img)
 
-        # random saturation/hue distortion
-        img = self.saturation_hue(img)
+        hsv_mode = random.randint(4)
+        if hsv_mode:
+            # random saturation/hue distortion
+            img = mmcv.bgr2hsv(img)
+            if hsv_mode == 1 or hsv_mode == 3:
+                img = self.saturation(img)
+            if hsv_mode == 2 or hsv_mode == 3:
+                img = self.hue(img)
+            img = mmcv.hsv2bgr(img)
 
         # random contrast
         if mode == 0:
