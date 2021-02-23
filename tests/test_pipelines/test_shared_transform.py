@@ -38,7 +38,7 @@ def test_photometric_distortion_transform():
     load = dict(type='LoadImageFromFile')
     load = build_from_cfg(load, PIPELINES)
 
-    photo_transform = dict(type='PhotoMetricDistortion')
+    photo_transform = dict(type='PhotometricDistortion')
     photo_transform = build_from_cfg(photo_transform, PIPELINES)
 
     # Execute transforms

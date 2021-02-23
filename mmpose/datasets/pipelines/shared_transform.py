@@ -281,7 +281,7 @@ class Albumentation(object):
 
 
 @PIPELINES.register_module()
-class PhotoMetricDistortion(object):
+class PhotometricDistortion():
     """Apply photometric distortion to image sequentially, every transformation
     is applied with a probability of 0.5. The position of random contrast is in
     second or second to last.
@@ -313,7 +313,7 @@ class PhotoMetricDistortion(object):
         self.hue_delta = hue_delta
 
     def convert(self, img, alpha=1, beta=0):
-        """Multiple with alpha and add beat with clip."""
+        """Multiple with alpha and add beta with clip."""
         img = img.astype(np.float32) * alpha + beta
         img = np.clip(img, 0, 255)
         return img.astype(np.uint8)
@@ -335,26 +335,28 @@ class PhotoMetricDistortion(object):
                 alpha=random.uniform(self.contrast_lower, self.contrast_upper))
         return img
 
-    def saturation(self, img):
-        """Saturation distortion."""
-        if random.randint(2):
+    def saturation_hue(self, img):
+        # Apply saturation and/or hue distortion
+        dice = random.randint(4)
+        if dice == 0:
+            return img
+        else:
             img = mmcv.bgr2hsv(img)
-            img[:, :, 1] = self.convert(
-                img[:, :, 1],
-                alpha=random.uniform(self.saturation_lower,
-                                     self.saturation_upper))
-            img = mmcv.hsv2bgr(img)
-        return img
 
-    def hue(self, img):
-        """Hue distortion."""
-        if random.randint(2):
-            img = mmcv.bgr2hsv(img)
-            img[:, :,
-                0] = (img[:, :, 0].astype(int) +
-                      random.randint(-self.hue_delta, self.hue_delta)) % 180
+            if dice == 1 or dice == 3:
+                # Random saturation distortion
+                img[:, :, 1] = self.convert(
+                    img[:, :, 1],
+                    alpha=random.uniform(self.saturation_lower,
+                                         self.saturation_upper))
+
+            if dice == 2 or dice == 3:
+                # Random hue distortion
+                img[:, :, 0] = (img[:, :, 0].astype(int) + random.randint(
+                    -self.hue_delta, self.hue_delta)) % 180
+
             img = mmcv.hsv2bgr(img)
-        return img
+            return img
 
     def __call__(self, results):
         """Call function to perform photometric distortion on images.
@@ -376,11 +378,8 @@ class PhotoMetricDistortion(object):
         if mode == 1:
             img = self.contrast(img)
 
-        # random saturation
-        img = self.saturation(img)
-
-        # random hue
-        img = self.hue(img)
+        # random saturation/hue distortion
+        img = self.saturation_hue(img)
 
         # random contrast
         if mode == 0:
