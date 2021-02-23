@@ -154,7 +154,7 @@ class Collect:
 
 
 @PIPELINES.register_module()
-class Albumentation(object):
+class Albumentation:
     """Albumentation augmentation (pixel-level transforms only). Adds custom
     pixel-level transformations from Albumentations library. Please visit
     `https://albumentations.readthedocs.io` to get more information.
@@ -281,7 +281,7 @@ class Albumentation(object):
 
 
 @PIPELINES.register_module()
-class PhotometricDistortion():
+class PhotometricDistortion:
     """Apply photometric distortion to image sequentially, every transformation
     is applied with a probability of 0.5. The position of random contrast is in
     second or second to last.
