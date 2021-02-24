@@ -348,6 +348,12 @@ class PhotometricDistortion:
                         random.randint(-self.hue_delta, self.hue_delta)) % 180
         return img
 
+    def swap_channels(self, img):
+        # Apply channel swap
+        if random.randint(2):
+            img = img[..., random.permutation(3)]
+        return img
+
     def __call__(self, results):
         """Call function to perform photometric distortion on images.
 
@@ -381,6 +387,9 @@ class PhotometricDistortion:
         # random contrast
         if mode == 0:
             img = self.contrast(img)
+
+        # randomly swap channels
+        self.swap_channels(img)
 
         results['img'] = img
         return results
