@@ -2,6 +2,7 @@
 
 sed -i '$a\\n' ../configs/bottom_up/*/*.md
 sed -i '$a\\n' ../configs/top_down/*/*.md
+sed -i '$a\\n' ../configs/wholebody/*/*.md
 sed -i '$a\\n' ../demo/*_demo.md
 sed -i '$a\\n' ../configs/hand/*/*.md
 sed -i '$a\\n' ../configs/face/*/*.md
@@ -25,6 +26,7 @@ sed -i "s/#/#&/" hand_models.md
 sed -i "s/#/#&/" face_models.md
 sed -i "s/#/#&/" mesh_models.md
 sed -i "s/#/#&/" fashion_models.md
+
 sed -i "s/md###t/html#t/g" bottom_up_models.md
 sed -i "s/md###t/html#t/g" top_down_models.md
 sed -i "s/md###t/html#t/g" wholebody_models.md
