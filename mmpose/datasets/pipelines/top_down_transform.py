@@ -564,7 +564,7 @@ class TopDownGenerateTarget:
                 factors = self.sigma
                 channel_factor = 1
             if isinstance(factors, list):
-                num_factors = len(self.kernel)
+                num_factors = len(factors)
                 cfg = results['ann_info']
                 num_joints = cfg['num_joints']
                 W, H = cfg['heatmap_size']
