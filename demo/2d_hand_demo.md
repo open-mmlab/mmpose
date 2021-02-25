@@ -1,5 +1,7 @@
 ## 2D Hand Keypoint Demo
 
+<img src="https://user-images.githubusercontent.com/11788150/109098558-8c54db00-775c-11eb-8966-85df96b23dc5.gif" width="600px" alt><br>
+
 ### 2D Hand Image Demo
 
 #### Using gt hand bounding boxes as input

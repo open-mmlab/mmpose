@@ -1,5 +1,7 @@
 ## 2D Human Whole-Body Pose Demo
 
+<img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
+
 ### 2D Human Whole-Body Pose Top-Down Image Demo
 
 #### Using gt human bounding boxes as input

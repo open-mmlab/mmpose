@@ -1,5 +1,7 @@
 ## 2D Pose Tracking Demo
 
+<img src="https://user-images.githubusercontent.com/11788150/109099201-a93dde00-775d-11eb-9624-f9676fc0e478.gif" width="600px" alt><br>
+
 ### 2D Top-Down Video Human Pose Tracking Demo
 
 We provide a video demo to illustrate the pose tracking results.

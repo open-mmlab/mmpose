@@ -1,5 +1,7 @@
 ## 2D Face Keypoint Demo
 
+<img src="https://user-images.githubusercontent.com/11788150/109144943-ccd44900-779c-11eb-9e9d-8682e7629654.gif" width="600px" alt><br>
+
 ### 2D Face Image Demo
 
 #### Using gt face bounding boxes as input
