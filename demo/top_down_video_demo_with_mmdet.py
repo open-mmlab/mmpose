@@ -46,7 +46,8 @@ def main():
     parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
     parser.add_argument('pose_config', help='Config file for pose')
     parser.add_argument('pose_checkpoint', help='Checkpoint file for pose')
-    parser.add_argument('--video-path', type=str, help='Video path')
+    parser.add_argument(
+        '--video-path', type=str, default='', help='Video path')
     parser.add_argument(
         '--show',
         action='store_true',
@@ -83,7 +84,10 @@ def main():
 
     dataset = pose_model.cfg.data['test']['type']
 
-    cap = cv2.VideoCapture(args.video_path)
+    if args.video_path != '':
+        cap = cv2.VideoCapture(args.video_path)
+    else:
+        cap = cv2.VideoCapture(0)
 
     if args.out_video_root == '':
         save_out_video = False
