@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import mmcv
 import numpy as np
 import torch
@@ -117,18 +118,23 @@ class LoadImage:
         """Call function to load images into results.
 
         Args:
-            results (dict): A result dict contains the file name
-                of the image to be read.
+            results (dict): A result dict contains the img_or_path.
 
         Returns:
             dict: ``results`` will be returned containing loaded image.
         """
         if isinstance(results['img_or_path'], str):
             results['image_file'] = results['img_or_path']
-        else:
+            img = mmcv.imread(results['img_or_path'], self.color_type,
+                              self.channel_order)
+        elif isinstance(results['img_or_path'], np.ndarray):
             results['image_file'] = ''
-        img = mmcv.imread(results['img_or_path'], self.color_type,
-                          self.channel_order)
+            if self.color_type == 'color' and self.channel_order == 'rgb':
+                img = cv2.cvtColor(results['img_or_path'], cv2.COLOR_BGR2RGB)
+        else:
+            raise TypeError('"img_or_path" must be a numpy array or a str or '
+                            'a pathlib.Path object')
+
         results['img'] = img
         return results
 
@@ -144,7 +150,7 @@ def _inference_single_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str | np.ndarray):Image_name
+        img_or_path (str | np.ndarray): Image filename or loaded image.
         bbox (list | np.ndarray): Bounding boxes (with scores),
             shaped (4, ) or (5, ). (left, top, width, height, [score])
         dataset (str): Dataset name.
@@ -160,7 +166,9 @@ def _inference_single_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     assert len(bbox) in [4, 5]
@@ -294,7 +302,7 @@ def inference_top_down_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str| np.ndarray): Image_name
+        img_or_path (str| np.ndarray): Image filename or loaded image.
         person_results (List(dict)): the item in the dict may contain
             'bbox' and/or 'track_id'.
             'bbox' (4, ) or (5, ): The person bounding box, which contains
@@ -374,7 +382,7 @@ def inference_bottom_up_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        image_name (str| np.ndarray): Image_name.
+        img_or_path (str| np.ndarray): Image filename or loaded image.
         return_heatmap (bool) : Flag to return heatmap, default: False
         outputs (list(str) | tuple(str)) : Names of layers whose outputs
             need to be returned, default: None
@@ -395,7 +403,9 @@ def inference_bottom_up_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     # prepare data
