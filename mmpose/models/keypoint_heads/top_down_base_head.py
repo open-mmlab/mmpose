@@ -37,22 +37,6 @@ class TopDownBaseHead(nn.Module):
         """Inference function."""
 
     def decode(self, img_metas, output, **kwargs):
-        """Decode the output.
-
-        Args:
-            img_metas (list(dict)): Information about data augmentation
-                By default this includes:
-                - "image_file: path to the image file
-                - "center": center of the bbox
-                - "scale": scale of the bbox
-                - "rotation": rotation of the bbox
-                - "bbox_score": score of bbox
-            output (np.ndarray[N, K, H, W]): model predicted heatmaps.
-        """
-        return self.decode_keypoints(
-            img_metas=img_metas, output_heatmap=output)
-
-    def decode_keypoints(self, img_metas, output_heatmap, **kwargs):
         """Decode keypoints from heatmaps.
 
         Args:
@@ -63,7 +47,7 @@ class TopDownBaseHead(nn.Module):
                 - "scale": scale of the bbox
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
-            output_heatmap (np.ndarray[N, K, H, W]): model predicted heatmaps.
+            output (np.ndarray[N, K, H, W]): model predicted heatmaps.
         """
         batch_size = len(img_metas)
 
@@ -87,7 +71,7 @@ class TopDownBaseHead(nn.Module):
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
         preds, maxvals = keypoints_from_heatmaps(
-            output_heatmap,
+            output,
             c,
             s,
             unbiased=self.test_cfg.get('unbiased_decoding', False),

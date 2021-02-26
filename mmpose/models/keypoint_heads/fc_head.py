@@ -116,7 +116,7 @@ class FcHead(nn.Module):
         return output_regression
 
     def decode(self, img_metas, output, **kwargs):
-        """Decode the output.
+        """Decode the keypoints from output regression.
 
         Args:
             img_metas (list(dict)): Information about data augmentation
@@ -126,28 +126,9 @@ class FcHead(nn.Module):
                 - "scale": scale of the bbox
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
-            output (np.ndarray[N, K, H, W]): model predicted heatmaps.
+            output (np.ndarray[N, K, 2]): predicted regression vector.
             kwargs: dict contains 'img_size'.
-        """
-        return self.decode_keypoints(
-            img_metas=img_metas,
-            output_regression=output,
-            img_size=kwargs['img_size'])
-
-    def decode_keypoints(self, img_metas, output_regression, img_size):
-        """Decode keypoints from output regression.
-
-        Args:
-            img_metas (list(dict)): Information about data augmentation
-                By default this includes:
-                - "image_file: path to the image file
-                - "center": center of the bbox
-                - "scale": scale of the bbox
-                - "rotation": rotation of the bbox
-                - "bbox_score": score of bbox
-            output_regression (np.ndarray[N, K, 2]): model
-                predicted regression vector.
-            img_size (tuple(img_width, img_height)): model input image size.
+                img_size (tuple(img_width, img_height)): input image size.
         """
         batch_size = len(img_metas)
 
@@ -170,8 +151,8 @@ class FcHead(nn.Module):
             if bbox_ids is not None:
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
-        preds, maxvals = keypoints_from_regression(output_regression, c, s,
-                                                   img_size)
+        preds, maxvals = keypoints_from_regression(output, c, s,
+                                                   kwargs['img_size'])
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
