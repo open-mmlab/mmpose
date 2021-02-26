@@ -1,5 +1,15 @@
 ## Installation
 
+<!-- TOC -->
+
+- [Requirements](#requirements)
+- [Install MMPose](#install-mmpose)
+- [A from-scratch setup script](#a-from-scratch-setup-script)
+- [Another option: Docker Image](#another-option-docker-image)
+- [Developing with multiple MMPose versions](#developing-with-multiple-mmpose-versions)
+
+<!-- TOC -->
+
 ### Requirements
 
 - Linux (Windows is not officially supported)
@@ -18,7 +28,7 @@ Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run pose demos)
 - [mmtrack](https://github.com/open-mmlab/mmtracking) (to run pose tracking demos)
 
-### Install mmpose
+### Install MMPose
 
 a. Create a conda virtual environment and activate it.
 
@@ -133,7 +143,7 @@ python setup.py develop
 
 ```
 
-### Docker Image
+### Another option: Docker Image
 
 We provide a [Dockerfile](/docker/Dockerfile) to build an image.
 
@@ -150,4 +160,14 @@ Run the following cmd:
 docker run --gpus all\
  --shm-size=8g \
  -it -v {DATA_DIR}:/mmpose/data mmpose
+```
+
+### Developing with multiple MMPose versions
+
+The train and test scripts already modify the `PYTHONPATH` to ensure the script use the MMPose in the current directory.
+
+To use the default MMPose installed in the environment rather than that you are working with, you can remove the following line in those scripts.
+
+```shell
+PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
 ```
