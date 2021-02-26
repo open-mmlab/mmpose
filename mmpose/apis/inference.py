@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import mmcv
 import numpy as np
 import torch
@@ -125,10 +126,13 @@ class LoadImage:
         """
         if isinstance(results['img_or_path'], str):
             results['image_file'] = results['img_or_path']
+            img = mmcv.imread(results['img_or_path'], self.color_type,
+                              self.channel_order)
         else:
             results['image_file'] = ''
-        img = mmcv.imread(results['img_or_path'], self.color_type,
-                          self.channel_order)
+            if self.channel_order == 'rgb':
+                img = cv2.cvtColor(results['img_or_path'], cv2.COLOR_BGR2RGB)
+
         results['img'] = img
         return results
 
@@ -160,7 +164,9 @@ def _inference_single_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     assert len(bbox) in [4, 5]
@@ -395,7 +401,9 @@ def inference_bottom_up_pose_model(model,
     device = next(model.parameters()).device
 
     # build the data pipeline
-    test_pipeline = [LoadImage()] + cfg.test_pipeline[1:]
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
     # prepare data
