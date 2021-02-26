@@ -66,3 +66,4 @@ For top-down 2D human pose models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
 2. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L52).
+1. use faster human detector or human tracker, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html) or [MMTracking](https://github.com/open-mmlab/mmtracking/blob/master/docs/model_zoo.md).

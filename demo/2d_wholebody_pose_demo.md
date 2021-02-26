@@ -103,3 +103,4 @@ For top-down models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [pose_hrnet_w48_dark+](/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L80).
 1. set `post_process='default'` in [pose_hrnet_w48_dark+](/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L81).
+1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
