@@ -100,6 +100,7 @@ If the contents here do not cover your issue, please create an issue using the [
 
   1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
   1. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+  1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
   For bottom-up models, try to edit the config file. For example,
 
