@@ -28,11 +28,13 @@ def _calc_distances(preds, targets, mask, normalize):
           If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
+    # set mask=0 when normalize==0
+    mask[np.where((normalize == 0).sum(1))[0], :] = False
     distances = np.full((N, K), -1, dtype=np.float32)
     # handle invalid values
     normalize[np.where(normalize <= 0)] = 1e6
     distances[mask] = np.linalg.norm(
-        ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
+        ((preds - targets) / (normalize[:, None, :] + 1e-7))[mask], axis=-1)
     return distances.T
 
 
