@@ -74,6 +74,7 @@ Please replace ``{cu_version}`` and ``{torch_version}`` in the url to your desir
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu110/torch1.7.0/index.html
 ```
 
+If it compiles during installation, then please check that the cuda version and pytorch version **exactly"" matches the version in the mmcv-full installation command. For example, pytorch 1.7.0 and 1.7.1 are treated differently.
 See [here](https://github.com/open-mmlab/mmcv#installation) for different versions of MMCV compatible to different PyTorch and CUDA versions.
 
 Optionally you can choose to compile mmcv from source by the following command
@@ -132,7 +133,7 @@ conda activate open-mmlab
 # install latest pytorch prebuilt with the default prebuilt CUDA version (usually the latest)
 conda install -c pytorch pytorch torchvision -y
 
-# install the latest mmcv or mmcv-full, here we take mmcv as example
+# install the latest mmcv-full or mmcv, here we take mmcv-full as example
 pip install mmcv-full
 
 # install mmpose
