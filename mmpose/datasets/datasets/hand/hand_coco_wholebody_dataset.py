@@ -85,37 +85,38 @@ class HandCocoWholeBodyDataset(HandBaseDataset):
 
             for obj in objs:
                 for type in ['left', 'right']:
-                    if max(obj[f'{type}hand_kpts']) > 0:
-                        continue
-                    joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-                    joints_3d_visible = np.zeros((num_joints, 3),
-                                                 dtype=np.float32)
+                    if obj[f'{type}hand_valid'] and max(
+                            obj[f'{type}hand_kpts']) > 0:
+                        joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+                        joints_3d_visible = np.zeros((num_joints, 3),
+                                                     dtype=np.float32)
 
-                    keypoints = np.array(obj[f'{type}hand_kpts']).reshape(
-                        -1, 3)
-                    joints_3d[:, :2] = keypoints[:, :2]
-                    joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
+                        keypoints = np.array(obj[f'{type}hand_kpts']).reshape(
+                            -1, 3)
+                        joints_3d[:, :2] = keypoints[:, :2]
+                        joints_3d_visible[:, :2] = np.minimum(
+                            1, keypoints[:, 2:3])
 
-                    # use 1.25 padded bbox as input
-                    center, scale = self._xywh2cs(*obj[f'{type}hand_box'][:4],
-                                                  1.25)
+                        # use 1.25 padded bbox as input
+                        center, scale = self._xywh2cs(
+                            *obj[f'{type}hand_box'][:4], 1.25)
 
-                    image_file = os.path.join(self.img_prefix,
-                                              self.id2name[img_id])
+                        image_file = os.path.join(self.img_prefix,
+                                                  self.id2name[img_id])
 
-                    gt_db.append({
-                        'image_file': image_file,
-                        'center': center,
-                        'scale': scale,
-                        'rotation': 0,
-                        'joints_3d': joints_3d,
-                        'joints_3d_visible': joints_3d_visible,
-                        'dataset': self.dataset_name,
-                        'bbox': obj[f'{type}hand_box'],
-                        'bbox_score': 1,
-                        'bbox_id': bbox_id
-                    })
-                    bbox_id = bbox_id + 1
+                        gt_db.append({
+                            'image_file': image_file,
+                            'center': center,
+                            'scale': scale,
+                            'rotation': 0,
+                            'joints_3d': joints_3d,
+                            'joints_3d_visible': joints_3d_visible,
+                            'dataset': self.dataset_name,
+                            'bbox': obj[f'{type}hand_box'],
+                            'bbox_score': 1,
+                            'bbox_id': bbox_id
+                        })
+                        bbox_id = bbox_id + 1
         gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db
