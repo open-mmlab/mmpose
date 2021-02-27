@@ -6,9 +6,8 @@ import numpy as np
 from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
-from ...builder import DATASETS
+from mmpose.datasets.builder import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
-
 
 @DATASETS.register_module()
 class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
