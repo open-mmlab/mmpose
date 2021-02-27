@@ -1,5 +1,15 @@
 ## Installation
 
+<!-- TOC -->
+
+- [Requirements](#requirements)
+- [Install MMPose](#install-mmpose)
+- [A from-scratch setup script](#a-from-scratch-setup-script)
+- [Another option: Docker Image](#another-option-docker-image)
+- [Developing with multiple MMPose versions](#developing-with-multiple-mmpose-versions)
+
+<!-- TOC -->
+
 ### Requirements
 
 - Linux (Windows is not officially supported)
@@ -18,7 +28,7 @@ Optional:
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run pose demos)
 - [mmtrack](https://github.com/open-mmlab/mmtracking) (to run pose tracking demos)
 
-### Install mmpose
+### Install MMPose
 
 a. Create a conda virtual environment and activate it.
 
@@ -52,14 +62,48 @@ conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
 
 If you build PyTorch from source instead of installing the prebuilt package, you can use more CUDA versions such as 9.0.
 
-c. Clone the mmpose repository
+c. Install mmcv, we recommend you to install the pre-build mmcv as below.
+
+```shell
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+```
+
+Please replace ``{cu_version}`` and ``{torch_version}`` in the url to your desired one. For example, to install the latest ``mmcv-full`` with ``CUDA 11`` and ``PyTorch 1.7.0``, use the following command:
+
+```shell
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu110/torch1.7.0/index.html
+```
+
+If it compiles during installation, then please check that the cuda version and pytorch version **exactly"" matches the version in the mmcv-full installation command. For example, pytorch 1.7.0 and 1.7.1 are treated differently.
+See [here](https://github.com/open-mmlab/mmcv#installation) for different versions of MMCV compatible to different PyTorch and CUDA versions.
+
+Optionally you can choose to compile mmcv from source by the following command
+
+```shell
+git clone https://github.com/open-mmlab/mmcv.git
+cd mmcv
+MMCV_WITH_OPS=1 pip install -e .  # package mmcv-full, which contains cuda ops, will be installed after this step
+# OR pip install -e .  # package mmcv, which contains no cuda ops, will be installed after this step
+cd ..
+```
+
+Or directly run
+
+```shell
+pip install mmcv-full
+# alternative: pip install mmcv
+```
+
+**Important:** You need to run `pip uninstall mmcv` first if you have mmcv installed. If mmcv and mmcv-full are both installed, there will be `ModuleNotFoundError`.
+
+d. Clone the mmpose repository
 
 ```shell
 git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 ```
 
-d. Install build requirements and then install mmpose
+e. Install build requirements and then install mmpose
 
 ```shell
 pip install -r requirements.txt
@@ -86,7 +130,13 @@ Here is a full script for setting up mmpose with conda and link the dataset path
 conda create -n open-mmlab python=3.7 -y
 conda activate open-mmlab
 
+# install latest pytorch prebuilt with the default prebuilt CUDA version (usually the latest)
 conda install -c pytorch pytorch torchvision -y
+
+# install the latest mmcv-full or mmcv, here we take mmcv-full as example
+pip install mmcv-full
+
+# install mmpose
 git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
@@ -94,7 +144,7 @@ python setup.py develop
 
 ```
 
-### Docker Image
+### Another option: Docker Image
 
 We provide a [Dockerfile](/docker/Dockerfile) to build an image.
 
@@ -111,4 +161,14 @@ Run the following cmd:
 docker run --gpus all\
  --shm-size=8g \
  -it -v {DATA_DIR}:/mmpose/data mmpose
+```
+
+### Developing with multiple MMPose versions
+
+The train and test scripts already modify the `PYTHONPATH` to ensure the script use the MMPose in the current directory.
+
+To use the default MMPose installed in the environment rather than that you are working with, you can remove the following line in those scripts.
+
+```shell
+PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
 ```
