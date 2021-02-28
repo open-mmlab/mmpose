@@ -46,7 +46,7 @@ model = dict(
         num_joints=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='WingLoss', use_target_weight=True)),
     train_cfg=dict(),
-    test_cfg=dict())
+    test_cfg=dict(flip_test=True))
 
 data_cfg = dict(
     image_size=[256, 256],
