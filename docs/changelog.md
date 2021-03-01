@@ -13,7 +13,6 @@
 - Support Albumentation pipeline ([\#469](https://github.com/open-mmlab/mmpose/pull/469))
 - Support PhotometricDistortion pipeline ([\#485](https://github.com/open-mmlab/mmpose/pull/485))
 - Set seed option for training ([\#493](https://github.com/open-mmlab/mmpose/pull/493))
-- Add `decode` function for heads ([\#481](https://github.com/open-mmlab/mmpose/pull/481))
 
 **Bug Fixes**
 
@@ -24,6 +23,7 @@
 **Breaking Changes**
 
 - Refactor configs for wholebody pose estimation ([\#487](https://github.com/open-mmlab/mmpose/pull/487), [\#491](https://github.com/open-mmlab/mmpose/pull/491))
+- Rename `decode` function for heads ([\#481](https://github.com/open-mmlab/mmpose/pull/481))
 
 **Improvements**
 
