@@ -1,5 +1,43 @@
 # Changelog
 
+## v0.12.0 (28/02/2020)
+
+**Highlights**
+
+1. Support DeepPose algorithm.
+
+**New Features**
+
+- Support DeepPose algorithm ([\#446](https://github.com/open-mmlab/mmpose/pull/446), [\#461](https://github.com/open-mmlab/mmpose/pull/461))
+- Support interhand3d dataset ([\#468](https://github.com/open-mmlab/mmpose/pull/468))
+- Support Albumentation pipeline ([\#469](https://github.com/open-mmlab/mmpose/pull/469))
+- Support PhotometricDistortion pipeline ([\#485](https://github.com/open-mmlab/mmpose/pull/485))
+- Set seed option for training ([\#493](https://github.com/open-mmlab/mmpose/pull/493))
+- Add demos for face keypoint detection ([\#502](https://github.com/open-mmlab/mmpose/pull/502))
+
+**Bug Fixes**
+
+- Change channel order according to configs ([\#504](https://github.com/open-mmlab/mmpose/pull/504))
+- Fix `num_factors` in UDP encoding ([\#495](https://github.com/open-mmlab/mmpose/pull/495))
+- Fix configs ([\#456](https://github.com/open-mmlab/mmpose/pull/456))
+
+**Breaking Changes**
+
+- Refactor configs for wholebody pose estimation ([\#487](https://github.com/open-mmlab/mmpose/pull/487), [\#491](https://github.com/open-mmlab/mmpose/pull/491))
+- Rename `decode` function for heads ([\#481](https://github.com/open-mmlab/mmpose/pull/481))
+
+**Improvements**
+
+- Update config & checkpoints ([\#453](https://github.com/open-mmlab/mmpose/pull/453),[\#484](https://github.com/open-mmlab/mmpose/pull/484),[\#487](https://github.com/open-mmlab/mmpose/pull/487))
+- Add README in Chinese ([\#462](https://github.com/open-mmlab/mmpose/pull/462))
+- Add tutorials about configs  ([\#465](https://github.com/open-mmlab/mmpose/pull/465))
+- Add demo videos for various tasks ([\#499](https://github.com/open-mmlab/mmpose/pull/499), [\#503](https://github.com/open-mmlab/mmpose/pull/503))
+- Update docs about MMPose installation ([\#467](https://github.com/open-mmlab/mmpose/pull/467), [\#505](https://github.com/open-mmlab/mmpose/pull/505))
+- Rename `stat.py` to `stats.py` ([\#483](https://github.com/open-mmlab/mmpose/pull/483))
+- Fix typos ([\#463](https://github.com/open-mmlab/mmpose/pull/463), [\#464](https://github.com/open-mmlab/mmpose/pull/464), [\#477](https://github.com/open-mmlab/mmpose/pull/477), [\#481](https://github.com/open-mmlab/mmpose/pull/481))
+- latex to bibtex ([\#471](https://github.com/open-mmlab/mmpose/pull/471))
+- Update FAQ ([\#466](https://github.com/open-mmlab/mmpose/pull/466))
+
 ## v0.11.0 (31/01/2020)
 
 **Highlights**
