@@ -27,7 +27,7 @@ def parse_args():
         'the inference speed')
     parser.add_argument(
         '--eval',
-        default='mAP',
+        default=None,
         nargs='+',
         help='evaluation metric, which depends on the dataset,'
         ' e.g., "mAP" for MSCOCO')
@@ -126,7 +126,7 @@ def main():
                                  args.gpu_collect)
 
     rank, _ = get_dist_info()
-    eval_config = cfg.get('eval_config', {})
+    eval_config = cfg.get('evaluation', {})
     eval_config = merge_configs(eval_config, dict(metric=args.eval))
 
     if rank == 0:
