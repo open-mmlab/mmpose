@@ -3,7 +3,7 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
@@ -17,8 +17,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[40, 55])
-total_epochs = 60
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
     interval=5,
     hooks=[
