@@ -31,5 +31,5 @@
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_scnet_50](/configs/top_down/scnet/mpii/scnet50_mpii_256x256.py) | 256x256 | 0.888 | 0.333 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256-a54b6af5_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256_20200812.log.json) |
-| [pose_scnet_101](/configs/top_down/scnet/mpii/scnet101_mpii_256x256.py) | 256x256 | 0.886 | 0.334 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_mpii_256x256-b4c2d184_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_mpii_256x256_20200812.log.json) |
+| [pose_scnet_50](/configs/top_down/scnet/mpii/scnet50_mpii_256x256.py) | 256x256 | 0.888 | 0.290 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256-a54b6af5_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256_20200812.log.json) |
+| [pose_scnet_101](/configs/top_down/scnet/mpii/scnet101_mpii_256x256.py) | 256x256 | 0.886 | 0.293 | [ckpt](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_mpii_256x256-b4c2d184_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_mpii_256x256_20200812.log.json) |

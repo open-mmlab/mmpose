@@ -29,4 +29,4 @@
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_shufflenetv2](/configs/top_down/shufflenet_v2/mpii/shufflenetv2_mpii_256x256.py) | 256x256 | 0.828 | 0.238 | [ckpt](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth) | [log](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256_20200925.log.json) |
+| [pose_shufflenetv2](/configs/top_down/shufflenet_v2/mpii/shufflenetv2_mpii_256x256.py) | 256x256 | 0.828 | 0.205 | [ckpt](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth) | [log](https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256_20200925.log.json) |
