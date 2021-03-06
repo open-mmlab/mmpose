@@ -61,9 +61,9 @@ Please be cautious if you use the results in papers.
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/top_down/resnet/mpii/res50_mpii_256x256.py) | 256x256 | 0.882 | 0.329 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256_20200812.log.json) |
-| [pose_resnet_101](/configs/top_down/resnet/mpii/res101_mpii_256x256.py) | 256x256 | 0.887 | 0.333 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256-416f5d71_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256_20200812.log.json) |
-| [pose_resnet_152](/configs/top_down/resnet/mpii/res152_mpii_256x256.py) | 256x256 | 0.890 | 0.347 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_256x256-3ecba29d_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_256x256_20200812.log.json) |
+| [pose_resnet_50](/configs/top_down/resnet/mpii/res50_mpii_256x256.py) | 256x256 | 0.882 | 0.286 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256_20200812.log.json) |
+| [pose_resnet_101](/configs/top_down/resnet/mpii/res101_mpii_256x256.py) | 256x256 | 0.888 | 0.290 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256-416f5d71_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256_20200812.log.json) |
+| [pose_resnet_152](/configs/top_down/resnet/mpii/res152_mpii_256x256.py) | 256x256 | 0.889 | 0.303 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_256x256-3ecba29d_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_256x256_20200812.log.json) |
 
 #### Results on MPII-TRB val set
 

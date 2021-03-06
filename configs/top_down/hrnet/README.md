@@ -37,8 +37,8 @@
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_hrnet_w32](/configs/top_down/hrnet/mpii/hrnet_w32_mpii_256x256.py) | 256x256 | 0.900 | 0.379 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256-6c4f923f_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_20200812.log.json) |
-| [pose_hrnet_w48](/configs/top_down/hrnet/mpii/hrnet_w48_mpii_256x256.py) | 256x256 | 0.900 | 0.383 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256-92cab7bd_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_20200812.log.json) |
+| [pose_hrnet_w32](/configs/top_down/hrnet/mpii/hrnet_w32_mpii_256x256.py) | 256x256 | 0.900 | 0.334 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256-6c4f923f_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_20200812.log.json) |
+| [pose_hrnet_w48](/configs/top_down/hrnet/mpii/hrnet_w48_mpii_256x256.py) | 256x256 | 0.901 | 0.337 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256-92cab7bd_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_20200812.log.json) |
 
 #### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector
 
