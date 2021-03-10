@@ -44,7 +44,7 @@ model = dict(
         type='FcHead',
         in_channels=2048,
         num_joints=channel_cfg['num_output_channels'],
-        loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True)),
+        loss_keypoint=dict(type='WingLoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(flip_test=True))
 
