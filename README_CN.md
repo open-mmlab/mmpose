@@ -60,6 +60,7 @@ MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [Op
 <summary>(点击收起)</summary>
 
 - [x] [DeepPose](configs/top_down/deeppose/README.md) (CVPR'2014)
+- [x] [Wingloss](configs/face/deeppose/README.md) (CVPR'2018)
 - [x] [CPM](configs/top_down/cpm/README.md) (CVPR'2016)
 - [x] [Hourglass](configs/top_down/hourglass/README.md) (ECCV'2016)
 - [x] [SimpleBaseline](configs/top_down/resnet/README.md) (ECCV'2018)
