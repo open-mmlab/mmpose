@@ -98,7 +98,7 @@ class TopDown(BasePose):
             num_keypoints: K
             num_img_channel: C (Default: 3)
             img height: imgH
-            img weight: imgW
+            img width: imgW
             heatmaps height: H
             heatmaps weight: W
 
