@@ -8,7 +8,23 @@ from mmpose.datasets.pipelines import Compose
 
 
 class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
-    """Base class for 3D human pose datasets."""
+    """Base class for 3D human pose datasets.
+
+    Subclasses should consider everwriting following methods:
+        - load_config
+        - load_annotations
+        - build_sample_indices
+        - evaluate
+
+    Args:
+        ann_file (str): Path to the annotation file.
+        img_prefix (str): Path to a directory where images are held.
+            Default: None.
+        data_cfg (dict): config
+        pipeline (list[dict | callable]): A sequence of data transforms.
+        test_mode (bool): Store True when building test or
+            validation dataset. Default: False.
+    """
 
     def __init__(self,
                  ann_file,
@@ -28,6 +44,11 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.data_info = self.load_annotations()
         self.sample_indices = self.build_sample_indices()
         self.pipeline = Compose(pipeline)
+
+        self.name2id = {
+            name: i
+            for i, name in enumerate(self.data_info['imgnames'])
+        }
 
     def load_config(self, data_cfg):
         """Initialize dataset attributes according to the config.
@@ -107,7 +128,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
                 and the ground-truth pose of the last frame will be the target.
         """
         sample_indices = []
-        if self.ann_info['seq_len'] == 1:
+        if self.seq_len == 1:
             num_imgs = len(self.ann_info['imgnames'])
             sample_indices = [(idx, ) for idx in range(num_imgs)]
         else:
@@ -139,15 +160,14 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         target_idx = -1 if self.causal else int(self.seq_len) // 2
 
         results = {
-            'frame_ids': frame_ids,
-            'target_frame_id': frame_ids[target_idx],
             'input_2d': _joints_2d[:, :, :2],
             'input_2d_visible': _joints_2d[:, :, -1:],
             'input_3d': _joints_3d[:, :, :3],
             'input_3d_visible': _joints_3d[:, :, -1:],
             'target': _joints_3d[target_idx, :, :3],
             'target_visible': _joints_3d[target_idx, :, -1:],
-            'imgnames': _imgnames,
+            'image_paths': _imgnames,
+            'target_image_path': _imgnames[target_idx],
             'scales': _scales,
             'centers': _centers,
         }
@@ -168,6 +188,6 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         results['ann_info'] = self.ann_info
         return self.pipeline(results)
 
-    @abstractmethod
     def get_camera_param(self, imgname):
         """Get camera parameters of a frame by its image name."""
+        raise NotImplementedError

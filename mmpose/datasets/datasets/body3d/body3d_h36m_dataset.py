@@ -37,8 +37,15 @@ class Body3DH36MDataset(Body3DBaseDataset):
         15: 'right_elbow',
         16: 'right_wrist'
 
+
     Args:
-        PoseTransferBaseDataset ([type]): [description]
+        ann_file (str): Path to the annotation file.
+        img_prefix (str): Path to a directory where images are held.
+            Default: None.
+        data_cfg (dict): config
+        pipeline (list[dict | callable]): A sequence of data transforms.
+        test_mode (bool): Store True when building test or
+            validation dataset. Default: False.
     """
 
     JOINT_NAMES = [
@@ -47,10 +54,12 @@ class Body3DH36MDataset(Body3DBaseDataset):
         'RShoulder', 'RElbow', 'RWrist'
     ]
 
-    JOINT_IDX_GLOBAL = [
+    # The joint indices in the annotation file
+    JOINT_IDX_ANNOTATION = [
         14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6
     ]
-    JOINT_NUM_GLOBAL = 24
+    # The total joint number in the annotatino file
+    JOINT_NUM_ANNOTATION = 24
 
     # 2D joint source options:
     # "gt": from the annotation file
@@ -88,20 +97,22 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         self.ann_info.update(ann_info)
 
-    def load_annotation(self):
-        data_info = super().load_annotation()
+    def load_annotations(self):
+        data_info = super().load_annotations()
 
         # convert 3D joints from original 24-keypoint to standard 17-keypoint
-        assert data_info['joint_3d'].shape[1] == self.JOINT_NUM_GLOBAL
-        data_info['joint_3d'] = data_info['joint_3d'][:, self.JOINT_IDX_GLOBAL]
+        assert data_info['joints_3d'].shape[1] == self.JOINT_NUM_ANNOTATION
+        data_info['joints_3d'] = data_info['joints_3d'][:, self.
+                                                        JOINT_IDX_ANNOTATION]
 
         # get 2D joints
         if self.joint_2d_src == 'gt':
-            assert data_info['joint_2d'].shape[1] == self.JOINT_NUM_GLOBAL
-            data_info['joint_2d'] = data_info['joint_2d'][:, self.
-                                                          JOINT_IDX_GLOBAL]
+            assert 'joint_2d' in data_info
+            assert data_info['joints_2d'].shape[1] == self.JOINT_NUM_ANNOTATION
+            data_info['joints_2d'] = data_info[
+                'joints_2d'][:, self.JOINT_IDX_ANNOTATION]
         elif self.joint_2d_src == 'detection':
-            data_info['joint_2d'] = self._load_joint_2d_detection(
+            data_info['joints_2d'] = self._load_joint_2d_detection(
                 self.joint_2d_det_file)
         elif self.joint_2d_src == 'pipeline':
             pass
@@ -151,6 +162,14 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return sample_indices
 
+    def _load_joint_2d_detection(self, det_file):
+        """"Load 2D joint detection results from file."""
+        joints_2d = np.load(det_file).astype(np.float32)
+        assert joints_2d.shape[0] == self.data_info['joint_3d'].shape[0]
+        assert joints_2d.shape[2] == 3
+
+        return joints_2d
+
     def evaluate(self, outputs, res_folder, metric='joint_error', **kwargs):
         metrics = metric if isinstance(metric, list) else [metric]
 
@@ -162,64 +181,57 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         res_file = osp.join(res_folder, 'result_keypoints.json')
         kpts = []
-        for preds, boxes, image_path in outputs:
-            kpts.append({
-                'keypoints': preds[0].tolist(),
-                'center': boxes[0][0:2].tolist(),
-                'scale': boxes[0][2:4].tolist(),
-                'area': float(boxes[0][4]),
-                'score': float(boxes[0][5]),
-                'image': image_path,
-            })
+        for output in outputs:
+            preds = output['preds']
+            image_paths = output['target_image_paths']
+            batch_size = len(image_paths)
+            for i in range(batch_size):
+                target_id = self.name2id[image_paths[i]]
+                kpts.append({
+                    'keypoints': preds[i],
+                    'target_id': target_id,
+                })
 
-        self._write_keypoint_results(kpts, res_file)
-        info_str = self._report_metric(res_file)
-        name_value = OrderedDict(info_str)
-        return name_value
-
-    def _load_joint_2d_detection(self, det_file):
-        """"Load 2D joint detection results from file."""
-        joints_2d = np.load(det_file).astype(np.float32)
-        assert joints_2d.shape[0] == self.data_info['joint_3d'].shape[0]
-        assert joints_2d.shape[2] == 3
-
-        return joints_2d
-
-    @staticmethod
-    def _write_keypoint_results(kpts, res_file):
-        """Write keypoint results into a (json) file."""
         mmcv.dump(kpts, res_file)
 
-    def _report_metric(self, res_file):
+        name_value_tuples = []
+        for _metric in metrics:
+            if _metric == 'joint_error':
+                _nv_tuples = self._report_joint_error(kpts)
+            else:
+                raise NotImplementedError
+            name_value_tuples.extend(_nv_tuples)
+
+        return OrderedDict(name_value_tuples)
+
+    def _report_joint_error(self, keypoint_results):
         """Keypoint evaluation.
 
         Report mean per joint position error (MPJPE) and mean per joint
         position error after rigid alignment (MPJPE-PA)
         """
-        preds = mmcv.load(res_file)
-        assert len(preds) == len(self)
 
         joint_error = []
         joint_error_pa = []
+        for result in keypoint_results:
+            pred = result['keypoints']
+            target_id = result['target_id']
+            target, target_visible = np.split(
+                self.data_info['joints_3d'][target_id], [3], axis=-1)
 
-        for pred, item in zip(preds, self.db):
-            error, error_pa = self._evaluate_kernel(pred['keypoints'][0],
-                                                    item['joints_3d'],
-                                                    item['joints_3d_visible'])
+            error, error_pa = self._joint_error_kernel(pred, target,
+                                                       target_visible)
+
             joint_error.append(error)
             joint_error_pa.append(error_pa)
 
-        mpjpe = np.array(joint_error).mean()
-        mpjpe_pa = np.array(joint_error_pa).mean()
+        name_value_tuples = [('MPJPE', np.mean(joint_error)),
+                             ('MPJPE-PA', np.mean(joint_error_pa))]
 
-        info_str = []
-        info_str.append(('MPJPE', mpjpe * 1000))
-        info_str.append(('MPJPE-PA', mpjpe_pa * 1000))
-
-        return info_str
+        return name_value_tuples
 
     @staticmethod
-    def _evaluate_kernel(pred_joints_3d, gt_joints_3d, joints_3d_visible):
+    def _joint_error_kernel(pred_joints_3d, gt_joints_3d, joints_3d_visible):
         """Evaluate one example."""
         assert (joints_3d_visible > 0).all()
 
@@ -249,5 +261,4 @@ class Body3DH36MDataset(Body3DBaseDataset):
         """Get camera parameters of a frame by its image name."""
         assert hasattr(self, 'camera_param')
         subj, _, camera = self._parse_h36m_imgname(imgname)
-        print(imgname)
         return self.camera_param[(subj, camera)]

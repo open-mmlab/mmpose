@@ -1,3 +1,7 @@
+import tempfile
+
+import numpy as np
+
 from mmpose.datasets import DATASETS
 
 
@@ -10,7 +14,7 @@ def test_body3d_h36m_dataset():
         num_joints=17,
         seq_len=1,
         seq_frame_interval=1,
-        joint_2d_src='gt',
+        joint_2d_src='pipeline',
         joint_2d_det_file=None,
         causal=False,
         need_camera_param=True,
@@ -32,3 +36,16 @@ def test_body3d_h36m_dataset():
 
     assert custom_dataset.test_mode is True
     _ = custom_dataset[0]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        outputs = []
+        for result in custom_dataset:
+            outputs.append({
+                'preds': result['target'][None, ...],
+                'target_image_paths': [result['target_image_path']],
+            })
+
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'joint_error')
+
+        np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
+        np.testing.assert_almost_equal(infos['MPJPE-PA'], 0.0)
