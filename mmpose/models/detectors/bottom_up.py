@@ -85,7 +85,7 @@ class BottomUp(BasePose):
             batch_size: N
             num_keypoints: K
             num_img_channel: C
-            img_weight: imgW
+            img_width: imgW
             img_height: imgH
             heatmaps weight: W
             heatmaps height: H
@@ -130,7 +130,7 @@ class BottomUp(BasePose):
             batch_size: N
             num_keypoints: K
             num_img_channel: C
-            img_weight: imgW
+            img_width: imgW
             img_height: imgH
             heatmaps weight: W
             heatmaps height: H
@@ -193,7 +193,7 @@ class BottomUp(BasePose):
         Note:
             Batchsize = N (currently support batchsize = 1)
             num_img_channel: C
-            img_weight: imgW
+            img_width: imgW
             img_height: imgH
 
         Args:
