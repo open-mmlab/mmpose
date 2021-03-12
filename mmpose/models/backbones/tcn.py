@@ -16,7 +16,7 @@ class BasicTemporalBlock(nn.Module):
         mid_channels (int): The output channels of conv1. Default: 1024.
         kernel_size (int): Size of the convolving kernel. Default: 3.
         dilation (int): Spacing between kernel elements. Default: 3.
-        drop_out (float): Drop-out rate. Default: 0.25.
+        dropout (float): Dropout rate. Default: 0.25.
         causal (bool): Use causal convolutions instead of symmetric
             convolutions (for real-time applications). Default: False.
         residual (bool): Use residual connection. Default: True.
@@ -32,7 +32,7 @@ class BasicTemporalBlock(nn.Module):
                  mid_channels=1024,
                  kernel_size=3,
                  dilation=3,
-                 drop_out=0.25,
+                 dropout=0.25,
                  causal=False,
                  residual=True,
                  conv_cfg=dict(type='Conv1d'),
@@ -46,7 +46,7 @@ class BasicTemporalBlock(nn.Module):
         self.mid_channels = mid_channels
         self.kernel_size = kernel_size
         self.dilation = dilation
-        self.drop_out = drop_out
+        self.dropout = dropout
         self.causal = causal
         self.residual = residual
 
@@ -62,7 +62,7 @@ class BasicTemporalBlock(nn.Module):
                 dilation=self.dilation,
                 bias=False,
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(self.drop_out))
+                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
         self.conv2 = nn.Sequential(
             ConvModule(
                 mid_channels,
@@ -70,7 +70,7 @@ class BasicTemporalBlock(nn.Module):
                 kernel_size=1,
                 bias=False,
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg))
+                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
 
         if residual and in_channels != out_channels:
             self.short_cut = build_conv_layer(conv_cfg, in_channels,
@@ -112,7 +112,7 @@ class TCN(BaseBackbone):
             Default: 2.
         kernel_sizes (Sequence[int]): Sizes of the convolving kernel of
             each basic block. Default: ``(3, 3, 3)``.
-        drop_out (float): Drop-out rate. Default: 0.25.
+        dropout (float): Dropout rate. Default: 0.25.
         causal (bool): Use causal convolutions instead of symmetric
             convolutions (for real-time applications).
             Default: False.
@@ -140,7 +140,7 @@ class TCN(BaseBackbone):
                  stem_channels=1024,
                  num_blocks=2,
                  kernel_sizes=(3, 3, 3),
-                 drop_out=0.25,
+                 dropout=0.25,
                  causal=False,
                  residual=True,
                  conv_cfg=dict(type='Conv1d'),
@@ -153,7 +153,7 @@ class TCN(BaseBackbone):
         self.stem_channels = stem_channels
         self.num_blocks = num_blocks
         self.kernel_sizes = kernel_sizes
-        self.drop_out = drop_out
+        self.dropout = dropout
         self.causal = causal
         self.residual = residual
 
@@ -179,7 +179,7 @@ class TCN(BaseBackbone):
                     mid_channels=stem_channels,
                     kernel_size=kernel_sizes[i],
                     dilation=dilation,
-                    drop_out=drop_out,
+                    dropout=dropout,
                     causal=causal,
                     residual=residual,
                     conv_cfg=conv_cfg,
