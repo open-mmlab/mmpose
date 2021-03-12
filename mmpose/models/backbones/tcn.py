@@ -8,7 +8,7 @@ from .base_backbone import BaseBackbone
 
 
 class BasicTemporalBlock(nn.Module):
-    """Basic block for VideoPose3D (simple yet effective baseline).
+    """Basic block for VideoPose3D.
 
     Args:
         in_channels (int): Input channels of this block.
