@@ -35,7 +35,7 @@ def test_temporal_head():
     assert torch.allclose(loss['reg_loss'], torch.tensor(0.))
 
     _ = head.inference_model(inputs)
-    _ = head.inference_model(inputs, [])
+    _ = head.inference_model(inputs, [(0, 1), (2, 3)])
 
     acc = head.get_accuracy(out, out, torch.ones_like(out))
     assert acc['mpjpe'] == 0.
