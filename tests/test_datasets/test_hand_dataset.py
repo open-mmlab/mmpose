@@ -160,6 +160,62 @@ def test_top_down_FreiHand_dataset():
             infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
+def test_top_down_RHD_dataset():
+    dataset = 'Rhd2DDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=21,
+        dataset_joints=21,
+        dataset_channel=[
+            [
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20
+            ],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ])
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/rhd/test_rhd.json',
+        img_prefix='tests/data/rhd/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/rhd/test_rhd.json',
+        img_prefix='tests/data/rhd/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        test_mode=False)
+
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 3
+    _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+        assert_almost_equal(infos['PCK'], 1.0)
+        assert_almost_equal(infos['AUC'], 0.95)
+        assert_almost_equal(infos['EPE'], 0.0)
+
+        with pytest.raises(KeyError):
+            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
 def test_top_down_Panoptic_dataset():
     dataset = 'PanopticDataset'
     dataset_class = DATASETS.get(dataset)
