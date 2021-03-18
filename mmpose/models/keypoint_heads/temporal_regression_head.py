@@ -9,7 +9,7 @@ from mmpose.models.registry import HEADS
 
 
 @HEADS.register_module()
-class TemporalHead(nn.Module):
+class TemporalRegressionHead(nn.Module):
     """Regression head of VideoPose3D.
 
     Paper ref: Dario Pavllo.

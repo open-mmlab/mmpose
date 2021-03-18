@@ -2,12 +2,12 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import TemporalHead
+from mmpose.models import TemporalRegressionHead
 
 
-def test_temporal_head():
+def test_temporal_regression_head():
     """Test temporal head."""
-    head = TemporalHead(
+    head = TemporalRegressionHead(
         in_channels=1024,
         num_joints=17,
         loss_keypoint=dict(type='MPJPELoss', use_target_weight=True))
