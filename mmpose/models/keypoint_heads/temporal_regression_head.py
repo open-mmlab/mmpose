@@ -125,6 +125,23 @@ class TemporalRegressionHead(nn.Module):
             output_regression = output.detach().cpu().numpy()
         return output_regression
 
+    def decode(self, metas, output):
+        """Decode the keypoints from output regression.
+
+        Args:
+            metas (list(dict)): Information about data augmentation.
+                By default this includes:
+                - "image_file": path to the image file
+            output (np.ndarray[N, K, 3]): predicted regression vector.
+        """
+        image_paths = []
+        for i in range(len(metas)):
+            image_paths.append(metas[i]['image_file'])
+
+        result = {'preds': output, 'metas': image_paths}
+
+        return result
+
     def init_weights(self):
         """Initialize model weights."""
         normal_init(self.conv, mean=0, std=0.001, bias=0)
