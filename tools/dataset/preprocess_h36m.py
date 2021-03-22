@@ -342,6 +342,6 @@ if __name__ == '__main__':
         ORIGINAL_DIR,
         EXTRACTED_DIR,
         smpl_train='/data/Human3.6M/process/h36m_smpl_train.pkl')
-    # h36m.extract_tgz()
+    h36m.extract_tgz()
     h36m.generate_cameras_file()
     h36m.generate_annotations()
