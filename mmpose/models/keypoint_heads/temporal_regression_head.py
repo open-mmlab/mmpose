@@ -131,14 +131,14 @@ class TemporalRegressionHead(nn.Module):
         Args:
             metas (list(dict)): Information about data augmentation.
                 By default this includes:
-                - "image_file": path to the image file
+                - "target_image_path": path to the image file
             output (np.ndarray[N, K, 3]): predicted regression vector.
         """
-        image_paths = []
+        target_image_paths = []
         for i in range(len(metas)):
-            image_paths.append(metas[i]['image_file'])
+            target_image_paths.append(metas[i]['target_image_path'])
 
-        result = {'preds': output, 'metas': image_paths}
+        result = {'preds': output, 'target_image_paths': target_image_paths}
 
         return result
 
