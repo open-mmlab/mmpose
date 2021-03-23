@@ -25,7 +25,6 @@ class SingleCameraBase(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, param):
         """Load camera parameters and check validity."""
-        self.load_param(param)
 
     def world_to_camera(self, X):
         """Project points from world coordinates to camera coordinates."""

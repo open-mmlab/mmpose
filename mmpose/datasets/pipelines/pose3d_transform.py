@@ -38,7 +38,7 @@ class JointRelativization:
         joints = results[self.item]
         root_idx = self.root_index
 
-        assert joints.ndim >= 2 and joints.shape[-1] > root_idx,\
+        assert joints.ndim >= 2 and joints.shape[-2] > root_idx,\
             f'Got invalid joint shape {joints.shape}'
         root = joints[..., root_idx:root_idx + 1, :]
         joints = np.delete(joints - root, root_idx, axis=-2)
@@ -46,6 +46,7 @@ class JointRelativization:
         results[self.item] = joints
         if self.root_name is not None:
             results[self.root_name] = root
+
         return results
 
 
@@ -171,8 +172,20 @@ class CameraProjection:
 
 @PIPELINES.register_module()
 class RelativeJointRandomFlip:
-    """Data augmentation with random horizontal joint flip around a root
-    joint."""
+    """Data augmentation with random horizontal joint flip around a root joint.
+
+    Args:
+        item (str): The name of the pose to flip.
+        root_index (int): Root joint index in the pose.
+        visible_item (str): The name of the visibility item which will be
+            flipped accordingly along with the pose.
+        flip_prob (float): Probability of flip.
+
+    Required keys:
+        item (depend on args): Should be an array in shape [...,Kj,C]
+    MOdified keys:
+        item
+    """
 
     def __init__(self, item, root_index, visible_item=None, flip_prob=0.5):
         self.item = item
@@ -190,7 +203,7 @@ class RelativeJointRandomFlip:
             joints = results[self.item]
 
             root_idx = self.root_index
-            assert joints.ndim >= 2 and joints.shape[-1] > root_idx,\
+            assert joints.ndim >= 2 and joints.shape[-2] > root_idx,\
                 f'Got invalid joint shape {joints.shape}'
 
             joints_flipped = joints.copy()

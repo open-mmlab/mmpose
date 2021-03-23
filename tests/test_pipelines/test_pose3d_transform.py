@@ -121,7 +121,7 @@ def test_joint_transforms():
 
 def test_camera_projection():
     results = get_data_sample()
-    pipeline = [
+    pipeline_1 = [
         dict(
             type='CameraProjection',
             item='input_3d',
@@ -142,8 +142,36 @@ def test_camera_projection():
             mode='camera_to_pixel'),
         dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
     ]
+    pipeline_2 = [
+        dict(
+            type='CameraProjection',
+            item='input_3d',
+            output_name='input_3d_w',
+            camera_type='SimpleCamera',
+            camera_param=results['camera_param'],
+            mode='camera_to_world'),
+        dict(
+            type='CameraProjection',
+            item='input_3d_w',
+            output_name='input_3d_wp',
+            camera_type='SimpleCamera',
+            camera_param=results['camera_param'],
+            mode='world_to_pixel'),
+        dict(
+            type='CameraProjection',
+            item='input_3d',
+            output_name='input_3d_p',
+            camera_type='SimpleCamera',
+            camera_param=results['camera_param'],
+            mode='camera_to_pixel'),
+        dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
+    ]
 
-    pipeline = Compose(pipeline)
-    output = pipeline(results)
+    output1 = Compose(pipeline_1)(results)
+    output2 = Compose(pipeline_2)(results)
+
     np.testing.assert_allclose(
-        output['input_3d_wp'], output['input_3d_p'], rtol=1e-6)
+        output1['input_3d_wp'], output1['input_3d_p'], rtol=1e-6)
+
+    np.testing.assert_allclose(
+        output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
