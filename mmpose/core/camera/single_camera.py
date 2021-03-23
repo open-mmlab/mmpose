@@ -94,8 +94,8 @@ class SimpleCamera(SingleCameraBase):
         if self.undistortion:
             k = self.param['k']
             p = self.param['p']
-            _X_xy = _X[..., :2]
-            r2 = (_X_xy**2).sum(-1)
+            _X_2d = _X[..., :2]
+            r2 = (_X_2d**2).sum(-1)
             radinal = 1 + sum((ki * r2**(i + 1) for i, ki in enumerate(k[:3])))
             if k.size == 6:
                 radinal /= 1 + sum(
@@ -103,6 +103,6 @@ class SimpleCamera(SingleCameraBase):
 
             tan = 2 * (p[1] * _X[..., 0] + p[0] * _X[..., 1])
 
-            _X[..., :2] = _X_xy * (radinal + tan)[..., None] + np.outer(
-                r2, p[::-1]).reshape(_X_xy.shape)
+            _X[..., :2] = _X_2d * (radinal + tan)[..., None] + np.outer(
+                r2, p[::-1]).reshape(_X_2d.shape)
         return _X @ self.param['K']
