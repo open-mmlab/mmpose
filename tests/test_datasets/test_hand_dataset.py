@@ -13,8 +13,10 @@ def convert_db_to_output(db, batch_size=2, keys=None):
     len_db = len(db)
     for i in range(0, len_db, batch_size):
         keypoints = np.stack([
-            db[j]['joints_3d'].reshape((-1, 3))
-            for j in range(i, min(i + batch_size, len_db))
+            np.hstack([
+                db[j]['joints_3d'].reshape((-1, 3))[:, :2],
+                db[j]['joints_3d_visible'].reshape((-1, 3))[:, :1]
+            ]) for j in range(i, min(i + batch_size, len_db))
         ])
         image_paths = [
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
