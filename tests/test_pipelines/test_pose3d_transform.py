@@ -165,21 +165,21 @@ def test_camera_projection():
             item='input_3d',
             output_name='input_3d_w',
             camera_type='SimpleCamera',
-            camera_param=results['camera_param'],
+            camera_param=camera_param,
             mode='camera_to_world'),
         dict(
             type='CameraProjection',
             item='input_3d_w',
             output_name='input_3d_wp',
             camera_type='SimpleCamera',
-            camera_param=results['camera_param'],
+            camera_param=camera_param,
             mode='world_to_pixel'),
         dict(
             type='CameraProjection',
             item='input_3d',
             output_name='input_3d_p',
             camera_type='SimpleCamera',
-            camera_param=results['camera_param'],
+            camera_param=camera_param,
             mode='camera_to_pixel'),
         dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
     ]
