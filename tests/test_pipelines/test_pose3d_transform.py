@@ -1,5 +1,6 @@
 import copy
 import os.path as osp
+import tempfile
 
 import mmcv
 import numpy as np
@@ -118,6 +119,19 @@ def test_joint_transforms():
 
     np.testing.assert_array_almost_equal(joints_0, joints_1)
 
+    # test load mean/std from file
+    with tempfile.TemporaryDirectory() as tmpdir:
+        norm_param = {'mean': mean, 'std': std}
+        norm_param_file = osp.join(tmpdir, 'norm_param.pkl')
+        mmcv.dump(norm_param, norm_param_file)
+
+        pipeline = [
+            dict(
+                type='JointNormalization',
+                item='target',
+                norm_param_file=norm_param_file),
+        ]
+
 
 def test_camera_projection():
     results = get_data_sample()
@@ -142,6 +156,9 @@ def test_camera_projection():
             mode='camera_to_pixel'),
         dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
     ]
+    camera_param = results['camera_param'].copy()
+    camera_param['K'] = np.concatenate(
+        (np.diagflat(camera_param['f']), camera_param['c']), axis=-1)
     pipeline_2 = [
         dict(
             type='CameraProjection',
