@@ -8,14 +8,22 @@ from numpy.testing import assert_almost_equal
 from mmpose.datasets import DATASETS
 
 
-def convert_db_to_output(db, batch_size=2):
+def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
     outputs = []
     len_db = len(db)
     for i in range(0, len_db, batch_size):
-        keypoints = np.stack([
-            db[j]['joints_3d'].reshape((-1, 3))
-            for j in range(i, min(i + batch_size, len_db))
-        ])
+        if is_3d:
+            keypoints = np.stack([
+                db[j]['joints_3d'].reshape((-1, 3))
+                for j in range(i, min(i + batch_size, len_db))
+            ])
+        else:
+            keypoints = np.stack([
+                np.hstack([
+                    db[j]['joints_3d'].reshape((-1, 3))[:, :2],
+                    db[j]['joints_3d_visible'].reshape((-1, 3))[:, :1]
+                ]) for j in range(i, min(i + batch_size, len_db))
+            ])
         image_paths = [
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
         ]
@@ -35,6 +43,13 @@ def convert_db_to_output(db, batch_size=2):
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
         output['bbox_ids'] = bbox_ids
+
+        if keys is not None:
+            keys = keys if isinstance(keys, list) else [keys]
+            for key in keys:
+                output[key] = [
+                    db[j][key] for j in range(i, min(i + batch_size, len_db))
+                ]
 
         outputs.append(output)
 
