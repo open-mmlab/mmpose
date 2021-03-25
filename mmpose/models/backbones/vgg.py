@@ -154,8 +154,6 @@ class VGG(BaseBackbone):
                     constant_init(m, 1)
                 elif isinstance(m, nn.Linear):
                     normal_init(m, std=0.01)
-        else:
-            raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         outs = []

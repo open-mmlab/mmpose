@@ -27,19 +27,18 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    dataset_joints=17,
+    num_output_channels=14,
+    dataset_joints=14,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-    ])
+    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
 data_cfg = dict(
-    image_size=640,
-    base_size=320,
+    image_size=512,
+    base_size=256,
     base_sigma=2,
-    heatmap_size=[160, 320],
+    heatmap_size=[128, 256],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -84,7 +83,7 @@ model = dict(
     keypoint_head=dict(
         type='BottomUpHigherResolutionHead',
         in_channels=32,
-        num_joints=17,
+        num_joints=14,
         tag_per_joint=True,
         extra=dict(final_conv_kernel=1, ),
         num_deconv_layers=1,
@@ -95,11 +94,11 @@ model = dict(
         with_ae_loss=[True, False],
         loss_keypoint=dict(
             type='MultiLossFactory',
-            num_joints=17,
+            num_joints=14,
             num_stages=2,
             ae_loss_type='exp',
             with_ae_loss=[True, False],
-            push_loss_factor=[0.001, 0.001],
+            push_loss_factor=[0.01, 0.01],
             pull_loss_factor=[0.001, 0.001],
             with_heatmaps_loss=[True, True],
             heatmaps_loss_factor=[1.0, 1.0])),
@@ -112,7 +111,7 @@ model = dict(
         scale_factor=[1],
         with_heatmaps=[True, True],
         with_ae=[True, False],
-        project2image=True,
+        project2image=False,
         nms_kernel=5,
         nms_padding=2,
         tag_per_joint=True,
@@ -122,7 +121,8 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True))
+        flip_test=True,
+        use_udp=True))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -131,7 +131,8 @@ train_pipeline = [
         rot_factor=30,
         scale_factor=[0.75, 1.5],
         scale_type='short',
-        trans_factor=40),
+        trans_factor=40,
+        use_udp=True),
     dict(type='BottomUpRandomFlip', flip_prob=0.5),
     dict(type='ToTensor'),
     dict(
@@ -142,6 +143,7 @@ train_pipeline = [
         type='BottomUpGenerateTarget',
         sigma=2,
         max_num_people=30,
+        use_udp=True,
     ),
     dict(
         type='Collect',
@@ -151,7 +153,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1], use_udp=True),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
@@ -159,8 +161,9 @@ val_pipeline = [
             dict(
                 type='NormalizeTensor',
                 mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225]),
-        ]),
+                std=[0.229, 0.224, 0.225])
+        ],
+        use_udp=True),
     dict(
         type='Collect',
         keys=['img'],
@@ -172,26 +175,29 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/aic'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=24,
     workers_per_gpu=2,
     train=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_train.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_train_20170902/'
+        'keypoint_train_images_20170902/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_val.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
+        'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='BottomUpCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='BottomUpAicDataset',
+        ann_file=f'{data_root}/annotations/aic_val.json',
+        img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
+        'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

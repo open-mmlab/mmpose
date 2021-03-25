@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+evaluation = dict(interval=10, metric='PCK', key_indicator='PCK')
 
 optimizer = dict(
     type='Adam',
@@ -20,21 +20,20 @@ lr_config = dict(
     step=[170, 200])
 total_epochs = 210
 log_config = dict(
-    interval=50,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
     ])
 
+target_type = 'GaussianHeatMap'
 channel_cfg = dict(
-    num_output_channels=17,
-    dataset_joints=17,
+    num_output_channels=4,
+    dataset_joints=4,
     dataset_channel=[
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        [0, 1, 2, 3],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-    ])
+    inference_channel=[0, 1, 2, 3])
 
 # model settings
 model = dict(
@@ -81,12 +80,14 @@ model = dict(
     test_cfg=dict(
         flip_test=True,
         post_process='default',
-        shift_heatmap=True,
-        modulate_kernel=11))
+        shift_heatmap=False,
+        target_type=target_type,
+        modulate_kernel=11,
+        use_udp=True))
 
 data_cfg = dict(
-    image_size=[288, 384],
-    heatmap_size=[72, 96],
+    image_size=[192, 256],
+    heatmap_size=[48, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -105,18 +106,18 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownHalfBodyTransform',
-        num_joints_half_body=8,
-        prob_half_body=0.3),
-    dict(
         type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
-    dict(type='TopDownAffine'),
+    dict(type='TopDownAffine', use_udp=True),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=3),
+    dict(
+        type='TopDownGenerateTarget',
+        sigma=2,
+        encoding='UDP',
+        target_type=target_type),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -128,7 +129,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownAffine'),
+    dict(type='TopDownAffine', use_udp=True),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -145,26 +146,31 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/fld'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_train.json',
+        img_prefix=f'{data_root}/img/',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_val.json',
+        img_prefix=f'{data_root}/img/',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownCocoDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_test.json',
+        img_prefix=f'{data_root}/img/',
+        subset='lower',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
