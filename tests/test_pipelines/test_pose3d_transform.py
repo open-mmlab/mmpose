@@ -131,6 +131,7 @@ def test_joint_transforms():
                 item='target',
                 norm_param_file=norm_param_file),
         ]
+        pipeline = Compose(pipeline)
 
 
 def test_camera_projection():
