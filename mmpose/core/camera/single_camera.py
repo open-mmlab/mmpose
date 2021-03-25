@@ -10,12 +10,12 @@ class SimpleCamera(SingleCameraBase):
 
     Notes:
         The keypoint coordiante should be an np.ndarray with a shape of
-    [...,Kj, C] where Kj is the keypoint number of an instance, and ndims
+    [...,J, C] where J is the keypoint number of an instance, and ndims
     is the coordinate dimension. For example:
 
-        [Kj, C]: shape of joint coordinates of a person with Kj joints.
-        [N, Kj, C]: shape of a batch of person joint coordinates.
-        [N, T, Kj, C]: shape of a batch of pose sequences.
+        [J, C]: shape of joint coordinates of a person with J joints.
+        [N, J, C]: shape of a batch of person joint coordinates.
+        [N, T, J, C]: shape of a batch of pose sequences.
 
     Args:
         param (dict): camera parameters including:
@@ -45,9 +45,11 @@ class SimpleCamera(SingleCameraBase):
         T = np.array(param['T'], dtype=np.float32)
         assert R.shape == (3, 3)
         assert T.shape == (3, 1)
+        # The camera matrices are transposed in advance because the joint
+        # coordinates are stored as row vectors.
         self.param['R_c2w'] = R.T
         self.param['T_c2w'] = T.T
-        self.param['R_w2c'] = np.linalg.inv(self.param['R_c2w'])
+        self.param['R_w2c'] = R
         self.param['T_w2c'] = -self.param['T_c2w'] @ self.param['R_w2c']
 
         # intrinsic param
@@ -96,13 +98,13 @@ class SimpleCamera(SingleCameraBase):
             p = self.param['p']
             _X_2d = _X[..., :2]
             r2 = (_X_2d**2).sum(-1)
-            radinal = 1 + sum((ki * r2**(i + 1) for i, ki in enumerate(k[:3])))
+            radial = 1 + sum(ki * r2**(i + 1) for i, ki in enumerate(k[:3]))
             if k.size == 6:
-                radinal /= 1 + sum(
+                radial /= 1 + sum(
                     (ki * r2**(i + 1) for i, ki in enumerate(k[3:])))
 
             tan = 2 * (p[1] * _X[..., 0] + p[0] * _X[..., 1])
 
-            _X[..., :2] = _X_2d * (radinal + tan)[..., None] + np.outer(
+            _X[..., :2] = _X_2d * (radial + tan)[..., None] + np.outer(
                 r2, p[::-1]).reshape(_X_2d.shape)
         return _X @ self.param['K']
