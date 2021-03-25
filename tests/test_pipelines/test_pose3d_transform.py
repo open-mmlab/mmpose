@@ -91,6 +91,7 @@ def test_joint_transforms():
             root_index=0,
             root_name='global_position'),
         dict(type='JointNormalization', item='target', mean=mean, std=std),
+        dict(type='PoseSequenceToTensor', item='target'),
         dict(
             type='Collect',
             keys=[('target', 'output'), 'flip_pairs'],
@@ -101,7 +102,7 @@ def test_joint_transforms():
     output = pipeline(copy.deepcopy(results))
 
     joints_0 = results['target']
-    joints_1 = output['output']
+    joints_1 = output['output'].numpy()
 
     # manually do transformations
     flip_pairs = output['flip_pairs']
@@ -116,6 +117,9 @@ def test_joint_transforms():
 
     joints_0 = _joints_0_flipped
     joints_0 = (joints_0[..., 1:, :] - joints_0[..., 0:1, :] - mean) / std
+
+    # convert to [K*C, T]
+    joints_0 = joints_0.reshape(-1)[..., None]
 
     np.testing.assert_array_almost_equal(joints_0, joints_1)
 

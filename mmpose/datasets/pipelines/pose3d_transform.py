@@ -1,5 +1,6 @@
 import mmcv
 import numpy as np
+import torch
 from mmcv.utils import build_from_cfg
 
 from mmpose.core.camera import CAMERAS
@@ -223,5 +224,42 @@ class RelativeJointRandomFlip:
                     visible_flipped[..., left, :] = visible[..., right, :]
                     visible_flipped[..., right, :] = visible[..., left, :]
                 results[self.vis_item] = visible_flipped
+
+        return results
+
+
+@PIPELINES.register_module()
+class PoseSequenceToTensor:
+    """Convert pose sequence from numpy array to Tensor.
+
+    The original pose sequence should have a shape of [T,K,C] or [K,C], where
+    T is the sequence length, K and C are keypoint number and dimension. The
+    converted pose sequence will have a shape of [K*C, T].
+
+    Args:
+        item (str): The name of the pose sequence
+
+    Requred keys:
+        item
+    Modified keys:
+        item
+    """
+
+    def __init__(self, item):
+        self.item = item
+
+    def __call__(self, results):
+        assert self.item in results
+        seq = results[self.item]
+
+        assert isinstance(seq, np.ndarray)
+        assert seq.ndim in {2, 3}
+
+        if seq.ndim == 2:
+            seq = seq[None, ...]
+
+        T = seq.shape[0]
+        seq = seq.transpose(1, 2, 0).reshape(-1, T)
+        results[self.item] = torch.from_numpy(seq)
 
         return results
