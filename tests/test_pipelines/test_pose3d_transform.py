@@ -89,7 +89,8 @@ def test_joint_transforms():
             type='JointRelativization',
             item='target',
             root_index=0,
-            root_name='global_position'),
+            root_name='global_position',
+            remove_root=True),
         dict(type='JointNormalization', item='target', mean=mean, std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(

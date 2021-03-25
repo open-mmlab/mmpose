@@ -10,8 +10,8 @@ class SimpleCamera(SingleCameraBase):
 
     Notes:
         The keypoint coordiante should be an np.ndarray with a shape of
-    [...,J, C] where J is the keypoint number of an instance, and ndims
-    is the coordinate dimension. For example:
+    [...,J, C] where J is the keypoint number of an instance, and C is
+    the coordinate dimension. For example:
 
         [J, C]: shape of joint coordinates of a person with J joints.
         [N, J, C]: shape of a batch of person joint coordinates.
@@ -103,8 +103,8 @@ class SimpleCamera(SingleCameraBase):
                 radial /= 1 + sum(
                     (ki * r2**(i + 1) for i, ki in enumerate(k[3:])))
 
-            tan = 2 * (p[1] * _X[..., 0] + p[0] * _X[..., 1])
+            tangential = 2 * (p[1] * _X[..., 0] + p[0] * _X[..., 1])
 
-            _X[..., :2] = _X_2d * (radial + tan)[..., None] + np.outer(
+            _X[..., :2] = _X_2d * (radial + tangential)[..., None] + np.outer(
                 r2, p[::-1]).reshape(_X_2d.shape)
         return _X @ self.param['K']

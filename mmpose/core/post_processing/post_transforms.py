@@ -50,56 +50,56 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     return joints_3d_flipped, joints_3d_visible_flipped
 
 
-def fliplr_regression(regression, flip_pairs):
+def fliplr_regression(regression,
+                      flip_pairs,
+                      center_mode='static',
+                      center_x=0.5,
+                      center_index=0):
     """Flip human joints horizontally.
 
     Note:
         batch_size: N
         num_keypoint: K
     Args:
-        regression (np.ndarray([N, K, 2])): Coordinates of keypoints.
+        regression (np.ndarray([..., K, C])): Coordinates of keypoints.
         flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
+        center_mode (str): The mode to set the center location on the x-axis
+            to flip around. Options are:
+            - static: use a static x value (see center_x also)
+            - root: use a root joint (see center_index also)
+        center_x (float): Set the x-axis location of the flip cneter. Only used
+            when center_mode=static.
+        center_index (int): Set the index of the root joint, whose x location
+            will be used as the flip center. Only used when cneter_mode=root.
 
     Returns:
         tuple: Flipped human joints.
 
-        - regression_flipped (np.ndarray([N, K, 2])): Flipped joints.
+        - regression_flipped (np.ndarray([..., K, C])): Flipped joints.
     """
+    assert regression.ndim >= 2, f'Invalid pose shape {regression.shape}'
+
+    allowed_center_mode = {'static', 'root'}
+    assert center_mode in allowed_center_mode, 'Get invalid center_mode ' \
+        f'{center_mode}, allowed choices are {allowed_center_mode}'
+
+    if center_mode == 'static':
+        x_c = center_x
+    elif center_mode == 'root':
+        assert regression.shape[-2] > center_index
+        x_c = regression[..., center_index:center_index + 1, 0]
+    else:
+        raise NotImplementedError
+
     regression_flipped = regression.copy()
     # Swap left-right parts
     for left, right in flip_pairs:
-        regression_flipped[:, left, :] = regression[:, right, :]
-        regression_flipped[:, right, :] = regression[:, left, :]
+        regression_flipped[..., left, :] = regression[..., right, :]
+        regression_flipped[..., right, :] = regression[..., left, :]
 
     # Flip horizontally
-    regression_flipped[:, :, 0] = 1 - regression_flipped[:, :, 0]
-    return regression_flipped
-
-
-def fliplr_regression_3d(regression, flip_pairs):
-    """Flip human joints horizontally.
-
-    Note:
-        batch_size: N
-        num_keypoint: K
-    Args:
-        regression (np.ndarray([N, K, 3])): Coordinates of keypoints.
-        flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
-            (for example, left ear -- right ear).
-
-    Returns:
-        tuple: Flipped human joints.
-
-        - regression_flipped (np.ndarray([N, K, 3])): Flipped joints.
-    """
-    regression_flipped = regression.copy()
-    # Swap left-right parts
-    for left, right in flip_pairs:
-        regression_flipped[:, left, :] = regression[:, right, :]
-        regression_flipped[:, right, :] = regression[:, left, :]
-    # Flip horizontally
-    regression_flipped[:, :, 0] = -regression_flipped[:, :, 0]
+    regression_flipped[..., 0] = x_c * 2 - regression_flipped[..., 0]
     return regression_flipped
 
 

@@ -4,21 +4,23 @@ import torch
 from mmcv.utils import build_from_cfg
 
 from mmpose.core.camera import CAMERAS
+from mmpose.core.post_processing import fliplr_regression
 from mmpose.datasets.registry import PIPELINES
 
 
 @PIPELINES.register_module()
 class JointRelativization:
-    """Zero-center the pose around a given root joint. The root joint will be
-    removed from the original pose and optionally stored as a separate item.
+    """Zero-center the pose around a given root joint. Optionally, the root
+    joint can be removed from the origianl pose and stored as a separate item.
 
     Note that the relativized joints no longer align with some annotation
-    information (e.g. flip_pairs, num_joints, inference_channel, etal) due to
+    information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
     the removal of the root joint.
 
     Args:
         item (str): The name of the pose to relativeze.
         root_index (int): Root joint index in the pose.
+        remove_root (bool): If true, remove the root joint from the pose
         root_name (str): Optional. If not none, it will be used as the key to
             store the root position separated from the original pose.
 
@@ -29,9 +31,10 @@ class JointRelativization:
         item, root_name (depend on args), ann_info (add relative flip pairs)
     """
 
-    def __init__(self, item, root_index, root_name=None):
+    def __init__(self, item, root_index, remove_root=False, root_name=None):
         self.item = item
         self.root_index = root_index
+        self.remove_root = remove_root
         self.root_name = root_name
 
     def __call__(self, results):
@@ -41,8 +44,15 @@ class JointRelativization:
 
         assert joints.ndim >= 2 and joints.shape[-2] > root_idx,\
             f'Got invalid joint shape {joints.shape}'
+
         root = joints[..., root_idx:root_idx + 1, :]
-        joints = np.delete(joints - root, root_idx, axis=-2)
+        joints = joints - root
+
+        if self.remove_root:
+            joints = np.delete(joints, root_idx, axis=-2)
+            # Add a flag to avoid latter transforms that rely on the root
+            # joint or the original joint index
+            results[f'{self.item}_root_removed'] = True
 
         results[self.item] = joints
         if self.root_name is not None:
@@ -59,7 +69,8 @@ class JointNormalization:
         item (str): The name of the pose to normalize.
         mean (array): Mean values of joint coordiantes in shape [Kj, C].
         std (array): Std values of joint coordinates in shape [Kj, C].
-
+        norm_param_file (str): Optionally load a dict containing `mean` and
+            `std` from a file using `mmcv.load`.
     Required keys:
         item (depend on args): Should be an array in shape [...,Kj,C], where
             the joint number Kj should be greater than root_index.
@@ -97,7 +108,7 @@ class CameraProjection:
             - camera_to_world
             - camera_to_pixel
         output_name (str|None): The name of the projected pose. If None
-            (default) is given, the projected pose will be stored inplace.
+            (default) is given, the projected pose will be stored in place.
         camera_type (str): The camera class name (should be registered in
             CAMERA).
         camera_param (dict|None): The camera parameter dict. See the camera
@@ -184,7 +195,7 @@ class RelativeJointRandomFlip:
 
     Required keys:
         item (depend on args): Should be an array in shape [...,Kj,C]
-    MOdified keys:
+    Modified keys:
         item
     """
 
@@ -196,6 +207,12 @@ class RelativeJointRandomFlip:
 
     def __call__(self, results):
 
+        if results.get(f'{self.item}_root_removed', False):
+            raise RuntimeError('The transform RelativeJointRandomFlip should '
+                               f'not be applied to {self.item} whose root '
+                               'joint has been removed and joint indices have '
+                               'been changed')
+
         if np.random.rand() <= self.flip_prob:
 
             flip_pairs = results['ann_info']['flip_pairs']
@@ -203,17 +220,12 @@ class RelativeJointRandomFlip:
             assert self.item in results
             joints = results[self.item]
 
-            root_idx = self.root_index
-            assert joints.ndim >= 2 and joints.shape[-2] > root_idx,\
-                f'Got invalid joint shape {joints.shape}'
+            joints_flipped = fliplr_regression(
+                joints,
+                flip_pairs,
+                center_mode='root',
+                center_index=self.root_index)
 
-            joints_flipped = joints.copy()
-            for left, right in flip_pairs:
-                assert root_idx not in {left, right}
-                joints_flipped[..., left, :] = joints[..., right, :]
-                joints_flipped[..., right, :] = joints[..., left, :]
-            joints_flipped[..., 0] = -joints_flipped[..., 0] + joints[
-                ..., root_idx:root_idx + 1, 0] * 2
             results[self.item] = joints_flipped
             # flip joint visibility
             if self.vis_item is not None:
