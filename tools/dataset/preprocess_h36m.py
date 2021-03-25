@@ -3,6 +3,7 @@
 # Original license: Copyright (c) Aiden Nibali, under the Apache License.
 # -----------------------------------------------------------------------------
 
+import argparse
 import os
 import pickle
 import tarfile
@@ -24,15 +25,9 @@ class PreprocessH36m:
             should be placed under the subdirectory 's1'.
         extracted_dir (str): Directory of the extracted files. If not given, it
             will be placed under the same parent directory as original_dir.
-        processed_der (str): Directory of the process files. If not given, it
+        processed_der (str): Directory of the processed files. If not given, it
             will be placed under the same parent directory as original_dir.
         sample_rate (int): Downsample FPS to `1 / sample_rate`. Default: 5.
-        smpl_train (str): Path to .pkl file containing SMPL pose and shape for
-            training data. If not given, pose and shape parameters will not be
-            saved to the annotation file.
-        smpl_train (str): Path to .pkl file containing SMPL pose and shape for
-            training data. If not given, pose and shape parameters will not be
-            saved to the annotation file.
     """
 
     def __init__(self,
@@ -40,14 +35,10 @@ class PreprocessH36m:
                  original_dir,
                  extracted_dir=None,
                  processed_dir=None,
-                 sample_rate=5,
-                 smpl_train=None,
-                 smpl_test=None):
+                 sample_rate=5):
         self.metadata = metadata
         self.original_dir = original_dir
         self.sample_rate = sample_rate
-        self.smpl_train = smpl_train
-        self.smpl_test = smpl_test
 
         if extracted_dir is None:
             self.extracted_dir = join(
@@ -78,9 +69,6 @@ class PreprocessH36m:
         self.movable_joints = [
             0, 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27
         ]
-        self.joints_mapping = [
-            14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6
-        ]
         self.scale_factor = 1.2
 
     def extract_tgz(self):
@@ -90,7 +78,7 @@ class PreprocessH36m:
             cur_dir = join(self.original_dir, subject.lower())
             for file in self.extract_files:
                 filename = join(cur_dir, file + '.tgz')
-                print('Extracting %s ...' % filename)
+                print(f'Extracting {filename} ...')
                 with tarfile.open(filename) as tar:
                     tar.extractall(self.extracted_dir)
         print('Extraction done.\n')
@@ -101,17 +89,17 @@ class PreprocessH36m:
         cameras = {}
         for subject in range(1, 12):
             for camera in range(4):
-                key = ('S%d' % subject, self.camera_ids[camera])
+                key = (f'S{subject}', self.camera_ids[camera])
                 cameras[key] = self._get_camera_params(camera, subject)
 
-        out_file = self.processed_dir + '/cameras.pkl'
+        out_file = join(self.processed_dir, 'cameras.pkl')
         with open(out_file, 'wb') as fout:
             pickle.dump(cameras, fout)
-        print('Camera parameters have been written to \"%s\".\n' % out_file)
+        print(f'Camera parameters have been written to \"{out_file}\".\n')
 
     def generate_annotations(self):
         """Generate annotations for training and testing data."""
-        output_dir = join(self.processed_dir, 'annotations')
+        output_dir = join(self.processed_dir, 'annotation_body3d')
         os.makedirs(output_dir, exist_ok=True)
 
         for data_split in ('train', 'test'):
@@ -142,45 +130,18 @@ class PreprocessH36m:
             kps2d_all = np.concatenate(kps2d_all)
             kps3d_all = np.concatenate(kps3d_all)
 
-            out_file = join(output_dir, 'h36m_annot_%s.npz' % data_split)
+            out_file = join(output_dir, f'h36m_{data_split}.npz')
+            np.savez(
+                out_file,
+                imgname=imgnames_all,
+                center=centers_all,
+                scale=scales_all,
+                part=kps2d_all,
+                S=kps3d_all)
 
-            if eval('self.smpl_' + data_split) is not None:
-                with open(eval('self.smpl_' + data_split), 'rb') as fin:
-                    smpl = pickle.load(fin)
-
-                poses_all = []
-                shapes_all = []
-                for i in range(len(imgnames_all)):
-                    imgname = imgnames_all[i]
-                    pose = smpl[imgname][:72]
-                    shape = smpl[imgname][72:]
-                    poses_all.append(pose)
-                    shapes_all.append(shape)
-                poses_all = np.stack(poses_all, axis=0)
-                shapes_all = np.stack(shapes_all, axis=0)
-
-                np.savez(
-                    out_file,
-                    imgname=imgnames_all,
-                    center=centers_all,
-                    scale=scales_all,
-                    part=kps2d_all,
-                    pose=poses_all,
-                    shape=shapes_all,
-                    S=kps3d_all)
-
-            else:
-                np.savez(
-                    out_file,
-                    imgname=imgnames_all,
-                    center=centers_all,
-                    scale=scales_all,
-                    part=kps2d_all,
-                    S=kps3d_all)
-
-            print('All annotations of %sing data have been written to \"%s\". '
-                  '%d samples in total.\n' %
-                  (data_split, out_file, len(imgnames_all)))
+            print(
+                f'All annotations of {data_split}ing data have been written to'
+                ' \"{out_file}\". {len(imgnames_all)} samples in total.\n')
 
     def _load_metadata(self):
         """Load meta data from metadata.xml."""
@@ -213,8 +174,8 @@ class PreprocessH36m:
 
     def _get_base_filename(self, subject, action, subaction, camera):
         """Get base filename given subject, action, subaction and camera."""
-        return '{}.{}'.format(
-            self.sequence_mappings[subject][(action, subaction)], camera)
+        return f'{self.sequence_mappings[subject][(action, subaction)]}'
+        '.{camera}'
 
     def _get_camera_params(self, camera, subject):
         """Get camera parameters given camera id and subject id."""
@@ -252,7 +213,7 @@ class PreprocessH36m:
             'f': f,
             'k': k,
             'p': p,
-            'name': 'camera%d' % (camera + 1),
+            'name': f'camera{camera + 1}',
             'id': self.camera_ids[camera]
         }
 
@@ -265,36 +226,32 @@ class PreprocessH36m:
         with pycdf.CDF(
                 join(subj_dir, 'MyPoseFeatures', 'D2_Positions',
                      basename + '.cdf')) as cdf:
-            kps_2d_17 = np.array(cdf['Pose'])
+            kps_2d = np.array(cdf['Pose'])
 
-        num_frames = kps_2d_17.shape[1]
-        kps_2d_17 = kps_2d_17.reshape((num_frames, 32, 2))[::self.sample_rate,
-                                                           self.movable_joints]
-        kps_2d_17 = np.concatenate(
-            [kps_2d_17, np.ones((len(kps_2d_17), 17, 1))], axis=2)
-        kps_2d = np.zeros((len(kps_2d_17), 24, 3))
-        kps_2d[:, self.joints_mapping, :] = kps_2d_17[:, :, :]
+        num_frames = kps_2d.shape[1]
+        kps_2d = kps_2d.reshape((num_frames, 32, 2))[::self.sample_rate,
+                                                     self.movable_joints]
+        kps_2d = np.concatenate([kps_2d, np.ones((len(kps_2d), 17, 1))],
+                                axis=2)
 
         # load 3D keypoints
         with pycdf.CDF(
                 join(subj_dir, 'MyPoseFeatures', 'D3_Positions_mono',
                      basename + '.cdf')) as cdf:
-            kps_3d_17 = np.array(cdf['Pose'])
+            kps_3d = np.array(cdf['Pose'])
 
-        kps_3d_17 = kps_3d_17.reshape(
+        kps_3d = kps_3d.reshape(
             (num_frames, 32, 3))[::self.sample_rate,
                                  self.movable_joints] / 1000.
-        kps_3d_17 = np.concatenate(
-            [kps_3d_17, np.ones((len(kps_3d_17), 17, 1))], axis=2)
-        kps_3d = np.zeros((len(kps_3d_17), 24, 4))
-        kps_3d[:, self.joints_mapping, :] = kps_3d_17[:, :, :]
+        kps_3d = np.concatenate([kps_3d, np.ones((len(kps_3d), 17, 1))],
+                                axis=2)
 
         # calculate bounding boxes
         bboxes = np.stack([
-            np.min(kps_2d_17[:, :, 0], axis=1),
-            np.min(kps_2d_17[:, :, 1], axis=1),
-            np.max(kps_2d_17[:, :, 0], axis=1),
-            np.max(kps_2d_17[:, :, 1], axis=1)
+            np.min(kps_2d[:, :, 0], axis=1),
+            np.min(kps_2d[:, :, 1], axis=1),
+            np.max(kps_2d[:, :, 0], axis=1),
+            np.max(kps_2d[:, :, 1], axis=1)
         ],
                           axis=1)
         centers = np.stack([(bboxes[:, 0] + bboxes[:, 2]) / 2,
@@ -313,7 +270,7 @@ class PreprocessH36m:
 
         cap = cv2.VideoCapture(video_path)
         for i in range(0, num_frames, self.sample_rate):
-            imgname = prefix + '_%06d.jpg' % (i + 1)
+            imgname = prefix + f'_{i + 1: 06d}.jpg'
             imgnames.append(imgname)
             dest_path = join(self.processed_dir, 'imgs', imgname)
             if os.path.exists(dest_path):
@@ -326,22 +283,54 @@ class PreprocessH36m:
         imgnames = np.array(imgnames)
         assert len(centers) == len(imgnames)
 
-        print('Annoatations for sequence \"%s %s\" are loaded.'
-              '%d samples in total.' % (subject, basename, len(imgnames)))
+        print(
+            f'Annoatations for sequence \"{subject} {basename}\" are loaded. '
+            '{len(imgnames)} samples in total.')
 
         return imgnames, centers, scales, kps_2d, kps_3d
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--metadata', type=str, required=True, help='Path to metadata.xml')
+    parser.add_argument(
+        '--original',
+        type=str,
+        required=True,
+        help='Directory of the original dataset with all files compressed. '
+        'Specifically, .tgz files belonging to subject 1 should be placed '
+        'under the subdirectory \"s1\".')
+    parser.add_argument(
+        '--extracted',
+        type=str,
+        default=None,
+        help='Directory of the extracted files. If not given, it will be '
+        'placed under the same parent directory as original_dir.')
+    parser.add_argument(
+        '--processed',
+        type=str,
+        default=None,
+        help='Directory of the processed files. If not given, it will be '
+        'placed under the same parent directory as original_dir.')
+    parser.add_argument(
+        '--sample_rate',
+        type=int,
+        default=5,
+        help='Downsample FPS to `1 / sample_rate`. Default: 5.')
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == '__main__':
-    METADATA = '/data/Human3.6M/metadata.xml'
-    ORIGINAL_DIR = '/data/Human3.6M/original'
-    EXTRACTED_DIR = '/data/Human3.6M/extracted'
+    args = parse_args()
 
     h36m = PreprocessH36m(
-        METADATA,
-        ORIGINAL_DIR,
-        EXTRACTED_DIR,
-        smpl_train='/data/Human3.6M/process/h36m_smpl_train.pkl')
+        metadata=args.metadata,
+        original_dir=args.original,
+        extracted_dir=args.extracted,
+        processed_dir=args.processed,
+        sample_rate=args.sample_rate)
     h36m.extract_tgz()
     h36m.generate_cameras_file()
     h36m.generate_annotations()
