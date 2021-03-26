@@ -141,7 +141,7 @@ class PreprocessH36m:
 
             print(
                 f'All annotations of {data_split}ing data have been written to'
-                ' \"{out_file}\". {len(imgnames_all)} samples in total.\n')
+                f' \"{out_file}\". {len(imgnames_all)} samples in total.\n')
 
     def _load_metadata(self):
         """Load meta data from metadata.xml."""
@@ -174,8 +174,8 @@ class PreprocessH36m:
 
     def _get_base_filename(self, subject, action, subaction, camera):
         """Get base filename given subject, action, subaction and camera."""
-        return f'{self.sequence_mappings[subject][(action, subaction)]}'
-        '.{camera}'
+        return f'{self.sequence_mappings[subject][(action, subaction)]}' + \
+            f'.{camera}'
 
     def _get_camera_params(self, camera, subject):
         """Get camera parameters given camera id and subject id."""
@@ -199,12 +199,12 @@ class PreprocessH36m:
         T = metadata_slice[3:6].reshape(-1, 1)
 
         # intrinsics
-        c = metadata_slice[8:10, np.newaxis]
-        f = metadata_slice[6:8, np.newaxis]
+        c = metadata_slice[8:10, None]
+        f = metadata_slice[6:8, None]
 
         # distortion
-        k = metadata_slice[10:13, np.newaxis]
-        p = metadata_slice[13:15, np.newaxis]
+        k = metadata_slice[10:13, None]
+        p = metadata_slice[13:15, None]
 
         return {
             'R': R,
@@ -264,28 +264,30 @@ class PreprocessH36m:
         imgnames = []
         video_path = join(subj_dir, 'Videos', basename + '.mp4')
         sub_base = subject + '_' + basename.replace(' ', '_')
-        img_dir = join(self.processed_dir, 'imgs', subject, sub_base)
+        img_dir = join(self.processed_dir, 'images', subject, sub_base)
         os.makedirs(img_dir, exist_ok=True)
         prefix = join(subject, sub_base, sub_base)
 
         cap = cv2.VideoCapture(video_path)
-        for i in range(0, num_frames, self.sample_rate):
-            imgname = prefix + f'_{i + 1: 06d}.jpg'
-            imgnames.append(imgname)
-            dest_path = join(self.processed_dir, 'imgs', imgname)
-            if os.path.exists(dest_path):
-                continue
-            cap.set(1, i)
+        i = 0
+        while True:
             success, img = cap.read()
-            if success:
-                cv2.imwrite(dest_path, img)
+            if not success:
+                break
+            if i % self.sample_rate == 0:
+                imgname = f'{prefix}_{i + 1: 06d}.jpg'
+                imgnames.append(imgname)
+                dest_path = join(self.processed_dir, 'images', imgname)
+                if not os.path.exists(dest_path):
+                    cv2.imwrite(dest_path, img)
+                if len(imgnames) == len(centers):
+                    break
+            i += 1
         cap.release()
         imgnames = np.array(imgnames)
-        assert len(centers) == len(imgnames)
 
-        print(
-            f'Annoatations for sequence \"{subject} {basename}\" are loaded. '
-            '{len(imgnames)} samples in total.')
+        print(f'Annoatations for sequence "{subject} {basename}" are loaded. '
+              f'{len(imgnames)} samples in total.')
 
         return imgnames, centers, scales, kps_2d, kps_3d
 
