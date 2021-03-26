@@ -13,7 +13,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
-    --output-video-root ${OUTPUT_VIDEO_ROOT} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR} --iou-thr ${IOU_SCORE_THR}]
 ```
@@ -42,7 +42,7 @@ python demo/top_down_video_demo_with_mmtracking.py \
     ${MMTRACKING_CONFIG_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
-    --output-video-root ${OUTPUT_VIDEO_ROOT} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
