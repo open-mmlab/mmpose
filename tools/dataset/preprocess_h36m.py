@@ -95,7 +95,7 @@ class PreprocessH36m:
         out_file = join(self.processed_dir, 'cameras.pkl')
         with open(out_file, 'wb') as fout:
             pickle.dump(cameras, fout)
-        print(f'Camera parameters have been written to \"{out_file}\".\n')
+        print(f'Camera parameters have been written to "{out_file}".\n')
 
     def generate_annotations(self):
         """Generate annotations for training and testing data."""
@@ -141,7 +141,7 @@ class PreprocessH36m:
 
             print(
                 f'All annotations of {data_split}ing data have been written to'
-                f' \"{out_file}\". {len(imgnames_all)} samples in total.\n')
+                f' "{out_file}". {len(imgnames_all)} samples in total.\n')
 
     def _load_metadata(self):
         """Load meta data from metadata.xml."""
