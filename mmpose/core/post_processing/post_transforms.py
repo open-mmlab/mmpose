@@ -61,17 +61,18 @@ def fliplr_regression(regression,
         batch_size: N
         num_keypoint: K
     Args:
-        regression (np.ndarray([..., K, C])): Coordinates of keypoints.
+        regression (np.ndarray([..., K, C])): Coordinates of keypoints, where K
+            is the joint number and C is the dimension
         flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
         center_mode (str): The mode to set the center location on the x-axis
             to flip around. Options are:
             - static: use a static x value (see center_x also)
             - root: use a root joint (see center_index also)
-        center_x (float): Set the x-axis location of the flip cneter. Only used
+        center_x (float): Set the x-axis location of the flip center. Only used
             when center_mode=static.
         center_index (int): Set the index of the root joint, whose x location
-            will be used as the flip center. Only used when cneter_mode=root.
+            will be used as the flip center. Only used when center_mode=root.
 
     Returns:
         tuple: Flipped human joints.
