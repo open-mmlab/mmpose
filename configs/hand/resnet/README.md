@@ -53,3 +53,10 @@
 |All|test(H)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.839 | 4.65 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
 |All|test(M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.838 | 4.42 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
 |All|test(H+M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.851 | 4.46 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
+
+#### Results on RHD test set
+
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/hand/resnet/rhd2d/res50_rhd2d_224x224.py) | 224x224 | 0.986 | 0.889 | 2.61 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_224x224-280404fa_20210327.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_224x224_20210327.log.json) |
+| [pose_resnet_50](/configs/hand/resnet/rhd2d/res50_rhd2d_256x256.py) | 256x256 | 0.983 | 0.888 | 2.63 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5d8853b1_20210327.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256_20210327.log.json) |
