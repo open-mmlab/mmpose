@@ -4,6 +4,7 @@ import tempfile
 
 import mmcv
 import numpy as np
+import pytest
 
 from mmpose.datasets.pipelines import Compose
 
@@ -198,3 +199,30 @@ def test_camera_projection():
 
     np.testing.assert_allclose(
         output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
+
+    # test incomplete camera parameters
+    with pytest.raises(ValueError):
+        camera_param_wo_intrinsic = camera_param.copy()
+        camera_param_wo_intrinsic.pop('K')
+        camera_param_wo_intrinsic.pop('f')
+        camera_param_wo_intrinsic.pop('c')
+        _ = Compose([
+            dict(
+                type='CameraProjection',
+                item='input_3d',
+                camera_type='SimpleCamera',
+                camera_param=camera_param_wo_intrinsic,
+                mode='camera_to_pixel')
+        ])
+
+    camera_param_wo_undistortion = camera_param.copy()
+    camera_param_wo_undistortion.pop('k')
+    camera_param_wo_undistortion.pop('p')
+    _ = Compose([
+        dict(
+            type='CameraProjection',
+            item='input_3d',
+            camera_type='SimpleCamera',
+            camera_param=camera_param_wo_undistortion,
+            mode='camera_to_pixel')
+    ])

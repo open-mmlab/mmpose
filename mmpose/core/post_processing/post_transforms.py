@@ -90,8 +90,6 @@ def fliplr_regression(regression,
     elif center_mode == 'root':
         assert regression.shape[-2] > center_index
         x_c = regression[..., center_index:center_index + 1, 0]
-    else:
-        raise NotImplementedError
 
     regression_flipped = regression.copy()
     # Swap left-right parts
