@@ -64,8 +64,7 @@ data_cfg = dict(
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
-    inference_channel=channel_cfg['inference_channel'],
-)
+    inference_channel=channel_cfg['inference_channel'])
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
