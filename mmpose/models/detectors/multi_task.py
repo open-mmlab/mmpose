@@ -46,9 +46,6 @@ class MultiTask(nn.Module):
             assert head is not None
             self.heads.append(builder.build_head(head))
 
-        if self.with_necks:
-            assert len(self.necks) == len(self.heads)
-
         self.init_weights(pretrained=pretrained)
 
     @property
@@ -130,11 +127,14 @@ class MultiTask(nn.Module):
         for head, output, gt, gt_weight in zip(self.heads, outputs, target,
                                                target_weight):
             loss = head.get_loss(output, gt, gt_weight)
-            acc = head.get_accuracy(output, gt, gt_weight)
             assert len(set(losses.keys()).intersection(set(loss.keys()))) == 0
             losses.update(loss)
-            assert len(set(losses.keys()).intersection(set(acc.keys()))) == 0
-            losses.update(acc)
+
+            if hasattr(head, 'get_accuracy'):
+                acc = head.get_accuracy(output, gt, gt_weight)
+                assert len(set(losses.keys()).intersection(set(
+                    acc.keys()))) == 0
+                losses.update(acc)
 
         return losses
 
@@ -152,12 +152,19 @@ class MultiTask(nn.Module):
 
         for head_id, head in enumerate(self.heads):
             neck_id = self.head2neck[head_id]
-            outputs.append(
-                head.inference_model(
-                    self.necks[neck_id](features), flip_pairs=None))
+            if hasattr(head, 'inference_model'):
+                head_output = head.inference_model(
+                    self.necks[neck_id](features), flip_pairs=None)
+            else:
+                head_output = head(self.necks[neck_id](features))
+            outputs.append(head_output)
 
         for head, output in zip(self.heads, outputs):
-            result = head.decode(img_metas, output, [img_width, img_height])
+            if hasattr(head, 'decode'):
+                result = head.decode(
+                    img_metas, output, img_size=[img_width, img_height])
+            else:
+                result = output
             results.update(result)
 
         return results
