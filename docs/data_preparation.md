@@ -7,4 +7,5 @@ MMPose supports multiple tasks. Please follow the corresponding guidelines for d
 - [2D Face Keypoint](tasks/2d_face_keypoint.md)
 - [2D WholeBody Keypoint](tasks/2d_wholebody_keypoint.md)
 - [2D Fashion Landmark Detection](tasks/2d_fashion_landmark.md)
+- [2D Animal Keypoint Detection](tasks/2d_animal_keypoint.md)
 - [3D Human Mesh Recovery](tasks/3d_body_mesh.md)
