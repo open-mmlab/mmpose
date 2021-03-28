@@ -107,7 +107,6 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         # get 2D joints
         if self.joint_2d_src == 'gt':
-            assert 'joint_2d' in data_info
             assert data_info['joints_2d'].shape[1] == self.JOINT_NUM_ANNOTATION
             data_info['joints_2d'] = data_info[
                 'joints_2d'][:, self.JOINT_IDX_ANNOTATION]
@@ -171,8 +170,10 @@ class Body3DH36MDataset(Body3DBaseDataset):
         return joints_2d
 
     def evaluate(self, outputs, res_folder, metric='joint_error', **kwargs):
-        metrics = metric if isinstance(metric, list) else [metric]
+        # bound the kwargs
+        assert len(kwargs) == 0
 
+        metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
                 raise ValueError(
