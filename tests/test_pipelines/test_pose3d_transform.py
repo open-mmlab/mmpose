@@ -188,6 +188,13 @@ def test_camera_projection():
             camera_type='SimpleCamera',
             camera_param=camera_param,
             mode='camera_to_pixel'),
+        dict(
+            type='CameraProjection',
+            item='input_3d_w',
+            output_name='input_3d_wc',
+            camera_type='SimpleCamera',
+            camera_param=camera_param,
+            mode='world_to_camera'),
         dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
     ]
 
@@ -200,8 +207,9 @@ def test_camera_projection():
     np.testing.assert_allclose(
         output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
 
-    # test incomplete camera parameters
+    # test invalid camera parameters
     with pytest.raises(ValueError):
+        # missing intrinsic parameters
         camera_param_wo_intrinsic = camera_param.copy()
         camera_param_wo_intrinsic.pop('K')
         camera_param_wo_intrinsic.pop('f')
@@ -215,6 +223,18 @@ def test_camera_projection():
                 mode='camera_to_pixel')
         ])
 
+    with pytest.raises(ValueError):
+        # invalid mode
+        _ = Compose([
+            dict(
+                type='CameraProjection',
+                item='input_3d',
+                camera_type='SimpleCamera',
+                camera_param=camera_param,
+                mode='dummy')
+        ])
+
+    # test camera without undistortion
     camera_param_wo_undistortion = camera_param.copy()
     camera_param_wo_undistortion.pop('k')
     camera_param_wo_undistortion.pop('p')
