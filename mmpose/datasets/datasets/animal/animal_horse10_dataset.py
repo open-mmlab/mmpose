@@ -1,8 +1,11 @@
 import os
 from collections import OrderedDict
 
+import json_tricks as json
 import numpy as np
 
+from mmpose.core.evaluation.top_down_eval import (keypoint_nme,
+                                                  keypoint_pck_accuracy)
 from ...registry import DATASETS
 from .animal_base_dataset import AnimalBaseDataset
 
@@ -117,9 +120,68 @@ class AnimalHorse10Dataset(AnimalBaseDataset):
 
         return gt_db
 
+    def _get_normalize_factor(self, gts):
+        """Get inter-ocular distance as the normalize factor, measured as the
+        Euclidean distance between the outer corners of the eyes.
+
+        Args:
+            gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+
+        Return:
+            np.ndarray[N, 2]: normalized factor
+        """
+
+        interocular = np.linalg.norm(
+            gts[:, 0, :] - gts[:, 1, :], axis=1, keepdims=True)
+        return np.tile(interocular, [1, 2])
+
+    def _report_metric(self, res_file, metrics, pck_thr=0.3):
+        """Keypoint evaluation.
+
+        Args:
+            res_file (str): Json file stored prediction results.
+            metrics (str | list[str]): Metric to be performed.
+                Options: 'PCK', 'NME'.
+            pck_thr (float): PCK threshold, default: 0.3.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
+        """
+        info_str = []
+
+        with open(res_file, 'r') as fin:
+            preds = json.load(fin)
+        assert len(preds) == len(self.db)
+
+        outputs = []
+        gts = []
+        masks = []
+
+        for pred, item in zip(preds, self.db):
+            outputs.append(np.array(pred['keypoints'])[:, :-1])
+            gts.append(np.array(item['joints_3d'])[:, :-1])
+            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
+
+        outputs = np.array(outputs)
+        gts = np.array(gts)
+        masks = np.array(masks)
+
+        normalize_factor = self._get_normalize_factor(gts)
+
+        if 'PCK' in metrics:
+            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
+                                              normalize_factor)
+            info_str.append(('PCK', pck))
+
+        if 'NME' in metrics:
+            info_str.append(
+                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
+
+        return info_str
+
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
-        """Evaluate onehand10k keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        """Evaluate horse-10 keypoint results. The pose prediction results will
+        be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             batch_size: N
@@ -138,13 +200,13 @@ class AnimalHorse10Dataset(AnimalBaseDataset):
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'AUC', 'EPE'.
+                Options: 'PCK', 'NME'.
 
         Returns:
             dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['PCK', 'AUC', 'EPE']
+        allowed_metrics = ['PCK', 'NME']
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')

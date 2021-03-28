@@ -6,8 +6,6 @@ import numpy as np
 from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
-from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
-                                                  keypoint_pck_accuracy)
 from mmpose.datasets.pipelines import Compose
 
 
@@ -128,75 +126,6 @@ class AnimalBaseDataset(Dataset, metaclass=ABCMeta):
 
         with open(res_file, 'w') as f:
             json.dump(keypoints, f, sort_keys=True, indent=4)
-
-    def _report_metric(self,
-                       res_file,
-                       metrics,
-                       pck_thr=0.2,
-                       pckh_thr=0.7,
-                       auc_nor=30):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'PCKh', 'AUC', 'EPE'.
-            pck_thr (float): PCK threshold, default as 0.2.
-            pckh_thr (float): PCKh threshold, default as 0.7.
-            auc_nor (float): AUC normalization factor, default as 30 pixel.
-
-        Returns:
-            List: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-        threshold_bbox = []
-        threshold_head_box = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-            if 'PCK' in metrics:
-                bbox = np.array(item['bbox'])
-                bbox_thr = np.max(bbox[2:])
-                threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
-            if 'PCKh' in metrics:
-                head_box_thr = item['head_size']
-                threshold_head_box.append(
-                    np.array([head_box_thr, head_box_thr]))
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-        threshold_bbox = np.array(threshold_bbox)
-        threshold_head_box = np.array(threshold_head_box)
-
-        if 'PCK' in metrics:
-            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
-                                              threshold_bbox)
-            info_str.append(('PCK', pck))
-
-        if 'PCKh' in metrics:
-            _, pckh, _ = keypoint_pck_accuracy(outputs, gts, masks, pckh_thr,
-                                               threshold_head_box)
-            info_str.append(('PCKh', pckh))
-
-        if 'AUC' in metrics:
-            info_str.append(('AUC', keypoint_auc(outputs, gts, masks,
-                                                 auc_nor)))
-
-        if 'EPE' in metrics:
-            info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
-
-        return info_str
 
     def __len__(self):
         """Get the size of the dataset."""
