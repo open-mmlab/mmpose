@@ -37,10 +37,10 @@ class AnimalHorse10Dataset(AnimalBaseDataset):
         14: 'Nearhindfetlock',
         15: 'Nearhindfoot',
         16: 'Hip',
-        17: 'Stifle'
+        17: 'Stifle',
         18: 'Offhindhock',
-        19: 'Offhindfetlock'
-        20: 'Offhindfoot'
+        19: 'Offhindfetlock',
+        20: 'Offhindfoot',
         21: 'Ischium'
 
     Args:
