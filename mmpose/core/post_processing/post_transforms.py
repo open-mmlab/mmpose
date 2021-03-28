@@ -143,12 +143,8 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
 
 
 def transform_preds(coords, center, scale, output_size, use_udp=False):
-    """Get final keypoint predictions from heatmaps and transform them back to
-    the image.
-
-    First calculate the transformation matrix from `get_affine_transform()`,
-    then affine transform the predicted keypoint coordinates back
-    to the image.
+    """Get final keypoint predictions from heatmaps and apply scaling and
+    translation to map them back to the image.
 
     Note:
         num_keypoints: K
@@ -186,7 +182,7 @@ def transform_preds(coords, center, scale, output_size, use_udp=False):
         scale_x = scale[0] / output_size[0]
         scale_y = scale[1] / output_size[1]
 
-    target_coords = np.zeros(coords.shape)
+    target_coords = np.zeros_like(coords)
     target_coords[:, 0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
     target_coords[:, 1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
 
