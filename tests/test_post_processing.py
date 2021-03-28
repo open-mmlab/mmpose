@@ -55,6 +55,13 @@ def test_transform_preds():
     ans = transform_preds(coords, center, scale, size)
     assert_array_almost_equal(coords, ans)
 
+    coords = np.random.random([2, 2])
+    center = np.array([50, 50])
+    scale = np.array([100 / 200.0, 100 / 200.0])
+    size = np.array([101, 101])
+    ans = transform_preds(coords, center, scale, size, use_udp=True)
+    assert_array_almost_equal(coords, ans)
+
 
 def test_get_affine_transform():
     center = np.array([50, 50])
