@@ -54,6 +54,7 @@ def parse_args():
         action='store_true',
         help=('whether to set the dataset as simple_inference mode, '
               'currently only compatible with TopDownCocoWholeBodyDataset'))
+    parser.add_argument('--testfile', default=None, help='test ann file')
 
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
@@ -86,6 +87,8 @@ def main():
         torch.backends.cudnn.benchmark = True
     cfg.model.pretrained = None
     cfg.data.test.test_mode = True
+    if args.testfile is not None:
+        cfg.data.test.ann_file = args.testfile
 
     args.work_dir = osp.join('./work_dirs',
                              osp.splitext(osp.basename(args.config))[0])
@@ -105,7 +108,7 @@ def main():
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     dataloader_setting = dict(
         samples_per_gpu=1,
-        workers_per_gpu=cfg.data.get('workers_per_gpu', 1),
+        workers_per_gpu=cfg.data.get('workers_per_gpu', 4),
         dist=distributed,
         shuffle=False,
         drop_last=False)
