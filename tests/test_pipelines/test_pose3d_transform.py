@@ -33,7 +33,6 @@ def get_data_sample():
     _imgnames = data['imgname']
     _joints_2d = data['part'][:, H36M_JOINT_IDX].astype(np.float32)
     _joints_3d = data['S'][:, H36M_JOINT_IDX].astype(np.float32)
-    _joints_3d[..., :3] *= 1000.
     _centers = data['center'].astype(np.float32)
     _scales = data['scale'].astype(np.float32)
 
