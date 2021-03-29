@@ -139,19 +139,21 @@ class Collect:
         data = {}
         for key in self.keys:
             if isinstance(key, tuple):
-                key_src, key_tar = key[:2]
+                assert len(key) == 2
+                key_src, key_tgt = key[:2]
             else:
-                key_src = key_tar = key
-            data[key_tar] = results[key_src]
+                key_src = key_tgt = key
+            data[key_tgt] = results[key_src]
 
         meta = {}
         if len(self.meta_keys) != 0:
             for key in self.meta_keys:
                 if isinstance(key, tuple):
-                    key_src, key_tar = key[:2]
+                    assert len(key) == 2
+                    key_src, key_tgt = key[:2]
                 else:
-                    key_src = key_tar = key
-                meta[key_tar] = results[key_src]
+                    key_src = key_tgt = key
+                meta[key_tgt] = results[key_src]
         if 'bbox_id' in results:
             meta['bbox_id'] = results['bbox_id']
         data[self.meta_name] = DC(meta, cpu_only=True)
