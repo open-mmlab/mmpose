@@ -39,6 +39,43 @@ def test_multitask_forward():
     outputs = model(inputs, img_metas=img_metas, return_loss=False)
     assert 'preds' in outputs
 
+    # Test dummy forward
+    outputs = model.forward_dummy(inputs)
+    assert outputs[0].shape == torch.Size([1, 17, 2])
+
+    # Build multitask detector with no neck
+    model_cfg = dict(
+        backbone=dict(type='ResNet', depth=50),
+        heads=[
+            dict(
+                type='TopDownSimpleHead',
+                in_channels=2048,
+                out_channels=17,
+                num_deconv_layers=3,
+                num_deconv_filters=(256, 256, 256),
+                num_deconv_kernels=(4, 4, 4),
+                loss_keypoint=dict(
+                    type='JointsMSELoss', use_target_weight=True))
+        ],
+        pretrained=None,
+    )
+    model = MultiTask(**model_cfg)
+
+    # build inputs and target
+    target = [mm_inputs['target_heatmap']]
+
+    # Test forward train
+    losses = model(inputs, target, target_weight, return_loss=True)
+    assert 'mse_loss' in losses and 'acc_pose' in losses
+
+    # Test forward test
+    outputs = model(inputs, img_metas=img_metas, return_loss=False)
+    assert 'preds' in outputs
+
+    # Test dummy forward
+    outputs = model.forward_dummy(inputs)
+    assert outputs[0].shape == torch.Size([1, 17, 64, 64])
+
 
 def _demo_mm_inputs(input_shape=(1, 3, 256, 256)):
     """Create a superset of inputs needed to run test or train.
