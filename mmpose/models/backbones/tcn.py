@@ -1,8 +1,10 @@
 import copy
 
 import torch.nn as nn
-from mmcv.cnn import ConvModule, build_conv_layer
+from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
+from mmcv.utils.parrots_wrapper import _BatchNorm
 
+from mmpose.core import WeightNormClipRegister
 from ..registry import BACKBONES
 from .base_backbone import BaseBackbone
 
@@ -150,6 +152,8 @@ class TCN(BaseBackbone):
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN1d').
+        max_norm (float|None): if not None, the weight of convolution layers
+            will be clipped to have a maximum norm of max_norm.
 
     Example:
         >>> from mmpose.models import TCN
@@ -174,7 +178,8 @@ class TCN(BaseBackbone):
                  residual=True,
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
-                 norm_cfg=dict(type='BN1d')):
+                 norm_cfg=dict(type='BN1d'),
+                 max_norm=None):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -187,6 +192,7 @@ class TCN(BaseBackbone):
         self.causal = causal
         self.residual = residual
         self.use_stride_conv = use_stride_conv
+        self.max_norm = max_norm
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
@@ -219,6 +225,13 @@ class TCN(BaseBackbone):
                     norm_cfg=norm_cfg))
             dilation *= kernel_sizes[i]
 
+        if self.max_norm is not None:
+            # Apply weight norm clip to conv layers
+            weight_clip = WeightNormClipRegister(self.max_norm)
+            for module in self.modules():
+                if isinstance(module, nn.modules.conv._ConvNd):
+                    weight_clip.register(module)
+
     def forward(self, x):
         """Forward function."""
         x = self.expand_conv(x)
@@ -228,3 +241,13 @@ class TCN(BaseBackbone):
             outs.append(x)
 
         return tuple(outs)
+
+    def init_weights(self, pretrained=None):
+        """Initialize the weights."""
+        super().init_weights(pretrained)
+        if pretrained is None:
+            for m in self.modules():
+                if isinstance(m, nn.Conv2d):
+                    kaiming_init(m, mode='fan_in', nonlinearity='relu')
+                elif isinstance(m, _BatchNorm):
+                    constant_init(m, 1)

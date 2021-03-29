@@ -25,7 +25,6 @@ def keypoint_mpjpe(pred, gt, mask):
             ground truth
     """
     assert mask.any()
-
     pred_aligned = np.stack(
         compute_similarity_transform(pred_i, gt_i)
         for pred_i, gt_i in zip(pred, gt))

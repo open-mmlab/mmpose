@@ -21,14 +21,14 @@ def test_body3d_h36m_dataset():
         camera_param_file='tests/data/h36m/cameras.pkl')
 
     _ = dataset_class(
-        ann_file='tests/data/h36m/test_h36m.npz',
+        ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
         pipeline=[],
         test_mode=False)
 
     custom_dataset = dataset_class(
-        ann_file='tests/data/h36m/test_h36m.npz',
+        ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
         pipeline=[],
