@@ -275,7 +275,7 @@ class PreprocessH36m:
             if not success:
                 break
             if i % self.sample_rate == 0:
-                imgname = f'{prefix}_{i + 1: 06d}.jpg'
+                imgname = f'{prefix}_{i + 1:06d}.jpg'
                 imgnames.append(imgname)
                 dest_path = join(self.processed_dir, 'images', imgname)
                 if not os.path.exists(dest_path):
