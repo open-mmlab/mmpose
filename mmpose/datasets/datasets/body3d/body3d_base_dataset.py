@@ -10,7 +10,7 @@ from mmpose.datasets.pipelines import Compose
 class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
     """Base class for 3D human pose datasets.
 
-    Subclasses should consider everwriting following methods:
+    Subclasses should consider overwriting following methods:
         - load_config
         - load_annotations
         - build_sample_indices

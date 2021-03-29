@@ -4,7 +4,7 @@ from collections import OrderedDict, defaultdict
 import mmcv
 import numpy as np
 
-from mmpose.core.evaluation.mesh_eval import compute_similarity_transform
+from mmpose.core.evaluation import keypoint_mpjpe
 from ...registry import DATASETS
 from .body3d_base_dataset import Body3DBaseDataset
 
@@ -58,13 +58,13 @@ class Body3DH36MDataset(Body3DBaseDataset):
     JOINT_IDX_ANNOTATION = [
         14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6
     ]
-    # The total joint number in the annotatino file
+    # The total joint number in the annotation file
     JOINT_NUM_ANNOTATION = 24
 
     # 2D joint source options:
     # "gt": from the annotation file
     # "detection": from a detection result file of 2D keypoint
-    # "pipeline": will be generate in the pipeline
+    # "pipeline": will be generate by the pipeline
     SUPPORTED_JOINT_2D_SRC = {'gt', 'detection', 'pipeline'}
 
     # metric
@@ -198,61 +198,40 @@ class Body3DH36MDataset(Body3DBaseDataset):
         name_value_tuples = []
         for _metric in metrics:
             if _metric == 'joint_error':
-                _nv_tuples = self._report_joint_error(kpts)
+                _nv_tuples = self._report_mpjpe(kpts)
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
 
         return OrderedDict(name_value_tuples)
 
-    def _report_joint_error(self, keypoint_results):
+    def _report_mpjpe(self, keypoint_results):
         """Keypoint evaluation.
 
         Report mean per joint position error (MPJPE) and mean per joint
         position error after rigid alignment (MPJPE-PA)
         """
 
-        joint_error = []
-        joint_error_pa = []
+        preds = []
+        gts = []
+        masks = []
         for result in keypoint_results:
             pred = result['keypoints']
             target_id = result['target_id']
-            target, target_visible = np.split(
+            gt, gt_visible = np.split(
                 self.data_info['joints_3d'][target_id], [3], axis=-1)
+            preds.append(pred)
+            gts.append(gt)
+            masks.append(gt_visible)
 
-            error, error_pa = self._joint_error_kernel(pred, target,
-                                                       target_visible)
+        preds = np.stack(preds)
+        gts = np.stack(gts)
+        masks = np.stack(masks).squeeze(-1) > 0
 
-            joint_error.append(error)
-            joint_error_pa.append(error_pa)
-
-        name_value_tuples = [('MPJPE', np.mean(joint_error)),
-                             ('MPJPE-PA', np.mean(joint_error_pa))]
+        mpjpe, p_mpjpe = keypoint_mpjpe(preds, gts, masks)
+        name_value_tuples = [('MPJPE', mpjpe), ('MPJPE-PA', p_mpjpe)]
 
         return name_value_tuples
-
-    @staticmethod
-    def _joint_error_kernel(pred_joints_3d, gt_joints_3d, joints_3d_visible):
-        """Evaluate one example."""
-        assert (joints_3d_visible > 0).all()
-
-        root_joint_idx = 0
-        pred_joints_3d = np.array(pred_joints_3d)
-        pred_root = pred_joints_3d[root_joint_idx]
-        pred_joints_3d = pred_joints_3d - pred_root
-
-        gt_root = gt_joints_3d[root_joint_idx]
-        gt_joints_3d = gt_joints_3d - gt_root
-
-        error = pred_joints_3d - gt_joints_3d
-        error = np.linalg.norm(error, ord=2, axis=-1).mean(axis=-1)
-
-        pred_joints_3d_aligned = compute_similarity_transform(
-            pred_joints_3d, gt_joints_3d)
-        error_pa = pred_joints_3d_aligned - gt_joints_3d
-        error_pa = np.linalg.norm(error_pa, ord=2, axis=-1).mean(axis=-1)
-
-        return error, error_pa
 
     def _load_camera_param(self, camear_param_file):
         """Load camera parameters from file."""
