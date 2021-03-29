@@ -49,6 +49,12 @@ def parse_args():
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
         help='job launcher')
+    parser.add_argument(
+        '--simple_inference',
+        action='store_true',
+        help=('whether to set the dataset as simple_inference mode, '
+              'currently only compatible with TopDownCocoWholeBodyDataset'))
+
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
@@ -92,6 +98,9 @@ def main():
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
 
+    if args.simple_inference:
+        cfg.data.test.simple_inference = True
+
     # build the dataloader
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     dataloader_setting = dict(
@@ -133,8 +142,8 @@ def main():
         if args.out:
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
-
-        print(dataset.evaluate(outputs, args.work_dir, **eval_config))
+        if not args.simple_inference:
+            print(dataset.evaluate(outputs, args.work_dir, **eval_config))
 
 
 if __name__ == '__main__':

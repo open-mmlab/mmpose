@@ -1,6 +1,8 @@
 import os
+import os.path as osp
 import warnings
 
+import mmcv
 import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -36,6 +38,11 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
+        simple_inference (bool): If running the simple inference mode. In
+            simple inference mode, the ann_file contains a list of dict, each
+            dict contains two varibles: image_file and bbox (x, y, w, h).
+            In simple inference mode, all bboxes should be inside the image.
+            Default: False.
     """
 
     def __init__(self,
@@ -43,7 +50,8 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 simple_inference=False):
         super(TopDownCocoDataset, self).__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
@@ -110,6 +118,12 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
 
         self.sigmas = np.array(self.sigmas_wholebody)
 
+        self.simple_inference = simple_inference
+        if self.simple_inference:
+            self.db = self._get_simple_inference(ann_file)
+            print(f'=> load {len(self.db)} samples')
+            return
+
         self.coco = COCO(ann_file)
 
         cats = [
@@ -131,6 +145,16 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
+
+    def _get_simple_inference(self, ann_file):
+        db = mmcv.load(ann_file)
+        for obj in db:
+            obj['image_file'] = osp.join(self.img_prefix, obj['image_file'])
+            obj['center'], obj['scale'] = self._xywh2cs(*obj['bbox'])
+            obj['rotation'] = 0
+            obj['bbox_score'] = 1
+            obj['dataset'] = 'smp_inf'
+        return db
 
     @staticmethod
     def _make_flip_pairs():
