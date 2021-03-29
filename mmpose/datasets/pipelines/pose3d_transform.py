@@ -25,10 +25,9 @@ class JointRelativization:
             store the root position separated from the original pose.
 
     Required keys:
-        item (depend on args): Should be an array in shape [...,Kj,C], where
-            the joint number Kj should be greater than root_index.
+        item
     Modified keys:
-        item, root_name (depend on args), ann_info (add relative flip pairs)
+        item, root_name
     """
 
     def __init__(self, item, root_index, remove_root=False, root_name=None):
@@ -67,13 +66,12 @@ class JointNormalization:
 
     Args:
         item (str): The name of the pose to normalize.
-        mean (array): Mean values of joint coordiantes in shape [Kj, C].
-        std (array): Std values of joint coordinates in shape [Kj, C].
+        mean (array): Mean values of joint coordiantes in shape [K, C].
+        std (array): Std values of joint coordinates in shape [K, C].
         norm_param_file (str): Optionally load a dict containing `mean` and
             `std` from a file using `mmcv.load`.
     Required keys:
-        item (depend on args): Should be an array in shape [...,Kj,C], where
-            the joint number Kj should be greater than root_index.
+        item
     Modified keys:
         item
     """
@@ -114,13 +112,13 @@ class CameraProjection:
         camera_param (dict|None): The camera parameter dict. See the camera
             class definition for more details. If None is given, the camera
             parameter will be obtained during processing of each data sample
-            with the key "camara_param".
+            with the key "camera_param".
 
     Required keys:
-        item (depend on args): Should be an array in shape [...,Kj,C]
+        item
         camera_param (if camera parameters are not given in initialization)
     Modified keys:
-        output_name (depend on args)
+        output_name
     """
 
     def __init__(self,
@@ -194,7 +192,7 @@ class RelativeJointRandomFlip:
         flip_prob (float): Probability of flip.
 
     Required keys:
-        item (depend on args): Should be an array in shape [...,Kj,C]
+        item
     Modified keys:
         item
     """
