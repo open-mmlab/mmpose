@@ -68,7 +68,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     SUPPORTED_JOINT_2D_SRC = {'gt', 'detection', 'pipeline'}
 
     # metric
-    ALLOWED_METRICS = {'joint_error'}
+    ALLOWED_METRICS = {'mpjpe'}
 
     def load_config(self, data_cfg):
         super().load_config(data_cfg)
@@ -169,7 +169,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return joints_2d
 
-    def evaluate(self, outputs, res_folder, metric='joint_error', **kwargs):
+    def evaluate(self, outputs, res_folder, metric='mpjpe', **kwargs):
         # bound the kwargs
         assert len(kwargs) == 0
 
@@ -197,7 +197,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         name_value_tuples = []
         for _metric in metrics:
-            if _metric == 'joint_error':
+            if _metric == 'mpjpe':
                 _nv_tuples = self._report_mpjpe(kpts)
             else:
                 raise NotImplementedError
@@ -229,7 +229,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
         masks = np.stack(masks).squeeze(-1) > 0
 
         mpjpe, p_mpjpe = keypoint_mpjpe(preds, gts, masks)
-        name_value_tuples = [('MPJPE', mpjpe), ('MPJPE-PA', p_mpjpe)]
+        name_value_tuples = [('MPJPE', mpjpe), ('P-MPJPE', p_mpjpe)]
 
         return name_value_tuples
 
