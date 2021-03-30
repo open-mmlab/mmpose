@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from mmcv.runner import load_checkpoint
 
-from mmpose.models import build_posenet
+from mmpose.apis.inference import init_pose_model
 
 try:
     import onnx
@@ -69,7 +69,7 @@ def pytorch2onnx(model,
         one_img,
         output_file,
         export_params=True,
-        keep_initializers_as_inputs=True,
+        keep_initializers_as_inputs=False,
         verbose=show,
         opset_version=opset_version)
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
     cfg = mmcv.Config.fromfile(args.config)
     # build the model
-    model = build_posenet(cfg.model)
+    model = init_pose_model(cfg, args.checkpoint)
     model = _convert_batchnorm(model)
 
     # onnx.export does not support kwargs
@@ -139,8 +139,6 @@ if __name__ == '__main__':
     else:
         raise NotImplementedError(
             'Please implement the forward method for exporting.')
-
-    checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
 
     # conver model to onnx file
     pytorch2onnx(
