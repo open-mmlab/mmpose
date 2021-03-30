@@ -42,7 +42,7 @@ jobs:
             mmcv: "latest+torch1.3.0+cpu"
           - torch: 1.5.1
             torchvision: 0.6.1
-            mmcv: "latest+torch1.5.1+cpu"
+            mmcv: "latest+torch1.5.0+cpu"
           - torch: 1.6.0
             torchvision: 0.7.0
             mmcv: "latest+torch1.6.0+cpu"
@@ -90,7 +90,7 @@ jobs:
             mmcv: "latest+torch1.3.0+cu101"
           - torch: 1.5.1+cu101
             torchvision: 0.6.1+cu101
-            mmcv: "latest+torch1.5.1+cu101"
+            mmcv: "latest+torch1.5.0+cu101"
           - torch: 1.6.0+cu101
             torchvision: 0.7.0+cu101
             mmcv: "latest+torch1.6.0+cu101"
