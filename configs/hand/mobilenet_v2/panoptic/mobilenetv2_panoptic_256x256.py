@@ -64,14 +64,13 @@ data_cfg = dict(
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
-    inference_channel=channel_cfg['inference_channel'],
-)
+    inference_channel=channel_cfg['inference_channel'])
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=20, scale_factor=0.3),
+        type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
