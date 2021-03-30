@@ -19,13 +19,16 @@ def test_compose():
         # transform must be callable or a dict
         Compose('LoadImageFromFile')
 
-    target_keys = ['img', 'img_metas']
+    target_keys = ['img', 'img_rename', 'img_metas']
 
     # test Compose given a data pipeline
     img = np.random.randn(256, 256, 3)
     results = dict(img=img, img_file='test_image.png')
     test_pipeline = [
-        dict(type='Collect', keys=['img'], meta_keys=['img_file'])
+        dict(
+            type='Collect',
+            keys=['img', ('img', 'img_rename')],
+            meta_keys=['img_file'])
     ]
     compose = Compose(test_pipeline)
     compose_results = compose(results)
