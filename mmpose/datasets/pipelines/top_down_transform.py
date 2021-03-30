@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
-                                         get_affine_transform)
-from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
+                                         get_affine_transform, get_warp_matrix,
+                                         warp_affine_joints)
 from mmpose.datasets.registry import PIPELINES
 
 
