@@ -156,17 +156,14 @@ class MultiTask(nn.Module):
                 head_output = head.inference_model(
                     self.necks[neck_id](features), flip_pairs=None)
             else:
-                head_output = head(self.necks[neck_id](features))
+                head_output = head(
+                    self.necks[neck_id](features)).detach().cpu().numpy()
             outputs.append(head_output)
 
         for head, output in zip(self.heads, outputs):
-            if hasattr(head, 'decode'):
-                result = head.decode(
-                    img_metas, output, img_size=[img_width, img_height])
-            else:
-                result = output
+            result = head.decode(
+                img_metas, output, img_size=[img_width, img_height])
             results.update(result)
-
         return results
 
     def forward_dummy(self, img):
