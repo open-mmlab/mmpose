@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=5)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=5, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
+    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -18,8 +18,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[40, 50])
-total_epochs = 60
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
     interval=20,
     hooks=[
@@ -103,41 +103,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/interhand2.6m'
+data_root = 'data/rhd'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_joint_3d.json',
-        img_prefix=f'{data_root}/images/train/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_train.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_joint_3d.json',
-        img_prefix=f'{data_root}/images/val/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_joint_3d.json',
-        img_prefix=f'{data_root}/images/test/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

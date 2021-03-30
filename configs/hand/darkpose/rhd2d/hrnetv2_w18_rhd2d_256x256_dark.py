@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=5)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=5, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
+    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -18,10 +18,10 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[40, 50])
-total_epochs = 60
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
-    interval=20,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
@@ -44,17 +44,51 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    pretrained='open-mmlab://msra/hrnetv2_w18',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(18, 36)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(18, 36, 72)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(18, 36, 72, 144),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False))),
     keypoint_head=dict(
         type='TopDownSimpleHead',
-        in_channels=2048,
+        in_channels=[18, 36, 72, 144],
+        in_index=(0, 1, 2, 3),
+        input_transform='resize_concat',
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(
+            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='default',
+        post_process='unbiased',
         shift_heatmap=True,
         modulate_kernel=11))
 
@@ -77,7 +111,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2, unbiased_encoding=True),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -103,41 +137,26 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/interhand2.6m'
+data_root = 'data/rhd'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_train_joint_3d.json',
-        img_prefix=f'{data_root}/images/train/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_train.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_joint_3d.json',
-        img_prefix=f'{data_root}/images/val/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_test_joint_3d.json',
-        img_prefix=f'{data_root}/images/test/',
+        type='Rhd2DDataset',
+        ann_file=f'{data_root}/annotations/rhd_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

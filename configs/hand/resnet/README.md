@@ -22,7 +22,7 @@
 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py) | 256x256 | 0.985 | 0.536 | 27.3 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256_20200813.log.json) |
+| [pose_resnet_50](/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py) | 256x256 | 0.989 | 0.555 | 25.19 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-739c8639_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256_20210330.log.json) |
 
 #### Results on FreiHand val & test set
 
@@ -35,7 +35,7 @@
 
 | Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/hand/resnet/panoptic/res50_panoptic_256x256.py) | 256x256 | 0.998 | 0.708 | 9.24 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-5f55ca1a_20200925.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256_20200925.log.json) |
+| [pose_resnet_50](/configs/hand/resnet/panoptic/res50_panoptic_256x256.py) | 256x256 | 0.999 | 0.713 | 9.00 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-4eafc561_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256_20210330.log.json) |
 
 #### Results on InterHand2.6M val & test set
 
@@ -53,3 +53,10 @@
 |All|test(H)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.839 | 4.65 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
 |All|test(M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.838 | 4.42 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
 |All|test(H+M)| [pose_resnet_50](/configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py) | 256x256 | 0.979 | 0.851 | 4.46 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all_20201102.log.json) |
+
+#### Results on RHD test set
+
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/hand/resnet/rhd2d/res50_rhd2d_224x224.py) | 224x224 | 0.992 | 0.896 | 2.38 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_224x224-385ceec1_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_224x224_20210330.log.json) |
+| [pose_resnet_50](/configs/hand/resnet/rhd2d/res50_rhd2d_256x256.py) | 256x256 | 0.991 | 0.898 | 2.33 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5dc7e4cc_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256_20210330.log.json) |
