@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 
-from mmpose.core.post_processing import transform_preds
-from mmpose.datasets.pipelines import get_warp_matrix, warp_affine_joints
+from mmpose.core.post_processing import (get_warp_matrix, transform_preds,
+                                         warp_affine_joints)
 
 
 def get_multi_stage_outputs(outputs,
