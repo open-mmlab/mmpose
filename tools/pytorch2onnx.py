@@ -3,7 +3,6 @@ import argparse
 import mmcv
 import numpy as np
 import torch
-from mmcv.runner import load_checkpoint
 
 from mmpose.apis.inference import init_pose_model
 
@@ -130,7 +129,7 @@ if __name__ == '__main__':
 
     cfg = mmcv.Config.fromfile(args.config)
     # build the model
-    model = init_pose_model(cfg, args.checkpoint)
+    model = init_pose_model(cfg, args.checkpoint, device='cpu')
     model = _convert_batchnorm(model)
 
     # onnx.export does not support kwargs
