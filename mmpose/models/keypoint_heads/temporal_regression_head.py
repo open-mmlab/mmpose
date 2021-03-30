@@ -3,7 +3,7 @@ import torch.nn as nn
 from mmcv.cnn import build_conv_layer, normal_init
 
 from mmpose.core.evaluation import compute_similarity_transform
-from mmpose.core.post_processing import fliplr_regression_3d
+from mmpose.core.post_processing import fliplr_regression
 from mmpose.models.builder import build_loss
 from mmpose.models.registry import HEADS
 
@@ -119,8 +119,11 @@ class TemporalRegressionHead(nn.Module):
         output = self.forward(x)
 
         if flip_pairs is not None:
-            output_regression = fliplr_regression_3d(
-                output.detach().cpu().numpy(), flip_pairs)
+            output_regression = fliplr_regression(
+                output.detach().cpu().numpy(),
+                flip_pairs,
+                center_mode='static',
+                center_x=0)
         else:
             output_regression = output.detach().cpu().numpy()
         return output_regression

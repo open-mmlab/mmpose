@@ -111,11 +111,14 @@ class Collect:
     another dict with keys 'filename', 'label', 'original_shape'.
 
     Args:
-        keys (Sequence[str]): Required keys to be collected.
+        keys (Sequence[str|tuple]): Required keys to be collected. If a tuple
+          (key, key_new) is given as an element, the item retrived by key will
+          be renamed as key_new in collected data.
         meta_name (str): The name of the key that contains meta infomation.
           This key is always populated. Default: "img_metas".
-        meta_keys (Sequence[str]): Keys that are collected under meta_name.
-          The contents of the `meta_name` dictionary depends on `meta_keys`.
+        meta_keys (Sequence[str|tuple]): Keys that are collected under
+          meta_name. The contents of the `meta_name` dictionary depends
+          on `meta_keys`.
     """
 
     def __init__(self, keys, meta_keys, meta_name='img_metas'):
@@ -135,12 +138,22 @@ class Collect:
 
         data = {}
         for key in self.keys:
-            data[key] = results[key]
+            if isinstance(key, tuple):
+                assert len(key) == 2
+                key_src, key_tgt = key[:2]
+            else:
+                key_src = key_tgt = key
+            data[key_tgt] = results[key_src]
 
         meta = {}
         if len(self.meta_keys) != 0:
             for key in self.meta_keys:
-                meta[key] = results[key]
+                if isinstance(key, tuple):
+                    assert len(key) == 2
+                    key_src, key_tgt = key[:2]
+                else:
+                    key_src = key_tgt = key
+                meta[key_tgt] = results[key_src]
         if 'bbox_id' in results:
             meta['bbox_id'] = results['bbox_id']
         data[self.meta_name] = DC(meta, cpu_only=True)
