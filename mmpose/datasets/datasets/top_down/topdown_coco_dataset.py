@@ -1,8 +1,10 @@
 import os
+import os.path as osp
 import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
+import mmcv
 import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -58,13 +60,15 @@ class TopDownCocoDataset(TopDownBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
-                 test_mode=False):
+                 test_mode=False,
+                 simple_inference=False):
         super().__init__(
             ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+        self.simple_inference = simple_inference
         if 'image_thr' in data_cfg:
             warnings.warn(
                 'image_thr is deprecated, '
@@ -97,6 +101,11 @@ class TopDownCocoDataset(TopDownBaseDataset):
             .87, .87, .89, .89
         ]) / 10.0
 
+        if self.simple_inference:
+            self.db = self._get_simple_inference(ann_file)
+            print(f'=> load {len(self.db)} samples')
+            return
+
         self.coco = COCO(ann_file)
 
         cats = [
@@ -118,6 +127,16 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
+
+    def _get_simple_inference(self, ann_file):
+        db = mmcv.load(ann_file)
+        for obj in db:
+            obj['image_file'] = osp.join(self.img_prefix, obj['image_file'])
+            obj['center'], obj['scale'] = self._xywh2cs(*obj['bbox'])
+            obj['rotation'] = 0
+            obj['bbox_score'] = 1
+            obj['dataset'] = 'smp_inf'
+        return db
 
     @staticmethod
     def _get_mapping_id_name(imgs):
