@@ -8,10 +8,12 @@
 
 **New Features**
 
+- Support Wingloss ([\#482](https://github.com/open-mmlab/mmpose/pull/482))
 - Support RHD 2D hand dataset ([\#523](https://github.com/open-mmlab/mmpose/pull/523))
 - Support Human3.6m dataset for 3d keypoint detection ([\#518](https://github.com/open-mmlab/mmpose/pull/518), [\#527](https://github.com/open-mmlab/mmpose/pull/527))
 - Support TCN model for 3d keypoint detection ([\#521](https://github.com/open-mmlab/mmpose/pull/521), [\#522](https://github.com/open-mmlab/mmpose/pull/522))
 - Support Interhand3D model for 3d hand detection ([\#536](https://github.com/open-mmlab/mmpose/pull/536))
+- Support Multi-task detector ([\#480](https://github.com/open-mmlab/mmpose/pull/480))
 
 **Bug Fixes**
 
