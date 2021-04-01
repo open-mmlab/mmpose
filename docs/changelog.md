@@ -23,8 +23,6 @@
 - Fix circular importing ([\#542](https://github.com/open-mmlab/mmpose/pull/542))
 - Fix bugs in bottom-up keypoint score ([\#548](https://github.com/open-mmlab/mmpose/pull/548))
 
-**Breaking Changes**
-
 **Improvements**
 
 - Update config & checkpoints ([\#525](https://github.com/open-mmlab/mmpose/pull/525), [\#546](https://github.com/open-mmlab/mmpose/pull/546))
