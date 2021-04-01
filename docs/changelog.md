@@ -5,7 +5,7 @@
 **Highlights**
 
 1. Support Wingloss.
-2. Support RHD hand dataset.
+1. Support RHD hand dataset.
 
 **New Features**
 
