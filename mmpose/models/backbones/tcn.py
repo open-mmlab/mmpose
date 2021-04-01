@@ -20,8 +20,12 @@ class BasicTemporalBlock(nn.Module):
         causal (bool): Use causal convolutions instead of symmetric
             convolutions (for real-time applications). Default: False.
         residual (bool): Use residual connection. Default: True.
-        optimized_1f (bool): Use optimized TCN that designed specifically for
-            single-frame batching. Default: False.
+        train_with_stride_conv (bool): Use optimized TCN that designed
+            specifically for single-frame batching, i.e. where batches have
+            input length = receptive field, and output length = 1. This
+            implementation replaces dilated convolutions with strided
+            convolutions to avoid generating unused intermediate results.
+            Default: False.
         conv_cfg (dict): dictionary to construct and config conv layer.
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
@@ -37,7 +41,7 @@ class BasicTemporalBlock(nn.Module):
                  dropout=0.25,
                  causal=False,
                  residual=True,
-                 optimized_1f=False,
+                 train_with_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d')):
         # Protect mutable default arguments
@@ -52,10 +56,10 @@ class BasicTemporalBlock(nn.Module):
         self.dropout = dropout
         self.causal = causal
         self.residual = residual
-        self.optimized_1f = optimized_1f
+        self.train_with_stride_conv = train_with_stride_conv
 
         self.pad = (kernel_size - 1) * dilation // 2
-        if optimized_1f:
+        if train_with_stride_conv:
             self.stride = kernel_size
             self.causal_shift = kernel_size // 2 if causal else 0
             self.dilation = 1
@@ -90,7 +94,7 @@ class BasicTemporalBlock(nn.Module):
 
     def forward(self, x):
         """Forward function."""
-        if self.optimized_1f:
+        if self.train_with_stride_conv:
             assert self.causal_shift + self.kernel_size // 2 < x.shape[2]
         else:
             assert 0 <= self.pad + self.causal_shift < x.shape[2] - \
@@ -100,7 +104,7 @@ class BasicTemporalBlock(nn.Module):
         out = self.conv2(out)
 
         if self.residual:
-            if self.optimized_1f:
+            if self.train_with_stride_conv:
                 res = x[:, :, self.causal_shift +
                         self.kernel_size // 2::self.kernel_size]
             else:
@@ -136,12 +140,12 @@ class TCN(BaseBackbone):
             convolutions (for real-time applications).
             Default: False.
         residual (bool): Use residual connection. Default: True.
-        optimized_1f (bool): Use TCN backbone optimized for single-frame
-            batching, i.e. where batches have input length = receptive field,
-            and output length = 1. This implementation replaces dilated
-            convolutions with strided convolutions to avoid generating unused
-            intermediate results. The weights are interchangeable with the
-            reference implementation.
+        train_with_stride_conv (bool): Use TCN backbone optimized for
+            single-frame batching, i.e. where batches have input length =
+            receptive field, and output length = 1. This implementation
+            replaces dilated convolutions with strided convolutions to avoid
+            generating unused intermediate results. The weights are
+            interchangeable with the reference implementation. Default: False
         conv_cfg (dict): dictionary to construct and config conv layer.
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
@@ -168,7 +172,7 @@ class TCN(BaseBackbone):
                  dropout=0.25,
                  causal=False,
                  residual=True,
-                 optimized_1f=False,
+                 train_with_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d')):
         # Protect mutable default arguments
@@ -182,7 +186,7 @@ class TCN(BaseBackbone):
         self.dropout = dropout
         self.causal = causal
         self.residual = residual
-        self.optimized_1f = optimized_1f
+        self.train_with_stride_conv = train_with_stride_conv
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
@@ -192,7 +196,7 @@ class TCN(BaseBackbone):
             in_channels,
             stem_channels,
             kernel_size=kernel_sizes[0],
-            stride=kernel_sizes[0] if optimized_1f else 1,
+            stride=kernel_sizes[0] if train_with_stride_conv else 1,
             bias=False,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg)
@@ -210,7 +214,7 @@ class TCN(BaseBackbone):
                     dropout=dropout,
                     causal=causal,
                     residual=residual,
-                    optimized_1f=optimized_1f,
+                    train_with_stride_conv=train_with_stride_conv,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg))
             dilation *= kernel_sizes[i]

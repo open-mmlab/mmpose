@@ -13,10 +13,14 @@ def test_basic_temporal_block():
         x_out = block(x)
 
     with pytest.raises(AssertionError):
-        # when optimized_1f is True, shift + kernel_size // 2 should not be
-        # larger than x.shape[2]
+        # when train_with_stride_conv is True, shift + kernel_size // 2 should
+        # not be larger than x.shape[2]
         block = BasicTemporalBlock(
-            1024, 1024, kernel_size=5, causal=True, optimized_1f=True)
+            1024,
+            1024,
+            kernel_size=5,
+            causal=True,
+            train_with_stride_conv=True)
         x = torch.rand(2, 1024, 3)
         x_out = block(x)
 
@@ -38,14 +42,15 @@ def test_basic_temporal_block():
     x_out = block(x)
     assert x_out.shape == torch.Size([2, 1024, 235])
 
-    # BasicTemporalBlock with optimized_1f == True
-    block = BasicTemporalBlock(1024, 1024, optimized_1f=True)
+    # BasicTemporalBlock, train_with_stride_conv == True
+    block = BasicTemporalBlock(1024, 1024, train_with_stride_conv=True)
     x = torch.rand(2, 1024, 81)
     x_out = block(x)
     assert x_out.shape == torch.Size([2, 1024, 27])
 
-    # BasicTemporalBlock with optimized_1f == True and causal == True
-    block = BasicTemporalBlock(1024, 1024, optimized_1f=True, causal=True)
+    # BasicTemporalBlock with train_with_stride_conv == True and causal == True
+    block = BasicTemporalBlock(
+        1024, 1024, train_with_stride_conv=True, causal=True)
     x = torch.rand(2, 1024, 81)
     x_out = block(x)
     assert x_out.shape == torch.Size([2, 1024, 27])
@@ -60,7 +65,7 @@ def test_tcn_backbone():
         # kernel size should be odd
         TCN(in_channels=34, kernel_sizes=(3, 4, 3))
 
-    # Test TCN with 2 blocks (optimized_1f == False)
+    # Test TCN with 2 blocks (train_with_stride_conv == False)
     model = TCN(in_channels=34, num_blocks=2, kernel_sizes=(3, 3, 3))
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
@@ -68,7 +73,7 @@ def test_tcn_backbone():
     assert feat[0].shape == (2, 1024, 235)
     assert feat[1].shape == (2, 1024, 217)
 
-    # Test TCN with 4 blocks (optimized_1f == False)
+    # Test TCN with 4 blocks (train_with_stride_conv == False)
     model = TCN(in_channels=34, num_blocks=4, kernel_sizes=(3, 3, 3, 3, 3))
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
@@ -78,12 +83,12 @@ def test_tcn_backbone():
     assert feat[2].shape == (2, 1024, 163)
     assert feat[3].shape == (2, 1024, 1)
 
-    # Test TCN with 4 blocks (optimized_1f == True)
+    # Test TCN with 4 blocks (train_with_stride_conv == True)
     model = TCN(
         in_channels=34,
         num_blocks=4,
         kernel_sizes=(3, 3, 3, 3, 3),
-        optimized_1f=True)
+        train_with_stride_conv=True)
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
     assert len(feat) == 4
