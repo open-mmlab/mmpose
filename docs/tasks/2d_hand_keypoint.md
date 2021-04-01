@@ -208,7 +208,7 @@ mmpose
 ```
 
 For [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html), please download from [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html).
-Please download the annotation files from [rhd_annotations](https://drive.google.com/file/d/1iBkF3srSQ0-LZhAPNlgOPxT-E8lT0vCY/view?usp=sharing).
+Please download the annotation files from [rhd_annotations](https://download.openmmlab.com/mmpose/datasets/rhd_annotations.zip).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```text
