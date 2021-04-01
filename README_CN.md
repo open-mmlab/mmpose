@@ -94,6 +94,7 @@ MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [Op
 - [x] [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) (ICCV'2013)
 - [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) (TCSVT'2019)
 - [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) (ICCV'2019)
+- [x] [RHD](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html) (ICCV'2017)
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
 - [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php) (TPAMI'2014)
