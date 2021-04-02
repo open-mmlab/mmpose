@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import torch
 import torch.nn as nn
@@ -86,7 +87,9 @@ def test_tcn_backbone():
 
     for module in model.modules():
         if isinstance(module, torch.nn.modules.conv._ConvNd):
-            assert module.weight.norm().item() <= max_norm
+            norm = module.weight.norm().item()
+            np.testing.assert_allclose(
+                np.maximum(norm, max_norm), max_norm, rtol=1e-4)
 
     # Test TCN with 4 blocks (use_stride_conv == True)
     model = TCN(

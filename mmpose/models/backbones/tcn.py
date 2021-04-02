@@ -247,7 +247,7 @@ class TCN(BaseBackbone):
         super().init_weights(pretrained)
         if pretrained is None:
             for m in self.modules():
-                if isinstance(m, nn.Conv2d):
+                if isinstance(m, nn.modules.conv._ConvNd):
                     kaiming_init(m, mode='fan_in', nonlinearity='relu')
                 elif isinstance(m, _BatchNorm):
                     constant_init(m, 1)

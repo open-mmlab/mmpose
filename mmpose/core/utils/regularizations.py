@@ -81,6 +81,6 @@ class WeightNormClipRegister(PytorchModuleHookRegister):
                 f'a parameter of the module {type(module)}'
 
             with torch.no_grad():
-                m = param.norm()
+                m = param.norm().item()
                 if m > self.max_norm:
-                    param.div_(m)
+                    param.mul_(self.max_norm / (m + 1e-6))
