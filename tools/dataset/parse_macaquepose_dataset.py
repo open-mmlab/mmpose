@@ -131,7 +131,7 @@ def save_coco_anno(data_annotation,
     print(f'done {save_path}')
 
 
-root_dir = '/data2/datasets/macaquepose_v1'
+root_dir = '/data/macaque/'
 
 with open(os.path.join(root_dir, 'annotations.csv'), 'r') as fp:
     data_annotation_all = list(csv.reader(fp, delimiter=','))[1:]
