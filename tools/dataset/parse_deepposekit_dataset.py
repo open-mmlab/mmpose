@@ -20,11 +20,15 @@ def save_coco_anno(keypoints_all,
                    start_ann_id=0):
     """Save annotations in coco-format.
 
-    :param data_annotation: list of data annotation.
+    :param keypoints_all: keypoint annotations.
+    :param annotated_all: images annotated or not.
+    :param imgs_all: the array of images.
+    :param keypoints_info: infomation about keypoint name.
+    :param skeleton_info: infomation about skeleton connection.
+    :param img_root: the path to save images.
     :param save_path: the path to save transformed annotation file.
     :param start_img_id: the starting point to count the image id.
     :param start_ann_id: the starting point to count the annotation id.
-    :param kpt_num: the number of keypoint.
     """
     images = []
     annotations = []
@@ -132,7 +136,7 @@ for dataset in ['fly', 'locust', 'zebra']:
     else:
         NotImplementedError()
 
-    dataset_dir = f'/data2/datasets/DeepPoseKit-Data/datasets/{dataset}'
+    dataset_dir = f'data/DeepPoseKit-Data/datasets/{dataset}'
 
     with h5py.File(
             os.path.join(dataset_dir, 'annotation_data_release.h5'), 'r') as f:
