@@ -88,3 +88,5 @@ mmpose
         │   │-- ...
 
 ```
+
+Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](tools/dataset/parse_macaquepose_dataset.py)).
