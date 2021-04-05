@@ -131,9 +131,9 @@ def save_coco_anno(data_annotation,
     print(f'done {save_path}')
 
 
-root_dir = '/data/macaque/'
+dataset_dir = '/data/macaque/'
 
-with open(os.path.join(root_dir, 'annotations.csv'), 'r') as fp:
+with open(os.path.join(dataset_dir, 'annotations.csv'), 'r') as fp:
     data_annotation_all = list(csv.reader(fp, delimiter=','))[1:]
 
 np.random.shuffle(data_annotation_all)
@@ -141,16 +141,16 @@ np.random.shuffle(data_annotation_all)
 data_annotation_train = data_annotation_all[0:12500]
 data_annotation_val = data_annotation_all[12500:]
 
-img_root = os.path.join(root_dir, 'images')
+img_root = os.path.join(dataset_dir, 'images')
 save_coco_anno(
     data_annotation_train,
     img_root,
-    os.path.join(root_dir, 'annotations', 'macaque_train.json'),
+    os.path.join(dataset_dir, 'annotations', 'macaque_train.json'),
     kpt_num=17)
 save_coco_anno(
     data_annotation_val,
     img_root,
-    os.path.join(root_dir, 'annotations', 'macaque_test.json'),
+    os.path.join(dataset_dir, 'annotations', 'macaque_test.json'),
     start_img_id=12500,
     start_ann_id=15672,
     kpt_num=17)
