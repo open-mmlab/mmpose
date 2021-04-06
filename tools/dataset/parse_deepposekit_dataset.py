@@ -14,6 +14,7 @@ def save_coco_anno(keypoints_all,
                    imgs_all,
                    keypoints_info,
                    skeleton_info,
+                   dataset,
                    img_root,
                    save_path,
                    start_img_id=0,
@@ -25,6 +26,7 @@ def save_coco_anno(keypoints_all,
     :param imgs_all: the array of images.
     :param keypoints_info: infomation about keypoint name.
     :param skeleton_info: infomation about skeleton connection.
+    :param dataset: infomation about dataset name.
     :param img_root: the path to save images.
     :param save_path: the path to save transformed annotation file.
     :param start_img_id: the starting point to count the image id.
@@ -95,7 +97,7 @@ def save_coco_anno(keypoints_all,
     cocotype['categories'] = [{
         'supercategory': 'animal',
         'id': 1,
-        'name': 'macaque',
+        'name': dataset,
         'keypoints': keypoints_info,
         'skeleton': skeleton.tolist()
     }]
@@ -162,7 +164,7 @@ for dataset in ['fly', 'locust', 'zebra']:
 
         save_coco_anno(
             annotations[train_list], annotated[train_list], images[train_list],
-            keypoints_info, skeleton_info, img_root,
+            keypoints_info, skeleton_info, dataset, img_root,
             os.path.join(dataset_dir, 'annotations', f'{dataset}_train.json'))
         save_coco_anno(
             annotations[val_list],
@@ -170,6 +172,7 @@ for dataset in ['fly', 'locust', 'zebra']:
             images[val_list],
             keypoints_info,
             skeleton_info,
+            dataset,
             img_root,
             os.path.join(dataset_dir, 'annotations', f'{dataset}_test.json'),
             start_img_id=train_data_num,
