@@ -86,7 +86,7 @@ class AnimalZebraDataset(AnimalBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the ori image is 192x192
+                # the ori image is 160x160
                 center, scale = self._xywh2cs(0, 0, 160, 160, 0.8)
 
                 image_file = os.path.join(self.img_prefix,

@@ -1,7 +1,7 @@
 from ...deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
                            TopDownPanopticDataset)
-from .body3d import Body3DH36MDataset
 from .animal import AnimalHorse10Dataset, AnimalMacaqueDataset
+from .body3d import Body3DH36MDataset
 from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
                         BottomUpCrowdPoseDataset, BottomUpMhpDataset)
 from .face import (Face300WDataset, FaceAFLWDataset, FaceCOFWDataset,
