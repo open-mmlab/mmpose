@@ -7,6 +7,9 @@ MMPose supported datasets:
 
 - [Horse-10](#horse-10) \[ [Homepage](http://www.mackenziemathislab.org/horse10) \]
 - [MacaquePose](#macaquepose) \[ [Homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
+- [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
+- [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
+- [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 
 ## Horse-10
 
@@ -90,3 +93,133 @@ mmpose
 ```
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](tools/dataset/parse_macaquepose_dataset.py)).
+
+## Vinegar Fly
+
+[DATASET]
+
+```bibtex
+@article{pereira2019fast,
+  title={Fast animal pose estimation using deep neural networks},
+  author={Pereira, Talmo D and Aldarondo, Diego E and Willmore, Lindsay and Kislin, Mikhail and Wang, Samuel S-H and Murthy, Mala and Shaevitz, Joshua W},
+  journal={Nature methods},
+  volume={16},
+  number={1},
+  pages={117--125},
+  year={2019},
+  publisher={Nature Publishing Group}
+}
+```
+
+For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [vinegar_fly_images](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_images.tar).
+Please download the annotation files from [vinegar_fly_annotations](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── fly
+        │-- annotations
+        │   │-- fly_train.json
+        │   |-- fly_test.json
+        │-- images
+        │   │-- 0.jpg
+        │   │-- 1.jpg
+        │   │-- 2.jpg
+        │   │-- 3.jpg
+        │   │-- ...
+
+```
+
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+
+## Desert locust
+
+[DATASET]
+
+```bibtex
+@article{graving2019deepposekit,
+  title={DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning},
+  author={Graving, Jacob M and Chae, Daniel and Naik, Hemal and Li, Liang and Koger, Benjamin and Costelloe, Blair R and Couzin, Iain D},
+  journal={Elife},
+  volume={8},
+  pages={e47994},
+  year={2019},
+  publisher={eLife Sciences Publications Limited}
+}
+```
+
+For [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [locust_images](https://download.openmmlab.com/mmpose/datasets/locust_images.tar).
+Please download the annotation files from [locust_annotations](https://download.openmmlab.com/mmpose/datasets/locust_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── fly
+        │-- annotations
+        │   │-- locust_train.json
+        │   |-- locust_test.json
+        │-- images
+        │   │-- 0.jpg
+        │   │-- 1.jpg
+        │   │-- 2.jpg
+        │   │-- 3.jpg
+        │   │-- ...
+
+```
+
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+
+## Grévy’s Zebra
+
+[DATASET]
+
+```bibtex
+@article{graving2019deepposekit,
+  title={DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning},
+  author={Graving, Jacob M and Chae, Daniel and Naik, Hemal and Li, Liang and Koger, Benjamin and Costelloe, Blair R and Couzin, Iain D},
+  journal={Elife},
+  volume={8},
+  pages={e47994},
+  year={2019},
+  publisher={eLife Sciences Publications Limited}
+}
+```
+
+For [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [zebra_images](https://download.openmmlab.com/mmpose/datasets/zebra_images.tar).
+Please download the annotation files from [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── zebra
+        │-- annotations
+        │   │-- zebra_train.json
+        │   |-- zebra_test.json
+        │-- images
+        │   │-- 0.jpg
+        │   │-- 1.jpg
+        │   │-- 2.jpg
+        │   │-- 3.jpg
+        │   │-- ...
+
+```
+
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
