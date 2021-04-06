@@ -28,6 +28,8 @@ def _calc_distances(preds, targets, mask, normalize):
     """
     N, K, _ = preds.shape
     distances = np.full((N, K), -1, dtype=np.float32)
+    # handle invalid values
+    normalize[np.where(normalize <= 0)] = np.inf
     distances[mask] = np.linalg.norm(
         ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances.T
