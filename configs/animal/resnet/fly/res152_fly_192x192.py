@@ -103,27 +103,27 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/locust'
+data_root = 'data/fly'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_train.json',
+        type='AnimalFlyDataset',
+        ann_file=f'{data_root}/annotations/fly_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_test.json',
+        type='AnimalFlyDataset',
+        ann_file=f'{data_root}/annotations/fly_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_test.json',
+        type='AnimalFlyDataset',
+        ann_file=f'{data_root}/annotations/fly_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
