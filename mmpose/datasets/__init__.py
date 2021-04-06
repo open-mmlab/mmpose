@@ -1,5 +1,7 @@
 from .builder import build_dataloader, build_dataset
-from .datasets import (AnimalHorse10Dataset, BottomUpCocoDataset,
+from .datasets import (AnimalFlyDataset, AnimalHorse10Dataset,
+                       AnimalLocustDataset, AnimalMacaqueDataset,
+                       AnimalZebraDataset, BottomUpCocoDataset,
                        BottomUpCrowdPoseDataset, BottomUpMhpDataset,
                        DeepFashionDataset, Face300WDataset, FreiHandDataset,
                        InterHand2DDataset, MeshAdversarialDataset,
@@ -26,6 +28,7 @@ __all__ = [
     'TopDownFreiHandDataset', 'TopDownOneHand10KDataset',
     'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset',
     'TopDownJhmdbDataset', 'TopDownMhpDataset', 'Face300WDataset',
-    'AnimalHorse10Dataset', 'build_dataloader', 'build_dataset', 'Compose',
-    'DistributedSampler', 'DATASETS', 'PIPELINES'
+    'AnimalHorse10Dataset', 'AnimalMacaqueDataset', 'AnimalFlyDataset',
+    'AnimalLocustDataset', 'AnimalZebraDataset', 'build_dataloader',
+    'build_dataset', 'Compose', 'DistributedSampler', 'DATASETS', 'PIPELINES'
 ]

@@ -1,6 +1,8 @@
 from ...deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
                            TopDownPanopticDataset)
-from .animal import AnimalHorse10Dataset, AnimalMacaqueDataset
+from .animal import (AnimalFlyDataset, AnimalHorse10Dataset,
+                     AnimalLocustDataset, AnimalMacaqueDataset,
+                     AnimalZebraDataset)
 from .body3d import Body3DH36MDataset
 from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
                         BottomUpCrowdPoseDataset, BottomUpMhpDataset)
@@ -29,5 +31,6 @@ __all__ = [
     'TopDownPanopticDataset', 'TopDownPoseTrack18Dataset',
     'TopDownJhmdbDataset', 'TopDownMhpDataset', 'DeepFashionDataset',
     'Face300WDataset', 'FaceAFLWDataset', 'FaceWFLWDataset', 'FaceCOFWDataset',
-    'Body3DH36MDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset'
+    'Body3DH36MDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
+    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset'
 ]
