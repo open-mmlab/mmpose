@@ -5,6 +5,8 @@ from mmpose.core import WeightNormClipRegister
 
 
 def test_weight_norm_clip():
+    torch.manual_seed(0)
+
     module = torch.nn.Linear(2, 2, bias=False)
     module.weight.data.fill_(2)
     WeightNormClipRegister(max_norm=1.0).register(module)
@@ -13,4 +15,4 @@ def test_weight_norm_clip():
     _ = module(x)
 
     weight_norm = module.weight.norm().item()
-    np.testing.assert_allclose(weight_norm, 1.0)
+    np.testing.assert_allclose(weight_norm, 1.0, rtol=1e-6)
