@@ -79,10 +79,9 @@ def _xywh2xyxy(bbox_xywh, bbox_thr):
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
     bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
-    
+
     # Select bboxes by score threshold
-    print(bbox_thr)
-    if bbox_thr: # bbox_thr not None
+    if bbox_thr:  # bbox_thr not None
         assert bbox_xyxy.shape[1] == 5
         bbox_xyxy = bbox_xyxy[bbox_xyxy[:, 4] > bbox_thr]
 
@@ -260,15 +259,24 @@ def _inference_single_pose_model(model,
 
         # prepare data
         data = {
-            'img_or_path': img_or_path,
-            'center': center,
-            'scale': scale,
-            'bbox_score': bbox[4] if len(bbox) == 5 else 1,
-            'bbox_id': 0, # need to be assigned if batch_size > 1
-            'dataset': dataset,
-            'joints_3d': np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-            'joints_3d_visible': np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-            'rotation': 0,
+            'img_or_path':
+            img_or_path,
+            'center':
+            center,
+            'scale':
+            scale,
+            'bbox_score':
+            bbox[4] if len(bbox) == 5 else 1,
+            'bbox_id':
+            0,  # need to be assigned if batch_size > 1
+            'dataset':
+            dataset,
+            'joints_3d':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'joints_3d_visible':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'rotation':
+            0,
             'ann_info': {
                 'image_size': cfg.data_cfg['image_size'],
                 'num_joints': cfg.data_cfg['num_joints'],
@@ -278,15 +286,17 @@ def _inference_single_pose_model(model,
         data = test_pipeline(data)
         batch_data.append(data)
     # End of bboxes for loop.
-    
+
     batch_data = collate(batch_data, samples_per_gpu=1)
 
     if next(model.parameters()).is_cuda:
         # scatter not work so just move image to cuda device
         batch_data['img'] = batch_data['img'].to(device)
     # Get all img_metas of each bounding box
-    batch_data['img_metas'] = [ img_metas[0] for img_metas in batch_data['img_metas'].data]
-    
+    batch_data['img_metas'] = [
+        img_metas[0] for img_metas in batch_data['img_metas'].data
+    ]
+
     # forward the model
     with torch.no_grad():
         result = model(
@@ -345,17 +355,17 @@ def inference_top_down_pose_model(model,
 
     pose_results = []
     returned_outputs = []
-    
-    # Change from for-loop preprocess each bbox to preprocess all bboxes at once.
+
+    # Change for-loop preprocess each bbox to preprocess all bboxes at once.
     bboxes = np.array([box['bbox'] for box in person_results])
     if format == 'xyxy':
         bboxes_xyxy = bboxes
         bboxes_xywh = _xyxy2xywh(bboxes, bbox_thr=bbox_thr)
-    else: # format is already 'xywh'
+    else:  # format is already 'xywh'
         bboxes_xywh = bboxes
         bboxes_xyxy = _xywh2xyxy(bboxes, bbox_thr=bbox_thr)
 
-    with OutputHook(model, outputs=outputs, as_tensor=False) as h:        
+    with OutputHook(model, outputs=outputs, as_tensor=False) as h:
         # pose is results['pred'] # N x 17x 3
         pose, heatmap = _inference_single_pose_model(
             model,
@@ -368,12 +378,12 @@ def inference_top_down_pose_model(model,
             h.layer_outputs['heatmap'] = heatmap
 
         returned_outputs.append(h.layer_outputs)
-    
+
     # preprocess output
     pose_results = []
     for i in range(len(pose)):
         pose_results.append({'keypoints': pose[i], 'bbox': bboxes_xyxy[i]})
-        
+
     return pose_results, returned_outputs
 
 
