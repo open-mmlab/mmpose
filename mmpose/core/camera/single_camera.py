@@ -17,7 +17,6 @@ class SimpleCamera(SingleCameraBase):
         [N, J, C]: shape of a batch of person joint coordinates.
         [N, T, J, C]: shape of a batch of pose sequences.
 
-
     Args:
         param (dict): camera parameters including:
             - R: 3x3, camera rotation matrix (camera-to-world)

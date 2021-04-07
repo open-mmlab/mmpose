@@ -196,7 +196,7 @@ class TCN(BaseBackbone):
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
-            assert ks & 1 == 1, 'Only odd filter widths are supported.'
+            assert ks % 2 == 1, 'Only odd filter widths are supported.'
 
         self.expand_conv = ConvModule(
             in_channels,

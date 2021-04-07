@@ -134,8 +134,8 @@ class TemporalRegressionHead(nn.Module):
 
         # Denormalize the predicted pose
         if 'target_mean' in metas[0] and 'target_std' in metas[0]:
-            target_mean = np.stack([_['target_mean'] for _ in metas])
-            target_std = np.stack([_['target_std'] for _ in metas])
+            target_mean = np.stack([m['target_mean'] for m in metas])
+            target_std = np.stack([m['target_std'] for m in metas])
             output_ = self._denormalize_joints(output_, target_mean,
                                                target_std)
             target_ = self._denormalize_joints(target_, target_mean,
@@ -202,20 +202,18 @@ class TemporalRegressionHead(nn.Module):
 
         # Denormalize the predicted pose
         if 'target_mean' in metas[0] and 'target_std' in metas[0]:
-            target_mean = np.stack([_['target_mean'] for _ in metas])
-            target_std = np.stack([_['target_std'] for _ in metas])
+            target_mean = np.stack([m['target_mean'] for m in metas])
+            target_std = np.stack([m['target_std'] for m in metas])
             output = self._denormalize_joints(output, target_mean, target_std)
 
         # Restore global position
         if 'global_position' in metas[0]:
-            global_pos = np.stack([_['global_position'] for _ in metas])
+            global_pos = np.stack([m['global_position'] for m in metas])
             global_idx = metas[0].get('global_position_index', None)
             output = self._restore_global_position(output, global_pos,
                                                    global_idx)
 
-        target_image_paths = [
-            _m.get('target_image_path', None) for _m in metas
-        ]
+        target_image_paths = [m.get('target_image_path', None) for m in metas]
         result = {'preds': output, 'target_image_paths': target_image_paths}
 
         return result
