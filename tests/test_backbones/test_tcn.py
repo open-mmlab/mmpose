@@ -1,5 +1,6 @@
 import pytest
 import torch
+import torch.nn as nn
 
 from mmpose.models.backbones import TCN
 from mmpose.models.backbones.tcn import BasicTemporalBlock
@@ -10,6 +11,18 @@ def test_basic_temporal_block():
         # padding( + shift) should not be larger than x.shape[2]
         block = BasicTemporalBlock(1024, 1024, dilation=81)
         x = torch.rand(2, 1024, 150)
+        x_out = block(x)
+
+    with pytest.raises(AssertionError):
+        # when train_with_stride_conv is True, shift + kernel_size // 2 should
+        # not be larger than x.shape[2]
+        block = BasicTemporalBlock(
+            1024,
+            1024,
+            kernel_size=5,
+            causal=True,
+            train_with_stride_conv=True)
+        x = torch.rand(2, 1024, 3)
         x_out = block(x)
 
     # BasicTemporalBlock with causal == False
@@ -30,6 +43,19 @@ def test_basic_temporal_block():
     x_out = block(x)
     assert x_out.shape == torch.Size([2, 1024, 235])
 
+    # BasicTemporalBlock, train_with_stride_conv == True
+    block = BasicTemporalBlock(1024, 1024, train_with_stride_conv=True)
+    x = torch.rand(2, 1024, 81)
+    x_out = block(x)
+    assert x_out.shape == torch.Size([2, 1024, 27])
+
+    # BasicTemporalBlock with train_with_stride_conv == True and causal == True
+    block = BasicTemporalBlock(
+        1024, 1024, train_with_stride_conv=True, causal=True)
+    x = torch.rand(2, 1024, 81)
+    x_out = block(x)
+    assert x_out.shape == torch.Size([2, 1024, 27])
+
 
 def test_tcn_backbone():
     with pytest.raises(AssertionError):
@@ -40,7 +66,7 @@ def test_tcn_backbone():
         # kernel size should be odd
         TCN(in_channels=34, kernel_sizes=(3, 4, 3))
 
-    # Test TCN with 2 blocks
+    # Test TCN with 2 blocks (train_with_stride_conv == False)
     model = TCN(in_channels=34, num_blocks=2, kernel_sizes=(3, 3, 3))
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
@@ -48,7 +74,7 @@ def test_tcn_backbone():
     assert feat[0].shape == (2, 1024, 235)
     assert feat[1].shape == (2, 1024, 217)
 
-    # Test TCN with 4 blocks
+    # Test TCN with 4 blocks (train_with_stride_conv == False)
     model = TCN(in_channels=34, num_blocks=4, kernel_sizes=(3, 3, 3, 3, 3))
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
@@ -57,3 +83,63 @@ def test_tcn_backbone():
     assert feat[1].shape == (2, 1024, 217)
     assert feat[2].shape == (2, 1024, 163)
     assert feat[3].shape == (2, 1024, 1)
+
+    # Test TCN with 4 blocks (train_with_stride_conv == True)
+    model = TCN(
+        in_channels=34,
+        num_blocks=4,
+        kernel_sizes=(3, 3, 3, 3, 3),
+        train_with_stride_conv=True)
+    pose2d = torch.rand((2, 34, 243))
+    feat = model(pose2d)
+    assert len(feat) == 4
+    assert feat[0].shape == (2, 1024, 27)
+    assert feat[1].shape == (2, 1024, 9)
+    assert feat[2].shape == (2, 1024, 3)
+    assert feat[3].shape == (2, 1024, 1)
+
+    # Check that the model w. or w/o train_with_stride_conv will have the same
+    # output and gradient after a forward+backward pass
+    model1 = TCN(
+        in_channels=34,
+        stem_channels=4,
+        num_blocks=1,
+        kernel_sizes=(3, 3),
+        dropout=0,
+        residual=False,
+        norm_cfg=None)
+    model2 = TCN(
+        in_channels=34,
+        stem_channels=4,
+        num_blocks=1,
+        kernel_sizes=(3, 3),
+        dropout=0,
+        residual=False,
+        norm_cfg=None,
+        train_with_stride_conv=True)
+    for m in model1.modules():
+        if isinstance(m, nn.Conv1d):
+            nn.init.constant_(m.weight, 0.5)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+    for m in model2.modules():
+        if isinstance(m, nn.Conv1d):
+            nn.init.constant_(m.weight, 0.5)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+    input1 = torch.rand((1, 34, 9))
+    input2 = input1.clone()
+    outputs1 = model1(input1)
+    outputs2 = model2(input2)
+    for output1, output2 in zip(outputs1, outputs2):
+        assert torch.isclose(output1, output2).all()
+
+    criterion = nn.MSELoss()
+    target = torch.rand(output1.shape)
+    loss1 = criterion(output1, target)
+    loss2 = criterion(output2, target)
+    loss1.backward()
+    loss2.backward()
+    for m1, m2 in zip(model1.modules(), model2.modules()):
+        if isinstance(m1, nn.Conv1d):
+            assert torch.isclose(m1.weight.grad, m2.weight.grad).all()
