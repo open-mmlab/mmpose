@@ -61,7 +61,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     SUPPORTED_JOINT_2D_SRC = {'gt', 'detection', 'pipeline'}
 
     # metric
-    ALLOWED_METRICS = {'mpjpe'}
+    ALLOWED_METRICS = {'mpjpe', 'n-mpjpe'}
 
     def load_config(self, data_cfg):
         super().load_config(data_cfg)
@@ -158,7 +158,12 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return joints_2d
 
-    def evaluate(self, outputs, res_folder, metric='mpjpe', logger=None):
+    def evaluate(self,
+                 outputs,
+                 res_folder,
+                 metric='mpjpe',
+                 logger=None,
+                 **kwargs):
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
@@ -185,17 +190,24 @@ class Body3DH36MDataset(Body3DBaseDataset):
         for _metric in metrics:
             if _metric == 'mpjpe':
                 _nv_tuples = self._report_mpjpe(kpts)
+            elif _metric == 'n-mpjpe':
+                _nv_tuples = self._report_mpjpe(kpts, align_pred_and_gt=False)
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
 
         return OrderedDict(name_value_tuples)
 
-    def _report_mpjpe(self, keypoint_results):
+    def _report_mpjpe(self, keypoint_results, align_pred_and_gt=True):
         """Keypoint evaluation.
 
         Report mean per joint position error (MPJPE) and mean per joint
         position error after rigid alignment (MPJPE-PA)
+
+        Args:
+            align_pred_and_gt (bool): If true (default), the prediction and the
+                gt will be aligned by subtracting global position (root joint
+                position) respectively.
         """
 
         preds = []
@@ -220,14 +232,19 @@ class Body3DH36MDataset(Body3DBaseDataset):
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
 
+        if align_pred_and_gt:
+            preds = preds[:, 1:, :] - preds[:, :1, :]
+            gts = gts[:, 1:, :] - gts[:, :1, :]
+            masks = masks[:, 1:]
+
         mpjpe, p_mpjpe = keypoint_mpjpe(preds, gts, masks)
         name_value_tuples = [('MPJPE', mpjpe), ('P-MPJPE', p_mpjpe)]
 
         for action_category, indices in action_category_indices.items():
             _mpjpe, _p_mpjpe = keypoint_mpjpe(preds[indices], gts[indices],
                                               masks[indices])
-            name_value_tuples.append((f'MPJPE: {action_category}', _mpjpe))
-            name_value_tuples.append((f'P-MPJPE: {action_category}', _p_mpjpe))
+            name_value_tuples.append((f'MPJPE_{action_category}', _mpjpe))
+            name_value_tuples.append((f'P-MPJPE_{action_category}', _p_mpjpe))
 
         return name_value_tuples
 

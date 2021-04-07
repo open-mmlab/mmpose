@@ -145,15 +145,18 @@ class PreprocessH36m:
 
             if data_split == 'train':
                 kps_3d_all = kps3d_all[..., :3]  # remove visibility
-                kps_2d_all = kps2d_all[..., :2]  # remove visibility
-
                 mean_3d, std_3d = self._get_pose_stats(kps_3d_all)
+
+                kps_2d_all = kps2d_all[..., :2]  # remove visibility
                 mean_2d, std_2d = self._get_pose_stats(kps_2d_all)
 
                 # centered around root
-                # the root keypoint has an index of 0
+                # the root keypoint is 0-index
                 kps_3d_rel = kps_3d_all[..., 1:, :] - kps_3d_all[..., :1, :]
                 mean_3d_rel, std_3d_rel = self._get_pose_stats(kps_3d_rel)
+
+                kps_2d_rel = kps_2d_all[..., 1:, :] - kps_2d_all[..., :1, :]
+                mean_2d_rel, std_2d_rel = self._get_pose_stats(kps_2d_rel)
 
                 stats = {
                     'joint3d_stats': {
@@ -168,10 +171,15 @@ class PreprocessH36m:
                         'mean': mean_3d_rel,
                         'std': std_3d_rel
                     },
+                    'joint2d_rel_stats': {
+                        'mean': mean_2d_rel,
+                        'std': std_2d_rel
+                    }
                 }
                 for name, stat_dict in stats.items():
                     out_file = join(output_dir, f'{name}.pkl')
-                    pickle.dump(out_file, stat_dict)
+                    with open(out_file, 'wb') as f:
+                        pickle.dump(stat_dict, f)
                     print(f'Create statistic data file: {out_file}')
 
     @staticmethod

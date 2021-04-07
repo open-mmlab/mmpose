@@ -45,7 +45,7 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='TCN',
-        in_channels=2 * 17,
+        in_channels=2 * 16,
         stem_channels=1024,
         num_blocks=2,
         kernel_sizes=(1, 1, 1),
@@ -86,9 +86,16 @@ train_pipeline = [
         norm_param_file=f'{data_root}/annotation_body3d/joint3d_rel_stats.pkl'
     ),
     dict(
+        type='JointRelativization',
+        item='input_2d',
+        visible_item='input_2d_visible',
+        root_index=0,
+        remove_root=True),
+    dict(
         type='JointNormalization',
         item='input_2d',
-        norm_param_file=f'{data_root}/annotation_body3d/joint2d_stats.pkl'),
+        norm_param_file=f'{data_root}/annotation_body3d/joint2d_rel_stats.pkl'
+    ),
     dict(type='PoseSequenceToTensor', item='input_2d'),
     dict(
         type='Collect',

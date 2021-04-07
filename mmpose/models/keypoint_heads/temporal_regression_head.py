@@ -110,8 +110,16 @@ class TemporalRegressionHead(nn.Module):
             target (torch.Tensor[N, K, 3]): Target keypoints.
             target_weight (torch.Tensor[N, K, 3]):
                 Weights across different joint types.
-            metas (list(dict)): Information about data augmentation.
-                By default this includes:
+            metas (list(dict)): Information about data augmentation including:
+                - target_image_path (str): Optional, path to the image file
+                - target_mean (float): Optional, normalization parameter of
+                    the target pose.
+                - target_std (float): Optional, normalization parameter of the
+                    target pose.
+                - global_position (np.ndarray[3,1]): Optional, global
+                    position of the root joint.
+                - global_index (torch.ndarray[1,]): Optional, original index of
+                    the root joint before relativization.
         """
 
         accuracy = dict()
@@ -126,9 +134,11 @@ class TemporalRegressionHead(nn.Module):
 
         # Denormalize the predicted pose
         if 'target_mean' in metas[0] and 'target_std' in metas[0]:
-            target_mean = np.stack(_['target_mean'] for _ in metas)
-            target_std = np.stack(_['target_std'] for _ in metas)
+            target_mean = np.stack([_['target_mean'] for _ in metas])
+            target_std = np.stack([_['target_std'] for _ in metas])
             output_ = self._denormalize_joints(output_, target_mean,
+                                               target_std)
+            target_ = self._denormalize_joints(target_, target_mean,
                                                target_std)
 
         mpjpe = np.mean(
@@ -178,23 +188,30 @@ class TemporalRegressionHead(nn.Module):
                 By default this includes:
                 - "target_image_path": path to the image file
             output (np.ndarray[N, K, 3]): predicted regression vector.
+            metas (list(dict)): Information about data augmentation including:
+                - target_image_path (str): Optional, path to the image file
+                - target_mean (float): Optional, normalization parameter of
+                    the target pose.
+                - target_std (float): Optional, normalization parameter of the
+                    target pose.
+                - global_position (np.ndarray[3,1]): Optional, global
+                    position of the root joint.
+                - global_index (torch.ndarray[1,]): Optional, original index of
+                    the root joint before relativization.
         """
 
         # Denormalize the predicted pose
         if 'target_mean' in metas[0] and 'target_std' in metas[0]:
-            target_mean = np.stack(_['target_mean'] for _ in metas)
-            target_std = np.stack(_['target_std'] for _ in metas)
+            target_mean = np.stack([_['target_mean'] for _ in metas])
+            target_std = np.stack([_['target_std'] for _ in metas])
             output = self._denormalize_joints(output, target_mean, target_std)
 
         # Restore global position
         if 'global_position' in metas[0]:
-            global_position = np.stack(_['global_position'] for _ in metas)
-            output += global_position
-            if 'global_position_index' in metas[0]:
-                idx = metas[0]['global_position_index']
-                assert all(_['global_position_index'] == idx for _ in metas)
-                output = np.insert(
-                    output, idx, global_position.squeeze(-2), axis=-2)
+            global_pos = np.stack([_['global_position'] for _ in metas])
+            global_idx = metas[0].get('global_position_index', None)
+            output = self._restore_global_position(output, global_pos,
+                                                   global_idx)
 
         target_image_paths = [
             _m.get('target_image_path', None) for _m in metas
@@ -216,6 +233,22 @@ class TemporalRegressionHead(nn.Module):
         assert x.shape == mean.shape == std.shape
 
         return x * std + mean
+
+    @staticmethod
+    def _restore_global_position(x, global_pos, global_idx=None):
+        """Restore global position of the relativized joints.
+
+        Args:
+            x (np.ndarray[N, K, 3]): Relativized joint coordinates
+            global_pos (np.ndarray[N,1,3]): The global position of the
+                reference point in relativization
+            global_idx (int|None): If not none, the reference point will be
+                inserted back to the joints at given index
+        """
+        x = x + global_pos
+        if global_idx is not None:
+            x = np.insert(x, global_idx, global_pos.squeeze(-2), axis=-2)
+        return x
 
     def init_weights(self):
         """Initialize the weights."""

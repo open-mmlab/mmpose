@@ -134,7 +134,9 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
 
-        print(dataset.evaluate(outputs, args.work_dir, **eval_config))
+        results = dataset.evaluate(outputs, args.work_dir, **eval_config)
+        for k, v in sorted(results.items()):
+            print(f'{k}: {v}')
 
 
 if __name__ == '__main__':

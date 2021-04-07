@@ -25,9 +25,10 @@ def keypoint_mpjpe(pred, gt, mask):
             ground truth
     """
     assert mask.any()
-    pred_aligned = np.stack(
+    pred_aligned = np.stack([
         compute_similarity_transform(pred_i, gt_i)
-        for pred_i, gt_i in zip(pred, gt))
+        for pred_i, gt_i in zip(pred, gt)
+    ])
 
     mpjpe = np.linalg.norm(pred - gt, ord=2, axis=-1)[mask].mean()
     p_mpjpe = np.linalg.norm(pred_aligned - gt, ord=2, axis=-1)[mask].mean()
