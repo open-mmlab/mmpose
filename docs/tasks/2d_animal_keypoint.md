@@ -138,7 +138,7 @@ mmpose
 
 Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
 
-## Desert locust
+## Desert Locust
 
 [DATASET]
 
