@@ -365,6 +365,10 @@ def inference_top_down_pose_model(model,
         bboxes_xywh = bboxes
         bboxes_xyxy = _xywh2xyxy(bboxes, bbox_thr=bbox_thr)
 
+    # if bbox_thr remove all bounding box
+    if len(bboxes_xywh) == 0:
+        return [], []
+
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
         # pose is results['pred'] # N x 17x 3
         pose, heatmap = _inference_single_pose_model(
