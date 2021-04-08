@@ -76,7 +76,7 @@ class BasicTemporalBlock(nn.Module):
                 kernel_size=kernel_size,
                 stride=self.stride,
                 dilation=self.dilation,
-                bias=False,
+                bias='auto',
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg), nn.Dropout(self.dropout))
         self.conv2 = nn.Sequential(
@@ -84,7 +84,7 @@ class BasicTemporalBlock(nn.Module):
                 mid_channels,
                 out_channels,
                 kernel_size=1,
-                bias=False,
+                bias='auto',
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg), nn.Dropout(self.dropout))
 
@@ -198,14 +198,15 @@ class TCN(BaseBackbone):
         for ks in kernel_sizes:
             assert ks % 2 == 1, 'Only odd filter widths are supported.'
 
-        self.expand_conv = ConvModule(
-            in_channels,
-            stem_channels,
-            kernel_size=kernel_sizes[0],
-            stride=kernel_sizes[0] if use_stride_conv else 1,
-            bias=False,
-            conv_cfg=conv_cfg,
-            norm_cfg=norm_cfg)
+        self.expand_conv = nn.Sequential(
+            ConvModule(
+                in_channels,
+                stem_channels,
+                kernel_size=kernel_sizes[0],
+                stride=kernel_sizes[0] if use_stride_conv else 1,
+                bias='auto',
+                conv_cfg=conv_cfg,
+                norm_cfg=norm_cfg), nn.Dropout(dropout))
 
         dilation = kernel_sizes[0]
         self.tcn_blocks = nn.ModuleList()
