@@ -3,8 +3,8 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
-evaluation = dict(interval=1, metric='mpjpe', key_indicator='MPJPE')
+checkpoint_config = dict(interval=10)
+evaluation = dict(interval=10, metric='mpjpe', key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -56,7 +56,7 @@ model = dict(
         in_channels=1024,
         num_joints=16,
         max_norm=1.0,
-        loss_keypoint=dict(type='MPJPELoss')),
+        loss_keypoint=dict(type='MSELoss')),
     train_cfg=dict(),
     test_cfg=dict())
 
