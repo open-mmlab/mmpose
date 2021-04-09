@@ -41,3 +41,9 @@ This page provides tutorials about running demos. Please click the caption for m
 
 [2D pose tracking demo](2d_pose_tracking_demo.md)
 </div>
+
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
+
+[2D animal_pose demo](2d_animal_demo.md)
+</div>
