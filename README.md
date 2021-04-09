@@ -34,7 +34,8 @@ The master branch works with **PyTorch 1.3+**.
 
 - **Support diverse tasks**
 
-  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and 3d human mesh recovery.
+  We support a wide spectrum of mainstream pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, 3d human mesh recovery, fashion landmark detection and animal pose estimation.
+  See [demo.md](demo/README.md) for more information.
 
 - **Higher efficiency and higher accuracy**
 

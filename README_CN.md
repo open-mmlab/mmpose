@@ -14,7 +14,7 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
+MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
 主分支代码目前支持 **PyTorch 1.3 以上**的版本
 
@@ -33,7 +33,8 @@ MMPose 是一款基于 PyTorch 的人体姿态分析的开源工具箱，是 [Op
 
 - **支持多种人体姿态分析相关任务**
 
-  MMPose 支持当前学界广泛关注的主流人体姿态分析任务：主要包括 2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点的全身人体姿态估计、服饰关键点检测，3D人体形状恢复等。
+  MMPose 支持当前学界广泛关注的主流姿态分析任务：主要包括 2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点的全身人体姿态估计、3D人体形状恢复、服饰关键点检测、动物关键点检测等。
+  具体请参考 [功能演示](demo/README.md)。
 
 - **更高的精度和更快的速度**
 
