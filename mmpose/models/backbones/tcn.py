@@ -78,7 +78,7 @@ class BasicTemporalBlock(nn.Module):
                 dilation=self.dilation,
                 bias='auto',
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
+                norm_cfg=norm_cfg))
         self.conv2 = nn.Sequential(
             ConvModule(
                 mid_channels,
@@ -86,13 +86,16 @@ class BasicTemporalBlock(nn.Module):
                 kernel_size=1,
                 bias='auto',
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
+                norm_cfg=norm_cfg))
 
         if residual and in_channels != out_channels:
             self.short_cut = build_conv_layer(conv_cfg, in_channels,
                                               out_channels, 1)
         else:
             self.short_cut = None
+
+        if dropout > 0:
+            self.dropout_layer = nn.Dropout(dropout)
 
     def forward(self, x):
         """Forward function."""
@@ -103,7 +106,12 @@ class BasicTemporalBlock(nn.Module):
                 self.pad + self.causal_shift <= x.shape[2]
 
         out = self.conv1(x)
+        if self.dropout > 0:
+            out = self.dropout_layer(out)
+
         out = self.conv2(out)
+        if self.dropout > 0:
+            out = self.dropout_layer(out)
 
         if self.residual:
             if self.use_stride_conv:
@@ -116,7 +124,7 @@ class BasicTemporalBlock(nn.Module):
 
             if self.short_cut is not None:
                 res = self.short_cut(res)
-            out += res
+            out = out + res
 
         return out
 
@@ -198,15 +206,14 @@ class TCN(BaseBackbone):
         for ks in kernel_sizes:
             assert ks % 2 == 1, 'Only odd filter widths are supported.'
 
-        self.expand_conv = nn.Sequential(
-            ConvModule(
-                in_channels,
-                stem_channels,
-                kernel_size=kernel_sizes[0],
-                stride=kernel_sizes[0] if use_stride_conv else 1,
-                bias='auto',
-                conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(dropout))
+        self.expand_conv = ConvModule(
+            in_channels,
+            stem_channels,
+            kernel_size=kernel_sizes[0],
+            stride=kernel_sizes[0] if use_stride_conv else 1,
+            bias='auto',
+            conv_cfg=conv_cfg,
+            norm_cfg=norm_cfg)
 
         dilation = kernel_sizes[0]
         self.tcn_blocks = nn.ModuleList()
@@ -233,9 +240,16 @@ class TCN(BaseBackbone):
                 if isinstance(module, nn.modules.conv._ConvNd):
                     weight_clip.register(module)
 
+        if dropout > 0:
+            self.dropout_layer = nn.Dropout(dropout)
+
     def forward(self, x):
         """Forward function."""
         x = self.expand_conv(x)
+
+        if self.dropout > 0:
+            x = self.dropout_layer(x)
+
         outs = []
         for i in range(self.num_blocks):
             x = self.tcn_blocks[i](x)
