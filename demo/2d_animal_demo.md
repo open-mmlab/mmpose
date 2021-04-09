@@ -49,7 +49,7 @@ We also provide video demos to illustrate the results.
 If the video is cropped with the object centered in the screen, we can simply use the full image as the model input (without object detection).
 
 ```shell
-python demo/top_down_full_img_video_demo.py \
+python demo/top_down_video_demo_full_frame_without_det.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
@@ -60,7 +60,7 @@ python demo/top_down_full_img_video_demo.py \
 Examples:
 
 ```shell
-python demo/top_down_full_img_video_demo.py \
+python demo/top_down_video_demo_full_frame_without_det.py \
     configs/animal/resnet/fly/res152_fly_192x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth \
     --video-path demo_fly_video.avi \
