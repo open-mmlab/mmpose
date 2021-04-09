@@ -69,10 +69,10 @@ def main():
     parser.add_argument(
         '--iou-thr', type=float, default=0.3, help='IoU score threshold')
     parser.add_argument(
-        '--cat-id',
+        '--det-cat-id',
         type=int,
         default=0,
-        help='Category id for box detection model')
+        help='Category id for bounding box detection model')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -126,7 +126,7 @@ def main():
         mmdet_results = inference_detector(det_model, img)
 
         # keep the person class bounding boxes.
-        person_results = process_mmdet_results(mmdet_results, args.cat_id)
+        person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(

@@ -84,7 +84,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
-    --cat-id ${CATEGORY_ID}
+    --det-cat-id ${CATEGORY_ID}
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
@@ -101,7 +101,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     --out-video-root vis_results \
     --bbox-thr 0.1 \
     --kpt-thr 0.4 \
-    --cat-id 19
+    --det-cat-id 19
 ```
 
 <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" height="140px" alt><br>
@@ -117,7 +117,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
-    [--cat-id ${CATEGORY_ID}]
+    [--det-cat-id ${CATEGORY_ID}]
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```

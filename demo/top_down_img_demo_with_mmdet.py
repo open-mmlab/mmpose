@@ -63,14 +63,14 @@ def main():
         '--bbox-thr',
         type=float,
         default=0.3,
-        help='Bounding bbox score threshold')
+        help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
-        '--cat-id',
+        '--det-cat-id',
         type=int,
         default=0,
-        help='Category id for box detection model')
+        help='Category id for bounding box detection model')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -95,7 +95,7 @@ def main():
     mmdet_results = inference_detector(det_model, image_name)
 
     # keep the person class bounding boxes.
-    person_results = process_mmdet_results(mmdet_results, args.cat_id)
+    person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
 
     # test a single image, with a list of bboxes.
 
