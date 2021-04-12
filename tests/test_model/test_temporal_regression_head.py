@@ -36,8 +36,9 @@ def test_temporal_regression_head():
 
     _ = head.inference_model(inputs)
     _ = head.inference_model(inputs, [(0, 1), (2, 3)])
+    metas = [{}]
 
-    acc = head.get_accuracy(out, out, torch.ones_like(out))
+    acc = head.get_accuracy(out, out, torch.ones_like(out), metas)
     assert acc['mpjpe'] == 0.
     np.testing.assert_almost_equal(acc['p_mpjpe'], 0.)
 

@@ -20,6 +20,7 @@ class JointRelativization:
     Args:
         item (str): The name of the pose to relativeze.
         root_index (int): Root joint index in the pose.
+        visible_item (str): The name of the visibility item.
         remove_root (bool): If true, remove the root joint from the pose
         root_name (str): Optional. If not none, it will be used as the key to
             store the root position separated from the original pose.
@@ -27,14 +28,20 @@ class JointRelativization:
     Required keys:
         item
     Modified keys:
-        item, root_name
+        item, visible_item, root_name
     """
 
-    def __init__(self, item, root_index, remove_root=False, root_name=None):
+    def __init__(self,
+                 item,
+                 root_index,
+                 visible_item=None,
+                 remove_root=False,
+                 root_name=None):
         self.item = item
         self.root_index = root_index
         self.remove_root = remove_root
         self.root_name = root_name
+        self.visible_item = visible_item
 
     def __call__(self, results):
         assert self.item in results
@@ -47,15 +54,21 @@ class JointRelativization:
         root = joints[..., root_idx:root_idx + 1, :]
         joints = joints - root
 
-        if self.remove_root:
-            joints = np.delete(joints, root_idx, axis=-2)
-            # Add a flag to avoid latter transforms that rely on the root
-            # joint or the original joint index
-            results[f'{self.item}_root_removed'] = True
-
         results[self.item] = joints
         if self.root_name is not None:
             results[self.root_name] = root
+            results[f'{self.root_name}_index'] = self.root_index
+
+        if self.remove_root:
+            results[self.item] = np.delete(
+                results[self.item], root_idx, axis=-2)
+            if self.visible_item is not None:
+                assert self.visible_item in results
+                results[self.visible_item] = np.delete(
+                    results[self.visible_item], root_idx, axis=-2)
+            # Add a flag to avoid latter transforms that rely on the root
+            # joint or the original joint index
+            results[f'{self.item}_root_removed'] = True
 
         return results
 
@@ -82,15 +95,20 @@ class JointNormalization:
         if norm_param_file is not None:
             norm_param = mmcv.load(norm_param_file)
             assert 'mean' in norm_param and 'std' in norm_param
-            self.mean = norm_param['mean']
-            self.std = norm_param['std']
+            mean = norm_param['mean']
+            std = norm_param['std']
         else:
-            self.mean = mean
-            self.std = std
+            assert mean is not None
+            assert std is not None
+
+        self.mean = np.array(mean, dtype=np.float32)
+        self.std = np.array(std, dtype=np.float32)
 
     def __call__(self, results):
         assert self.item in results
         results[self.item] = (results[self.item] - self.mean) / self.std
+        results[f'{self.item}_mean'] = self.mean.copy()
+        results[f'{self.item}_std'] = self.std.copy()
         return results
 
 
@@ -225,6 +243,7 @@ class RelativeJointRandomFlip:
                 center_index=self.root_index)
 
             results[self.item] = joints_flipped
+
             # flip joint visibility
             if self.vis_item is not None:
                 assert self.vis_item in results
