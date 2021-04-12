@@ -57,6 +57,7 @@ def _xyxy2xywh(bbox_xyxy):
     bbox_xywh = bbox_xyxy.copy()
     bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
     bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
+
     return bbox_xywh
 
 
@@ -73,6 +74,7 @@ def _xywh2xyxy(bbox_xywh):
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
     bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
+
     return bbox_xyxy
 
 
@@ -141,7 +143,7 @@ class LoadImage:
 
 def _inference_single_pose_model(model,
                                  img_or_path,
-                                 bbox,
+                                 bboxes,
                                  dataset,
                                  return_heatmap=False):
     """Inference a single bbox.
@@ -151,8 +153,9 @@ def _inference_single_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str | np.ndarray): Image filename or loaded image.
-        bbox (list | np.ndarray): Bounding boxes (with scores),
-            shaped (4, ) or (5, ). (left, top, width, height, [score])
+        bboxes (list | np.ndarray): All bounding boxes (with scores),
+            shaped (N, 4) or (N, 5). (left, top, width, height, [score])
+            where N is number of bounding boxes.
         dataset (str): Dataset name.
         outputs (list[str] | tuple[str]): Names of layers whose output is
             to be returned, default: None
@@ -171,8 +174,7 @@ def _inference_single_pose_model(model,
                      ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
-    assert len(bbox) in [4, 5]
-    center, scale = _box2cs(cfg, bbox)
+    assert len(bboxes[0]) in [4, 5]
 
     flip_pairs = None
     if dataset in ('TopDownCocoDataset', 'TopDownOCHumanDataset',
@@ -258,48 +260,58 @@ def _inference_single_pose_model(model,
     else:
         raise NotImplementedError()
 
-    # prepare data
-    data = {
-        'img_or_path':
-        img_or_path,
-        'center':
-        center,
-        'scale':
-        scale,
-        'bbox_score':
-        bbox[4] if len(bbox) == 5 else 1,
-        'dataset':
-        dataset,
-        'joints_3d':
-        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-        'joints_3d_visible':
-        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-        'rotation':
-        0,
-        'ann_info': {
-            'image_size': cfg.data_cfg['image_size'],
-            'num_joints': cfg.data_cfg['num_joints'],
-            'flip_pairs': flip_pairs
+    batch_data = []
+    for bbox in bboxes:
+        center, scale = _box2cs(cfg, bbox)
+
+        # prepare data
+        data = {
+            'img_or_path':
+            img_or_path,
+            'center':
+            center,
+            'scale':
+            scale,
+            'bbox_score':
+            bbox[4] if len(bbox) == 5 else 1,
+            'bbox_id':
+            0,  # need to be assigned if batch_size > 1
+            'dataset':
+            dataset,
+            'joints_3d':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'joints_3d_visible':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'rotation':
+            0,
+            'ann_info': {
+                'image_size': cfg.data_cfg['image_size'],
+                'num_joints': cfg.data_cfg['num_joints'],
+                'flip_pairs': flip_pairs
+            }
         }
-    }
-    data = test_pipeline(data)
-    data = collate([data], samples_per_gpu=1)
+        data = test_pipeline(data)
+        batch_data.append(data)
+
+    batch_data = collate(batch_data, samples_per_gpu=1)
+
     if next(model.parameters()).is_cuda:
-        # scatter to specified GPU
-        data = scatter(data, [device])[0]
-    else:
-        # just get the actual data from DataContainer
-        data['img_metas'] = data['img_metas'].data[0]
+        # scatter not work so just move image to cuda device
+        batch_data['img'] = batch_data['img'].to(device)
+    # get all img_metas of each bounding box
+    batch_data['img_metas'] = [
+        img_metas[0] for img_metas in batch_data['img_metas'].data
+    ]
 
     # forward the model
     with torch.no_grad():
         result = model(
-            img=data['img'],
-            img_metas=data['img_metas'],
+            img=batch_data['img'],
+            img_metas=batch_data['img_metas'],
             return_loss=False,
             return_heatmap=return_heatmap)
 
-    return result['preds'][0], result['output_heatmap']
+    return result['preds'], result['output_heatmap']
 
 
 def inference_top_down_pose_model(model,
@@ -350,38 +362,42 @@ def inference_top_down_pose_model(model,
     pose_results = []
     returned_outputs = []
 
+    # Change for-loop preprocess each bbox to preprocess all bboxes at once.
+    bboxes = np.array([box['bbox'] for box in person_results])
+
+    # Select bboxes by score threshold
+    if bbox_thr is not None:
+        assert bboxes.shape[1] == 5
+        bboxes = bboxes[bboxes[:, 4] > bbox_thr]
+
+    if format == 'xyxy':
+        bboxes_xyxy = bboxes
+        bboxes_xywh = _xyxy2xywh(bboxes)
+    else:
+        # format is already 'xywh'
+        bboxes_xywh = bboxes
+        bboxes_xyxy = _xywh2xyxy(bboxes)
+
+    # if bbox_thr remove all bounding box
+    if len(bboxes_xywh) == 0:
+        return [], []
+
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
-        for person_result in person_results:
-            if format == 'xyxy':
-                bbox_xyxy = np.expand_dims(np.array(person_result['bbox']), 0)
-                bbox_xywh = _xyxy2xywh(bbox_xyxy)
-            else:
-                bbox_xywh = np.expand_dims(np.array(person_result['bbox']), 0)
-                bbox_xyxy = _xywh2xyxy(bbox_xywh)
+        # pose is results['pred'] # N x 17x 3
+        pose, heatmap = _inference_single_pose_model(
+            model,
+            img_or_path,
+            bboxes_xywh,
+            dataset,
+            return_heatmap=return_heatmap)
 
-            if bbox_thr is not None:
-                assert bbox_xywh.shape[1] == 5
-                if bbox_xywh[0, 4] < bbox_thr:
-                    continue
+        if return_heatmap:
+            h.layer_outputs['heatmap'] = heatmap
 
-            pose, heatmap = _inference_single_pose_model(
-                model,
-                img_or_path,
-                bbox_xywh[0],
-                dataset,
-                return_heatmap=return_heatmap)
+        returned_outputs.append(h.layer_outputs)
 
-            if return_heatmap:
-                h.layer_outputs['heatmap'] = heatmap
-
-            returned_outputs.append(h.layer_outputs)
-
-            person_result['keypoints'] = pose
-
-            if format == 'xywh':
-                person_result['bbox'] = bbox_xyxy[0]
-
-            pose_results.append(person_result)
+    for i in range(len(pose)):
+        pose_results.append({'keypoints': pose[i], 'bbox': bboxes_xyxy[i]})
 
     return pose_results, returned_outputs
 
