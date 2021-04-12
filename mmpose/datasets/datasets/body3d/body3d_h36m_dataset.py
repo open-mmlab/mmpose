@@ -54,13 +54,6 @@ class Body3DH36MDataset(Body3DBaseDataset):
         'RShoulder', 'RElbow', 'RWrist'
     ]
 
-    # The joint indices in the annotation file
-    JOINT_IDX_ANNOTATION = [
-        14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6
-    ]
-    # The total joint number in the annotation file
-    JOINT_NUM_ANNOTATION = 24
-
     # 2D joint source options:
     # "gt": from the annotation file
     # "detection": from a detection result file of 2D keypoint
@@ -68,7 +61,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     SUPPORTED_JOINT_2D_SRC = {'gt', 'detection', 'pipeline'}
 
     # metric
-    ALLOWED_METRICS = {'mpjpe'}
+    ALLOWED_METRICS = {'mpjpe', 'n-mpjpe'}
 
     def load_config(self, data_cfg):
         super().load_config(data_cfg)
@@ -100,20 +93,14 @@ class Body3DH36MDataset(Body3DBaseDataset):
     def load_annotations(self):
         data_info = super().load_annotations()
 
-        # convert 3D joints from original 24-keypoint to standard 17-keypoint
-        assert data_info['joints_3d'].shape[1] == self.JOINT_NUM_ANNOTATION
-        data_info['joints_3d'] = data_info['joints_3d'][:, self.
-                                                        JOINT_IDX_ANNOTATION]
-
         # get 2D joints
         if self.joint_2d_src == 'gt':
-            assert data_info['joints_2d'].shape[1] == self.JOINT_NUM_ANNOTATION
-            data_info['joints_2d'] = data_info[
-                'joints_2d'][:, self.JOINT_IDX_ANNOTATION]
+            data_info['joints_2d'] = data_info['joints_2d']
         elif self.joint_2d_src == 'detection':
             data_info['joints_2d'] = self._load_joint_2d_detection(
                 self.joint_2d_det_file)
         elif self.joint_2d_src == 'pipeline':
+            # joint_2d will be generated in the pipeline
             pass
         else:
             raise NotImplementedError(
@@ -169,10 +156,12 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return joints_2d
 
-    def evaluate(self, outputs, res_folder, metric='mpjpe', **kwargs):
-        # bound the kwargs
-        assert len(kwargs) == 0
-
+    def evaluate(self,
+                 outputs,
+                 res_folder,
+                 metric='mpjpe',
+                 logger=None,
+                 **kwargs):
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
@@ -199,23 +188,31 @@ class Body3DH36MDataset(Body3DBaseDataset):
         for _metric in metrics:
             if _metric == 'mpjpe':
                 _nv_tuples = self._report_mpjpe(kpts)
+            elif _metric == 'n-mpjpe':
+                _nv_tuples = self._report_mpjpe(kpts, align_root=False)
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
 
         return OrderedDict(name_value_tuples)
 
-    def _report_mpjpe(self, keypoint_results):
+    def _report_mpjpe(self, keypoint_results, align_root=True):
         """Keypoint evaluation.
 
         Report mean per joint position error (MPJPE) and mean per joint
         position error after rigid alignment (MPJPE-PA)
+
+        Args:
+            align_root (bool): If true (default), the prediction will be
+                aligned to the ground truth by translation according to the
+                root joint.
         """
 
         preds = []
         gts = []
         masks = []
-        for result in keypoint_results:
+        action_category_indices = defaultdict(list)
+        for idx, result in enumerate(keypoint_results):
             pred = result['keypoints']
             target_id = result['target_id']
             gt, gt_visible = np.split(
@@ -224,12 +221,32 @@ class Body3DH36MDataset(Body3DBaseDataset):
             gts.append(gt)
             masks.append(gt_visible)
 
+            action = self._parse_h36m_imgname(
+                self.data_info['imgnames'][target_id])[1]
+            action_category = action.split('_')[0]
+            action_category_indices[action_category].append(idx)
+
         preds = np.stack(preds)
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
 
+        if align_root:
+            # The prediction and groundtruth are aligned by subtracting root
+            # position respectively (equivalent to move the prediction to the
+            # groundtruth root position by translation). Then theroot joint
+            # will be removed from the pose.
+            preds = preds[:, 1:, :] - preds[:, :1, :]
+            gts = gts[:, 1:, :] - gts[:, :1, :]
+            masks = masks[:, 1:]
+
         mpjpe, p_mpjpe = keypoint_mpjpe(preds, gts, masks)
         name_value_tuples = [('MPJPE', mpjpe), ('P-MPJPE', p_mpjpe)]
+
+        for action_category, indices in action_category_indices.items():
+            _mpjpe, _p_mpjpe = keypoint_mpjpe(preds[indices], gts[indices],
+                                              masks[indices])
+            name_value_tuples.append((f'MPJPE_{action_category}', _mpjpe))
+            name_value_tuples.append((f'P-MPJPE_{action_category}', _p_mpjpe))
 
         return name_value_tuples
 

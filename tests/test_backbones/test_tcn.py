@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import torch
 import torch.nn as nn
@@ -69,8 +70,13 @@ def test_tcn_backbone():
     assert feat[0].shape == (2, 1024, 235)
     assert feat[1].shape == (2, 1024, 217)
 
-    # Test TCN with 4 blocks (use_stride_conv == False)
-    model = TCN(in_channels=34, num_blocks=4, kernel_sizes=(3, 3, 3, 3, 3))
+    # Test TCN with 4 blocks and weight norm clip
+    max_norm = 0.1
+    model = TCN(
+        in_channels=34,
+        num_blocks=4,
+        kernel_sizes=(3, 3, 3, 3, 3),
+        max_norm=max_norm)
     pose2d = torch.rand((2, 34, 243))
     feat = model(pose2d)
     assert len(feat) == 4
@@ -78,6 +84,12 @@ def test_tcn_backbone():
     assert feat[1].shape == (2, 1024, 217)
     assert feat[2].shape == (2, 1024, 163)
     assert feat[3].shape == (2, 1024, 1)
+
+    for module in model.modules():
+        if isinstance(module, torch.nn.modules.conv._ConvNd):
+            norm = module.weight.norm().item()
+            np.testing.assert_allclose(
+                np.maximum(norm, max_norm), max_norm, rtol=1e-4)
 
     # Test TCN with 4 blocks (use_stride_conv == True)
     model = TCN(

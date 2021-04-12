@@ -92,7 +92,7 @@ class PreprocessH36m:
                 key = (f'S{subject}', self.camera_ids[camera])
                 cameras[key] = self._get_camera_params(camera, subject)
 
-        out_file = join(self.processed_dir, 'cameras.pkl')
+        out_file = join(self.processed_dir, 'annotation_body3d', 'cameras.pkl')
         with open(out_file, 'wb') as fout:
             pickle.dump(cameras, fout)
         print(f'Camera parameters have been written to "{out_file}".\n')
@@ -142,6 +142,62 @@ class PreprocessH36m:
             print(
                 f'All annotations of {data_split}ing data have been written to'
                 f' "{out_file}". {len(imgnames_all)} samples in total.\n')
+
+            if data_split == 'train':
+                kps_3d_all = kps3d_all[..., :3]  # remove visibility
+                mean_3d, std_3d = self._get_pose_stats(kps_3d_all)
+
+                kps_2d_all = kps2d_all[..., :2]  # remove visibility
+                mean_2d, std_2d = self._get_pose_stats(kps_2d_all)
+
+                # centered around root
+                # the root keypoint is 0-index
+                kps_3d_rel = kps_3d_all[..., 1:, :] - kps_3d_all[..., :1, :]
+                mean_3d_rel, std_3d_rel = self._get_pose_stats(kps_3d_rel)
+
+                kps_2d_rel = kps_2d_all[..., 1:, :] - kps_2d_all[..., :1, :]
+                mean_2d_rel, std_2d_rel = self._get_pose_stats(kps_2d_rel)
+
+                stats = {
+                    'joint3d_stats': {
+                        'mean': mean_3d,
+                        'std': std_3d
+                    },
+                    'joint2d_stats': {
+                        'mean': mean_2d,
+                        'std': std_2d
+                    },
+                    'joint3d_rel_stats': {
+                        'mean': mean_3d_rel,
+                        'std': std_3d_rel
+                    },
+                    'joint2d_rel_stats': {
+                        'mean': mean_2d_rel,
+                        'std': std_2d_rel
+                    }
+                }
+                for name, stat_dict in stats.items():
+                    out_file = join(output_dir, f'{name}.pkl')
+                    with open(out_file, 'wb') as f:
+                        pickle.dump(stat_dict, f)
+                    print(f'Create statistic data file: {out_file}')
+
+    @staticmethod
+    def _get_pose_stats(kps):
+        """Get statistic information `mean` and `std` of pose data.
+
+        Args:
+            kps (ndarray): keypoints in shape [..., K, C] where K and C is
+                the keypoint category number and dimension.
+        Returns:
+            mean (ndarray): [K, C]
+        """
+        assert kps.ndim > 2
+        K, C = kps.shape[-2:]
+        kps = kps.reshape(-1, K, C)
+        mean = kps.mean(axis=0)
+        std = kps.std(axis=0)
+        return mean, std
 
     def _load_metadata(self):
         """Load meta data from metadata.xml."""
@@ -197,6 +253,8 @@ class PreprocessH36m:
                                                     np.cos(z), 0], [0, 0, 1]])
         R = (R_x @ R_y @ R_z).T
         T = metadata_slice[3:6].reshape(-1, 1)
+        # convert unit from milimeter to meter
+        T *= 0.001
 
         # intrinsics
         c = metadata_slice[8:10, None]
