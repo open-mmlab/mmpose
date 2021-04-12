@@ -4,12 +4,12 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mpjpe', key_indicator='MPJPE')
+evaluation = dict(interval=10, metric='mpjpe', key_indicator='mpjpe')
 
 # optimizer settings
 optimizer = dict(
     type='Adam',
-    lr=1e-3,
+    lr=1e-4,  # The original paper uses 1e-3.
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy

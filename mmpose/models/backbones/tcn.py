@@ -4,7 +4,7 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from mmpose.core import WeightNormClipRegister
+from mmpose.core import WeightNormClipHook
 from ..registry import BACKBONES
 from .base_backbone import BaseBackbone
 
@@ -94,8 +94,7 @@ class BasicTemporalBlock(nn.Module):
         else:
             self.short_cut = None
 
-        if dropout > 0:
-            self.dropout_layer = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout) if dropout > 0 else None
 
     def forward(self, x):
         """Forward function."""
@@ -106,12 +105,12 @@ class BasicTemporalBlock(nn.Module):
                 self.pad + self.causal_shift <= x.shape[2]
 
         out = self.conv1(x)
-        if self.dropout > 0:
-            out = self.dropout_layer(out)
+        if self.dropout is not None:
+            out = self.dropout(out)
 
         out = self.conv2(out)
-        if self.dropout > 0:
-            out = self.dropout_layer(out)
+        if self.dropout is not None:
+            out = self.dropout(out)
 
         if self.residual:
             if self.use_stride_conv:
@@ -235,20 +234,19 @@ class TCN(BaseBackbone):
 
         if self.max_norm is not None:
             # Apply weight norm clip to conv layers
-            weight_clip = WeightNormClipRegister(self.max_norm)
+            weight_clip = WeightNormClipHook(self.max_norm)
             for module in self.modules():
                 if isinstance(module, nn.modules.conv._ConvNd):
                     weight_clip.register(module)
 
-        if dropout > 0:
-            self.dropout_layer = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(dropout) if dropout > 0 else None
 
     def forward(self, x):
         """Forward function."""
         x = self.expand_conv(x)
 
-        if self.dropout > 0:
-            x = self.dropout_layer(x)
+        if self.dropout is not None:
+            x = self.dropout(x)
 
         outs = []
         for i in range(self.num_blocks):

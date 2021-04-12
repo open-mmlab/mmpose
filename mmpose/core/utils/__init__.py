@@ -1,4 +1,4 @@
 from .dist_utils import allreduce_grads
-from .regularizations import WeightNormClipRegister
+from .regularizations import WeightNormClipHook
 
-__all__ = ['allreduce_grads', 'WeightNormClipRegister']
+__all__ = ['allreduce_grads', 'WeightNormClipHook']

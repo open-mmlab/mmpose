@@ -3,7 +3,7 @@ import torch.nn as nn
 from mmcv.cnn import build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from mmpose.core import (WeightNormClipRegister, compute_similarity_transform,
+from mmpose.core import (WeightNormClipHook, compute_similarity_transform,
                          fliplr_regression)
 from mmpose.models.builder import build_loss
 from mmpose.models.registry import HEADS
@@ -47,7 +47,7 @@ class TemporalRegressionHead(nn.Module):
 
         if self.max_norm is not None:
             # Apply weight norm clip to conv layers
-            weight_clip = WeightNormClipRegister(self.max_norm)
+            weight_clip = WeightNormClipHook(self.max_norm)
             for module in self.modules():
                 if isinstance(module, nn.modules.conv._ConvNd):
                     weight_clip.register(module)
@@ -56,7 +56,7 @@ class TemporalRegressionHead(nn.Module):
         """Transform inputs for decoder.
 
         Args:
-            inputs (tuple/list of Tensor | Tensor): multi-level img features.
+            inputs (tuple/list of Tensor | Tensor): multi-level features.
 
         Returns:
             Tensor: The transformed inputs
@@ -65,6 +65,8 @@ class TemporalRegressionHead(nn.Module):
             return x
 
         assert len(x) > 0
+
+        # return the top-level feature of the 1D feature pyramid
         return x[-1]
 
     def forward(self, x):

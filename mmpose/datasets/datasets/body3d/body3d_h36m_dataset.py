@@ -93,9 +93,6 @@ class Body3DH36MDataset(Body3DBaseDataset):
     def load_annotations(self):
         data_info = super().load_annotations()
 
-        # convert 3D joints from original 24-keypoint to standard 17-keypoint
-        data_info['joints_3d'] = data_info['joints_3d']
-
         # get 2D joints
         if self.joint_2d_src == 'gt':
             data_info['joints_2d'] = data_info['joints_2d']
@@ -103,6 +100,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
             data_info['joints_2d'] = self._load_joint_2d_detection(
                 self.joint_2d_det_file)
         elif self.joint_2d_src == 'pipeline':
+            # joint_2d will be generated in the pipeline
             pass
         else:
             raise NotImplementedError(
@@ -191,23 +189,23 @@ class Body3DH36MDataset(Body3DBaseDataset):
             if _metric == 'mpjpe':
                 _nv_tuples = self._report_mpjpe(kpts)
             elif _metric == 'n-mpjpe':
-                _nv_tuples = self._report_mpjpe(kpts, align_pred_and_gt=False)
+                _nv_tuples = self._report_mpjpe(kpts, align_root=False)
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
 
         return OrderedDict(name_value_tuples)
 
-    def _report_mpjpe(self, keypoint_results, align_pred_and_gt=True):
+    def _report_mpjpe(self, keypoint_results, align_root=True):
         """Keypoint evaluation.
 
         Report mean per joint position error (MPJPE) and mean per joint
         position error after rigid alignment (MPJPE-PA)
 
         Args:
-            align_pred_and_gt (bool): If true (default), the prediction and the
-                gt will be aligned by subtracting global position (root joint
-                position) respectively.
+            align_root (bool): If true (default), the prediction will be
+                aligned to the ground truth by translation according to the
+                root joint.
         """
 
         preds = []
@@ -232,7 +230,11 @@ class Body3DH36MDataset(Body3DBaseDataset):
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
 
-        if align_pred_and_gt:
+        if align_root:
+            # The prediction and groundtruth are aligned by subtracting root
+            # position respectively (equivalent to move the prediction to the
+            # groundtruth root position by translation). Then theroot joint
+            # will be removed from the pose.
             preds = preds[:, 1:, :] - preds[:, :1, :]
             gts = gts[:, 1:, :] - gts[:, :1, :]
             masks = masks[:, 1:]

@@ -3,10 +3,10 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 import torch
 
 
-class PytorchModuleHookRegister(metaclass=ABCMeta):
+class PytorchModuleHook(metaclass=ABCMeta):
     """Base class for PyTorch module hook registers.
 
-    An instance of a subclass of PytorchModuleHookRegister can be used to
+    An instance of a subclass of PytorchModuleHook can be used to
     register hook to a pytorch module using the `register` method like:
         hook_register.register(module)
 
@@ -52,7 +52,7 @@ class PytorchModuleHookRegister(metaclass=ABCMeta):
         return h
 
 
-class WeightNormClipRegister(PytorchModuleHookRegister):
+class WeightNormClipHook(PytorchModuleHook):
     """Apply weight norm clip regularization.
 
     The module's parameter will be clip to a given maximum norm before each

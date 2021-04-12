@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from mmpose.core import WeightNormClipRegister
+from mmpose.core import WeightNormClipHook
 
 
 def test_weight_norm_clip():
@@ -9,7 +9,7 @@ def test_weight_norm_clip():
 
     module = torch.nn.Linear(2, 2, bias=False)
     module.weight.data.fill_(2)
-    WeightNormClipRegister(max_norm=1.0).register(module)
+    WeightNormClipHook(max_norm=1.0).register(module)
 
     x = torch.rand(1, 2).requires_grad_()
     _ = module(x)
