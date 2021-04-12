@@ -43,7 +43,7 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     return model
 
 
-def _xyxy2xywh(bbox_xyxy, bbox_thr):
+def _xyxy2xywh(bbox_xyxy):
     """Transform the bbox format from x1y1x2y2 to xywh.
 
     Args:
@@ -58,15 +58,10 @@ def _xyxy2xywh(bbox_xyxy, bbox_thr):
     bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
     bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
 
-    # Select bboxes by score threshold
-    if bbox_thr is not None:
-        assert bbox_xywh.shape[1] == 5
-        bbox_xywh = bbox_xywh[bbox_xywh[:, 4] > bbox_thr]
-
     return bbox_xywh
 
 
-def _xywh2xyxy(bbox_xywh, bbox_thr):
+def _xywh2xyxy(bbox_xywh):
     """Transform the bbox format from xywh to x1y1x2y2.
 
     Args:
@@ -79,11 +74,6 @@ def _xywh2xyxy(bbox_xywh, bbox_thr):
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
     bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
-
-    # Select bboxes by score threshold
-    if bbox_thr:  # bbox_thr not None
-        assert bbox_xyxy.shape[1] == 5
-        bbox_xyxy = bbox_xyxy[bbox_xyxy[:, 4] > bbox_thr]
 
     return bbox_xyxy
 
@@ -285,7 +275,6 @@ def _inference_single_pose_model(model,
         }
         data = test_pipeline(data)
         batch_data.append(data)
-    # End of bboxes for loop.
 
     batch_data = collate(batch_data, samples_per_gpu=1)
 
@@ -358,12 +347,18 @@ def inference_top_down_pose_model(model,
 
     # Change for-loop preprocess each bbox to preprocess all bboxes at once.
     bboxes = np.array([box['bbox'] for box in person_results])
+
+    # Select bboxes by score threshold
+    if bbox_thr:  # bbox_thr not None
+        assert bboxes.shape[1] == 5
+        bboxes = bboxes[bboxes[:, 4] > bbox_thr]
+
     if format == 'xyxy':
         bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes, bbox_thr=bbox_thr)
+        bboxes_xywh = _xyxy2xywh(bboxes)
     else:  # format is already 'xywh'
         bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes, bbox_thr=bbox_thr)
+        bboxes_xyxy = _xywh2xyxy(bboxes)
 
     # if bbox_thr remove all bounding box
     if len(bboxes_xywh) == 0:
@@ -383,8 +378,6 @@ def inference_top_down_pose_model(model,
 
         returned_outputs.append(h.layer_outputs)
 
-    # preprocess output
-    pose_results = []
     for i in range(len(pose)):
         pose_results.append({'keypoints': pose[i], 'bbox': bboxes_xyxy[i]})
 
