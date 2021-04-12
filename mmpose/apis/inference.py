@@ -281,7 +281,7 @@ def _inference_single_pose_model(model,
     if next(model.parameters()).is_cuda:
         # scatter not work so just move image to cuda device
         batch_data['img'] = batch_data['img'].to(device)
-    # Get all img_metas of each bounding box
+    # get all img_metas of each bounding box
     batch_data['img_metas'] = [
         img_metas[0] for img_metas in batch_data['img_metas'].data
     ]
@@ -349,14 +349,15 @@ def inference_top_down_pose_model(model,
     bboxes = np.array([box['bbox'] for box in person_results])
 
     # Select bboxes by score threshold
-    if bbox_thr:  # bbox_thr not None
+    if bbox_thr is not None:
         assert bboxes.shape[1] == 5
         bboxes = bboxes[bboxes[:, 4] > bbox_thr]
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
         bboxes_xywh = _xyxy2xywh(bboxes)
-    else:  # format is already 'xywh'
+    else:
+        # format is already 'xywh'
         bboxes_xywh = bboxes
         bboxes_xyxy = _xywh2xyxy(bboxes)
 
