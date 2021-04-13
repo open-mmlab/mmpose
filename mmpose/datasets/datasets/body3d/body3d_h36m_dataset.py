@@ -61,7 +61,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     SUPPORTED_JOINT_2D_SRC = {'gt', 'detection', 'pipeline'}
 
     # metric
-    ALLOWED_METRICS = {'mpjpe', 'n-mpjpe'}
+    ALLOWED_METRICS = {'mpjpe', 'p-mpjpe', 'n-mpjpe'}
 
     def load_config(self, data_cfg):
         super().load_config(data_cfg)
@@ -188,24 +188,30 @@ class Body3DH36MDataset(Body3DBaseDataset):
         for _metric in metrics:
             if _metric == 'mpjpe':
                 _nv_tuples = self._report_mpjpe(kpts)
+            elif _metric == 'p-mpjpe':
+                _nv_tuples = self._report_mpjpe(kpts, mode='p-mpjpe')
             elif _metric == 'n-mpjpe':
-                _nv_tuples = self._report_mpjpe(kpts, align_root=False)
+                _nv_tuples = self._report_mpjpe(kpts, mode='n-mpjpe')
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
 
         return OrderedDict(name_value_tuples)
 
-    def _report_mpjpe(self, keypoint_results, align_root=True):
-        """Keypoint evaluation.
-
-        Report mean per joint position error (MPJPE) and mean per joint
-        position error after rigid alignment (MPJPE-PA)
+    def _report_mpjpe(self, keypoint_results, mode='mpjpe'):
+        """Cauculate mean per joint position error (MPJPE) or its variants like
+        P-MPJPE or N-MPJPE.
 
         Args:
-            align_root (bool): If true (default), the prediction will be
-                aligned to the ground truth by translation according to the
-                root joint.
+            keypoint_results (list): Keypoint predictions. See
+                'Body3DH36MDataset.evaluate' for details.
+            mode (str): Specify mpjpe variants. Supported options are:
+                - ``'mpjpe'``: Standard MPJPE.
+                - ``'p-mpjpe'``: MPJPE after aligning prediction to groundtruth
+                    via a rigid transformation (scale, rotation and
+                    translation).
+                - ``'n-mpjpe'``: MPJPE after aligning prediction to groundtruth
+                    in scale only.
         """
 
         preds = []
@@ -230,23 +236,29 @@ class Body3DH36MDataset(Body3DBaseDataset):
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
 
-        if align_root:
-            # The prediction and groundtruth are aligned by subtracting root
-            # position respectively (equivalent to move the prediction to the
-            # groundtruth root position by translation). Then theroot joint
-            # will be removed from the pose.
-            preds = preds[:, 1:, :] - preds[:, :1, :]
-            gts = gts[:, 1:, :] - gts[:, :1, :]
-            masks = masks[:, 1:]
+        # Zero-center the pose around its root joint and remove root
+        # joint from the pose.
+        preds = preds[:, 1:, :] - preds[:, :1, :]
+        gts = gts[:, 1:, :] - gts[:, :1, :]
+        masks = masks[:, 1:]
 
-        mpjpe, p_mpjpe = keypoint_mpjpe(preds, gts, masks)
-        name_value_tuples = [('MPJPE', mpjpe), ('P-MPJPE', p_mpjpe)]
+        err_name = mode.upper()
+        if mode == 'mpjpe':
+            alignment = 'none'
+        elif mode == 'p-mpjpe':
+            alignment = 'procrustes'
+        elif mode == 'n-mpjpe':
+            alignment = 'scale'
+        else:
+            raise ValueError(f'Invalid mode: {mode}')
+
+        error = keypoint_mpjpe(preds, gts, masks, alignment)
+        name_value_tuples = [(err_name, error)]
 
         for action_category, indices in action_category_indices.items():
-            _mpjpe, _p_mpjpe = keypoint_mpjpe(preds[indices], gts[indices],
-                                              masks[indices])
-            name_value_tuples.append((f'MPJPE_{action_category}', _mpjpe))
-            name_value_tuples.append((f'P-MPJPE_{action_category}', _p_mpjpe))
+            _error = keypoint_mpjpe(preds[indices], gts[indices],
+                                    masks[indices])
+            name_value_tuples.append((f'{err_name}_{action_category}', _error))
 
         return name_value_tuples
 
