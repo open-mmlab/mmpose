@@ -37,8 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet101',
-    backbone=dict(type='ResNet', depth=101),
+    pretrained='torchvision://resnet152',
+    backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
         type='TopDownSimpleHead',
         in_channels=2048,
@@ -52,8 +52,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[192, 256],
-    heatmap_size=[48, 64],
+    image_size=[256, 256],
+    heatmap_size=[64, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],

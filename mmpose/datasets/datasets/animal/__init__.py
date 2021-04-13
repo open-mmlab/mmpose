@@ -1,4 +1,4 @@
-from .animal_ATRW_dataset import AnimalATRWDataset
+from .animal_atrw_dataset import AnimalATRWDataset
 from .animal_fly_dataset import AnimalFlyDataset
 from .animal_horse10_dataset import AnimalHorse10Dataset
 from .animal_locust_dataset import AnimalLocustDataset
