@@ -362,6 +362,9 @@ def inference_top_down_pose_model(model,
     pose_results = []
     returned_outputs = []
 
+    if len(person_results) == 0:
+        return pose_results, returned_outputs
+
     # Change for-loop preprocess each bbox to preprocess all bboxes at once.
     bboxes = np.array([box['bbox'] for box in person_results])
 
