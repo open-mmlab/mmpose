@@ -20,8 +20,8 @@ def keypoint_mpjpe(pred, gt, mask, alignment='none'):
         alignment (str, optional): method to align the prediction with the
             groundtruth. Supported options are:
             - ``'none'``: no alignment will be applied
-            - ``'scale'``: align in the least-square scene in scale
-            - ``'procrustes'``: align in the least-square scene in scale,
+            - ``'scale'``: align in the least-square sense in scale
+            - ``'procrustes'``: align in the least-square sense in scale,
                 rotation and translation.
     Returns:
         tuple: A tuple containing joint position errors

@@ -236,7 +236,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
 
-        # Zero-center the pose around its root joint and the remove the root
+        # Zero-center the pose around its root joint and remove root
         # joint from the pose.
         preds = preds[:, 1:, :] - preds[:, :1, :]
         gts = gts[:, 1:, :] - gts[:, :1, :]
