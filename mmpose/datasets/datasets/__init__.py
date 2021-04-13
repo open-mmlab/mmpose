@@ -1,6 +1,6 @@
 from ...deprecated import (TopDownFreiHandDataset, TopDownOneHand10KDataset,
                            TopDownPanopticDataset)
-from .animal import (AnimalFlyDataset, AnimalHorse10Dataset,
+from .animal import (AnimalATRWDataset, AnimalFlyDataset, AnimalHorse10Dataset,
                      AnimalLocustDataset, AnimalMacaqueDataset,
                      AnimalZebraDataset)
 from .body3d import Body3DH36MDataset
@@ -32,5 +32,6 @@ __all__ = [
     'TopDownJhmdbDataset', 'TopDownMhpDataset', 'DeepFashionDataset',
     'Face300WDataset', 'FaceAFLWDataset', 'FaceWFLWDataset', 'FaceCOFWDataset',
     'Body3DH36MDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
-    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset'
+    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset',
+    'AnimalATRWDataset'
 ]
