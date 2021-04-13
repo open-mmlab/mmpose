@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=1)
 evaluation = dict(
-    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='mpjpe')
+    interval=1, metric=['mpjpe', 'p-mpjpe'], key_indicator='mpjpe')
 
 # optimizer settings
 optimizer = dict(
@@ -59,7 +59,7 @@ model = dict(
         max_norm=1.0,
         loss_keypoint=dict(type='MSELoss')),
     train_cfg=dict(),
-    test_cfg=dict())
+    test_cfg=dict(restore_global_position=True))
 
 # data settings
 data_root = 'data/h36m'
@@ -77,34 +77,34 @@ train_pipeline = [
     dict(
         type='JointRelativization',
         item='target',
-        visible_item='target_visible',
+        # visible_item='target_visible',
         root_index=0,
-        root_name='global_position',
+        root_name='root_position',
         remove_root=True),
     dict(
         type='JointNormalization',
         item='target',
-        norm_param_file=f'{data_root}/annotation_body3d/joint3d_rel_stats.pkl'
-    ),
+        norm_param_file=f'{data_root}/annotation_body3d/fps50/'
+        'joint3d_rel_stats.pkl'),
     dict(
         type='JointRelativization',
         item='input_2d',
-        visible_item='input_2d_visible',
+        # visible_item='input_2d_visible',
         root_index=0,
         remove_root=True),
     dict(
         type='JointNormalization',
         item='input_2d',
-        norm_param_file=f'{data_root}/annotation_body3d/joint2d_rel_stats.pkl'
-    ),
+        norm_param_file=f'{data_root}/annotation_body3d/fps50/'
+        'joint2d_rel_stats.pkl'),
     dict(type='PoseSequenceToTensor', item='input_2d'),
     dict(
         type='Collect',
         keys=[('input_2d', 'input'), 'target'],
         meta_name='metas',
         meta_keys=[
-            'target_image_path', 'flip_pairs', 'global_position',
-            'global_position_index', 'target_mean', 'target_std'
+            'target_image_path', 'flip_pairs', 'root_position',
+            'root_position_index', 'target_mean', 'target_std'
         ])
 ]
 
@@ -118,19 +118,19 @@ data = dict(
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_train.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_test.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_test.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=test_pipeline),

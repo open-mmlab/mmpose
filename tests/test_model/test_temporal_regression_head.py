@@ -10,7 +10,8 @@ def test_temporal_regression_head():
     head = TemporalRegressionHead(
         in_channels=1024,
         num_joints=17,
-        loss_keypoint=dict(type='MPJPELoss', use_target_weight=True))
+        loss_keypoint=dict(type='MPJPELoss', use_target_weight=True),
+        test_cfg=dict(restore_global_position=False))
 
     head.init_weights()
 

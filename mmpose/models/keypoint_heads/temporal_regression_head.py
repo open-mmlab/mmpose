@@ -118,9 +118,9 @@ class TemporalRegressionHead(nn.Module):
                     the target pose.
                 - target_std (float): Optional, normalization parameter of the
                     target pose.
-                - global_position (np.ndarray[3,1]): Optional, global
+                - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
-                - global_index (torch.ndarray[1,]): Optional, original index of
+                - root_index (torch.ndarray[1,]): Optional, original index of
                     the root joint before relativization.
         """
 
@@ -129,11 +129,6 @@ class TemporalRegressionHead(nn.Module):
         N = output.shape[0]
         output_ = output.detach().cpu().numpy()
         target_ = target.detach().cpu().numpy()
-        if target_weight is None:
-            target_weight_ = np.ones_like(target_)
-        else:
-            target_weight_ = target_weight.detach().cpu().numpy()
-
         # Denormalize the predicted pose
         if 'target_mean' in metas[0] and 'target_std' in metas[0]:
             target_mean = np.stack([m['target_mean'] for m in metas])
@@ -142,6 +137,20 @@ class TemporalRegressionHead(nn.Module):
                                                target_std)
             target_ = self._denormalize_joints(target_, target_mean,
                                                target_std)
+
+        # Restore global position
+        if self.test_cfg.get('restore_global_position', False):
+            root_pos = np.stack([m['root_position'] for m in metas])
+            root_idx = metas[0].get('root_position_index', None)
+            output_ = self._restore_global_position(output_, root_pos,
+                                                    root_idx)
+            target_ = self._restore_global_position(target_, root_pos,
+                                                    root_idx)
+        # Get target weight
+        if target_weight is None:
+            target_weight_ = np.ones_like(target_)
+        else:
+            target_weight_ = target_weight.detach().cpu().numpy()
 
         mpjpe = np.mean(
             np.linalg.norm((output_ - target_) * target_weight_, axis=-1))
@@ -196,9 +205,9 @@ class TemporalRegressionHead(nn.Module):
                     the target pose.
                 - target_std (float): Optional, normalization parameter of the
                     target pose.
-                - global_position (np.ndarray[3,1]): Optional, global
+                - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
-                - global_index (torch.ndarray[1,]): Optional, original index of
+                - root_index (torch.ndarray[1,]): Optional, original index of
                     the root joint before relativization.
         """
 
@@ -209,11 +218,10 @@ class TemporalRegressionHead(nn.Module):
             output = self._denormalize_joints(output, target_mean, target_std)
 
         # Restore global position
-        if 'global_position' in metas[0]:
-            global_pos = np.stack([m['global_position'] for m in metas])
-            global_idx = metas[0].get('global_position_index', None)
-            output = self._restore_global_position(output, global_pos,
-                                                   global_idx)
+        if self.test_cfg.get('restore_global_position', False):
+            root_pos = np.stack([m['root_position'] for m in metas])
+            root_idx = metas[0].get('root_position_index', None)
+            output = self._restore_global_position(output, root_pos, root_idx)
 
         target_image_paths = [m.get('target_image_path', None) for m in metas]
         result = {'preds': output, 'target_image_paths': target_image_paths}
@@ -225,9 +233,9 @@ class TemporalRegressionHead(nn.Module):
         """Denormalize joint coordinates with given statistics mean and std.
 
         Args:
-            x (np.ndarray[N, K, 3]): normalized joint coordinates
-            mean (np.ndarray[K, 3]): mean value
-            std (np.ndarray[K, 3]): std value
+            x (np.ndarray[N, K, 3]): Normalized joint coordinates.
+            mean (np.ndarray[K, 3]): Mean value.
+            std (np.ndarray[K, 3]): Std value.
         """
         assert x.ndim == 3
         assert x.shape == mean.shape == std.shape
@@ -235,19 +243,19 @@ class TemporalRegressionHead(nn.Module):
         return x * std + mean
 
     @staticmethod
-    def _restore_global_position(x, global_pos, global_idx=None):
+    def _restore_global_position(x, root_pos, root_idx=None):
         """Restore global position of the relativized joints.
 
         Args:
             x (np.ndarray[N, K, 3]): Relativized joint coordinates
-            global_pos (np.ndarray[N,1,3]): The global position of the
-                reference point in relativization
-            global_idx (int|None): If not none, the reference point will be
-                inserted back to the joints at given index
+            root_pos (np.ndarray[N,1,3]): The global position of the
+                root joint in relativization.
+            root_idx (int|None): If not none, the root joint will be inserted
+                back to the pose at the given index.
         """
-        x = x + global_pos
-        if global_idx is not None:
-            x = np.insert(x, global_idx, global_pos.squeeze(-2), axis=-2)
+        x = x + root_pos
+        if root_idx is not None:
+            x = np.insert(x, root_idx, root_pos.squeeze(-2), axis=-2)
         return x
 
     def init_weights(self):
