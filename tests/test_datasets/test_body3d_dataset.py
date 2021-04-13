@@ -45,7 +45,9 @@ def test_body3d_h36m_dataset():
                 'target_image_paths': [result['target_image_path']],
             })
 
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mpjpe')
+        metrics = ['mpjpe', 'p-mpjpe', 'n-mpjpe']
+        infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
 
         np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
         np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
+        np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
