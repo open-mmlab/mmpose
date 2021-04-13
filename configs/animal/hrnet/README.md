@@ -35,3 +35,10 @@
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_hrnet_w32](/configs/animal/hrnet/macaque/hrnet_w32_macaque_256x192.py)  | 256x192 | 0.814 | 0.953 | 0.918 | 0.851 | 0.969 | [ckpt](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_macaque_256x192-f7e9e04f_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_macaque_256x192_20210407.log.json) |
 | [pose_hrnet_w48](/configs/animal/hrnet/macaque/hrnet_w48_macaque_256x192.py)  | 256x192 | 0.818 | 0.963 | 0.917 | 0.855 | 0.971 | [ckpt](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_macaque_256x192-9b34b02a_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_macaque_256x192_20210407.log.json) |
+
+#### Results on ATRW validation set
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_hrnet_w32](/configs/animal/hrnet/atrw/hrnet_w32_atrw_256x192.py)  | 256x192 | 0.904 | 0.972 | 0.944 | 0.933 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_atrw_256x192-9cbb9285_20210413.pth) | [log](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_atrw_256x192_20210413.log.json) |
+| [pose_hrnet_w48](/configs/animal/hrnet/atrw/hrnet_w48_atrw_256x192.py)  | 256x192 | 0.905 | 0.972 | 0.946 | 0.938 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_atrw_256x192-e0c66b36_20210413.pth) | [log](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_atrw_256x192_20210413.log.json) |

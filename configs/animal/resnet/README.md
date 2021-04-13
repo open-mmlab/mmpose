@@ -63,3 +63,11 @@
 |[pose_resnet_50](/configs/animal/resnet/zebra/res50_zebra_160x160.py) | 160x160 | 1.000 | 0.914 | 1.86 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_zebra_160x160-5a104833_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_zebra_160x160_20210407.log.json) |
 |[pose_resnet_101](/configs/animal/resnet/zebra/res101_zebra_160x160.py) | 160x160 | 1.000 | 0.916 | 1.82 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_zebra_160x160-e8cb2010_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_zebra_160x160_20210407.log.json) |
 |[pose_resnet_152](/configs/animal/resnet/zebra/res152_zebra_160x160.py) | 160x160 | 1.000 | 0.921 | 1.66 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_zebra_160x160-05de71dd_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_zebra_160x160_20210407.log.json) |
+
+#### Results on ATRW validation set
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/animal/resnet/atrw/res50_atrw_256x192.py)  | 256x192 | 0.891 | 0.972 | 0.956 | 0.922 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_atrw_256x192-4b3bdea2_20210413.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_atrw_256x192_20210413.log.json) |
+| [pose_resnet_101](/configs/animal/resnet/atrw/res101_atrw_256x192.py) | 256x192 | 0.887 | 0.973 | 0.934 | 0.920 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_atrw_256x192-5fc16cc5_20210413.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_atrw_256x192_20210413.log.json) |
+| [pose_resnet_152](/configs/animal/resnet/atrw/res152_atrw_256x192.py) | 256x192 | 0.887 | 0.972 | 0.934 | 0.922 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_atrw_256x192-45c2088d_20210413.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_atrw_256x192_20210413.log.json) |
