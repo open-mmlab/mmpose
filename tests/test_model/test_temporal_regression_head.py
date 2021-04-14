@@ -63,10 +63,12 @@ def test_temporal_regression_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 16, 3])
 
-    _ = head.inference_model(inputs)
+    inference_out = head.inference_model(inputs)
     acc = head.get_accuracy(out, out, torch.ones_like(out), metas)
     assert acc['mpjpe'] == 0.
     np.testing.assert_almost_equal(acc['p_mpjpe'], 0.)
+
+    _ = head.decode(metas, inference_out)
 
 
 def _demo_inputs(input_shape=(1, 1024, 1)):

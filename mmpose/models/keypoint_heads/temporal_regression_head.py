@@ -275,9 +275,7 @@ class TemporalRegressionHead(nn.Module):
             root_idx (int|None): If not none, the root joint weight will be
                 inserted back to the target weight at the given index.
         """
-        if root_idx is None:
-            pass
-        else:
+        if root_idx is not None:
             root_weight = np.full(
                 target_weight.shape[0], root_weight, dtype=target_weight.dtype)
             target_weight = np.insert(
