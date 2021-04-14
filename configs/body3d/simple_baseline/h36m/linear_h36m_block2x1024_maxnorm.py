@@ -5,7 +5,7 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='mpjpe')
+    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
