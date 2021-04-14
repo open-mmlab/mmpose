@@ -10,6 +10,7 @@ MMPose supported datasets:
 - [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
+- [ATRW](#atrw) \[ [Homepage](https://cvwc2019.github.io/challenge.html) \]
 
 ## Horse-10
 
@@ -223,3 +224,56 @@ mmpose
 ```
 
 Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+
+## ATRW
+
+[DATASET]
+
+```bibtex
+@inproceedings{li2020atrw,
+  title={ATRW: A Benchmark for Amur Tiger Re-identification in the Wild},
+  author={Li, Shuyuan and Li, Jianguo and Tang, Hanlin and Qian, Rui and Lin, Weiyao},
+  booktitle={Proceedings of the 28th ACM International Conference on Multimedia},
+  pages={2590--2598},
+  year={2020}
+}
+```
+
+ATRW captures images of the Amur tiger (also known as Siberian tiger, Northeast-China tiger) in the wild.
+For [ATRW](https://cvwc2019.github.io/challenge.html) datatset, please download images from
+[Pose_train](https://lilablobssc.blob.core.windows.net/cvwc2019/train/atrw_pose_train.tar.gz),
+[Pose_val](https://lilablobssc.blob.core.windows.net/cvwc2019/train/atrw_pose_val.tar.gz), and
+[Pose_test](https://lilablobssc.blob.core.windows.net/cvwc2019/test/atrw_pose_test.tar.gz).
+Note that in the ATRW official annotation files, the key "file_name" is written as "filename". To make it compatible with
+other coco-type json files, we have modified this key.
+Please download the modified annotation files from [atrw_annotations](https://download.openmmlab.com/mmpose/datasets/atrw_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── atrw
+        │-- annotations
+        │   │-- keypoint_train.json
+        │   │-- keypoint_val.json
+        │   │-- keypoint_trainval.json
+        │-- images
+        │   │-- train
+        │   │   │-- 000002.jpg
+        │   │   │-- 000003.jpg
+        │   │   │-- ...
+        │   │-- val
+        │   │   │-- 000001.jpg
+        │   │   │-- 000013.jpg
+        │   │   │-- ...
+        │   │-- test
+        │   │   │-- 000000.jpg
+        │   │   │-- 000004.jpg
+        │   │   │-- ...
+
+```

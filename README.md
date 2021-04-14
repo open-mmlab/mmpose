@@ -113,6 +113,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
 - [x] [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
 - [x] [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
+- [x] [ATRW](https://cvwc2019.github.io/challenge.html) (ACM MM'2020)
 
 </details>
 
