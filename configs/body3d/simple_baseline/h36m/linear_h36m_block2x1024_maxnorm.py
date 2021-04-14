@@ -77,7 +77,7 @@ train_pipeline = [
     dict(
         type='JointRelativization',
         item='target',
-        # visible_item='target_visible',
+        visible_item='target_visible',
         root_index=0,
         root_name='root_position',
         remove_root=True),
