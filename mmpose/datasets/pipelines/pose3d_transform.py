@@ -13,7 +13,7 @@ class JointRelativization:
     """Zero-center the pose around a given root joint. Optionally, the root
     joint can be removed from the origianl pose and stored as a separate item.
 
-    Note that the relativized joints no longer align with some annotation
+    Note that the relativized joints may no longer align with some annotation
     information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
     the removal of the root joint.
 
@@ -57,7 +57,6 @@ class JointRelativization:
         results[self.item] = joints
         if self.root_name is not None:
             results[self.root_name] = root
-            results[f'{self.root_name}_index'] = self.root_index
 
         if self.remove_root:
             results[self.item] = np.delete(
@@ -69,6 +68,10 @@ class JointRelativization:
             # Add a flag to avoid latter transforms that rely on the root
             # joint or the original joint index
             results[f'{self.item}_root_removed'] = True
+
+            # Save the root index which is necessary to restore the global pose
+            if self.root_name is not None:
+                results[f'{self.root_name}_index'] = self.root_index
 
         return results
 

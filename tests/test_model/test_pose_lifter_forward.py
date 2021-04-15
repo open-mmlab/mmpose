@@ -16,8 +16,8 @@ def _create_inputs(joint_num_in, joint_channel_in, joint_num_out,
                             dtype=np.float32)
 
     meta_info = {
-        'global_position': np.zeros((1, joint_channel_out), np.float32),
-        'global_position_index': 0,
+        'root_position': np.zeros((1, joint_channel_out), np.float32),
+        'root_position_index': 0,
         'target_mean': np.zeros((joint_num_out, joint_channel_out),
                                 np.float32),
         'target_std': np.ones((joint_num_out, joint_channel_out), np.float32)
@@ -44,7 +44,8 @@ def test_pose_lifter_forward():
             in_channels=1024,
             num_joints=16,
             max_norm=1.0,
-            loss_keypoint=dict(type='MPJPELoss')),
+            loss_keypoint=dict(type='MPJPELoss'),
+            test_cfg=dict(restore_global_position=True)),
         train_cfg=dict(),
         test_cfg=dict())
 
