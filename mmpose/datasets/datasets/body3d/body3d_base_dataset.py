@@ -60,6 +60,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.seq_len = data_cfg.get('seq_len', 1)
         self.seq_frame_interval = data_cfg.get('seq_frame_interval', 1)
         self.causal = data_cfg.get('causal', True)
+        self.pad = data_cfg.get('pad', False)
 
         self.need_camera_param = False
 

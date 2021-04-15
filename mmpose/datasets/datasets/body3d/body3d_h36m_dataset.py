@@ -140,11 +140,31 @@ class Body3DH36MDataset(Body3DBaseDataset):
         _step = self.seq_frame_interval
         for _, _indices in sorted(video_frames.items()):
             n_frame = len(_indices)
-            seqs_from_video = [
-                _indices[i:(i + _len):_step]
-                for i in range(0, n_frame - _len + 1)
-            ]
-            sample_indices.extend(seqs_from_video)
+
+            if self.pad:
+                # Pad the sequence so that every frame in the sequence will be
+                # predicted.
+                if self.causal:
+                    frames_left = self.seq_len - 1
+                    frames_right = 0
+                else:
+                    frames_left = frames_right = (self.seq_len - 1) // 2
+                for i in range(n_frame):
+                    pad_left = max(0, frames_left - i // _step)
+                    pad_right = max(0,
+                                    frames_right - (n_frame - 1 - i) // _step)
+                    start = max(i % _step, i - frames_left * _step)
+                    end = min(n_frame - (n_frame - 1 - i) % _step,
+                              i + frames_right * _step + 1)
+                    sample_indices.append([_indices[0]] * pad_left +
+                                          _indices[start:end:_step] +
+                                          [_indices[-1]] * pad_right)
+            else:
+                seqs_from_video = [
+                    _indices[i:(i + _len):_step]
+                    for i in range(0, n_frame - _len + 1)
+                ]
+                sample_indices.extend(seqs_from_video)
 
         return sample_indices
 

@@ -113,6 +113,57 @@ class JointNormalization:
 
 
 @PIPELINES.register_module()
+class ImageCoordinateNormalization:
+    """Normalize the 2D joint coordinate (and camera intrinsics) with image
+    width and height. Range [0, w] is mapped to [-1, 1], while preserving the
+    aspect ratio.
+
+    Args:
+        norm_camera (bool): Whether to normalize camera intrinsics.
+        camera_param (dict|None): The camera parameter dict. See the camera
+            class definition for more details. If None is given, the camera
+            parameter will be obtained during processing of each data sample
+            with the key "camera_param".
+    Required keys:
+        None
+    Modified keys:
+        input_2d (, camera_param)
+    """
+
+    def __init__(self, norm_camera=True, camera_param=None):
+        self.norm_camera = norm_camera
+        self.camera_param = camera_param
+
+    def __call__(self, results):
+        if self.camera_param is None:
+            assert 'camera_param' in results, 'Camera parameters are missing.'
+            self.camera_param = results['camera_param']
+        assert 'h' in self.camera_param and 'w' in self.camera_param
+
+        center = np.array(
+            [0.5 * self.camera_param['w'], 0.5 * self.camera_param['h']],
+            dtype=np.float32)
+        scale = np.array(0.5 * self.camera_param['w'], dtype=np.float32)
+
+        results['input_2d'] = (results['input_2d'] - center) / scale
+        results['input_2d_mean'] = np.broadcast_to(
+            center, results['input_2d'].shape[-2:])
+        results['input_2d_std'] = np.broadcast_to(
+            scale, results['input_2d'].shape[-2:])
+
+        if self.norm_camera:
+            assert 'f' in self.camera_param and 'c' in self.camera_param
+            self.camera_param['f'] = self.camera_param['f'] / scale
+            self.camera_param['c'] = (self.camera_param['c'] -
+                                      center[:, None]) / scale
+            if 'camera_param' not in results:
+                results['camera_param'] = dict()
+            results['camera_param'].update(self.camera_param)
+
+        return results
+
+
+@PIPELINES.register_module()
 class CameraProjection:
     """Apply camera projection to joint coordinates.
 
@@ -203,23 +254,42 @@ class RelativeJointRandomFlip:
     """Data augmentation with random horizontal joint flip around a root joint.
 
     Args:
-        item (str): The name of the pose to flip.
+        item (str|list[str]): The name of the poses to flip.
         root_index (int): Root joint index in the pose.
-        visible_item (str): The name of the visibility item which will be
-            flipped accordingly along with the pose.
+        visible_item (str|list[str]): The name of the visibility items which
+        will be flipped accordingly along with the pose.
         flip_prob (float): Probability of flip.
+        flip_camera (bool): Whether to flip horizontal distortion coefficients.
+        camera_param (dict|None): The camera parameter dict. See the camera
+            class definition for more details. If None is given, the camera
+            parameter will be obtained during processing of each data sample
+            with the key "camera_param".
 
     Required keys:
         item
     Modified keys:
-        item
+        item (, camera_param)
     """
 
-    def __init__(self, item, root_index, visible_item=None, flip_prob=0.5):
+    def __init__(self,
+                 item,
+                 root_index,
+                 visible_item=None,
+                 flip_prob=0.5,
+                 flip_camera=False,
+                 camera_param=None):
         self.item = item
         self.root_index = root_index
         self.vis_item = visible_item
         self.flip_prob = flip_prob
+        self.flip_camera = flip_camera
+        self.camera_param = camera_param
+
+        if isinstance(self.item, str):
+            self.item = [self.item]
+        if isinstance(self.vis_item, str):
+            self.vis_item = [self.vis_item]
+        assert len(self.item) == len(self.vis_item)
 
     def __call__(self, results):
 
@@ -232,27 +302,43 @@ class RelativeJointRandomFlip:
         if np.random.rand() <= self.flip_prob:
 
             flip_pairs = results['ann_info']['flip_pairs']
-            # flip joint coordinates
-            assert self.item in results
-            joints = results[self.item]
+            for i, item in enumerate(self.item):
+                # flip joint coordinates
+                assert item in results
+                joints = results[item]
 
-            joints_flipped = fliplr_regression(
-                joints,
-                flip_pairs,
-                center_mode='root',
-                center_index=self.root_index)
+                joints_flipped = fliplr_regression(
+                    joints,
+                    flip_pairs,
+                    center_mode='root',
+                    center_index=self.root_index)
 
-            results[self.item] = joints_flipped
+                results[item] = joints_flipped
 
-            # flip joint visibility
-            if self.vis_item is not None:
-                assert self.vis_item in results
-                visible = results[self.vis_item]
-                visible_flipped = visible.copy()
-                for left, right in flip_pairs:
-                    visible_flipped[..., left, :] = visible[..., right, :]
-                    visible_flipped[..., right, :] = visible[..., left, :]
-                results[self.vis_item] = visible_flipped
+                # flip joint visibility
+                if self.vis_item[i] is not None:
+                    assert self.vis_item[i] in results
+                    visible = results[self.vis_item[i]]
+                    visible_flipped = visible.copy()
+                    for left, right in flip_pairs:
+                        visible_flipped[..., left, :] = visible[..., right, :]
+                        visible_flipped[..., right, :] = visible[..., left, :]
+                    results[self.vis_item[i]] = visible_flipped
+
+                # flip horizontal distortion coefficients
+                if self.flip_camera:
+                    if self.camera_param is None:
+                        assert 'camera_param' in results,\
+                            'Camera parameters are missing.'
+                        self.camera_param = results['camera_param']
+                    assert 'c' in self.camera_param and \
+                        'p' in self.camera_param
+                    self.camera_param['c'][0] *= -1
+                    self.camera_param['p'][0] *= -1
+
+                    if 'camera_param' not in results:
+                        results['camera_param'] = dict()
+                    results['camera_param'].update(self.camera_param)
 
         return results
 

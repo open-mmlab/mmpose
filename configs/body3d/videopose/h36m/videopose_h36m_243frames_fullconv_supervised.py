@@ -3,28 +3,27 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=5)
 evaluation = dict(
-    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
+    interval=5, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
     type='Adam',
-    lr=1e-4,  # The original paper uses 1e-3.
+    lr=1e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
-    policy='step',
-    by_epoch=False,
-    step=100000,
-    gamma=0.96,
+    policy='exp',
+    by_epoch=True,
+    gamma=0.95,
 )
 
-total_epochs = 200
+total_epochs = 80
 
 log_config = dict(
-    interval=50,
+    interval=20,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
@@ -46,18 +45,17 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='TCN',
-        in_channels=2 * 16,
+        in_channels=2 * 17,
         stem_channels=1024,
-        num_blocks=2,
-        kernel_sizes=(1, 1, 1),
-        dropout=0.5,
-        max_norm=1.0),
+        num_blocks=4,
+        kernel_sizes=(3, 3, 3, 3, 3),
+        dropout=0.25,
+        use_stride_conv=True),
     keypoint_head=dict(
         type='TemporalRegressionHead',
         in_channels=1024,
-        num_joints=16,
-        max_norm=1.0,
-        loss_keypoint=dict(type='MSELoss')),
+        num_joints=17,
+        loss_keypoint=dict(type='MPJPELoss')),
     train_cfg=dict(),
     test_cfg=dict())
 
@@ -65,11 +63,12 @@ model = dict(
 data_root = 'data/h36m'
 data_cfg = dict(
     num_joints=17,
-    seq_len=1,
+    seq_len=243,
     seq_frame_interval=1,
-    casual=True,
+    casual=False,
+    pad=True,
     joint_2d_src='gt',
-    need_camera_param=False,
+    need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',
 )
 
@@ -80,42 +79,30 @@ train_pipeline = [
         visible_item='target_visible',
         root_index=0,
         root_name='global_position',
-        remove_root=True),
+        remove_root=False),
+    dict(type='ImageCoordinateNormalization', norm_camera=False),
     dict(
-        type='JointNormalization',
-        item='target',
-        norm_param_file=f'{data_root}/annotation_body3d/joint3d_rel_stats.pkl'
-    ),
-    dict(
-        type='JointRelativization',
-        item='input_2d',
-        visible_item='input_2d_visible',
+        type='RelativeJointRandomFlip',
+        item=['input_2d', 'target'],
         root_index=0,
-        remove_root=True),
-    dict(
-        type='JointNormalization',
-        item='input_2d',
-        norm_param_file=f'{data_root}/annotation_body3d/joint2d_rel_stats.pkl'
-    ),
+        visible_item=['input_2d_visible', 'target_visible'],
+        flip_prob=0.5),
     dict(type='PoseSequenceToTensor', item='input_2d'),
     dict(
         type='Collect',
         keys=[('input_2d', 'input'), 'target'],
         meta_name='metas',
-        meta_keys=[
-            'target_image_path', 'flip_pairs', 'global_position',
-            'global_position_index', 'target_mean', 'target_std'
-        ])
+        meta_keys=['target_image_path', 'flip_pairs'])
 ]
 
 val_pipeline = train_pipeline
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=2,  # TODO
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=64),
-    test_dataloader=dict(samples_per_gpu=64),
+    val_dataloader=dict(samples_per_gpu=2),  # TODO
+    test_dataloader=dict(samples_per_gpu=2),  # TODO
     train=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/h36m_train.npz',

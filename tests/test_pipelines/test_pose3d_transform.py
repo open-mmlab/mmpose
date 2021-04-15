@@ -93,15 +93,18 @@ def test_joint_transforms():
             remove_root=True),
         dict(type='JointNormalization', item='target', mean=mean, std=std),
         dict(type='PoseSequenceToTensor', item='target'),
+        dict(type='ImageCoordinateNormalization', norm_camera=True),
         dict(
             type='Collect',
-            keys=[('target', 'output'), 'flip_pairs'],
-            meta_keys=[])
+            keys=[('input_2d', 'input'), ('target', 'output'), 'flip_pairs'],
+            meta_name='metas',
+            meta_keys=['camera_param'])
     ]
 
     pipeline = Compose(pipeline)
     output = pipeline(copy.deepcopy(results))
 
+    # test transformation of target
     joints_0 = results['target']
     joints_1 = output['output'].numpy()
 
@@ -123,6 +126,30 @@ def test_joint_transforms():
     joints_0 = joints_0.reshape(-1)[..., None]
 
     np.testing.assert_array_almost_equal(joints_0, joints_1)
+
+    # test transformation of input
+    joints_0 = results['input_2d']
+    joints_1 = output['input']
+    # manually do transformations
+    center = np.array([
+        0.5 * results['camera_param']['w'], 0.5 * results['camera_param']['h']
+    ],
+                      dtype=np.float32)
+    scale = np.array(0.5 * results['camera_param']['w'], dtype=np.float32)
+    joints_0 = (joints_0 - center) / scale
+    np.testing.assert_array_almost_equal(joints_0, joints_1)
+
+    # test transformation of camera parameters
+    camera_param_0 = results['camera_param']
+    camera_param_1 = output['metas'].data['camera_param']
+    # manually do transformations
+    camera_param_0['c'] = (camera_param_0['c'] -
+                           np.array(center)[:, None]) / scale
+    camera_param_0['f'] = camera_param_0['f'] / scale
+    np.testing.assert_array_almost_equal(camera_param_0['c'],
+                                         camera_param_1['c'])
+    np.testing.assert_array_almost_equal(camera_param_0['f'],
+                                         camera_param_1['f'])
 
     # test load mean/std from file
     with tempfile.TemporaryDirectory() as tmpdir:
