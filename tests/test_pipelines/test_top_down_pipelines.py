@@ -8,8 +8,10 @@ from xtcocotools.coco import COCO
 
 from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        NormalizeTensor, TopDownAffine,
+                                       TopDownGenerate3DHeatmapTarget,
                                        TopDownGenerateTarget,
                                        TopDownGetRandomScaleRotation,
+                                       TopDownGetRandomTranslation,
                                        TopDownHalfBodyTransform,
                                        TopDownRandomFlip, ToTensor)
 
@@ -209,3 +211,33 @@ def test_top_down_pipeline():
     results_final = collect(results_target)
     assert 'img_size' not in results_final['img_metas'].data
     assert 'image_file' in results_final['img_metas'].data
+
+
+def test_3d_heatmap_generation():
+    ann_info = dict(
+        image_size=np.array([256, 256]),
+        heatmap_size=np.array([64, 64, 64]),
+        bbox_depth_size=400.0,
+        num_joints=17,
+        joint_weights=np.ones((17, 1), dtype=np.float32),
+        use_different_joint_weights=False)
+
+    results = dict(
+        joints_3d=np.zeros([17, 3]),
+        joints_3d_visible=np.ones([17, 3]),
+        ann_info=ann_info)
+
+    pipeline = TopDownGenerate3DHeatmapTarget()
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (17, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (17, 1)
+
+
+def test_random_translation():
+    results = dict(
+        center=np.zeros([2]),
+        scale=1,
+    )
+    pipeline = TopDownGetRandomTranslation()
+    results = pipeline(results)
+    assert results['center'].shape == (2, )

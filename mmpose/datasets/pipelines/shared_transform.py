@@ -403,3 +403,28 @@ class PhotometricDistortion:
                      f'{self.saturation_upper}), '
                      f'hue_delta={self.hue_delta})')
         return repr_str
+
+
+@PIPELINES.register_module()
+class MultitaskGatherTarget:
+    """Gather the targets for multitask heads.
+
+    Args:
+        pipeline_list (list[list]): List of pipelines for each head.
+    """
+
+    def __init__(self, pipeline_list):
+        self.pipelines = []
+        for pipeline in pipeline_list:
+            self.pipelines.append(Compose(pipeline))
+
+    def __call__(self, results):
+        target = []
+        target_weight = []
+        for pipeline in self.pipelines:
+            results_head = pipeline(results)
+            target.append(results_head['target'])
+            target_weight.append(results_head['target_weight'])
+        results['target'] = target
+        results['target_weight'] = target_weight
+        return results
