@@ -215,3 +215,130 @@ class MSELoss(nn.Module):
             loss = self.criterion(output, target)
 
         return loss * self.loss_weight
+
+
+@LOSSES.register_module()
+class BoneLoss(nn.Module):
+    """Bone length loss."""
+
+    def __init__(self, joint_parents, use_target_weight=False, loss_weight=1.):
+        super().__init__()
+        self.criterion = F.l1_loss
+        self.joint_parents = joint_parents
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+
+        self.non_root_indices = []
+        for i in range(len(self.joint_parents)):
+            if i != self.joint_parents[i]:
+                self.non_root_indices.append(i)
+
+    def forward(self, output, target, target_weight):
+        """Forward function.
+
+        Note:
+            batch_size: N
+            num_keypoints: K
+            dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            output (torch.Tensor[N, K, D]): Output regression.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N, K-1]):
+                Weights across different bone types.
+        """
+        output_bone = torch.norm(
+            output - output[:, self.joint_parents, :],
+            dim=-1)[:, self.non_root_indices]
+        target_bone = torch.norm(
+            target - target[:, self.joint_parents, :],
+            dim=-1)[:, self.non_root_indices]
+        if self.use_target_weight:
+            loss = self.criterion(output_bone * target_weight,
+                                  target_bone * target_weight)
+        else:
+            loss = self.criterion(output_bone, target_bone)
+
+        return loss * self.loss_weight
+
+
+@LOSSES.register_module()
+class SemiSupervisionLoss(nn.Module):
+    """Semi-supervision loss for unlabeled data. It is composed of projection
+    loss and bone loss.
+
+    Args:
+        projection_loss_weight (float): Weight for projection loss.
+        bone_loss_weight (float): Weight for bone loss.
+        warmup_epochs (int): Warmup epochs for semi-supervision. For the
+            first warm_up_epochs, only losses of labeled data are calculated.
+            An empty loss dict will be returned during warmup epochs.
+    """
+
+    def __init__(self,
+                 joint_parents,
+                 projection_loss_weight=1.,
+                 bone_loss_weight=1.,
+                 warmup_epochs=1):
+        super().__init__()
+        self.criterion_projection = MPJPELoss(
+            loss_weight=projection_loss_weight)
+        self.criterion_bone = BoneLoss(
+            joint_parents, loss_weight=bone_loss_weight)
+
+        self.warmup_epochs = warmup_epochs
+        self.num_epochs = 0
+
+    @staticmethod
+    def project_joints(x, intrinsics):
+        """Project 3D joint coordinates to 2D image plane using camera
+        intrinsic parameters.
+
+        Args:
+            x (torch.Tensor[N, K, 3]): 3D joint coordinates.
+            intrinsics (torch.Tensor[N, 4] | torch.Tensor[N, 9]): Camera
+                intrinsics: f (2), c (2), k (3), p (2).
+        """
+        f = intrinsics[:, :2]
+        c = intrinsics[:, 2:4]
+        _x = torch.clamp(x[:, :, :2] / x[:, :, 2:], -1, 1)
+        if intrinsics.shape[1] == 9:
+            k = intrinsics[:, 4:7]
+            p = intrinsics[:, 7:9]
+
+            r2 = torch.sum(_x**2, dim=-1, keepdim=True)
+            radial = 1 + torch.sum(
+                k * torch.cat((r2, r2**2, r2**3), dim=-1),
+                dim=-1,
+                keepdim=True)
+            tan = torch.sum(p * _x, dim=-1, keepdim=True)
+            _x = _x * (radial + tan) + p * r2
+        _x = f * _x + c
+        return _x
+
+    def forward(self, output, target):
+        losses = dict()
+
+        self.num_epochs += 1
+        if self.num_epochs <= self.warmup_epochs:
+            return losses
+
+        labeled_pose = output['labeled_pose']
+        unlabeled_pose = output['unlabeled_pose']
+        unlabeled_traj = output['unlabeled_traj']
+        unlabeled_target_2d = target['unlabeled_target_2d']
+        intrinsics = target['intrinsics']
+
+        # projection loss
+        unlabeled_output = unlabeled_pose + unlabeled_traj
+        unlabeled_output_2d = self._reproject_joints(unlabeled_output,
+                                                     intrinsics)
+        loss_proj = self.criterion_projection(unlabeled_output_2d,
+                                              unlabeled_target_2d)
+        losses['proj_loss'] = loss_proj
+
+        # bone loss
+        loss_bone = self.criterion_bone(unlabeled_pose, labeled_pose)
+        losses['bone_loss'] = loss_bone
+
+        return losses

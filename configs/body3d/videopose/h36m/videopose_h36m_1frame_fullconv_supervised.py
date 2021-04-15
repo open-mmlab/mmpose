@@ -48,7 +48,7 @@ model = dict(
         in_channels=2 * 17,
         stem_channels=1024,
         num_blocks=4,
-        kernel_sizes=(3, 3, 3, 3, 3),
+        kernel_sizes=(1, 1, 1, 1, 1),
         dropout=0.25,
         use_stride_conv=True),
     keypoint_head=dict(
@@ -63,10 +63,10 @@ model = dict(
 data_root = 'data/h36m'
 data_cfg = dict(
     num_joints=17,
-    seq_len=243,
+    seq_len=1,
     seq_frame_interval=1,
     casual=False,
-    pad=True,
+    pad=False,
     joint_2d_src='gt',
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',
@@ -115,10 +115,10 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=2,
+    samples_per_gpu=64,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=2),
-    test_dataloader=dict(samples_per_gpu=2),
+    val_dataloader=dict(samples_per_gpu=64),
+    test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',

@@ -114,6 +114,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 - [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
 - [x] [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
 - [x] [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
+- [x] [ATRW](https://cvwc2019.github.io/challenge.html) (ACM MM'2020)
 
 </details>
 

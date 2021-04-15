@@ -117,7 +117,8 @@ class PreprocessH36m:
 
     def generate_annotations(self):
         """Generate annotations for training and testing data."""
-        output_dir = join(self.processed_dir, 'annotation_body3d')
+        output_dir = join(self.processed_dir, 'annotation_body3d',
+                          f'fps{50 // self.sample_rate}')
         os.makedirs(output_dir, exist_ok=True)
 
         for data_split in ('train', 'test'):

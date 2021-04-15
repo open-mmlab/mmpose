@@ -94,6 +94,7 @@ def test_joint_transforms():
         dict(type='JointNormalization', item='target', mean=mean, std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(type='ImageCoordinateNormalization', norm_camera=True),
+        dict(type='CollectCameraIntrinsics'),
         dict(
             type='Collect',
             keys=[('input_2d', 'input'), ('target', 'output'), 'flip_pairs'],
@@ -107,24 +108,19 @@ def test_joint_transforms():
     # test transformation of target
     joints_0 = results['target']
     joints_1 = output['output'].numpy()
-
     # manually do transformations
     flip_pairs = output['flip_pairs']
     _joints_0_flipped = joints_0.copy()
     for _l, _r in flip_pairs:
         _joints_0_flipped[..., _l, :] = joints_0[..., _r, :]
         _joints_0_flipped[..., _r, :] = joints_0[..., _l, :]
-
     _joints_0_flipped[...,
                       0] = 2 * joints_0[..., 0:1, 0] - _joints_0_flipped[...,
                                                                          0]
-
     joints_0 = _joints_0_flipped
     joints_0 = (joints_0[..., 1:, :] - joints_0[..., 0:1, :] - mean) / std
-
     # convert to [K*C, T]
     joints_0 = joints_0.reshape(-1)[..., None]
-
     np.testing.assert_array_almost_equal(joints_0, joints_1)
 
     # test transformation of input
@@ -150,6 +146,16 @@ def test_joint_transforms():
                                          camera_param_1['c'])
     np.testing.assert_array_almost_equal(camera_param_0['f'],
                                          camera_param_1['f'])
+
+    # test CollectCameraIntrinsics
+    intrinsics_0 = np.concatenate([
+        results['camera_param']['f'].reshape(2),
+        results['camera_param']['c'].reshape(2),
+        results['camera_param']['k'].reshape(3),
+        results['camera_param']['p'].reshape(2)
+    ])
+    intrinsics_1 = output['intrinsics']
+    np.testing.assert_array_almost_equal(intrinsics_0, intrinsics_1)
 
     # test load mean/std from file
     with tempfile.TemporaryDirectory() as tmpdir:

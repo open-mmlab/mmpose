@@ -80,6 +80,8 @@ class Body3DH36MDataset(Body3DBaseDataset):
             self.camera_param = self._load_camera_param(
                 data_cfg['camera_param_file'])
 
+        self.subjects = data_cfg.get('subjects', None)
+
         # h36m specific annotation info
         ann_info = {}
         ann_info['flip_pairs'] = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15],
@@ -132,7 +134,9 @@ class Body3DH36MDataset(Body3DBaseDataset):
         video_frames = defaultdict(list)
         for idx, imgname in enumerate(self.data_info['imgnames']):
             subj, action, camera = self._parse_h36m_imgname(imgname)
-            video_frames[(subj, action, camera)].append(idx)
+            # filter out unwanted subjects if self.subjects is not None
+            if self.subjects is None or subj in self.subjects:
+                video_frames[(subj, action, camera)].append(idx)
 
         # build sample indices
         sample_indices = []
@@ -255,12 +259,6 @@ class Body3DH36MDataset(Body3DBaseDataset):
         preds = np.stack(preds)
         gts = np.stack(gts)
         masks = np.stack(masks).squeeze(-1) > 0
-
-        # Zero-center the pose around its root joint and remove root
-        # joint from the pose.
-        preds = preds[:, 1:, :] - preds[:, :1, :]
-        gts = gts[:, 1:, :] - gts[:, :1, :]
-        masks = masks[:, 1:]
 
         err_name = mode.upper()
         if mode == 'mpjpe':

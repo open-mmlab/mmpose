@@ -61,6 +61,8 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.seq_frame_interval = data_cfg.get('seq_frame_interval', 1)
         self.causal = data_cfg.get('causal', True)
         self.pad = data_cfg.get('pad', False)
+        self.subset = data_cfg.get('subset', 1)
+        self.need_target_2d = data_cfg.get('need_target_2d', False)
 
         self.need_camera_param = False
 
@@ -106,12 +108,18 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         else:
             _joints_2d = np.zeros((num_imgs, num_joints, 3), dtype=np.float32)
 
+        # reduce dataset size if self.subset < 1
+        assert 0 < self.subset <= 1
+        subset_size = int(num_imgs * self.subset)
+        start = np.random.randint(0, len(_imgnames) - subset_size + 1)
+        end = start + subset_size
+
         data_info = {
-            'imgnames': _imgnames,
-            'joints_3d': _joints_3d,
-            'joints_2d': _joints_2d,
-            'scales': _scales,
-            'centers': _centers,
+            'imgnames': _imgnames[start:end],
+            'joints_3d': _joints_3d[start:end],
+            'joints_2d': _joints_2d[start:end],
+            'scales': _scales[start:end],
+            'centers': _centers[start:end],
         }
 
         return data_info
@@ -172,6 +180,9 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
             'scales': _scales,
             'centers': _centers,
         }
+
+        if self.need_target_2d:
+            results['target_2d'] = _joints_2d[target_idx, :, :2]
 
         if self.need_camera_param:
             _cam_param = self.get_camera_param(_imgnames[0])

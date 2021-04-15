@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=5)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=5, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
+    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -17,10 +17,10 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='exp',
     by_epoch=True,
-    gamma=0.95,
+    gamma=0.975,
 )
 
-total_epochs = 80
+total_epochs = 160
 
 log_config = dict(
     interval=20,
@@ -57,7 +57,7 @@ model = dict(
         num_joints=17,
         loss_keypoint=dict(type='MPJPELoss')),
     train_cfg=dict(),
-    test_cfg=dict())
+    test_cfg=dict(restore_global_position=True))
 
 # data settings
 data_root = 'data/h36m'
@@ -78,7 +78,7 @@ train_pipeline = [
         item='target',
         visible_item='target_visible',
         root_index=0,
-        root_name='global_position',
+        root_name='root_position',
         remove_root=False),
     dict(type='ImageCoordinateNormalization', norm_camera=False),
     dict(
@@ -92,13 +92,26 @@ train_pipeline = [
         type='Collect',
         keys=[('input_2d', 'input'), 'target'],
         meta_name='metas',
-        meta_keys=[
-            'target_image_path', 'flip_pairs', 'global_position',
-            'global_position_index'
-        ])
+        meta_keys=['target_image_path', 'flip_pairs', 'root_position'])
 ]
 
-val_pipeline = train_pipeline
+val_pipeline = [
+    dict(
+        type='JointRelativization',
+        item='target',
+        visible_item='target_visible',
+        root_index=0,
+        root_name='root_position',
+        remove_root=False),
+    dict(type='ImageCoordinateNormalization', norm_camera=False),
+    dict(type='PoseSequenceToTensor', item='input_2d'),
+    dict(
+        type='Collect',
+        keys=[('input_2d', 'input'), 'target'],
+        meta_name='metas',
+        meta_keys=['target_image_path', 'flip_pairs', 'root_position'])
+]
+
 test_pipeline = val_pipeline
 
 data = dict(
@@ -108,19 +121,19 @@ data = dict(
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_train.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_test.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/h36m_test.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=test_pipeline),

@@ -13,7 +13,7 @@ class JointRelativization:
     """Zero-center the pose around a given root joint. Optionally, the root
     joint can be removed from the origianl pose and stored as a separate item.
 
-    Note that the relativized joints no longer align with some annotation
+    Note that the relativized joints may no longer align with some annotation
     information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
     the removal of the root joint.
 
@@ -57,7 +57,6 @@ class JointRelativization:
         results[self.item] = joints
         if self.root_name is not None:
             results[self.root_name] = root
-            results[f'{self.root_name}_index'] = self.root_index
 
         if self.remove_root:
             results[self.item] = np.delete(
@@ -69,6 +68,10 @@ class JointRelativization:
             # Add a flag to avoid latter transforms that rely on the root
             # joint or the original joint index
             results[f'{self.item}_root_removed'] = True
+
+            # Save the root index which is necessary to restore the global pose
+            if self.root_name is not None:
+                results[f'{self.root_name}_index'] = self.root_index
 
         return results
 
@@ -130,7 +133,7 @@ class ImageCoordinateNormalization:
         input_2d (, camera_param)
     """
 
-    def __init__(self, norm_camera=True, camera_param=None):
+    def __init__(self, norm_camera=False, camera_param=None):
         self.norm_camera = norm_camera
         self.camera_param = camera_param
 
@@ -161,6 +164,46 @@ class ImageCoordinateNormalization:
             results['camera_param'].update(self.camera_param)
 
         return results
+
+
+@PIPELINES.register_module()
+class CollectCameraIntrinsics:
+    """Store camera intrinsics in a 1-dim array, including f, c, k, p.
+
+    Args:
+        camera_param (dict|None): The camera parameter dict. See the camera
+            class definition for more details. If None is given, the camera
+            parameter will be obtained during processing of each data sample
+            with the key "camera_param".
+        need_distortion (bool): Whether need distortion parameters k and p.
+            Default: True.
+
+    Required keys:
+        camera_param (if camera parameters are not given in initialization)
+    Modified keys:
+        intrinsics
+    """
+
+    def __init__(self, camera_param=None, need_distortion=True):
+        self.camera_param = camera_param
+        self.need_distortion = need_distortion
+
+    def __call__(self, results):
+        if self.camera_param is None:
+            assert 'camera_param' in results, 'Camera parameters are missing.'
+            self.camera_param = results['camera_param']
+        assert 'f' in self.camera_param and 'c' in self.camera_param
+        intrinsics = np.concatenate([
+            self.camera_param['f'].reshape(2),
+            self.camera_param['c'].reshape(2)
+        ])
+        if self.need_distortion:
+            assert 'k' in self.camera_param and 'p' in self.camera_param
+            intrinsics = np.concatenate([
+                intrinsics, self.camera_param['k'].reshape(3),
+                self.camera_param['p'].reshape(2)
+            ])
+        results['intrinsics'] = intrinsics
 
 
 @PIPELINES.register_module()
