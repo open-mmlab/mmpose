@@ -85,6 +85,12 @@ pipelines
 .. automodule:: mmpose.datasets.pipelines.bottom_up_transform
     :members:
 
+.. automodule:: mmpose.datasets.pipelines.mesh_transform
+    :members:
+
+.. automodule:: mmpose.datasets.pipelines.pose3d_transform
+    :members:
+
 samplers
 ^^^^^^^^^^^
 .. automodule:: mmpose.datasets.samplers
