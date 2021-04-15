@@ -194,7 +194,10 @@ def test_camera_projection():
             camera_type='SimpleCamera',
             camera_param=camera_param,
             mode='world_to_camera'),
-        dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
+        dict(
+            type='Collect',
+            keys=['input_3d_wp', 'input_3d_p', 'input_2d'],
+            meta_keys=[])
     ]
 
     output1 = Compose(pipeline_1)(results)
@@ -205,6 +208,9 @@ def test_camera_projection():
 
     np.testing.assert_allclose(
         output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
+
+    np.testing.assert_allclose(
+        output2['input_3d_p'], output2['input_2d'], rtol=1e-3, atol=1e-1)
 
     # test invalid camera parameters
     with pytest.raises(ValueError):
