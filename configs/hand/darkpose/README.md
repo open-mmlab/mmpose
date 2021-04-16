@@ -2,7 +2,7 @@
 
 ## Introduction
 
-<!-- [ALGORITHM] -->
+[ALGORITHM]
 
 ```bibtex
 @inproceedings{zhang2020distribution,
@@ -20,18 +20,18 @@
 
 #### Results on OneHand10K val set
 
-| Arch                                                                                              | Input Size | PCK@0.2 |  AUC  |  EPE  |                                                       ckpt                                                        |                                                     log                                                      |
-| :------------------------------------------------------------------------------------------------ | :--------: | :-----: | :---: | :---: | :---------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
-| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/onehand10k/hrnetv2_w18_onehand10k_256x256_dark.py) |  256x256   |  0.990  | 0.573 | 23.84 | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark-a2f80c64_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark_20210330.log.json) |
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/onehand10k/hrnetv2_w18_onehand10k_256x256_dark.py) | 256x256 | 0.990 | 0.573 | 23.84 | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark-a2f80c64_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark_20210330.log.json) |
 
 #### Results on CMU Panoptic (MPII+NZSL val set)
 
-| Arch                                                                                          | Input Size | PCKh@0.7 |  AUC  |  EPE  |                                                      ckpt                                                       |                                                    log                                                     |
-| :-------------------------------------------------------------------------------------------- | :--------: | :------: | :---: | :---: | :-------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------: |
-| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/panoptic/hrnetv2_w18_panoptic_256x256_dark.py) |  256x256   |  0.999   | 0.745 | 7.77  | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark-1f1e4b74_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark_20210330.log.json) |
+| Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/panoptic/hrnetv2_w18_panoptic_256x256_dark.py) | 256x256 | 0.999 | 0.745 | 7.77 | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark-1f1e4b74_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark_20210330.log.json) |
 
 #### Results on RHD test set
 
-| Arch                                                                                    | Input Size | PCK@0.2 |  AUC  |  EPE  |                                                     ckpt                                                     |                                                   log                                                   |
-| :-------------------------------------------------------------------------------------- | :--------: | :-----: | :---: | :---: | :----------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------: |
-| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/rhd2d/hrnetv2_w18_rhd2d_256x256_dark.py) |  256x256   |  0.992  | 0.903 | 2.17  | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark-4df3a347_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark_20210330.log.json) |
+| Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
+| :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_hrnetv2_w18_dark](/configs/hand/darkpose/rhd2d/hrnetv2_w18_rhd2d_256x256_dark.py) | 256x256 | 0.992 | 0.903 | 2.17 | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark-4df3a347_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark_20210330.log.json) |

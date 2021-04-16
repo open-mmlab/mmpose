@@ -2,7 +2,7 @@
 
 ## Introduction
 
-<!-- [ALGORITHM] -->
+[ALGORITHM]
 
 ```bibtex
 @inproceedings{xiao2018simple,
