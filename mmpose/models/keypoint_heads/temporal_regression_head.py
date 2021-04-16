@@ -4,7 +4,7 @@ from mmcv.cnn import build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from mmpose.core import (WeightNormClipHook, compute_similarity_transform,
-                         fliplr_regression, my_kaiming_normal_init_)
+                         fliplr_regression)
 from mmpose.models.builder import build_loss
 from mmpose.models.registry import HEADS
 
@@ -31,8 +31,7 @@ class TemporalRegressionHead(nn.Module):
                  max_norm=None,
                  loss_keypoint=None,
                  train_cfg=None,
-                 test_cfg=None,
-                 use_my_kaiming_init=False):
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
@@ -42,8 +41,6 @@ class TemporalRegressionHead(nn.Module):
 
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
-
-        self.use_my_kaiming_init = use_my_kaiming_init
 
         self.conv = build_conv_layer(
             dict(type='Conv1d'), in_channels, num_joints * 3, 1)
@@ -55,7 +52,8 @@ class TemporalRegressionHead(nn.Module):
                 if isinstance(module, nn.modules.conv._ConvNd):
                     weight_clip.register(module)
 
-    def _transform_inputs(self, x):
+    @staticmethod
+    def _transform_inputs(x):
         """Transform inputs for decoder.
 
         Args:
@@ -289,9 +287,6 @@ class TemporalRegressionHead(nn.Module):
         """Initialize the weights."""
         for m in self.modules():
             if isinstance(m, nn.modules.conv._ConvNd):
-                if self.use_my_kaiming_init:
-                    my_kaiming_normal_init_(m)
-                else:
-                    kaiming_init(m, mode='fan_in', nonlinearity='relu')
+                kaiming_init(m, mode='fan_in', nonlinearity='relu')
             elif isinstance(m, _BatchNorm):
                 constant_init(m, 1)

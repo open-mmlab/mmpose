@@ -4,7 +4,7 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from mmpose.core import WeightNormClipHook, my_kaiming_normal_init_
+from mmpose.core import WeightNormClipHook
 from ..registry import BACKBONES
 from .base_backbone import BaseBackbone
 
@@ -45,8 +45,7 @@ class BasicTemporalBlock(nn.Module):
                  residual=True,
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
-                 norm_cfg=dict(type='BN1d'),
-                 bias='auto'):
+                 norm_cfg=dict(type='BN1d')):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -77,7 +76,7 @@ class BasicTemporalBlock(nn.Module):
                 kernel_size=kernel_size,
                 stride=self.stride,
                 dilation=self.dilation,
-                bias=bias,
+                bias='auto',
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg))
         self.conv2 = nn.Sequential(
@@ -85,7 +84,7 @@ class BasicTemporalBlock(nn.Module):
                 mid_channels,
                 out_channels,
                 kernel_size=1,
-                bias=bias,
+                bias='auto',
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg))
 
@@ -187,9 +186,7 @@ class TCN(BaseBackbone):
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d'),
-                 max_norm=None,
-                 use_my_kaiming_init=False,
-                 bias='auto'):
+                 max_norm=None):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -203,8 +200,6 @@ class TCN(BaseBackbone):
         self.residual = residual
         self.use_stride_conv = use_stride_conv
         self.max_norm = max_norm
-        self.use_my_kaiming_init = use_my_kaiming_init
-        self.bias = bias
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
@@ -215,7 +210,7 @@ class TCN(BaseBackbone):
             stem_channels,
             kernel_size=kernel_sizes[0],
             stride=kernel_sizes[0] if use_stride_conv else 1,
-            bias=bias,
+            bias='auto',
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg)
 
@@ -234,8 +229,7 @@ class TCN(BaseBackbone):
                     residual=residual,
                     use_stride_conv=use_stride_conv,
                     conv_cfg=conv_cfg,
-                    norm_cfg=norm_cfg,
-                    bias=bias))
+                    norm_cfg=norm_cfg))
             dilation *= kernel_sizes[i]
 
         if self.max_norm is not None:
@@ -267,9 +261,6 @@ class TCN(BaseBackbone):
         if pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.modules.conv._ConvNd):
-                    if self.use_my_kaiming_init:
-                        my_kaiming_normal_init_(m)
-                    else:
-                        kaiming_init(m, mode='fan_in', nonlinearity='relu')
+                    kaiming_init(m, mode='fan_in', nonlinearity='relu')
                 elif isinstance(m, _BatchNorm):
                     constant_init(m, 1)
