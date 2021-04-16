@@ -59,24 +59,3 @@ class HandGenerateRelDepthTarget:
         results['target'] = target * np.ones(1, dtype=np.float32)
         results['target_weight'] = target_weight * np.ones(1, dtype=np.float32)
         return results
-
-
-@PIPELINES.register_module()
-class HandGenerateLabelTarget:
-    """Generate the target hand type label.
-
-    Required keys: 'hand_type', 'hand_type_valid'. Modified keys: 'target',
-    'target_weight'.
-    """
-
-    def __init__(self):
-        pass
-
-    def __call__(self, results):
-        """Generate the target hand type label."""
-        target = results['hand_type']
-        target_weight = np.ones(
-            target.shape, dtype=np.float32) * results['hand_type_valid']
-        results['target'] = target
-        results['target_weight'] = target_weight
-        return results

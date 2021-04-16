@@ -261,6 +261,8 @@ class InterHand3DDataset(HandBaseDataset):
                 # the bboxes have been extended
                 center, scale = self._xywh2cs(*bbox, 1.0)
                 abs_depth = rootnet_ann_data['abs_depth']
+            # 41: 'l_wrist', left hand root
+            # 20: 'r_wrist', right hand root
             rel_root_depth = joint_cam[41, 2] - joint_cam[20, 2]
             # if root is not valid, root-relative 3D depth is also invalid.
             rel_root_valid = joint_valid[20] * joint_valid[41]

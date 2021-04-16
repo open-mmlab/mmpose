@@ -295,3 +295,56 @@ class PoseSequenceToTensor:
         results[self.item] = torch.from_numpy(seq)
 
         return results
+
+
+@PIPELINES.register_module()
+class Generate3DHeatmapTarget:
+    """Generate the target 3d heatmap.
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+        sigma: Sigma of heatmap gaussian.
+    """
+
+    def __init__(self, sigma=2):
+        self.sigma = sigma
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+        cfg = results['ann_info']
+        image_size = cfg['image_size']
+        W, H, D = cfg['heatmap_size']
+        bbox_depth_size = cfg['bbox_depth_size']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        mu_x = joints_3d[:, 0] * W / image_size[0]
+        mu_y = joints_3d[:, 1] * H / image_size[1]
+        mu_z = (joints_3d[:, 2] / bbox_depth_size + 0.5) * D
+
+        target_weight = joints_3d_visible[:, 0]
+        target_weight = target_weight * (mu_z >= 0) * (mu_z < D)
+        if use_different_joint_weights:
+            target_weight = np.multiply(target_weight, joint_weights)
+        target_weight = target_weight[:, None]
+
+        x, y, z = np.arange(W), np.arange(H), np.arange(D)
+        zz, yy, xx = np.meshgrid(z, y, x)
+        xx = xx[None, ...].astype(np.float32)
+        yy = yy[None, ...].astype(np.float32)
+        zz = zz[None, ...].astype(np.float32)
+
+        mu_x = mu_x[..., None, None, None]
+        mu_y = mu_y[..., None, None, None]
+        mu_z = mu_z[..., None, None, None]
+
+        target = np.exp(-((xx - mu_x)**2 + (yy - mu_y)**2 + (zz - mu_z)**2) /
+                        (2 * self.sigma**2))
+
+        results['target'] = target
+        results['target_weight'] = target_weight
+        return results

@@ -65,9 +65,3 @@ def test_hand_transforms():
     results_depth = pipeline(copy.deepcopy(results))
     assert results_depth['target'].shape == (1, )
     assert results_depth['target_weight'].shape == (1, )
-
-    # test hand type label target generation
-    pipeline = Compose([dict(type='HandGenerateLabelTarget')])
-    results_label = pipeline(copy.deepcopy(results))
-    assert results_label['target'].shape == (2, )
-    assert results_label['target_weight'].shape == (2, )
