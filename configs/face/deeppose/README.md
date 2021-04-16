@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @inproceedings{toshev2014deeppose,
@@ -14,7 +14,7 @@
 }
 ```
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @inproceedings{feng2018wing,
@@ -35,7 +35,7 @@
 
 The model is trained on WFLW train.
 
-| Arch  | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> | ckpt | log |
-| :-----| :--------: | :------------------: | :------------------: |:---------------------------: |:------------------------: | :------------------: | :--------------: |:-------------------------: |:---: | :---: |
-| [deeppose_res50](/configs/face/deeppose/wflw/deeppose_res50_wflw_256x256.py)  | 256x256 | 4.85 | 8.50 | 4.81 | 5.69 | 5.45 | 4.82 | 5.20 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json) |
-| [deeppose_res50_wingloss](/configs/face/deeppose/wflw/deeppose_res50_wflw_256x256_wingloss.py)  | 256x256 | 4.64 | 8.25 | 4.59 | 5.56 | 5.26 | 4.59 | 5.07 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss_20210303.log.json) |
+| Arch                                                                                           | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |                                                          ckpt                                                          |                                                        log                                                        |
+| :--------------------------------------------------------------------------------------------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------: |
+| [deeppose_res50](/configs/face/deeppose/wflw/deeppose_res50_wflw_256x256.py)                   |  256x256   |         4.85         |         8.50         |             4.81             |           5.69            |         5.45         |          4.82          |            5.20            |     [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256-92d0ba7f_20210303.pth)      |     [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_20210303.log.json)      |
+| [deeppose_res50_wingloss](/configs/face/deeppose/wflw/deeppose_res50_wflw_256x256_wingloss.py) |  256x256   |         4.64         |         8.25         |             4.59             |           5.56            |         5.26         |          4.59          |            5.07            | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss_20210303.log.json) |
