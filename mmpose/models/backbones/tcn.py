@@ -45,7 +45,8 @@ class BasicTemporalBlock(nn.Module):
                  residual=True,
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
-                 norm_cfg=dict(type='BN1d')):
+                 norm_cfg=dict(type='BN1d'),
+                 bias='auto'):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -76,7 +77,7 @@ class BasicTemporalBlock(nn.Module):
                 kernel_size=kernel_size,
                 stride=self.stride,
                 dilation=self.dilation,
-                bias='auto',
+                bias=bias,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg))
         self.conv2 = nn.Sequential(
@@ -84,7 +85,7 @@ class BasicTemporalBlock(nn.Module):
                 mid_channels,
                 out_channels,
                 kernel_size=1,
-                bias='auto',
+                bias=bias,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg))
 
@@ -187,7 +188,8 @@ class TCN(BaseBackbone):
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d'),
                  max_norm=None,
-                 use_my_kaiming_init=False):
+                 use_my_kaiming_init=False,
+                 bias='auto'):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -202,6 +204,7 @@ class TCN(BaseBackbone):
         self.use_stride_conv = use_stride_conv
         self.max_norm = max_norm
         self.use_my_kaiming_init = use_my_kaiming_init
+        self.bias = bias
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
@@ -212,7 +215,7 @@ class TCN(BaseBackbone):
             stem_channels,
             kernel_size=kernel_sizes[0],
             stride=kernel_sizes[0] if use_stride_conv else 1,
-            bias='auto',
+            bias=bias,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg)
 
@@ -231,7 +234,8 @@ class TCN(BaseBackbone):
                     residual=residual,
                     use_stride_conv=use_stride_conv,
                     conv_cfg=conv_cfg,
-                    norm_cfg=norm_cfg))
+                    norm_cfg=norm_cfg,
+                    bias=bias))
             dilation *= kernel_sizes[i]
 
         if self.max_norm is not None:
