@@ -242,6 +242,85 @@ class JointsEncoder:
         return visible_kpts
 
 
+class PAFGenerator:
+    """Generate part affinity fields.
+
+    Args:
+        output_res (int): Size of feature map.
+        limb_width (int): Limb width of part affinity fields.
+        skeleton (list[list]): connections of joints.
+    """
+
+    def __init__(self, output_res, limb_width, skeleton):
+        self.output_res = output_res
+        self.limb_width = limb_width
+        self.skeleton = skeleton
+
+    def _accumulate_paf_map(self, pafs, src, dst, count):
+        """Accumulate part affinity fields between two given joints.
+
+        Args:
+            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:
+                x and y direction) for a certain limb connection.
+            src (np.ndarray[2,]): coordinates of the source joint.
+            dst (np.ndarray[2,]): coordinates of the destination joint.
+            count (np.ndarray[HxW]): count map that preserves the number of
+                non-zero vectors at each point
+        """
+        limb_vec = dst - src
+        norm = np.linalg.norm(limb_vec)
+        unit_limb_vec = limb_vec / norm
+
+        min_x = max(np.floor(min(src[0], dst[0]) - self.limb_width), 0)
+        max_x = min(
+            np.ceil(max(src[0], dst[0]) + self.limb_width),
+            self.output_res - 1)
+        min_y = max(np.floor(min(src[1], dst[1]) - self.limb_width), 0)
+        max_y = min(
+            np.ceil(max(src[1], dst[1]) + self.limb_width),
+            self.output_res + 1)
+
+        range_x = list(range(int(min_x), int(max_x + 1), 1))
+        range_y = list(range(int(min_y), int(max_y + 1), 1))
+        xx, yy = np.meshgrid(range_x, range_y)
+        delta_x = xx - src[0]
+        delta_y = yy - src[1]
+        dist = np.abs(delta_x * unit_limb_vec[1] - delta_y * unit_limb_vec[0])
+        mask_local = (dist < self.limb_width)
+        mask = np.zeros_like(count, dtype=bool)
+        mask[xx, yy] = mask_local
+
+        pafs[0, mask] += unit_limb_vec[0]
+        pafs[1, mask] += unit_limb_vec[1]
+        count[mask] += 1
+
+        return pafs, count
+
+    def __call__(self, joints):
+        """Generate the target maps of part affinity fields."""
+        pafs = np.zeros(
+            (len(self.skeleton) * 2, self.output_res, self.output_res),
+            dtype=np.float32)
+
+        for idx, sk in enumerate(self.skeleton):
+            count = np.zeros((self.output_res, self.output_res),
+                             dtype=np.float32)
+
+            for p in joints:
+                src = p[sk[0] - 1]
+                dst = p[sk[1] - 1]
+                if src[2] > 0 and dst[2] > 0:
+                    (pafs[2 * idx:2 * idx + 2],
+                     count) = self._accumulate_paf_map(
+                         pafs[2 * idx:2 * idx + 2], src[:2], dst[:2], count)
+
+            mask = (count == 0)
+            count[mask] = 1
+            pafs[2 * idx:2 * idx + 2] = pafs[2 * idx:2 * idx + 2] / count
+
+        return pafs
+
+
 @PIPELINES.register_module()
 class BottomUpRandomFlip:
     """Data augmentation with random image flip for bottom-up.
@@ -425,6 +504,46 @@ class BottomUpRandomAffine:
 
 
 @PIPELINES.register_module()
+class BottomUpGenerateHeatmapTarget:
+    """Generate multi-scale heatmap target for bottom-up.
+
+    Args:
+        sigma (int): Sigma of heatmap Gaussian
+        max_num_people (int): Maximum number of people in an image
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+    """
+
+    def __init__(self, sigma, use_udp=False):
+        self.sigma = sigma
+        self.use_udp = use_udp
+
+    def _generate(self, num_joints, heatmap_size):
+        """Get heatmap generator."""
+        heatmap_generator = [
+            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp)
+            for output_size in heatmap_size
+        ]
+        return heatmap_generator
+
+    def __call__(self, results):
+        """Generate multi-scale heatmap target for bottom-up."""
+        heatmap_generator = \
+            self._generate(results['ann_info']['num_joints'],
+                           results['ann_info']['heatmap_size'])
+        target_list = list()
+        joints_list = results['joints']
+
+        for scale_id in range(results['ann_info']['num_scales']):
+            heatmaps = heatmap_generator[scale_id](joints_list[scale_id])
+            target_list.append(heatmaps.astype(np.float32))
+        results['target'] = target_list
+
+        return results
+
+
+@PIPELINES.register_module()
 class BottomUpGenerateTarget:
     """Generate multi-scale heatmap target for bottom-up.
 
@@ -473,6 +592,52 @@ class BottomUpGenerateTarget:
         results['img'], results['masks'], results[
             'joints'] = img, mask_list, joints_list
         results['targets'] = target_list
+
+        return results
+
+
+@PIPELINES.register_module()
+class BottomUpGeneratePAFTarget:
+    """Generate multi-scale heatmaps and part affinity fields (PAF) target for
+    bottom-up. Paper ref: Cao et al. Realtime Multi-Person 2D Human Pose
+    Estimation using Part Affinity Fields (CVPR 2017).
+
+    Args:
+        limb_width (int): Limb width of part affinity fields
+    """
+
+    def __init__(self, limb_width, skeleton=None):
+        self.limb_width = limb_width
+        self.skeleton = skeleton
+
+    def _generate(self, heatmap_size, skeleton):
+        """Get PAF generator."""
+        paf_generator = [
+            PAFGenerator(output_size, self.limb_width, skeleton)
+            for output_size in heatmap_size
+        ]
+        return paf_generator
+
+    def __call__(self, results):
+        """Generate multi-scale part affinity fields for bottom-up."""
+        if self.skeleton is None:
+            assert results['ann_info']['skeleton'] is not None
+            self.skeleton = results['ann_info']['skeleton']
+        else:
+            assert np.array(
+                self.skeleton).max() < results['ann_info']['num_joints']
+
+        paf_generator = \
+            self._generate(results['ann_info']['heatmap_size'],
+                           self.skeleton)
+        target_list = list()
+        joints_list = results['joints']
+
+        for scale_id in range(results['ann_info']['num_scales']):
+            pafs = paf_generator[scale_id](joints_list[scale_id])
+            target_list.append(pafs.astype(np.float32))
+
+        results['target'] = target_list
 
         return results
 
