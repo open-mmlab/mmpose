@@ -260,8 +260,8 @@ class PAFGenerator:
         """Accumulate part affinity fields between two given joints.
 
         Args:
-            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:
-                x and y direction) for a certain limb connection.
+            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:x axis and
+                y axis) for a certain limb connection.
             src (np.ndarray[2,]): coordinates of the source joint.
             dst (np.ndarray[2,]): coordinates of the destination joint.
             count (np.ndarray[HxW]): count map that preserves the number of
