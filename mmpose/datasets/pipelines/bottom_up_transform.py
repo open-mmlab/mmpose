@@ -131,18 +131,18 @@ class HeatmapGenerator:
 
     Args:
         num_joints (int): Number of keypoints
-        output_res (int): Size of feature map
+        output_size (int): Size of feature map
         sigma (int): Sigma of the heatmaps.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, output_res, num_joints, sigma=-1, use_udp=False):
-        self.output_res = output_res
+    def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
+        self.output_size = output_size
         self.num_joints = num_joints
         if sigma < 0:
-            sigma = self.output_res / 64
+            sigma = self.output_size / 64
         self.sigma = sigma
         size = 6 * sigma + 3
         self.use_udp = use_udp
@@ -157,7 +157,7 @@ class HeatmapGenerator:
 
     def __call__(self, joints):
         """Generate heatmaps."""
-        hms = np.zeros((self.num_joints, self.output_res, self.output_res),
+        hms = np.zeros((self.num_joints, self.output_size, self.output_size),
                        dtype=np.float32)
         sigma = self.sigma
         for p in joints:
@@ -165,7 +165,7 @@ class HeatmapGenerator:
                 if pt[2] > 0:
                     x, y = int(pt[0]), int(pt[1])
                     if x < 0 or y < 0 or \
-                       x >= self.output_res or y >= self.output_res:
+                       x >= self.output_size or y >= self.output_size:
                         continue
 
                     if self.use_udp:
@@ -181,11 +181,11 @@ class HeatmapGenerator:
                     br = int(np.round(x + 3 * sigma +
                                       2)), int(np.round(y + 3 * sigma + 2))
 
-                    c, d = max(0, -ul[0]), min(br[0], self.output_res) - ul[0]
-                    a, b = max(0, -ul[1]), min(br[1], self.output_res) - ul[1]
+                    c, d = max(0, -ul[0]), min(br[0], self.output_size) - ul[0]
+                    a, b = max(0, -ul[1]), min(br[1], self.output_size) - ul[1]
 
-                    cc, dd = max(0, ul[0]), min(br[0], self.output_res)
-                    aa, bb = max(0, ul[1]), min(br[1], self.output_res)
+                    cc, dd = max(0, ul[0]), min(br[0], self.output_size)
+                    aa, bb = max(0, ul[1]), min(br[1], self.output_size)
                     hms[idx, aa:bb,
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
@@ -196,19 +196,19 @@ class JointsEncoder:
     """Encodes the visible joints into (coordinates, score); The coordinate of
     one joint and its score are of `int` type.
 
-    (idx * output_res**2 + y * output_res + x, 1) or (0, 0).
+    (idx * output_size**2 + y * output_size + x, 1) or (0, 0).
 
     Args:
         max_num_people(int): Max number of people in an image
         num_joints(int): Number of keypoints
-        output_res(int): Size of feature map
+        output_size(int): Size of feature map
         tag_per_joint(bool):  Option to use one tag map per joint.
     """
 
-    def __init__(self, max_num_people, num_joints, output_res, tag_per_joint):
+    def __init__(self, max_num_people, num_joints, output_size, tag_per_joint):
         self.max_num_people = max_num_people
         self.num_joints = num_joints
-        self.output_res = output_res
+        self.output_size = output_size
         self.tag_per_joint = tag_per_joint
 
     def __call__(self, joints):
@@ -226,18 +226,18 @@ class JointsEncoder:
         """
         visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
                                 dtype=np.float32)
-        output_res = self.output_res
+        output_size = self.output_size
         for i in range(len(joints)):
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if (pt[2] > 0 and 0 <= y < self.output_res
-                        and 0 <= x < self.output_res):
+                if (pt[2] > 0 and 0 <= y < self.output_size
+                        and 0 <= x < self.output_size):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
-                            (idx * output_res**2 + y * output_res + x, 1)
+                            (idx * output_size**2 + y * output_size + x, 1)
                     else:
-                        visible_kpts[i][tot] = (y * output_res + x, 1)
+                        visible_kpts[i][tot] = (y * output_size + x, 1)
                     tot += 1
         return visible_kpts
 
@@ -246,13 +246,13 @@ class PAFGenerator:
     """Generate part affinity fields.
 
     Args:
-        output_res (int): Size of feature map.
+        output_size (int): Size of feature map.
         limb_width (int): Limb width of part affinity fields.
         skeleton (list[list]): connections of joints.
     """
 
-    def __init__(self, output_res, limb_width, skeleton):
-        self.output_res = output_res
+    def __init__(self, output_size, limb_width, skeleton):
+        self.output_size = output_size
         self.limb_width = limb_width
         self.skeleton = skeleton
 
@@ -266,9 +266,6 @@ class PAFGenerator:
             dst (np.ndarray[2,]): coordinates of the destination joint.
             count (np.ndarray[HxW]): count map that preserves the number of
                 non-zero vectors at each point.
-
-        Note:
-            Args pafs and count are accumulated and returned.
         """
         limb_vec = dst - src
         norm = np.linalg.norm(limb_vec)
@@ -280,11 +277,11 @@ class PAFGenerator:
         min_x = max(np.floor(min(src[0], dst[0]) - self.limb_width), 0)
         max_x = min(
             np.ceil(max(src[0], dst[0]) + self.limb_width),
-            self.output_res - 1)
+            self.output_size - 1)
         min_y = max(np.floor(min(src[1], dst[1]) - self.limb_width), 0)
         max_y = min(
             np.ceil(max(src[1], dst[1]) + self.limb_width),
-            self.output_res + 1)
+            self.output_size + 1)
 
         range_x = list(range(int(min_x), int(max_x + 1), 1))
         range_y = list(range(int(min_y), int(max_y + 1), 1))
@@ -298,18 +295,18 @@ class PAFGenerator:
 
         pafs[0, mask] += unit_limb_vec[0]
         pafs[1, mask] += unit_limb_vec[1]
-        count[mask] += 1
+        count = count + mask
 
         return pafs, count
 
     def __call__(self, joints):
         """Generate the target part affinity fields."""
         pafs = np.zeros(
-            (len(self.skeleton) * 2, self.output_res, self.output_res),
+            (len(self.skeleton) * 2, self.output_size, self.output_size),
             dtype=np.float32)
 
         for idx, sk in enumerate(self.skeleton):
-            count = np.zeros((self.output_res, self.output_res),
+            count = np.zeros((self.output_size, self.output_size),
                              dtype=np.float32)
 
             for p in joints:
