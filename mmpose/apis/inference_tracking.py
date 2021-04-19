@@ -207,7 +207,8 @@ def get_track_id(results,
         else:
             result['track_id'] = track_id
         if use_one_euro:
-            result = _temporal_refine(result, match_result, fps=fps)
+            result['keypoints'] = _temporal_refine(
+                result, match_result, fps=fps)
         del match_result
 
     return results, next_id
