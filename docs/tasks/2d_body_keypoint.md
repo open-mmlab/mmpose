@@ -19,7 +19,7 @@ MMPose supported datasets:
 
 ## COCO
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -69,7 +69,7 @@ mmpose
 
 ## MPII
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{andriluka14cvpr,
@@ -120,7 +120,7 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 
 ## MPII-TRB
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{duan2019trb,
@@ -156,7 +156,7 @@ mmpose
 
 ## AIC
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{wu2017ai,
@@ -197,7 +197,7 @@ mmpose
 
 ## CrowdPose
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{li2018crowdpose,
@@ -238,7 +238,7 @@ mmpose
 
 ## OCHuman
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{zhang2019pose2seg,
@@ -275,7 +275,7 @@ mmpose
 
 ## MHP
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{zhao2018understanding,
@@ -325,7 +325,7 @@ mmpose
 
 ## PoseTrack18
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{andriluka2018posetrack,
@@ -411,7 +411,7 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 ## sub-JHMDB dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{Jhuang:ICCV:2013,

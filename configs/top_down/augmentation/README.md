@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -14,7 +14,7 @@
 }
 ```
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @article{buslaev2020albumentations,

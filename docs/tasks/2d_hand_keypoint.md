@@ -13,7 +13,7 @@ MMPose supported datasets:
 
 ## OneHand10K
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{wang2018mask,
@@ -58,7 +58,7 @@ mmpose
 
 ## FreiHAND Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{zimmermann2019freihand,
@@ -101,7 +101,7 @@ mmpose
 
 ## CMU Panoptic HandDB
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{simon2017hand,
@@ -151,7 +151,7 @@ mmpose
 
 ## InterHand2.6M
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{moon2020interhand2,
@@ -194,7 +194,7 @@ mmpose
 
 ## RHD Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @TechReport{zb2017hand,

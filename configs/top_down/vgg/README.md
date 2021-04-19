@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
 ```bibtex
 @article{simonyan2014very,

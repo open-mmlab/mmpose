@@ -84,7 +84,7 @@ mmpose
 
 ## COCO
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -119,7 +119,7 @@ mmpose
 
 ## Human3.6M
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{ionescu2013human3,
@@ -167,7 +167,7 @@ extract the images by themselves.
 
 ## MPI-INF-3DHP
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{mono-3dhp2017,
@@ -228,7 +228,7 @@ mmpose
 
 ## LSP
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{johnson2010clustered,
@@ -264,7 +264,7 @@ mmpose
 
 ## LSPET
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{johnson2011learning,
@@ -300,7 +300,7 @@ mmpose
 
 ## CMU MoShed Data
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{kanazawa2018end,

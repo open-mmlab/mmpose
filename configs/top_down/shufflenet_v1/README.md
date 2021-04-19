@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
 ```bibtex
 @inproceedings{zhang2018shufflenet,
