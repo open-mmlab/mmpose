@@ -25,11 +25,7 @@ class OneEuroFilter:
                  beta=0.3,
                  d_cutoff=30.0,
                  fps=None):
-        """One Euro Filter for keypoints smooding.
-
-        parameter (cutoff, beta) from VNect
-        (http://gvv.mpi-inf.mpg.de/projects/VNect/)
-        Realtime Camera fps default 30.0
+        """One Euro Filter for keypoints smoothing.
 
         Args:
             x0 (np.ndarray[K, 2]): Initialize keypoints value
@@ -49,6 +45,7 @@ class OneEuroFilter:
         self.x_prev = x0.astype(np.float)
         self.dx_prev = np.full(x0.shape, dx0)
         self.mask_prev = np.ma.masked_where(x0 <= 0, x0)
+        self.realtime = True
         if fps is None:
             # Using in realtime inference
             self.t_e = None
@@ -61,6 +58,10 @@ class OneEuroFilter:
 
     def __call__(self, x, t_e=1.0):
         """Compute the filtered signal.
+
+        parameter (cutoff, beta) from VNect
+        (http://gvv.mpi-inf.mpg.de/projects/VNect/)
+        Realtime Camera fps (d_cutoff) default 30.0
 
         Args:
             x (np.ndarray[K, 2]): keypoints results in frame

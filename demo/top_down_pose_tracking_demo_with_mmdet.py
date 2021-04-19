@@ -63,7 +63,7 @@ def main():
         '--bbox-thr',
         type=float,
         default=0.3,
-        help='Bounding box score threshold')
+        help='Bounding box score threshold or OKS score threshlod')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
@@ -82,7 +82,7 @@ def main():
         '--euro',
         action='store_true',
         default=False,
-        help='Using One_Euro_Filter for smooding')
+        help='Using One_Euro_Filter for smoothing')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
