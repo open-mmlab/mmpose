@@ -256,16 +256,18 @@ class PAFGenerator:
         self.limb_width = limb_width
         self.skeleton = skeleton
 
-    def _accumulate_paf_map(self, pafs, src, dst, count):
+    def _accumulate_paf_map_(self, pafs, src, dst, count):
         """Accumulate part affinity fields between two given joints.
 
         Args:
             pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:x axis and
-                y axis) for a certain limb connection.
+                y axis) for a certain limb connection. This argument will
+                be modified inplace.
             src (np.ndarray[2,]): coordinates of the source joint.
             dst (np.ndarray[2,]): coordinates of the destination joint.
-            count (np.ndarray[HxW]): count map that preserves the number of
-                non-zero vectors at each point.
+            count (np.ndarray[HxW]): count map that preserves the number
+                of non-zero vectors at each point. This argument will be
+                modified inplace.
         """
         limb_vec = dst - src
         norm = np.linalg.norm(limb_vec)
@@ -295,7 +297,7 @@ class PAFGenerator:
 
         pafs[0, mask] += unit_limb_vec[0]
         pafs[1, mask] += unit_limb_vec[1]
-        count = count + mask
+        count += mask
 
         return pafs, count
 
@@ -313,11 +315,10 @@ class PAFGenerator:
                 src = p[sk[0] - 1]
                 dst = p[sk[1] - 1]
                 if src[2] > 0 and dst[2] > 0:
-                    (pafs[2 * idx:2 * idx + 2],
-                     count) = self._accumulate_paf_map(
-                         pafs[2 * idx:2 * idx + 2], src[:2], dst[:2], count)
+                    self._accumulate_paf_map_(
+                        pafs[2 * idx:2 * idx + 2], src[:2], dst[:2], count)
 
-            count[np.where(count == 0)] = 1
+            count = np.maximum(count, 1)
             pafs[2 * idx:2 * idx + 2] = pafs[2 * idx:2 * idx + 2] / count
 
         return pafs
