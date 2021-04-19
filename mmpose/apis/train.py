@@ -17,7 +17,7 @@ else:
     warnings.warn(
         'Fp16OptimizerHook in mmpose will be deprecated in the next'
         'release and replaced by Fp16OptimizerHook provided by mmcv (>=1.3.1)'
-        'Please upgrade your mmcv version if need.', DeprecationWarning)
+        'Please upgrade your mmcv version, if needed.', DeprecationWarning)
     from mmpose.core import Fp16OptimizerHook
 
 
