@@ -15,8 +15,8 @@ if version.parse(mmcv.__version__) >= version.parse('1.3.1'):
     from mmcv.runner import Fp16OptimizerHook
 else:
     warnings.warn(
-        'Fp16OptimizerHook in mmpose will be deprecateed in the next'
-        'release and replaced by Fp16Optimizer provided by mmcv (>=1.3.1)'
+        'Fp16OptimizerHook in mmpose will be deprecated in the next'
+        'release and replaced by Fp16OptimizerHook provided by mmcv (>=1.3.1)'
         'Please upgrade your mmcv version if need.', DeprecationWarning)
     from mmpose.core import Fp16OptimizerHook
 
