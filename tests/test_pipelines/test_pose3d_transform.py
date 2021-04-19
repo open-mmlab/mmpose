@@ -86,7 +86,7 @@ def test_joint_transforms():
             visible_item='target_visible',
             flip_prob=1.),
         dict(
-            type='JointRelativization',
+            type='ZeroCenterJoint',
             item='target',
             root_index=0,
             root_name='global_position',

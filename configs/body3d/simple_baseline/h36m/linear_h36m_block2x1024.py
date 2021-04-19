@@ -50,13 +50,11 @@ model = dict(
         stem_channels=1024,
         num_blocks=2,
         kernel_sizes=(1, 1, 1),
-        dropout=0.5,
-        max_norm=1.0),
+        dropout=0.5),
     keypoint_head=dict(
         type='TemporalRegressionHead',
         in_channels=1024,
         num_joints=16,  # do not predict root joint
-        max_norm=1.0,
         loss_keypoint=dict(type='MSELoss')),
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
@@ -75,7 +73,7 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(
-        type='JointRelativization',
+        type='ZeroCenterJoint',
         item='target',
         visible_item='target_visible',
         root_index=0,
