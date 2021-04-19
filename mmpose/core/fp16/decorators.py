@@ -1,4 +1,5 @@
 import functools
+import warnings
 from inspect import getfullargspec
 
 import torch
@@ -37,6 +38,11 @@ def auto_fp16(apply_to=None, out_fp32=False):
         >>>     def do_something(self, pred, others):
         >>>         pass
     """
+
+    warnings.warn(
+        'auto_fp16 in mmpose will be deprecated in the next release.'
+        'Please use mmcv.runner.auto_fp16 instead (mmcv>=1.3.1).',
+        DeprecationWarning)
 
     def auto_fp16_wrapper(old_func):
 
@@ -117,6 +123,10 @@ def force_fp32(apply_to=None, out_fp16=False):
         >>>     def post_process(self, pred, others):
         >>>         pass
     """
+    warnings.warn(
+        'force_fp32 in mmpose will be deprecated in the next release.'
+        'Please use mmcv.runner.force_fp32 instead (mmcv>=1.3.1).',
+        DeprecationWarning)
 
     def force_fp32_wrapper(old_func):
 
