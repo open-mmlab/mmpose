@@ -297,7 +297,7 @@ class PAFGenerator:
         return pafs, count
 
     def __call__(self, joints):
-        """Generate the target maps of part affinity fields."""
+        """Generate the target part affinity fields."""
         pafs = np.zeros(
             (len(self.skeleton) * 2, self.output_res, self.output_res),
             dtype=np.float32)
@@ -314,8 +314,7 @@ class PAFGenerator:
                      count) = self._accumulate_paf_map(
                          pafs[2 * idx:2 * idx + 2], src[:2], dst[:2], count)
 
-            mask = (count == 0)
-            count[mask] = 1
+            count[np.where(count == 0)] = 1
             pafs[2 * idx:2 * idx + 2] = pafs[2 * idx:2 * idx + 2] / count
 
         return pafs
