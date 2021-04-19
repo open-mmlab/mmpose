@@ -14,7 +14,7 @@
 }
 ```
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,

@@ -9,7 +9,7 @@ MMPose supported datasets:
 
 ## DeepFashion (Fashion Landmark Detection, FLD)
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -21,7 +21,7 @@ MMPose supported datasets:
 }
 ```
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,
