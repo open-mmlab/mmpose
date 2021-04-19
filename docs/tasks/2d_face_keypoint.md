@@ -12,7 +12,7 @@ MMPose supported datasets:
 
 ## 300W Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{sagonas2016300,
@@ -85,7 +85,7 @@ mmpose
 
 ## WFLW Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{wu2018look,
@@ -136,7 +136,7 @@ mmpose
 
 ## AFLW Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{koestinger2011annotated,
@@ -184,7 +184,7 @@ mmpose
 
 ## COFW Dataset
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{burgos2013robust,

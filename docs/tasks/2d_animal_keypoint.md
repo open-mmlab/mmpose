@@ -14,7 +14,7 @@ MMPose supported datasets:
 
 ## Horse-10
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{mathis2021pretraining,
@@ -55,7 +55,7 @@ mmpose
 
 ## MacaquePose
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{labuguen2020macaquepose,
@@ -97,7 +97,7 @@ Since the official dataset does not provide the test set, we randomly select 125
 
 ## Vinegar Fly
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{pereira2019fast,
@@ -141,7 +141,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 ## Desert Locust
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -184,7 +184,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 ## Grévy’s Zebra
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -227,7 +227,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 ## ATRW
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{li2020atrw,

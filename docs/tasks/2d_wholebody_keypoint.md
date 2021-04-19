@@ -9,7 +9,7 @@ MMPose supported datasets:
 
 ## COCO-WholeBody
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{jin2020whole,
