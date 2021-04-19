@@ -63,21 +63,20 @@ def main():
         '--bbox-thr',
         type=float,
         default=0.3,
-        help='Bounding box score threshold or OKS score threshlod')
+        help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
         '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+    parser.add_argument(
+        '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
     parser.add_argument(
         '--det-cat-id',
         type=int,
         default=0,
         help='Category id for bounding box detection model')
     parser.add_argument(
-        '--oks',
-        action='store_true',
-        default=False,
-        help='Using OKS similarity for tracking')
+        '--oks', action='store_true', default=False, help='Using OKS tracking')
     parser.add_argument(
         '--euro',
         action='store_true',
@@ -156,6 +155,7 @@ def main():
             pose_results_last,
             next_id,
             iou_thr=args.iou_thr,
+            oks_thr=args.oks_thr,
             use_oks=args.oks,
             use_one_euro=args.euro,
             fps=fps)

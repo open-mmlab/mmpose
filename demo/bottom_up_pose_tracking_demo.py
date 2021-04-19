@@ -26,17 +26,13 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
-        '--oks-thr',
-        type=float,
-        default=0.3,
-        help='OKS score threshlod or Bounding box score threshold')
-    parser.add_argument(
         '--kpt-thr', type=float, default=0.5, help='Keypoint score threshold')
     parser.add_argument(
-        '--oks',
-        action='store_true',
-        default=True,
-        help='Using OKS similarity for tracking')
+        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+    parser.add_argument(
+        '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
+    parser.add_argument(
+        '--iou', action='store_false', default=True, help='Using iou tracking')
     parser.add_argument(
         '--euro',
         action='store_true',
@@ -97,8 +93,9 @@ def main():
             pose_results,
             pose_results_last,
             next_id,
-            iou_thr=args.oks_thr,
-            use_oks=args.oks,
+            iou_thr=args.iou_thr,
+            oks_thr=args.oks_thr,
+            use_oks=args.iou,
             use_one_euro=args.euro,
             fps=fps)
 

@@ -167,6 +167,7 @@ def get_track_id(results,
                  results_last,
                  next_id,
                  iou_thr=0.3,
+                 oks_thr=0.3,
                  min_keypoints=3,
                  use_oks=False,
                  use_one_euro=False,
@@ -180,6 +181,13 @@ def get_track_id(results,
                 last frame (bbox_result, pose_result, track_id).
         next_id (int): The track id for the new person instance.
         iou_thr (float): The threshold for iou tracking.
+        oks_thr (float): The threshold for oks tracking.
+        min_keypoints (int): Minimum number of keypoints recognized as person.
+                            default:3
+        use_oks (bool): Flag to using oks tracking. default:False
+        use_one_euro (bool): Option to use one-euro-filter. default:False.
+        fps (optional): Parameters that d_cutoff
+                        when one-euro-filter is used as a video input
 
     Returns:
         list[dict]: The bbox & pose & track_id info of the
@@ -190,12 +198,14 @@ def get_track_id(results,
 
     if use_oks:
         _track = _track_by_oks
+        thr = oks_thr
     else:
         _track = _track_by_iou
+        thr = iou_thr
 
     for result in results:
         track_id, results_last, match_result = _track(result, results_last,
-                                                      iou_thr)
+                                                      thr)
         if track_id == -1:
             if np.count_nonzero(result['keypoints'][:, 1]) > min_keypoints:
                 result['track_id'] = next_id
