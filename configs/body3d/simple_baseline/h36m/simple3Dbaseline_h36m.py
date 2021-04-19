@@ -73,19 +73,19 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(
-        type='ZeroCenterJoint',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
         root_name='root_position',
         remove_root=True),
     dict(
-        type='JointNormalization',
+        type='NormalizeJointCoordinate',
         item='target',
         norm_param_file=f'{data_root}/annotation_body3d/fps50/'
         'joint3d_rel_stats.pkl'),
     dict(
-        type='JointNormalization',
+        type='NormalizeJointCoordinate',
         item='input_2d',
         norm_param_file=f'{data_root}/annotation_body3d/fps50/'
         'joint2d_stats.pkl'),

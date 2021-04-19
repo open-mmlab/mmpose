@@ -122,7 +122,7 @@ class TemporalRegressionHead(nn.Module):
                 - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
                 - root_index (torch.ndarray[1,]): Optional, original index of
-                    the root joint before zero-centering.
+                    the root joint before root-centering.
         """
 
         accuracy = dict()
@@ -214,7 +214,7 @@ class TemporalRegressionHead(nn.Module):
                 - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
                 - root_index (torch.ndarray[1,]): Optional, original index of
-                    the root joint before zero-centering.
+                    the root joint before root-centering.
         """
 
         # Denormalize the predicted pose
@@ -250,10 +250,10 @@ class TemporalRegressionHead(nn.Module):
 
     @staticmethod
     def _restore_global_position(x, root_pos, root_idx=None):
-        """Restore global position of the zero-centered joints.
+        """Restore global position of the root-centered joints.
 
         Args:
-            x (np.ndarray[N, K, 3]): zero-centered joint coordinates
+            x (np.ndarray[N, K, 3]): root-centered joint coordinates
             root_pos (np.ndarray[N,1,3]): The global position of the
                 root joint.
             root_idx (int|None): If not none, the root joint will be inserted

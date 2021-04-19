@@ -86,12 +86,14 @@ def test_joint_transforms():
             visible_item='target_visible',
             flip_prob=1.),
         dict(
-            type='ZeroCenterJoint',
+            type='GetRootCenteredPose',
             item='target',
             root_index=0,
             root_name='global_position',
             remove_root=True),
-        dict(type='JointNormalization', item='target', mean=mean, std=std),
+        dict(
+            type='NormalizeJointCoordinate', item='target', mean=mean,
+            std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(
             type='Collect',
@@ -132,7 +134,7 @@ def test_joint_transforms():
 
         pipeline = [
             dict(
-                type='JointNormalization',
+                type='NormalizeJointCoordinate',
                 item='target',
                 norm_param_file=norm_param_file),
         ]

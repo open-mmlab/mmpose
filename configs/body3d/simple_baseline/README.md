@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @inproceedings{martinez_2017_3dbaseline,
