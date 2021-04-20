@@ -86,12 +86,14 @@ def test_joint_transforms():
             visible_item='target_visible',
             flip_prob=1.),
         dict(
-            type='JointRelativization',
+            type='GetRootCenteredPose',
             item='target',
             root_index=0,
             root_name='global_position',
             remove_root=True),
-        dict(type='JointNormalization', item='target', mean=mean, std=std),
+        dict(
+            type='NormalizeJointCoordinate', item='target', mean=mean,
+            std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(
             type='Collect',
@@ -132,7 +134,7 @@ def test_joint_transforms():
 
         pipeline = [
             dict(
-                type='JointNormalization',
+                type='NormalizeJointCoordinate',
                 item='target',
                 norm_param_file=norm_param_file),
         ]
@@ -194,7 +196,10 @@ def test_camera_projection():
             camera_type='SimpleCamera',
             camera_param=camera_param,
             mode='world_to_camera'),
-        dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
+        dict(
+            type='Collect',
+            keys=['input_3d_wp', 'input_3d_p', 'input_2d'],
+            meta_keys=[])
     ]
 
     output1 = Compose(pipeline_1)(results)
@@ -205,6 +210,9 @@ def test_camera_projection():
 
     np.testing.assert_allclose(
         output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
+
+    np.testing.assert_allclose(
+        output2['input_3d_p'], output2['input_2d'], rtol=1e-3, atol=1e-1)
 
     # test invalid camera parameters
     with pytest.raises(ValueError):

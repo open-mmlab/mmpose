@@ -75,10 +75,9 @@ class WeightNormClipHook(PytorchModuleHook):
 
     def hook(self, module, _input):
         for name in self.module_param_names:
-            assert hasattr(module, name)
-            param = getattr(module, name)
-            assert isinstance(param, torch.nn.Parameter), f'{name} is not ' \
-                f'a parameter of the module {type(module)}'
+            assert name in module._parameters, f'{name} is not a parameter' \
+                f' of the module {type(module)}'
+            param = module._parameters[name]
 
             with torch.no_grad():
                 m = param.norm().item()

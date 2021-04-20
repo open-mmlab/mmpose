@@ -52,7 +52,8 @@ class TemporalRegressionHead(nn.Module):
                 if isinstance(module, nn.modules.conv._ConvNd):
                     weight_clip.register(module)
 
-    def _transform_inputs(self, x):
+    @staticmethod
+    def _transform_inputs(x):
         """Transform inputs for decoder.
 
         Args:
@@ -121,7 +122,7 @@ class TemporalRegressionHead(nn.Module):
                 - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
                 - root_index (torch.ndarray[1,]): Optional, original index of
-                    the root joint before relativization.
+                    the root joint before root-centering.
         """
 
         accuracy = dict()
@@ -213,7 +214,7 @@ class TemporalRegressionHead(nn.Module):
                 - root_position (np.ndarray[3,1]): Optional, global
                     position of the root joint.
                 - root_index (torch.ndarray[1,]): Optional, original index of
-                    the root joint before relativization.
+                    the root joint before root-centering.
         """
 
         # Denormalize the predicted pose
@@ -249,12 +250,12 @@ class TemporalRegressionHead(nn.Module):
 
     @staticmethod
     def _restore_global_position(x, root_pos, root_idx=None):
-        """Restore global position of the relativized joints.
+        """Restore global position of the root-centered joints.
 
         Args:
-            x (np.ndarray[N, K, 3]): Relativized joint coordinates
+            x (np.ndarray[N, K, 3]): root-centered joint coordinates
             root_pos (np.ndarray[N,1,3]): The global position of the
-                root joint in relativization.
+                root joint.
             root_idx (int|None): If not none, the root joint will be inserted
                 back to the pose at the given index.
         """
@@ -285,7 +286,7 @@ class TemporalRegressionHead(nn.Module):
     def init_weights(self):
         """Initialize the weights."""
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, nn.modules.conv._ConvNd):
                 kaiming_init(m, mode='fan_in', nonlinearity='relu')
             elif isinstance(m, _BatchNorm):
                 constant_init(m, 1)
