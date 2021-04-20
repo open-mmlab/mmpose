@@ -594,7 +594,7 @@ class TopDownGenerateTarget:
 
 
 @PIPELINES.register_module()
-class TopDownGenerateTargetRegression():
+class TopDownGenerateTargetRegression:
     """Generate the target regression vector (coordinates).
 
     Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified keys:
