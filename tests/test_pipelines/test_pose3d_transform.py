@@ -265,3 +265,10 @@ def test_3d_heatmap_generation():
     results_3d = pipeline(results)
     assert results_3d['target'].shape == (17, 64, 64, 64)
     assert results_3d['target_weight'].shape == (17, 1)
+
+    # test joint_indices
+    pipeline = Compose(
+        [dict(type='Generate3DHeatmapTarget', joint_indices=[0, 8, 16])])
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (3, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (3, 1)

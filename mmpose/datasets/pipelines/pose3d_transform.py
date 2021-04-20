@@ -306,10 +306,13 @@ class Generate3DHeatmapTarget:
 
     Args:
         sigma: Sigma of heatmap gaussian.
+        joint_indices (list): Indices of joints used for heatmap generation.
+        If None (default) is given, all joints will be used.
     """
 
-    def __init__(self, sigma=2):
+    def __init__(self, sigma=2, joint_indices=None):
         self.sigma = sigma
+        self.joint_indices = joint_indices
 
     def __call__(self, results):
         """Generate the target heatmap."""
@@ -321,6 +324,11 @@ class Generate3DHeatmapTarget:
         bbox_depth_size = cfg['bbox_depth_size']
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
+
+        if self.joint_indices is not None:
+            joints_3d = joints_3d[self.joint_indices, ...]
+            joints_3d_visible = joints_3d_visible[self.joint_indices, ...]
+            joint_weights = joint_weights[self.joint_indices, ...]
 
         mu_x = joints_3d[:, 0] * W / image_size[0]
         mu_y = joints_3d[:, 1] * H / image_size[1]
