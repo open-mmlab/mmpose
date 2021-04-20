@@ -11,7 +11,7 @@ The pre-trained pose estimation model can be downloaded from [model zoo](https:/
 Take [macaque model](https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth) as an example:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -22,7 +22,7 @@ python demo/top_down_img_demo.py \
 Examples:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     configs/animal/resnet/macaque/res50_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth \
     --img-root tests/data/macaque/ --json-file tests/data/macaque/test_macaque.json \
@@ -32,7 +32,7 @@ python demo/top_down_img_demo.py \
 To run demos on CPU:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     configs/animal/resnet/macaque/res50_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth \
     --img-root tests/data/macaque/ --json-file tests/data/macaque/test_macaque.json \
@@ -49,7 +49,7 @@ We also provide video demos to illustrate the results.
 If the video is cropped with the object centered in the screen, we can simply use the full image as the model input (without object detection).
 
 ```shell
-python demo/top_down_video_demo_full_frame_without_det.py \
+python demo/scripts/top_down_video_demo_full_frame_without_det.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
@@ -60,10 +60,10 @@ python demo/top_down_video_demo_full_frame_without_det.py \
 Examples:
 
 ```shell
-python demo/top_down_video_demo_full_frame_without_det.py \
+python demo/scripts/top_down_video_demo_full_frame_without_det.py \
     configs/animal/resnet/fly/res152_fly_192x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth \
-    --video-path demo_fly_video.avi \
+    --video-path demo/resources/demo_fly_video.avi \
     --out-video-root vis_results
 ```
 
@@ -79,7 +79,7 @@ In COCO dataset, there are 80 object categories, including 10 common `animal` ca
 For these COCO-animals, please download the COCO pre-trained detection model from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -92,12 +92,12 @@ python demo/top_down_video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_2x_coco/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth \
     configs/animal/resnet/horse10/res50_horse10_256x256-split1.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split1-3a3dc37e_20210405.pth \
-    --video-path demo_horse.mp4 \
+    --video-path demo/resources/demo_horse.mp4 \
     --out-video-root vis_results \
     --bbox-thr 0.1 \
     --kpt-thr 0.4 \
@@ -112,7 +112,7 @@ For other animals, we have also provided some pre-trained animal detection model
 The pre-trained animal pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/animal_models.html#).
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -125,12 +125,12 @@ python demo/top_down_video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py \
     demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
     https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_macaque-e45e36f5_20210409.pth \
     configs/animal/resnet/macaque/res152_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_macaque_256x192-c42abc02_20210407.pth \
-    --video-path demo_macaque.mp4 \
+    --video-path demo/resources/demo_macaque.mp4 \
     --out-video-root vis_results \
     --bbox-thr 0.5 \
     --kpt-thr 0.3 \

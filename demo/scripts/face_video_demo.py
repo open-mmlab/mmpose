@@ -7,30 +7,24 @@ from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
 
 try:
-    from mmdet.apis import inference_detector, init_detector
-    has_mmdet = True
+    import face_recognition
+    has_face_det = True
 except (ImportError, ModuleNotFoundError):
-    has_mmdet = False
+    has_face_det = False
 
 
-def process_mmdet_results(mmdet_results, cat_id=0):
-    """Process mmdet results, and return a list of bboxes.
+def process_face_det_results(face_det_results):
+    """Process det results, and return a list of bboxes.
 
-    :param mmdet_results:
-    :param cat_id: category id (default: 0 for human)
-    :return: a list of detected bounding boxes
+    :param face_det_results: (top, right, bottom and left)
+    :return: a list of detected bounding boxes (x,y,x,y)-format
     """
-    if isinstance(mmdet_results, tuple):
-        det_results = mmdet_results[0]
-    else:
-        det_results = mmdet_results
-
-    bboxes = det_results[cat_id]
 
     person_results = []
-    for bbox in bboxes:
+    for bbox in face_det_results:
         person = {}
-        person['bbox'] = bbox
+        # left, top, right, bottom
+        person['bbox'] = [bbox[3], bbox[0], bbox[1], bbox[2]]
         person_results.append(person)
 
     return person_results
@@ -42,8 +36,6 @@ def main():
     Using mmdet to detect the human.
     """
     parser = ArgumentParser()
-    parser.add_argument('det_config', help='Config file for detection')
-    parser.add_argument('det_checkpoint', help='Checkpoint file for detection')
     parser.add_argument('pose_config', help='Config file for pose')
     parser.add_argument('pose_checkpoint', help='Checkpoint file for pose')
     parser.add_argument('--video-path', type=str, help='Video path')
@@ -60,28 +52,16 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
-        '--bbox-thr',
-        type=float,
-        default=0.3,
-        help='Bounding box score threshold')
-    parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
-    parser.add_argument(
-        '--det-cat-id',
-        type=int,
-        default=0,
-        help='Category id for bounding box detection model')
 
-    assert has_mmdet, 'Please install mmdet to run the demo.'
+    assert has_face_det, 'Please install face_recognition to run the demo. '\
+                         '"pip install face_recognition", For more details, '\
+                         'see https://github.com/ageitgey/face_recognition'
 
     args = parser.parse_args()
 
     assert args.show or (args.out_video_root != '')
-    assert args.det_config is not None
-    assert args.det_checkpoint is not None
 
-    det_model = init_detector(
-        args.det_config, args.det_checkpoint, device=args.device.lower())
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
@@ -89,6 +69,7 @@ def main():
     dataset = pose_model.cfg.data['test']['type']
 
     cap = cv2.VideoCapture(args.video_path)
+    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
 
     if args.out_video_root == '':
         save_out_video = False
@@ -116,18 +97,17 @@ def main():
         flag, img = cap.read()
         if not flag:
             break
-        # test a single image, the resulting box is (x1, y1, x2, y2)
-        mmdet_results = inference_detector(det_model, img)
 
-        # keep the person class bounding boxes.
-        person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
+        face_det_results = face_recognition.face_locations(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        face_results = process_face_det_results(face_det_results)
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             img,
-            person_results,
-            bbox_thr=args.bbox_thr,
+            face_results,
+            bbox_thr=None,
             format='xyxy',
             dataset=dataset,
             return_heatmap=return_heatmap,

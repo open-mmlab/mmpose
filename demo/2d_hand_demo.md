@@ -13,7 +13,7 @@ The pre-trained hand pose estimation model can be downloaded from [model zoo](ht
 Take [onehand10k model](https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth) as an example:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -24,7 +24,7 @@ python demo/top_down_img_demo.py \
 Examples:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
@@ -34,7 +34,7 @@ python demo/top_down_img_demo.py \
 To run demos on CPU:
 
 ```shell
-python demo/top_down_img_demo.py \
+python demo/scripts/top_down_img_demo.py \
     configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
     --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
@@ -53,7 +53,7 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 *Hand Pose Model Preparation:* The pre-trained hand pose estimation model can be downloaded from [pose model zoo](https://mmpose.readthedocs.io/en/latest/hand_models.html#).
 
 ```shell
-python demo/top_down_img_demo_with_mmdet.py \
+python demo/scripts/top_down_img_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --img ${IMG_FILE} \
@@ -63,7 +63,7 @@ python demo/top_down_img_demo_with_mmdet.py \
 ```
 
 ```shell
-python demo/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
+python demo/scripts/top_down_img_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
     configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
@@ -83,7 +83,7 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 *Hand Pose Model Preparation:* The pre-trained hand pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/hand_models.html#).
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -95,11 +95,11 @@ python demo/top_down_video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
+python demo/scripts/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
     https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
     configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
-    --video-path demo/demo_video.mp4 \
+    --video-path demo/resources/demo_video.mp4 \
     --out-video-root vis_results
 ```
 
