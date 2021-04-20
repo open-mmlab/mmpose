@@ -315,11 +315,10 @@ class PAFGenerator:
                 src = p[sk[0] - 1]
                 dst = p[sk[1] - 1]
                 if src[2] > 0 and dst[2] > 0:
-                    self._accumulate_paf_map_(
-                        pafs[2 * idx:2 * idx + 2], src[:2], dst[:2], count)
+                    self._accumulate_paf_map_(pafs[2 * idx:2 * idx + 2],
+                                              src[:2], dst[:2], count)
 
-            count = np.maximum(count, 1)
-            pafs[2 * idx:2 * idx + 2] = pafs[2 * idx:2 * idx + 2] / count
+            pafs[2 * idx:2 * idx + 2] /= np.maximum(count, 1)
 
         return pafs
 
