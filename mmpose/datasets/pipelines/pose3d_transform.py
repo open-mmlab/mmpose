@@ -9,16 +9,16 @@ from mmpose.datasets.registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class JointRelativization:
+class GetRootCenteredPose:
     """Zero-center the pose around a given root joint. Optionally, the root
     joint can be removed from the origianl pose and stored as a separate item.
 
-    Note that the relativized joints may no longer align with some annotation
+    Note that the root-centered joints may no longer align with some annotation
     information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
     the removal of the root joint.
 
     Args:
-        item (str): The name of the pose to relativeze.
+        item (str): The name of the pose to apply root-centering.
         root_index (int): Root joint index in the pose.
         visible_item (str): The name of the visibility item.
         remove_root (bool): If true, remove the root joint from the pose
@@ -77,7 +77,7 @@ class JointRelativization:
 
 
 @PIPELINES.register_module()
-class JointNormalization:
+class NormalizeJointCoordinate:
     """Normalize the joint coordinate with given mean and std.
 
     Args:

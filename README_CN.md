@@ -80,6 +80,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 - [x] [MSPN](configs/top_down/mspn/README.md) (ArXiv'2019)
 - [x] [RSN](configs/top_down/rsn/README.md) (ECCV'2020)
 - [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
+- [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
 
 </details>
 
