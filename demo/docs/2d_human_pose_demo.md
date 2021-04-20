@@ -9,7 +9,7 @@
 We provide a demo script to test a single image, given gt json file.
 
 ```shell
-python demo/scripts/top_down_img_demo.py \
+python demo/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -20,7 +20,7 @@ python demo/scripts/top_down_img_demo.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_img_demo.py \
+python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
@@ -30,7 +30,7 @@ python demo/scripts/top_down_img_demo.py \
 To run demos on CPU:
 
 ```shell
-python demo/scripts/top_down_img_demo.py \
+python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
@@ -45,7 +45,7 @@ We provide a demo script to run mmdet for human detection, and mmpose for pose e
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/scripts/top_down_img_demo_with_mmdet.py \
+python demo/top_down_img_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --img ${IMG_FILE} \
@@ -57,7 +57,7 @@ python demo/scripts/top_down_img_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_img_demo_with_mmdet.py \
+python demo/top_down_img_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
@@ -74,7 +74,7 @@ We also provide a video demo to illustrate the results.
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/scripts/top_down_video_demo_with_mmdet.py \
+python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -86,7 +86,7 @@ python demo/scripts/top_down_video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_video_demo_with_mmdet.py \
+python demo/top_down_video_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
@@ -100,7 +100,7 @@ python demo/scripts/top_down_video_demo_with_mmdet.py \
 We provide a demo script to test a single image.
 
 ```shell
-python demo/scripts/bottom_up_img_demo.py \
+python demo/bottom_up_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -111,7 +111,7 @@ python demo/scripts/bottom_up_img_demo.py \
 Examples:
 
 ```shell
-python demo/scripts/bottom_up_img_demo.py \
+python demo/bottom_up_img_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
     https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
@@ -123,7 +123,7 @@ python demo/scripts/bottom_up_img_demo.py \
 We also provide a video demo to illustrate the results.
 
 ```shell
-python demo/scripts/bottom_up_video_demo.py \
+python demo/bottom_up_video_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
@@ -134,7 +134,7 @@ python demo/scripts/bottom_up_video_demo.py \
 Examples:
 
 ```shell
-python demo/scripts/bottom_up_video_demo.py \
+python demo/bottom_up_video_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
     https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --video-path demo/resources/demo_video.mp4 \

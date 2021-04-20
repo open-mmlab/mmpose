@@ -9,7 +9,7 @@ We provide a video demo to illustrate the pose tracking results.
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/scripts/top_down_video_demo_with_mmdet.py \
+python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -21,7 +21,7 @@ python demo/scripts/top_down_video_demo_with_mmdet.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_pose_tracking_demo_with_mmdet.py \
+python demo/top_down_pose_tracking_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/resnet/coco/res50_coco_256x192.py \
@@ -38,7 +38,7 @@ Here we show how to utilize MMTracking and MMPose to achieve human pose tracking
 Assume that you have already installed [mmtracking](https://github.com/open-mmlab/mmtracking).
 
 ```shell
-python demo/scripts/top_down_video_demo_with_mmtracking.py \
+python demo/top_down_video_demo_with_mmtracking.py \
     ${MMTRACKING_CONFIG_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
@@ -50,7 +50,7 @@ python demo/scripts/top_down_video_demo_with_mmtracking.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_pose_tracking_demo_with_mmtracking.py \
+python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     demo/mmtracking_cfg/tracktor_faster-rcnn_r50_fpn_4e_mot17-private.py \
     configs/top_down/resnet/coco/res50_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \

@@ -99,7 +99,7 @@ We also provide scripts to run demos.
 Here is an example of running top-down human pose demos using ground-truth bounding boxes.
 
 ```shell
-python demo/scripts/top_down_img_demo.py \
+python demo/top_down_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
@@ -110,7 +110,7 @@ python demo/scripts/top_down_img_demo.py \
 Examples:
 
 ```shell
-python demo/scripts/top_down_img_demo.py \
+python demo/top_down_img_demo.py \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
