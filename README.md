@@ -20,7 +20,7 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 The master branch works with **PyTorch 1.3+**.
 
 <div align="center">
-    <img src="demo/demo_coco.gif" width="600px" alt><br>
+    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
     COCO 17-keypoint pose estimation
 </div>
 <div align="center">

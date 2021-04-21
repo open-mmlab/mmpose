@@ -371,7 +371,9 @@ def inference_top_down_pose_model(model,
     # Select bboxes by score threshold
     if bbox_thr is not None:
         assert bboxes.shape[1] == 5
-        bboxes = bboxes[bboxes[:, 4] > bbox_thr]
+        valid_idx = np.where(bboxes[:, 4] > bbox_thr)[0]
+        bboxes = bboxes[valid_idx]
+        person_results = [person_results[i] for i in valid_idx]
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
@@ -386,8 +388,8 @@ def inference_top_down_pose_model(model,
         return [], []
 
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
-        # pose is results['pred'] # N x 17x 3
-        pose, heatmap = _inference_single_pose_model(
+        # poses is results['pred'] # N x 17x 3
+        poses, heatmap = _inference_single_pose_model(
             model,
             img_or_path,
             bboxes_xywh,
@@ -399,8 +401,14 @@ def inference_top_down_pose_model(model,
 
         returned_outputs.append(h.layer_outputs)
 
-    for i in range(len(pose)):
-        pose_results.append({'keypoints': pose[i], 'bbox': bboxes_xyxy[i]})
+    assert len(poses) == len(person_results), print(
+        len(poses), len(person_results), len(bboxes_xyxy))
+    for pose, person_result, bbox_xyxy in zip(poses, person_results,
+                                              bboxes_xyxy):
+        pose_result = person_result.copy()
+        pose_result['keypoints'] = pose
+        pose_result['bbox'] = bbox_xyxy
+        pose_results.append(pose_result)
 
     return pose_results, returned_outputs
 
