@@ -42,6 +42,8 @@ def main():
     dataset = pose_model.cfg.data['test']['type']
 
     cap = cv2.VideoCapture(args.video_path)
+    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
+
     fps = cap.get(cv2.CAP_PROP_FPS)
     size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
             int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
