@@ -1,6 +1,6 @@
 ## 2D Human Pose Demo
 
-<img src="https://raw.githubusercontent.com/open-mmlab/mmpose/master/demo/demo_coco.gif" width="600px" alt><br>
+<img src="https://raw.githubusercontent.com/open-mmlab/mmpose/master/demo/resources/demo_coco.gif" width="600px" alt><br>
 
 ### 2D Human Pose Top-Down Image Demo
 

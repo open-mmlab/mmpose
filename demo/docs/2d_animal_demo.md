@@ -108,7 +108,7 @@ python demo/top_down_video_demo_with_mmdet.py \
 
 **Other Animals**
 
-For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [det model zoo](/demo/mmdet_modelzoo.md).
+For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [det model zoo](/demo/docs/mmdet_modelzoo.md).
 The pre-trained animal pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/animal_models.html#).
 
 ```shell

@@ -48,7 +48,7 @@ We provide a demo script to run mmdet for hand detection, and mmpose for hand po
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
-*Hand Box Model Preparation:* The pre-trained hand box estimation model can be found in [det model zoo](/demo/mmdet_modelzoo.md).
+*Hand Box Model Preparation:* The pre-trained hand box estimation model can be found in [det model zoo](/demo/docs/mmdet_modelzoo.md).
 
 *Hand Pose Model Preparation:* The pre-trained hand pose estimation model can be downloaded from [pose model zoo](https://mmpose.readthedocs.io/en/latest/hand_models.html#).
 
@@ -78,7 +78,7 @@ We also provide a video demo to illustrate the results.
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
-*Hand Box Model Preparation:* The pre-trained hand box estimation model can be found in [det model zoo](/demo/mmdet_modelzoo.md).
+*Hand Box Model Preparation:* The pre-trained hand box estimation model can be found in [det model zoo](/demo/docs/mmdet_modelzoo.md).
 
 *Hand Pose Model Preparation:* The pre-trained hand pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/hand_models.html#).
 

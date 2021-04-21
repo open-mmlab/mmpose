@@ -5,7 +5,7 @@ This page provides tutorials about running demos. Please click the caption for m
 <br>
 
 <div align="center">
-    <img src="demo_coco.gif" width="600px" alt><br>
+    <img src="resources/demo_coco.gif" width="600px" alt><br>
 
 [2D human pose demo](docs/2d_human_pose_demo.md)
 </div>
