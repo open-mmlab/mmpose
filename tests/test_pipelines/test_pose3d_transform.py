@@ -251,7 +251,7 @@ def test_3d_heatmap_generation():
     ann_info = dict(
         image_size=np.array([256, 256]),
         heatmap_size=np.array([64, 64, 64]),
-        bbox_depth_size=400.0,
+        heatmap3d_depth_bound=400.0,
         num_joints=17,
         joint_weights=np.ones((17, 1), dtype=np.float32),
         use_different_joint_weights=False)

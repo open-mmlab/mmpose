@@ -10,9 +10,9 @@ from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        NormalizeTensor, TopDownAffine,
                                        TopDownGenerateTarget,
                                        TopDownGetRandomScaleRotation,
-                                       TopDownGetRandomTranslation,
                                        TopDownHalfBodyTransform,
-                                       TopDownRandomFlip, ToTensor)
+                                       TopDownRandomFlip,
+                                       TopDownRandomTranslation, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):
@@ -217,6 +217,6 @@ def test_random_translation():
         center=np.zeros([2]),
         scale=1,
     )
-    pipeline = TopDownGetRandomTranslation()
+    pipeline = TopDownRandomTranslation()
     results = pipeline(results)
     assert results['center'].shape == (2, )

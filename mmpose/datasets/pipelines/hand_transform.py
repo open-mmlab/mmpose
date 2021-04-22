@@ -6,7 +6,8 @@ from .top_down_transform import TopDownRandomFlip
 
 @PIPELINES.register_module()
 class HandRandomFlip(TopDownRandomFlip):
-    """Data augmentation with random image flip.
+    """Data augmentation with random image flip. A child class of
+    TopDownRandomFlip.
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center',
     'hand_type', 'rel_root_depth' and 'ann_info'.
@@ -17,18 +18,16 @@ class HandRandomFlip(TopDownRandomFlip):
         flip_prob (float): Probability of flip.
     """
 
-    def __init__(self, flip_prob=0.5):
-        super().__init__(flip_prob=flip_prob)
-
     def __call__(self, results):
         """Perform data augmentation with random image flip."""
-        # base flip augment
+        # base flip augmentation
         super().__call__(results)
 
         # flip hand type and root depth
         hand_type = results['hand_type']
         rel_root_depth = results['rel_root_depth']
-        if self.flip_flag:
+        flipped = results['flipped']
+        if flipped:
             hand_type[0], hand_type[1] = hand_type[1], hand_type[0]
             rel_root_depth = -rel_root_depth
         results['hand_type'] = hand_type
@@ -53,8 +52,8 @@ class HandGenerateRelDepthTarget:
         rel_root_valid = results['rel_root_valid']
         cfg = results['ann_info']
         D = cfg['heatmap_size_root']
-        depth_size = cfg['bbox_depth_size_root']
-        target = (rel_root_depth / depth_size + 0.5) * D
+        root_depth_bound = cfg['root_depth_bound']
+        target = (rel_root_depth / root_depth_bound + 0.5) * D
         target_weight = rel_root_valid * (target >= 0) * (target <= D)
         results['target'] = target * np.ones(1, dtype=np.float32)
         results['target_weight'] = target_weight * np.ones(1, dtype=np.float32)

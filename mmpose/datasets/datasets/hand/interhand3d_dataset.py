@@ -97,10 +97,10 @@ class InterHand3DDataset(HandBaseDataset):
         assert self.ann_info['num_joints'] == 42
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-        self.ann_info['bbox_depth_size'] = data_cfg['bbox_depth_size']
+        self.ann_info['heatmap3d_depth_bound'] = data_cfg[
+            'heatmap3d_depth_bound']
         self.ann_info['heatmap_size_root'] = data_cfg['heatmap_size_root']
-        self.ann_info['bbox_depth_size_root'] = data_cfg[
-            'bbox_depth_size_root']
+        self.ann_info['root_depth_bound'] = data_cfg['root_depth_bound']
 
         self.dataset_name = 'interhand3d'
         self.camera_file = camera_file

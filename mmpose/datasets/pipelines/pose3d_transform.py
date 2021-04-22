@@ -321,7 +321,7 @@ class Generate3DHeatmapTarget:
         cfg = results['ann_info']
         image_size = cfg['image_size']
         W, H, D = cfg['heatmap_size']
-        bbox_depth_size = cfg['bbox_depth_size']
+        heatmap3d_depth_bound = cfg['heatmap3d_depth_bound']
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
 
@@ -332,12 +332,12 @@ class Generate3DHeatmapTarget:
 
         mu_x = joints_3d[:, 0] * W / image_size[0]
         mu_y = joints_3d[:, 1] * H / image_size[1]
-        mu_z = (joints_3d[:, 2] / bbox_depth_size + 0.5) * D
+        mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D
 
         target_weight = joints_3d_visible[:, 0]
         target_weight = target_weight * (mu_z >= 0) * (mu_z < D)
         if use_different_joint_weights:
-            target_weight = np.multiply(target_weight, joint_weights)
+            target_weight = target_weight * joint_weights
         target_weight = target_weight[:, None]
 
         x, y, z = np.arange(W), np.arange(H), np.arange(D)

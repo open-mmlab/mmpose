@@ -20,9 +20,9 @@ def get_sample_data():
     ann_info = {}
     ann_info['image_size'] = np.array([256, 256])
     ann_info['heatmap_size'] = np.array([64, 64, 64])
-    ann_info['bbox_depth_size'] = 400.0
+    ann_info['heatmap3d_depth_bound'] = 400.0
     ann_info['heatmap_size_root'] = 64
-    ann_info['bbox_depth_size_root'] = 400.0
+    ann_info['root_depth_bound'] = 400.0
     ann_info['num_joints'] = 42
     ann_info['joint_weights'] = np.ones((ann_info['num_joints'], 1),
                                         dtype=np.float32)

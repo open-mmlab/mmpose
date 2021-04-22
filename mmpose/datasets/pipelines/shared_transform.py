@@ -457,6 +457,6 @@ class RenameKeys:
         """Rename keys."""
         for key_pair in self.key_pairs:
             assert len(key_pair) == 2
-            key_src, key_tgt = key_pair[:2]
+            key_src, key_tgt = key_pair
             results[key_tgt] = results.pop(key_src)
         return results

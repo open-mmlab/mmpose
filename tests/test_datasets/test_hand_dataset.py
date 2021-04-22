@@ -367,9 +367,9 @@ def test_top_down_InterHand3D_dataset():
     data_cfg = dict(
         image_size=[256, 256],
         heatmap_size=[64, 64, 64],
-        bbox_depth_size=400.0,
+        heatmap3d_depth_bound=400.0,
         heatmap_size_root=64,
-        bbox_depth_size_root=400.0,
+        root_depth_bound=400.0,
         num_output_channels=channel_cfg['num_output_channels'],
         num_joints=channel_cfg['dataset_joints'],
         dataset_channel=channel_cfg['dataset_channel'],
