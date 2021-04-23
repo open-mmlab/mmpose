@@ -104,6 +104,8 @@ class TopDownHalpeDataset(TopDownCocoDataset):
         # sanitize bboxes
         valid_objs = []
         for obj in objs:
+            if 'bbox' not in obj:
+                continue
             x, y, w, h = obj['bbox']
             x1 = max(0, x)
             y1 = max(0, y)
@@ -117,14 +119,14 @@ class TopDownHalpeDataset(TopDownCocoDataset):
         rec = []
         bbox_id = 0
         for obj in objs:
+            if 'keypoints' not in obj:
+                continue
             if max(obj['keypoints']) == 0:
                 continue
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
 
-            keypoints = np.array(obj['keypoints'] + obj['foot_kpts'] +
-                                 obj['face_kpts'] + obj['lefthand_kpts'] +
-                                 obj['righthand_kpts']).reshape(-1, 3)
+            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3] > 0)
 
