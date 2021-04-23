@@ -19,16 +19,19 @@ class BCELoss(nn.Module):
 
         Note:
             batch_size: N
-            num_keypoints: K
+            num_labels: K
 
         Args:
             output (torch.Tensor[N, K]): Output classification.
             target (torch.Tensor[N, K]): Target classification.
-            target_weight (torch.Tensor[N, K]):
-                Weights across different joint types.
+            target_weight (torch.Tensor[N, K] or torch.Tensor[N]):
+                Weights across different labels.
         """
+
         if self.use_target_weight:
             loss = self.criterion(output, target, reduction='none')
+            if target_weight.dim() == 1:
+                target_weight = target_weight[:, None]
             loss = (loss * target_weight).mean()
         else:
             loss = self.criterion(output, target)
