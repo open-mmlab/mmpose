@@ -174,7 +174,7 @@ class PoseLifter(BasePose):
 
             output_semi = dict(
                 labeled_pose=output,
-                unlabled_pose=ul_output,
+                unlabeled_pose=ul_output,
                 unlabeled_traj=ul_traj_output)
             target_semi = dict(
                 unlabeled_target_2d=kwargs['unlabeled_target_2d'],
@@ -230,8 +230,9 @@ class PoseLifter(BasePose):
             if self.with_neck:
                 traj_features = self.traj_neck(traj_features)
             traj_output = self.traj_head(traj_features)
+            output = output + traj_output
 
-        return output, traj_output
+        return output
 
     def show_result(self, **kwargs):
         pass

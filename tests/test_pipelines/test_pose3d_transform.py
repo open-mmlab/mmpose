@@ -86,18 +86,21 @@ def test_joint_transforms():
             visible_item='target_visible',
             flip_prob=1.),
         dict(
-            type='JointRelativization',
+            type='GetRootCenteredPose',
             item='target',
             root_index=0,
             root_name='global_position',
             remove_root=True),
-        dict(type='JointNormalization', item='target', mean=mean, std=std),
+        dict(
+            type='NormalizeJointCoordinate', item='target', mean=mean,
+            std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(type='ImageCoordinateNormalization', norm_camera=True),
         dict(type='CollectCameraIntrinsics'),
         dict(
             type='Collect',
-            keys=[('input_2d', 'input'), ('target', 'output'), 'flip_pairs'],
+            keys=[('input_2d', 'input'), ('target', 'output'), 'flip_pairs',
+                  'intrinsics'],
             meta_name='metas',
             meta_keys=['camera_param'])
     ]
@@ -165,7 +168,7 @@ def test_joint_transforms():
 
         pipeline = [
             dict(
-                type='JointNormalization',
+                type='NormalizeJointCoordinate',
                 item='target',
                 norm_param_file=norm_param_file),
         ]
@@ -227,7 +230,10 @@ def test_camera_projection():
             camera_type='SimpleCamera',
             camera_param=camera_param,
             mode='world_to_camera'),
-        dict(type='Collect', keys=['input_3d_wp', 'input_3d_p'], meta_keys=[])
+        dict(
+            type='Collect',
+            keys=['input_3d_wp', 'input_3d_p', 'input_2d'],
+            meta_keys=[])
     ]
 
     output1 = Compose(pipeline_1)(results)
@@ -238,6 +244,9 @@ def test_camera_projection():
 
     np.testing.assert_allclose(
         output2['input_3d_wp'], output2['input_3d_p'], rtol=1e-6)
+
+    np.testing.assert_allclose(
+        output2['input_3d_p'], output2['input_2d'], rtol=1e-3, atol=1e-1)
 
     # test invalid camera parameters
     with pytest.raises(ValueError):
@@ -278,3 +287,30 @@ def test_camera_projection():
             camera_param=camera_param_wo_undistortion,
             mode='camera_to_pixel')
     ])
+
+
+def test_3d_heatmap_generation():
+    ann_info = dict(
+        image_size=np.array([256, 256]),
+        heatmap_size=np.array([64, 64, 64]),
+        heatmap3d_depth_bound=400.0,
+        num_joints=17,
+        joint_weights=np.ones((17, 1), dtype=np.float32),
+        use_different_joint_weights=False)
+
+    results = dict(
+        joints_3d=np.zeros([17, 3]),
+        joints_3d_visible=np.ones([17, 3]),
+        ann_info=ann_info)
+
+    pipeline = Compose([dict(type='Generate3DHeatmapTarget')])
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (17, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (17, 1)
+
+    # test joint_indices
+    pipeline = Compose(
+        [dict(type='Generate3DHeatmapTarget', joint_indices=[0, 8, 16])])
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (3, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (3, 1)

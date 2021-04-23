@@ -65,7 +65,7 @@ data_cfg = dict(
     num_joints=17,
     seq_len=1,
     seq_frame_interval=1,
-    casual=False,
+    causal=False,
     pad=False,
     joint_2d_src='gt',
     need_camera_param=True,
@@ -74,7 +74,7 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
@@ -84,7 +84,10 @@ train_pipeline = [
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target'],
-        root_index=0,
+        flip_cfg=[
+            dict(center_mode='static', center_x=0.),
+            dict(center_mode='root', center_index=0)
+        ],
         visible_item=['input_2d_visible', 'target_visible'],
         flip_prob=0.5),
     dict(type='PoseSequenceToTensor', item='input_2d'),
@@ -97,7 +100,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,

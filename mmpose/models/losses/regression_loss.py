@@ -299,12 +299,14 @@ class SemiSupervisionLoss(nn.Module):
             intrinsics (torch.Tensor[N, 4] | torch.Tensor[N, 9]): Camera
                 intrinsics: f (2), c (2), k (3), p (2).
         """
-        f = intrinsics[:, :2]
-        c = intrinsics[:, 2:4]
+        while intrinsics.dim() < x.dim():
+            intrinsics.unsqueeze_(1)
+        f = intrinsics[..., :2]
+        c = intrinsics[..., 2:4]
         _x = torch.clamp(x[:, :, :2] / x[:, :, 2:], -1, 1)
-        if intrinsics.shape[1] == 9:
-            k = intrinsics[:, 4:7]
-            p = intrinsics[:, 7:9]
+        if intrinsics.shape[-1] == 9:
+            k = intrinsics[..., 4:7]
+            p = intrinsics[..., 7:9]
 
             r2 = torch.sum(_x**2, dim=-1, keepdim=True)
             radial = 1 + torch.sum(
@@ -331,14 +333,13 @@ class SemiSupervisionLoss(nn.Module):
 
         # projection loss
         unlabeled_output = unlabeled_pose + unlabeled_traj
-        unlabeled_output_2d = self._reproject_joints(unlabeled_output,
-                                                     intrinsics)
+        unlabeled_output_2d = self.project_joints(unlabeled_output, intrinsics)
         loss_proj = self.criterion_projection(unlabeled_output_2d,
-                                              unlabeled_target_2d)
+                                              unlabeled_target_2d, None)
         losses['proj_loss'] = loss_proj
 
         # bone loss
-        loss_bone = self.criterion_bone(unlabeled_pose, labeled_pose)
+        loss_bone = self.criterion_bone(unlabeled_pose, labeled_pose, None)
         losses['bone_loss'] = loss_bone
 
         return losses

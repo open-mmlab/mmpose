@@ -84,7 +84,7 @@ mmpose
 
 ## COCO
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -119,18 +119,19 @@ mmpose
 
 ## Human3.6M
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
-@article{ionescu2013human3,
-  title={Human3. 6m: Large scale datasets and predictive methods for 3d human sensing in natural environments},
-  author={Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu, Cristian},
-  journal={IEEE transactions on pattern analysis and machine intelligence},
-  volume={36},
-  number={7},
-  pages={1325--1339},
-  year={2013},
-  publisher={IEEE}
+@article{h36m_pami,
+  author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
+  title = {Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in Natural Environments},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  publisher = {IEEE Computer Society},
+  volume = {36},
+  number = {7},
+  pages = {1325-1339},
+  month = {jul},
+  year = {2014}
 }
 ```
 
@@ -167,7 +168,7 @@ extract the images by themselves.
 
 ## MPI-INF-3DHP
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{mono-3dhp2017,
@@ -228,7 +229,7 @@ mmpose
 
 ## LSP
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{johnson2010clustered,
@@ -264,7 +265,7 @@ mmpose
 
 ## LSPET
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{johnson2011learning,
@@ -300,7 +301,7 @@ mmpose
 
 ## CMU MoShed Data
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{kanazawa2018end,

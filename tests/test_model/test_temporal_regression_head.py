@@ -43,7 +43,7 @@ def test_temporal_regression_head():
 
     acc = head.get_accuracy(out, out, None, metas=metas)
     assert acc['mpjpe'] == 0.
-    np.testing.assert_almost_equal(acc['p_mpjpe'], 0.)
+    np.testing.assert_almost_equal(acc['p_mpjpe'], 0., decimal=6)
 
     # w/ global position restoration
     head = TemporalRegressionHead(

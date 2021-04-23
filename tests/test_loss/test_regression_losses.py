@@ -94,14 +94,15 @@ def test_mse_regression_loss():
 
 def test_bone_loss():
     # w/o target weight
-    loss_cfg = dict(type='BoneLoss', parents=[0, 0, 1])
+    loss_cfg = dict(type='BoneLoss', joint_parents=[0, 0, 1])
     loss = build_loss(loss_cfg)
     fake_pred = torch.zeros((1, 3, 3))
     fake_label = torch.zeros((1, 3, 3))
     assert torch.allclose(loss(fake_pred, fake_label, None), torch.tensor(0.))
 
-    fake_pred = torch.ones((1, 3, 3))
-    fake_label = torch.zeros((1, 3, 3))
+    fake_pred = torch.tensor([[[0, 0, 0], [1, 1, 1], [2, 2, 2]]],
+                             dtype=torch.float32)
+    fake_label = fake_pred * 2
     assert torch.allclose(
         loss(fake_pred, fake_label, None), torch.tensor(3**0.5))
 
@@ -115,8 +116,9 @@ def test_bone_loss():
     assert torch.allclose(
         loss(fake_pred, fake_label, fake_weight), torch.tensor(0.))
 
-    fake_pred = torch.ones((1, 3, 3))
-    fake_label = torch.zeros((1, 3, 3))
+    fake_pred = torch.tensor([[[0, 0, 0], [1, 1, 1], [2, 2, 2]]],
+                             dtype=torch.float32)
+    fake_label = fake_pred * 2
     fake_weight = torch.ones((1, 2))
     assert torch.allclose(
         loss(fake_pred, fake_label, fake_weight), torch.tensor(3**0.5))

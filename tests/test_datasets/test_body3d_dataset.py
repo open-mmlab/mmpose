@@ -95,3 +95,58 @@ def test_body3d_h36m_dataset():
         np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
         np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
         np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
+
+
+def test_body3d_semi_dataset():
+    # Test Body3d Semi-supervision Dataset
+
+    # load labeled dataset
+    labeled_data_cfg = dict(
+        num_joints=17,
+        seq_len=27,
+        seq_frame_interval=1,
+        casual=False,
+        pad=True,
+        joint_2d_src='gt',
+        subset=1,
+        subjects=['S1'],
+        need_camera_param=True,
+        camera_param_file='tests/data/h36m/cameras.pkl')
+    labeled_dataset = dict(
+        type='Body3DH36MDataset',
+        ann_file='tests/data/h36m/test_h36m_body3d.npz',
+        img_prefix='tests/data/h36m',
+        data_cfg=labeled_data_cfg,
+        pipeline=[])
+
+    # load unlabled data
+    unlabeled_data_cfg = dict(
+        num_joints=17,
+        seq_len=27,
+        seq_frame_interval=1,
+        casual=False,
+        pad=True,
+        joint_2d_src='gt',
+        subjects=['S5', 'S7', 'S8'],
+        need_camera_param=True,
+        camera_param_file='tests/data/h36m/cameras.pkl',
+        need_target_2d=True)
+    unlabeled_dataset = dict(
+        type='Body3DH36MDataset',
+        ann_file='tests/data/h36m/test_h36m_body3d.npz',
+        img_prefix='tests/data/h36m',
+        data_cfg=unlabeled_data_cfg,
+        pipeline=[
+            dict(
+                type='Collect',
+                keys=[('input_2d', 'unlabeled_input')],
+                meta_name='metas',
+                meta_keys=[])
+        ])
+
+    # combine labeled and unlabeled dataset to form a new dataset
+    dataset = 'Body3DSemiDataset'
+    dataset_class = DATASETS.get(dataset)
+    custom_dataset = dataset_class(labeled_dataset, unlabeled_dataset)
+    item = custom_dataset[0]
+    assert 'unlabeled_input' in item.keys()

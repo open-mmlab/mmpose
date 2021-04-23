@@ -403,3 +403,60 @@ class PhotometricDistortion:
                      f'{self.saturation_upper}), '
                      f'hue_delta={self.hue_delta})')
         return repr_str
+
+
+@PIPELINES.register_module()
+class MultitaskGatherTarget:
+    """Gather the targets for multitask heads.
+
+    Args:
+        pipeline_list (list[list]): List of pipelines for all heads.
+        pipeline_indices (list[int]): Pipeline index of each head.
+    """
+
+    def __init__(self, pipeline_list, pipeline_indices):
+        self.pipelines = []
+        for pipeline in pipeline_list:
+            self.pipelines.append(Compose(pipeline))
+        self.pipeline_indices = pipeline_indices
+
+    def __call__(self, results):
+        # generate target and target weights using all pipelines
+        _target, _target_weight = [], []
+        for pipeline in self.pipelines:
+            results_head = pipeline(results)
+            _target.append(results_head['target'])
+            _target_weight.append(results_head['target_weight'])
+
+        # reorganize generated target, target_weights according
+        # to self.pipelines_indices
+        target, target_weight = [], []
+        for ind in self.pipeline_indices:
+            target.append(_target[ind])
+            target_weight.append(_target_weight[ind])
+
+        results['target'] = target
+        results['target_weight'] = target_weight
+        return results
+
+
+@PIPELINES.register_module()
+class RenameKeys:
+    """Rename the keys.
+
+    Args:
+    key_pairs (Sequence[tuple]): Required keys to be renamed. If a tuple
+    (key_src, key_tgt) is given as an element, the item retrived by key_src
+    will be renamed as key_tgt.
+    """
+
+    def __init__(self, key_pairs):
+        self.key_pairs = key_pairs
+
+    def __call__(self, results):
+        """Rename keys."""
+        for key_pair in self.key_pairs:
+            assert len(key_pair) == 2
+            key_src, key_tgt = key_pair
+            results[key_tgt] = results.pop(key_src)
+        return results

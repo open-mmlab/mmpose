@@ -22,11 +22,11 @@ Examples:
 
 ```shell
 python demo/top_down_pose_tracking_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_1x_coco.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/resnet/coco/res50_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
-    --video-path demo/demo.mp4 \
+    --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
 ```
 
@@ -54,7 +54,7 @@ python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     demo/mmtracking_cfg/tracktor_faster-rcnn_r50_fpn_4e_mot17-private.py \
     configs/top_down/resnet/coco/res50_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
-    --video-path demo/demo.mp4 \
+    --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
 ```
 

@@ -65,7 +65,7 @@ data_cfg = dict(
     num_joints=17,
     seq_len=81,
     seq_frame_interval=1,
-    casual=False,
+    causal=False,
     pad=True,
     joint_2d_src='gt',
     need_camera_param=True,
@@ -74,7 +74,7 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
@@ -84,7 +84,10 @@ train_pipeline = [
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target'],
-        root_index=0,
+        flip_cfg=[
+            dict(center_mode='static', center_x=0.),
+            dict(center_mode='root', center_index=0)
+        ],
         visible_item=['input_2d_visible', 'target_visible'],
         flip_prob=0.5),
     dict(type='PoseSequenceToTensor', item='input_2d'),
@@ -97,7 +100,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
@@ -115,10 +118,10 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=1024,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=64),
-    test_dataloader=dict(samples_per_gpu=64),
+    val_dataloader=dict(samples_per_gpu=1024),
+    test_dataloader=dict(samples_per_gpu=1024),
     train=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',

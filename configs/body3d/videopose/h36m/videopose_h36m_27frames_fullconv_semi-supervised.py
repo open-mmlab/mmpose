@@ -5,7 +5,7 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=20)
 evaluation = dict(
-    interval=20, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
+    interval=20, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -82,7 +82,7 @@ labeled_data_cfg = dict(
     num_joints=17,
     seq_len=27,
     seq_frame_interval=1,
-    casual=False,
+    causal=False,
     pad=True,
     joint_2d_src='gt',
     subset=0.1,
@@ -94,7 +94,7 @@ unlabeled_data_cfg = dict(
     num_joints=17,
     seq_len=27,
     seq_frame_interval=1,
-    casual=False,
+    causal=False,
     pad=True,
     joint_2d_src='gt',
     subjects=['S5', 'S6', 'S7', 'S8'],
@@ -114,7 +114,7 @@ test_data_cfg = val_data_cfg
 
 train_labeled_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
@@ -124,7 +124,10 @@ train_labeled_pipeline = [
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target'],
-        root_index=0,
+        flip_cfg=[
+            dict(center_mode='static', center_x=0.),
+            dict(center_mode='root', center_index=0)
+        ],
         visible_item=['input_2d_visible', 'target_visible'],
         flip_prob=0.5),
     dict(type='PoseSequenceToTensor', item='input_2d'),
@@ -140,7 +143,7 @@ train_unlabeled_pipeline = [
     dict(type='ImageCoordinateNormalization', norm_camera=True),
     dict(
         type='RelativeJointRandomFlip',
-        item='input_2d',
+        item=['input_2d', 'target_2d'],
         root_index=0,
         visible_item='input_2d_visible',
         flip_prob=0.5,
@@ -157,7 +160,7 @@ train_unlabeled_pipeline = [
 
 val_pipeline = [
     dict(
-        type='JointRelativization',
+        type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,

@@ -9,16 +9,16 @@ from mmpose.datasets.registry import PIPELINES
 
 
 @PIPELINES.register_module()
-class JointRelativization:
+class GetRootCenteredPose:
     """Zero-center the pose around a given root joint. Optionally, the root
     joint can be removed from the origianl pose and stored as a separate item.
 
-    Note that the relativized joints may no longer align with some annotation
+    Note that the root-centered joints may no longer align with some annotation
     information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
     the removal of the root joint.
 
     Args:
-        item (str): The name of the pose to relativeze.
+        item (str): The name of the pose to apply root-centering.
         root_index (int): Root joint index in the pose.
         visible_item (str): The name of the visibility item.
         remove_root (bool): If true, remove the root joint from the pose
@@ -77,7 +77,7 @@ class JointRelativization:
 
 
 @PIPELINES.register_module()
-class JointNormalization:
+class NormalizeJointCoordinate:
     """Normalize the joint coordinate with given mean and std.
 
     Args:
@@ -135,18 +135,24 @@ class ImageCoordinateNormalization:
 
     def __init__(self, norm_camera=False, camera_param=None):
         self.norm_camera = norm_camera
-        self.camera_param = camera_param
+
+        if camera_param is None:
+            self.static_camera = False
+        else:
+            self.static_camera = True
+            self.camera_param = camera_param
 
     def __call__(self, results):
-        if self.camera_param is None:
+        if self.static_camera:
+            camera_param = self.camera_param
+        else:
             assert 'camera_param' in results, 'Camera parameters are missing.'
-            self.camera_param = results['camera_param']
-        assert 'h' in self.camera_param and 'w' in self.camera_param
+            camera_param = results['camera_param']
+        assert 'h' in camera_param and 'w' in camera_param
 
-        center = np.array(
-            [0.5 * self.camera_param['w'], 0.5 * self.camera_param['h']],
-            dtype=np.float32)
-        scale = np.array(0.5 * self.camera_param['w'], dtype=np.float32)
+        center = np.array([0.5 * camera_param['w'], 0.5 * camera_param['h']],
+                          dtype=np.float32)
+        scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
 
         results['input_2d'] = (results['input_2d'] - center) / scale
         results['input_2d_mean'] = np.broadcast_to(
@@ -155,13 +161,12 @@ class ImageCoordinateNormalization:
             scale, results['input_2d'].shape[-2:])
 
         if self.norm_camera:
-            assert 'f' in self.camera_param and 'c' in self.camera_param
-            self.camera_param['f'] = self.camera_param['f'] / scale
-            self.camera_param['c'] = (self.camera_param['c'] -
-                                      center[:, None]) / scale
+            assert 'f' in camera_param and 'c' in camera_param
+            camera_param['f'] = camera_param['f'] / scale
+            camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
             if 'camera_param' not in results:
                 results['camera_param'] = dict()
-            results['camera_param'].update(self.camera_param)
+            results['camera_param'].update(camera_param)
 
         return results
 
@@ -185,25 +190,31 @@ class CollectCameraIntrinsics:
     """
 
     def __init__(self, camera_param=None, need_distortion=True):
-        self.camera_param = camera_param
+        if camera_param is None:
+            self.static_camera = False
+        else:
+            self.static_camera = True
+            self.camera_param = camera_param
         self.need_distortion = need_distortion
 
     def __call__(self, results):
-        if self.camera_param is None:
+        if self.static_camera:
+            camera_param = self.camera_param
+        else:
             assert 'camera_param' in results, 'Camera parameters are missing.'
-            self.camera_param = results['camera_param']
-        assert 'f' in self.camera_param and 'c' in self.camera_param
-        intrinsics = np.concatenate([
-            self.camera_param['f'].reshape(2),
-            self.camera_param['c'].reshape(2)
-        ])
+            camera_param = results['camera_param']
+        assert 'f' in camera_param and 'c' in camera_param
+        intrinsics = np.concatenate(
+            [camera_param['f'].reshape(2), camera_param['c'].reshape(2)])
         if self.need_distortion:
-            assert 'k' in self.camera_param and 'p' in self.camera_param
+            assert 'k' in camera_param and 'p' in camera_param
             intrinsics = np.concatenate([
-                intrinsics, self.camera_param['k'].reshape(3),
-                self.camera_param['p'].reshape(2)
+                intrinsics, camera_param['k'].reshape(3),
+                camera_param['p'].reshape(2)
             ])
         results['intrinsics'] = intrinsics
+
+        return results
 
 
 @PIPELINES.register_module()
@@ -297,9 +308,9 @@ class RelativeJointRandomFlip:
     """Data augmentation with random horizontal joint flip around a root joint.
 
     Args:
-        item (str|list[str]): The name of the poses to flip.
+        item (str|list[str]): The name of the pose to flip.
         root_index (int): Root joint index in the pose.
-        visible_item (str|list[str]): The name of the visibility items which
+        visible_item (str|list[str]): The name of the visibility item which
         will be flipped accordingly along with the pose.
         flip_prob (float): Probability of flip.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
@@ -316,13 +327,13 @@ class RelativeJointRandomFlip:
 
     def __init__(self,
                  item,
-                 root_index,
+                 flip_cfg,
                  visible_item=None,
                  flip_prob=0.5,
                  flip_camera=False,
                  camera_param=None):
         self.item = item
-        self.root_index = root_index
+        self.flip_cfg = flip_cfg
         self.vis_item = visible_item
         self.flip_prob = flip_prob
         self.flip_camera = flip_camera
@@ -330,9 +341,11 @@ class RelativeJointRandomFlip:
 
         if isinstance(self.item, str):
             self.item = [self.item]
+        if isinstance(self.flip_cfg, dict):
+            self.flip_cfg = [self.flip_cfg]
+        assert len(self.item) == len(self.flip_cfg)
         if isinstance(self.vis_item, str):
             self.vis_item = [self.vis_item]
-        assert len(self.item) == len(self.vis_item)
 
     def __call__(self, results):
 
@@ -345,43 +358,41 @@ class RelativeJointRandomFlip:
         if np.random.rand() <= self.flip_prob:
 
             flip_pairs = results['ann_info']['flip_pairs']
+
+            # flip joint coordinates
             for i, item in enumerate(self.item):
-                # flip joint coordinates
                 assert item in results
                 joints = results[item]
 
-                joints_flipped = fliplr_regression(
-                    joints,
-                    flip_pairs,
-                    center_mode='root',
-                    center_index=self.root_index)
+                joints_flipped = fliplr_regression(joints, flip_pairs,
+                                                   **self.flip_cfg[i])
 
                 results[item] = joints_flipped
 
-                # flip joint visibility
-                if self.vis_item[i] is not None:
-                    assert self.vis_item[i] in results
-                    visible = results[self.vis_item[i]]
-                    visible_flipped = visible.copy()
-                    for left, right in flip_pairs:
-                        visible_flipped[..., left, :] = visible[..., right, :]
-                        visible_flipped[..., right, :] = visible[..., left, :]
-                    results[self.vis_item[i]] = visible_flipped
+            # flip joint visibility
+            for i, vis_item in enumerate(self.vis_item):
+                assert vis_item in results
+                visible = results[vis_item]
+                visible_flipped = visible.copy()
+                for left, right in flip_pairs:
+                    visible_flipped[..., left, :] = visible[..., right, :]
+                    visible_flipped[..., right, :] = visible[..., left, :]
+                results[vis_item] = visible_flipped
 
-                # flip horizontal distortion coefficients
-                if self.flip_camera:
-                    if self.camera_param is None:
-                        assert 'camera_param' in results,\
-                            'Camera parameters are missing.'
-                        self.camera_param = results['camera_param']
-                    assert 'c' in self.camera_param and \
-                        'p' in self.camera_param
-                    self.camera_param['c'][0] *= -1
-                    self.camera_param['p'][0] *= -1
+            # flip horizontal distortion coefficients
+            if self.flip_camera:
+                if self.camera_param is None:
+                    assert 'camera_param' in results,\
+                        'Camera parameters are missing.'
+                    self.camera_param = results['camera_param']
+                assert 'c' in self.camera_param and \
+                    'p' in self.camera_param
+                self.camera_param['c'][0] *= -1
+                self.camera_param['p'][0] *= -1
 
-                    if 'camera_param' not in results:
-                        results['camera_param'] = dict()
-                    results['camera_param'].update(self.camera_param)
+                if 'camera_param' not in results:
+                    results['camera_param'] = dict()
+                results['camera_param'].update(self.camera_param)
 
         return results
 
@@ -420,4 +431,65 @@ class PoseSequenceToTensor:
         seq = seq.transpose(1, 2, 0).reshape(-1, T)
         results[self.item] = torch.from_numpy(seq)
 
+        return results
+
+
+@PIPELINES.register_module()
+class Generate3DHeatmapTarget:
+    """Generate the target 3d heatmap.
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+        sigma: Sigma of heatmap gaussian.
+        joint_indices (list): Indices of joints used for heatmap generation.
+        If None (default) is given, all joints will be used.
+    """
+
+    def __init__(self, sigma=2, joint_indices=None):
+        self.sigma = sigma
+        self.joint_indices = joint_indices
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+        cfg = results['ann_info']
+        image_size = cfg['image_size']
+        W, H, D = cfg['heatmap_size']
+        heatmap3d_depth_bound = cfg['heatmap3d_depth_bound']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        if self.joint_indices is not None:
+            joints_3d = joints_3d[self.joint_indices, ...]
+            joints_3d_visible = joints_3d_visible[self.joint_indices, ...]
+            joint_weights = joint_weights[self.joint_indices, ...]
+
+        mu_x = joints_3d[:, 0] * W / image_size[0]
+        mu_y = joints_3d[:, 1] * H / image_size[1]
+        mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D
+
+        target_weight = joints_3d_visible[:, 0]
+        target_weight = target_weight * (mu_z >= 0) * (mu_z < D)
+        if use_different_joint_weights:
+            target_weight = target_weight * joint_weights
+        target_weight = target_weight[:, None]
+
+        x, y, z = np.arange(W), np.arange(H), np.arange(D)
+        zz, yy, xx = np.meshgrid(z, y, x)
+        xx = xx[None, ...].astype(np.float32)
+        yy = yy[None, ...].astype(np.float32)
+        zz = zz[None, ...].astype(np.float32)
+
+        mu_x = mu_x[..., None, None, None]
+        mu_y = mu_y[..., None, None, None]
+        mu_z = mu_z[..., None, None, None]
+
+        target = np.exp(-((xx - mu_x)**2 + (yy - mu_y)**2 + (zz - mu_z)**2) /
+                        (2 * self.sigma**2))
+
+        results['target'] = target
+        results['target_weight'] = target_weight
         return results

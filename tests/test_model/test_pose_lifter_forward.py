@@ -35,15 +35,18 @@ def _create_inputs(joint_num_in,
     }
 
     if semi:
-        inputs['traj_target'] = np.zeros((1, joint_channel_out), np.float32)
+        traj_target = np.zeros((batch_size, 1, joint_channel_out), np.float32)
         unlabeled_pose_in = rng.rand(batch_size,
                                      joint_num_in * joint_channel_in, seq_len)
         unlabeled_target_2d = np.zeros(
             (batch_size, joint_num_out, joint_channel_in), dtype=np.float32)
         intrinsics = np.ones((batch_size, 4))
-        inputs['unlabeled_input'] = unlabeled_pose_in
-        inputs['unlabeled_target_2d'] = unlabeled_target_2d
-        inputs['intrinsics'] = intrinsics
+
+        inputs['traj_target'] = torch.FloatTensor(traj_target)
+        inputs['unlabeled_input'] = torch.FloatTensor(
+            unlabeled_pose_in).requires_grad_(True)
+        inputs['unlabeled_target_2d'] = torch.FloatTensor(unlabeled_target_2d)
+        inputs['intrinsics'] = torch.FloatTensor(intrinsics)
 
     return inputs
 
@@ -115,10 +118,10 @@ def test_pose_lifter_forward():
             loss_keypoint=dict(type='MPJPELoss')),
         loss_semi=dict(
             type='SemiSupervisionLoss',
-            joints_parents=[
+            joint_parents=[
                 0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15
             ],
-            warmup_epochs=0),
+            warmup_epochs=1),
         train_cfg=dict(),
         test_cfg=dict())
 
@@ -136,26 +139,11 @@ def test_pose_lifter_forward():
         batch_size=8,
         semi=True)
 
-    losses = detector.forward(
-        inputs['input'],
-        inputs['target'],
-        inputs['target_weight'],
-        inputs['traj_target'],
-        inputs['unlabeled_input'],
-        inputs['unlabeled_target_2d'],
-        inputs['intrinsics'],
-        inputs['metas'],
-        return_loss=True)
+    losses = detector.forward(**inputs, return_loss=True)
 
     assert isinstance(losses, dict)
 
     # Test forward test for semi-supervised learning
     with torch.no_grad():
-        _ = detector.forward(
-            inputs['input'],
-            inputs['target'],
-            inputs['target_weight'],
-            inputs['traj_target'],
-            inputs['metas'],
-            return_loss=False)
+        _ = detector.forward(**inputs, return_loss=False)
         _ = detector.forward_dummy(inputs['input'])

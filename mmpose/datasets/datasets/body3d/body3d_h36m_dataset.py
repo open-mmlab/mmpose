@@ -152,7 +152,8 @@ class Body3DH36MDataset(Body3DBaseDataset):
                     frames_left = self.seq_len - 1
                     frames_right = 0
                 else:
-                    frames_left = frames_right = (self.seq_len - 1) // 2
+                    frames_left = (self.seq_len - 1) // 2
+                    frames_right = frames_left
                 for i in range(n_frame):
                     pad_left = max(0, frames_left - i // _step)
                     pad_right = max(0,
