@@ -659,12 +659,12 @@ class TopDownRandomTranslation:
     Required key: 'scale' and 'center'. Modifies key: 'center'.
 
     Notes:
-        w: width of bbox
-        h: height of bbox
+        bbox height: H
+        bbox width: W
 
     Args:
         trans_factor (float): Translating center to
-        ``[-trans_factor, -trans_factor] * [w, h] + center``.
+        ``[-trans_factor, trans_factor] * [W, H] + center``.
     """
 
     def __init__(self, trans_factor=0.15):
