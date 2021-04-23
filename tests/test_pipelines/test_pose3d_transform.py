@@ -253,3 +253,30 @@ def test_camera_projection():
             camera_param=camera_param_wo_undistortion,
             mode='camera_to_pixel')
     ])
+
+
+def test_3d_heatmap_generation():
+    ann_info = dict(
+        image_size=np.array([256, 256]),
+        heatmap_size=np.array([64, 64, 64]),
+        heatmap3d_depth_bound=400.0,
+        num_joints=17,
+        joint_weights=np.ones((17, 1), dtype=np.float32),
+        use_different_joint_weights=False)
+
+    results = dict(
+        joints_3d=np.zeros([17, 3]),
+        joints_3d_visible=np.ones([17, 3]),
+        ann_info=ann_info)
+
+    pipeline = Compose([dict(type='Generate3DHeatmapTarget')])
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (17, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (17, 1)
+
+    # test joint_indices
+    pipeline = Compose(
+        [dict(type='Generate3DHeatmapTarget', joint_indices=[0, 8, 16])])
+    results_3d = pipeline(results)
+    assert results_3d['target'].shape == (3, 64, 64, 64)
+    assert results_3d['target_weight'].shape == (3, 1)
