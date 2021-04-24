@@ -194,18 +194,18 @@ class Interhand3DHead(nn.Module):
         keypoints_3d = np.concatenate(
             [result['preds'], result_left_hand['preds']], axis=1)
         # transform keypoint depth to camera space
-        keypoints_3d[:,
-                     3] = (keypoints_3d[:, 3] / self.right_hand_head.depth_size
-                           - 0.5) * heatmap3d_depth_bound
+        keypoints_3d[:, 3] = \
+            (keypoints_3d[:, 3] / self.right_hand_head.depth_size - 0.5) \
+            * heatmap3d_depth_bound
         keypoints_3d = keypoints_3d[:, :, :3]
         result['preds'] = keypoints_3d
 
         # decode relative hand root depth
         result_root = self.root_head.decode(img_metas, output[2], **kwargs)
-        # transform depth to camera space
-        result['rel_root_depth'] = (
-            result_root['values'] / self.root_head.heatmap_size -
-            0.5) * root_depth_bound
+        # transform relative root depth to camera space
+        result['rel_root_depth'] = \
+            (result_root['values'] / self.root_head.heatmap_size - 0.5) \
+            * root_depth_bound
 
         # decode hand type
         result_hand_type = self.hand_type_head.decode(img_metas, output[3],

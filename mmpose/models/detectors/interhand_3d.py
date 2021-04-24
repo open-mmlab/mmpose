@@ -4,27 +4,11 @@ from .top_down import TopDown
 
 @POSENETS.register_module()
 class Interhand3D(TopDown):
-    """Top-down interhand 3D pose detectors. A child class of TopDown
-    detectors.
+    """Top-down interhand 3D pose detector of paper ref: Gyeongsik Moon.
 
-    Args:
-        backbone (dict): Backbone modules to extract feature.
-        neck (dict): Neck modules to process feature.
-        head (dict): Head to process feature.
-        train_cfg (dict): Config for training. Default: None.
-        test_cfg (dict): Config for testing. Default: None.
-        pretrained (str): Path to the pretrained models.
+    "InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
+    Estimation from a Single RGB Image". A child class of TopDown detector.
     """
-
-    def __init__(self,
-                 backbone,
-                 neck=None,
-                 keypoint_head=None,
-                 train_cfg=None,
-                 test_cfg=None,
-                 pretrained=None):
-        super().__init__(backbone, neck, keypoint_head, train_cfg, test_cfg,
-                         pretrained)
 
     def forward(self,
                 img,
