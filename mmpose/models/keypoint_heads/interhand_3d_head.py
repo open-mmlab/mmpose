@@ -17,8 +17,8 @@ class Interhand3DHead(nn.Module):
     RGB Image".
 
     Args:
-        keypoint_head_cfg (dict): Configs of Heatmap3DHead for
-        hand keypoints estimation.
+        keypoint_head_cfg (dict): Configs of Heatmap3DHead for hand
+        keypoints estimation.
         root_head_cfg (dict): Configs of Heatmap1DHead for relative
         hand root depth estimation.
         hand_type_head_cfg (dict): Configs of MultilabelClassificationHead
