@@ -44,10 +44,10 @@ def _get_max_preds_3d(heatmaps):
 
 
 @HEADS.register_module()
-class HeatMap3DHead(TopDownSimpleHead):
+class Heatmap3DHead(TopDownSimpleHead):
     """3D heatmap head of paper ref: Gyeongsik Moon. "InterHand2.6M: A Dataset
     and Baseline for 3D Interacting Hand Pose Estimation from a Single RGB
-    Image" HeatMap3DHead is a variant of TopDownSimpleHead, and is composed of
+    Image" Heatmap3DHead is a variant of TopDownSimpleHead, and is composed of
     (>=0) number of deconv layers and a simple conv2d layer.
 
     Args:
@@ -172,10 +172,10 @@ class HeatMap3DHead(TopDownSimpleHead):
             preds[i, :, :2] = transform_preds(preds[i, :, :2], center[i],
                                               scale[i], [W, H])
 
-        all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
+        all_preds = np.zeros((batch_size, preds.shape[1], 4), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
-        all_preds[:, :, 0:2] = preds[:, :, 0:2]
-        all_preds[:, :, 2:3] = maxvals
+        all_preds[:, :, 0:3] = preds[:, :, 0:3]
+        all_preds[:, :, 3:4] = maxvals
         all_boxes[:, 0:2] = center[:, 0:2]
         all_boxes[:, 2:4] = scale[:, 0:2]
         # scale is defined as: bbox_size / 200.0,

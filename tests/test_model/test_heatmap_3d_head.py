@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from mmpose.models import HeatMap3DHead
+from mmpose.models import Heatmap3DHead
 
 
 def test_heatmap_3d_head():
@@ -22,7 +22,7 @@ def test_heatmap_3d_head():
     }]
 
     # test 3D heatmap head
-    head3d = HeatMap3DHead(
+    head3d = Heatmap3DHead(
         in_channels=512,
         out_channels=20 * 64,
         depth_size=64,

@@ -70,7 +70,7 @@ class MultilabelClassificationHead(nn.Module):
 
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
-        assert target.dim() == 2 and target_weight.dim() == 2
+        assert target.dim() == 2 and target_weight.dim() in [1, 2]
         losses['classification_loss'] = self.loss(output, target,
                                                   target_weight)
         return losses
@@ -91,7 +91,8 @@ class MultilabelClassificationHead(nn.Module):
 
         accuracy = dict()
         # only calculate accuracy on the samples with ground truth labels
-        valid = (target_weight > 0).min(dim=1)[0]
+        valid = (target_weight > 0).min(dim=1)[0] \
+            if target_weight.dim() == 2 else (target_weight > 0)
 
         output, target = output[valid], target[valid]
 

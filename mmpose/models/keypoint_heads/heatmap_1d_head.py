@@ -87,7 +87,7 @@ class Heatmap1DHead(nn.Module):
         """Inference function.
 
         Returns:
-            output_labels (np.ndarray): Output labels.
+            value (np.ndarray): Output value.
 
         Args:
             x (torch.Tensor[NxC]): Input features vector.
@@ -95,13 +95,6 @@ class Heatmap1DHead(nn.Module):
                 Pairs of labels which are mirrored.
         """
         value = self.forward(x).detach().cpu().numpy()
-
-        if flip_pairs is not None:
-            value_flipped_back = value.copy()
-            for left, right in flip_pairs:
-                value_flipped_back[:, left, ...] = value[:, right, ...]
-                value_flipped_back[:, right, ...] = value[:, left, ...]
-            return value_flipped_back
         return value
 
     def decode(self, img_metas, output, **kwargs):
