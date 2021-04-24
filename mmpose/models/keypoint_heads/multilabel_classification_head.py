@@ -38,15 +38,15 @@ class MultilabelClassificationHead(nn.Module):
         feature_dims = [in_channels] + \
                        [dim for dim in hidden_dims] + \
                        [num_labels]
-        self.fc = self._make_linear_layers(feature_dims)
+        self.fc = self._make_linear_layers(feature_dims, relu_final=False)
 
-    def _make_linear_layers(self, feat_dims, relu_final=True):
+    def _make_linear_layers(self, feat_dims, relu_final=False):
         """Make linear layers."""
         layers = []
         for i in range(len(feat_dims) - 1):
             layers.append(nn.Linear(feat_dims[i], feat_dims[i + 1]))
-            if i < len(feat_dims) - 2 or (i == len(feat_dims) - 2
-                                          and relu_final):
+            if i < len(feat_dims) - 2 or \
+                    (i == len(feat_dims) - 2 and relu_final):
                 layers.append(nn.ReLU(inplace=True))
         return nn.Sequential(*layers)
 
@@ -70,7 +70,7 @@ class MultilabelClassificationHead(nn.Module):
 
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
-        assert target.dim() == 2 and target_weight.dim() == 2
+        assert target.dim() == 2 and target_weight.dim() in [1, 2]
         losses['classification_loss'] = self.loss(output, target,
                                                   target_weight)
         return losses
@@ -91,7 +91,8 @@ class MultilabelClassificationHead(nn.Module):
 
         accuracy = dict()
         # only calculate accuracy on the samples with ground truth labels
-        valid = (target_weight > 0).min(dim=1)[0]
+        valid = (target_weight > 0).min(dim=1)[0] \
+            if target_weight.dim() == 2 else (target_weight > 0)
 
         output, target = output[valid], target[valid]
 
@@ -101,7 +102,7 @@ class MultilabelClassificationHead(nn.Module):
         else:
             acc = (((output - 0.5) *
                     (target - 0.5)).min(dim=1)[0] > 0).float().mean()
-        accuracy['acc_classification'] = acc
+        accuracy['acc_classification'] = acc.detach().item()
         return accuracy
 
     def inference_model(self, x, flip_pairs=None):
@@ -135,6 +136,7 @@ class MultilabelClassificationHead(nn.Module):
                 - "image_file": path to the image file
             output (np.ndarray[N, L]): model predicted labels.
         """
+        output = output > 0.5
         return dict(labels=output)
 
     def init_weights(self):

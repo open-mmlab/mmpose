@@ -38,7 +38,7 @@ class Heatmap1DHead(nn.Module):
         feature_dims = [in_channels] + \
                        [dim for dim in hidden_dims] + \
                        [heatmap_size]
-        self.fc = self._make_linear_layers(feature_dims)
+        self.fc = self._make_linear_layers(feature_dims, relu_final=False)
 
     def soft_argmax_1d(self, heatmap1d):
         heatmap1d = F.softmax(heatmap1d, 1)
@@ -48,13 +48,13 @@ class Heatmap1DHead(nn.Module):
         coord = accu.sum(dim=1)
         return coord
 
-    def _make_linear_layers(self, feat_dims, relu_final=True):
+    def _make_linear_layers(self, feat_dims, relu_final=False):
         """Make linear layers."""
         layers = []
         for i in range(len(feat_dims) - 1):
             layers.append(nn.Linear(feat_dims[i], feat_dims[i + 1]))
-            if i < len(feat_dims) - 2 or (i == len(feat_dims) - 2
-                                          and relu_final):
+            if i < len(feat_dims) - 2 or \
+                    (i == len(feat_dims) - 2 and relu_final):
                 layers.append(nn.ReLU(inplace=True))
         return nn.Sequential(*layers)
 
@@ -87,7 +87,7 @@ class Heatmap1DHead(nn.Module):
         """Inference function.
 
         Returns:
-            output_labels (np.ndarray): Output labels.
+            value (np.ndarray): Output value.
 
         Args:
             x (torch.Tensor[NxC]): Input features vector.
@@ -95,13 +95,6 @@ class Heatmap1DHead(nn.Module):
                 Pairs of labels which are mirrored.
         """
         value = self.forward(x).detach().cpu().numpy()
-
-        if flip_pairs is not None:
-            value_flipped_back = value.copy()
-            for left, right in flip_pairs:
-                value_flipped_back[:, left, ...] = value[:, right, ...]
-                value_flipped_back[:, right, ...] = value[:, left, ...]
-            return value_flipped_back
         return value
 
     def decode(self, img_metas, output, **kwargs):

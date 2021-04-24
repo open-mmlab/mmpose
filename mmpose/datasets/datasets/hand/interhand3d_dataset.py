@@ -188,11 +188,11 @@ class InterHand3DDataset(HandBaseDataset):
     @staticmethod
     def _encode_handtype(hand_type):
         if hand_type == 'right':
-            return np.array([1, 0], dtype=int)
+            return np.array([1, 0], dtype=np.float32)
         elif hand_type == 'left':
-            return np.array([0, 1], dtype=int)
+            return np.array([0, 1], dtype=np.float32)
         elif hand_type == 'interacting':
-            return np.array([1, 1], dtype=int)
+            return np.array([1, 1], dtype=np.float32)
         else:
             assert 0, f'Not support hand type: {hand_type}'
 
