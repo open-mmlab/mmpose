@@ -1,4 +1,3 @@
-import sys
 import warnings
 
 import torch
@@ -13,9 +12,9 @@ from mmpose.utils import get_root_logger
 try:
     from mmcv.runner import Fp16OptimizerHook
 except ImportError:
-    warnings.warn('Fp16OptimizerHook from mmpose is deprecated from v0.14.0'
-                  'Please install mmcv>=1.1.4')
-    sys.exit()
+    warnings.warn('Fp16OptimizerHook from mmpose will be deprecated from '
+                  'v0.15.0. Please install mmcv>=1.1.4')
+    from mmpose.core import Fp16OptimizerHook
 
 
 def train_model(model,
