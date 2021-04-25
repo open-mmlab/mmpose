@@ -60,32 +60,8 @@ def get_anno_info():
                      [16, 20]]
     category_info = [{
         'supercategory': 'animal',
-        'id': 0,
-        'name': 'cat',
-        'keypoints': keypoints_info,
-        'skeleton': skeleton_info
-    }, {
-        'supercategory': 'animal',
         'id': 1,
-        'name': 'cow',
-        'keypoints': keypoints_info,
-        'skeleton': skeleton_info
-    }, {
-        'supercategory': 'animal',
-        'id': 2,
-        'name': 'dog',
-        'keypoints': keypoints_info,
-        'skeleton': skeleton_info
-    }, {
-        'supercategory': 'animal',
-        'id': 3,
-        'name': 'horse',
-        'keypoints': keypoints_info,
-        'skeleton': skeleton_info
-    }, {
-        'supercategory': 'animal',
-        'id': 4,
-        'name': 'sheep',
+        'name': 'animal',
         'keypoints': keypoints_info,
         'skeleton': skeleton_info
     }]
@@ -131,11 +107,7 @@ def xml2coco_trainval(file_list, img_root, save_path, start_ann_id=0):
         'L_B_Paw': 18,
         'R_B_Paw': 19
     }
-    cat2id = {'cat': 0, 'cow': 1, 'dog': 2, 'horse': 3, 'sheep': 4}
-
     for file in file_list:
-        category_id = cat2id[file.split('/')[-2]]
-
         data_anno = xmltodict.parse(open(file).read())['annotation']
 
         img_id = int(data_anno['image'].split('_')[0] +
@@ -189,7 +161,7 @@ def xml2coco_trainval(file_list, img_root, save_path, start_ann_id=0):
         ]
         anno['iscrowd'] = 0
         anno['area'] = float(anno['bbox'][2] * anno['bbox'][3])
-        anno['category_id'] = category_id
+        anno['category_id'] = 1
 
         annotations.append(anno)
         ann_ids.append(ann_id)
@@ -257,7 +229,7 @@ def xml2coco_test(file_list, img_root, save_path, start_ann_id=0):
         'R_B_paw': 19
     }
 
-    cat2id = {'cat': 0, 'cow': 1, 'dog': 2, 'horse': 3, 'sheep': 4}
+    cat2id = {'cat': 1, 'cow': 2, 'dog': 3, 'horse': 4, 'sheep': 5}
 
     for file in file_list:
         data_anno = xmltodict.parse(open(file).read())['annotation']
@@ -316,7 +288,7 @@ def xml2coco_test(file_list, img_root, save_path, start_ann_id=0):
         ]
         anno['iscrowd'] = 0
         anno['area'] = float(anno['bbox'][2] * anno['bbox'][3])
-        anno['category_id'] = category_id
+        anno['category_id'] = 1
 
         annotations.append(anno)
         ann_ids.append(ann_id)
