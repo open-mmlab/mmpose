@@ -94,9 +94,9 @@ class AnimalPoseDataset(AnimalBaseDataset):
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
-        # The original paper did not provide the details about the sigmas.
-        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
-        # 'pycocotools/cocoeval.py#L523'
+        # Note: The original paper did not provide enough information about
+        # the sigmas. We modified from 'https://github.com/cocodataset/'
+        # 'cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py#L523'
         self.sigmas = np.array([
             .25, .25, .26, .35, .35, 1.0, 1.0, 1.0, 1.07, 1.07, 1.07, 1.07,
             .87, .87, .87, .87, .89, .89, .89, .89

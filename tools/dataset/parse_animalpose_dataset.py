@@ -2,10 +2,12 @@ import json
 import os
 import re
 import time
+import warnings
 
 import cv2
 import numpy as np
 import xmltodict
+from xtcocotools.coco import COCO
 
 np.random.seed(0)
 
@@ -29,13 +31,76 @@ def list_all_files(root_dir, ext='.xml'):
     return files
 
 
-def xml2coco_train(file_list, img_root, save_path, start_ann_id=0):
+def get_anno_info():
+    keypoints_info = [
+        'L_Eye',
+        'R_Eye',
+        'L_EarBase',
+        'R_EarBase',
+        'Nose',
+        'Throat',
+        'TailBase',
+        'Withers',
+        'L_F_Elbow',
+        'R_F_Elbow',
+        'L_B_Elbow',
+        'R_B_Elbow',
+        'L_F_Knee',
+        'R_F_Knee',
+        'L_B_Knee',
+        'R_B_Knee',
+        'L_F_Paw',
+        'R_F_Paw',
+        'L_B_Paw',
+        'R_B_Paw',
+    ]
+    skeleton_info = [[1, 2], [1, 3], [2, 4], [1, 5], [2, 5], [5, 6], [6, 8],
+                     [7, 8], [6, 9], [9, 13], [13, 17], [6, 10], [10, 14],
+                     [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
+                     [16, 20]]
+    category_info = [{
+        'supercategory': 'animal',
+        'id': 0,
+        'name': 'cat',
+        'keypoints': keypoints_info,
+        'skeleton': skeleton_info
+    }, {
+        'supercategory': 'animal',
+        'id': 1,
+        'name': 'cow',
+        'keypoints': keypoints_info,
+        'skeleton': skeleton_info
+    }, {
+        'supercategory': 'animal',
+        'id': 2,
+        'name': 'dog',
+        'keypoints': keypoints_info,
+        'skeleton': skeleton_info
+    }, {
+        'supercategory': 'animal',
+        'id': 3,
+        'name': 'horse',
+        'keypoints': keypoints_info,
+        'skeleton': skeleton_info
+    }, {
+        'supercategory': 'animal',
+        'id': 4,
+        'name': 'sheep',
+        'keypoints': keypoints_info,
+        'skeleton': skeleton_info
+    }]
+
+    return keypoints_info, skeleton_info, category_info
+
+
+def xml2coco_trainval(file_list, img_root, save_path, start_ann_id=0):
     """Save annotations in coco-format.
 
     :param file_list: list of data annotation files.
     :param img_root: the root dir to load images.
     :param save_path: the path to save transformed annotation file.
     :param start_ann_id: the starting point to count the annotation id.
+    :param val_num: the number of annotated objects for validation.
     """
     images = []
     annotations = []
@@ -66,8 +131,11 @@ def xml2coco_train(file_list, img_root, save_path, start_ann_id=0):
         'L_B_Paw': 18,
         'R_B_Paw': 19
     }
+    cat2id = {'cat': 0, 'cow': 1, 'dog': 2, 'horse': 3, 'sheep': 4}
 
     for file in file_list:
+        category_id = cat2id[file.split('/')[-2]]
+
         data_anno = xmltodict.parse(open(file).read())['annotation']
 
         img_id = int(data_anno['image'].split('_')[0] +
@@ -121,7 +189,7 @@ def xml2coco_train(file_list, img_root, save_path, start_ann_id=0):
         ]
         anno['iscrowd'] = 0
         anno['area'] = float(anno['bbox'][2] * anno['bbox'][3])
-        anno['category_id'] = 1
+        anno['category_id'] = category_id
 
         annotations.append(anno)
         ann_ids.append(ann_id)
@@ -139,40 +207,10 @@ def xml2coco_train(file_list, img_root, save_path, start_ann_id=0):
 
     cocotype['images'] = images
     cocotype['annotations'] = annotations
-    cocotype['categories'] = [{
-        'supercategory':
-        'animal',
-        'id':
-        1,
-        'name':
-        'animal',
-        'keypoints': [
-            'L_Eye',
-            'R_Eye',
-            'L_EarBase',
-            'R_EarBase',
-            'Nose',
-            'Throat',
-            'TailBase',
-            'Withers',
-            'L_F_Elbow',
-            'R_F_Elbow',
-            'L_B_Elbow',
-            'R_B_Elbow',
-            'L_F_Knee',
-            'R_F_Knee',
-            'L_B_Knee',
-            'R_B_Knee',
-            'L_F_Paw',
-            'R_F_Paw',
-            'L_B_Paw',
-            'R_B_Paw',
-        ],
-        'skeleton': [[1, 2], [1, 3], [2, 4], [1, 5], [2, 5], [5, 6], [6, 8],
-                     [7, 8], [6, 9], [9, 13], [13, 17], [6, 10], [10, 14],
-                     [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
-                     [16, 20]]
-    }]
+
+    keypoints_info, skeleton_info, category_info = get_anno_info()
+
+    cocotype['categories'] = category_info
 
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     json.dump(cocotype, open(save_path, 'w'), indent=4)
@@ -181,7 +219,7 @@ def xml2coco_train(file_list, img_root, save_path, start_ann_id=0):
     print(f'done {save_path}')
 
 
-def xml2coco_val(file_list, img_root, save_path, start_ann_id=0):
+def xml2coco_test(file_list, img_root, save_path, start_ann_id=0):
     """Save annotations in coco-format.
 
     :param file_list: list of data annotation files.
@@ -278,7 +316,7 @@ def xml2coco_val(file_list, img_root, save_path, start_ann_id=0):
         ]
         anno['iscrowd'] = 0
         anno['area'] = float(anno['bbox'][2] * anno['bbox'][3])
-        anno['category_id'] = 1
+        anno['category_id'] = category_id
 
         annotations.append(anno)
         ann_ids.append(ann_id)
@@ -296,62 +334,128 @@ def xml2coco_val(file_list, img_root, save_path, start_ann_id=0):
 
     cocotype['images'] = images
     cocotype['annotations'] = annotations
-    cocotype['categories'] = [{
-        'supercategory':
-        'animal',
-        'id':
-        1,
-        'name':
-        'animal',
-        'keypoints': [
-            'L_Eye',
-            'R_Eye',
-            'L_EarBase',
-            'R_EarBase',
-            'Nose',
-            'Throat',
-            'TailBase',
-            'Withers',
-            'L_F_Elbow',
-            'R_F_Elbow',
-            'L_B_Elbow',
-            'R_B_Elbow',
-            'L_F_Knee',
-            'R_F_Knee',
-            'L_B_Knee',
-            'R_B_Knee',
-            'L_F_Paw',
-            'R_F_Paw',
-            'L_B_Paw',
-            'R_B_Paw',
-        ],
-        'skeleton': [[1, 2], [1, 3], [2, 4], [1, 5], [2, 5], [5, 6], [6, 8],
-                     [7, 8], [6, 9], [9, 13], [13, 17], [6, 10], [10, 14],
-                     [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
-                     [16, 20]]
-    }]
+
+    keypoints_info, skeleton_info, category_info = get_anno_info()
+
+    cocotype['categories'] = category_info
 
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     json.dump(cocotype, open(save_path, 'w'), indent=4)
+    print('=========================================================')
     print('number of images:', len(img_ids))
     print('number of annotations:', len(ann_ids))
     print(f'done {save_path}')
 
 
+def split_train_val(work_dir, trainval_file, train_file, val_file,
+                    val_ann_num):
+    """Split train-val json file into training and validation files.
+
+    :param work_dir: path to load train-val json file, and save split files.
+    :param trainval_file: The input json file combining both train and val.
+    :param trainval_file: The output json file for tranining.
+    :param trainval_file: The output json file for validation.
+    :param val_ann_num: the number of validation annotations.
+    """
+
+    coco = COCO(os.path.join(work_dir, trainval_file))
+
+    img_list = list(coco.imgs.keys())
+    np.random.shuffle(img_list)
+
+    count = 0
+
+    images_train = []
+    images_val = []
+    annotations_train = []
+    annotations_val = []
+
+    for img_id in img_list:
+        ann_ids = coco.getAnnIds(img_id)
+
+        if count + len(ann_ids) <= val_ann_num:
+            # for validation
+            count += len(ann_ids)
+            images_val.append(coco.imgs[img_id])
+            for ann_id in ann_ids:
+                annotations_val.append(coco.anns[ann_id])
+
+        else:
+            images_train.append(coco.imgs[img_id])
+            for ann_id in ann_ids:
+                annotations_train.append(coco.anns[ann_id])
+
+    if count == val_ann_num:
+        print(f'We have found {count} annotations for validation.')
+    else:
+        warnings.warn(
+            f'We only found {count} annotations, instead of {val_ann_num}.')
+
+    cocotype_train = {}
+    cocotype_val = {}
+
+    keypoints_info, skeleton_info, category_info = get_anno_info()
+
+    cocotype_train['info'] = {}
+    cocotype_train['info'][
+        'description'] = 'AnimalPose dataset Generated by MMPose Team'
+    cocotype_train['info']['version'] = '1.0'
+    cocotype_train['info']['year'] = time.strftime('%Y', time.localtime())
+    cocotype_train['info']['date_created'] = time.strftime(
+        '%Y/%m/%d', time.localtime())
+    cocotype_train['images'] = images_train
+    cocotype_train['annotations'] = annotations_train
+    cocotype_train['categories'] = category_info
+
+    json.dump(
+        cocotype_train,
+        open(os.path.join(work_dir, train_file), 'w'),
+        indent=4)
+    print('=========================================================')
+    print('number of images:', len(images_train))
+    print('number of annotations:', len(annotations_train))
+    print(f'done {train_file}')
+
+    cocotype_val['info'] = {}
+    cocotype_val['info'][
+        'description'] = 'AnimalPose dataset Generated by MMPose Team'
+    cocotype_val['info']['version'] = '1.0'
+    cocotype_val['info']['year'] = time.strftime('%Y', time.localtime())
+    cocotype_val['info']['date_created'] = time.strftime(
+        '%Y/%m/%d', time.localtime())
+    cocotype_val['images'] = images_val
+    cocotype_val['annotations'] = annotations_val
+    cocotype_val['categories'] = category_info
+
+    json.dump(
+        cocotype_val, open(os.path.join(work_dir, val_file), 'w'), indent=4)
+    print('=========================================================')
+    print('number of images:', len(images_val))
+    print('number of annotations:', len(annotations_val))
+    print(f'done {val_file}')
+
+
 dataset_dir = 'data/animalpose/'
 
-# We choose the images from PascalVOC for training
+# We choose the images from PascalVOC for train + val
 # 3608 images, 5117 annotations
-xml2coco_train(
+xml2coco_trainval(
     list_all_files(os.path.join(dataset_dir, 'PASCAL2011_animal_annotation')),
     dataset_dir,
-    os.path.join(dataset_dir, 'annotations', 'animalpose_train.json'),
+    os.path.join(dataset_dir, 'annotations', 'animalpose_trainval.json'),
     start_ann_id=1000000)
+
+split_train_val(
+    os.path.join(dataset_dir, 'annotations'),
+    'animalpose_trainval.json',
+    'animalpose_train.json',
+    'animalpose_val.json',
+    val_ann_num=1117)
 
 # We choose the remaining 1000 images for validation
 # 1000 images, 1000 annotations
-xml2coco_val(
+xml2coco_test(
     list_all_files(os.path.join(dataset_dir, 'animalpose_anno2')),
     dataset_dir,
-    os.path.join(dataset_dir, 'annotations', 'animalpose_val.json'),
+    os.path.join(dataset_dir, 'annotations', 'animalpose_test.json'),
     start_ann_id=0)
