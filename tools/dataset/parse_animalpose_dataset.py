@@ -353,7 +353,7 @@ def split_train_val(work_dir, trainval_file, train_file, val_file,
 
     :param work_dir: path to load train-val json file, and save split files.
     :param trainval_file: The input json file combining both train and val.
-    :param trainval_file: The output json file for tranining.
+    :param trainval_file: The output json file for training.
     :param trainval_file: The output json file for validation.
     :param val_ann_num: the number of validation annotations.
     """
@@ -438,13 +438,15 @@ def split_train_val(work_dir, trainval_file, train_file, val_file,
 dataset_dir = 'data/animalpose/'
 
 # We choose the images from PascalVOC for train + val
-# 3608 images, 5117 annotations
+# In total, train+val: 3608 images, 5117 annotations
 xml2coco_trainval(
     list_all_files(os.path.join(dataset_dir, 'PASCAL2011_animal_annotation')),
     dataset_dir,
     os.path.join(dataset_dir, 'annotations', 'animalpose_trainval.json'),
     start_ann_id=1000000)
 
+# train: 2798 images, 4000 annotations
+# val: 810 images, 1117 annotations
 split_train_val(
     os.path.join(dataset_dir, 'annotations'),
     'animalpose_trainval.json',
@@ -452,7 +454,7 @@ split_train_val(
     'animalpose_val.json',
     val_ann_num=1117)
 
-# We choose the remaining 1000 images for validation
+# We choose the remaining 1000 images for test
 # 1000 images, 1000 annotations
 xml2coco_test(
     list_all_files(os.path.join(dataset_dir, 'animalpose_anno2')),
