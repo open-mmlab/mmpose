@@ -337,9 +337,9 @@ class Generate3DHeatmapTarget:
         mu_y = joints_3d[:, 1] * H / image_size[1]
         mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D
 
-        target = np.zeros([num_joints, D, H, W])
+        target = np.zeros([num_joints, D, H, W], dtype=np.float32)
 
-        target_weight = joints_3d_visible[:, 0]
+        target_weight = joints_3d_visible[:, 0].astype(np.float32)
         target_weight = target_weight * (mu_z >= 0) * (mu_z < D)
         if use_different_joint_weights:
             target_weight = target_weight * joint_weights
@@ -349,7 +349,7 @@ class Generate3DHeatmapTarget:
         tmp_size = 3 * self.sigma
 
         # get neighboring voxels coordinates
-        x = y = z = np.arange(2 * tmp_size + 1) - tmp_size
+        x = y = z = np.arange(2 * tmp_size + 1, dtype=np.float32) - tmp_size
         zz, yy, xx = np.meshgrid(z, y, x)
         xx = xx[None, ...].astype(np.float32)
         yy = yy[None, ...].astype(np.float32)
