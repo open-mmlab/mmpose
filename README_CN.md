@@ -110,6 +110,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
 - [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) (CVPR'2016)
+- [x] [Animal-Pose](https://sites.google.com/view/animal-pose/) (ICCV'2019)
 - [x] [Horse-10](http://www.mackenziemathislab.org/horse10) (WACV'2021)
 - [x] [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) (bioRxiv'2020)
 - [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
