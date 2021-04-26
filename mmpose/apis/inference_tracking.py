@@ -211,6 +211,8 @@ def get_track_id(results,
                 result['track_id'] = next_id
                 next_id += 1
             else:
+                # If the number of keypoints detected is small,
+                # delete that person instance.
                 result['keypoints'][:, 1] = -10
                 result['bbox'] *= 0
                 result['track_id'] = -1

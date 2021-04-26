@@ -32,7 +32,7 @@ def main():
     parser.add_argument(
         '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
     parser.add_argument(
-        '--iou', action='store_false', default=True, help='Using iou tracking')
+        '--oks', action='store_true', default=False, help='Using OKS tracking')
     parser.add_argument(
         '--euro',
         action='store_true',
@@ -52,6 +52,8 @@ def main():
 
     cap = cv2.VideoCapture(args.video_path)
     fps = None
+
+    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
 
     if args.out_video_root == '':
         save_out_video = False
