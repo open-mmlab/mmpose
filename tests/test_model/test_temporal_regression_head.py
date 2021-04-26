@@ -34,7 +34,7 @@ def test_temporal_regression_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 17, 3])
 
-    loss = head.get_loss(out, out, torch.ones_like(out))
+    loss = head.get_loss(out, out, None)
     assert torch.allclose(loss['reg_loss'], torch.tensor(0.))
 
     _ = head.inference_model(inputs)
@@ -84,7 +84,7 @@ def test_temporal_regression_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 1, 3])
 
-    loss = head.get_loss(out, out, torch.ones_like(out))
+    loss = head.get_loss(out, out.squeeze(1), torch.ones_like(out))
     assert torch.allclose(loss['traj_loss'], torch.tensor(0.))
 
 

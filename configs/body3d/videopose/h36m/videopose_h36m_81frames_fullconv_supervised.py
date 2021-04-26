@@ -118,10 +118,10 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=1024,
+    samples_per_gpu=64,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=1024),
-    test_dataloader=dict(samples_per_gpu=1024),
+    val_dataloader=dict(samples_per_gpu=64),
+    test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',

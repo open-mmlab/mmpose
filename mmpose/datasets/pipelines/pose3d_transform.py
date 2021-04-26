@@ -337,7 +337,11 @@ class RelativeJointRandomFlip:
         self.vis_item = visible_item
         self.flip_prob = flip_prob
         self.flip_camera = flip_camera
-        self.camera_param = camera_param
+        if camera_param is None:
+            self.static_camera = False
+        else:
+            self.static_camera = True
+            self.camera_param = camera_param
 
         if isinstance(self.item, str):
             self.item = [self.item]
@@ -381,18 +385,19 @@ class RelativeJointRandomFlip:
 
             # flip horizontal distortion coefficients
             if self.flip_camera:
-                if self.camera_param is None:
-                    assert 'camera_param' in results,\
+                if self.static_camera:
+                    camera_param = self.camera_param
+                else:
+                    assert 'camera_param' in results, \
                         'Camera parameters are missing.'
-                    self.camera_param = results['camera_param']
-                assert 'c' in self.camera_param and \
-                    'p' in self.camera_param
-                self.camera_param['c'][0] *= -1
-                self.camera_param['p'][0] *= -1
+                    camera_param = results['camera_param']
+                assert 'c' in camera_param and 'p' in camera_param
+                camera_param['c'][0] *= -1
+                camera_param['p'][0] *= -1
 
                 if 'camera_param' not in results:
                     results['camera_param'] = dict()
-                results['camera_param'].update(self.camera_param)
+                results['camera_param'].update(camera_param)
 
         return results
 

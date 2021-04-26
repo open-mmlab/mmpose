@@ -84,7 +84,8 @@ def test_joint_transforms():
             item='target',
             flip_cfg=dict(center_mode='root', center_index=0),
             visible_item='target_visible',
-            flip_prob=1.),
+            flip_prob=1.,
+            flip_camera=True),
         dict(
             type='GetRootCenteredPose',
             item='target',
@@ -141,7 +142,9 @@ def test_joint_transforms():
     # test transformation of camera parameters
     camera_param_0 = results['camera_param']
     camera_param_1 = output['metas'].data['camera_param']
-    # manually do transformations
+    # manually flip and normalization
+    camera_param_0['c'][0] *= -1
+    camera_param_0['p'][0] *= -1
     camera_param_0['c'] = (camera_param_0['c'] -
                            np.array(center)[:, None]) / scale
     camera_param_0['f'] = camera_param_0['f'] / scale
