@@ -1,6 +1,6 @@
 ## 2D Human Pose Demo
 
-<img src="https://raw.githubusercontent.com/open-mmlab/mmpose/master/demo/demo_coco.gif" width="600px" alt><br>
+<img src="https://raw.githubusercontent.com/open-mmlab/mmpose/master/demo/resources/demo_coco.gif" width="600px" alt><br>
 
 ### 2D Human Pose Top-Down Image Demo
 
@@ -58,7 +58,7 @@ Examples:
 
 ```shell
 python demo/top_down_img_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_1x_coco.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
@@ -87,11 +87,11 @@ Examples:
 
 ```shell
 python demo/top_down_video_demo_with_mmdet.py \
-    demo/mmdetection_cfg/faster_rcnn_r50_fpn_1x_coco.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
-    --video-path demo/demo_video.mp4 \
+    --video-path demo/resources/demo_video.mp4 \
     --out-video-root vis_results
 ```
 
@@ -137,7 +137,7 @@ Examples:
 python demo/bottom_up_video_demo.py \
     configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
     https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
-    --video-path demo/demo_video.mp4 \
+    --video-path demo/resources/demo_video.mp4 \
     --out-video-root vis_results
 ```
 

@@ -102,6 +102,8 @@ def main():
     cap = cv2.VideoCapture(args.video_path)
     fps = None
 
+    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
+
     if args.out_video_root == '':
         save_out_video = False
     else:

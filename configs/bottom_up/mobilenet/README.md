@@ -2,7 +2,7 @@
 
 ## Introduction
 
-[ALGORITHM]
+<!-- [ALGORITHM] -->
 
 ```bibtex
 @inproceedings{newell2017associative,
@@ -14,7 +14,7 @@
 }
 ```
 
-[BACKBONE]
+<!-- [BACKBONE] -->
 
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,

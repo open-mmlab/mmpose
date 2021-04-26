@@ -20,7 +20,7 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 The master branch works with **PyTorch 1.3+**.
 
 <div align="center">
-    <img src="demo/demo_coco.gif" width="600px" alt><br>
+    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
     COCO 17-keypoint pose estimation
 </div>
 <div align="center">
@@ -79,6 +79,7 @@ Supported algorithms:
 - [x] [MSPN](configs/top_down/mspn/README.md) (ArXiv'2019)
 - [x] [RSN](configs/top_down/rsn/README.md) (ECCV'2020)
 - [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
+- [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
 
 </details>
 
@@ -226,3 +227,4 @@ We wish that the toolbox and benchmark could serve the growing research communit
 - [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
 - [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
 - [MMOCR](https://github.com/open-mmlab/mmocr): A Comprehensive Toolbox for Text Detection, Recognition and Understanding.
+- [MMGeneration](https://github.com/open-mmlab/mmgeneration): A powerful toolkit for generative models.

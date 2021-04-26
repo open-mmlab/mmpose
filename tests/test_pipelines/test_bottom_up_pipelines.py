@@ -6,7 +6,9 @@ import pytest
 import xtcocotools
 from xtcocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (BottomUpGenerateTarget,
+from mmpose.datasets.pipelines import (BottomUpGenerateHeatmapTarget,
+                                       BottomUpGeneratePAFTarget,
+                                       BottomUpGenerateTarget,
                                        BottomUpGetImgSize,
                                        BottomUpRandomAffine,
                                        BottomUpRandomFlip, BottomUpResizeAlign,
@@ -239,3 +241,80 @@ def test_bottomup_pipeline():
     results_copy['img'] = np.random.rand(640, 425, 3)
     results_get_multi_scale_size = get_multi_scale_size(results_copy)
     assert results_get_multi_scale_size['ann_info']['base_size'][0] == 512
+
+
+def test_BottomUpGenerateHeatmapTarget():
+
+    data_prefix = 'tests/data/coco/'
+    ann_file = osp.join(data_prefix, 'test_coco.json')
+    coco = COCO(ann_file)
+
+    ann_info = {}
+    ann_info['heatmap_size'] = np.array([128, 256])
+    ann_info['num_joints'] = 17
+    ann_info['num_scales'] = 2
+    ann_info['scale_aware_sigma'] = False
+
+    ann_ids = coco.getAnnIds(785)
+    anno = coco.loadAnns(ann_ids)
+    mask = _get_mask(coco, anno, 785)
+
+    anno = [
+        obj for obj in anno if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
+    ]
+    joints = _get_joints(anno, ann_info, False)
+
+    mask_list = [mask.copy() for _ in range(ann_info['num_scales'])]
+    joints_list = [joints.copy() for _ in range(ann_info['num_scales'])]
+
+    results = {}
+    results['dataset'] = 'coco'
+    results['image_file'] = osp.join(data_prefix, '000000000785.jpg')
+    results['mask'] = mask_list
+    results['joints'] = joints_list
+    results['ann_info'] = ann_info
+
+    generate_heatmap_target = BottomUpGenerateHeatmapTarget(2)
+    results_generate_heatmap_target = generate_heatmap_target(results)
+    assert 'target' in results_generate_heatmap_target
+    assert len(results_generate_heatmap_target['target']
+               ) == results['ann_info']['num_scales']
+
+
+def test_BottomUpGeneratePAFTarget():
+
+    ann_info = {}
+    ann_info['skeleton'] = [[1, 2], [3, 4]]
+    ann_info['heatmap_size'] = np.array([5])
+    ann_info['num_joints'] = 4
+    ann_info['num_scales'] = 1
+
+    mask = np.ones((5, 5), dtype=bool)
+    joints = np.array([[[1, 1, 2], [3, 3, 2], [0, 0, 0], [0, 0, 0]],
+                       [[1, 3, 2], [3, 1, 2], [0, 0, 0], [0, 0, 0]]])
+
+    mask_list = [mask.copy() for _ in range(ann_info['num_scales'])]
+    joints_list = [joints.copy() for _ in range(ann_info['num_scales'])]
+
+    results = {}
+    results['dataset'] = 'coco'
+    results['mask'] = mask_list
+    results['joints'] = joints_list
+    results['ann_info'] = ann_info
+
+    generate_paf_target = BottomUpGeneratePAFTarget(1)
+    results_generate_paf_target = generate_paf_target(results)
+    sqrt = np.sqrt(2) / 2
+    print(results_generate_paf_target['target'])
+    assert (results_generate_paf_target['target'] == np.array(
+        [[[sqrt, sqrt, 0, sqrt, sqrt], [sqrt, sqrt, sqrt, sqrt, sqrt],
+          [0, sqrt, sqrt, sqrt, 0], [sqrt, sqrt, sqrt, sqrt, sqrt],
+          [sqrt, sqrt, 0, sqrt, sqrt]],
+         [[sqrt, sqrt, 0, -sqrt, -sqrt], [sqrt, sqrt, 0, -sqrt, -sqrt],
+          [0, 0, 0, 0, 0], [-sqrt, -sqrt, 0, sqrt, sqrt],
+          [-sqrt, -sqrt, 0, sqrt, sqrt]],
+         [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0]],
+         [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0]]],
+        dtype=np.float32)).all()

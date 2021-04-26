@@ -97,6 +97,10 @@ class InterHand3DDataset(HandBaseDataset):
         assert self.ann_info['num_joints'] == 42
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
+        self.ann_info['heatmap3d_depth_bound'] = data_cfg[
+            'heatmap3d_depth_bound']
+        self.ann_info['heatmap_size_root'] = data_cfg['heatmap_size_root']
+        self.ann_info['root_depth_bound'] = data_cfg['root_depth_bound']
 
         self.dataset_name = 'interhand3d'
         self.camera_file = camera_file
@@ -257,7 +261,12 @@ class InterHand3DDataset(HandBaseDataset):
                 # the bboxes have been extended
                 center, scale = self._xywh2cs(*bbox, 1.0)
                 abs_depth = rootnet_ann_data['abs_depth']
+            # 41: 'l_wrist', left hand root
+            # 20: 'r_wrist', right hand root
             rel_root_depth = joint_cam[41, 2] - joint_cam[20, 2]
+            # if root is not valid, root-relative 3D depth is also invalid.
+            rel_root_valid = joint_valid[20] * joint_valid[41]
+
             # if root is not valid -> root-relative 3D pose is also not valid.
             # Therefore, mark all joints as invalid
             joint_valid[:20] *= joint_valid[20]
@@ -280,6 +289,7 @@ class InterHand3DDataset(HandBaseDataset):
                 'hand_type': hand_type,
                 'hand_type_valid': hand_type_valid,
                 'rel_root_depth': rel_root_depth,
+                'rel_root_valid': rel_root_valid,
                 'abs_depth': abs_depth,
                 'joints_cam': joint_cam,
                 'focal': focal,
