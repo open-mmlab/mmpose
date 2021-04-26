@@ -126,7 +126,8 @@ def test_bone_loss():
 
 def test_semi_supervision_loss():
     # test warmup
-    loss_cfg = dict(joint_parents=[0, 0, 1], warmup_epochs=1)
+    loss_cfg = dict(
+        type='SemiSupervisionLoss', joint_parents=[0, 0, 1], warmup_epochs=1)
     loss = build_loss(loss_cfg)
 
     unlabeled_pose = torch.rand((1, 3, 3))
@@ -142,7 +143,7 @@ def test_semi_supervision_loss():
     unlabled_target_2d = loss.project_joints(unlabeled_pose + unlabeled_traj,
                                              intrinsics)
     fake_label = dict(
-        unlabled_target_2d=unlabled_target_2d, intrinsics=intrinsics)
+        unlabeled_target_2d=unlabled_target_2d, intrinsics=intrinsics)
 
     # during warmup
     losses = loss(fake_pred, fake_label)

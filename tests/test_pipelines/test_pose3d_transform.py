@@ -82,7 +82,7 @@ def test_joint_transforms():
         dict(
             type='RelativeJointRandomFlip',
             item='target',
-            root_index=0,
+            flip_cfg=dict(center_mode='root', center_index=0),
             visible_item='target_visible',
             flip_prob=1.),
         dict(
