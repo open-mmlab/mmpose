@@ -97,7 +97,7 @@ def main():
             next_id,
             iou_thr=args.iou_thr,
             oks_thr=args.oks_thr,
-            use_oks=args.iou,
+            use_oks=args.oks,
             use_one_euro=args.euro,
             fps=fps)
 
