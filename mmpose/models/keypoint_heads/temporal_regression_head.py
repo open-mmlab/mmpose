@@ -79,7 +79,7 @@ class TemporalRegressionHead(nn.Module):
         N = output.shape[0]
         return output.reshape(N, self.num_joints, 3)
 
-    def get_loss(self, output, target, target_weight, intrinsics=None):
+    def get_loss(self, output, target, target_weight):
         """Calculate keypoint loss.
 
         Note:
@@ -91,9 +91,6 @@ class TemporalRegressionHead(nn.Module):
             target (torch.Tensor[N, K, 3]): Target keypoints.
             target_weight (torch.Tensor[N, K, 3]):
                 Weights across different joint types.
-            intrinsics (None|torch.Tensor[N, 4]|torch.Tensor[N, 9]): Camera
-                intrinsics. If given, first project 3D output keypoints to
-                2D, then calculate loss.
         """
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
