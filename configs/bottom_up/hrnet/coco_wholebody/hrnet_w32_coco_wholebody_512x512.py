@@ -83,14 +83,14 @@ model = dict(
     keypoint_head=dict(
         type='BottomUpSimpleHead',
         in_channels=32,
-        num_joints=17,
+        num_joints=133,
         num_deconv_layers=0,
         tag_per_joint=True,
         with_ae_loss=[True],
         extra=dict(final_conv_kernel=1, ),
         loss_keypoint=dict(
             type='MultiLossFactory',
-            num_joints=17,
+            num_joints=133,
             num_stages=1,
             ae_loss_type='exp',
             with_ae_loss=[True],
