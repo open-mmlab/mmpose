@@ -8,30 +8,22 @@ from .bottom_up_coco import BottomUpCocoDataset
 
 @DATASETS.register_module()
 class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
-    """COCO dataset for bottom-up pose estimation.
+    """CocoWholeBodyDataset dataset for bottom-up pose estimation.
+
+    `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
+    More details can be found in the `paper
+    <https://arxiv.org/abs/2007.11858>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    COCO keypoint indexes::
+    In total, we have 133 keypoints for wholebody pose estimation.
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    COCO-WholeBody keypoint indexes::
+        0-16: 17 body keypoints
+        17-22: 6 foot keypoints
+        23-90: 68 face keypoints
+        91-132: 42 hand keypoints
 
     Args:
         ann_file (str): Path to the annotation file.
