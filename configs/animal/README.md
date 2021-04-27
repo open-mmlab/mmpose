@@ -9,7 +9,7 @@ Please follow [DATA Preparation](/docs/tasks/2d_animal_keypoint.md) to prepare d
 
 ## Demo
 
-Please follow [DEMO](/demo/2d_animal_demo.md) to generate fancy demos.
+Please follow [DEMO](/demo/docs/2d_animal_demo.md) to generate fancy demos.
 
 <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" height="140px" alt><br>
 
