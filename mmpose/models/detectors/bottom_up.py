@@ -312,15 +312,20 @@ class BottomUp(BasePose):
             img (str or Tensor): The image to be displayed.
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
+            skeleton (list[list]): The connection of keypoints.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
             pose_limb_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
+            radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.
             win_name (str): The window name.
+            show (bool): Whether to show the image. Default: False.
+            show_keypoint_weight (bool): Whether to change the transparency
+                using the predicted confidence scores of keypoints.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.
