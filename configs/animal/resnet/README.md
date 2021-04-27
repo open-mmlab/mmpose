@@ -71,3 +71,11 @@
 | [pose_resnet_50](/configs/animal/resnet/atrw/res50_atrw_256x256.py)  | 256x256 | 0.900 | 0.973 | 0.932 | 0.929 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_atrw_256x256-546c4594_20210414.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_atrw_256x256_20210414.log.json) |
 | [pose_resnet_101](/configs/animal/resnet/atrw/res101_atrw_256x256.py) | 256x256 | 0.898 | 0.973 | 0.936 | 0.927 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_atrw_256x256-da93f371_20210414.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_atrw_256x256_20210414.log.json) |
 | [pose_resnet_152](/configs/animal/resnet/atrw/res152_atrw_256x256.py) | 256x256 | 0.896 | 0.973 | 0.931 | 0.927 | 0.985 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_atrw_256x256-2bb8e162_20210414.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_atrw_256x256_20210414.log.json) |
+
+#### Results on AnimalPose validation set (1117 instances)
+
+| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
+| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
+| [pose_resnet_50](/configs/animal/resnet/animalpose/res50_animalpose_256x256.py)  | 256x256 | 0.688 | 0.945 | 0.772 | 0.733 | 0.952 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_animalpose_256x256-e1f30bff_20210426.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_animalpose_256x256_20210426.log.json) |
+| [pose_resnet_101](/configs/animal/resnet/animalpose/res101_animalpose_256x256.py) | 256x256 | 0.696 | 0.948 | 0.785 | 0.737 | 0.954 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_animalpose_256x256-85563f4a_20210426.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_animalpose_256x256_20210426.log.json) |
+| [pose_resnet_152](/configs/animal/resnet/animalpose/res152_animalpose_256x256.py) | 256x256 | 0.709 | 0.948 | 0.797 | 0.749 | 0.951 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_animalpose_256x256-a0a7506c_20210426.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_animalpose_256x256_20210426.log.json) |
