@@ -75,7 +75,7 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 
 **COCO-animals**
 
-In COCO dataset, there are 80 object categories, including 10 common `animal` categories (16: 'bird', 17: 'cat', 18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear', 24: 'zebra', 25: 'giraffe')
+In COCO dataset, there are 80 object categories, including 10 common `animal` categories (15: 'bird', 16: 'cat', 17: 'dog', 18: 'horse', 19: 'sheep', 20: 'cow', 21: 'elephant', 22: 'bear', 23: 'zebra', 24: 'giraffe')
 For these COCO-animals, please download the COCO pre-trained detection model from [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
 ```shell
@@ -101,7 +101,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     --out-video-root vis_results \
     --bbox-thr 0.1 \
     --kpt-thr 0.4 \
-    --det-cat-id 19
+    --det-cat-id 18
 ```
 
 <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" height="140px" alt><br>
