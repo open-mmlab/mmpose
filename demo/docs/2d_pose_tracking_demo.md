@@ -9,7 +9,7 @@ We provide a video demo to illustrate the pose tracking results.
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/top_down_pose_tracking_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \

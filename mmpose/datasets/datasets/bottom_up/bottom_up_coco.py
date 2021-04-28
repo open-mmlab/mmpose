@@ -57,10 +57,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  test_mode=False):
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
-        self.use_nms = data_cfg.get('use_nms', False)
-        self.soft_nms = data_cfg.get('soft_nms', True)
-        self.oks_thr = data_cfg.get('oks_thr', 0.9)
-
         self.ann_info['flip_index'] = [
             0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
         ]

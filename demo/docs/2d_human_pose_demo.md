@@ -105,7 +105,7 @@ python demo/bottom_up_img_demo.py \
     --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
     --out-img-root ${OUTPUT_DIR} \
     [--show --device ${GPU_ID or CPU}] \
-    [--kpt-thr ${KPT_SCORE_THR}]
+    [--kpt-thr ${KPT_SCORE_THR} --oks-thr ${NMS_OKS_THR}]
 ```
 
 Examples:
@@ -128,7 +128,7 @@ python demo/bottom_up_video_demo.py \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--kpt-thr ${KPT_SCORE_THR} --oks-thr ${NMS_OKS_THR}]
 ```
 
 Examples:
