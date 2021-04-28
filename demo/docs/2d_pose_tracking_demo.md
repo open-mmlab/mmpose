@@ -58,6 +58,29 @@ python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     --out-video-root vis_results
 ```
 
+### 2D Bottom-Up Video Human Pose Tracking Demo
+
+We also provide a pose tracking demo with bottom-up pose estimation methods.
+
+```shell
+python demo/bottom_up_pose_tracking_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --video-path ${VIDEO_FILE} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID or CPU}] \
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+```
+
+Examples:
+
+```shell
+python demo/bottom_up_pose_tracking_demo.py \
+    configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
+    https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
+    --video-path demo/resources/demo.mp4 \
+    --out-video-root vis_results
+```
+
 ### Speed Up Inference
 
 Some tips to speed up MMPose inference:
