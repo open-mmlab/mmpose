@@ -101,6 +101,9 @@ class Body3DH36MDataset(Body3DBaseDataset):
         elif self.joint_2d_src == 'detection':
             data_info['joints_2d'] = self._load_joint_2d_detection(
                 self.joint_2d_det_file)
+            assert data_info['joints_2d'].shape[0] == data_info[
+                'joints_3d'].shape[0]
+            assert data_info['joints_2d'].shape[2] == 3
         elif self.joint_2d_src == 'pipeline':
             # joint_2d will be generated in the pipeline
             pass
@@ -176,8 +179,6 @@ class Body3DH36MDataset(Body3DBaseDataset):
     def _load_joint_2d_detection(self, det_file):
         """"Load 2D joint detection results from file."""
         joints_2d = np.load(det_file).astype(np.float32)
-        assert joints_2d.shape[0] == self.data_info['joint_3d'].shape[0]
-        assert joints_2d.shape[2] == 3
 
         return joints_2d
 
