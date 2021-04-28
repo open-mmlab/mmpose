@@ -296,6 +296,7 @@ class BottomUp(BasePose):
                     result,
                     skeleton=None,
                     kpt_score_thr=0.3,
+                    bbox_color=None,
                     pose_kpt_color=None,
                     pose_limb_color=None,
                     radius=4,
