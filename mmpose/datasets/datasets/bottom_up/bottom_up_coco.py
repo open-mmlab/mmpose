@@ -7,6 +7,7 @@ import xtcocotools
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
+from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.datasets.builder import DATASETS
 from .bottom_up_base_dataset import BottomUpBaseDataset
 
@@ -55,6 +56,10 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  pipeline,
                  test_mode=False):
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
+
+        self.use_nms = data_cfg.get('use_nms', False)
+        self.soft_nms = data_cfg.get('soft_nms', True)
+        self.oks_thr = data_cfg.get('oks_thr', 0.9)
 
         self.ann_info['flip_index'] = [
             0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
@@ -271,16 +276,17 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                     'area': area,
                 })
 
-        oks_nmsed_kpts = []
+        valid_kpts = []
         for img in kpts.keys():
             img_kpts = kpts[img]
-            keep = []
-            if len(keep) == 0:
-                oks_nmsed_kpts.append(img_kpts)
+            if self.use_nms:
+                nms = soft_oks_nms if self.soft_nms else oks_nms
+                keep = nms(list(img_kpts), self.oks_thr, sigmas=self.sigmas)
+                valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
-                oks_nmsed_kpts.append([img_kpts[_keep] for _keep in keep])
+                valid_kpts.append(img_kpts)
 
-        self._write_coco_keypoint_results(oks_nmsed_kpts, res_file)
+        self._write_coco_keypoint_results(valid_kpts, res_file)
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)
