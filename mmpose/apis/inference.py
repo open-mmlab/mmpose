@@ -419,7 +419,7 @@ def inference_top_down_pose_model(model,
 
 def inference_bottom_up_pose_model(model,
                                    img_or_path,
-                                   use_nms,
+                                   use_nms=True,
                                    oks_thr=0.9,
                                    return_heatmap=False,
                                    outputs=None):
