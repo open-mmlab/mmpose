@@ -7,10 +7,10 @@ import torch
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
 
+from mmpose.core.post_processing import oks_nms
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
-from mmpose.core.post_processing import oks_nms
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
@@ -499,7 +499,7 @@ def inference_bottom_up_pose_model(model,
 
         for idx, pred in enumerate(result['preds']):
             area = (np.max(pred[:, 0]) - np.min(pred[:, 0])) * (
-                    np.max(pred[:, 1]) - np.min(pred[:, 1]))
+                np.max(pred[:, 1]) - np.min(pred[:, 1]))
             pose_results.append({
                 'keypoints': pred[:, :3],
                 'score': result['scores'][idx],

@@ -34,7 +34,10 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
-        '--use-nms', action='store_true', default=True, help='whether to use pose nms')
+        '--use-nms',
+        action='store_true',
+        default=True,
+        help='whether to use pose nms')
     parser.add_argument(
         '--oks-thr', type=float, default=0.9, help='NMS oks threshold')
 
