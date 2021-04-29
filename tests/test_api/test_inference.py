@@ -55,6 +55,24 @@ def test_top_down_demo():
     vis_pose_result(
         pose_model, image_name, pose_results, dataset='OneHand10KDataset')
 
+    # InterHand2DDataset demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py',
+        None,
+        device='cpu')
+    image_name = 'tests/data/interhand2.6m/image2017.jpg'
+    # test a single image, with a list of bboxes.
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        image_name,
+        person_result,
+        format='xywh',
+        dataset='InterHand2DDataset')
+    # show the results
+    vis_pose_result(
+        pose_model, image_name, pose_results, dataset='InterHand2DDataset')
+
     with pytest.raises(NotImplementedError):
         pose_results, _ = inference_top_down_pose_model(
             pose_model,
