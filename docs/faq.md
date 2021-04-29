@@ -109,9 +109,9 @@ If the contents here do not cover your issue, please create an issue using the [
 
   For bottom-up models, try to edit the config file. For example,
 
-  1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L80).
-  1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L78).
-  1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L79).
+  1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91).
+  1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
+  1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
   1. use smaller input image size in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
 
 ## Deployment
