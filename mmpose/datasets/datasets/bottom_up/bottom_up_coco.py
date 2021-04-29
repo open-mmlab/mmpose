@@ -277,7 +277,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             img_kpts = kpts[img]
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
-                keep = nms(list(img_kpts), self.oks_thr, sigmas=self.sigmas)
+                keep = nms(img_kpts, self.oks_thr, sigmas=self.sigmas)
                 valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
                 valid_kpts.append(img_kpts)

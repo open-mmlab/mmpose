@@ -505,7 +505,7 @@ def inference_bottom_up_pose_model(model,
             })
 
         # pose nms
-        keep = oks_nms(list(pose_results), oks_thr, sigmas=None)
+        keep = oks_nms(pose_results, oks_thr, sigmas=None)
         pose_results = [pose_results[_keep] for _keep in keep]
 
     return pose_results, returned_outputs
