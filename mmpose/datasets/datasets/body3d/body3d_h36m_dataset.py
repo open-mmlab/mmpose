@@ -88,6 +88,16 @@ class Body3DH36MDataset(Body3DBaseDataset):
         ann_info['lower_body_ids'] = (1, 2, 3, 4, 5, 6)
         ann_info['use_different_joint_weights'] = False
 
+        # action filter
+        actions = data_cfg.get('actions', '_all_')
+        self.actions = set(
+            actions if isinstance(actions, (list, tuple)) else [actions])
+
+        # subject filter
+        subjects = data_cfg.get('subjects', '_all_')
+        self.subjects = set(
+            subjects if isinstance(subjects, (list, tuple)) else [subjects])
+
         self.ann_info.update(ann_info)
 
     def load_annotations(self):
@@ -132,6 +142,13 @@ class Body3DH36MDataset(Body3DBaseDataset):
         video_frames = defaultdict(list)
         for idx, imgname in enumerate(self.data_info['imgnames']):
             subj, action, camera = self._parse_h36m_imgname(imgname)
+
+            if '__all__' not in self.actions and action not in self.actions:
+                continue
+
+            if '__all__' not in self.subjects and subj not in self.subjects:
+                continue
+
             video_frames[(subj, action, camera)].append(idx)
 
         # build sample indices
