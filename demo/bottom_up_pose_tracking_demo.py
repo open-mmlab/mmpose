@@ -28,11 +28,22 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.5, help='Keypoint score threshold')
     parser.add_argument(
-        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+        '--nms-oks-thr', type=float, default=0.9, help='NMS oks threshold')
     parser.add_argument(
-        '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
+        '--use-oks-track',
+        action='store_true',
+        default=False,
+        help='Using OKS tracking')
     parser.add_argument(
-        '--oks', action='store_true', default=False, help='Using OKS tracking')
+        '--oks-track-thr',
+        type=float,
+        default=0.3,
+        help='OKS tracking score threshlod')
+    parser.add_argument(
+        '--iou-track-thr',
+        type=float,
+        default=0.3,
+        help='IoU tracking score threshold')
     parser.add_argument(
         '--euro',
         action='store_true',
@@ -97,7 +108,7 @@ def main():
             next_id,
             iou_thr=args.iou_thr,
             oks_thr=args.oks_thr,
-            use_oks=args.oks,
+            use_oks=args.use_oks_track,
             use_one_euro=args.euro,
             fps=fps)
 
