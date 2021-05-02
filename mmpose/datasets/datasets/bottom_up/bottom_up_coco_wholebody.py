@@ -186,20 +186,33 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
                 self.left_hand_num, self.right_hand_num
             ]) * 3
 
-            result = [{
-                'image_id': img_kpt['image_id'],
-                'category_id': cat_id,
-                'keypoints': key_point[cuts[0]:cuts[1]].tolist(),
-                'foot_kpts': key_point[cuts[1]:cuts[2]].tolist(),
-                'face_kpts': key_point[cuts[2]:cuts[3]].tolist(),
-                'lefthand_kpts': key_point[cuts[3]:cuts[4]].tolist(),
-                'righthand_kpts': key_point[cuts[4]:cuts[5]].tolist(),
-                'score': float(img_kpt['score']),
-                'center': img_kpt['center'].tolist(),
-                'scale': img_kpt['scale'].tolist()
-            } for img_kpt, key_point in zip(img_kpts, key_points)]
+            for img_kpt, key_point in zip(img_kpts, key_points):
+                kpt = key_point.reshape((self.ann_info['num_joints'], 3))
+                left_top = np.amin(kpt, axis=0)
+                right_bottom = np.amax(kpt, axis=0)
 
-            cat_results.extend(result)
+                w = right_bottom[0] - left_top[0]
+                h = right_bottom[1] - left_top[1]
+
+                cat_results.append({
+                    'image_id':
+                    img_kpt['image_id'],
+                    'category_id':
+                    cat_id,
+                    'keypoints':
+                    key_point[cuts[0]:cuts[1]].tolist(),
+                    'foot_kpts':
+                    key_point[cuts[1]:cuts[2]].tolist(),
+                    'face_kpts':
+                    key_point[cuts[2]:cuts[3]].tolist(),
+                    'lefthand_kpts':
+                    key_point[cuts[3]:cuts[4]].tolist(),
+                    'righthand_kpts':
+                    key_point[cuts[4]:cuts[5]].tolist(),
+                    'score':
+                    img_kpt['score'],
+                    'bbox': [left_top[0], left_top[1], w, h]
+                })
 
         return cat_results
 
