@@ -16,6 +16,7 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
         t (torch.Tensor): input
         requires_grad (bool): Option to use requires_grad.
         device: torch device
+
     Returns:
         torch.Tensor: zero input.
     """
@@ -30,7 +31,7 @@ class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch.
 
     Args:
-        supervise_empty(bool): Whether to supervise empty channels.
+        supervise_empty (bool): Whether to supervise empty channels.
     """
 
     def __init__(self, supervise_empty=True):
@@ -46,9 +47,9 @@ class HeatmapLoss(nn.Module):
             max_num_people: M
             num_keypoints: K
         Args:
-            pred(torch.Tensor[NxKxHxW]):heatmap of output.
-            gt(torch.Tensor[NxKxHxW]): target heatmap.
-            mask(torch.Tensor[NxHxW]): mask of target.
+            pred (torch.Tensor[NxKxHxW]):heatmap of output.
+            gt (torch.Tensor[NxKxHxW]): target heatmap.
+            mask (torch.Tensor[NxHxW]): mask of target.
         """
         assert pred.size() == gt.size(
         ), f'pred.size() is {pred.size()}, gt.size() is {gt.size()}'
@@ -85,8 +86,8 @@ class AELoss(nn.Module):
             num_keypoints: K
 
         Args:
-            pred_tag(torch.Tensor[(KxHxW)x1]): tag of output for one image.
-            joints(torch.Tensor[MxKx2]): joints information for one image.
+            pred_tag (torch.Tensor[(KxHxW)x1]): tag of output for one image.
+            joints (torch.Tensor[MxKx2]): joints information for one image.
         """
         tags = []
         pull = 0
@@ -144,8 +145,8 @@ class AELoss(nn.Module):
             num_keypoints: K
 
         Args:
-            tags(torch.Tensor[Nx(KxHxW)x1]): tag channels of output.
-            joints(torch.Tensor[NxMxKx2]): joints information.
+            tags (torch.Tensor[Nx(KxHxW)x1]): tag channels of output.
+            joints (torch.Tensor[NxMxKx2]): joints information.
         """
         pushes, pulls = [], []
         joints = joints.cpu().data.numpy()
@@ -162,23 +163,31 @@ class MultiLossFactory(nn.Module):
     """Loss for bottom-up models.
 
     Args:
-        num_joints(int): Number of keypoints.
-        num_stages(int): Number of stages.
-        ae_loss_type(str): Type of ae loss.
-        with_ae_loss(list[bool]): Use ae loss or not in multi-heatmap.
-        push_loss_factor(list[float]):
+        num_joints (int): Number of keypoints.
+        num_stages (int): Number of stages.
+        ae_loss_type (str): Type of ae loss.
+        with_ae_loss (list[bool]): Use ae loss or not in multi-heatmap.
+        push_loss_factor (list[float]):
             Parameter of push loss in multi-heatmap.
-        pull_loss_factor(list[float]):
+        pull_loss_factor (list[float]):
             Parameter of pull loss in multi-heatmap.
-        with_heatmap_loss(list[bool]):
+        with_heatmap_loss (list[bool]):
             Use heatmap loss or not in multi-heatmap.
-        heatmaps_loss_factor(list[float]):
+        heatmaps_loss_factor (list[float]):
             Parameter of heatmap loss in multi-heatmap.
+        supervise_empty (bool): Whether to supervise empty channels.
     """
 
-    def __init__(self, num_joints, num_stages, ae_loss_type, with_ae_loss,
-                 push_loss_factor, pull_loss_factor, with_heatmaps_loss,
-                 heatmaps_loss_factor):
+    def __init__(self,
+                 num_joints,
+                 num_stages,
+                 ae_loss_type,
+                 with_ae_loss,
+                 push_loss_factor,
+                 pull_loss_factor,
+                 with_heatmaps_loss,
+                 heatmaps_loss_factor,
+                 supervise_empty=True):
         super().__init__()
 
         assert isinstance(with_heatmaps_loss, (list, tuple)), \
@@ -204,7 +213,7 @@ class MultiLossFactory(nn.Module):
         self.heatmaps_loss = \
             nn.ModuleList(
                 [
-                    HeatmapLoss()
+                    HeatmapLoss(supervise_empty)
                     if with_heatmaps_loss else None
                     for with_heatmaps_loss in self.with_heatmaps_loss
                 ]
@@ -230,10 +239,10 @@ class MultiLossFactory(nn.Module):
             output_channel: C C=2K if use ae loss else K
 
         Args:
-            outputs(List(torch.Tensor[NxCxHxW])): outputs of stages.
-            heatmaps(List(torch.Tensor[NxKxHxW])): target of heatmaps.
-            masks(List(torch.Tensor[NxHxW])): masks of heatmaps.
-            joints(List(torch.Tensor[NxMxKx2])): joints of ae loss.
+            outputs (List(torch.Tensor[NxCxHxW])): outputs of stages.
+            heatmaps (List(torch.Tensor[NxKxHxW])): target of heatmaps.
+            masks (List(torch.Tensor[NxHxW])): masks of heatmaps.
+            joints (List(torch.Tensor[NxMxKx2])): joints of ae loss.
         """
         heatmaps_losses = []
         push_losses = []
