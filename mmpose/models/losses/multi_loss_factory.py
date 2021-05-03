@@ -27,10 +27,17 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
 
 @LOSSES.register_module()
 class HeatmapLoss(nn.Module):
-    """Accumulate the heatmap loss for each image in the batch."""
+    """Accumulate the heatmap loss for each image in the batch.
 
-    @staticmethod
-    def forward(pred, gt, mask):
+    Args:
+        supervise_empty(bool): Whether to supervise empty channels.
+    """
+
+    def __init__(self, supervise_empty=True):
+        super().__init__()
+        self.supervise_empty = supervise_empty
+
+    def forward(self, pred, gt, mask):
         """
         Note:
             batch_size: N
@@ -45,7 +52,13 @@ class HeatmapLoss(nn.Module):
         """
         assert pred.size() == gt.size(
         ), f'pred.size() is {pred.size()}, gt.size() is {gt.size()}'
-        loss = ((pred - gt)**2) * mask[:, None, :, :].expand_as(pred)
+
+        if not self.supervise_empty:
+            empty_mask = (gt.sum(dim=[2, 3], keepdim=True) > 0).float()
+            loss = ((pred - gt)**2) * empty_mask.expand_as(
+                pred) * mask[:, None, :, :].expand_as(pred)
+        else:
+            loss = ((pred - gt)**2) * mask[:, None, :, :].expand_as(pred)
         loss = loss.mean(dim=3).mean(dim=2).mean(dim=1)
         return loss
 
@@ -70,6 +83,7 @@ class AELoss(nn.Module):
             heatmaps height: H
             max_num_people: M
             num_keypoints: K
+
         Args:
             pred_tag(torch.Tensor[(KxHxW)x1]): tag of output for one image.
             joints(torch.Tensor[MxKx2]): joints information for one image.
