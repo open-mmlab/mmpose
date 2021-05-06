@@ -48,6 +48,15 @@ class TopDownRandomFlip:
         results['center'] = center
         results['flipped'] = flipped
 
+        # import cv2
+        # print("R", results.keys())
+        # # print("center", results["center"])
+        # # print("bbox", results["bbox"])
+        # # print("scale", results["scale"])
+        # # print("rotation", results["rotation"])
+        # # print("j3d", results["joints_3d"])
+        # import time
+        # cv2.imwrite("xtest/" + str(time.time()) + ".jpg", results['img'][:,:,::-1])
         return results
 
 
@@ -180,7 +189,6 @@ class TopDownAffine:
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
-
     def __init__(self, use_udp=False):
         self.use_udp = use_udp
 
@@ -193,7 +201,6 @@ class TopDownAffine:
         c = results['center']
         s = results['scale']
         r = results['rotation']
-
         if self.use_udp:
             trans = get_warp_matrix(r, c * 2.0, image_size - 1.0, s * 200.0)
             img = cv2.warpAffine(
@@ -212,11 +219,9 @@ class TopDownAffine:
                 if joints_3d_visible[i, 0] > 0.0:
                     joints_3d[i,
                               0:2] = affine_transform(joints_3d[i, 0:2], trans)
-
         results['img'] = img
         results['joints_3d'] = joints_3d
         results['joints_3d_visible'] = joints_3d_visible
-
         return results
 
 

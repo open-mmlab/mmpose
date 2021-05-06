@@ -27,6 +27,9 @@ class ToTensor:
     """
 
     def __call__(self, results):
+
+
+
         results['img'] = F.to_tensor(results['img'])
         return results
 
@@ -49,6 +52,7 @@ class NormalizeTensor:
     def __call__(self, results):
         results['img'] = F.normalize(
             results['img'], mean=self.mean, std=self.std)
+        import numpy as np
         return results
 
 
