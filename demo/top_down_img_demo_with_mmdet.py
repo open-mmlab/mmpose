@@ -60,17 +60,17 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
+        '--det-cat-id',
+        type=int,
+        default=1,
+        help='Category id for bounding box detection model')
+    parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.3,
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
-    parser.add_argument(
-        '--det-cat-id',
-        type=int,
-        default=1,
-        help='Category id for bounding box detection model')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 

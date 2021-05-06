@@ -37,6 +37,11 @@ def test_top_down_pose_tracking_demo():
         dataset='TopDownAicDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,
                                          next_id)
+    for pose_result in pose_results:
+        del pose_result['bbox']
+    pose_results, next_id = get_track_id(pose_results, pose_results_last,
+                                         next_id)
+
     # show the results
     vis_pose_tracking_result(
         pose_model, image_name, pose_results, dataset='TopDownAicDataset')
