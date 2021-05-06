@@ -62,7 +62,8 @@ def test_bottom_up_COCO_dataset():
         dataset_channel=channel_cfg['dataset_channel'],
         inference_channel=channel_cfg['inference_channel'],
         num_scales=2,
-        scale_aware_sigma=False)
+        scale_aware_sigma=False,
+        use_nms=True)
 
     _ = dataset_class(
         ann_file='tests/data/coco/test_coco.json',

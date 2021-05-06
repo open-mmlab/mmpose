@@ -28,15 +28,17 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.5, help='Keypoint score threshold')
     parser.add_argument(
-        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+        '--pose-nms-thr',
+        type=float,
+        default=0.9,
+        help='OKS threshold for pose NMS')
     parser.add_argument(
-        '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
+        '--use-oks-tracking', action='store_true', help='Using OKS tracking')
     parser.add_argument(
-        '--oks', action='store_true', default=False, help='Using OKS tracking')
+        '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
     parser.add_argument(
         '--euro',
         action='store_true',
-        default=False,
         help='Using One_Euro_Filter for smoothing')
 
     args = parser.parse_args()
@@ -87,6 +89,7 @@ def main():
         pose_results, returned_outputs = inference_bottom_up_pose_model(
             pose_model,
             img,
+            pose_nms_thr=args.pose_nms_thr,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
@@ -95,9 +98,8 @@ def main():
             pose_results,
             pose_results_last,
             next_id,
-            iou_thr=args.iou_thr,
-            oks_thr=args.oks_thr,
-            use_oks=args.oks,
+            use_oks=args.use_oks_tracking,
+            tracking_thr=args.tracking_thr,
             use_one_euro=args.euro,
             fps=fps)
 

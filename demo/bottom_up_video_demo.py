@@ -27,6 +27,11 @@ def main():
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+    parser.add_argument(
+        '--pose-nms-thr',
+        type=float,
+        default=0.9,
+        help='OKS threshold for pose NMS')
 
     args = parser.parse_args()
 
@@ -71,6 +76,7 @@ def main():
         pose_results, returned_outputs = inference_bottom_up_pose_model(
             pose_model,
             img,
+            pose_nms_thr=args.pose_nms_thr,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
