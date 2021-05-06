@@ -11,6 +11,13 @@ from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
 
+try:
+    from mmcv.runner import auto_fp16
+except ImportError:
+    warnings.warn('auto_fp16 from mmpose will be deprecated from v0.15.0'
+                  'Please install mmcv>=1.1.4')
+    from mmpose.core import auto_fp16
+
 
 @POSENETS.register_module()
 class TopDown(BasePose):
@@ -35,6 +42,7 @@ class TopDown(BasePose):
                  pretrained=None,
                  loss_pose=None):
         super().__init__()
+        self.fp16_enabled = False
 
         self.backbone = builder.build_backbone(backbone)
 
@@ -78,6 +86,7 @@ class TopDown(BasePose):
         if self.with_keypoint:
             self.keypoint_head.init_weights()
 
+    @auto_fp16(apply_to=('img', ))
     def forward(self,
                 img,
                 target=None,
