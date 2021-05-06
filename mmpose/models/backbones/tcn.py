@@ -1,8 +1,10 @@
 import copy
 
 import torch.nn as nn
-from mmcv.cnn import ConvModule, build_conv_layer
+from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
+from mmcv.utils.parrots_wrapper import _BatchNorm
 
+from mmpose.core import WeightNormClipHook
 from ..registry import BACKBONES
 from .base_backbone import BaseBackbone
 
@@ -20,6 +22,12 @@ class BasicTemporalBlock(nn.Module):
         causal (bool): Use causal convolutions instead of symmetric
             convolutions (for real-time applications). Default: False.
         residual (bool): Use residual connection. Default: True.
+        use_stride_conv (bool): Use optimized TCN that designed
+            specifically for single-frame batching, i.e. where batches have
+            input length = receptive field, and output length = 1. This
+            implementation replaces dilated convolutions with strided
+            convolutions to avoid generating unused intermediate results.
+            Default: False.
         conv_cfg (dict): dictionary to construct and config conv layer.
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
@@ -35,6 +43,7 @@ class BasicTemporalBlock(nn.Module):
                  dropout=0.25,
                  causal=False,
                  residual=True,
+                 use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d')):
         # Protect mutable default arguments
@@ -49,28 +58,35 @@ class BasicTemporalBlock(nn.Module):
         self.dropout = dropout
         self.causal = causal
         self.residual = residual
+        self.use_stride_conv = use_stride_conv
 
         self.pad = (kernel_size - 1) * dilation // 2
-        self.causal_shift = kernel_size // 2 * dilation if causal else 0
+        if use_stride_conv:
+            self.stride = kernel_size
+            self.causal_shift = kernel_size // 2 if causal else 0
+            self.dilation = 1
+        else:
+            self.stride = 1
+            self.causal_shift = kernel_size // 2 * dilation if causal else 0
 
         self.conv1 = nn.Sequential(
             ConvModule(
                 in_channels,
                 mid_channels,
                 kernel_size=kernel_size,
-                stride=1,
+                stride=self.stride,
                 dilation=self.dilation,
-                bias=False,
+                bias='auto',
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
+                norm_cfg=norm_cfg))
         self.conv2 = nn.Sequential(
             ConvModule(
                 mid_channels,
                 out_channels,
                 kernel_size=1,
-                bias=False,
+                bias='auto',
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg), nn.Dropout(self.dropout))
+                norm_cfg=norm_cfg))
 
         if residual and in_channels != out_channels:
             self.short_cut = build_conv_layer(conv_cfg, in_channels,
@@ -78,20 +94,36 @@ class BasicTemporalBlock(nn.Module):
         else:
             self.short_cut = None
 
+        self.dropout = nn.Dropout(dropout) if dropout > 0 else None
+
     def forward(self, x):
         """Forward function."""
-        assert 0 <= self.pad + self.causal_shift < x.shape[
-            2] - self.pad + self.causal_shift <= x.shape[2]
+        if self.use_stride_conv:
+            assert self.causal_shift + self.kernel_size // 2 < x.shape[2]
+        else:
+            assert 0 <= self.pad + self.causal_shift < x.shape[2] - \
+                self.pad + self.causal_shift <= x.shape[2]
+
         out = self.conv1(x)
+        if self.dropout is not None:
+            out = self.dropout(out)
+
         out = self.conv2(out)
+        if self.dropout is not None:
+            out = self.dropout(out)
 
         if self.residual:
-            res = x[:, :,
-                    (self.pad + self.causal_shift):(x.shape[2] - self.pad +
-                                                    self.causal_shift)]
+            if self.use_stride_conv:
+                res = x[:, :, self.causal_shift +
+                        self.kernel_size // 2::self.kernel_size]
+            else:
+                res = x[:, :,
+                        (self.pad + self.causal_shift):(x.shape[2] - self.pad +
+                                                        self.causal_shift)]
+
             if self.short_cut is not None:
                 res = self.short_cut(res)
-            out += res
+            out = out + res
 
         return out
 
@@ -117,10 +149,18 @@ class TCN(BaseBackbone):
             convolutions (for real-time applications).
             Default: False.
         residual (bool): Use residual connection. Default: True.
+        use_stride_conv (bool): Use TCN backbone optimized for
+            single-frame batching, i.e. where batches have input length =
+            receptive field, and output length = 1. This implementation
+            replaces dilated convolutions with strided convolutions to avoid
+            generating unused intermediate results. The weights are
+            interchangeable with the reference implementation. Default: False
         conv_cfg (dict): dictionary to construct and config conv layer.
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN1d').
+        max_norm (float|None): if not None, the weight of convolution layers
+            will be clipped to have a maximum norm of max_norm.
 
     Example:
         >>> from mmpose.models import TCN
@@ -143,8 +183,10 @@ class TCN(BaseBackbone):
                  dropout=0.25,
                  causal=False,
                  residual=True,
+                 use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
-                 norm_cfg=dict(type='BN1d')):
+                 norm_cfg=dict(type='BN1d'),
+                 max_norm=None):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -156,16 +198,19 @@ class TCN(BaseBackbone):
         self.dropout = dropout
         self.causal = causal
         self.residual = residual
+        self.use_stride_conv = use_stride_conv
+        self.max_norm = max_norm
 
         assert num_blocks == len(kernel_sizes) - 1
         for ks in kernel_sizes:
-            assert ks & 1 == 1, 'Only odd filter widths are supported.'
+            assert ks % 2 == 1, 'Only odd filter widths are supported.'
 
         self.expand_conv = ConvModule(
             in_channels,
             stem_channels,
             kernel_size=kernel_sizes[0],
-            bias=False,
+            stride=kernel_sizes[0] if use_stride_conv else 1,
+            bias='auto',
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg)
 
@@ -182,16 +227,40 @@ class TCN(BaseBackbone):
                     dropout=dropout,
                     causal=causal,
                     residual=residual,
+                    use_stride_conv=use_stride_conv,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg))
             dilation *= kernel_sizes[i]
 
+        if self.max_norm is not None:
+            # Apply weight norm clip to conv layers
+            weight_clip = WeightNormClipHook(self.max_norm)
+            for module in self.modules():
+                if isinstance(module, nn.modules.conv._ConvNd):
+                    weight_clip.register(module)
+
+        self.dropout = nn.Dropout(dropout) if dropout > 0 else None
+
     def forward(self, x):
         """Forward function."""
         x = self.expand_conv(x)
+
+        if self.dropout is not None:
+            x = self.dropout(x)
+
         outs = []
         for i in range(self.num_blocks):
             x = self.tcn_blocks[i](x)
             outs.append(x)
 
         return tuple(outs)
+
+    def init_weights(self, pretrained=None):
+        """Initialize the weights."""
+        super().init_weights(pretrained)
+        if pretrained is None:
+            for m in self.modules():
+                if isinstance(m, nn.modules.conv._ConvNd):
+                    kaiming_init(m, mode='fan_in', nonlinearity='relu')
+                elif isinstance(m, _BatchNorm):
+                    constant_init(m, 1)

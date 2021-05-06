@@ -3,9 +3,9 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
+checkpoint_config = dict(interval=10)
 evaluation = dict(
-    interval=1, metric=['PCKh', 'AUC', 'EPE'], key_indicator='AUC')
+    interval=10, metric=['PCKh', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -18,10 +18,10 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[70, 100])
-total_epochs = 110
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
-    interval=20,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
@@ -70,7 +70,7 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=20, scale_factor=0.3),
+        type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -105,7 +105,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/panoptic'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=64,
     workers_per_gpu=2,
     train=dict(
         type='PanopticDataset',

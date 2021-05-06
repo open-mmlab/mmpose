@@ -1,6 +1,36 @@
 # Changelog
 
-## v0.12.0 (28/02/2020)
+## v0.13.0 (31/03/2021)
+
+**Highlights**
+
+1. Support Wingloss.
+1. Support RHD hand dataset.
+
+**New Features**
+
+- Support Wingloss ([\#482](https://github.com/open-mmlab/mmpose/pull/482))
+- Support RHD hand dataset ([\#523](https://github.com/open-mmlab/mmpose/pull/523), [\#551](https://github.com/open-mmlab/mmpose/pull/551))
+- Support Human3.6m dataset for 3d keypoint detection ([\#518](https://github.com/open-mmlab/mmpose/pull/518), [\#527](https://github.com/open-mmlab/mmpose/pull/527))
+- Support TCN model for 3d keypoint detection ([\#521](https://github.com/open-mmlab/mmpose/pull/521), [\#522](https://github.com/open-mmlab/mmpose/pull/522))
+- Support Interhand3D model for 3d hand detection ([\#536](https://github.com/open-mmlab/mmpose/pull/536))
+- Support Multi-task detector ([\#480](https://github.com/open-mmlab/mmpose/pull/480))
+
+**Bug Fixes**
+
+- Fix PCKh@0.1 calculation ([\#516](https://github.com/open-mmlab/mmpose/pull/516))
+- Fix unittest ([\#529](https://github.com/open-mmlab/mmpose/pull/529))
+- Fix circular importing ([\#542](https://github.com/open-mmlab/mmpose/pull/542))
+- Fix bugs in bottom-up keypoint score ([\#548](https://github.com/open-mmlab/mmpose/pull/548))
+
+**Improvements**
+
+- Update config & checkpoints ([\#525](https://github.com/open-mmlab/mmpose/pull/525), [\#546](https://github.com/open-mmlab/mmpose/pull/546))
+- Fix typos ([\#514](https://github.com/open-mmlab/mmpose/pull/514), [\#519](https://github.com/open-mmlab/mmpose/pull/519), [\#532](https://github.com/open-mmlab/mmpose/pull/532), [\#537](https://github.com/open-mmlab/mmpose/pull/537), )
+- Speed up post processing ([\#535](https://github.com/open-mmlab/mmpose/pull/535))
+- Update mmcv version dependency ([\#544](https://github.com/open-mmlab/mmpose/pull/544))
+
+## v0.12.0 (28/02/2021)
 
 **Highlights**
 
@@ -38,7 +68,7 @@
 - latex to bibtex ([\#471](https://github.com/open-mmlab/mmpose/pull/471))
 - Update FAQ ([\#466](https://github.com/open-mmlab/mmpose/pull/466))
 
-## v0.11.0 (31/01/2020)
+## v0.11.0 (31/01/2021)
 
 **Highlights**
 

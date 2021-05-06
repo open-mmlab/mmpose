@@ -1,61 +1,10 @@
-import math
-
 import cv2
 import numpy as np
 
-from mmpose.core.post_processing import get_affine_transform
+from mmpose.core.post_processing import (get_affine_transform, get_warp_matrix,
+                                         warp_affine_joints)
 from mmpose.datasets.registry import PIPELINES
 from .shared_transform import Compose
-
-
-def get_warp_matrix(theta, size_input, size_dst, size_target):
-    """Calculate the transformation matrix under the constraint of unbiased.
-    Paper ref: Huang et al. The Devil is in the Details: Delving into Unbiased
-    Data Processing for Human Pose Estimation (CVPR 2020).
-
-    Args:
-        theta (float): Rotation angle in degrees.
-        size_input (np.ndarray): Size of input image [w, h].
-        size_dst (np.ndarray): Size of output image [w, h].
-        size_target (np.ndarray): Size of ROI in input plane [w, h].
-
-    Returns:
-        matrix (np.ndarray): A matrix for transformation.
-    """
-    theta = np.deg2rad(theta)
-    matrix = np.zeros((2, 3), dtype=np.float32)
-    scale_x = size_dst[0] / size_target[0]
-    scale_y = size_dst[1] / size_target[1]
-    matrix[0, 0] = math.cos(theta) * scale_x
-    matrix[0, 1] = -math.sin(theta) * scale_x
-    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) +
-                              0.5 * size_input[1] * math.sin(theta) +
-                              0.5 * size_target[0])
-    matrix[1, 0] = math.sin(theta) * scale_y
-    matrix[1, 1] = math.cos(theta) * scale_y
-    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) -
-                              0.5 * size_input[1] * math.cos(theta) +
-                              0.5 * size_target[1])
-    return matrix
-
-
-def warp_affine_joints(joints, mat):
-    """Apply affine transformation defined by the transform matrix on the
-    joints.
-
-    Args:
-        joints (np.ndarray[..., 2]): Origin coordinate of joints.
-        mat (np.ndarray[3, 2]): The affine matrix.
-
-    Returns:
-        matrix (np.ndarray[..., 2]): Result coordinate of joints.
-    """
-    joints = np.array(joints)
-    shape = joints.shape
-    joints = joints.reshape(-1, 2)
-    return np.dot(
-        np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
-        mat.T).reshape(shape)
 
 
 def _ceil_to_multiples_of(x, base=64):
@@ -182,18 +131,18 @@ class HeatmapGenerator:
 
     Args:
         num_joints (int): Number of keypoints
-        output_res (int): Size of feature map
+        output_size (int): Size of feature map
         sigma (int): Sigma of the heatmaps.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, output_res, num_joints, sigma=-1, use_udp=False):
-        self.output_res = output_res
+    def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
+        self.output_size = output_size
         self.num_joints = num_joints
         if sigma < 0:
-            sigma = self.output_res / 64
+            sigma = self.output_size / 64
         self.sigma = sigma
         size = 6 * sigma + 3
         self.use_udp = use_udp
@@ -208,7 +157,7 @@ class HeatmapGenerator:
 
     def __call__(self, joints):
         """Generate heatmaps."""
-        hms = np.zeros((self.num_joints, self.output_res, self.output_res),
+        hms = np.zeros((self.num_joints, self.output_size, self.output_size),
                        dtype=np.float32)
         sigma = self.sigma
         for p in joints:
@@ -216,7 +165,7 @@ class HeatmapGenerator:
                 if pt[2] > 0:
                     x, y = int(pt[0]), int(pt[1])
                     if x < 0 or y < 0 or \
-                       x >= self.output_res or y >= self.output_res:
+                       x >= self.output_size or y >= self.output_size:
                         continue
 
                     if self.use_udp:
@@ -232,11 +181,11 @@ class HeatmapGenerator:
                     br = int(np.round(x + 3 * sigma +
                                       2)), int(np.round(y + 3 * sigma + 2))
 
-                    c, d = max(0, -ul[0]), min(br[0], self.output_res) - ul[0]
-                    a, b = max(0, -ul[1]), min(br[1], self.output_res) - ul[1]
+                    c, d = max(0, -ul[0]), min(br[0], self.output_size) - ul[0]
+                    a, b = max(0, -ul[1]), min(br[1], self.output_size) - ul[1]
 
-                    cc, dd = max(0, ul[0]), min(br[0], self.output_res)
-                    aa, bb = max(0, ul[1]), min(br[1], self.output_res)
+                    cc, dd = max(0, ul[0]), min(br[0], self.output_size)
+                    aa, bb = max(0, ul[1]), min(br[1], self.output_size)
                     hms[idx, aa:bb,
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
@@ -247,19 +196,19 @@ class JointsEncoder:
     """Encodes the visible joints into (coordinates, score); The coordinate of
     one joint and its score are of `int` type.
 
-    (idx * output_res**2 + y * output_res + x, 1) or (0, 0).
+    (idx * output_size**2 + y * output_size + x, 1) or (0, 0).
 
     Args:
         max_num_people(int): Max number of people in an image
         num_joints(int): Number of keypoints
-        output_res(int): Size of feature map
+        output_size(int): Size of feature map
         tag_per_joint(bool):  Option to use one tag map per joint.
     """
 
-    def __init__(self, max_num_people, num_joints, output_res, tag_per_joint):
+    def __init__(self, max_num_people, num_joints, output_size, tag_per_joint):
         self.max_num_people = max_num_people
         self.num_joints = num_joints
-        self.output_res = output_res
+        self.output_size = output_size
         self.tag_per_joint = tag_per_joint
 
     def __call__(self, joints):
@@ -277,20 +226,101 @@ class JointsEncoder:
         """
         visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
                                 dtype=np.float32)
-        output_res = self.output_res
+        output_size = self.output_size
         for i in range(len(joints)):
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if (pt[2] > 0 and 0 <= y < self.output_res
-                        and 0 <= x < self.output_res):
+                if (pt[2] > 0 and 0 <= y < self.output_size
+                        and 0 <= x < self.output_size):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
-                            (idx * output_res**2 + y * output_res + x, 1)
+                            (idx * output_size**2 + y * output_size + x, 1)
                     else:
-                        visible_kpts[i][tot] = (y * output_res + x, 1)
+                        visible_kpts[i][tot] = (y * output_size + x, 1)
                     tot += 1
         return visible_kpts
+
+
+class PAFGenerator:
+    """Generate part affinity fields.
+
+    Args:
+        output_size (int): Size of feature map.
+        limb_width (int): Limb width of part affinity fields.
+        skeleton (list[list]): connections of joints.
+    """
+
+    def __init__(self, output_size, limb_width, skeleton):
+        self.output_size = output_size
+        self.limb_width = limb_width
+        self.skeleton = skeleton
+
+    def _accumulate_paf_map_(self, pafs, src, dst, count):
+        """Accumulate part affinity fields between two given joints.
+
+        Args:
+            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:x axis and
+                y axis) for a certain limb connection. This argument will
+                be modified inplace.
+            src (np.ndarray[2,]): coordinates of the source joint.
+            dst (np.ndarray[2,]): coordinates of the destination joint.
+            count (np.ndarray[HxW]): count map that preserves the number
+                of non-zero vectors at each point. This argument will be
+                modified inplace.
+        """
+        limb_vec = dst - src
+        norm = np.linalg.norm(limb_vec)
+        if norm == 0:
+            unit_limb_vec = np.zeros(2)
+        else:
+            unit_limb_vec = limb_vec / norm
+
+        min_x = max(np.floor(min(src[0], dst[0]) - self.limb_width), 0)
+        max_x = min(
+            np.ceil(max(src[0], dst[0]) + self.limb_width),
+            self.output_size - 1)
+        min_y = max(np.floor(min(src[1], dst[1]) - self.limb_width), 0)
+        max_y = min(
+            np.ceil(max(src[1], dst[1]) + self.limb_width),
+            self.output_size + 1)
+
+        range_x = list(range(int(min_x), int(max_x + 1), 1))
+        range_y = list(range(int(min_y), int(max_y + 1), 1))
+        xx, yy = np.meshgrid(range_x, range_y)
+        delta_x = xx - src[0]
+        delta_y = yy - src[1]
+        dist = np.abs(delta_x * unit_limb_vec[1] - delta_y * unit_limb_vec[0])
+        mask_local = (dist < self.limb_width)
+        mask = np.zeros_like(count, dtype=bool)
+        mask[xx, yy] = mask_local
+
+        pafs[0, mask] += unit_limb_vec[0]
+        pafs[1, mask] += unit_limb_vec[1]
+        count += mask
+
+        return pafs, count
+
+    def __call__(self, joints):
+        """Generate the target part affinity fields."""
+        pafs = np.zeros(
+            (len(self.skeleton) * 2, self.output_size, self.output_size),
+            dtype=np.float32)
+
+        for idx, sk in enumerate(self.skeleton):
+            count = np.zeros((self.output_size, self.output_size),
+                             dtype=np.float32)
+
+            for p in joints:
+                src = p[sk[0] - 1]
+                dst = p[sk[1] - 1]
+                if src[2] > 0 and dst[2] > 0:
+                    self._accumulate_paf_map_(pafs[2 * idx:2 * idx + 2],
+                                              src[:2], dst[:2], count)
+
+            pafs[2 * idx:2 * idx + 2] /= np.maximum(count, 1)
+
+        return pafs
 
 
 @PIPELINES.register_module()
@@ -476,6 +506,46 @@ class BottomUpRandomAffine:
 
 
 @PIPELINES.register_module()
+class BottomUpGenerateHeatmapTarget:
+    """Generate multi-scale heatmap target for bottom-up.
+
+    Args:
+        sigma (int): Sigma of heatmap Gaussian
+        max_num_people (int): Maximum number of people in an image
+        use_udp (bool): To use unbiased data processing.
+            Paper ref: Huang et al. The Devil is in the Details: Delving into
+            Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+    """
+
+    def __init__(self, sigma, use_udp=False):
+        self.sigma = sigma
+        self.use_udp = use_udp
+
+    def _generate(self, num_joints, heatmap_size):
+        """Get heatmap generator."""
+        heatmap_generator = [
+            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp)
+            for output_size in heatmap_size
+        ]
+        return heatmap_generator
+
+    def __call__(self, results):
+        """Generate multi-scale heatmap target for bottom-up."""
+        heatmap_generator = \
+            self._generate(results['ann_info']['num_joints'],
+                           results['ann_info']['heatmap_size'])
+        target_list = list()
+        joints_list = results['joints']
+
+        for scale_id in range(results['ann_info']['num_scales']):
+            heatmaps = heatmap_generator[scale_id](joints_list[scale_id])
+            target_list.append(heatmaps.astype(np.float32))
+        results['target'] = target_list
+
+        return results
+
+
+@PIPELINES.register_module()
 class BottomUpGenerateTarget:
     """Generate multi-scale heatmap target for bottom-up.
 
@@ -524,6 +594,52 @@ class BottomUpGenerateTarget:
         results['img'], results['masks'], results[
             'joints'] = img, mask_list, joints_list
         results['targets'] = target_list
+
+        return results
+
+
+@PIPELINES.register_module()
+class BottomUpGeneratePAFTarget:
+    """Generate multi-scale heatmaps and part affinity fields (PAF) target for
+    bottom-up. Paper ref: Cao et al. Realtime Multi-Person 2D Human Pose
+    Estimation using Part Affinity Fields (CVPR 2017).
+
+    Args:
+        limb_width (int): Limb width of part affinity fields
+    """
+
+    def __init__(self, limb_width, skeleton=None):
+        self.limb_width = limb_width
+        self.skeleton = skeleton
+
+    def _generate(self, heatmap_size, skeleton):
+        """Get PAF generator."""
+        paf_generator = [
+            PAFGenerator(output_size, self.limb_width, skeleton)
+            for output_size in heatmap_size
+        ]
+        return paf_generator
+
+    def __call__(self, results):
+        """Generate multi-scale part affinity fields for bottom-up."""
+        if self.skeleton is None:
+            assert results['ann_info']['skeleton'] is not None
+            self.skeleton = results['ann_info']['skeleton']
+        else:
+            assert np.array(
+                self.skeleton).max() < results['ann_info']['num_joints']
+
+        paf_generator = \
+            self._generate(results['ann_info']['heatmap_size'],
+                           self.skeleton)
+        target_list = list()
+        joints_list = results['joints']
+
+        for scale_id in range(results['ann_info']['num_scales']):
+            pafs = paf_generator[scale_id](joints_list[scale_id])
+            target_list.append(pafs.astype(np.float32))
+
+        results['target'] = target_list
 
         return results
 

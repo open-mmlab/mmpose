@@ -57,6 +57,7 @@ def _xyxy2xywh(bbox_xyxy):
     bbox_xywh = bbox_xyxy.copy()
     bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
     bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
+
     return bbox_xywh
 
 
@@ -73,6 +74,7 @@ def _xywh2xyxy(bbox_xywh):
     bbox_xyxy = bbox_xywh.copy()
     bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
     bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
+
     return bbox_xyxy
 
 
@@ -141,7 +143,7 @@ class LoadImage:
 
 def _inference_single_pose_model(model,
                                  img_or_path,
-                                 bbox,
+                                 bboxes,
                                  dataset,
                                  return_heatmap=False):
     """Inference a single bbox.
@@ -151,8 +153,9 @@ def _inference_single_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str | np.ndarray): Image filename or loaded image.
-        bbox (list | np.ndarray): Bounding boxes (with scores),
-            shaped (4, ) or (5, ). (left, top, width, height, [score])
+        bboxes (list | np.ndarray): All bounding boxes (with scores),
+            shaped (N, 4) or (N, 5). (left, top, width, height, [score])
+            where N is number of bounding boxes.
         dataset (str): Dataset name.
         outputs (list[str] | tuple[str]): Names of layers whose output is
             to be returned, default: None
@@ -171,11 +174,11 @@ def _inference_single_pose_model(model,
                      ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
-    assert len(bbox) in [4, 5]
-    center, scale = _box2cs(cfg, bbox)
+    assert len(bboxes[0]) in [4, 5]
 
     flip_pairs = None
-    if dataset in ('TopDownCocoDataset', 'TopDownOCHumanDataset'):
+    if dataset in ('TopDownCocoDataset', 'TopDownOCHumanDataset',
+                   'AnimalMacaqueDataset'):
         flip_pairs = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12],
                       [13, 14], [15, 16]]
     elif dataset == 'TopDownCocoWholeBodyDataset':
@@ -240,51 +243,77 @@ def _inference_single_pose_model(model,
                       [89, 91], [95, 93], [96, 97]]
     elif dataset in 'TopDownForkliftDataset':
         flip_pairs = [[0, 1], [2, 3], [4, 5]]
+    elif dataset in 'AnimalFlyDataset':
+        flip_pairs = [[1, 2], [6, 18], [7, 19], [8, 20], [9, 21], [10, 22],
+                      [11, 23], [12, 24], [13, 25], [14, 26], [15, 27],
+                      [16, 28], [17, 29], [30, 31]]
+    elif dataset in 'AnimalHorse10Dataset':
+        flip_pairs = []
+
+    elif dataset in 'AnimalLocustDataset':
+        flip_pairs = [[5, 20], [6, 21], [7, 22], [8, 23], [9, 24], [10, 25],
+                      [11, 26], [12, 27], [13, 28], [14, 29], [15, 30],
+                      [16, 31], [17, 32], [18, 33], [19, 34]]
+    elif dataset in 'AnimalZebraDataset':
+        flip_pairs = [[3, 4], [5, 6]]
+    elif dataset in 'AnimalPoseDataset':
+        flip_pairs = [[0, 1], [2, 3], [8, 9], [10, 11], [12, 13], [14, 15],
+                      [16, 17], [18, 19]]
     else:
         raise NotImplementedError()
 
-    # prepare data
-    data = {
-        'img_or_path':
-        img_or_path,
-        'center':
-        center,
-        'scale':
-        scale,
-        'bbox_score':
-        bbox[4] if len(bbox) == 5 else 1,
-        'dataset':
-        dataset,
-        'joints_3d':
-        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-        'joints_3d_visible':
-        np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-        'rotation':
-        0,
-        'ann_info': {
-            'image_size': cfg.data_cfg['image_size'],
-            'num_joints': cfg.data_cfg['num_joints'],
-            'flip_pairs': flip_pairs
+    batch_data = []
+    for bbox in bboxes:
+        center, scale = _box2cs(cfg, bbox)
+
+        # prepare data
+        data = {
+            'img_or_path':
+            img_or_path,
+            'center':
+            center,
+            'scale':
+            scale,
+            'bbox_score':
+            bbox[4] if len(bbox) == 5 else 1,
+            'bbox_id':
+            0,  # need to be assigned if batch_size > 1
+            'dataset':
+            dataset,
+            'joints_3d':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'joints_3d_visible':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'rotation':
+            0,
+            'ann_info': {
+                'image_size': cfg.data_cfg['image_size'],
+                'num_joints': cfg.data_cfg['num_joints'],
+                'flip_pairs': flip_pairs
+            }
         }
-    }
-    data = test_pipeline(data)
-    data = collate([data], samples_per_gpu=1)
+        data = test_pipeline(data)
+        batch_data.append(data)
+
+    batch_data = collate(batch_data, samples_per_gpu=1)
+
     if next(model.parameters()).is_cuda:
-        # scatter to specified GPU
-        data = scatter(data, [device])[0]
-    else:
-        # just get the actual data from DataContainer
-        data['img_metas'] = data['img_metas'].data[0]
+        # scatter not work so just move image to cuda device
+        batch_data['img'] = batch_data['img'].to(device)
+    # get all img_metas of each bounding box
+    batch_data['img_metas'] = [
+        img_metas[0] for img_metas in batch_data['img_metas'].data
+    ]
 
     # forward the model
     with torch.no_grad():
         result = model(
-            img=data['img'],
-            img_metas=data['img_metas'],
+            img=batch_data['img'],
+            img_metas=batch_data['img_metas'],
             return_loss=False,
             return_heatmap=return_heatmap)
 
-    return result['preds'][0], result['output_heatmap']
+    return result['preds'], result['output_heatmap']
 
 
 def inference_top_down_pose_model(model,
@@ -335,38 +364,53 @@ def inference_top_down_pose_model(model,
     pose_results = []
     returned_outputs = []
 
+    if len(person_results) == 0:
+        return pose_results, returned_outputs
+
+    # Change for-loop preprocess each bbox to preprocess all bboxes at once.
+    bboxes = np.array([box['bbox'] for box in person_results])
+
+    # Select bboxes by score threshold
+    if bbox_thr is not None:
+        assert bboxes.shape[1] == 5
+        valid_idx = np.where(bboxes[:, 4] > bbox_thr)[0]
+        bboxes = bboxes[valid_idx]
+        person_results = [person_results[i] for i in valid_idx]
+
+    if format == 'xyxy':
+        bboxes_xyxy = bboxes
+        bboxes_xywh = _xyxy2xywh(bboxes)
+    else:
+        # format is already 'xywh'
+        bboxes_xywh = bboxes
+        bboxes_xyxy = _xywh2xyxy(bboxes)
+
+    # if bbox_thr remove all bounding box
+    if len(bboxes_xywh) == 0:
+        return [], []
+
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
-        for person_result in person_results:
-            if format == 'xyxy':
-                bbox_xyxy = np.expand_dims(np.array(person_result['bbox']), 0)
-                bbox_xywh = _xyxy2xywh(bbox_xyxy)
-            else:
-                bbox_xywh = np.expand_dims(np.array(person_result['bbox']), 0)
-                bbox_xyxy = _xywh2xyxy(bbox_xywh)
+        # poses is results['pred'] # N x 17x 3
+        poses, heatmap = _inference_single_pose_model(
+            model,
+            img_or_path,
+            bboxes_xywh,
+            dataset,
+            return_heatmap=return_heatmap)
 
-            if bbox_thr is not None:
-                assert bbox_xywh.shape[1] == 5
-                if bbox_xywh[0, 4] < bbox_thr:
-                    continue
+        if return_heatmap:
+            h.layer_outputs['heatmap'] = heatmap
 
-            pose, heatmap = _inference_single_pose_model(
-                model,
-                img_or_path,
-                bbox_xywh[0],
-                dataset,
-                return_heatmap=return_heatmap)
+        returned_outputs.append(h.layer_outputs)
 
-            if return_heatmap:
-                h.layer_outputs['heatmap'] = heatmap
-
-            returned_outputs.append(h.layer_outputs)
-
-            person_result['keypoints'] = pose
-
-            if format == 'xywh':
-                person_result['bbox'] = bbox_xyxy[0]
-
-            pose_results.append(person_result)
+    assert len(poses) == len(person_results), print(
+        len(poses), len(person_results), len(bboxes_xyxy))
+    for pose, person_result, bbox_xyxy in zip(poses, person_results,
+                                              bboxes_xyxy):
+        pose_result = person_result.copy()
+        pose_result['keypoints'] = pose
+        pose_result['bbox'] = bbox_xyxy
+        pose_results.append(pose_result)
 
     return pose_results, returned_outputs
 
@@ -488,7 +532,7 @@ def vis_pose_result(model,
     radius = 4
 
     if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
-                   'TopDownOCHumanDataset'):
+                   'TopDownOCHumanDataset', 'AnimalMacaqueDataset'):
         # show the results
         skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
                     [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
@@ -629,6 +673,7 @@ def vis_pose_result(model,
         radius = 3
         kpt_score_thr = 0
 
+
     elif dataset == 'TopDownForkliftDataset':
         # show the results
         skeleton = []
@@ -637,6 +682,53 @@ def vis_pose_result(model,
         pose_kpt_color = palette[[19] * 6]
         radius = 3
         kpt_score_thr = 0
+
+    elif dataset == 'AnimalHorse10Dataset':
+        skeleton = [[1, 2], [2, 13], [13, 17], [17, 22], [22, 18], [18, 12],
+                    [12, 11], [11, 9], [9, 10], [10, 13], [3, 4], [4, 5],
+                    [6, 7], [7, 8], [14, 15], [15, 16], [19, 20], [20, 21]]
+
+        pose_limb_color = palette[[4] * 10 + [6] * 2 + [6] * 2 + [7] * 2 +
+                                  [7] * 2]
+        pose_kpt_color = palette[[
+            4, 4, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4, 4, 7, 7, 7, 4, 4, 7, 7, 7, 4
+        ]]
+
+    elif dataset == 'AnimalFlyDataset':
+        skeleton = [[2, 1], [3, 1], [4, 1], [5, 4], [6, 5], [8, 7], [9, 8],
+                    [10, 9], [12, 11], [13, 12], [14, 13], [16, 15], [17, 16],
+                    [18, 17], [20, 19], [21, 20], [22, 21], [24, 23], [25, 24],
+                    [26, 25], [28, 27], [29, 28], [30, 29], [31, 4], [32, 4]]
+
+        pose_limb_color = palette[[0] * 25]
+        pose_kpt_color = palette[[0] * 32]
+
+    elif dataset == 'AnimalLocustDataset':
+        skeleton = [[2, 1], [3, 2], [4, 3], [5, 4], [7, 6], [8, 7], [10, 9],
+                    [11, 10], [12, 11], [14, 13], [15, 14], [16, 15], [18, 17],
+                    [19, 18], [20, 19], [22, 21], [23, 22], [25, 24], [26, 25],
+                    [27, 26], [29, 28], [30, 29], [31, 30], [33, 32], [34, 33],
+                    [35, 34]]
+
+        pose_limb_color = palette[[0] * 26]
+        pose_kpt_color = palette[[0] * 35]
+
+    elif dataset == 'AnimalZebraDataset':
+        skeleton = [[2, 1], [3, 2], [4, 3], [5, 3], [6, 8], [7, 8], [8, 3],
+                    [9, 8]]
+
+        pose_limb_color = palette[[0] * 8]
+        pose_kpt_color = palette[[0] * 9]
+
+    elif dataset in 'AnimalPoseDataset':
+        skeleton = [[1, 2], [1, 3], [2, 4], [1, 5], [2, 5], [5, 6], [6, 8],
+                    [7, 8], [6, 9], [9, 13], [13, 17], [6, 10], [10, 14],
+                    [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
+                    [16, 20]]
+
+        pose_limb_color = palette[[0] * 20]
+        pose_kpt_color = palette[[0] * 20]
+
     else:
         raise NotImplementedError()
 

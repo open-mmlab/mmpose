@@ -3,6 +3,8 @@
 # Original licence: Copyright (c) Microsoft, under the MIT License.
 # ------------------------------------------------------------------------------
 
+import math
+
 import cv2
 import numpy as np
 
@@ -48,56 +50,58 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     return joints_3d_flipped, joints_3d_visible_flipped
 
 
-def fliplr_regression(regression, flip_pairs):
+def fliplr_regression(regression,
+                      flip_pairs,
+                      center_mode='static',
+                      center_x=0.5,
+                      center_index=0):
     """Flip human joints horizontally.
 
     Note:
         batch_size: N
         num_keypoint: K
     Args:
-        regression (np.ndarray([N, K, 2])): Coordinates of keypoints.
+        regression (np.ndarray([..., K, C])): Coordinates of keypoints, where K
+            is the joint number and C is the dimension. Example shapes are:
+            - [N, K, C]: a batch of keypoints where N is the batch size.
+            - [N, T, K, C]: a batch of pose sequences, where T is the frame
+                number.
         flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
+        center_mode (str): The mode to set the center location on the x-axis
+            to flip around. Options are:
+            - static: use a static x value (see center_x also)
+            - root: use a root joint (see center_index also)
+        center_x (float): Set the x-axis location of the flip center. Only used
+            when center_mode=static.
+        center_index (int): Set the index of the root joint, whose x location
+            will be used as the flip center. Only used when center_mode=root.
 
     Returns:
         tuple: Flipped human joints.
 
-        - regression_flipped (np.ndarray([N, K, 2])): Flipped joints.
+        - regression_flipped (np.ndarray([..., K, C])): Flipped joints.
     """
+    assert regression.ndim >= 2, f'Invalid pose shape {regression.shape}'
+
+    allowed_center_mode = {'static', 'root'}
+    assert center_mode in allowed_center_mode, 'Get invalid center_mode ' \
+        f'{center_mode}, allowed choices are {allowed_center_mode}'
+
+    if center_mode == 'static':
+        x_c = center_x
+    elif center_mode == 'root':
+        assert regression.shape[-2] > center_index
+        x_c = regression[..., center_index:center_index + 1, 0]
+
     regression_flipped = regression.copy()
     # Swap left-right parts
     for left, right in flip_pairs:
-        regression_flipped[:, left, :] = regression[:, right, :]
-        regression_flipped[:, right, :] = regression[:, left, :]
+        regression_flipped[..., left, :] = regression[..., right, :]
+        regression_flipped[..., right, :] = regression[..., left, :]
 
     # Flip horizontally
-    regression_flipped[:, :, 0] = 1 - regression_flipped[:, :, 0]
-    return regression_flipped
-
-
-def fliplr_regression_3d(regression, flip_pairs):
-    """Flip human joints horizontally.
-
-    Note:
-        batch_size: N
-        num_keypoint: K
-    Args:
-        regression (np.ndarray([N, K, 3])): Coordinates of keypoints.
-        flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
-            (for example, left ear -- right ear).
-
-    Returns:
-        tuple: Flipped human joints.
-
-        - regression_flipped (np.ndarray([N, K, 3])): Flipped joints.
-    """
-    regression_flipped = regression.copy()
-    # Swap left-right parts
-    for left, right in flip_pairs:
-        regression_flipped[:, left, :] = regression[:, right, :]
-        regression_flipped[:, right, :] = regression[:, left, :]
-    # Flip horizontally
-    regression_flipped[:, :, 0] = -regression_flipped[:, :, 0]
+    regression_flipped[..., 0] = x_c * 2 - regression_flipped[..., 0]
     return regression_flipped
 
 
@@ -143,12 +147,8 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
 
 
 def transform_preds(coords, center, scale, output_size, use_udp=False):
-    """Get final keypoint predictions from heatmaps and transform them back to
-    the image.
-
-    First calculate the transformation matrix from `get_affine_transform()`,
-    then affine transform the predicted keypoint coordinates back
-    to the image.
+    """Get final keypoint predictions from heatmaps and apply scaling and
+    translation to map them back to the image.
 
     Note:
         num_keypoints: K
@@ -175,22 +175,21 @@ def transform_preds(coords, center, scale, output_size, use_udp=False):
     assert len(center) == 2
     assert len(scale) == 2
     assert len(output_size) == 2
+
+    # Recover the scale which is normalized by a factor of 200.
+    scale = scale * 200.0
+
     if use_udp:
-        # The input scale is normalized by dividing a factor of 200.
-        # Here is a recover.
-        scale = scale * 200.0
         scale_x = scale[0] / (output_size[0] - 1.0)
         scale_y = scale[1] / (output_size[1] - 1.0)
-        target_coords = np.zeros(coords.shape)
-        target_coords[:,
-                      0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
-        target_coords[:,
-                      1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
     else:
-        target_coords = coords.copy()
-        trans = get_affine_transform(center, scale, 0, output_size, inv=True)
-        for p in range(coords.shape[0]):
-            target_coords[p, 0:2] = affine_transform(coords[p, 0:2], trans)
+        scale_x = scale[0] / output_size[0]
+        scale_y = scale[1] / output_size[1]
+
+    target_coords = np.ones_like(coords)
+    target_coords[:, 0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
+    target_coords[:, 1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
+
     return target_coords
 
 
@@ -307,3 +306,53 @@ def rotate_point(pt, angle_rad):
     rotated_pt = [new_x, new_y]
 
     return rotated_pt
+
+
+def get_warp_matrix(theta, size_input, size_dst, size_target):
+    """Calculate the transformation matrix under the constraint of unbiased.
+    Paper ref: Huang et al. The Devil is in the Details: Delving into Unbiased
+    Data Processing for Human Pose Estimation (CVPR 2020).
+
+    Args:
+        theta (float): Rotation angle in degrees.
+        size_input (np.ndarray): Size of input image [w, h].
+        size_dst (np.ndarray): Size of output image [w, h].
+        size_target (np.ndarray): Size of ROI in input plane [w, h].
+
+    Returns:
+        matrix (np.ndarray): A matrix for transformation.
+    """
+    theta = np.deg2rad(theta)
+    matrix = np.zeros((2, 3), dtype=np.float32)
+    scale_x = size_dst[0] / size_target[0]
+    scale_y = size_dst[1] / size_target[1]
+    matrix[0, 0] = math.cos(theta) * scale_x
+    matrix[0, 1] = -math.sin(theta) * scale_x
+    matrix[0, 2] = scale_x * (-0.5 * size_input[0] * math.cos(theta) +
+                              0.5 * size_input[1] * math.sin(theta) +
+                              0.5 * size_target[0])
+    matrix[1, 0] = math.sin(theta) * scale_y
+    matrix[1, 1] = math.cos(theta) * scale_y
+    matrix[1, 2] = scale_y * (-0.5 * size_input[0] * math.sin(theta) -
+                              0.5 * size_input[1] * math.cos(theta) +
+                              0.5 * size_target[1])
+    return matrix
+
+
+def warp_affine_joints(joints, mat):
+    """Apply affine transformation defined by the transform matrix on the
+    joints.
+
+    Args:
+        joints (np.ndarray[..., 2]): Origin coordinate of joints.
+        mat (np.ndarray[3, 2]): The affine matrix.
+
+    Returns:
+        matrix (np.ndarray[..., 2]): Result coordinate of joints.
+    """
+    joints = np.array(joints)
+    shape = joints.shape
+    joints = joints.reshape(-1, 2)
+    return np.dot(
+        np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
+        mat.T).reshape(shape)

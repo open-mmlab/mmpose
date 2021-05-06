@@ -20,21 +20,26 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 The master branch works with **PyTorch 1.3+**.
 
 <div align="center">
-    <img src="demo/demo_coco.gif" width="600px" alt><br>
+    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
     COCO 17-keypoint pose estimation
 </div>
 <div align="center">
-<img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
+    <img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
 
 133-keypoint whole-body pose estimation ([full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
 
+</div>
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
+    2D animal_pose estimation
 </div>
 
 ### Major Features
 
 - **Support diverse tasks**
 
-  We support a wide spectrum of mainstream human pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and 3d human mesh recovery.
+  We support a wide spectrum of mainstream pose analysis tasks in current research community, including 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, 3d human mesh recovery, fashion landmark detection and animal pose estimation.
+  See [demo.md](demo/README.md) for more information.
 
 - **Higher efficiency and higher accuracy**
 
@@ -74,6 +79,7 @@ Supported algorithms:
 - [x] [MSPN](configs/top_down/mspn/README.md) (ArXiv'2019)
 - [x] [RSN](configs/top_down/rsn/README.md) (ECCV'2020)
 - [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
+- [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
 
 </details>
 
@@ -92,16 +98,24 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [PoseTrack18](https://posetrack.net/users/download.php) (CVPR'2018)
 - [x] [MHP](https://lv-mhp.github.io/dataset) (ACM MM'2018)
 - [x] [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) (ICCV'2013)
-- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) (TCSVT'2019)
-- [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) (ICCV'2019)
-- [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
-- [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
 - [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php) (TPAMI'2014)
-- [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) (CVPR'2016)
 - [x] [300W](https://ibug.doc.ic.ac.uk/resources/300-W/) (IMAVIS'2016)
 - [x] [WFLW](https://wywu.github.io/projects/LAB/WFLW.html) (CVPR'2018)
 - [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/) (ICCVW'2011)
 - [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/) (ICCV'2013)
+- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) (TCSVT'2019)
+- [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) (ICCV'2019)
+- [x] [RHD](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html) (ICCV'2017)
+- [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
+- [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
+- [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) (CVPR'2016)
+- [x] [Animal-Pose](https://sites.google.com/view/animal-pose/) (ICCV'2019)
+- [x] [Horse-10](http://www.mackenziemathislab.org/horse10) (WACV'2021)
+- [x] [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) (bioRxiv'2020)
+- [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
+- [x] [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
+- [x] [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
+- [x] [ATRW](https://cvwc2019.github.io/challenge.html) (ACM MM'2020)
 
 </details>
 
@@ -213,3 +227,5 @@ We wish that the toolbox and benchmark could serve the growing research communit
 - [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab video perception toolbox and benchmark.
 - [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
 - [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
+- [MMOCR](https://github.com/open-mmlab/mmocr): A Comprehensive Toolbox for Text Detection, Recognition and Understanding.
+- [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab's next-generation toolbox for generative models.

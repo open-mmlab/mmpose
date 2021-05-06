@@ -1,12 +1,20 @@
+import warnings
+
 import torch
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, OptimizerHook
 
-from mmpose.core import (DistEvalHook, EvalHook, Fp16OptimizerHook,
-                         build_optimizers)
+from mmpose.core import DistEvalHook, EvalHook, build_optimizers
 from mmpose.core.distributed_wrapper import DistributedDataParallelWrapper
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.utils import get_root_logger
+
+try:
+    from mmcv.runner import Fp16OptimizerHook
+except ImportError:
+    warnings.warn('Fp16OptimizerHook from mmpose will be deprecated from '
+                  'v0.15.0. Please install mmcv>=1.1.4')
+    from mmpose.core import Fp16OptimizerHook
 
 
 def train_model(model,

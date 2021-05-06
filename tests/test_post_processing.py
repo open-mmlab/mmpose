@@ -2,7 +2,8 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 
 from mmpose.core import (affine_transform, flip_back, fliplr_joints,
-                         get_affine_transform, rotate_point, transform_preds)
+                         fliplr_regression, get_affine_transform, rotate_point,
+                         transform_preds)
 
 
 def test_affine_transform():
@@ -55,6 +56,13 @@ def test_transform_preds():
     ans = transform_preds(coords, center, scale, size)
     assert_array_almost_equal(coords, ans)
 
+    coords = np.random.random([2, 2])
+    center = np.array([50, 50])
+    scale = np.array([100 / 200.0, 100 / 200.0])
+    size = np.array([101, 101])
+    ans = transform_preds(coords, center, scale, size, use_udp=True)
+    assert_array_almost_equal(coords, ans)
+
 
 def test_get_affine_transform():
     center = np.array([50, 50])
@@ -63,3 +71,23 @@ def test_get_affine_transform():
     ans = get_affine_transform(center, scale, 0, size)
     trans = np.array([[1, 0, 0], [0, 1, 0]])
     assert_array_almost_equal(trans, ans)
+
+
+def test_flip_regression():
+    coords = np.random.rand(3, 3)
+    flip_pairs = [[1, 2]]
+    root = coords[:1]
+    coords_flipped = coords.copy()
+    coords_flipped[1] = coords[2]
+    coords_flipped[2] = coords[1]
+    coords_flipped[..., 0] = 2 * root[..., 0] - coords_flipped[..., 0]
+
+    # static mode
+    res_static = fliplr_regression(
+        coords, flip_pairs, center_mode='static', center_x=root[0, 0])
+    assert_array_almost_equal(res_static, coords_flipped)
+
+    # root mode
+    res_root = fliplr_regression(
+        coords, flip_pairs, center_mode='root', center_index=0)
+    assert_array_almost_equal(res_root, coords_flipped)

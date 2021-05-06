@@ -35,16 +35,19 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-        torch: [1.3.0, 1.5.1, 1.6.0, 1.7.0]
+        torch: [1.3.0, 1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.3.0
             torchvision: 0.4.1
-          - torch: 1.5.1
-            torchvision: 0.6.1
+          - torch: 1.5.0
+            torchvision: 0.6.0
           - torch: 1.6.0
             torchvision: 0.7.0
           - torch: 1.7.0
             torchvision: 0.8.1
+          - torch: 1.8.0
+            torchvision: 0.9.0
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -58,8 +61,8 @@ jobs:
       - name: Install PyTorch
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMCV
-        run: pip install mmcv-full==1.2.2 -f https://download.openmmlab.com/mmcv/dist/cpu/torch${{matrix.torch}}/index.html
-      - name: Install unittest dependencies
+        run: pip install mmcv-full==1.3.0 -f https://download.openmmlab.com/mmcv/dist/cpu/torch${{matrix.torch}}/index.html --use-deprecated=legacy-resolver
+      - name: Install other dependencies
         run: pip install -r requirements.txt
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
@@ -79,27 +82,26 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7]
-        torch: [1.3.0, 1.5.1+cu101, 1.6.0+cu101, 1.7.0+cu101]
+        torch: [1.3.0, 1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.3.0
             torchvision: 0.4.1
-            mmcv: "cu101/torch1.3.0"
-          - torch: 1.5.1+cu101
-            torchvision: 0.6.1+cu101
-            mmcv: "cu101/torch1.5.1"
-          - torch: 1.6.0+cu101
-            torchvision: 0.7.0+cu101
-            mmcv: "cu101/torch1.6.0"
-          - torch: 1.7.0+cu101
-            torchvision: 0.8.1+cu101
-            mmcv: "cu101/torch1.7.0"
-          - torch: 1.7.0+cu101
-            torchvision: 0.8.1+cu101
-            mmcv: "cu101/torch1.7.0"
+          - torch: 1.5.0
+            torchvision: 0.6.0
+          - torch: 1.6.0
+            torchvision: 0.7.0
+          - torch: 1.7.0
+            torchvision: 0.8.1
+          - torch: 1.7.0
+            torchvision: 0.8.1
             python-version: 3.6
-          - torch: 1.7.0+cu101
-            torchvision: 0.8.1+cu101
-            mmcv: "cu101/torch1.7.0"
+          - torch: 1.7.0
+            torchvision: 0.8.1
+            python-version: 3.8
+          - torch: 1.8.0
+            torchvision: 0.9.0
+          - torch: 1.8.0
+            torchvision: 0.9.0
             python-version: 3.8
 
     steps:
@@ -130,11 +132,17 @@ jobs:
       - name: Install TurboJpeg lib
         run: sudo apt-get install -y libturbojpeg
       - name: Install PyTorch
-        run: pip install torch==${{matrix.torch}} torchvision==${{matrix.torchvision}} -f https://download.pytorch.org/whl/torch_stable.html
-      - name: Install mmpose dependencies
         run: |
-          pip install mmcv-full==1.2.2 -f https://download.openmmlab.com/mmcv/dist/${{matrix.mmcv}}/index.html
-          pip install -r requirements.txt
+          if [ ${{matrix.torch}} == '1.3.0' ]
+          then
+            pip install torch==${{matrix.torch}} torchvision==${{matrix.torchvision}} -f https://download.pytorch.org/whl/torch_stable.html
+          else
+            pip install torch==${{matrix.torch}}+cu101 torchvision==${{matrix.torchvision}}+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+          fi
+      - name: Install MMCV
+        run: pip install mmcv-full==1.3.0 -f https://download.openmmlab.com/mmcv/dist/cu101/torch${{matrix.torch}}/index.html --use-deprecated=legacy-resolver
+      - name: Install other dependencies
+        run: pip install -r requirements.txt
       - name: Build and install
         run: |
           rm -rf .eggs
