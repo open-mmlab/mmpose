@@ -104,6 +104,8 @@ def main():
                               **cfg.data.get('test_dataloader', {}))
     data_loader = build_dataloader(dataset, **dataloader_setting)
 
+    # print(data_loader)
+
     # build the model and load checkpoint
     model = build_posenet(cfg.model)
     fp16_cfg = cfg.get('fp16', None)

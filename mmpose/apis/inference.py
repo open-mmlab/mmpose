@@ -238,6 +238,8 @@ def _inference_single_pose_model(model,
                                                                58], [76, 82],
                       [77, 81], [78, 80], [87, 83], [86, 84], [88, 92],
                       [89, 91], [95, 93], [96, 97]]
+    elif dataset in 'TopDownForkliftDataset':
+        flip_pairs = [[0, 1], [2, 3], [4, 5]]
     else:
         raise NotImplementedError()
 
@@ -627,6 +629,14 @@ def vis_pose_result(model,
         radius = 3
         kpt_score_thr = 0
 
+    elif dataset == 'TopDownForkliftDataset':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 6]
+        radius = 3
+        kpt_score_thr = 0
     else:
         raise NotImplementedError()
 

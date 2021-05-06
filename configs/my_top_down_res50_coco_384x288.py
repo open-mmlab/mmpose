@@ -3,12 +3,12 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=50)
 evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,13 +17,13 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[360, 380])
+total_epochs = 400
 log_config = dict(
-    interval=50,
+    interval=25,
     hooks=[
         dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
+        dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
@@ -63,7 +63,7 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    use_gt_bbox=False,
+    use_gt_bbox=True,
     det_bbox_thr=0.0,
     bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
@@ -72,13 +72,14 @@ data_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
+    # dict(
+    #     type='TopDownHalfBodyTransform',
+    #     num_joints_half_body=8,
+    #     prob_half_body=0.3),
     dict(
-        type='TopDownHalfBodyTransform',
-        num_joints_half_body=8,
-        prob_half_body=0.3),
-    dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+        type='TopDownGetRandomScaleRotation', rot_factor=180, scale_factor=0.5, rot_prob=0.9),
     dict(type='TopDownAffine'),
+
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -113,25 +114,25 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/forklift_coco'
 data = dict(
-    samples_per_gpu=4,
+    samples_per_gpu=8,
     workers_per_gpu=2,
     train=dict(
         type='TopDownForkliftDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
+        ann_file=f'{data_root}/annotations/forklift_keypoints_train2017.json',
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
         type='TopDownForkliftDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        ann_file=f'{data_root}/annotations/forklift_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
         type='TopDownForkliftDataset',
-        ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
+        ann_file=f'{data_root}/annotations/forklift_keypoints_test2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
