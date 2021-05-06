@@ -89,6 +89,38 @@ def test_top_down_demo():
     vis_pose_result(
         pose_model, image_name, pose_results, dataset='Face300WDataset')
 
+    # FaceAFLWDataset demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/face/resnet/aflw/res50_aflw_256x256.py', None, device='cpu')
+    image_name = 'tests/data/aflw/image04476.jpg'
+    # test a single image, with a list of bboxes.
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        image_name,
+        person_result,
+        format='xywh',
+        dataset='FaceAFLWDataset')
+    # show the results
+    vis_pose_result(
+        pose_model, image_name, pose_results, dataset='FaceAFLWDataset')
+
+    # FaceCOFWDataset demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/face/resnet/cofw/res50_cofw_256x256.py', None, device='cpu')
+    image_name = 'tests/data/cofw/001766.jpg'
+    # test a single image, with a list of bboxes.
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        image_name,
+        person_result,
+        format='xywh',
+        dataset='FaceCOFWDataset')
+    # show the results
+    vis_pose_result(
+        pose_model, image_name, pose_results, dataset='FaceCOFWDataset')
+
     with pytest.raises(NotImplementedError):
         pose_results, _ = inference_top_down_pose_model(
             pose_model,
