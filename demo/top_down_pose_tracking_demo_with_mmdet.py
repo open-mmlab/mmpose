@@ -60,6 +60,11 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
+        '--det-cat-id',
+        type=int,
+        default=1,
+        help='Category id for bounding box detection model')
+    parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.3,
@@ -67,20 +72,12 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
-        '--iou-thr', type=float, default=0.3, help='IoU score threshold')
+        '--use-oks-tracking', action='store_true', help='Using OKS tracking')
     parser.add_argument(
-        '--oks-thr', type=float, default=0.3, help='OKS score threshlod')
-    parser.add_argument(
-        '--det-cat-id',
-        type=int,
-        default=1,
-        help='Category id for bounding box detection model')
-    parser.add_argument(
-        '--oks', action='store_true', default=False, help='Using OKS tracking')
+        '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
     parser.add_argument(
         '--euro',
         action='store_true',
-        default=False,
         help='Using One_Euro_Filter for smoothing')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
@@ -156,9 +153,8 @@ def main():
             pose_results,
             pose_results_last,
             next_id,
-            iou_thr=args.iou_thr,
-            oks_thr=args.oks_thr,
-            use_oks=args.oks,
+            use_oks=args.use_oks_tracking,
+            tracking_thr=args.tracking_thr,
             use_one_euro=args.euro,
             fps=fps)
 

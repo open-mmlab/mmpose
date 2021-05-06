@@ -28,7 +28,7 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
-        '--oks-thr', type=float, default=0.9, help='NMS oks threshold')
+        '--pose-nms-thr', type=float, default=0.9, help='Pose nms threshold')
 
     args = parser.parse_args()
 
@@ -73,7 +73,7 @@ def main():
         pose_results, returned_outputs = inference_bottom_up_pose_model(
             pose_model,
             img,
-            oks_thr=args.oks_thr,
+            pose_nms_thr=args.pose_nms_thr,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
