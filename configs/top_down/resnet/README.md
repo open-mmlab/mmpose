@@ -28,6 +28,9 @@
 | [pose_resnet_101](/configs/top_down/resnet/coco/res101_coco_384x288.py) | 384x288 | 0.748 | 0.905 | 0.817 | 0.798 | 0.940 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288_20200709.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_256x192.py) | 256x192 | 0.735 | 0.905 | 0.812 | 0.790 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192_20200709.log.json) |
 | [pose_resnet_152](/configs/top_down/resnet/coco/res152_coco_384x288.py) | 384x288 | 0.750 | 0.908 | 0.821 | 0.800 | 0.942 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288_20200709.log.json) |
+| [pose_resnet_50_fp16<sup>1</sup>](/configs/top_down/resnet/coco/res50_coco_256x192_fp16_dynamic.py)  | 256x192 | 0.717 | 0.898 | 0.793 | 0.772 | 0.936 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic-6edb79f3_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic_20210430.log.json) |
+
+<sup>1</sup> Please refer to [fp16/README.md](/configs/fp16/README.md) for the method we use for mixed precision training.
 
 #### Results on OCHuman test dataset with ground-truth bounding boxes
 
