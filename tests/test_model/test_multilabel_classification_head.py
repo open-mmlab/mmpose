@@ -38,11 +38,11 @@ def test_multilabel_classification_head():
 
     acc = head.get_accuracy(
         inputs.new_ones(1, 2), inputs.new_ones(1, 2), inputs.new_ones(1, 2))
-    assert torch.allclose(acc['acc_classification'], torch.tensor(1.))
+    assert acc['acc_classification'] == 1
 
     acc = head.get_accuracy(
         inputs.new_zeros(1, 2), inputs.new_ones(1, 2), inputs.new_ones(1, 2))
-    assert torch.allclose(acc['acc_classification'], torch.tensor(0.))
+    assert acc['acc_classification'] == 0
 
     # test inference model function
     output = head.inference_model(inputs, [(0, 1)])
