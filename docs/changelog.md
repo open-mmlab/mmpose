@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.14.0 (06/05/2021)
+
+**Highlights**
+
+1. Support animal pose estimation with 7 popular datasets.
+1. Support "A simple yet effective baseline for 3d human pose estimation" (ICCV'17).
+
+**New Features**
+
+- Support "A simple yet effective baseline for 3d human pose estimation" (ICCV'17)  ([\#554](https://github.com/open-mmlab/mmpose/pull/554),[\#558](https://github.com/open-mmlab/mmpose/pull/558),[\#566](https://github.com/open-mmlab/mmpose/pull/566),[\#570](https://github.com/open-mmlab/mmpose/pull/570),[\#589](https://github.com/open-mmlab/mmpose/pull/589))
+- Support animal pose estimation ([\#559](https://github.com/open-mmlab/mmpose/pull/559),[\#561](https://github.com/open-mmlab/mmpose/pull/561),[\#563](https://github.com/open-mmlab/mmpose/pull/563),[\#571](https://github.com/open-mmlab/mmpose/pull/571),[\#603](https://github.com/open-mmlab/mmpose/pull/603),[\#605](https://github.com/open-mmlab/mmpose/pull/605))
+- Support Horse-10 dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), MacaquePose dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Vinegar Fly dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Desert Locust dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Grevy's Zebra dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), ATRW dataset ([\#571](https://github.com/open-mmlab/mmpose/pull/571)), and Animal-Pose dataset ([\#603](https://github.com/open-mmlab/mmpose/pull/603)).
+- Support bottom-up pose tracking demo ([\#574](https://github.com/open-mmlab/mmpose/pull/574)).
+- Support FP16 training ([\#584](https://github.com/open-mmlab/mmpose/pull/584),[\#616](https://github.com/open-mmlab/mmpose/pull/616),[\#626](https://github.com/open-mmlab/mmpose/pull/626)).
+- Support NMS for bottom-up ([\#609](https://github.com/open-mmlab/mmpose/pull/609)).
+
+**Bug Fixes**
+
+- Fix bugs in the top-down demo, when there are no people in the images ([\#569](https://github.com/open-mmlab/mmpose/pull/569)).
+- Fix the links in the doc ([\#612](https://github.com/open-mmlab/mmpose/pull/612)).
+
+**Improvements**
+
+- Speed up top-down inference ([\#560](https://github.com/open-mmlab/mmpose/pull/560))
+- Update github CI ([\#562](https://github.com/open-mmlab/mmpose/pull/562),[\#564](https://github.com/open-mmlab/mmpose/pull/564))
+- Update Readme ([\#578](https://github.com/open-mmlab/mmpose/pull/578),[\#579](https://github.com/open-mmlab/mmpose/pull/579),[\#580](https://github.com/open-mmlab/mmpose/pull/580),[\#592](https://github.com/open-mmlab/mmpose/pull/592),[\#599](https://github.com/open-mmlab/mmpose/pull/599),[\#600](https://github.com/open-mmlab/mmpose/pull/600),[\#607](https://github.com/open-mmlab/mmpose/pull/607))
+- Update Faq ([\#587](https://github.com/open-mmlab/mmpose/pull/587),[\#610](https://github.com/open-mmlab/mmpose/pull/610))
+
 ## v0.13.0 (31/03/2021)
 
 **Highlights**
