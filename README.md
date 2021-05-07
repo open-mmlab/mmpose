@@ -80,6 +80,7 @@ Supported algorithms:
 - [x] [RSN](configs/top_down/rsn/README.md) (ECCV'2020)
 - [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
 - [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
+- [x] [InterNet](configs/hand3d/InterNet/README.md) (ArXiv'2020)
 
 </details>
 

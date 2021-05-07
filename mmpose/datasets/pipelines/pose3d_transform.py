@@ -372,10 +372,10 @@ class Generate3DHeatmapTarget:
                    (2 * self.sigma**2))
 
         # put the local target value to the full target heatmap
-        tmp_size = xx.shape[1]
+        local_size = xx.shape[1]
         idx_joints = np.tile(
             np.arange(num_joints)[:, None, None, None],
-            [1, tmp_size, tmp_size, tmp_size])
+            [1, local_size, local_size, local_size])
         idx = np.stack([idx_joints, zz, yy, xx],
                        axis=-1).astype(np.long).reshape(-1, 4)
         target[idx[:, 0], idx[:, 1], idx[:, 2],
