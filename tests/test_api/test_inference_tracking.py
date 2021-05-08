@@ -1,10 +1,11 @@
 import pytest
 
-from mmpose.apis import (get_track_id, inference_top_down_pose_model,
-                         init_pose_model, vis_pose_tracking_result)
+from mmpose.apis import (get_track_id, inference_bottom_up_pose_model,
+                         inference_top_down_pose_model, init_pose_model,
+                         vis_pose_tracking_result)
 
 
-def test_pose_tracking_demo():
+def test_top_down_pose_tracking_demo():
     # COCO demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
@@ -36,6 +37,11 @@ def test_pose_tracking_demo():
         dataset='TopDownAicDataset')
     pose_results, next_id = get_track_id(pose_results, pose_results_last,
                                          next_id)
+    for pose_result in pose_results:
+        del pose_result['bbox']
+    pose_results, next_id = get_track_id(pose_results, pose_results_last,
+                                         next_id)
+
     # show the results
     vis_pose_tracking_result(
         pose_model, image_name, pose_results, dataset='TopDownAicDataset')
@@ -104,3 +110,33 @@ def test_pose_tracking_demo():
     with pytest.raises(NotImplementedError):
         vis_pose_tracking_result(
             pose_model, image_name, pose_results, dataset='test')
+
+
+def test_bottom_up_pose_tracking_demo():
+    # COCO demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/bottom_up/resnet/coco/res50_coco_512x512.py',
+        None,
+        device='cpu')
+
+    image_name = 'tests/data/coco/000000000785.jpg'
+
+    pose_results, _ = inference_bottom_up_pose_model(pose_model, image_name)
+
+    pose_results, next_id = get_track_id(pose_results, [], next_id=0)
+
+    # show the results
+    vis_pose_tracking_result(
+        pose_model, image_name, pose_results, dataset='BottomUpCocoDataset')
+
+    pose_results_last = pose_results
+
+    # oks
+    pose_results, next_id = get_track_id(
+        pose_results, pose_results_last, next_id=next_id, use_oks=True)
+
+    pose_results_last = pose_results
+    # one_euro
+    pose_results, next_id = get_track_id(
+        pose_results, pose_results_last, next_id=next_id, use_one_euro=True)

@@ -109,6 +109,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
 - [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
 - [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) (CVPR'2016)
+- [x] [Animal-Pose](https://sites.google.com/view/animal-pose/) (ICCV'2019)
 - [x] [Horse-10](http://www.mackenziemathislab.org/horse10) (WACV'2021)
 - [x] [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) (bioRxiv'2020)
 - [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
@@ -227,3 +228,4 @@ We wish that the toolbox and benchmark could serve the growing research communit
 - [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
 - [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
 - [MMOCR](https://github.com/open-mmlab/mmocr): A Comprehensive Toolbox for Text Detection, Recognition and Understanding.
+- [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab's next-generation toolbox for generative models.

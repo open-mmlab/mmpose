@@ -1,6 +1,15 @@
+import warnings
+
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
+
+try:
+    from mmcv.runner import auto_fp16
+except ImportError:
+    warnings.warn('auto_fp16 from mmpose will be deprecated from v0.15.0'
+                  'Please install mmcv>=1.1.4')
+    from mmpose.core import auto_fp16
 
 
 @POSENETS.register_module()
@@ -20,6 +29,8 @@ class PoseLifter(BasePose):
                  test_cfg=None,
                  pretrained=None):
         super().__init__()
+        self.fp16_enabled = False
+
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
 
@@ -91,6 +102,7 @@ class PoseLifter(BasePose):
         if self.with_traj:
             self.traj_head.init_weights()
 
+    @auto_fp16(apply_to=('input', ))
     def forward(self,
                 input,
                 target=None,

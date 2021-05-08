@@ -6,7 +6,7 @@ import torch.distributed as dist
 import torch.nn as nn
 
 
-class BasePose(nn.Module):
+class BasePose(nn.Module, metaclass=ABCMeta):
     """Base class for pose detectors.
 
     All recognizers should subclass it.
@@ -20,8 +20,6 @@ class BasePose(nn.Module):
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
     """
-
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def forward_train(self, img, img_metas, **kwargs):

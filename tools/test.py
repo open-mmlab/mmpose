@@ -1,6 +1,7 @@
 import argparse
 import os
 import os.path as osp
+import warnings
 
 import mmcv
 import torch
@@ -10,9 +11,15 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import get_dist_info, init_dist, load_checkpoint
 
 from mmpose.apis import multi_gpu_test, single_gpu_test
-from mmpose.core import wrap_fp16_model
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
+
+try:
+    from mmcv.runner import wrap_fp16_model
+except ImportError:
+    warnings.warn('auto_fp16 from mmpose will be deprecated from v0.15.0'
+                  'Please install mmcv>=1.1.4')
+    from mmpose.core import wrap_fp16_model
 
 
 def parse_args():

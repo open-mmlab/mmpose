@@ -26,6 +26,9 @@
 | [pose_hrnet_w32](/configs/top_down/hrnet/coco/hrnet_w32_coco_384x288.py)  | 384x288 | 0.760 | 0.906 | 0.829 | 0.810 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288-d9f0d786_20200708.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_20200708.log.json) |
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py)  | 256x192 | 0.756 | 0.907 | 0.825 | 0.806 | 0.942 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_20200708.log.json) |
 | [pose_hrnet_w48](/configs/top_down/hrnet/coco/hrnet_w48_coco_384x288.py)  | 384x288 | 0.767 | 0.910 | 0.831 | 0.816 | 0.946 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288-314c8528_20200708.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_20200708.log.json) |
+| [pose_hrnet_w32_fp16<sup>1</sup>](/configs/top_down/hrnet/coco/hrnet_w32_coco_256x192_fp16_dynamic.py)  | 256x192 | 0.746 | 0.905 | 0.88 | 0.800 | 0.943 | [ckpt](hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_fp16_dynamic_20210430.log.json) |
+
+<sup>1</sup> Please refer to [fp16/README.md](/configs/fp16/README.md) for the method we use for mixed precision training.
 
 #### Results on AIC val set with ground-truth bounding boxes
 

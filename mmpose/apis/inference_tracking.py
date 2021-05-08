@@ -2,6 +2,8 @@ import warnings
 
 import numpy as np
 
+from mmpose.core import OneEuroFilter, oks_iou
+
 
 def _compute_iou(bboxA, bboxB):
     """Compute the Intersection over Union (IoU) between two boxes .
@@ -46,13 +48,14 @@ def _track_by_iou(res, results_last, thr):
         int: The track id for the new person instance.
         list[dict]: The bbox & pose & track_id info of the persons
                 that have not been matched on the last frame.
+        dict: The matched person instance on the last frame.
     """
 
     bbox = list(res['bbox'])
 
     max_iou_score = -1
     max_index = -1
-
+    match_result = {}
     for index, res_last in enumerate(results_last):
         bbox_last = list(res_last['bbox'])
 
@@ -63,14 +66,111 @@ def _track_by_iou(res, results_last, thr):
 
     if max_iou_score > thr:
         track_id = results_last[max_index]['track_id']
+        match_result = results_last[max_index]
         del results_last[max_index]
     else:
         track_id = -1
 
-    return track_id, results_last
+    return track_id, results_last, match_result
 
 
-def get_track_id(results, results_last, next_id, iou_thr=0.3):
+def _track_by_oks(res, results_last, thr):
+    """Get track id using OKS tracking greedily.
+
+    Args:
+        res (dict): The pose results of the person instance.
+        results_last (list[dict]): The pose & track_id info of the
+                last frame (pose_result, track_id).
+        thr (float): The threshold for oks tracking.
+
+    Returns:
+        int: The track id for the new person instance.
+        list[dict]: The pose & track_id info of the persons
+                that have not been matched on the last frame.
+        dict: The matched person instance on the last frame.
+    """
+    pose = res['keypoints'].reshape((-1))
+    area = res['area']
+    max_index = -1
+    match_result = {}
+
+    if len(results_last) == 0:
+        return -1, results_last, match_result
+
+    pose_last = np.array(
+        [res_last['keypoints'].reshape((-1)) for res_last in results_last])
+    area_last = np.array([res_last['area'] for res_last in results_last])
+
+    oks_score = oks_iou(pose, pose_last, area, area_last)
+
+    max_index = np.argmax(oks_score)
+
+    if oks_score[max_index] > thr:
+        track_id = results_last[max_index]['track_id']
+        match_result = results_last[max_index]
+        del results_last[max_index]
+    else:
+        track_id = -1
+
+    return track_id, results_last, match_result
+
+
+def _get_area(results):
+    """Get bbox for each person instance on the current frame.
+
+    Args:
+        results (list[dict]): The pose results of the current frame
+                (pose_result).
+    Returns:
+        list[dict]: The bbox & pose info of the current frame
+                (bbox_result, pose_result, area).
+    """
+    for result in results:
+        if 'bbox' in result:
+            result['area'] = np.abs((result['bbox'][1] - result['bbox'][0]) *
+                                    (result['bbox'][2] - result['bbox'][3]))
+        else:
+            xmin = np.min(
+                result['keypoints'][:, 0][result['keypoints'][:, 0] > 0],
+                initial=1e10)
+            xmax = np.max(result['keypoints'][:, 0])
+            ymin = np.min(
+                result['keypoints'][:, 1][result['keypoints'][:, 1] > 0],
+                initial=1e10)
+            ymax = np.max(result['keypoints'][:, 1])
+            result['area'] = (xmax - xmin) * (ymax - ymin)
+            result['bbox'] = np.array([xmin, ymin, xmax, ymax])
+    return results
+
+
+def _temporal_refine(result, match_result, fps=None):
+    """Refine koypoints using tracked person instance on last frame.
+
+    Args:
+        results (dict): The pose results of the current frame
+                (pose_result).
+        match_result (dict): The pose results of the last frame
+                (match_result)
+    return:
+        (array): The person keypoints after refine.
+    """
+    if 'one_euro' in match_result:
+        result['keypoints'][:, :2] = match_result['one_euro'](
+            result['keypoints'][:, :2])
+        result['one_euro'] = match_result['one_euro']
+    else:
+        result['one_euro'] = OneEuroFilter(result['keypoints'][:, :2], fps=fps)
+    return result['keypoints']
+
+
+def get_track_id(results,
+                 results_last,
+                 next_id,
+                 min_keypoints=3,
+                 use_oks=False,
+                 tracking_thr=0.3,
+                 use_one_euro=False,
+                 fps=None):
     """Get track id for each person instance on the current frame.
 
     Args:
@@ -79,22 +179,45 @@ def get_track_id(results, results_last, next_id, iou_thr=0.3):
         results_last (list[dict]): The bbox & pose & track_id info of the
                 last frame (bbox_result, pose_result, track_id).
         next_id (int): The track id for the new person instance.
-        iou_thr (float): The threshold for iou tracking.
+        min_keypoints (int): Minimum number of keypoints recognized as person.
+                            default: 3.
+        use_oks (bool): Flag to using oks tracking. default: False.
+        tracking_thr (float): The threshold for tracking.
+        use_one_euro (bool): Option to use one-euro-filter. default: False.
+        fps (optional): Parameters that d_cutoff
+                        when one-euro-filter is used as a video input
 
     Returns:
         list[dict]: The bbox & pose & track_id info of the
                 current frame (bbox_result, pose_result, track_id).
         int: The track id for the new person instance.
     """
+    results = _get_area(results)
+
+    if use_oks:
+        _track = _track_by_oks
+    else:
+        _track = _track_by_iou
 
     for result in results:
-        track_id, results_last = _track_by_iou(result, results_last, iou_thr)
-
+        track_id, results_last, match_result = _track(result, results_last,
+                                                      tracking_thr)
         if track_id == -1:
-            result['track_id'] = next_id
-            next_id += 1
+            if np.count_nonzero(result['keypoints'][:, 1]) > min_keypoints:
+                result['track_id'] = next_id
+                next_id += 1
+            else:
+                # If the number of keypoints detected is small,
+                # delete that person instance.
+                result['keypoints'][:, 1] = -10
+                result['bbox'] *= 0
+                result['track_id'] = -1
         else:
             result['track_id'] = track_id
+        if use_one_euro:
+            result['keypoints'] = _temporal_refine(
+                result, match_result, fps=fps)
+        del match_result
 
     return results, next_id
 

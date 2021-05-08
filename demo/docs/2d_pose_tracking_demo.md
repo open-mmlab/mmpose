@@ -9,13 +9,14 @@ We provide a video demo to illustrate the pose tracking results.
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/top_down_pose_tracking_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --video-path ${VIDEO_FILE} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR} --iou-thr ${IOU_SCORE_THR}]
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--use-oks-tracking --tracking-thr ${TRACKING_THR} --euro]
 ```
 
 Examples:
@@ -54,6 +55,30 @@ python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     demo/mmtracking_cfg/tracktor_faster-rcnn_r50_fpn_4e_mot17-private.py \
     configs/top_down/resnet/coco/res50_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
+    --video-path demo/resources/demo.mp4 \
+    --out-video-root vis_results
+```
+
+### 2D Bottom-Up Video Human Pose Tracking Demo
+
+We also provide a pose tracking demo with bottom-up pose estimation methods.
+
+```shell
+python demo/bottom_up_pose_tracking_demo.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --video-path ${VIDEO_FILE} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID or CPU}] \
+    [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]
+    [--use-oks-tracking --tracking-thr ${TRACKING_THR} --euro]
+```
+
+Examples:
+
+```shell
+python demo/bottom_up_pose_tracking_demo.py \
+    configs/bottom_up/hrnet/coco/hrnet_w32_coco_512x512.py \
+    https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
 ```

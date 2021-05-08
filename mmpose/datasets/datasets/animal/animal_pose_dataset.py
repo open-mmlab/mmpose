@@ -9,39 +9,42 @@ from xtcocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...registry import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .animal_base_dataset import AnimalBaseDataset
 
 
 @DATASETS.register_module()
-class TopDownCocoDataset(TopDownBaseDataset):
-    """CocoDataset dataset for top-down pose estimation.
+class AnimalPoseDataset(AnimalBaseDataset):
+    """Animal-Pose dataset for animal pose estimation.
 
-    `Microsoft COCO: Common Objects in Context' ECCV'2014
+    `Cross-domain Adaptation For Animal Pose Estimation’ ICCV'2019
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/1908.05806>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    COCO keypoint indexes::
+    Animal-Pose keypoint indexes::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: 'L_Eye',
+        1: 'R_Eye',
+        2: 'L_EarBase',
+        3: 'R_EarBase',
+        4: 'Nose',
+        5: 'Throat',
+        6: 'TailBase',
+        7: 'Withers',
+        8: 'L_F_Elbow',
+        9: 'R_F_Elbow',
+        10: 'L_B_Elbow',
+        11: 'R_B_Elbow',
+        12: 'L_F_Knee',
+        13: 'R_F_Knee',
+        14: 'L_B_Knee',
+        15: 'R_B_Knee',
+        16: 'L_F_Paw',
+        17: 'R_F_Paw',
+        18: 'L_B_Paw',
+        19: 'R_B_Paw'
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -76,25 +79,27 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
 
-        self.ann_info['flip_pairs'] = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10],
-                                       [11, 12], [13, 14], [15, 16]]
+        self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [8, 9], [10, 11],
+                                       [12, 13], [14, 15], [16, 17], [18, 19]]
 
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
+        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 7, 8, 9, 12, 13,
+                                           16, 17)
+        self.ann_info['lower_body_ids'] = (6, 10, 11, 14, 15, 18, 19)
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
+                1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.2,
+                1.2, 1.5, 1.5, 1.5, 1.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
-        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
-        # 'pycocotools/cocoeval.py#L523'
+        # Note: The original paper did not provide enough information about
+        # the sigmas. We modified from 'https://github.com/cocodataset/'
+        # 'cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py#L523'
         self.sigmas = np.array([
-            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
-            .87, .87, .89, .89
+            .25, .25, .26, .35, .35, 1.0, 1.0, 1.0, 1.07, 1.07, 1.07, 1.07,
+            .87, .87, .87, .87, .89, .89, .89, .89
         ]) / 10.0
 
         self.coco = COCO(ann_file)
@@ -112,42 +117,17 @@ class TopDownCocoDataset(TopDownBaseDataset):
         self.img_ids = self.coco.getImgIds()
         self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'coco'
+        self.dataset_name = 'animalpose'
 
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    @staticmethod
-    def _get_mapping_id_name(imgs):
-        """
-        Args:
-            imgs (dict): dict of image info.
-
-        Returns:
-            tuple: Image name & id mapping dicts.
-
-            - id2name (dict): Mapping image id to name.
-            - name2id (dict): Mapping image name to id.
-        """
-        id2name = {}
-        name2id = {}
-        for image_id, image in imgs.items():
-            file_name = image['file_name']
-            id2name[image_id] = file_name
-            name2id[file_name] = image_id
-
-        return id2name, name2id
-
     def _get_db(self):
         """Load dataset."""
-        if (not self.test_mode) or self.use_gt_bbox:
-            # use ground truth bbox
-            gt_db = self._load_coco_keypoint_annotations()
-        else:
-            # use bbox from detection
-            gt_db = self._load_coco_person_detection_results()
+        assert self.use_gt_bbox
+        gt_db = self._load_coco_keypoint_annotations()
         return gt_db
 
     def _load_coco_keypoint_annotations(self):
@@ -224,83 +204,6 @@ class TopDownCocoDataset(TopDownBaseDataset):
             bbox_id = bbox_id + 1
 
         return rec
-
-    def _xywh2cs(self, x, y, w, h):
-        """This encodes bbox(x,y,w,w) into (center, scale)
-
-        Args:
-            x, y, w, h
-
-        Returns:
-            tuple: A tuple containing center and scale.
-
-            - center (np.ndarray[float32](2,)): center of the bbox (x, y).
-            - scale (np.ndarray[float32](2,)): scale of the bbox w & h.
-        """
-        aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
-            'image_size'][1]
-        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-        if (not self.test_mode) and np.random.rand() < 0.3:
-            center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
-
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
-
-        # pixel std is 200.0
-        scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-        # padding to include proper amount of context
-        scale = scale * 1.25
-
-        return center, scale
-
-    def _load_coco_person_detection_results(self):
-        """Load coco person detection results."""
-        num_joints = self.ann_info['num_joints']
-        all_boxes = None
-        with open(self.bbox_file, 'r') as f:
-            all_boxes = json.load(f)
-
-        if not all_boxes:
-            raise ValueError('=> Load %s fail!' % self.bbox_file)
-
-        print(f'=> Total boxes: {len(all_boxes)}')
-
-        kpt_db = []
-        bbox_id = 0
-        for det_res in all_boxes:
-            if det_res['category_id'] != 1:
-                continue
-
-            image_file = os.path.join(self.img_prefix,
-                                      self.id2name[det_res['image_id']])
-            box = det_res['bbox']
-            score = det_res['score']
-
-            if score < self.det_bbox_thr:
-                continue
-
-            center, scale = self._xywh2cs(*box[:4])
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-            joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
-            kpt_db.append({
-                'image_file': image_file,
-                'center': center,
-                'scale': scale,
-                'rotation': 0,
-                'bbox': box[:4],
-                'bbox_score': score,
-                'dataset': self.dataset_name,
-                'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible,
-                'bbox_id': bbox_id
-            })
-            bbox_id = bbox_id + 1
-        print(f'=> Total boxes after filter '
-              f'low score@{self.det_bbox_thr}: {bbox_id}')
-        return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
@@ -381,7 +284,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
 
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
-                keep = nms(img_kpts, oks_thr, sigmas=self.sigmas)
+                keep = nms(list(img_kpts), oks_thr, sigmas=self.sigmas)
                 valid_kpts.append([img_kpts[_keep] for _keep in keep])
             else:
                 valid_kpts.append(img_kpts)

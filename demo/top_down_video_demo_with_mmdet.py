@@ -13,11 +13,11 @@ except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
 
-def process_mmdet_results(mmdet_results, cat_id=0):
+def process_mmdet_results(mmdet_results, cat_id=1):
     """Process mmdet results, and return a list of bboxes.
 
     :param mmdet_results:
-    :param cat_id: category id (default: 0 for human)
+    :param cat_id: category id (default: 1 for human)
     :return: a list of detected bounding boxes
     """
     if isinstance(mmdet_results, tuple):
@@ -25,7 +25,7 @@ def process_mmdet_results(mmdet_results, cat_id=0):
     else:
         det_results = mmdet_results
 
-    bboxes = det_results[cat_id]
+    bboxes = det_results[cat_id - 1]
 
     person_results = []
     for bbox in bboxes:
@@ -60,17 +60,17 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
+        '--det-cat-id',
+        type=int,
+        default=1,
+        help='Category id for bounding box detection model')
+    parser.add_argument(
         '--bbox-thr',
         type=float,
         default=0.3,
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
-    parser.add_argument(
-        '--det-cat-id',
-        type=int,
-        default=0,
-        help='Category id for bounding box detection model')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 

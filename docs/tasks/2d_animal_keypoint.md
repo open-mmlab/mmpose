@@ -5,12 +5,92 @@ If your folder structure is different, you may need to change the corresponding 
 
 MMPose supported datasets:
 
+- [Animal-Pose](#animal-pose) \[ [Homepage](https://sites.google.com/view/animal-pose/) \]
 - [Horse-10](#horse-10) \[ [Homepage](http://www.mackenziemathislab.org/horse10) \]
 - [MacaquePose](#macaquepose) \[ [Homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
 - [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Desert Locust](#desert-locust) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [Grévy’s Zebra](#grvys-zebra) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
 - [ATRW](#atrw) \[ [Homepage](https://cvwc2019.github.io/challenge.html) \]
+
+## Animal-Pose
+
+<!-- [DATASET] -->
+
+```bibtex
+@InProceedings{Cao_2019_ICCV,
+    author = {Cao, Jinkun and Tang, Hongyang and Fang, Hao-Shu and Shen, Xiaoyong and Lu, Cewu and Tai, Yu-Wing},
+    title = {Cross-Domain Adaptation for Animal Pose Estimation},
+    booktitle = {The IEEE International Conference on Computer Vision (ICCV)},
+    month = {October},
+    year = {2019} }
+
+```
+
+For [Animal-Pose](https://sites.google.com/view/animal-pose/) datatset, we prepare the dataset as follows:
+
+1. Download the images of [PASCAL2011](http://www.google.com/url?q=http%3A%2F%2Fhost.robots.ox.ac.uk%2Fpascal%2FVOC%2Fvoc2011%2Findex.html&sa=D&sntz=1&usg=AFQjCNGmiJGkhSSWtShDe7NwRPyyyBUYSQ), especially the five categories (dog, cat, sheep, cow, horse), which we use as trainval dataset.
+1. Download the [test-set](https://drive.google.com/drive/folders/1DwhQobZlGntOXxdm7vQsE4bqbFmN3b9y?usp=sharing) images with raw annotations (1000 images, 5 categories).
+1. We have pre-processed the annotations to make it compatible with MMPose. Please download the annotation files from [annotations](https://download.openmmlab.com/mmpose/datasets/animalpose_annotations.tar). If you would like to generate the annotations by yourself, please check our dataset parsing [codes](/tools/dataset/parse_animalpose_dataset.py).
+
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── animalpose
+        │
+        │-- VOC2011
+        │   │-- Annotations
+        │   │-- ImageSets
+        │   │-- JPEGImages
+        │   │-- SegmentationClass
+        │   │-- SegmentationObject
+        │
+        │-- animalpose_image_part2
+        │   │-- cat
+        │   │-- cow
+        │   │-- dog
+        │   │-- horse
+        │   │-- sheep
+        │
+        │-- annotations
+        │   │-- animalpose_train.json
+        │   |-- animalpose_val.json
+        │   |-- animalpose_trainval.json
+        │   │-- animalpose_test.json
+        │
+        │-- PASCAL2011_animal_annotation
+        │   │-- cat
+        │   │   |-- 2007_000528_1.xml
+        │   │   |-- 2007_000549_1.xml
+        │   │   │-- ...
+        │   │-- cow
+        │   │-- dog
+        │   │-- horse
+        │   │-- sheep
+        │
+        │-- annimalpose_anno2
+        │   │-- cat
+        │   │   |-- ca1.xml
+        │   │   |-- ca2.xml
+        │   │   │-- ...
+        │   │-- cow
+        │   │-- dog
+        │   │-- horse
+        │   │-- sheep
+
+```
+
+The official dataset does not provide the official train/val/test set split.
+We choose the images from PascalVOC for train & val. In total, we have 3608 images and 5117 annotations for train+val, where
+2798 images with 4000 annotations are used for training, and 810 images with 1117 annotations are used for validation.
+Those images from other sources (1000 images with 1000 annotations) are used for testing.
 
 ## Horse-10
 
@@ -93,7 +173,7 @@ mmpose
 
 ```
 
-Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](tools/dataset/parse_macaquepose_dataset.py)).
+Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation (see [code](/tools/dataset/parse_macaquepose_dataset.py)).
 
 ## Vinegar Fly
 
@@ -137,7 +217,7 @@ mmpose
 
 ```
 
-Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](/tools/dataset/parse_deepposekit_dataset.py)).
 
 ## Desert Locust
 
@@ -180,7 +260,7 @@ mmpose
 
 ```
 
-Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](/tools/dataset/parse_deepposekit_dataset.py)).
 
 ## Grévy’s Zebra
 
@@ -223,7 +303,7 @@ mmpose
 
 ```
 
-Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](tools/dataset/parse_deepposekit_dataset.py)).
+Since the official dataset does not provide the test set, we randomly select 90\% images for training, and the rest (10\%) for evaluation (see [code](/tools/dataset/parse_deepposekit_dataset.py)).
 
 ## ATRW
 
