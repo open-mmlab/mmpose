@@ -39,7 +39,7 @@ def test_interhand3d_forward():
     detector = build_posenet(model_cfg)
     detector.init_weights()
 
-    input_shape = (1, 3, 256, 256)
+    input_shape = (2, 3, 256, 256)
     mm_inputs = _demo_mm_inputs(input_shape)
 
     imgs = mm_inputs.pop('imgs')
