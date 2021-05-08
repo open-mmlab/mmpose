@@ -108,18 +108,12 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         else:
             _joints_2d = np.zeros((num_imgs, num_joints, 3), dtype=np.float32)
 
-        # reduce dataset size if self.subset < 1
-        assert 0 < self.subset <= 1
-        subset_size = int(num_imgs * self.subset)
-        start = np.random.randint(0, len(_imgnames) - subset_size + 1)
-        end = start + subset_size
-
         data_info = {
-            'imgnames': _imgnames[start:end],
-            'joints_3d': _joints_3d[start:end],
-            'joints_2d': _joints_2d[start:end],
-            'scales': _scales[start:end],
-            'centers': _centers[start:end],
+            'imgnames': _imgnames,
+            'joints_3d': _joints_3d,
+            'joints_2d': _joints_2d,
+            'scales': _scales,
+            'centers': _centers,
         }
 
         return data_info

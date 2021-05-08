@@ -223,7 +223,6 @@ class BoneLoss(nn.Module):
 
     def __init__(self, joint_parents, use_target_weight=False, loss_weight=1.):
         super().__init__()
-        self.criterion = F.l1_loss
         self.joint_parents = joint_parents
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
@@ -254,10 +253,12 @@ class BoneLoss(nn.Module):
             target - target[:, self.joint_parents, :],
             dim=-1)[:, self.non_root_indices]
         if self.use_target_weight:
-            loss = self.criterion(output_bone * target_weight,
-                                  target_bone * target_weight)
+            loss = torch.mean(
+                torch.abs((output_bone * target_weight).mean(dim=0) -
+                          (target_bone * target_weight).mean(dim=0)))
         else:
-            loss = self.criterion(output_bone, target_bone)
+            loss = torch.mean(
+                torch.abs(output_bone.mean(dim=0) - target_bone.mean(dim=0)))
 
         return loss * self.loss_weight
 
@@ -270,24 +271,17 @@ class SemiSupervisionLoss(nn.Module):
     Args:
         projection_loss_weight (float): Weight for projection loss.
         bone_loss_weight (float): Weight for bone loss.
-        warmup_epochs (int): Warmup epochs for semi-supervision. For the
-            first warm_up_epochs, only losses of labeled data are calculated.
-            An empty loss dict will be returned during warmup epochs.
     """
 
     def __init__(self,
                  joint_parents,
                  projection_loss_weight=1.,
-                 bone_loss_weight=1.,
-                 warmup_epochs=1):
+                 bone_loss_weight=1.):
         super().__init__()
         self.criterion_projection = MPJPELoss(
             loss_weight=projection_loss_weight)
         self.criterion_bone = BoneLoss(
             joint_parents, loss_weight=bone_loss_weight)
-
-        self.warmup_epochs = warmup_epochs
-        self.num_epochs = 0
 
     @staticmethod
     def project_joints(x, intrinsics):
@@ -308,7 +302,7 @@ class SemiSupervisionLoss(nn.Module):
             k = intrinsics[..., 4:7]
             p = intrinsics[..., 7:9]
 
-            r2 = torch.sum(_x**2, dim=-1, keepdim=True)
+            r2 = torch.sum(_x[:, :, :2]**2, dim=-1, keepdim=True)
             radial = 1 + torch.sum(
                 k * torch.cat((r2, r2**2, r2**3), dim=-1),
                 dim=-1,
@@ -320,10 +314,6 @@ class SemiSupervisionLoss(nn.Module):
 
     def forward(self, output, target):
         losses = dict()
-
-        self.num_epochs += 1
-        if self.num_epochs <= self.warmup_epochs:
-            return losses
 
         labeled_pose = output['labeled_pose']
         unlabeled_pose = output['unlabeled_pose']

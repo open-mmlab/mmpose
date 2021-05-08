@@ -174,7 +174,13 @@ class Body3DH36MDataset(Body3DBaseDataset):
                 ]
                 sample_indices.extend(seqs_from_video)
 
-        return sample_indices
+        # reduce dataset size if self.subset < 1
+        assert 0 < self.subset <= 1
+        subset_size = int(len(sample_indices) * self.subset)
+        start = np.random.randint(0, len(sample_indices) - subset_size + 1)
+        end = start + subset_size
+
+        return sample_indices[start:end]
 
     def _load_joint_2d_detection(self, det_file):
         """"Load 2D joint detection results from file."""

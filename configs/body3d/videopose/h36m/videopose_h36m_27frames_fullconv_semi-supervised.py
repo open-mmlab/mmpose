@@ -5,7 +5,7 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=20)
 evaluation = dict(
-    interval=20, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
+    interval=5, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -71,8 +71,8 @@ model = dict(
         loss_keypoint=dict(type='MPJPELoss', use_target_weight=True)),
     loss_semi=dict(
         type='SemiSupervisionLoss',
-        joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15],
-        warmup_epochs=5),
+        joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15]),
+    warmup_epochs=5 // 5,
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
 
@@ -120,7 +120,7 @@ train_labeled_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=False),
-    dict(type='ImageCoordinateNormalization', norm_camera=False),
+    dict(type='ImageCoordinateNormalization', item='input_2d'),
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target'],
@@ -140,11 +140,16 @@ train_labeled_pipeline = [
 ]
 
 train_unlabeled_pipeline = [
-    dict(type='ImageCoordinateNormalization', norm_camera=True),
+    dict(type='ImageCoordinateNormalization', item='input_2d'),
+    dict(type='ImageCoordinateNormalization', item='target_2d'),
+    dict(type='CameraNormalization'),
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target_2d'],
-        root_index=0,
+        flip_cfg=[
+            dict(center_mode='static', center_x=0.),
+            dict(center_mode='static', center_x=0.)
+        ],
         visible_item='input_2d_visible',
         flip_prob=0.5,
         flip_camera=True),
@@ -166,7 +171,7 @@ val_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=False),
-    dict(type='ImageCoordinateNormalization', norm_camera=False),
+    dict(type='ImageCoordinateNormalization', item='input_2d'),
     dict(type='PoseSequenceToTensor', item='input_2d'),
     dict(
         type='Collect',
@@ -178,12 +183,12 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=64,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=8),
-    test_dataloader=dict(samples_per_gpu=8),
+    val_dataloader=dict(samples_per_gpu=64),
+    test_dataloader=dict(samples_per_gpu=64),
     train=dict(
-        type='Body3dSemiDataset',
+        type='Body3DSemiDataset',
         labeled_dataset=dict(
             type='Body3DH36MDataset',
             ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',

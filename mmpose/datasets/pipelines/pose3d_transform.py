@@ -117,24 +117,23 @@ class NormalizeJointCoordinate:
 
 @PIPELINES.register_module()
 class ImageCoordinateNormalization:
-    """Normalize the 2D joint coordinate (and camera intrinsics) with image
-    width and height. Range [0, w] is mapped to [-1, 1], while preserving the
-    aspect ratio.
+    """Normalize the 2D joint coordinate with image width and height. Range [0,
+    w] is mapped to [-1, 1], while preserving the aspect ratio.
 
     Args:
-        norm_camera (bool): Whether to normalize camera intrinsics.
+        item (str): The name of the pose to normalize.
         camera_param (dict|None): The camera parameter dict. See the camera
             class definition for more details. If None is given, the camera
             parameter will be obtained during processing of each data sample
             with the key "camera_param".
     Required keys:
-        None
+        item
     Modified keys:
-        input_2d (, camera_param)
+        item
     """
 
-    def __init__(self, norm_camera=False, camera_param=None):
-        self.norm_camera = norm_camera
+    def __init__(self, item, camera_param=None):
+        self.item = item
 
         if camera_param is None:
             self.static_camera = False
@@ -154,19 +153,53 @@ class ImageCoordinateNormalization:
                           dtype=np.float32)
         scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
 
-        results['input_2d'] = (results['input_2d'] - center) / scale
-        results['input_2d_mean'] = np.broadcast_to(
-            center, results['input_2d'].shape[-2:])
-        results['input_2d_std'] = np.broadcast_to(
-            scale, results['input_2d'].shape[-2:])
+        results[self.item] = (results[self.item] - center) / scale
 
-        if self.norm_camera:
-            assert 'f' in camera_param and 'c' in camera_param
-            camera_param['f'] = camera_param['f'] / scale
-            camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
-            if 'camera_param' not in results:
-                results['camera_param'] = dict()
-            results['camera_param'].update(camera_param)
+        return results
+
+
+@PIPELINES.register_module()
+class CameraNormalization:
+    """Normalize camera frame. This pipeline should be called along with
+    ImageCoordinateNormalization.
+
+    Args:
+        camera_param (dict|None): The camera parameter dict. See the camera
+            class definition for more details. If None is given, the camera
+            parameter will be obtained during processing of each data sample
+            with the key "camera_param".
+
+    Required keys:
+        camera_param (if camera parameters are not given in initialization)
+    Modified keys:
+        camera_param
+    """
+
+    def __init__(self, camera_param=None):
+        if camera_param is None:
+            self.static_camera = False
+        else:
+            self.static_camera = True
+            self.camera_param = camera_param
+
+    def __call__(self, results):
+        if self.static_camera:
+            camera_param = self.camera_param
+        else:
+            assert 'camera_param' in results, 'Camera parameters are missing.'
+            camera_param = results['camera_param']
+        assert 'h' in camera_param and 'w' in camera_param
+        assert 'f' in camera_param and 'c' in camera_param
+
+        center = np.array([0.5 * camera_param['w'], 0.5 * camera_param['h']],
+                          dtype=np.float32)
+        scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
+
+        camera_param['f'] = camera_param['f'] / scale
+        camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
+        if 'camera_param' not in results:
+            results['camera_param'] = dict()
+        results['camera_param'].update(camera_param)
 
         return results
 

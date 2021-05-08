@@ -80,7 +80,7 @@ train_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=False),
-    dict(type='ImageCoordinateNormalization', norm_camera=False),
+    dict(type='ImageCoordinateNormalization', item='input_2d'),
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target'],
@@ -106,7 +106,7 @@ val_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=False),
-    dict(type='ImageCoordinateNormalization', norm_camera=False),
+    dict(type='ImageCoordinateNormalization', item='input_2d'),
     dict(type='PoseSequenceToTensor', item='input_2d'),
     dict(
         type='Collect',

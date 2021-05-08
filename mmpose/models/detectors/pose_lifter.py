@@ -15,6 +15,7 @@ class PoseLifter(BasePose):
                  traj_neck=None,
                  traj_head=None,
                  loss_semi=None,
+                 warmup_epochs=0,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None):
@@ -47,6 +48,9 @@ class PoseLifter(BasePose):
             self.loss_semi = builder.build_loss(loss_semi)
 
         self.init_weights(pretrained=pretrained)
+
+        self.warmup_epochs = warmup_epochs
+        self.epoch = 0
 
     @property
     def with_neck(self):
@@ -160,7 +164,7 @@ class PoseLifter(BasePose):
             losses.update(traj_losses)
 
         # semi-supervised learning
-        if self.semi:
+        if self.semi and self.epoch >= self.warmup_epochs:
             ul_input = kwargs['unlabeled_input']
             ul_features = self.backbone(ul_input)
             if self.with_neck:
@@ -205,6 +209,8 @@ class PoseLifter(BasePose):
                 traj_features = self.traj_neck(traj_features)
             traj_output = self.traj_head.inference_model(traj_features)
             results['traj_preds'] = traj_output
+
+        self.epoch += 1
 
         return results
 

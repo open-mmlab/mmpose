@@ -120,8 +120,8 @@ def test_pose_lifter_forward():
             type='SemiSupervisionLoss',
             joint_parents=[
                 0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15
-            ],
-            warmup_epochs=1),
+            ]),
+        warmup_epochs=1,
         train_cfg=dict(),
         test_cfg=dict())
 
@@ -142,8 +142,15 @@ def test_pose_lifter_forward():
     losses = detector.forward(**inputs, return_loss=True)
 
     assert isinstance(losses, dict)
+    assert 'proj_loss' not in losses
 
     # Test forward test for semi-supervised learning
     with torch.no_grad():
         _ = detector.forward(**inputs, return_loss=False)
         _ = detector.forward_dummy(inputs['input'])
+
+    # Test warmup
+    losses = detector.forward(**inputs, return_loss=True)
+
+    assert isinstance(losses, dict)
+    assert 'proj_loss' in losses

@@ -96,7 +96,8 @@ def test_joint_transforms():
             type='NormalizeJointCoordinate', item='target', mean=mean,
             std=std),
         dict(type='PoseSequenceToTensor', item='target'),
-        dict(type='ImageCoordinateNormalization', norm_camera=True),
+        dict(type='ImageCoordinateNormalization', item='input_2d'),
+        dict(type='CameraNormalization'),
         dict(type='CollectCameraIntrinsics'),
         dict(
             type='Collect',
