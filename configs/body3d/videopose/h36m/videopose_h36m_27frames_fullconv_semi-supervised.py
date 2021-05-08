@@ -5,7 +5,7 @@ dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=20)
 evaluation = dict(
-    interval=5, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
+    interval=10, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -17,7 +17,7 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='exp',
     by_epoch=True,
-    gamma=0.98,
+    gamma=0.99,
 )
 
 total_epochs = 400
@@ -72,7 +72,7 @@ model = dict(
     loss_semi=dict(
         type='SemiSupervisionLoss',
         joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15]),
-    warmup_epochs=5 // 5,
+    warmup_epochs=1,
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
 
