@@ -17,7 +17,7 @@ Models:
       FLOPs: 7700000000
       Parameters: 28540000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.746
@@ -35,7 +35,7 @@ Models:
       FLOPs: 7700000000
       Parameters: 28540000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.746
@@ -53,7 +53,7 @@ Models:
       FLOPs: 17330000000
       Parameters: 28540000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.760
@@ -71,7 +71,7 @@ Models:
       FLOPs: 15770000000
       Parameters: 63600000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.756
@@ -89,7 +89,7 @@ Models:
       FLOPs: 35480000000
       Parameters: 63600000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.767
@@ -107,7 +107,7 @@ Models:
       FLOPs: 17330000000
       Parameters: 28540000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: MPII
         Metrics:
           Mean: 0.900
@@ -122,7 +122,7 @@ Models:
       FLOPs: 10270000000
       Parameters: 28540000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: MPII
         Metrics:
           Mean: 0.901

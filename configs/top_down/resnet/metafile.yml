@@ -17,7 +17,7 @@ Models:
       FLOPs: 5460000000
       Parameters: 34000000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.718
@@ -35,7 +35,7 @@ Models:
       FLOPs: 12290000000
       Parameters: 34000000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.731
@@ -53,7 +53,7 @@ Models:
       FLOPs: 9110000000
       Parameters: 52990000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.726
@@ -71,7 +71,7 @@ Models:
       FLOPs: 20500000000
       Parameters: 52990000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.748
@@ -89,7 +89,7 @@ Models:
       FLOPs: 12770000000
       Parameters: 68640000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.735
@@ -107,7 +107,7 @@ Models:
       FLOPs: 28730000000
       Parameters: 68640000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.750
@@ -125,7 +125,7 @@ Models:
       FLOPs: 5460000000
       Parameters: 34000000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: COCO
         Metrics:
           AP: 0.717
@@ -143,7 +143,7 @@ Models:
       FLOPs: 7280000000
       Parameters: 34000000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: MPII
         Metrics:
           Mean: 0.882
@@ -158,7 +158,7 @@ Models:
       FLOPs: 12150000000
       Parameters: 52990000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: MPII
         Metrics:
           Mean: 0.888
@@ -173,7 +173,7 @@ Models:
       FLOPs: 17020000000
       Parameters: 68640000
     Results:
-      - Task: 3D Human Pose Estimation
+      - Task: 2D Human Pose Estimation
         Dataset: MPII
         Metrics:
           Mean: 0.889
