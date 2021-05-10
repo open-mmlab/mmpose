@@ -5,7 +5,9 @@ Collections:
         - Adam
       Architecture:
         - HRNet
-    Paper: https://arxiv.org/abs/1902.09212
+    Paper:
+      - https://arxiv.org/abs/1902.09212
+      - https://arxiv.org/abs/1710.03740
     README: configs/top_down/hrnet/README.md
 
 Models:

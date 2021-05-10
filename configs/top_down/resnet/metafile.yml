@@ -5,7 +5,9 @@ Collections:
         - Adam
       Architecture:
         - ResNet
-    Paper: https://arxiv.org/abs/1804.06208
+    Paper:
+      - https://arxiv.org/abs/1804.06208
+      - https://arxiv.org/abs/1710.03740
     README: configs/top_down/resnet/README.md
 
 Models:
