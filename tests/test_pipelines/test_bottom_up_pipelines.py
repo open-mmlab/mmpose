@@ -305,7 +305,6 @@ def test_BottomUpGeneratePAFTarget():
     generate_paf_target = BottomUpGeneratePAFTarget(1)
     results_generate_paf_target = generate_paf_target(results)
     sqrt = np.sqrt(2) / 2
-    print(results_generate_paf_target['target'])
     assert (results_generate_paf_target['target'] == np.array(
         [[[sqrt, sqrt, 0, sqrt, sqrt], [sqrt, sqrt, sqrt, sqrt, sqrt],
           [0, sqrt, sqrt, sqrt, 0], [sqrt, sqrt, sqrt, sqrt, sqrt],

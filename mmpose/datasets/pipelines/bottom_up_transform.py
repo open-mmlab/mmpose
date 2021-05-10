@@ -496,8 +496,8 @@ class BottomUpRandomAffine:
             mat_input = self._get_affine_matrix(center, scale,
                                                 (self.input_size,
                                                  self.input_size), aug_rot)[:2]
-            image = cv2.warpAffine(image, mat_input,
-                                   (self.input_size, self.input_size))
+            image = cv2.warpAffine(image, mat_input, (self.input_size.item(),
+                                                      self.input_size.item()))
 
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
