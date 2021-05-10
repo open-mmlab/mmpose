@@ -21,20 +21,20 @@ class Body3DSemiDataset(Dataset):
         super().__init__()
         self.labeled_dataset = build_dataset(labeled_dataset)
         self.unlabeled_dataset = build_dataset(unlabeled_dataset)
-        self.length = len(self.labeled_dataset)
+        self.length = len(self.unlabeled_dataset)
 
     def __len__(self):
         """Get the size of the dataset."""
         return self.length
 
     def __getitem__(self, i):
-        """Given index, get the data from labeled dataset and randomly sample
-        an item from unlabeled dataset.
+        """Given index, get the data from unlabeled dataset and randomly sample
+        an item from labeled dataset.
 
         Return a dict containing data from labeled and unlabeled dataset.
         """
-        data = self.labeled_dataset[i]
-        rand_ind = np.random.randint(0, len(self.unlabeled_dataset))
-        unlabeled_data = self.unlabeled_dataset[rand_ind]
-        data.update(unlabeled_data)
+        data = self.unlabeled_dataset[i]
+        rand_ind = np.random.randint(0, len(self.labeled_dataset))
+        labeled_data = self.labeled_dataset[rand_ind]
+        data.update(labeled_data)
         return data

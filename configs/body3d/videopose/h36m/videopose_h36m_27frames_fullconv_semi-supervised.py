@@ -17,7 +17,7 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='exp',
     by_epoch=True,
-    gamma=0.99,
+    gamma=0.98,
 )
 
 total_epochs = 400
