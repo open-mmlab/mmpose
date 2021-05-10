@@ -1,0 +1,9 @@
+include requirements/*.txt
+include mmpose/VERSION
+include mmpose/model_zoo.yml
+include mmpose/configs/*/*.py
+include mmpose/configs/*/*.yml
+include mmpose/tools/*.py
+include mmpose/tools/*.sh
+include mmpose/tools/*/*.py
+include mmpose/demo/*/*

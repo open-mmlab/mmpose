@@ -1,0 +1,3 @@
+Import:
+  - configs/top_down/hrnet/metafile.yml
+  - configs/top_down/resnet/metafile.yml
