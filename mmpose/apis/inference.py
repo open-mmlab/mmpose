@@ -289,7 +289,7 @@ def _inference_single_pose_model(model,
             'rotation':
             0,
             'ann_info': {
-                'image_size': cfg.data_cfg['image_size'],
+                'image_size': np.array(cfg.data_cfg['image_size']),
                 'num_joints': cfg.data_cfg['num_joints'],
                 'flip_pairs': flip_pairs
             }
