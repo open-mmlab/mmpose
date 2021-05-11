@@ -514,6 +514,8 @@ def inference_bottom_up_pose_model(model,
 def vis_pose_result(model,
                     img,
                     result,
+                    radius=4,
+                    thickness=1,
                     kpt_score_thr=0.3,
                     dataset='TopDownCocoDataset',
                     show=False,
@@ -525,6 +527,8 @@ def vis_pose_result(model,
         img (str | np.ndarray): Image filename or loaded image.
         result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
+        radius (int): Radius of circles.
+        thickness (int): Thickness of lines.
         kpt_score_thr (float): The threshold to visualize the keypoints.
         skeleton (list[tuple()]): Default None.
         show (bool):  Whether to show the image. Default True.
@@ -540,8 +544,6 @@ def vis_pose_result(model,
                         [255, 51, 51], [153, 255, 153], [102, 255, 102],
                         [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
                         [255, 255, 255]])
-
-    radius = 4
 
     if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
                    'TopDownOCHumanDataset', 'AnimalMacaqueDataset'):
@@ -584,7 +586,6 @@ def vis_pose_result(model,
         pose_kpt_color = palette[
             [16, 16, 16, 16, 16, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0, 0] +
             [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
-        radius = 1
 
     elif dataset == 'TopDownAicDataset':
         skeleton = [[3, 2], [2, 1], [1, 14], [14, 4], [4, 5], [5, 6], [9, 8],
@@ -655,7 +656,6 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 68]
-        radius = 3
         kpt_score_thr = 0
 
     elif dataset == 'FaceAFLWDataset':
@@ -664,7 +664,6 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 19]
-        radius = 3
         kpt_score_thr = 0
 
     elif dataset == 'FaceCOFWDataset':
@@ -673,7 +672,6 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 29]
-        radius = 3
         kpt_score_thr = 0
 
     elif dataset == 'FaceWFLWDataset':
@@ -682,7 +680,6 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 98]
-        radius = 3
         kpt_score_thr = 0
 
     elif dataset == 'AnimalHorse10Dataset':
@@ -739,6 +736,7 @@ def vis_pose_result(model,
         result,
         skeleton,
         radius=radius,
+        thickness=thickness,
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
         kpt_score_thr=kpt_score_thr,
