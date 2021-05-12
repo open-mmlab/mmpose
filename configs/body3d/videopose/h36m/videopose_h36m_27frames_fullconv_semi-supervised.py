@@ -20,7 +20,7 @@ lr_config = dict(
     gamma=0.98,
 )
 
-total_epochs = 400
+total_epochs = 200
 
 log_config = dict(
     interval=20,
@@ -105,7 +105,7 @@ val_data_cfg = dict(
     num_joints=17,
     seq_len=27,
     seq_frame_interval=1,
-    casual=False,
+    causal=False,
     pad=True,
     joint_2d_src='gt',
     need_camera_param=True,
