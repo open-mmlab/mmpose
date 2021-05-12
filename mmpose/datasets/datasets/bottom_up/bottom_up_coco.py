@@ -61,6 +61,19 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
         ]
 
+        # joint index starts from 1
+        self.ann_info['skeleton'] = [[16, 14], [14, 12], [17, 15], [15, 13],
+                                     [12, 13], [6, 12], [7, 13], [6, 7],
+                                     [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
+                                     [1, 2], [1, 3], [2, 4], [3, 5], [4, 6],
+                                     [5, 7]]
+
+        self.ann_info['flip_index_paf'] = [
+            4, 5, 6, 7, 0, 1, 2, 3, 8, 9, 12, 13, 10, 11, 14, 15, 18, 19, 16,
+            17, 22, 23, 20, 21, 24, 25, 28, 29, 26, 27, 32, 33, 30, 31, 36, 37,
+            34, 35
+        ]
+
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [
@@ -68,13 +81,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                 1.2, 1.5, 1.5
             ],
             dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # joint index starts from 1
-        self.ann_info['skeleton'] = [[16, 14], [14, 12], [17, 15], [15, 13],
-                                     [12, 13], [6, 12], [7, 13], [6, 7],
-                                     [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                                     [1, 2], [1, 3], [2, 4], [3, 5], [4, 6],
-                                     [5, 7]]
 
         # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
         # 'pycocotools/cocoeval.py#L523'
