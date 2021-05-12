@@ -91,6 +91,43 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
+def get_max_preds_3d(heatmaps):
+    """Get keypoint predictions from 3D score maps.
+
+    Note:
+        batch size: N
+        num keypoints: K
+        heatmap depth size: D
+        heatmap height: H
+        heatmap width: W
+
+    Args:
+        heatmaps (np.ndarray[N, K, D, H, W]): model predicted heatmaps.
+
+    Returns:
+        tuple: A tuple containing aggregated results.
+        - preds (np.ndarray[N, K, 3]): Predicted keypoint location.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+    """
+    assert isinstance(heatmaps, np.ndarray), \
+        ('heatmaps should be numpy.ndarray')
+    assert heatmaps.ndim == 5, 'heatmaps should be 5-ndim'
+
+    N, K, D, H, W = heatmaps.shape
+    heatmaps_reshaped = heatmaps.reshape((N, K, -1))
+    idx = np.argmax(heatmaps_reshaped, 2).reshape((N, K, 1))
+    maxvals = np.amax(heatmaps_reshaped, 2).reshape((N, K, 1))
+
+    preds = np.zeros((N, K, 3), dtype=np.float32)
+    _idx = idx[..., 0]
+    preds[:, :, 2], _idx = _idx // (H * W), _idx % (H * W)
+    preds[:, :, 1], _idx = _idx // W, _idx % W
+    preds[:, :, 0] = _idx
+
+    preds = np.where(np.tile(maxvals, (1, 1, 3)) > 0.0, preds, -1)
+    return preds, maxvals
+
+
 def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
@@ -574,3 +611,13 @@ def keypoints_from_heatmaps(heatmaps,
         maxvals = maxvals / 255.0 + 0.5
 
     return preds, maxvals
+
+
+def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
+    valid = (mask > 0).min(axis=1) if mask.ndim == 2 else (mask > 0)
+    pred, gt = pred[valid], gt[valid]
+    if pred.shape[0] == 0:
+        acc = 0  # when no sample is with gt labels, set acc to 0.
+    else:
+        acc = (((pred - thr) * (gt - thr)).min(axis=1) > 0).mean()
+    return acc

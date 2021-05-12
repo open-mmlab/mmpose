@@ -375,7 +375,7 @@ class InterHand3DDataset(HandBaseDataset):
                 }
 
                 if preds is not None:
-                    kpt['keypoints'] = preds[i].tolist()
+                    kpt['keypoints'] = preds[i, :, :3].tolist()
                 if hand_type is not None:
                     kpt['hand_type'] = hand_type[i][0:2].tolist()
                     kpt['hand_type_score'] = hand_type[i][2:4].tolist()
