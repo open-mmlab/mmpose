@@ -44,17 +44,20 @@ model = dict(
             num_deconv_layers=3,
             num_deconv_filters=(256, 256, 256),
             num_deconv_kernels=(4, 4, 4),
-            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
+        ),
         root_head_cfg=dict(
             in_channels=2048,
             heatmap_size=64,
             hidden_dims=(512, ),
-            loss_value=dict(type='L1Loss', use_target_weight=True)),
+        ),
         hand_type_head_cfg=dict(
             in_channels=2048,
             num_labels=2,
             hidden_dims=(512, ),
-            loss_classification=dict(type='BCELoss', use_target_weight=True)),
+        ),
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
+        loss_root_depth=dict(type='L1Loss'),
+        loss_hand_type=dict(type='BCELoss', use_target_weight=True),
     ),
     train_cfg={},
     test_cfg=dict(flip_test=False))
