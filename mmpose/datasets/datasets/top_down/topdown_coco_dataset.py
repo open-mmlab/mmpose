@@ -226,7 +226,7 @@ class TopDownCocoDataset(TopDownBaseDataset):
         return rec
 
     def _xywh2cs(self, x, y, w, h):
-        """This encodes bbox(x,y,w,w) into (center, scale)
+        """This encodes bbox(x,y,w,h) into (center, scale)
 
         Args:
             x, y, w, h
