@@ -82,7 +82,7 @@ class AnimalBaseDataset(Dataset, metaclass=ABCMeta):
         return id2name, name2id
 
     def _xywh2cs(self, x, y, w, h, padding=1.25):
-        """This encodes bbox(x,y,w,w) into (center, scale)
+        """This encodes bbox(x,y,w,h) into (center, scale)
 
         Args:
             x, y, w, h

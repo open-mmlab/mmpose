@@ -109,6 +109,7 @@ if __name__ == '__main__':
         long_description=readme(),
         long_description_content_type='text/markdown',
         packages=find_packages(exclude=('configs', 'tools', 'demo')),
+        include_package_data=True,
         package_data={'mmpose.ops': ['*/*.so']},
         classifiers=[
             'Development Status :: 4 - Beta',
