@@ -3,6 +3,7 @@ import tempfile
 import numpy as np
 
 from mmpose.datasets import DATASETS
+from mmpose.datasets.builder import build_dataset
 
 
 def test_body3d_h36m_dataset():
@@ -151,3 +152,6 @@ def test_body3d_semi_supervision_dataset():
     custom_dataset = dataset_class(labeled_dataset, unlabeled_dataset)
     item = custom_dataset[0]
     assert 'unlabeled_input' in item.keys()
+
+    unlabeled_dataset = build_dataset(unlabeled_dataset)
+    assert len(unlabeled_dataset) == len(custom_dataset)
