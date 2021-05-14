@@ -17,7 +17,7 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='exp',
     by_epoch=True,
-    gamma=0.95,
+    gamma=0.975,
 )
 
 total_epochs = 160
@@ -47,8 +47,8 @@ model = dict(
         type='TCN',
         in_channels=2 * 17,
         stem_channels=1024,
-        num_blocks=4,
-        kernel_sizes=(1, 1, 1, 1, 1),
+        num_blocks=2,
+        kernel_sizes=(3, 3, 3),
         dropout=0.25,
         use_stride_conv=True),
     keypoint_head=dict(
@@ -63,10 +63,10 @@ model = dict(
 data_root = 'data/h36m'
 data_cfg = dict(
     num_joints=17,
-    seq_len=1,
+    seq_len=27,
     seq_frame_interval=1,
     causal=False,
-    pad=False,
+    pad=True,
     joint_2d_src='gt',
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',

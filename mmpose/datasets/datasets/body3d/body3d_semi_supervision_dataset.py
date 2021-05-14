@@ -5,7 +5,7 @@ from mmpose.datasets.builder import DATASETS, build_dataset
 
 
 @DATASETS.register_module()
-class Body3DSemiDataset(Dataset):
+class Body3DSemiSupervisionDataset(Dataset):
     """Mix Dataset for semi-supervised training in 3D human pose estimation
     task.
 

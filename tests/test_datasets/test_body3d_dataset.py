@@ -98,7 +98,7 @@ def test_body3d_h36m_dataset():
         np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
 
 
-def test_body3d_semi_dataset():
+def test_body3d_semi_supervision_dataset():
     # Test Body3d Semi-supervision Dataset
 
     # load labeled dataset
@@ -146,7 +146,7 @@ def test_body3d_semi_dataset():
         ])
 
     # combine labeled and unlabeled dataset to form a new dataset
-    dataset = 'Body3DSemiDataset'
+    dataset = 'Body3DSemiSupervisionDataset'
     dataset_class = DATASETS.get(dataset)
     custom_dataset = dataset_class(labeled_dataset, unlabeled_dataset)
     item = custom_dataset[0]

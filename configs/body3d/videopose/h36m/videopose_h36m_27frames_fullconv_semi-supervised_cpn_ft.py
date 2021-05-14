@@ -84,7 +84,9 @@ labeled_data_cfg = dict(
     seq_frame_interval=1,
     causal=False,
     pad=True,
-    joint_2d_src='gt',
+    joint_2d_src='detection',
+    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
+    '/joint_2d_det_files/cpn_ft_h36m_dbb_train.npy',
     subset=0.1,
     subjects=['S1'],
     need_camera_param=True,
@@ -96,7 +98,9 @@ unlabeled_data_cfg = dict(
     seq_frame_interval=1,
     causal=False,
     pad=True,
-    joint_2d_src='gt',
+    joint_2d_src='detection',
+    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
+    '/joint_2d_det_files/cpn_ft_h36m_dbb_train.npy',
     subjects=['S5', 'S6', 'S7', 'S8'],
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',
@@ -107,7 +111,9 @@ val_data_cfg = dict(
     seq_frame_interval=1,
     causal=False,
     pad=True,
-    joint_2d_src='gt',
+    joint_2d_src='detection',
+    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
+    '/joint_2d_det_files/cpn_ft_h36m_dbb_test.npy',
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl')
 test_data_cfg = val_data_cfg
@@ -184,7 +190,7 @@ test_pipeline = val_pipeline
 
 data = dict(
     samples_per_gpu=64,
-    workers_per_gpu=2,
+    workers_per_gpu=0,
     val_dataloader=dict(samples_per_gpu=64),
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
