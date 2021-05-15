@@ -21,7 +21,7 @@ Examples:
 
 ```shell
 python demo/top_down_img_demo.py \
-    configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody/2D_Kpt_SV_RGB_Img/topdown_hm/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
@@ -31,7 +31,7 @@ To run demos on CPU:
 
 ```shell
 python demo/top_down_img_demo.py \
-    configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody/2D_Kpt_SV_RGB_Img/topdown_hm/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
@@ -60,7 +60,7 @@ Examples:
 python demo/top_down_img_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody/2D_Kpt_SV_RGB_Img/topdown_hm/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
     --img-root tests/data/coco/ \
     --img 000000196141.jpg \
@@ -89,7 +89,7 @@ Examples:
 python demo/top_down_video_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody/2D_Kpt_SV_RGB_Img/topdown_hm/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
     --video-path demo/resources/demo_video.mp4 \
     --out-video-root vis_results
@@ -101,6 +101,6 @@ Some tips to speed up MMPose inference:
 
 For top-down models, try to edit the config file. For example,
 
-1. set `flip_test=False` in [pose_hrnet_w48_dark+](/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L80).
-1. set `post_process='default'` in [pose_hrnet_w48_dark+](/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L81).
+1. set `flip_test=False` in [pose_hrnet_w48_dark+](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L80).
+1. set `post_process='default'` in [pose_hrnet_w48_dark+](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L81).
 1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).

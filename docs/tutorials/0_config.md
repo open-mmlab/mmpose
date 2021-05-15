@@ -40,26 +40,26 @@ When submitting jobs using "tools/train.py" or "tools/test.py", you may specify 
 We follow the style below to name config files. Contributors are advised to follow the same style.
 
 ```
-configs/{task}/{model}/{dataset}/{backbone}_[model_setting]_{dataset}_{input_size}_[technique].py
+configs/{class}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset}_[input_size]_[technique].py
 ```
 
 `{xxx}` is required field and `[yyy]` is optional.
 
-- `{task}`: method type, e.g. `top_down`, `bottom_up`, `hand`, `mesh`, etc.
-- `{model}`: model type, e.g. `hrnet`, `darkpose`, etc.
+- `{class}`: object type, e.g. `body`, `face`, `hand`, `animal`, etc.
+- `{task}`: task type, `[2D | 3D]_[Kpt | Mesh | Dense]_[SV | MV]_[RGB | RGBD]_[Img | Vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation: keypoint (Kpt), Mesh, or DensePose (Dense). (3) Single-view (SV) or multi-view (MV), (4) RGB or RGBD, and (5) Image (Img) or Video (Vid). e.g. `2D_Kpt_SV_RGB_Img`, `3D_Kpt_SV_RGB_Vid`, etc.
+- `{algorithm}`: algorithm type, e.g. `AE`, `deeppose`, etc.
 - `{dataset}`: dataset name, e.g. `coco`, etc.
 - `{backbone}`: backbone type, e.g. `res50` (ResNet-50), etc.
 - `[model setting]`: specific setting for some models.
-- `[misc]`: miscellaneous setting/plugins of model, e.g. `video`, etc.
-- `{input_size}`: input size of the model.
-- `[technique]`: some specific techniques or tricks to use, e.g. `dark`, `udp`.
+- `[input_size]`: input size of the model.
+- `[technique]`: some specific techniques, including losses, augmentation and tricks, e.g. `wingloss`, `udp`, `fp16`.
 
 ### Config System for Top-down Human Pose Estimation
 
 - An Example of 2D Top-down Human Pose Estimation
 
     To help the users have a basic idea of a complete config structure and the modules in the config system,
-    we make brief comments on 'configs/top_down/resnet/coco/res50_coco_256x192.py' as the following.
+    we make brief comments on 'https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py' as the following.
     For more detailed usage and alternative for per parameter in each module, please refer to the API documentation.
 
     ```python

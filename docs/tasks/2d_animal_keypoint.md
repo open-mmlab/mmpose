@@ -23,8 +23,8 @@ MMPose supported datasets:
     title = {Cross-Domain Adaptation for Animal Pose Estimation},
     booktitle = {The IEEE International Conference on Computer Vision (ICCV)},
     month = {October},
-    year = {2019} }
-
+    year = {2019}
+}
 ```
 
 For [Animal-Pose](https://sites.google.com/view/animal-pose/) datatset, we prepare the dataset as follows:

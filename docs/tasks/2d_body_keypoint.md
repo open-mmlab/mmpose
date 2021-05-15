@@ -73,11 +73,11 @@ mmpose
 
 ```bibtex
 @inproceedings{andriluka14cvpr,
-   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}
-   title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
-   booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-   year = {2014},
-   month = {June}
+  author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}
+  title = {2D Human Pose Estimation: New Benchmark and State of the Art Analysis},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year = {2014},
+  month = {June}
 }
 ```
 
@@ -415,12 +415,12 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 ```bibtex
 @inproceedings{Jhuang:ICCV:2013,
-    title = {Towards understanding action recognition},
-    author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
-    booktitle = {International Conf. on Computer Vision (ICCV)},
-    month = Dec,
-    pages = {3192-3199},
-    year = {2013}
+  title = {Towards understanding action recognition},
+  author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
+  booktitle = {International Conf. on Computer Vision (ICCV)},
+  month = Dec,
+  pages = {3192-3199},
+  year = {2013}
 }
 ```
 

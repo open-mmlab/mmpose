@@ -71,7 +71,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 1. Test ResNet50 on COCO (without saving the test results) and evaluate the mAP.
 
    ```shell
-   ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
+   ./tools/dist_test.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
        checkpoints/SOME_CHECKPOINT.pth 1 \
        --eval mAP
    ```
@@ -79,7 +79,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 1. Test ResNet50 on COCO  with 8 GPUS, and evaluate the mAP.
 
    ```shell
-   ./tools/dist_test.sh configs/top_down/resnet/coco/res50_coco_256x192.py \
+   ./tools/dist_test.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
        checkpoints/SOME_CHECKPOINT.pth 8 \
        --eval mAP
    ```
@@ -88,7 +88,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
    ```shell
    ./tools/slurm_test.sh slurm_partition test_job \
-       configs/top_down/resnet/coco/res50_coco_256x192.py \
+       configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
        checkpoints/SOME_CHECKPOINT.pth \
        --eval mAP
    ```
@@ -111,7 +111,7 @@ Examples:
 
 ```shell
 python demo/top_down_img_demo.py \
-    configs/top_down/hrnet/coco/hrnet_w48_coco_256x192.py \
+    configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/hrnet_w48_coco_256x192.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
     --out-img-root vis_results
@@ -168,7 +168,7 @@ Difference between `resume-from` and `load-from`:
 Here is an example of using 8 GPUs to load ResNet50 checkpoint.
 
 ```shell
-./tools/dist_train.sh configs/top_down/resnet/coco/res50_coco_256x192.py 8 --resume_from work_dirs/res50_coco_256x192/latest.pth
+./tools/dist_train.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py 8 --resume_from work_dirs/res50_coco_256x192/latest.pth
 ```
 
 ### Train with multiple machines
@@ -184,7 +184,7 @@ Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a 
 Assume that `Test` is a valid ${PARTITION} name.)
 
 ```shell
-GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
+GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
 You can check [slurm_train.sh](/tools/slurm_train.sh) for full arguments and environment variables.
