@@ -27,14 +27,13 @@ Welcome to MMPose's documentation!
    :caption: Model Zoo
 
    modelzoo.md
-   top_down_models.md
-   bottom_up_models.md
-   wholebody_models.md
-   face_models.md
-   hand_models.md
-   fashion_models.md
    animal_models.md
-   mesh_models.md
+   body.md
+   face_models.md
+   fashion_models.md
+   hand_models.md
+   animal_models.md
+   wholebody_models.md
 
 .. toctree::
    :maxdepth: 2

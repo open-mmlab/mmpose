@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
 
-sed -i '$a\\n' ../configs/bottom_up/*/*.md
-sed -i '$a\\n' ../configs/top_down/*/*.md
-sed -i '$a\\n' ../configs/wholebody/*/*.md
-sed -i '$a\\n' ../configs/hand/*/*.md
-sed -i '$a\\n' ../configs/face/*/*.md
-sed -i '$a\\n' ../configs/mesh/*/*.md
-sed -i '$a\\n' ../configs/fashion/*/*.md
-sed -i '$a\\n' ../configs/animal/*/*.md
+sed -i '$a\\n' ../configs/animal/*/*/_result_collection/*.md
+sed -i '$a\\n' ../configs/body/*/*/_result_collection/*.md
+sed -i '$a\\n' ../configs/face/*/*/_result_collection/*.md
+sed -i '$a\\n' ../configs/fashion/*/*/_result_collection/*.md
+sed -i '$a\\n' ../configs/hand/*/*/_result_collection/*.md
+sed -i '$a\\n' ../configs/wholebody/*/*/_result_collection/*.md
 
-cat ../configs/bottom_up/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Bottom Up Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >bottom_up_models.md
-cat ../configs/top_down/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Top Down Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >top_down_models.md
-cat ../configs/wholebody/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Whole-Body Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >wholebody_models.md
-cat ../configs/hand/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Hand Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >hand_models.md
-cat ../configs/face/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Face Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >face_models.md
-cat ../configs/mesh/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Mesh Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >mesh_models.md
-cat ../configs/fashion/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Fashion Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >fashion_models.md
-cat ../configs/animal/*/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Animal Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >animal_models.md
+cat ../configs/animal/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Animal Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >animal_models.md
+cat ../configs/body/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Body Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >body_models.md
+cat ../configs/face/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Face Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >face_models.md
+cat ../configs/fashion/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Fashion Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >fashion_models.md
+cat ../configs/hand/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Hand Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >hand_models.md
+cat ../configs/wholebody/*/*/_result_collection/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# WholeBody Models' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >wholebody_models.md
 
 sed -i '$a\\n' ../demo/docs/*_demo.md
 cat ../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Demo' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md
