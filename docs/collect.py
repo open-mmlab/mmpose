@@ -46,5 +46,5 @@ for root, dirs, files in os.walk(root_dir, topdown=True):
                             Flag = False
                             break
                     if Flag:
-                        with open(cf + 'test.md', 'a') as file_out:
+                        with open(cf, 'a') as file_out:
                             file_out.write('\n' + res_content.split('# ')[-1])
