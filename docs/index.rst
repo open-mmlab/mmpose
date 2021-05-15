@@ -28,11 +28,10 @@ Welcome to MMPose's documentation!
 
    modelzoo.md
    animal_models.md
-   body.md
+   body_models.md
    face_models.md
    fashion_models.md
    hand_models.md
-   animal_models.md
    wholebody_models.md
 
 .. toctree::
