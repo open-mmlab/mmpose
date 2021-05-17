@@ -40,13 +40,13 @@ When submitting jobs using "tools/train.py" or "tools/test.py", you may specify 
 We follow the style below to name config files. Contributors are advised to follow the same style.
 
 ```
-configs/{class}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset}_[input_size]_[technique].py
+configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset}_[input_size]_[technique].py
 ```
 
 `{xxx}` is required field and `[yyy]` is optional.
 
-- `{class}`: object type, e.g. `body`, `face`, `hand`, `animal`, etc.
-- `{task}`: task type, `[2D | 3D]_[Kpt | Mesh | Dense]_[SV | MV]_[RGB | RGBD]_[Img | Vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation: keypoint (Kpt), Mesh, or DensePose (Dense). (3) Single-view (SV) or multi-view (MV), (4) RGB or RGBD, and (5) Image (Img) or Video (Vid). e.g. `2D_Kpt_SV_RGB_Img`, `3D_Kpt_SV_RGB_Vid`, etc.
+- `{topic}`: topic type, e.g. `body`, `face`, `hand`, `animal`, etc.
+- `{task}`: task type, `[2D | 3D]_[Kpt | Mesh | Dense]_[SView | MView]_[RGB | RGBD]_[Img | Vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation: keypoint (Kpt), Mesh, or DensePose (Dense). (3) Single-view (SView) or multi-view (MView), (4) RGB or RGBD, and (5) Image (Img) or Video (Vid). e.g. `2D_Kpt_SView_RGB_Img`, `3D_Kpt_SView_RGB_Vid`, etc.
 - `{algorithm}`: algorithm type, e.g. `AE`, `deeppose`, etc.
 - `{dataset}`: dataset name, e.g. `coco`, etc.
 - `{backbone}`: backbone type, e.g. `res50` (ResNet-50), etc.
