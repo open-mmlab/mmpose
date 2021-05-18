@@ -1,5 +1,12 @@
+import warnings
+
 from .datasets.builder import DATASETS
 from .datasets.datasets.top_down.topdown_base_dataset import TopDownBaseDataset
+from .models.builder import HEADS
+from .models.keypoint_heads import (AEHigherResolutionHead, AESimpleHead,
+                                    TopdownHeatmapMSMUHead,
+                                    TopdownHeatmapMultiStageHead,
+                                    TopdownHeatmapSimpleHead)
 
 
 @DATASETS.register_module()
@@ -48,3 +55,83 @@ class TopDownPanopticDataset(TopDownBaseDataset):
 
     def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
         return None
+
+
+@HEADS.register_module()
+class BottomUpHigherResolutionHead(AEHigherResolutionHead):
+    """Bottom-up head for Higher Resolution.
+
+    BottomUpHigherResolutionHead has been renamed into AEHigherResolutionHead,
+    check https://github.com/open- mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'BottomUpHigherResolutionHead has been renamed into '
+            'AEHigherResolutionHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+
+
+@HEADS.register_module()
+class BottomUpSimpleHead(AESimpleHead):
+    """Bottom-up simple head.
+
+    BottomUpSimpleHead has been renamed into AESimpleHead, check
+    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'BottomUpHigherResolutionHead has been renamed into '
+            'AEHigherResolutionHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+
+
+@HEADS.register_module()
+class TopDownSimpleHead(TopdownHeatmapSimpleHead):
+    """Top-down heatmap simple head.
+
+    TopDownSimpleHead has been renamed into TopdownHeatmapSimpleHead, check
+    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'TopDownSimpleHead has been renamed into '
+            'TopdownHeatmapSimpleHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+
+
+@HEADS.register_module()
+class TopDownMultiStageHead(TopdownHeatmapMultiStageHead):
+    """Top-down heatmap multi-stage head.
+
+    TopDownMultiStageHead has been renamed into TopdownHeatmapMultiStageHead,
+    check https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'TopDownMultiStageHead has been renamed into '
+            'TopdownHeatmapMultiStageHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+
+
+@HEADS.register_module()
+class TopDownMSMUHead(TopdownHeatmapMSMUHead):
+    """Heads for multi-stage multi-unit heads.
+
+    TopDownMSMUHead has been renamed into TopdownHeatmapMSMUHead, check
+    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'TopDownMSMUHead has been renamed into '
+            'TopdownHeatmapMSMUHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')

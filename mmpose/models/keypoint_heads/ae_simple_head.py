@@ -7,8 +7,11 @@ from ..registry import HEADS
 
 
 @HEADS.register_module()
-class BottomUpSimpleHead(nn.Module):
-    """Bottom-up simple head.
+class AESimpleHead(nn.Module):
+    """Associative embedding simple head.
+    paper ref: Alejandro Newell et al. "Associative
+    Embedding: End-to-end Learning for Joint Detection
+    and Grouping"
 
     Args:
         in_channels (int): Number of input channels.

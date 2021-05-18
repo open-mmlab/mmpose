@@ -8,12 +8,12 @@ from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from mmpose.models.utils.ops import resize
 from ..registry import HEADS
-from .top_down_base_head import TopDownBaseHead
+from .topdown_heatmap_base_head import TopdownHeatmapBaseHead
 
 
 @HEADS.register_module()
-class TopDownSimpleHead(TopDownBaseHead):
-    """Top-down model head of simple baseline paper ref: Bin Xiao. ``Simple
+class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
+    """Top-down heatmap simple head. paper ref: Bin Xiao et al. ``Simple
     Baselines for Human Pose Estimation and Tracking``.
 
     TopDownSimpleHead is consisted of (>=0) number of deconv layers

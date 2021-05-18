@@ -10,15 +10,15 @@ from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from ..registry import HEADS
-from .top_down_base_head import TopDownBaseHead
+from .topdown_heatmap_base_head import TopdownHeatmapBaseHead
 
 
 @HEADS.register_module()
-class TopDownMultiStageHead(TopDownBaseHead):
-    """Heads for multi-stage pose models.
+class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
+    """Top-down heatmap multi-stage head.
 
-    TopDownMultiStageHead is consisted of multiple branches, each of
-    which has num_deconv_layers(>=0) number of deconv layers
+    TopdownHeatmapMultiStageHead is consisted of multiple branches,
+    each of which has num_deconv_layers(>=0) number of deconv layers
     and a simple conv2d layer.
 
     Args:
@@ -386,7 +386,7 @@ class PRM(nn.Module):
 
 
 @HEADS.register_module()
-class TopDownMSMUHead(TopDownBaseHead):
+class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
     """Heads for multi-stage multi-unit heads used in Multi-Stage Pose
     estimation Network (MSPN), and Residual Steps Networks (RSN).
 
