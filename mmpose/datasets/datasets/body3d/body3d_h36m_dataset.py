@@ -143,10 +143,10 @@ class Body3DH36MDataset(Body3DBaseDataset):
         for idx, imgname in enumerate(self.data_info['imgnames']):
             subj, action, camera = self._parse_h36m_imgname(imgname)
 
-            if '__all__' not in self.actions and action not in self.actions:
+            if '_all_' not in self.actions and action not in self.actions:
                 continue
 
-            if '__all__' not in self.subjects and subj not in self.subjects:
+            if '_all_' not in self.subjects and subj not in self.subjects:
                 continue
 
             video_frames[(subj, action, camera)].append(idx)
