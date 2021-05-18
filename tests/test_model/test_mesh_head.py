@@ -2,13 +2,13 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import MeshHMRHead
-from mmpose.models.mesh_heads.discriminator import SMPLDiscriminator
+from mmpose.models import HMRMeshHead
+from mmpose.models.heads.discriminator import SMPLDiscriminator
 
 
 def test_mesh_hmr_head():
     """Test hmr mesh head."""
-    head = MeshHMRHead(in_channels=512)
+    head = HMRMeshHead(in_channels=512)
     head.init_weights()
 
     input_shape = (1, 512, 8, 8)
@@ -19,7 +19,7 @@ def test_mesh_hmr_head():
     assert smpl_shape.shape == torch.Size([1, 10])
     assert camera.shape == torch.Size([1, 3])
     """Test hmr mesh head with assigned mean parameters and n_iter """
-    head = MeshHMRHead(
+    head = HMRMeshHead(
         in_channels=512,
         smpl_mean_params='tests/data/smpl/smpl_mean_params.npz',
         n_iter=3)

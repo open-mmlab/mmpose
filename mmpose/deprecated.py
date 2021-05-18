@@ -3,10 +3,10 @@ import warnings
 from .datasets.builder import DATASETS
 from .datasets.datasets.top_down.topdown_base_dataset import TopDownBaseDataset
 from .models.builder import HEADS
-from .models.keypoint_heads import (AEHigherResolutionHead, AESimpleHead,
-                                    TopdownHeatmapMSMUHead,
-                                    TopdownHeatmapMultiStageHead,
-                                    TopdownHeatmapSimpleHead)
+from .models.heads import (AEHigherResolutionHead, AESimpleHead, HMRMeshHead,
+                           TopdownHeatmapMSMUHead,
+                           TopdownHeatmapMultiStageHead,
+                           TopdownHeatmapSimpleHead)
 
 
 @DATASETS.register_module()
@@ -134,4 +134,20 @@ class TopDownMSMUHead(TopdownHeatmapMSMUHead):
         warnings.warn(
             'TopDownMSMUHead has been renamed into '
             'TopdownHeatmapMSMUHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+
+
+@HEADS.register_module()
+class MeshHMRHead(HMRMeshHead):
+    """SMPL parameters regressor head.
+
+    MeshHMRHead has been renamed into HMRMeshHead, check
+    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'MeshHMRHead has been renamed into '
+            'HMRMeshHead, check '
             'https://github.com/open-mmlab/mmpose/pull/xxx for details')

@@ -1,8 +1,8 @@
 import numpy as np
 import torch
 
+from mmpose.models.heads.discriminator import SMPLDiscriminator
 from .. import builder
-from ..mesh_heads.discriminator import SMPLDiscriminator
 from ..registry import POSENETS
 from .base import BasePose
 

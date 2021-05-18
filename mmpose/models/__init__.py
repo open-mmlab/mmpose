@@ -2,9 +2,8 @@ from .backbones import *  # noqa
 from .builder import (build_backbone, build_head, build_loss, build_neck,
                       build_posenet)
 from .detectors import *  # noqa
-from .keypoint_heads import *  # noqa
+from .heads import *  # noqa
 from .losses import *  # noqa
-from .mesh_heads import *  # noqa
 from .necks import *  # noqa
 from .registry import BACKBONES, HEADS, LOSSES, POSENETS
 
