@@ -133,8 +133,9 @@ def get_multi_stage_outputs_paf(outputs,
     resize them to base sizes.
 
     Args:
-        outputs (list(torch.Tensor)): Outputs of network
-        outputs_flip (list(torch.Tensor)): Flip outputs of network
+        outputs (dict): Outputs of network, including heatmaps and pafs.
+        outputs_flip (dict): Flip outputs of network, including
+            heatmaps and pafs.
         with_heatmaps (list[bool]): Option to output
             heatmaps for different stages.
         with_pafs (list[bool]): Option to output

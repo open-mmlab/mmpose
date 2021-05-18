@@ -404,3 +404,272 @@ class HeatmapParser:
             ans = [ans]
 
         return ans, scores
+
+
+class PAFParser:
+    """The paf parser for post processing."""
+
+    def __init__(self, cfg):
+        self.params = _Params(cfg)
+        self.tag_per_joint = cfg['tag_per_joint']
+        self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
+                                       cfg['nms_padding'])
+        self.use_udp = cfg.get('use_udp', False)
+
+    # def nms(self, heatmaps):
+    #     """Non-Maximum Suppression for heatmaps.
+    #
+    #     Args:
+    #         heatmap(torch.Tensor): Heatmaps before nms.
+    #
+    #     Returns:
+    #         torch.Tensor: Heatmaps after nms.
+    #     """
+    #
+    #     maxm = self.pool(heatmaps)
+    #     maxm = torch.eq(maxm, heatmaps).float()
+    #     heatmaps = heatmaps * maxm
+    #
+    #     return heatmaps
+    #
+    # def match(self, tag_k, loc_k, val_k):
+    #     """Group keypoints to human poses in a batch.
+    #
+    #     Args:
+    #         tag_k (np.ndarray[NxKxMxL]): tag corresponding to the
+    #             top k values of feature map per keypoint.
+    #         loc_k (np.ndarray[NxKxMx2]): top k locations of the
+    #             feature maps for keypoint.
+    #         val_k (np.ndarray[NxKxM]): top k value of the
+    #             feature maps per keypoint.
+    #
+    #     Returns:
+    #         list
+    #     """
+    #
+    #     def _match(x):
+    #         return _match_by_tag(x, self.params)
+    #
+    #     return list(map(_match, zip(tag_k, loc_k, val_k)))
+    #
+    # def top_k(self, heatmaps, tags):
+    #     """Find top_k values in an image.
+    #
+    #     Note:
+    #         batch size: N
+    #         number of keypoints: K
+    #         heatmap height: H
+    #         heatmap width: W
+    #         max number of people: M
+    #         dim of tags: L
+    #             If use flip testing, L=2; else L=1.
+    #
+    #     Args:
+    #         heatmaps (torch.Tensor[NxKxHxW])
+    #         tags (torch.Tensor[NxKxHxWxL])
+    #
+    #     Return:
+    #         dict: A dict containing top_k values.
+    #
+    #         - tag_k (np.ndarray[NxKxMxL]):
+    #             tag corresponding to the top k values of
+    #             feature map per keypoint.
+    #         - loc_k (np.ndarray[NxKxMx2]):
+    #             top k location of feature map per keypoint.
+    #         - val_k (np.ndarray[NxKxM]):
+    #             top k value of feature map per keypoint.
+    #     """
+    #     heatmaps = self.nms(heatmaps)
+    #     N, K, H, W = heatmaps.size()
+    #     heatmaps = heatmaps.view(N, K, -1)
+    #     val_k, ind = heatmaps.topk(self.params.max_num_people, dim=2)
+    #
+    #     tags = tags.view(tags.size(0), tags.size(1), W * H, -1)
+    #     if not self.tag_per_joint:
+    #         tags = tags.expand(-1, self.params.num_joints, -1, -1)
+    #
+    #     tag_k = torch.stack(
+    #         [torch.gather(tags[..., i], 2, ind) for i in
+    #         range(tags.size(3))],
+    #         dim=3)
+    #
+    #     x = ind % W
+    #     y = ind // W
+    #
+    #     ind_k = torch.stack((x, y), dim=3)
+    #
+    #     ans = {
+    #         'tag_k': tag_k.cpu().numpy(),
+    #         'loc_k': ind_k.cpu().numpy(),
+    #         'val_k': val_k.cpu().numpy()
+    #     }
+    #
+    #     return ans
+    #
+    # @staticmethod
+    # def adjust(ans, heatmaps):
+    #     """Adjust the coordinates for better accuracy.
+    #
+    #     Note:
+    #         batch size: N
+    #         number of keypoints: K
+    #         heatmap height: H
+    #         heatmap width: W
+    #
+    #     Args:
+    #         ans (list(np.ndarray)): Keypoint predictions.
+    #         heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
+    #     """
+    #     _, _, H, W = heatmaps.shape
+    #     for batch_id, people in enumerate(ans):
+    #         for people_id, people_i in enumerate(people):
+    #             for joint_id, joint in enumerate(people_i):
+    #                 if joint[2] > 0:
+    #                     x, y = joint[0:2]
+    #                     xx, yy = int(x), int(y)
+    #                     tmp = heatmaps[batch_id][joint_id]
+    #                     if tmp[min(H - 1, yy + 1), xx] > tmp[max(0, yy - 1),
+    #                                                          xx]:
+    #                         y += 0.25
+    #                     else:
+    #                         y -= 0.25
+    #
+    #                     if tmp[yy, min(W - 1, xx + 1)] > tmp[yy,
+    #                                                          max(0, xx - 1)]:
+    #                         x += 0.25
+    #                     else:
+    #                         x -= 0.25
+    #                     ans[batch_id][people_id, joint_id,
+    #                                   0:2] = (x + 0.5, y + 0.5)
+    #     return ans
+    #
+    # @staticmethod
+    # def refine(heatmap, tag, keypoints, use_udp=False):
+    #     """Given initial keypoint predictions, we identify missing joints.
+    #
+    #     Note:
+    #         number of keypoints: K
+    #         heatmap height: H
+    #         heatmap width: W
+    #         dim of tags: L
+    #             If use flip testing, L=2; else L=1.
+    #
+    #     Args:
+    #         heatmap: np.ndarray(K, H, W).
+    #         tag: np.ndarray(K, H, W) |  np.ndarray(K, H, W, L)
+    #         keypoints: np.ndarray of size (K, 3 + L)
+    #                     last dim is (x, y, score, tag).
+    #         use_udp: bool-unbiased data processing
+    #
+    #     Returns:
+    #         np.ndarray: The refined keypoints.
+    #     """
+    #
+    #     K, H, W = heatmap.shape
+    #     if len(tag.shape) == 3:
+    #         tag = tag[..., None]
+    #
+    #     tags = []
+    #     for i in range(K):
+    #         if keypoints[i, 2] > 0:
+    #             # save tag value of detected keypoint
+    #             x, y = keypoints[i][:2].astype(int)
+    #             x = np.clip(x, 0, W - 1)
+    #             y = np.clip(y, 0, H - 1)
+    #             tags.append(tag[i, y, x])
+    #
+    #     # mean tag of current detected people
+    #     prev_tag = np.mean(tags, axis=0)
+    #     ans = []
+    #
+    #     for _heatmap, _tag in zip(heatmap, tag):
+    #         # distance of all tag values with mean tag of
+    #         # current detected people
+    #         distance_tag = (((_tag -
+    #                           prev_tag[None, None, :])**2).sum(axis=2)**0.5)
+    #         norm_heatmap = _heatmap - np.round(distance_tag)
+    #
+    #         # find maximum position
+    #         y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
+    #         xx = x.copy()
+    #         yy = y.copy()
+    #         # detection score at maximum position
+    #         val = _heatmap[y, x]
+    #         if not use_udp:
+    #             # offset by 0.5
+    #             x += 0.5
+    #             y += 0.5
+    #
+    #         # add a quarter offset
+    #         if _heatmap[yy, min(W - 1, xx + 1)] > _
+    #         heatmap[yy, max(0, xx - 1)]:
+    #             x += 0.25
+    #         else:
+    #             x -= 0.25
+    #
+    #         if _heatmap[min(H - 1, yy + 1), xx] > _
+    #         heatmap[max(0, yy - 1), xx]:
+    #             y += 0.25
+    #         else:
+    #             y -= 0.25
+    #
+    #         ans.append((x, y, val))
+    #     ans = np.array(ans)
+    #
+    #     if ans is not None:
+    #         for i in range(K):
+    #             # add keypoint if it is not detected
+    #             if ans[i, 2] > 0 and keypoints[i, 2] == 0:
+    #                 keypoints[i, :3] = ans[i, :3]
+    #
+    #     return keypoints
+
+    def parse(self, heatmaps, pafs, adjust=True, refine=True):
+        """Group keypoints into poses given heatmap and paf.
+
+        Note:
+            batch size: N
+            number of keypoints: K
+            number of paf maps: P
+            heatmap height: H
+            heatmap width: W
+
+        Args:
+            heatmaps (torch.Tensor[NxKxHxW]): model output heatmaps.
+            pafs (torch.Tensor[NxPxHxW]): model output pafs.
+
+        Returns:
+            tuple: A tuple containing keypoint grouping results.
+
+            - ans (list(np.ndarray)): Pose results.
+            - scores (list): Score of people.
+        """
+
+        assert 0, 'The post-process of paf have not been completed.'
+        # ans = self.match(**self.top_k(heatmaps, pafs))
+        #
+        # if adjust:
+        #     if self.use_udp:
+        #         for i in range(len(ans)):
+        #             if ans[i].shape[0] > 0:
+        #                 ans[i][..., :2] = post_dark_udp(
+        #                     ans[i][..., :2].copy(), heatmaps[i:i + 1, :])
+        #     else:
+        #         ans = self.adjust(ans, heatmaps)
+        #
+        # scores = [i[:, 2].mean() for i in ans[0]]
+        #
+        # if refine:
+        #     ans = ans[0]
+        #     # for every detected person
+        #     for i in range(len(ans)):
+        #         heatmap_numpy = heatmaps[0].cpu().numpy()
+        #         tag_numpy = tags[0].cpu().numpy()
+        #         if not self.tag_per_joint:
+        #             tag_numpy = np.tile(tag_numpy,
+        #                                 (self.params.num_joints, 1, 1, 1))
+        #         ans[i] = self.refine(
+        #             heatmap_numpy, tag_numpy, ans[i], use_udp=self.use_udp)
+        #     ans = [ans]
+        #
+        # return ans, scores

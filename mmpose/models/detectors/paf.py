@@ -10,7 +10,7 @@ from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_results_paf, get_group_preds,
                                     get_multi_stage_outputs_paf)
-from mmpose.core.post_processing.group import HeatmapParser
+from mmpose.core.post_processing.group import PAFParser
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
@@ -56,7 +56,7 @@ class BottomUp(BasePose):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.use_udp = test_cfg.get('use_udp', False)
-        self.parser = HeatmapParser(self.test_cfg)
+        self.parser = PAFParser(self.test_cfg)
         self.init_weights(pretrained=pretrained)
 
     @property
@@ -74,7 +74,6 @@ class BottomUp(BasePose):
                 img=None,
                 targets=None,
                 masks=None,
-                joints=None,
                 img_metas=None,
                 return_loss=True,
                 return_heatmap=False,
@@ -92,11 +91,10 @@ class BottomUp(BasePose):
             max_num_people: M
         Args:
             img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            targets (list(list)): List of heatmaps and pafs, each of which
+                multi-scale targets.
             masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
+                heatmaps.
             img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
@@ -118,12 +116,11 @@ class BottomUp(BasePose):
         """
 
         if return_loss:
-            return self.forward_train(img, targets, masks, joints, img_metas,
-                                      **kwargs)
+            return self.forward_train(img, targets, masks, img_metas, **kwargs)
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
-    def forward_train(self, img, targets, masks, joints, img_metas, **kwargs):
+    def forward_train(self, img, targets, masks, img_metas, **kwargs):
         """Forward the bottom-up model and calculate the loss.
 
         Note:
@@ -138,11 +135,10 @@ class BottomUp(BasePose):
 
         Args:
             img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            targets (list(list)): List of heatmaps and pafs, each of which
+                multi-scale targets.
             masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
+                heatmaps.
             img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
@@ -166,7 +162,7 @@ class BottomUp(BasePose):
         losses = dict()
         if self.with_keypoint:
             keypoint_losses = self.keypoint_head.get_loss(
-                output, targets, masks, joints)
+                output, targets, masks)
             losses.update(keypoint_losses)
 
         return losses
@@ -240,7 +236,7 @@ class BottomUp(BasePose):
                 outputs,
                 outputs_flipped,
                 self.test_cfg['with_heatmaps'],
-                self.test_cfg['with_ae'],
+                self.test_cfg['with_pafs'],
                 img_metas['flip_index'],
                 img_metas['flip_index_paf'],
                 self.test_cfg['project2image'],
@@ -259,10 +255,11 @@ class BottomUp(BasePose):
         # average heatmaps of different scales
         aggregated_heatmaps = aggregated_heatmaps / float(
             len(test_scale_factor))
-        tags = torch.cat(pafs, dim=4)
+        aggregated_pafs = aggregated_pafs / float(len(test_scale_factor))
 
         # perform grouping
-        grouped, scores = self.parser.parse(aggregated_heatmaps, tags,
+        grouped, scores = self.parser.parse(aggregated_heatmaps,
+                                            aggregated_pafs,
                                             self.test_cfg['adjust'],
                                             self.test_cfg['refine'])
 

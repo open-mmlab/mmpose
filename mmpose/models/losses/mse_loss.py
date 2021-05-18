@@ -150,3 +150,31 @@ class JointsOHKMMSELoss(nn.Module):
         losses = torch.cat(losses, dim=1)
 
         return self._ohkm(losses) * self.loss_weight
+
+
+@LOSSES.register_module()
+class MaskedMSELoss(nn.Module):
+    """MSE loss for the bottom-up outputs with mask.
+
+    Args:
+        use_mask (bool): Option to use mask of target. Default: True.
+        loss_weight (float): Weight of the loss. Default: 1.0.
+    """
+
+    def __init__(self, use_mask=True, loss_weight=1.):
+        super().__init__()
+        self.criterion = nn.MSELoss()
+        self.use_mask = use_mask
+        self.loss_weight = loss_weight
+
+    def forward(self, output, target, mask):
+        """Forward function."""
+        assert output.size() == target.size()
+
+        if self.use_mask:
+            loss = self.criterion(
+                output, target) * mask[:, None, :, :].expand_as(output)
+        else:
+            loss = self.criterion(output, target)
+
+        return loss * self.loss_weight
