@@ -4,7 +4,6 @@ import mmcv
 import numpy as np
 
 from mmpose.core import imshow_keypoints, imshow_keypoints_3d
-
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
