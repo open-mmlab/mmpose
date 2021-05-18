@@ -273,9 +273,9 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return name_value_tuples
 
-    def _load_camera_param(self, camear_param_file):
+    def _load_camera_param(self, camera_param_file):
         """Load camera parameters from file."""
-        return mmcv.load(camear_param_file)
+        return mmcv.load(camera_param_file)
 
     def get_camera_param(self, imgname):
         """Get camera parameters of a frame by its image name."""

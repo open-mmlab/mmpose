@@ -3,6 +3,7 @@ import math
 import cv2
 import mmcv
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 def imshow_keypoints(img,
@@ -20,7 +21,8 @@ def imshow_keypoints(img,
             img (str or Tensor): The image to draw poses on. If an image array
                 is given, id will be modified in-place.
             pose_result (list[kpts]): The poses to draw. Each element kpts is
-                a set of K keypoints as an Kx2 numpy.ndarray.
+                a set of K keypoints as an Kx3 numpy.ndarray, where each
+                keypoint is represented as x, y, score
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
@@ -106,3 +108,116 @@ def imshow_keypoints(img,
                             thickness=thickness)
 
         return img
+
+
+def imshow_keypoints_3d(pose_result,
+                        img=None,
+                        skeleton=None,
+                        pose_kpt_color=None,
+                        pose_limb_color=None,
+                        viz_hight=400,
+                        *,
+                        axis_azimuth=70,
+                        axis_limit=1.7,
+                        axis_dist=10.0,
+                        axis_elev=15.0,
+                        figsize=(6.0, 7.0)):
+    """Draw 3D keypoints and limbs in 3D coordinates.
+
+    Args:
+        pose_result (list[dict]): 3D pose results containing:
+            - "keypoints_3d" ([K,4]): 3D keypoints
+            - "title" (str): Optional. A string to specify the title of the
+                visualization of this pose result
+        img (str|np.ndarray): Opptional. The image or image path to show input
+            image and/or 2D pose.
+        skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
+            limbs, each is a pair of joint indices.
+        pose_kpt_color (np.ndarray[Nx3]`): Color of N keypoints. If None, do
+            not nddraw keypoints.
+        pose_limb_color (np.array[Mx3]): Color of M limbs. If None, do not
+            draw limbs.
+        viz_hight (int): The image hight of the visualization. The width
+                will be N*viz_hight depending on the number of visualized
+                items.
+        axis_azimuth (float): axis azimuth angle for 3D visualizations.
+        axis_dist (float): axis distance for 3D visualizations.
+        axis_elev (float): axis elevation view angle for 3D visualizations.
+        axis_limit (float): The axis limit to visualize 3d pose. The xyz
+            range will be set as:
+            - x: [x_c - axis_limit/2, x_c + axis_limit/2]
+            - y: [y_c - axis_limit/2, y_c + axis_limit/2]
+            - z: [0, axis_limit]
+            Where x_c, y_c is the mean value of x and y coordinates
+        figsize: (float): figure size in inch.
+    """
+
+    show_img = img is not None
+    num_axis = len(pose_result) + 1 if show_img else len(pose_result)
+
+    plt.ioff()
+    fig = plt.figure(figsize=(figsize[0] * num_axis, figsize[1]))
+
+    if show_img:
+        img = mmcv.imread(img)
+        img = mmcv.imrescale(img, scale=viz_hight / img.shape[0])
+
+        ax_img = fig.add_subplot(1, num_axis, 1)
+        ax_img.get_xaxis().set_visible(False)
+        ax_img.get_yaxis().set_visible(False)
+        ax_img.set_axis_off()
+        ax_img.set_title('Input')
+        ax_img.imshow(img, aspect='equal')
+
+    for idx, res in enumerate(pose_result):
+        kpts = res['keypoints_3d']
+        ax_idx = idx + 2 if show_img else idx + 1
+        ax = fig.add_subplot(1, num_axis, ax_idx, projection='3d')
+        ax.view_init(
+            elev=axis_elev,
+            azim=axis_azimuth,
+        )
+        x_c = np.mean(kpts[..., 0])
+        y_c = np.mean(kpts[..., 1])
+        ax.set_xlim3d([x_c - axis_limit / 2, x_c + axis_limit / 2])
+        ax.set_ylim3d([y_c - axis_limit / 2, y_c + axis_limit / 2])
+        ax.set_zlim3d([0, axis_limit])
+        ax.set_aspect('auto')
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_zticks([])
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
+        ax.set_zticklabels([])
+        ax.dist = axis_dist
+
+        if pose_kpt_color is not None:
+            assert len(pose_kpt_color) == len(kpts)
+            x_3d, y_3d, z_3d = np.split(kpts[:, :3], [1, 2], axis=1)
+            # matplotlib RGB color use 0~1 values
+            _color = pose_kpt_color / 255.
+            ax.scatter(x_3d, y_3d, z_3d, marker='o', color=_color)
+
+        if skeleton is not None and pose_limb_color is not None:
+            assert len(pose_limb_color) == len(skeleton)
+            for limb, limb_color in zip(skeleton, pose_limb_color):
+                limb_indices = [_i - 1 for _i in limb]
+                xs_3d = kpts[limb_indices, 0]
+                ys_3d = kpts[limb_indices, 1]
+                zs_3d = kpts[limb_indices, 2]
+                # matplotlib RGB color use 0~1 values
+                _color = limb_color / 255.
+                ax.plot(xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
+
+        if 'title' in res:
+            ax.set_title(res['title'])
+
+    # convert figure to numpy array
+    fig.tight_layout()
+    fig.canvas.draw()
+    img_w, img_h = fig.canvas.get_width_height()
+    img_vis = np.frombuffer(
+        fig.canvas.tostring_rgb(), dtype=np.uint8).reshape(img_h, img_w, -1)
+    img_vis = mmcv.rgb2bgr(img_vis)
+
+    return img_vis

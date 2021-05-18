@@ -2,9 +2,8 @@ import warnings
 
 import mmcv
 import numpy as np
-from matplotlib import pyplot as plt
 
-from mmpose.core import imshow_keypoints
+from mmpose.core import imshow_keypoints, imshow_keypoints_3d
 
 from .. import builder
 from ..registry import POSENETS
@@ -170,9 +169,7 @@ class PoseLifter(BasePose):
                     skeleton=None,
                     pose_kpt_color=None,
                     pose_limb_color=None,
-                    viz_hight=200,
-                    azimuth=70,
-                    axis_limit=1.7,
+                    viz_hight=400,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -181,10 +178,12 @@ class PoseLifter(BasePose):
 
         Args:
             result (list[dict]): The pose estimation results containing:
-                - "pose_result_3d": 3D pose estimation results to visualize
-                - "pose_input_2d": Optional for visualizing 2D inputs
-                - "bbox_result": Optional for visualizing 2D inputs
-                - "track_id": Optional for multi-person pose tracking
+                - "keypoints_3d" ([K,4]): 3D keypoints
+                - "keypoints" ([K,3] or [T,K,3]): Optional for visualizing
+                    2D inputs. If a sequence is given, only the last frame
+                    will be used for visualization
+                - "bbox" ([4,] or [T,4]): Optional for visualizing 2D inputs
+                - "title" (str): title for the subplot
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
                 limbs, each is a pair of joint indices.
@@ -195,11 +194,6 @@ class PoseLifter(BasePose):
             viz_hight (int): The image hight of the visualization. The width
                 will be N*viz_hight depending on the number of visualized
                 items.
-            azimuth (float): Camera azimuth angle in 3d pose visualization.
-            axis_limit (float): The axis limit to visualize 3d pose. The xyz
-                range will be set as:
-                    x, y: [-axis_limit/2, axis_limit]
-                    z: [0, axis_limit]
             win_name (str): The window name.
             wait_time (int): Value of waitKey param.
                 Default: 0.
@@ -213,27 +207,25 @@ class PoseLifter(BasePose):
         assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 0))
 
-        show_input = img is not None
-        num_axis = len(result) + 1 if show_input else len(result)
-
-        plt.ioff()
-        fig = plt.figure(figsize=(viz_hight * num_axis, viz_hight))
-
         # draw image and input 2d poses
-        if show_input:
-            ax_img = fig.add_subplot(1, num_axis, 1)
-            ax_img.get_xaxis().set_visible(False)
-            ax_img.get_yaxis().set_visible(False)
-            ax_img.set_axis_off()
-            ax_img.set_title('Input')
-
+        if img is not None:
             img = mmcv.imread(img)
+
             bbox_result = []
             pose_input_2d = []
             for res in result:
-                if 'bbox' in res and 'pose_input_2d' in res:
-                    bbox_result.append(res['bbox'])
-                    pose_input_2d.append(res['pose_input_2d'])
+                if 'bbox' in res:
+                    bbox = np.array(res['bbox'])
+                    if bbox.ndim != 1:
+                        assert bbox.ndim == 2
+                        bbox = bbox[-1]  # Get bbox from the last frame
+                    bbox_result.append(bbox)
+                if 'keypoints' in res:
+                    kpts = np.array(res['keypoints'])
+                    if kpts.ndim != 2:
+                        assert kpts.ndim == 3
+                        kpts = kpts[-1]  # Get 2D keypoints from the last frame
+                    pose_input_2d.append(kpts)
 
             if len(bbox_result) > 0:
                 bboxes = np.vstack(bbox_result)
@@ -242,8 +234,9 @@ class PoseLifter(BasePose):
                     bboxes,
                     colors='green',
                     top_k=-1,
-                    thickness=1,
+                    thickness=2,
                     show=False)
+            if len(pose_input_2d) > 0:
                 imshow_keypoints(
                     img,
                     pose_input_2d,
@@ -251,27 +244,17 @@ class PoseLifter(BasePose):
                     kpt_score_thr=0.3,
                     pose_kpt_color=pose_kpt_color,
                     pose_limb_color=pose_limb_color,
-                    radius=4,
-                    thickness=1)
-            ax_img.imshow(img, aspect='equal')
+                    radius=8,
+                    thickness=2)
+            img = mmcv.imrescale(img, scale=viz_hight / img.shape[0])
 
-            for idx, res in enumerate(result):
-                pose_result_3d = res['pose_result_3d']  # noqa: F841
-                track_id = res.get('track_id', 'unk')
-                ax_idx = idx + 2 if show_input else idx + 1
-                ax = fig.add_subplot(1, num_axis, ax_idx, projection='3d')
-                ax.view_init(
-                    elev=15.,
-                    azim=azimuth,
-                )
-                ax.set_xlim3d([-axis_limit / 2, axis_limit / 2])
-                ax.set_ylim3d([-axis_limit / 2, axis_limit / 2])
-                ax.set_zlim3d([0, axis_limit])
-                ax.set_aspect('equal')
-                ax.set_title(f'Pose: {track_id}')
-                ax.set_xticks([])
-                ax.set_yticks([])
-                ax.set_zticks([])
-                ax.set_xticklabels([])
-                ax.set_yticklabels([])
-                ax.set_zticklabels([])
+        img_vis = imshow_keypoints_3d(result, img, skeleton, pose_kpt_color,
+                                      pose_limb_color, viz_hight)
+
+        if show:
+            mmcv.visualization.imshow(img_vis, win_name, wait_time)
+
+        if out_file is not None:
+            mmcv.imwrite(img_vis, out_file)
+
+        return img_vis
