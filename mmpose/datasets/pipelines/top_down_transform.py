@@ -678,7 +678,7 @@ class TopDownRandomTranslation:
         scale = results['scale']
         if np.random.rand() <= self.trans_prob:
             # reference bbox size is [200, 200] pixels
-            center += self.trans_factor * (2 * np.random.rand(2) -
-                                           1) * scale * 200
+            center += self.trans_factor * np.random.uniform(
+                -1, 1, size=2) * scale * 200
         results['center'] = center
         return results
