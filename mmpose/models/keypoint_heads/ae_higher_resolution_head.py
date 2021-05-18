@@ -9,8 +9,10 @@ from ..builder import HEADS
 
 
 @HEADS.register_module()
-class BottomUpHigherResolutionHead(nn.Module):
-    """Bottom-up head for Higher Resolution.
+class AEHigherResolutionHead(nn.Module):
+    """Associative embedding with higher resolution head. paper ref: Bowen
+    Cheng et al. "HigherHRNet: Scale-Aware Representation Learning for Bottom-
+    Up Human Pose Estimation".
 
     Args:
         in_channels (int): Number of input channels.

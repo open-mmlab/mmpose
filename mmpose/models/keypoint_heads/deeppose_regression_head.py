@@ -9,8 +9,8 @@ from mmpose.models.builder import HEADS, build_loss
 
 
 @HEADS.register_module()
-class FcHead(nn.Module):
-    """regression head with fully connected layers.
+class DeepposeRegressionHead(nn.Module):
+    """Deeppose regression head with fully connected layers.
 
     paper ref: Alexander Toshev and Christian Szegedy,
     ``DeepPose: Human Pose Estimation via Deep Neural Networks.''.
