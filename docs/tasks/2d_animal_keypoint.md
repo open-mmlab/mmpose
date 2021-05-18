@@ -107,7 +107,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 ```
 
 For [Horse-10](http://www.mackenziemathislab.org/horse10) datatset, images can be downloaded from [download](http://www.mackenziemathislab.org/horse10).
-Please download the annotation files from [horse10_annotations](https://download.openmmlab.com/mmpose/datasets/horse10_annotations.tar).
+Please download the annotation files from [horse10_annotations](https://download.openmmlab.com/mmpose/datasets/horse10_annotations.tar). Note, this data and annotation data is for non-commercial use only, per the authors (see http://horse10.deeplabcut.org for more infomration).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```text
