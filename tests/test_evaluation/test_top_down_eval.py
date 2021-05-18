@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
 
-from mmpose.core import (get_max_preds_3d, keypoint_auc, keypoint_epe,
-                         keypoint_pck_accuracy, keypoints_from_heatmaps,
+from mmpose.core import (keypoint_auc, keypoint_epe, keypoint_pck_accuracy,
+                         keypoints_from_heatmaps, keypoints_from_heatmaps3d,
                          multilabel_classification_accuracy, pose_pck_accuracy)
 
 
@@ -129,14 +129,17 @@ def test_keypoint_epe():
     assert abs(epe - 11.5355339) < 1e-4
 
 
-def test_get_max_preds_3d():
+def test_keypoints_from_heatmaps3d():
     heatmaps = np.ones((1, 1, 64, 64, 64), dtype=np.float32)
     heatmaps[0, 0, 10, 31, 40] = 2
-    preds, maxvals = get_max_preds_3d(heatmaps)
+    center = np.array([[127, 127]])
+    scale = np.array([[64 / 200.0, 64 / 200.0]])
+    preds, maxvals = keypoints_from_heatmaps3d(heatmaps, center, scale)
+
+    assert_array_almost_equal(preds, np.array([[[135, 126, 10]]]), decimal=4)
+    assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
     assert isinstance(preds, np.ndarray)
     assert isinstance(maxvals, np.ndarray)
-    assert_array_almost_equal(preds, np.array([[[40, 31, 10]]]), decimal=4)
-    assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
 
 
 def test_multilabel_classification_accuracy():

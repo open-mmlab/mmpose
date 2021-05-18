@@ -6,8 +6,8 @@ from mmcv.cnn import (build_conv_layer, build_norm_layer, build_upsample_layer,
                       constant_init, normal_init)
 
 from mmpose.core.evaluation.top_down_eval import (
-    get_max_preds_3d, multilabel_classification_accuracy)
-from mmpose.core.post_processing import flip_back, transform_preds
+    keypoints_from_heatmaps3d, multilabel_classification_accuracy)
+from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from mmpose.models.necks import GlobalAveragePooling
 from ..registry import HEADS
@@ -254,9 +254,7 @@ class MultilabelClassificationHead(nn.Module):
         self.in_channels = in_channels
         self.num_labesl = num_labels
 
-        feature_dims = [in_channels] + \
-                       [dim for dim in hidden_dims] + \
-                       [num_labels]
+        feature_dims = [in_channels, *hidden_dims, num_labels]
         self.fc = self._make_linear_layers(feature_dims, relu_final=False)
 
     def _make_linear_layers(self, feat_dims, relu_final=False):
@@ -501,17 +499,11 @@ class Interhand3DHead(nn.Module):
 
         # decode 3D heatmaps of hand keypoints
         heatmap3d = output[0]
-        N, K, D, H, W = heatmap3d.shape
-        preds, maxvals = get_max_preds_3d(heatmap3d)
-        # Transform back to the image
-        for i in range(N):
-            preds[i, :, :2] = transform_preds(preds[i, :, :2], center[i],
-                                              scale[i], [W, H])
+        preds, maxvals = keypoints_from_heatmaps3d(heatmap3d, center, scale)
         keypoints_3d = np.zeros((batch_size, preds.shape[1], 4),
                                 dtype=np.float32)
         keypoints_3d[:, :, 0:3] = preds[:, :, 0:3]
         keypoints_3d[:, :, 3:4] = maxvals
-
         # transform keypoint depth to camera space
         keypoints_3d[:, :, 2] = \
             (keypoints_3d[:, :, 2] / self.right_hand_head.depth_size - 0.5) \
