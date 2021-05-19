@@ -20,12 +20,12 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
     Human3.6M keypoint indexes::
         0: 'root (pelvis)',
-        1: 'left_hip',
-        2: 'left_knee',
-        3: 'left_foot',
-        4: 'right_hip',
-        5: 'right_knee',
-        6: 'right_foot',
+        1: 'right_hip',
+        2: 'right_knee',
+        3: 'right_foot',
+        4: 'left_hip',
+        5: 'left_knee',
+        6: 'left_foot',
         7: 'spine',
         8: 'thorax',
         9: 'neck_base',
@@ -49,7 +49,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     """
 
     JOINT_NAMES = [
-        'Root', 'LHip', 'LKnee', 'LFoot', 'RHip', 'RKnee', 'RFoot', 'Spine',
+        'Root', 'RHip', 'RKnee', 'RFoot', 'LHip', 'LKnee', 'LFoot', 'Spine',
         'Thorax', 'NeckBase', 'Head', 'LShoulder', 'LElbow', 'LWrist',
         'RShoulder', 'RElbow', 'RWrist'
     ]

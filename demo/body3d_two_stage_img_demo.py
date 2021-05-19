@@ -115,6 +115,7 @@ def main():
     if args.only_second_stage:
         from mmpose.apis.inference import _xywh2xyxy
 
+        print('Stage 1: load 2D pose results from Json file.')
         for image_id, image in coco.imgs.items():
             image_name = osp.join(args.img_root, image['file_name'])
             ann_ids = coco.getAnnIds(image_id)
@@ -137,6 +138,8 @@ def main():
             pose_det_results_list.append(pose_det_results)
 
     else:
+        print('Stage 1: 2D pose detection.')
+
         pose_det_model = init_pose_model(
             args.pose_detector_config,
             args.pose_detector_checkpoint,
@@ -148,7 +151,7 @@ def main():
         dataset = pose_det_model.cfg.data['test']['type']
         img_keys = list(coco.imgs.keys())
 
-        for i in range(len(img_keys)):
+        for i in mmcv.track_iter_progress(range(len(img_keys))):
             # get bounding box annotations
             image_id = img_keys[i]
             image = coco.loadImgs(image_id)[0]
@@ -178,6 +181,8 @@ def main():
             pose_det_results_list.append(pose_det_results)
 
     # Second stage: Pose lifting
+    print('Stage 2: 2D-to-3D pose lifting.')
+
     pose_lift_model = init_pose_model(
         args.pose_lifter_config,
         args.pose_lifter_checkpoint,
@@ -192,7 +197,8 @@ def main():
     if args.camera_param_file is not None:
         camera_params = mmcv.load(args.camera_param_file)
 
-    for i, pose_det_results in enumerate(pose_det_results_list):
+    for i, pose_det_results in enumerate(
+            mmcv.track_iter_progress(pose_det_results_list)):
         # 2D-to-3D pose lifting
         # Note that the pose_det_results are regarded as a single-frame pose
         # sequence

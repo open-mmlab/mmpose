@@ -121,7 +121,7 @@ def imshow_keypoints_3d(pose_result,
                         axis_limit=1.7,
                         axis_dist=10.0,
                         axis_elev=15.0,
-                        figsize=(6.0, 7.0)):
+                        figsize=(4.0, 5.0)):
     """Draw 3D keypoints and limbs in 3D coordinates.
 
     Args:
@@ -130,7 +130,8 @@ def imshow_keypoints_3d(pose_result,
             - "title" (str): Optional. A string to specify the title of the
                 visualization of this pose result
         img (str|np.ndarray): Opptional. The image or image path to show input
-            image and/or 2D pose.
+            image and/or 2D pose. Note that the image should be given in BGR
+            channel order.
         skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
             limbs, each is a pair of joint indices.
         pose_kpt_color (np.ndarray[Nx3]`): Color of N keypoints. If None, do
@@ -159,7 +160,8 @@ def imshow_keypoints_3d(pose_result,
     fig = plt.figure(figsize=(figsize[0] * num_axis, figsize[1]))
 
     if show_img:
-        img = mmcv.imread(img)
+        img = mmcv.imread(img, channel_order='bgr')
+        img = mmcv.bgr2rgb(img)
         img = mmcv.imrescale(img, scale=viz_hight / img.shape[0])
 
         ax_img = fig.add_subplot(1, num_axis, 1)
@@ -194,8 +196,8 @@ def imshow_keypoints_3d(pose_result,
         if pose_kpt_color is not None:
             assert len(pose_kpt_color) == len(kpts)
             x_3d, y_3d, z_3d = np.split(kpts[:, :3], [1, 2], axis=1)
-            # matplotlib RGB color use 0~1 values
-            _color = pose_kpt_color / 255.
+            # matplotlib uses RGB color in [0, 1] value range
+            _color = pose_kpt_color[..., ::-1] / 255.
             ax.scatter(x_3d, y_3d, z_3d, marker='o', color=_color)
 
         if skeleton is not None and pose_limb_color is not None:
@@ -205,8 +207,8 @@ def imshow_keypoints_3d(pose_result,
                 xs_3d = kpts[limb_indices, 0]
                 ys_3d = kpts[limb_indices, 1]
                 zs_3d = kpts[limb_indices, 2]
-                # matplotlib RGB color use 0~1 values
-                _color = limb_color / 255.
+                # matplotlib uses RGB color in [0, 1] value range
+                _color = limb_color[::-1] / 255.
                 ax.plot(xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
         if 'title' in res:
@@ -219,5 +221,7 @@ def imshow_keypoints_3d(pose_result,
     img_vis = np.frombuffer(
         fig.canvas.tostring_rgb(), dtype=np.uint8).reshape(img_h, img_w, -1)
     img_vis = mmcv.rgb2bgr(img_vis)
+
+    plt.close(fig)
 
     return img_vis
