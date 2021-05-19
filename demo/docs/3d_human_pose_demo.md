@@ -4,7 +4,7 @@
 
 ### 3D Human Pose Two-stage Estimation Image Demo
 
-#### Using ground truth 2D poses as the 1st stage (pose detection) result, and inference the 2st stage (2D-to-3D lifting)
+#### Using ground truth 2D poses as the 1st stage (pose detection) result, and inference the 2nd stage (2D-to-3D lifting)
 
 We provide a demo script to test on single images with a given ground-truth Json file.
 
