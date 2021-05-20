@@ -80,14 +80,22 @@ def inference_pose_lifter_model(model,
             nested list. Each element of the outer list is the 2D pose results
             of a single frame, and each element of the inner list is the 2D
             pose of one person, which contains:
-                keypoints (ndarray[K, 2 or 3]): x, y, [score]
-                track_id (int)
+                - "keypoints" (ndarray[K, 2 or 3]): x, y, [score]
+                - "track_id" (int)
         dataset (str): Dataset name, e.g. 'Body3DH36MDataset'
         with_track_id: If True, the element in pose_results_2d is expected to
             contain "track_id", which will be used to gather the pose sequence
             of a person from multiple frames. Otherwise, the pose results in
             each frame are expected to have a consistent number and order of
             identities. Default is True.
+    Returns:
+        List[dict]: 3D pose inference results. Each element is the result of
+            an instance, which contains:
+            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
+            - "keypoints" (ndarray[K, 2 or 3]): from the last frame in
+                ``pose_results_2d``.
+            - "track_id" (int): from the last frame in ``pose_results_2d``.
+            If there is no valid instance, an empty list will be returned.
     """
     cfg = model.cfg
     test_pipeline = Compose(cfg.test_pipeline)
@@ -99,6 +107,10 @@ def inference_pose_lifter_model(model,
         raise NotImplementedError()
 
     pose_sequences_2d = _collate_pose_sequence(pose_results_2d, with_track_id)
+
+    if not pose_sequences_2d:
+        return []
+
     batch_data = []
     for seq in pose_sequences_2d:
         pose_2d = seq['keypoints'].astype(np.float32)

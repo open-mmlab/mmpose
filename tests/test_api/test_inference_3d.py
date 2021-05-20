@@ -40,10 +40,7 @@ def test_pose_lifter_demo():
     # test special cases
     # Empty 2D results
     _ = inference_pose_lifter_model(
-        pose_model, [], dataset, with_track_id=False)
-    # 2D results with different instance numbers in each frame
-    _ = inference_pose_lifter_model(
-        pose_model, [[], [pose_det_result]], dataset, with_track_id=True)
+        pose_model, [[]], dataset, with_track_id=False)
     # with CUDA
     _ = inference_pose_lifter_model(
         pose_model.cuda(), pose_results_2d, dataset, with_track_id=True)
