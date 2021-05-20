@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import torch
 
 from mmpose.apis import (inference_pose_lifter_model, init_pose_model,
                          vis_3d_pose_result)
@@ -41,9 +42,10 @@ def test_pose_lifter_demo():
     # Empty 2D results
     _ = inference_pose_lifter_model(
         pose_model, [[]], dataset, with_track_id=False)
-    # with CUDA
-    _ = inference_pose_lifter_model(
-        pose_model.cuda(), pose_results_2d, dataset, with_track_id=True)
+
+    if torch.cuda.is_available():
+        _ = inference_pose_lifter_model(
+            pose_model.cuda(), pose_results_2d, dataset, with_track_id=False)
 
     with pytest.raises(NotImplementedError):
         _ = inference_pose_lifter_model(
