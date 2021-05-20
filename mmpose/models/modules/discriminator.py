@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import normal_init, xavier_init
 
-from .hmr_head import batch_rodrigues
+from mmpose.models.utils.geometry import batch_rodrigues
 
 
 class BaseDiscriminator(nn.Module):

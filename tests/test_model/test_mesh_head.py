@@ -3,7 +3,7 @@ import pytest
 import torch
 
 from mmpose.models import HMRMeshHead
-from mmpose.models.heads.discriminator import SMPLDiscriminator
+from mmpose.models.modules.discriminator import SMPLDiscriminator
 
 
 def test_mesh_hmr_head():
