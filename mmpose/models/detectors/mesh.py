@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from mmpose.models.modules.discriminator import SMPLDiscriminator
+from mmpose.models.misc.discriminator import SMPLDiscriminator
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose

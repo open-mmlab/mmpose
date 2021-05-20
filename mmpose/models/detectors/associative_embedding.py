@@ -17,8 +17,8 @@ from .base import BasePose
 
 
 @POSENETS.register_module()
-class BottomUp(BasePose):
-    """Bottom-up pose detectors.
+class AssociativeEmbedding(BasePose):
+    """Associative embedding pose detectors.
 
     Args:
         backbone (dict): Backbone modules to extract feature.

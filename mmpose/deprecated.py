@@ -3,6 +3,7 @@ import warnings
 from .datasets.builder import DATASETS
 from .datasets.datasets.top_down.topdown_base_dataset import TopDownBaseDataset
 from .models.builder import HEADS
+from .models.detectors import AssociativeEmbedding
 from .models.heads import (AEHigherResolutionHead, AESimpleHead, HMRMeshHead,
                            TopdownHeatmapMSMUHead,
                            TopdownHeatmapMultiStageHead,
@@ -62,7 +63,7 @@ class BottomUpHigherResolutionHead(AEHigherResolutionHead):
     """Bottom-up head for Higher Resolution.
 
     BottomUpHigherResolutionHead has been renamed into AEHigherResolutionHead,
-    check https://github.com/open- mmlab/mmpose/pull/xxx for details.
+    check https://github.com/open- mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -70,7 +71,7 @@ class BottomUpHigherResolutionHead(AEHigherResolutionHead):
         warnings.warn(
             'BottomUpHigherResolutionHead has been renamed into '
             'AEHigherResolutionHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
 
 
 @HEADS.register_module()
@@ -78,7 +79,7 @@ class BottomUpSimpleHead(AESimpleHead):
     """Bottom-up simple head.
 
     BottomUpSimpleHead has been renamed into AESimpleHead, check
-    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -86,7 +87,7 @@ class BottomUpSimpleHead(AESimpleHead):
         warnings.warn(
             'BottomUpHigherResolutionHead has been renamed into '
             'AEHigherResolutionHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
 
 
 @HEADS.register_module()
@@ -94,7 +95,7 @@ class TopDownSimpleHead(TopdownHeatmapSimpleHead):
     """Top-down heatmap simple head.
 
     TopDownSimpleHead has been renamed into TopdownHeatmapSimpleHead, check
-    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -102,7 +103,7 @@ class TopDownSimpleHead(TopdownHeatmapSimpleHead):
         warnings.warn(
             'TopDownSimpleHead has been renamed into '
             'TopdownHeatmapSimpleHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
 
 
 @HEADS.register_module()
@@ -110,7 +111,7 @@ class TopDownMultiStageHead(TopdownHeatmapMultiStageHead):
     """Top-down heatmap multi-stage head.
 
     TopDownMultiStageHead has been renamed into TopdownHeatmapMultiStageHead,
-    check https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    check https://github.com/open-mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -118,7 +119,7 @@ class TopDownMultiStageHead(TopdownHeatmapMultiStageHead):
         warnings.warn(
             'TopDownMultiStageHead has been renamed into '
             'TopdownHeatmapMultiStageHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
 
 
 @HEADS.register_module()
@@ -126,7 +127,7 @@ class TopDownMSMUHead(TopdownHeatmapMSMUHead):
     """Heads for multi-stage multi-unit heads.
 
     TopDownMSMUHead has been renamed into TopdownHeatmapMSMUHead, check
-    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -134,7 +135,7 @@ class TopDownMSMUHead(TopdownHeatmapMSMUHead):
         warnings.warn(
             'TopDownMSMUHead has been renamed into '
             'TopdownHeatmapMSMUHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
 
 
 @HEADS.register_module()
@@ -142,7 +143,7 @@ class MeshHMRHead(HMRMeshHead):
     """SMPL parameters regressor head.
 
     MeshHMRHead has been renamed into HMRMeshHead, check
-    https://github.com/open-mmlab/mmpose/pull/xxx for details.
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
     """
 
     def __init__(self, *args, **kwargs):
@@ -150,4 +151,20 @@ class MeshHMRHead(HMRMeshHead):
         warnings.warn(
             'MeshHMRHead has been renamed into '
             'HMRMeshHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/xxx for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+
+
+@HEADS.register_module()
+class BottomUp(AssociativeEmbedding):
+    """Associative Embedding.
+
+    BottomUp has been renamed into AssociativeEmbedding, check
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'BottomUp has been renamed into '
+            'AssociativeEmbedding, check '
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
