@@ -46,17 +46,17 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
 `{xxx}` is required field and `[yyy]` is optional.
 
 - `{topic}`: topic type, e.g. `body`, `face`, `hand`, `animal`, etc.
-- `{task}`: task type, `[2D | 3D]_[Kpt | Mesh | Dense]_[SView | MView]_[RGB | RGBD]_[Img | Vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation: keypoint (Kpt), Mesh, or DensePose (Dense). (3) Single-view (SView) or multi-view (MView), (4) RGB or RGBD, and (5) Image (Img) or Video (Vid). e.g. `2D_Kpt_SView_RGB_Img`, `3D_Kpt_SView_RGB_Vid`, etc.
-- `{algorithm}`: algorithm type, e.g. `AE`, `deeppose`, etc.
+- `{task}`: task type, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation type: keypoint (kpt), mesh, or DensePose (dense). (3) Single-view (sview) or multi-view (mview), (4) RGB or RGBD, and (5) Image (img) or Video (vid). e.g. `2d_kpt_sview_rgb_img`, `3d_kpt_sview_rgb_vid`, etc.
+- `{algorithm}`: algorithm type, e.g. `associative_embedding`, `deeppose`, etc.
 - `{dataset}`: dataset name, e.g. `coco`, etc.
 - `{backbone}`: backbone type, e.g. `res50` (ResNet-50), etc.
 - `[model setting]`: specific setting for some models.
 - `[input_size]`: input size of the model.
 - `[technique]`: some specific techniques, including losses, augmentation and tricks, e.g. `wingloss`, `udp`, `fp16`.
 
-### Config System for Top-down Human Pose Estimation
+### Config System
 
-- An Example of 2D Top-down Human Pose Estimation
+- An Example of 2D Top-down Heatmap-based Human Pose Estimation
 
     To help the users have a basic idea of a complete config structure and the modules in the config system,
     we make brief comments on 'https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py' as the following.
