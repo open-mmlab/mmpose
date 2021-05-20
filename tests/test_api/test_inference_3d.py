@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from mmpose.apis import (inference_pose_lifter_model, init_pose_model,
                          vis_3d_pose_result)
@@ -35,3 +36,18 @@ def test_pose_lifter_demo():
         pose_lift_results,
         img=pose_lift_results[0]['image_name'],
         dataset=dataset)
+
+    # test special cases
+    # Empty 2D results
+    _ = inference_pose_lifter_model(
+        pose_model, [], dataset, with_track_id=False)
+    # 2D results with different instance numbers in each frame
+    _ = inference_pose_lifter_model(
+        pose_model, [[], [pose_det_result]], dataset, with_track_id=True)
+    # with CUDA
+    _ = inference_pose_lifter_model(
+        pose_model.cuda(), pose_results_2d, dataset, with_track_id=True)
+
+    with pytest.raises(NotImplementedError):
+        _ = inference_pose_lifter_model(
+            pose_model, pose_results_2d, dataset='test')
