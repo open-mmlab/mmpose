@@ -37,6 +37,7 @@ def test_body3d_h36m_dataset():
         pipeline=[],
         test_mode=True)
 
+    assert custom_dataset.dataset_name == 'h36m'
     assert custom_dataset.test_mode is True
     _ = custom_dataset[0]
 
@@ -152,6 +153,7 @@ def test_body3d_semi_supervision_dataset():
     dataset_class = DATASETS.get(dataset)
     custom_dataset = dataset_class(labeled_dataset, unlabeled_dataset)
     item = custom_dataset[0]
+    assert custom_dataset.labeled_dataset.dataset_name == 'h36m'
     assert 'unlabeled_input' in item.keys()
 
     unlabeled_dataset = build_dataset(unlabeled_dataset)

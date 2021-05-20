@@ -1,3 +1,4 @@
+_base_ = ['../../../../_base_/datasets/aic.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -177,19 +178,22 @@ data = dict(
         img_prefix=f'{data_root}/ai_challenger_keypoint_train_20170902/'
         'keypoint_train_images_20170902/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='BottomUpAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='BottomUpAicDataset',
         ann_file=f'{data_root}/annotations/aic_val.json',
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
 )

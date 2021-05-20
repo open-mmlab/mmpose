@@ -204,6 +204,7 @@ def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
 def inference_pose_lifter_model(model,
                                 pose_results_2d,
                                 dataset,
+                                dataset_info=None,
                                 with_track_id=True,
                                 image_size=None,
                                 norm_pose_2d=False):
@@ -241,13 +242,23 @@ def inference_pose_lifter_model(model,
     cfg = model.cfg
     test_pipeline = Compose(cfg.test_pipeline)
 
-    flip_pairs = None
-    if dataset == 'Body3DH36MDataset':
-        flip_pairs = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15], [13, 16]]
-        bbox_center = np.array([[528, 427]], dtype=np.float32)
-        bbox_scale = 400
+    if dataset_info is not None:
+        flip_pairs = dataset_info.flip_pairs
+        bbox_center = dataset_info.bbox_center
+        bbox_scale = dataset_info.bbox_scale
     else:
-        raise NotImplementedError()
+        warnings.warn(
+            'dataset is deprecated.'
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+        # TODO: These will be removed in the later versions.
+        if dataset == 'Body3DH36MDataset':
+            flip_pairs = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15], [13, 16]]
+            bbox_center = np.array([[528, 427]], dtype=np.float32)
+            bbox_scale = 400
+        else:
+            raise NotImplementedError()
 
     target_idx = -1 if model.causal else len(pose_results_2d) // 2
     pose_lifter_inputs = _gather_pose_lifter_inputs(pose_results_2d,
@@ -340,6 +351,7 @@ def vis_3d_pose_result(model,
                        radius=8,
                        thickness=2,
                        num_instances=-1,
+                       dataset_info=None,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.
@@ -348,68 +360,83 @@ def vis_3d_pose_result(model,
         model (nn.Module): The loaded model.
         result (list[dict])
     """
+
+    if dataset_info is not None:
+        skeleton = dataset_info.skeleton
+        pose_kpt_color = dataset_info.pose_kpt_color
+        pose_link_color = dataset_info.pose_link_color
+    else:
+        warnings.warn(
+            'dataset is deprecated.'
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+        # TODO: These will be removed in the later versions.
+        palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
+                            [230, 230, 0], [255, 153, 255], [153, 204, 255],
+                            [255, 102, 255], [255, 51, 255], [102, 178, 255],
+                            [51, 153, 255], [255, 153, 153], [255, 102, 102],
+                            [255, 51, 51], [153, 255, 153], [102, 255, 102],
+                            [51, 255, 51], [0, 255, 0], [0, 0, 255],
+                            [255, 0, 0], [255, 255, 255]])
+
+        if dataset == 'Body3DH36MDataset':
+            skeleton = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6], [0, 7],
+                        [7, 8], [8, 9], [9, 10], [8, 11], [11, 12], [12, 13],
+                        [8, 14], [14, 15], [15, 16]]
+
+            pose_kpt_color = palette[[
+                9, 0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
+            ]]
+            pose_link_color = palette[[
+                0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
+            ]]
+
+        elif dataset == 'InterHand3DDataset':
+            skeleton = [[0, 1], [1, 2], [2, 3], [3, 20], [4, 5], [5, 6],
+                        [6, 7], [7, 20], [8, 9], [9, 10], [10, 11], [11, 20],
+                        [12, 13], [13, 14], [14, 15], [15, 20], [16, 17],
+                        [17, 18], [18, 19], [19, 20], [21, 22], [22, 23],
+                        [23, 24], [24, 41], [25, 26], [26, 27], [27, 28],
+                        [28, 41], [29, 30], [30, 31], [31, 32], [32, 41],
+                        [33, 34], [34, 35], [35, 36], [36, 41], [37, 38],
+                        [38, 39], [39, 40], [40, 41]]
+
+            pose_kpt_color = [[14, 128, 250], [14, 128, 250], [14, 128, 250],
+                              [14, 128, 250], [80, 127, 255], [80, 127, 255],
+                              [80, 127, 255], [80, 127, 255], [71, 99, 255],
+                              [71, 99, 255], [71, 99, 255], [71, 99, 255],
+                              [0, 36, 255], [0, 36, 255], [0, 36, 255],
+                              [0, 36, 255], [0, 0, 230], [0, 0, 230],
+                              [0, 0, 230], [0, 0, 230], [0, 0, 139],
+                              [237, 149, 100], [237, 149, 100],
+                              [237, 149, 100], [237, 149, 100], [230, 128, 77],
+                              [230, 128, 77], [230, 128, 77], [230, 128, 77],
+                              [255, 144, 30], [255, 144, 30], [255, 144, 30],
+                              [255, 144, 30], [153, 51, 0], [153, 51, 0],
+                              [153, 51, 0], [153, 51, 0], [255, 51, 13],
+                              [255, 51, 13], [255, 51, 13], [255, 51, 13],
+                              [103, 37, 8]]
+
+            pose_link_color = [[14, 128, 250], [14, 128, 250], [14, 128, 250],
+                               [14, 128, 250], [80, 127, 255], [80, 127, 255],
+                               [80, 127, 255], [80, 127, 255], [71, 99, 255],
+                               [71, 99, 255], [71, 99, 255], [71, 99, 255],
+                               [0, 36, 255], [0, 36, 255], [0, 36, 255],
+                               [0, 36, 255], [0, 0, 230], [0, 0, 230],
+                               [0, 0, 230], [0, 0, 230], [237, 149, 100],
+                               [237, 149, 100], [237, 149, 100],
+                               [237, 149, 100], [230, 128, 77], [230, 128, 77],
+                               [230, 128, 77], [230, 128, 77], [255, 144, 30],
+                               [255, 144, 30], [255, 144, 30], [255, 144, 30],
+                               [153, 51, 0], [153, 51, 0], [153, 51, 0],
+                               [153, 51, 0], [255, 51, 13], [255, 51, 13],
+                               [255, 51, 13], [255, 51, 13]]
+        else:
+            raise NotImplementedError
+
     if hasattr(model, 'module'):
         model = model.module
-
-    palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102],
-                        [230, 230, 0], [255, 153, 255], [153, 204, 255],
-                        [255, 102, 255], [255, 51, 255], [102, 178, 255],
-                        [51, 153, 255], [255, 153, 153], [255, 102, 102],
-                        [255, 51, 51], [153, 255, 153], [102, 255, 102],
-                        [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
-                        [255, 255, 255]])
-
-    if dataset == 'Body3DH36MDataset':
-        skeleton = [[1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [1, 8],
-                    [8, 9], [9, 10], [10, 11], [9, 12], [12, 13], [13, 14],
-                    [9, 15], [15, 16], [16, 17]]
-
-        pose_kpt_color = palette[[
-            9, 0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
-        ]]
-        pose_limb_color = palette[[
-            0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
-        ]]
-    elif dataset == 'InterHand3DDataset':
-        skeleton = [[1, 2], [2, 3], [3, 4], [4, 21], [5, 6], [6, 7], [7, 8],
-                    [8, 21], [9, 10], [10, 11], [11, 12], [12, 21], [13, 14],
-                    [14, 15], [15, 16], [16, 21], [17, 18], [18, 19], [19, 20],
-                    [20, 21], [22, 23], [23, 24], [24, 25], [25, 42], [26, 27],
-                    [27, 28], [28, 29], [29, 42], [30, 31], [31, 32], [32, 33],
-                    [33, 42], [34, 35], [35, 36], [36, 37], [37, 42], [38, 39],
-                    [39, 40], [40, 41], [41, 42]]
-
-        pose_kpt_color = [[14, 128, 250], [14, 128, 250], [14, 128, 250],
-                          [14, 128, 250], [80, 127, 255], [80, 127, 255],
-                          [80, 127, 255], [80, 127, 255], [71, 99, 255],
-                          [71, 99, 255], [71, 99, 255], [71, 99, 255],
-                          [0, 36, 255], [0, 36, 255], [0, 36, 255],
-                          [0, 36, 255], [0, 0, 230], [0, 0, 230], [0, 0, 230],
-                          [0, 0, 230], [0, 0, 139], [237, 149, 100],
-                          [237, 149, 100], [237, 149, 100], [237, 149, 100],
-                          [230, 128, 77], [230, 128, 77], [230, 128, 77],
-                          [230, 128, 77], [255, 144, 30], [255, 144, 30],
-                          [255, 144, 30], [255, 144, 30], [153, 51, 0],
-                          [153, 51, 0], [153, 51, 0], [153, 51, 0],
-                          [255, 51, 13], [255, 51, 13], [255, 51, 13],
-                          [255, 51, 13], [103, 37, 8]]
-
-        pose_limb_color = [[14, 128, 250], [14, 128, 250], [14, 128, 250],
-                           [14, 128, 250], [80, 127, 255], [80, 127, 255],
-                           [80, 127, 255], [80, 127, 255], [71, 99, 255],
-                           [71, 99, 255], [71, 99, 255], [71, 99, 255],
-                           [0, 36, 255], [0, 36, 255], [0, 36, 255],
-                           [0, 36, 255], [0, 0, 230], [0, 0, 230], [0, 0, 230],
-                           [0, 0, 230], [237, 149, 100], [237, 149, 100],
-                           [237, 149, 100], [237, 149, 100], [230, 128, 77],
-                           [230, 128, 77], [230, 128, 77], [230, 128, 77],
-                           [255, 144, 30], [255, 144, 30], [255, 144, 30],
-                           [255, 144, 30], [153, 51, 0], [153, 51, 0],
-                           [153, 51, 0], [153, 51, 0], [255, 51, 13],
-                           [255, 51, 13], [255, 51, 13], [255, 51, 13]]
-
-    else:
-        raise NotImplementedError
 
     img = model.show_result(
         result,
@@ -418,7 +445,7 @@ def vis_3d_pose_result(model,
         radius=radius,
         thickness=thickness,
         pose_kpt_color=pose_kpt_color,
-        pose_limb_color=pose_limb_color,
+        pose_link_color=pose_link_color,
         num_instances=num_instances,
         show=show,
         out_file=out_file)
@@ -581,180 +608,3 @@ def inference_interhand_3d_model(model,
         pose_results.append(pose_res)
 
     return pose_results
-
-
-def inference_mesh_model(model,
-                         img_or_path,
-                         det_results,
-                         bbox_thr=None,
-                         format='xywh',
-                         dataset='MeshH36MDataset'):
-    """Inference a single image with a list of bounding boxes.
-
-    num_bboxes: N
-    num_keypoints: K
-    num_vertices: V
-    num_faces: F
-
-    Args:
-        model (nn.Module): The loaded pose model.
-        img_or_path (str | np.ndarray): Image filename or loaded image.
-        det_results (List[dict]): The 2D bbox sequences stored in a list.
-            Each each element of the list is the bbox of one person, which
-            contains:
-                - "bbox" (ndarray[4 or 5]): The person bounding box,
-                which contains 4 box coordinates (and score).
-        bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
-            will be fed into the pose detector. If bbox_thr is None, ignore it.
-        format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
-            'xyxy' means (left, top, right, bottom),
-            'xywh' means (left, top, width, height).
-        dataset (str): Dataset name.
-
-    Returns:
-        List[dict]: 3D pose inference results. Each element is the result of
-            an instance, which contains:
-            - "bbox" (ndarray[4]): instance bounding bbox
-            - "center" (ndarray[2]): bbox center
-            - "scale" (ndarray[2]): bbox scale
-            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
-            - "camera" (ndarray[3]): camera parameters
-            - "vertices" (ndarray[V, 3]): predicted 3D vertices
-            - "faces" (ndarray[F, 3]): mesh faces
-
-            If there is no valid instance, an empty list will be returned.
-    """
-
-    assert format in ['xyxy', 'xywh']
-
-    pose_results = []
-
-    if len(det_results) == 0:
-        return pose_results
-
-    # Change for-loop preprocess each bbox to preprocess all bboxes at once.
-    bboxes = np.array([box['bbox'] for box in det_results])
-
-    # Select bboxes by score threshold
-    if bbox_thr is not None:
-        assert bboxes.shape[1] == 5
-        valid_idx = np.where(bboxes[:, 4] > bbox_thr)[0]
-        bboxes = bboxes[valid_idx]
-        det_results = [det_results[i] for i in valid_idx]
-
-    if format == 'xyxy':
-        bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes)
-    else:
-        # format is already 'xywh'
-        bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes)
-
-    # if bbox_thr remove all bounding box
-    if len(bboxes_xywh) == 0:
-        return []
-
-    cfg = model.cfg
-    device = next(model.parameters()).device
-
-    # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
-
-    assert len(bboxes[0]) in [4, 5]
-
-    if dataset == 'MeshH36MDataset':
-        flip_pairs = [[0, 5], [1, 4], [2, 3], [6, 11], [7, 10], [8, 9],
-                      [20, 21], [22, 23]]
-    else:
-        raise NotImplementedError()
-
-    batch_data = []
-    for bbox in bboxes:
-        center, scale = _box2cs(cfg, bbox)
-
-        # prepare data
-        data = {
-            'img_or_path':
-            img_or_path,
-            'center':
-            center,
-            'scale':
-            scale,
-            'rotation':
-            0,
-            'bbox_score':
-            bbox[4] if len(bbox) == 5 else 1,
-            'dataset':
-            dataset,
-            'joints_2d':
-            np.zeros((cfg.data_cfg.num_joints, 2), dtype=np.float32),
-            'joints_2d_visible':
-            np.zeros((cfg.data_cfg.num_joints, 1), dtype=np.float32),
-            'joints_3d':
-            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-            'joints_3d_visible':
-            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
-            'pose':
-            np.zeros(72, dtype=np.float32),
-            'beta':
-            np.zeros(10, dtype=np.float32),
-            'has_smpl':
-            0,
-            'ann_info': {
-                'image_size': np.array(cfg.data_cfg['image_size']),
-                'num_joints': cfg.data_cfg['num_joints'],
-                'flip_pairs': flip_pairs,
-            }
-        }
-
-        data = test_pipeline(data)
-        batch_data.append(data)
-
-    batch_data = collate(batch_data, samples_per_gpu=1)
-
-    if next(model.parameters()).is_cuda:
-        # scatter not work so just move image to cuda device
-        batch_data['img'] = batch_data['img'].to(device)
-    # get all img_metas of each bounding box
-    batch_data['img_metas'] = [
-        img_metas[0] for img_metas in batch_data['img_metas'].data
-    ]
-
-    # forward the model
-    with torch.no_grad():
-        preds = model(
-            img=batch_data['img'],
-            img_metas=batch_data['img_metas'],
-            return_loss=False,
-            return_vertices=True,
-            return_faces=True)
-
-    for idx in range(len(det_results)):
-        pose_res = det_results[idx].copy()
-        pose_res['bbox'] = bboxes_xyxy[idx]
-        pose_res['center'] = batch_data['img_metas'][idx]['center']
-        pose_res['scale'] = batch_data['img_metas'][idx]['scale']
-        pose_res['keypoints_3d'] = preds['keypoints_3d'][idx]
-        pose_res['camera'] = preds['camera'][idx]
-        pose_res['vertices'] = preds['vertices'][idx]
-        pose_res['faces'] = preds['faces']
-        pose_results.append(pose_res)
-    return pose_results
-
-
-def vis_3d_mesh_result(model, result, img=None, show=False, out_file=None):
-    """Visualize the 3D mesh estimation results.
-
-    Args:
-        model (nn.Module): The loaded model.
-        result (list[dict])
-    """
-    if hasattr(model, 'module'):
-        model = model.module
-
-    img = model.show_result(result, img, show=show, out_file=out_file)
-
-    return img

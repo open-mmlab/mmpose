@@ -1,17 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from collections import OrderedDict
 
-import json_tricks as json
 import numpy as np
+from mmcv import Config
 
-from mmpose.core.evaluation.top_down_eval import keypoint_nme
 from mmpose.datasets.builder import DATASETS
-from .face_base_dataset import FaceBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class FaceWFLWDataset(FaceBaseDataset):
+class FaceWFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Face WFLW dataset for top-down face keypoint localization.
 
     `Look at Boundary: A Boundary-Aware Face Alignment Algorithm.
@@ -29,6 +29,7 @@ class FaceWFLWDataset(FaceBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -38,29 +39,26 @@ class FaceWFLWDataset(FaceBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/wflw.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 98
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[0, 32], [1, 31], [2, 30], [3, 29],
-                                       [4, 28], [5, 27], [6, 26], [7, 25],
-                                       [8, 24], [9, 23], [10, 22], [11, 21],
-                                       [12, 20], [13, 19], [14, 18], [15, 17],
-                                       [33, 46], [34, 45], [35, 44], [36, 43],
-                                       [37, 42], [38, 50], [39, 49], [40, 48],
-                                       [41, 47], [60, 72], [61, 71], [62, 70],
-                                       [63, 69], [64, 68], [65, 75], [66, 74],
-                                       [67, 73], [55, 59], [56, 58], [76, 82],
-                                       [77, 81], [78, 80], [87, 83], [86, 84],
-                                       [88, 92], [89, 91], [95, 93], [96, 97]]
-
-        self.dataset_name = 'wflw'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -111,7 +109,7 @@ class FaceWFLWDataset(FaceBaseDataset):
 
         return gt_db
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, gts, *args, **kwargs):
         """Get normalize factor for evaluation.
 
         Args:
@@ -124,43 +122,6 @@ class FaceWFLWDataset(FaceBaseDataset):
         interocular = np.linalg.norm(
             gts[:, 60, :] - gts[:, 72, :], axis=1, keepdims=True)
         return np.tile(interocular, [1, 2])
-
-    def _report_metric(self, res_file, metrics):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'NME'.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-
-        if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(gts)
-            info_str.append(
-                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
-
-        return info_str
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will

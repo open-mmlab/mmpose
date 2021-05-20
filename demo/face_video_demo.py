@@ -1,11 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from argparse import ArgumentParser
 
 import cv2
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
+from mmpose.datasets import DatasetInfo
 
 try:
     import face_recognition
@@ -78,6 +80,14 @@ def main():
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
     dataset = pose_model.cfg.data['test']['type']
+    dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)
+    if dataset_info is None:
+        warnings.warn(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+    else:
+        dataset_info = DatasetInfo(dataset_info)
 
     cap = cv2.VideoCapture(args.video_path)
     assert cap.isOpened(), f'Faild to load video file {args.video_path}'
@@ -121,6 +131,7 @@ def main():
             bbox_thr=None,
             format='xyxy',
             dataset=dataset,
+            dataset_info=dataset_info,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
@@ -132,6 +143,7 @@ def main():
             radius=args.radius,
             thickness=args.thickness,
             dataset=dataset,
+            dataset_info=dataset_info,
             kpt_score_thr=args.kpt_thr,
             show=False)
 

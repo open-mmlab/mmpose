@@ -1,18 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from collections import OrderedDict
 
-import json_tricks as json
 import numpy as np
+from mmcv import Config
 
-from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
-                                                  keypoint_pck_accuracy)
 from ...builder import DATASETS
-from .animal_base_dataset import AnimalBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class AnimalFlyDataset(AnimalBaseDataset):
+class AnimalFlyDataset(Kpt2dSviewRgbImgTopDownDataset):
     """AnimalFlyDataset for animal pose estimation.
 
     `Fast animal pose estimation using deep neural networks'
@@ -64,6 +63,7 @@ class AnimalFlyDataset(AnimalBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -73,22 +73,26 @@ class AnimalFlyDataset(AnimalBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/fly.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 32
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[1, 2], [6, 18], [7, 19], [8, 20],
-                                       [9, 21], [10, 22], [11, 23], [12, 24],
-                                       [13, 25], [14, 26], [15, 27], [16, 28],
-                                       [17, 29], [30, 31]]
-
-        self.dataset_name = 'fly'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -136,59 +140,6 @@ class AnimalFlyDataset(AnimalBaseDataset):
         gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
 
         return gt_db
-
-    def _report_metric(self, res_file, metrics, pck_thr=0.2, auc_nor=30):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'PCKh', 'AUC', 'EPE'.
-            pck_thr (float): PCK threshold, default as 0.2.
-            pckh_thr (float): PCKh threshold, default as 0.7.
-            auc_nor (float): AUC normalization factor, default as 30 pixel.
-
-        Returns:
-            List: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-        threshold_bbox = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-            if 'PCK' in metrics:
-                bbox = np.array(item['bbox'])
-                bbox_thr = np.max(bbox[2:])
-                threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-        threshold_bbox = np.array(threshold_bbox)
-
-        if 'PCK' in metrics:
-            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
-                                              threshold_bbox)
-            info_str.append(('PCK', pck))
-
-        if 'AUC' in metrics:
-            info_str.append(('AUC', keypoint_auc(outputs, gts, masks,
-                                                 auc_nor)))
-
-        if 'EPE' in metrics:
-            info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
-
-        return info_str
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate Fly keypoint results. The pose prediction results will be

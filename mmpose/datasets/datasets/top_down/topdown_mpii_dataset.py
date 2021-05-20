@@ -1,17 +1,19 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 from scipy.io import loadmat, savemat
 
 from ...builder import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class TopDownMpiiDataset(TopDownBaseDataset):
+class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MPII Dataset for top-down pose estimation.
 
     `2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
@@ -46,6 +48,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -55,23 +58,25 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/mpii.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
-
-        self.ann_file = ann_file
-        self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [10, 15],
-                                       [11, 14], [12, 13]]
-        self.ann_info['upper_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14, 15)
-        self.ann_info['lower_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
-
-        self.ann_info['use_different_joint_weights'] = False
-
-        assert self.ann_info['num_joints'] == 16
-        self.ann_info['joint_weights'] = np.ones(
-            (self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.dataset_name = 'mpii'
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            coco_style=False,
+            test_mode=test_mode)
 
         self.db = self._get_db()
         self.image_set = set(x['image_file'] for x in self.db)
@@ -90,8 +95,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         for a in anno:
             image_name = a['image']
 
-            center = np.array(a['center'], dtype=float)
-            scale = np.array([a['scale'], a['scale']], dtype=float)
+            center = np.array(a['center'], dtype=np.float32)
+            scale = np.array([a['scale'], a['scale']], dtype=np.float32)
 
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:

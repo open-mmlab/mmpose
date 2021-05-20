@@ -2,17 +2,19 @@
 import copy as cp
 import os
 import os.path as osp
+import warnings
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class TopDownMpiiTrbDataset(TopDownBaseDataset):
+class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MPII-TRB Dataset dataset for top-down pose estimation.
 
     `TRB: A Novel Triplet Representation for Understanding 2D Human Body`
@@ -72,6 +74,7 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -81,30 +84,26 @@ class TopDownMpiiTrbDataset(TopDownBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/mpii_trb.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
-
-        # flip_pairs in MPII-TRB
-        self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
-                                       [10, 11], [14, 15], [16, 22], [28, 34],
-                                       [17, 23], [29, 35], [18, 24], [30, 36],
-                                       [19, 25], [31, 37], [20, 26], [32, 38],
-                                       [21, 27], [33, 39]]
-
-        self.ann_info['upper_body_ids'] = [0, 1, 2, 3, 4, 5, 12, 13]
-        self.ann_info['lower_body_ids'] = [6, 7, 8, 9, 10, 11]
-        self.ann_info['upper_body_ids'].extend(list(range(14, 28)))
-        self.ann_info['lower_body_ids'].extend(list(range(28, 40)))
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-
-        assert self.ann_info['num_joints'] == 40
-        self.ann_info['joint_weights'] = np.ones(
-            (self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.dataset_name = 'mpii_trb'
         self.db = self._get_db(ann_file)
         self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)

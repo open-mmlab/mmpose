@@ -4,7 +4,7 @@ import warnings
 import mmcv
 import numpy as np
 
-from mmpose.core import imshow_bboxes, imshow_keypoints, imshow_keypoints_3d
+from mmpose.core import imshow_keypoints, imshow_keypoints_3d
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
@@ -290,11 +290,10 @@ class PoseLifter(BasePose):
                     img=None,
                     skeleton=None,
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     radius=8,
                     thickness=2,
                     vis_height=400,
-                    num_instances=-1,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -311,20 +310,16 @@ class PoseLifter(BasePose):
                 - "title" (str): title for the subplot
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
-                limbs, each is a pair of joint indices.
+                links, each is a pair of joint indices.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
-            num_instances (int): Number of instances to be shown in 3D. If
-                smaller than 0, all the instances in the pose_result will be
-                shown. Otherwise, pad or truncate the pose_result to a length
-                of num_instances.
             win_name (str): The window name.
             wait_time (int): Value of waitKey param.
                 Default: 0.
@@ -374,7 +369,7 @@ class PoseLifter(BasePose):
                     skeleton,
                     kpt_score_thr=0.3,
                     pose_kpt_color=pose_kpt_color,
-                    pose_limb_color=pose_limb_color,
+                    pose_link_color=pose_link_color,
                     radius=radius,
                     thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
@@ -384,7 +379,7 @@ class PoseLifter(BasePose):
             img,
             skeleton,
             pose_kpt_color,
-            pose_limb_color,
+            pose_link_color,
             vis_height,
             num_instances=num_instances)
 

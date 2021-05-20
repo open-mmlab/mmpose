@@ -1,15 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
-from .hand_base_dataset import HandBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class FreiHandDataset(HandBaseDataset):
+class FreiHandDataset(Kpt2dSviewRgbImgTopDownDataset):
     """FreiHand dataset for top-down hand pose estimation.
 
     `FreiHAND: A Dataset for Markerless Capture of Hand Pose
@@ -50,6 +52,7 @@ class FreiHandDataset(HandBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -59,17 +62,26 @@ class FreiHandDataset(HandBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/freihand2d.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 21
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.dataset_name = 'freihand'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

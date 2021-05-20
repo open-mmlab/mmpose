@@ -5,10 +5,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from torch.utils.data import Dataset
 
+from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 
 
-class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
+class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
     """Base class for 3D human pose datasets.
 
     Subclasses should consider overwriting following methods:
@@ -36,6 +37,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
                 Default: False.
 
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -45,6 +47,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
         self.ann_file = ann_file
@@ -54,7 +57,25 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.test_mode = test_mode
         self.ann_info = {}
 
+        if dataset_info is None:
+            raise ValueError(
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.')
+
+        dataset_info = DatasetInfo(dataset_info)
+
         self.load_config(self.data_cfg)
+
+        self.ann_info['num_joints'] = data_cfg['num_joints']
+        assert self.ann_info['num_joints'] == dataset_info.keypoint_num
+        self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
+        self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
+        self.ann_info['joint_weights'] = dataset_info.joint_weights
+        self.ann_info['skeleton'] = dataset_info.skeleton
+        self.sigmas = dataset_info.sigmas
+        self.dataset_name = dataset_info.dataset_name
+
         self.data_info = self.load_annotations()
         self.sample_indices = self.build_sample_indices()
         self.pipeline = Compose(pipeline)
@@ -77,19 +98,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.temporal_padding = data_cfg.get('temporal_padding', False)
         self.subset = data_cfg.get('subset', 1)
         self.need_2d_label = data_cfg.get('need_2d_label', False)
-
         self.need_camera_param = False
-
-        # create annotation information
-        ann_info = {}
-        ann_info['num_joints'] = self.num_joints
-        ann_info['flip_pairs'] = None
-        ann_info['upper_body_ids'] = None
-        ann_info['lower_body_ids'] = None
-        ann_info['joint_weights'] = np.full(
-            self.num_joints, 1.0, dtype=np.float32)
-
-        self.ann_info.update(ann_info)
 
     def load_annotations(self):
         """Load data annotation."""

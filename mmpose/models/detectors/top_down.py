@@ -222,7 +222,7 @@ class TopDown(BasePose):
                     kpt_score_thr=0.3,
                     bbox_color='green',
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     text_color='white',
                     radius=4,
                     thickness=1,
@@ -240,13 +240,14 @@ class TopDown(BasePose):
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
             skeleton (list[list]): The connection of keypoints.
+                skeleton is 0-based indexing.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             text_color (str or tuple or :obj:`Color`): Color of texts.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
@@ -290,7 +291,7 @@ class TopDown(BasePose):
                 show=False)
 
             imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                             pose_kpt_color, pose_limb_color, radius,
+                             pose_kpt_color, pose_link_color, radius,
                              thickness)
 
         if show:

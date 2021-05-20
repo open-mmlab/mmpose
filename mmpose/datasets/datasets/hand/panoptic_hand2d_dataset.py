@@ -1,15 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
-from .hand_base_dataset import HandBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class PanopticDataset(HandBaseDataset):
+class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Panoptic dataset for top-down hand pose estimation.
 
     `Hand Keypoint Detection in Single Images using Multiview
@@ -50,6 +52,7 @@ class PanopticDataset(HandBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -59,17 +62,26 @@ class PanopticDataset(HandBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/panoptic_hand2d.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 21
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.dataset_name = 'panoptic'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -95,9 +107,9 @@ class PanopticDataset(HandBaseDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the bbox is the tightest bbox enclosing keypoints
-                # the paper use 2.2bbox as input
-                # we use 1.76bbox(2.2 * 0.8) as input
+                # The bbox is the tightest bbox enclosing keypoints.
+                # The paper uses 2.2 bbox as the input, while
+                # we use 1.76 (2.2 * 0.8) bbox as the input.
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.76)
 
                 image_file = os.path.join(self.img_prefix,

@@ -85,9 +85,9 @@ def test_bottom_up_COCO_dataset():
         pipeline=[],
         test_mode=True)
 
+    assert custom_dataset.dataset_name == 'coco'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'coco'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -136,11 +136,12 @@ def test_bottom_up_CrowdPose_dataset():
         pipeline=[],
         test_mode=True)
 
+    assert custom_dataset.dataset_name == 'crowdpose'
+
     image_id = 103319
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'crowdpose'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -191,11 +192,12 @@ def test_bottom_up_MHP_dataset():
         pipeline=[],
         test_mode=True)
 
+    assert custom_dataset.dataset_name == 'mhp'
+
     image_id = 2889
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'mhp'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -244,6 +246,8 @@ def test_bottom_up_AIC_dataset():
         data_cfg=data_cfg,
         pipeline=[],
         test_mode=True)
+
+    assert custom_dataset.dataset_name == 'aic'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids

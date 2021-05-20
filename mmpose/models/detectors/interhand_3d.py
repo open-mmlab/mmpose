@@ -109,7 +109,7 @@ class Interhand3D(TopDown):
                     bbox_color='green',
                     thickness=2,
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     vis_height=400,
                     num_instances=-1,
                     win_name='',
@@ -128,7 +128,7 @@ class Interhand3D(TopDown):
                 - "title" (str): title for the subplot
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
-                limbs, each is a pair of joint indices.
+                links, each is a pair of joint indices.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             radius (int): Radius of circles.
@@ -136,7 +136,7 @@ class Interhand3D(TopDown):
             thickness (int): Thickness of lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
+            pose_link_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
@@ -196,7 +196,7 @@ class Interhand3D(TopDown):
                     skeleton,
                     kpt_score_thr=kpt_score_thr,
                     pose_kpt_color=pose_kpt_color,
-                    pose_limb_color=pose_limb_color,
+                    pose_link_color=pose_link_color,
                     radius=radius,
                     thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
@@ -206,7 +206,7 @@ class Interhand3D(TopDown):
             img,
             skeleton,
             pose_kpt_color,
-            pose_limb_color,
+            pose_link_color,
             vis_height,
             axis_limit=300,
             axis_azimuth=-115,
