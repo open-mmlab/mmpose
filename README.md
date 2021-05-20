@@ -33,6 +33,10 @@ The master branch works with **PyTorch 1.3+**.
     <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
     2D animal_pose estimation
 </div>
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/15977946/118820606-02df2000-b8e9-11eb-9984-b9228101e780.gif" width="600px" alt><br>
+    3D human pose estimation
+</div>
 
 ### Major Features
 
