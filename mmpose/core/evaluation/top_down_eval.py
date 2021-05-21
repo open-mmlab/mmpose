@@ -91,6 +91,43 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
+def _get_max_preds_3d(heatmaps):
+    """Get keypoint predictions from 3D score maps.
+
+    Note:
+        batch size: N
+        num keypoints: K
+        heatmap depth size: D
+        heatmap height: H
+        heatmap width: W
+
+    Args:
+        heatmaps (np.ndarray[N, K, D, H, W]): model predicted heatmaps.
+
+    Returns:
+        tuple: A tuple containing aggregated results.
+        - preds (np.ndarray[N, K, 3]): Predicted keypoint location.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+    """
+    assert isinstance(heatmaps, np.ndarray), \
+        ('heatmaps should be numpy.ndarray')
+    assert heatmaps.ndim == 5, 'heatmaps should be 5-ndim'
+
+    N, K, D, H, W = heatmaps.shape
+    heatmaps_reshaped = heatmaps.reshape((N, K, -1))
+    idx = np.argmax(heatmaps_reshaped, 2).reshape((N, K, 1))
+    maxvals = np.amax(heatmaps_reshaped, 2).reshape((N, K, 1))
+
+    preds = np.zeros((N, K, 3), dtype=np.float32)
+    _idx = idx[..., 0]
+    preds[..., 2] = _idx // (H * W)
+    preds[..., 1] = (_idx // W) % H
+    preds[..., 0] = _idx % W
+
+    preds = np.where(maxvals > 0.0, preds, -1)
+    return preds, maxvals
+
+
 def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
@@ -574,3 +611,64 @@ def keypoints_from_heatmaps(heatmaps,
         maxvals = maxvals / 255.0 + 0.5
 
     return preds, maxvals
+
+
+def keypoints_from_heatmaps3d(heatmaps, center, scale):
+    """Get final keypoint predictions from 3d heatmaps and transform them back
+    to the image.
+
+    Note:
+        batch size: N
+        num keypoints: K
+        heatmap depth size: D
+        heatmap height: H
+        heatmap width: W
+
+    Args:
+        heatmaps (np.ndarray[N, K, D, H, W]): model predicted heatmaps.
+        center (np.ndarray[N, 2]): Center of the bounding box (x, y).
+        scale (np.ndarray[N, 2]): Scale of the bounding box
+            wrt height/width.
+
+    Returns:
+        tuple: A tuple containing keypoint predictions and scores.
+
+        - preds (np.ndarray[N, K, 3]): Predicted 3d keypoint location
+        in images.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+    """
+    N, K, D, H, W = heatmaps.shape
+    preds, maxvals = _get_max_preds_3d(heatmaps)
+    # Transform back to the image
+    for i in range(N):
+        preds[i, :, :2] = transform_preds(preds[i, :, :2], center[i], scale[i],
+                                          [W, H])
+    return preds, maxvals
+
+
+def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
+    """Get multi-label classification accuracy.
+    Notes:
+        batch size: N
+        label number: L
+
+    Args:
+        pred (np.ndarray[N, L, 2]): model predicted labels.
+        gt (np.ndarray[N, L, 2]): ground-truth labels.
+        mask (np.ndarray[N, 1] or np.ndarray[N, L] ): reliability of
+        ground-truth labels.
+
+    Returns:
+        acc (float): multi-label classification accuracy.
+    """
+    # we only compute accuracy on the samples with ground-truth of all labels.
+    valid = (mask > 0).min(axis=1) if mask.ndim == 2 else (mask > 0)
+    pred, gt = pred[valid], gt[valid]
+
+    if pred.shape[0] == 0:
+        acc = 0  # when no sample is with gt labels, set acc to 0.
+    else:
+        # The classification of a sample is regarded as correct
+        # only if it's correct for all labels.
+        acc = (((pred - thr) * (gt - thr)) > 0).all(axis=1).mean()
+    return acc
