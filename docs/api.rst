@@ -39,14 +39,19 @@ backbones
 .. automodule:: mmpose.models.backbones
     :members:
 
+necks
+^^^^^^^^^^^
+.. automodule:: mmpose.models.necks
+    :members:
+
 detectors
 ^^^^^^^^^^^
 .. automodule:: mmpose.models.detectors
     :members:
 
-keypoint_heads
+heads
 ^^^^^^^^^^^^^^^
-.. automodule:: mmpose.models.keypoint_heads
+.. automodule:: mmpose.models.heads
     :members:
 
 losses
@@ -54,6 +59,10 @@ losses
 .. automodule:: mmpose.models.losses
     :members:
 
+misc
+^^^^^^^^^^^
+.. automodule:: mmpose.models.misc
+    :members:
 
 mmpose.datasets
 -----------------
