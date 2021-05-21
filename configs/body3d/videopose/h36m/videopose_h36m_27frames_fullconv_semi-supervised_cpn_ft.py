@@ -85,8 +85,8 @@ labeled_data_cfg = dict(
     causal=False,
     pad=True,
     joint_2d_src='detection',
-    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
-    '/joint_2d_det_files/cpn_ft_h36m_dbb_train.npy',
+    joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
+    'cpn_ft_h36m_dbb_train.npy',
     subset=0.1,
     subjects=['S1'],
     need_camera_param=True,
@@ -99,8 +99,8 @@ unlabeled_data_cfg = dict(
     causal=False,
     pad=True,
     joint_2d_src='detection',
-    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
-    '/joint_2d_det_files/cpn_ft_h36m_dbb_train.npy',
+    joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
+    'cpn_ft_h36m_dbb_train.npy',
     subjects=['S5', 'S6', 'S7', 'S8'],
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',
@@ -112,8 +112,8 @@ val_data_cfg = dict(
     causal=False,
     pad=True,
     joint_2d_src='detection',
-    joint_2d_det_file='/mnt/lustre/yingjiaming/external_files' +
-    '/joint_2d_det_files/cpn_ft_h36m_dbb_test.npy',
+    joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
+    'cpn_ft_h36m_dbb_test.npy',
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl')
 test_data_cfg = val_data_cfg
