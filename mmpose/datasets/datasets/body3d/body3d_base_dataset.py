@@ -21,6 +21,18 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         img_prefix (str): Path to a directory where images are held.
             Default: None.
         data_cfg (dict): config
+            - num_joints: Number of joints.
+            - seq_len: Number of frames in a sequence. Default: 1.
+            - seq_frame_interval: Extract frames from the video at certain
+                intervals. Default: 1.
+            - causal: Whether to use causal convolutions. If set to True, the
+                rightmost input frame will be the target frame. Otherwise, the
+                middle input frame will be the target frame. Default: True.
+            - temporal_padding: Whether to pad the video so that poses will be
+                predicted for every frame in the video. Default: False
+            - subset: Reduce dataset size by fraction. Default: 1.
+            - need_2d_label: Whether need 2D joint labels. Default: False.
+
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
@@ -60,9 +72,9 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.seq_len = data_cfg.get('seq_len', 1)
         self.seq_frame_interval = data_cfg.get('seq_frame_interval', 1)
         self.causal = data_cfg.get('causal', True)
-        self.pad = data_cfg.get('pad', False)
+        self.temporal_padding = data_cfg.get('temporal_padding', False)
         self.subset = data_cfg.get('subset', 1)
-        self.need_target_2d = data_cfg.get('need_target_2d', False)
+        self.need_2d_label = data_cfg.get('need_2d_label', False)
 
         self.need_camera_param = False
 
@@ -175,7 +187,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
             'centers': _centers,
         }
 
-        if self.need_target_2d:
+        if self.need_2d_label:
             results['target_2d'] = _joints_2d[target_idx, :, :2]
 
         if self.need_camera_param:

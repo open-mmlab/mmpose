@@ -60,7 +60,7 @@ def test_body3d_h36m_dataset():
         seq_len=27,
         seq_frame_interval=1,
         causal=True,
-        pad=True,
+        temporal_padding=True,
         joint_2d_src='detection',
         joint_2d_det_file='tests/data/h36m/test_h36m_2d_detection.npy',
         need_camera_param=True,
@@ -108,7 +108,7 @@ def test_body3d_semi_supervision_dataset():
         seq_len=27,
         seq_frame_interval=1,
         causall=False,
-        pad=True,
+        temporal_padding=True,
         joint_2d_src='gt',
         subset=1,
         subjects=['S1'],
@@ -127,12 +127,12 @@ def test_body3d_semi_supervision_dataset():
         seq_len=27,
         seq_frame_interval=1,
         causal=False,
-        pad=True,
+        temporal_padding=True,
         joint_2d_src='gt',
         subjects=['S5', 'S7', 'S8'],
         need_camera_param=True,
         camera_param_file='tests/data/h36m/cameras.pkl',
-        need_target_2d=True)
+        need_2d_label=True)
     unlabeled_dataset = dict(
         type='Body3DH36MDataset',
         ann_file='tests/data/h36m/test_h36m_body3d.npz',

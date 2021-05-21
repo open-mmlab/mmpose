@@ -148,7 +148,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
         for _, _indices in sorted(video_frames.items()):
             n_frame = len(_indices)
 
-            if self.pad:
+            if self.temporal_padding:
                 # Pad the sequence so that every frame in the sequence will be
                 # predicted.
                 if self.causal:

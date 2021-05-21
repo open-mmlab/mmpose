@@ -83,7 +83,7 @@ labeled_data_cfg = dict(
     seq_len=27,
     seq_frame_interval=1,
     causal=False,
-    pad=True,
+    temporal_padding=True,
     joint_2d_src='detection',
     joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
     'cpn_ft_h36m_dbb_train.npy',
@@ -97,20 +97,20 @@ unlabeled_data_cfg = dict(
     seq_len=27,
     seq_frame_interval=1,
     causal=False,
-    pad=True,
+    temporal_padding=True,
     joint_2d_src='detection',
     joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
     'cpn_ft_h36m_dbb_train.npy',
     subjects=['S5', 'S6', 'S7', 'S8'],
     need_camera_param=True,
     camera_param_file=f'{data_root}/annotation_body3d/cameras.pkl',
-    need_target_2d=True)
+    need_2d_label=True)
 val_data_cfg = dict(
     num_joints=17,
     seq_len=27,
     seq_frame_interval=1,
     causal=False,
-    pad=True,
+    temporal_padding=True,
     joint_2d_src='detection',
     joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
     'cpn_ft_h36m_dbb_test.npy',

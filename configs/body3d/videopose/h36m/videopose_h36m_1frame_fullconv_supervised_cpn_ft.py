@@ -66,7 +66,7 @@ train_data_cfg = dict(
     seq_len=1,
     seq_frame_interval=1,
     causal=False,
-    pad=False,
+    temporal_padding=False,
     joint_2d_src='detection',
     joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
     'cpn_ft_h36m_dbb_train.npy',
@@ -78,7 +78,7 @@ test_data_cfg = dict(
     seq_len=1,
     seq_frame_interval=1,
     causal=False,
-    pad=False,
+    temporal_padding=False,
     joint_2d_src='detection',
     joint_2d_det_file=f'{data_root}/joint_2d_det_files/' +
     'cpn_ft_h36m_dbb_test.npy',
