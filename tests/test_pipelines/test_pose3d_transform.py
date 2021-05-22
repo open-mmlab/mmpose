@@ -57,6 +57,10 @@ def get_data_sample():
     subj, _, camera = _parse_h36m_imgname(_imgnames[frame_ids[0]])
     results['camera_param'] = cameras[(subj, camera)]
 
+    # add image size
+    results['image_width'] = results['camera_param']['w']
+    results['image_height'] = results['camera_param']['h']
+
     # add ann_info
     ann_info = {}
     ann_info['num_joints'] = 17
@@ -96,8 +100,10 @@ def test_joint_transforms():
             type='NormalizeJointCoordinate', item='target', mean=mean,
             std=std),
         dict(type='PoseSequenceToTensor', item='target'),
-        dict(type='ImageCoordinateNormalization', item='input_2d'),
-        dict(type='CameraNormalization'),
+        dict(
+            type='ImageCoordinateNormalization',
+            item='input_2d',
+            norm_camera=True),
         dict(type='CollectCameraIntrinsics'),
         dict(
             type='Collect',
@@ -132,11 +138,10 @@ def test_joint_transforms():
     joints_0 = results['input_2d']
     joints_1 = output['input']
     # manually do transformations
-    center = np.array([
-        0.5 * results['camera_param']['w'], 0.5 * results['camera_param']['h']
-    ],
-                      dtype=np.float32)
-    scale = np.array(0.5 * results['camera_param']['w'], dtype=np.float32)
+    center = np.array(
+        [0.5 * results['image_width'], 0.5 * results['image_height']],
+        dtype=np.float32)
+    scale = np.array(0.5 * results['image_width'], dtype=np.float32)
     joints_0 = (joints_0 - center) / scale
     np.testing.assert_array_almost_equal(joints_0, joints_1)
 

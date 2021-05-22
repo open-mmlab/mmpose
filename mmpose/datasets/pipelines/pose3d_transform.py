@@ -1,3 +1,5 @@
+import copy
+
 import mmcv
 import numpy as np
 import torch
@@ -121,7 +123,9 @@ class ImageCoordinateNormalization:
     w] is mapped to [-1, 1], while preserving the aspect ratio.
 
     Args:
-        item (str): The name of the pose to normalize.
+        item (str|list[str]): The name of the pose to normalize.
+        norm_camera (bool): Whether to normalize camera intrinsics.
+            Default: False.
         camera_param (dict|None): The camera parameter dict. See the camera
             class definition for more details. If None is given, the camera
             parameter will be obtained during processing of each data sample
@@ -129,11 +133,15 @@ class ImageCoordinateNormalization:
     Required keys:
         item
     Modified keys:
-        item
+        item (, camera_param)
     """
 
-    def __init__(self, item, camera_param=None):
+    def __init__(self, item, norm_camera=False, camera_param=None):
         self.item = item
+        if isinstance(self.item, str):
+            self.item = [self.item]
+
+        self.norm_camera = norm_camera
 
         if camera_param is None:
             self.static_camera = False
@@ -142,64 +150,27 @@ class ImageCoordinateNormalization:
             self.camera_param = camera_param
 
     def __call__(self, results):
-        if self.static_camera:
-            camera_param = self.camera_param
-        else:
-            assert 'camera_param' in results, 'Camera parameters are missing.'
-            camera_param = results['camera_param']
-        assert 'h' in camera_param and 'w' in camera_param
+        center = np.array(
+            [0.5 * results['image_width'], 0.5 * results['image_height']],
+            dtype=np.float32)
+        scale = np.array(0.5 * results['image_width'], dtype=np.float32)
 
-        center = np.array([0.5 * camera_param['w'], 0.5 * camera_param['h']],
-                          dtype=np.float32)
-        scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
+        for item in self.item:
+            results[item] = (results[item] - center) / scale
 
-        results[self.item] = (results[self.item] - center) / scale
-
-        return results
-
-
-@PIPELINES.register_module()
-class CameraNormalization:
-    """Normalize camera frame. This pipeline should be called along with
-    ImageCoordinateNormalization.
-
-    Args:
-        camera_param (dict|None): The camera parameter dict. See the camera
-            class definition for more details. If None is given, the camera
-            parameter will be obtained during processing of each data sample
-            with the key "camera_param".
-
-    Required keys:
-        camera_param (if camera parameters are not given in initialization)
-    Modified keys:
-        camera_param
-    """
-
-    def __init__(self, camera_param=None):
-        if camera_param is None:
-            self.static_camera = False
-        else:
-            self.static_camera = True
-            self.camera_param = camera_param
-
-    def __call__(self, results):
-        if self.static_camera:
-            camera_param = self.camera_param
-        else:
-            assert 'camera_param' in results, 'Camera parameters are missing.'
-            camera_param = results['camera_param']
-        assert 'h' in camera_param and 'w' in camera_param
-        assert 'f' in camera_param and 'c' in camera_param
-
-        center = np.array([0.5 * camera_param['w'], 0.5 * camera_param['h']],
-                          dtype=np.float32)
-        scale = np.array(0.5 * camera_param['w'], dtype=np.float32)
-
-        camera_param['f'] = camera_param['f'] / scale
-        camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
-        if 'camera_param' not in results:
-            results['camera_param'] = dict()
-        results['camera_param'].update(camera_param)
+        if self.norm_camera:
+            if self.static_camera:
+                camera_param = self.camera_param
+            else:
+                assert 'camera_param' in results, \
+                    'Camera parameters are missing.'
+                camera_param = copy.deepcopy(results['camera_param'])
+            assert 'f' in camera_param and 'c' in camera_param
+            camera_param['f'] = camera_param['f'] / scale
+            camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
+            if 'camera_param' not in results:
+                results['camera_param'] = dict()
+            results['camera_param'].update(camera_param)
 
         return results
 
@@ -423,7 +394,7 @@ class RelativeJointRandomFlip:
                 else:
                     assert 'camera_param' in results, \
                         'Camera parameters are missing.'
-                    camera_param = results['camera_param']
+                    camera_param = copy.deepcopy(results['camera_param'])
                 assert 'c' in camera_param and 'p' in camera_param
                 camera_param['c'][0] *= -1
                 camera_param['p'][0] *= -1

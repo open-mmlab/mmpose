@@ -146,9 +146,10 @@ train_labeled_pipeline = [
 ]
 
 train_unlabeled_pipeline = [
-    dict(type='ImageCoordinateNormalization', item='input_2d'),
-    dict(type='ImageCoordinateNormalization', item='target_2d'),
-    dict(type='CameraNormalization'),
+    dict(
+        type='ImageCoordinateNormalization',
+        item=['input_2d', 'target_2d'],
+        norm_camera=True),
     dict(
         type='RelativeJointRandomFlip',
         item=['input_2d', 'target_2d'],
