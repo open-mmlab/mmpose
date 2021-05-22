@@ -1,11 +1,11 @@
 dataset_info = dict(
     dataset_name='atrw',
     paper_info=dict(
-        author='Li, Shuyuan and Li, Jianguo and Tang, Hanlin'
-        ' and Qian, Rui and Lin, Weiyao',
-        title='ATRW: A Benchmark for Amur Tiger'
-        ' Re-identification in the Wild',
-        booktitle='Proceedings of the 28th ACM '
+        author='Li, Shuyuan and Li, Jianguo and Tang, Hanlin '
+        'and Qian, Rui and Lin, Weiyao',
+        title='ATRW: A Benchmark for Amur Tiger '
+        'Re-identification in the Wild',
+        container='Proceedings of the 28th ACM '
         'International Conference on Multimedia',
         year='2020',
         homepage='https://cvwc2019.github.io/challenge.html',

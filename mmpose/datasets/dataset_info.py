@@ -92,7 +92,7 @@ class DatasetInfo:
                 self.flip_index_name.append(keypoint_name)
             else:
                 self.flip_index_name.append(swap_keypoint)
-                if (swap_keypoint, keypoint_name) not in self.flip_pairs_name:
+                if [swap_keypoint, keypoint_name] not in self.flip_pairs_name:
                     self.flip_pairs_name.append([keypoint_name, swap_keypoint])
 
         self.flip_pairs = [[
