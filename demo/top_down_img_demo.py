@@ -1,3 +1,4 @@
+import json
 import os
 from argparse import ArgumentParser
 
@@ -5,6 +6,7 @@ from xtcocotools.coco import COCO
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
+from mmpose.datasets import DatasetInfo
 
 
 def main():
@@ -58,6 +60,10 @@ def main():
 
     dataset = pose_model.cfg.data['test']['type']
 
+    with open('dataset_info/dataset_info.json', 'r') as f:
+        dataset_info_files = json.load(f)
+    dataset_info = DatasetInfo(dataset_info_files[dataset])
+
     img_keys = list(coco.imgs.keys())
 
     # optional
@@ -90,7 +96,7 @@ def main():
             person_results,
             bbox_thr=None,
             format='xywh',
-            dataset=dataset,
+            dataset_info=dataset_info,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
@@ -104,7 +110,7 @@ def main():
             pose_model,
             image_name,
             pose_results,
-            dataset=dataset,
+            dataset_info=dataset_info,
             kpt_score_thr=args.kpt_thr,
             radius=args.radius,
             thickness=args.thickness,

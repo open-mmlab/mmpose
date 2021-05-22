@@ -26,7 +26,7 @@ dataset_info = dict(
             type='upper',
             swap='left_ear'),
         2:
-        dict(name='nose', id=2, color=[51, 153, 255], type='upper', swap=None),
+        dict(name='nose', id=2, color=[51, 153, 255], type='upper', swap=''),
         3:
         dict(
             name='right_shoulder',
@@ -98,49 +98,44 @@ dataset_info = dict(
             type='lower',
             swap='right_back_paw'),
         13:
-        dict(
-            name='tail', id=13, color=[51, 153, 255], type='lower', swap=None),
+        dict(name='tail', id=13, color=[51, 153, 255], type='lower', swap=''),
         14:
         dict(
-            name='center',
-            id=14,
-            color=[51, 153, 255],
-            type='lower',
-            swap=None),
+            name='center', id=14, color=[51, 153, 255], type='lower', swap=''),
     },
     skeleton_info={
         0:
-        dict(pair=('left_ear', 'nose'), id=0, color=[0, 255, 0]),
+        dict(limb=('left_ear', 'nose'), id=0, color=[0, 255, 0]),
         1:
-        dict(pair=('right_ear', 'nose'), id=1, color=[255, 128, 0]),
+        dict(limb=('right_ear', 'nose'), id=1, color=[255, 128, 0]),
         2:
-        dict(pair=('nose', 'center'), id=2, color=[51, 153, 255]),
+        dict(limb=('nose', 'center'), id=2, color=[51, 153, 255]),
         3:
         dict(
-            pair=('left_shoulder', 'left_front_paw'), id=3, color=[0, 255, 0]),
+            limb=('left_shoulder', 'left_front_paw'), id=3, color=[0, 255, 0]),
         4:
-        dict(pair=('left_shoulder', 'center'), id=4, color=[0, 255, 0]),
+        dict(limb=('left_shoulder', 'center'), id=4, color=[0, 255, 0]),
         5:
         dict(
-            pair=('right_shoulder', 'right_front_paw'),
+            limb=('right_shoulder', 'right_front_paw'),
             id=5,
             color=[255, 128, 0]),
         6:
-        dict(pair=('right_shoulder', 'center'), id=6, color=[255, 128, 0]),
+        dict(limb=('right_shoulder', 'center'), id=6, color=[255, 128, 0]),
         7:
-        dict(pair=('tail', 'center'), id=7, color=[51, 153, 255]),
+        dict(limb=('tail', 'center'), id=7, color=[51, 153, 255]),
         8:
-        dict(pair=('right_back_paw', 'right_knee'), id=8, color=[255, 128, 0]),
+        dict(limb=('right_back_paw', 'right_knee'), id=8, color=[255, 128, 0]),
         9:
-        dict(pair=('right_knee', 'right_hip'), id=9, color=[255, 128, 0]),
+        dict(limb=('right_knee', 'right_hip'), id=9, color=[255, 128, 0]),
         10:
-        dict(pair=('right_hip', 'tail'), id=10, color=[255, 128, 0]),
+        dict(limb=('right_hip', 'tail'), id=10, color=[255, 128, 0]),
         11:
-        dict(pair=('left_back_paw', 'left_knee'), id=11, color=[0, 255, 0]),
+        dict(limb=('left_back_paw', 'left_knee'), id=11, color=[0, 255, 0]),
         12:
-        dict(pair=('left_knee', 'left_hip'), id=12, color=[0, 255, 0]),
+        dict(limb=('left_knee', 'left_hip'), id=12, color=[0, 255, 0]),
         13:
-        dict(pair=('left_hip', 'tail'), id=13, color=[0, 255, 0]),
+        dict(limb=('left_hip', 'tail'), id=13, color=[0, 255, 0]),
     },
     joint_weights=[1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
     sigmas=[

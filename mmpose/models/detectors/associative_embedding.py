@@ -321,6 +321,7 @@ class AssociativeEmbedding(BasePose):
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
             skeleton (list[list]): The connection of keypoints.
+                skeleton is 0-based indexing.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
