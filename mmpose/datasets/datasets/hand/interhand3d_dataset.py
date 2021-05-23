@@ -6,11 +6,11 @@ import numpy as np
 
 from mmpose.core.evaluation.top_down_eval import keypoint_epe
 from mmpose.datasets.builder import DATASETS
-from .hand_base_dataset import HandBaseDataset
+from .._base_ import Kpt3dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class InterHand3DDataset(HandBaseDataset):
+class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
     """InterHand2.6M 3D dataset for top-down hand pose estimation.
 
     `InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
@@ -88,21 +88,29 @@ class InterHand3DDataset(HandBaseDataset):
                  pipeline,
                  use_gt_root_depth=True,
                  rootnet_result_file=None,
+                 dataset_info=None,
                  test_mode=False):
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
-        self.ann_info['flip_pairs'] = [[i, 21 + i] for i in range(21)]
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
-        self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 42
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
         self.ann_info['heatmap3d_depth_bound'] = data_cfg[
             'heatmap3d_depth_bound']
         self.ann_info['heatmap_size_root'] = data_cfg['heatmap_size_root']
         self.ann_info['root_depth_bound'] = data_cfg['root_depth_bound']
+        self.ann_info['use_different_joint_weights'] = False
 
+        # TODO: These will be removed in the later versions.
+        self.ann_info['flip_pairs'] = [[i, 21 + i] for i in range(21)]
+        assert self.ann_info['num_joints'] == 42
+        self.ann_info['joint_weights'] = \
+            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
         self.dataset_name = 'interhand3d'
+
         self.camera_file = camera_file
         self.joint_file = joint_file
 
@@ -115,75 +123,6 @@ class InterHand3DDataset(HandBaseDataset):
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
-
-    @staticmethod
-    def _cam2pixel(cam_coord, f, c):
-        """Transform the joints from their camera coordinates to their pixel
-        coordinates.
-
-        Note:
-            N: number of joints
-
-        Args:
-            cam_coord (ndarray[N, 3]): 3D joints coordinates
-                in the camera coordinate system
-            f (ndarray[2]): focal length of x and y axis
-            c (ndarray[2]): principal point of x and y axis
-
-        Returns:
-            img_coord (ndarray[N, 3]): the coordinates (x, y, 0)
-                in the image plane.
-        """
-        x = cam_coord[:, 0] / (cam_coord[:, 2] + 1e-8) * f[0] + c[0]
-        y = cam_coord[:, 1] / (cam_coord[:, 2] + 1e-8) * f[1] + c[1]
-        z = np.zeros_like(x)
-        img_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
-        return img_coord
-
-    @staticmethod
-    def _world2cam(world_coord, R, T):
-        """Transform the joints from their world coordinates to their camera
-        coordinates.
-
-        Note:
-            N: number of joints
-
-        Args:
-            world_coord (ndarray[3, N]): 3D joints coordinates
-                in the world coordinate system
-            R (ndarray[3, 3]): camera rotation matrix
-            T (ndarray[3, 1]): camera position (x, y, z)
-
-        Returns:
-            cam_coord (ndarray[3, N]): 3D joints coordinates
-                in the camera coordinate system
-        """
-        cam_coord = np.dot(R, world_coord - T)
-        return cam_coord
-
-    @staticmethod
-    def _pixel2cam(pixel_coord, f, c):
-        """Transform the joints from their pixel coordinates to their camera
-        coordinates.
-
-        Note:
-            N: number of joints
-
-        Args:
-            pixel_coord (ndarray[N, 3]): 3D joints coordinates
-                in the pixel coordinate system
-            f (ndarray[2]): focal length of x and y axis
-            c (ndarray[2]): principal point of x and y axis
-
-        Returns:
-            cam_coord (ndarray[N, 3]): 3D joints coordinates
-                in the camera coordinate system
-        """
-        x = (pixel_coord[:, 0] - c[0]) / f[0] * pixel_coord[:, 2]
-        y = (pixel_coord[:, 1] - c[1]) / f[1] * pixel_coord[:, 2]
-        z = pixel_coord[:, 2]
-        cam_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
-        return cam_coord
 
     @staticmethod
     def _encode_handtype(hand_type):

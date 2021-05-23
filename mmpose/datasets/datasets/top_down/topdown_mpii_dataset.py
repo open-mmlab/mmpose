@@ -6,11 +6,11 @@ import numpy as np
 from scipy.io import loadmat, savemat
 
 from ...builder import DATASETS
-from .topdown_base_dataset import TopDownBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class TopDownMpiiDataset(TopDownBaseDataset):
+class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MPII Dataset for top-down pose estimation.
 
     `2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
@@ -54,11 +54,16 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
-        self.ann_file = ann_file
         self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [10, 15],
                                        [11, 14], [12, 13]]
         self.ann_info['upper_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14, 15)

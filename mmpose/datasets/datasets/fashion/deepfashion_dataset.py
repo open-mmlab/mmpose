@@ -1,14 +1,15 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
 
 from mmpose.datasets.builder import DATASETS
-from .fashion_base_dataset import FashionBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class DeepFashionDataset(FashionBaseDataset):
+class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
     `DeepFashion: Powering Robust Clothes Recognition
@@ -51,8 +52,6 @@ class DeepFashionDataset(FashionBaseDataset):
         ann_file (str): Path to the annotation file.
         img_prefix (str): Path to a directory where images are held.
             Default: None.
-        subset (str): The FLD dataset has 3 subsets, 'upper', 'lower',
-            and 'full', denoting different types of clothes.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or
@@ -62,14 +61,26 @@ class DeepFashionDataset(FashionBaseDataset):
     def __init__(self,
                  ann_file,
                  img_prefix,
-                 subset,
                  data_cfg,
                  pipeline,
+                 subset='',
+                 dataset_info=None,
                  test_mode=False):
 
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
+        # TODO: These will be removed in the later versions.
+        if subset != '':
+            warnings.warn(
+                'subset is deprecated.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
         if subset == 'upper':
             assert self.ann_info['num_joints'] == 6
             self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5]]
@@ -82,14 +93,11 @@ class DeepFashionDataset(FashionBaseDataset):
             assert self.ann_info['num_joints'] == 8
             self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 5], [6, 7]]
             self.dataset_name = 'deepfashion_full'
-        else:
-            NotImplementedError()
 
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.dataset_name = 'deepfashion_' + subset
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

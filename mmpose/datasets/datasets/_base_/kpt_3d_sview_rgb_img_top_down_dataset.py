@@ -6,13 +6,15 @@ import numpy as np
 from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
+from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 
 
-class FaceBaseDataset(Dataset, metaclass=ABCMeta):
-    """Base class for face datasets.
+class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
+    """Base class for keypoint 3D top-down pose estimation with single-view RGB
+    image as the input.
 
-    All face datasets should subclass it.
+    All fashion datasets should subclass it.
     All subclasses should overwrite:
         Methods:`_get_db`, 'evaluate'
 
@@ -31,12 +33,13 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
         self.image_info = {}
         self.ann_info = {}
 
-        self.annotations_path = ann_file
+        self.ann_file = ann_file
         self.img_prefix = img_prefix
         self.pipeline = pipeline
         self.test_mode = test_mode
@@ -45,13 +48,36 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
         self.ann_info['heatmap_size'] = np.array(data_cfg['heatmap_size'])
         self.ann_info['num_joints'] = data_cfg['num_joints']
 
-        self.ann_info['flip_pairs'] = None
-
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['num_output_channels'] = data_cfg['num_output_channels']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
 
+        if dataset_info is None:
+            raise ValueError(
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.')
+
+        dataset_info = DatasetInfo(dataset_info)
+
+        assert self.ann_info['num_joints'] == dataset_info.keypoint_num
+        self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
+        self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
+        self.ann_info['joint_weights'] = dataset_info.joint_weights
+        self.sigmas = dataset_info.sigmas
+        self.dataset_name = dataset_info.dataset_name
+
         self.coco = COCO(ann_file)
+        cats = [
+            cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
+        ]
+        self.classes = ['__background__'] + cats
+        self.num_classes = len(self.classes)
+        self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
+        self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
+        self._coco_ind_to_class_ind = dict(
+            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+            for cls in self.classes[1:])
         self.img_ids = self.coco.getImgIds()
         self.num_images = len(self.img_ids)
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
@@ -59,6 +85,75 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
         self.db = []
 
         self.pipeline = Compose(self.pipeline)
+
+    @staticmethod
+    def _cam2pixel(cam_coord, f, c):
+        """Transform the joints from their camera coordinates to their pixel
+        coordinates.
+
+        Note:
+            N: number of joints
+
+        Args:
+            cam_coord (ndarray[N, 3]): 3D joints coordinates
+                in the camera coordinate system
+            f (ndarray[2]): focal length of x and y axis
+            c (ndarray[2]): principal point of x and y axis
+
+        Returns:
+            img_coord (ndarray[N, 3]): the coordinates (x, y, 0)
+                in the image plane.
+        """
+        x = cam_coord[:, 0] / (cam_coord[:, 2] + 1e-8) * f[0] + c[0]
+        y = cam_coord[:, 1] / (cam_coord[:, 2] + 1e-8) * f[1] + c[1]
+        z = np.zeros_like(x)
+        img_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
+        return img_coord
+
+    @staticmethod
+    def _world2cam(world_coord, R, T):
+        """Transform the joints from their world coordinates to their camera
+        coordinates.
+
+        Note:
+            N: number of joints
+
+        Args:
+            world_coord (ndarray[3, N]): 3D joints coordinates
+                in the world coordinate system
+            R (ndarray[3, 3]): camera rotation matrix
+            T (ndarray[3, 1]): camera position (x, y, z)
+
+        Returns:
+            cam_coord (ndarray[3, N]): 3D joints coordinates
+                in the camera coordinate system
+        """
+        cam_coord = np.dot(R, world_coord - T)
+        return cam_coord
+
+    @staticmethod
+    def _pixel2cam(pixel_coord, f, c):
+        """Transform the joints from their pixel coordinates to their camera
+        coordinates.
+
+        Note:
+            N: number of joints
+
+        Args:
+            pixel_coord (ndarray[N, 3]): 3D joints coordinates
+                in the pixel coordinate system
+            f (ndarray[2]): focal length of x and y axis
+            c (ndarray[2]): principal point of x and y axis
+
+        Returns:
+            cam_coord (ndarray[N, 3]): 3D joints coordinates
+                in the camera coordinate system
+        """
+        x = (pixel_coord[:, 0] - c[0]) / f[0] * pixel_coord[:, 2]
+        y = (pixel_coord[:, 1] - c[1]) / f[1] * pixel_coord[:, 2]
+        z = pixel_coord[:, 2]
+        cam_coord = np.concatenate((x[:, None], y[:, None], z[:, None]), 1)
+        return cam_coord
 
     @staticmethod
     def _get_mapping_id_name(imgs):
@@ -85,7 +180,8 @@ class FaceBaseDataset(Dataset, metaclass=ABCMeta):
         """This encodes bbox(x,y,w,h) into (center, scale)
 
         Args:
-            x, y, w, h
+            x, y, w, h (float): left, top, width and height
+            padding (float): bounding box padding factor
 
         Returns:
             center (np.ndarray[float32](2,)): center of the bbox (x, y).

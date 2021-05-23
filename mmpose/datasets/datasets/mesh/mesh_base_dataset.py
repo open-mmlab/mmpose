@@ -37,7 +37,7 @@ class MeshBaseDataset(Dataset, metaclass=ABCMeta):
         self.image_info = {}
         self.ann_info = {}
 
-        self.annotations_path = ann_file
+        self.ann_file = ann_file
         self.img_prefix = img_prefix
         self.pipeline = pipeline
         self.test_mode = test_mode

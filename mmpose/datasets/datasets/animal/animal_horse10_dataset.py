@@ -1,17 +1,14 @@
 import os
 from collections import OrderedDict
 
-import json_tricks as json
 import numpy as np
 
-from mmpose.core.evaluation.top_down_eval import (keypoint_nme,
-                                                  keypoint_pck_accuracy)
 from ...builder import DATASETS
-from .animal_base_dataset import AnimalBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class AnimalHorse10Dataset(AnimalBaseDataset):
+class AnimalHorse10Dataset(Kpt2dSviewRgbImgTopDownDataset):
     """AnimalHorse10Dataset for animal pose estimation.
 
     `Pretraining boosts out-of-domain robustness for pose estimation'
@@ -61,17 +58,23 @@ class AnimalHorse10Dataset(AnimalBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
-
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
+        # TODO: These will be removed in the later versions.
         assert self.ann_info['num_joints'] == 22
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
         self.dataset_name = 'horse10'
+
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -134,50 +137,6 @@ class AnimalHorse10Dataset(AnimalBaseDataset):
         interocular = np.linalg.norm(
             gts[:, 0, :] - gts[:, 1, :], axis=1, keepdims=True)
         return np.tile(interocular, [1, 2])
-
-    def _report_metric(self, res_file, metrics, pck_thr=0.3):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'NME'.
-            pck_thr (float): PCK threshold, default: 0.3.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-
-        normalize_factor = self._get_normalize_factor(gts)
-
-        if 'PCK' in metrics:
-            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
-                                              normalize_factor)
-            info_str.append(('PCK', pck))
-
-        if 'NME' in metrics:
-            info_str.append(
-                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
-
-        return info_str
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate horse-10 keypoint results. The pose prediction results will

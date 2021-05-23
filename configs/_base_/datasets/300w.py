@@ -382,3 +382,23 @@ dataset_info = dict(
     skeleton_info={},
     joint_weights=[1.] * 68,
     sigmas=[])
+
+data_root = 'data/300w'
+
+data = dict(
+    train=dict(
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_train.json',
+        img_prefix=f'{data_root}/images/',
+        dataset_info=dataset_info),
+    val=dict(
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        img_prefix=f'{data_root}/images/',
+        dataset_info=dataset_info),
+    test=dict(
+        type='Face300WDataset',
+        ann_file=f'{data_root}/annotations/face_landmarks_300w_valid.json',
+        img_prefix=f'{data_root}/images/',
+        dataset_info=dataset_info),
+)

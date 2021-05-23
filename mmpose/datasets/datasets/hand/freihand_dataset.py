@@ -4,11 +4,11 @@ from collections import OrderedDict
 import numpy as np
 
 from mmpose.datasets.builder import DATASETS
-from .hand_base_dataset import HandBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class FreiHandDataset(HandBaseDataset):
+class FreiHandDataset(Kpt2dSviewRgbImgTopDownDataset):
     """FreiHand dataset for top-down hand pose estimation.
 
     `FreiHAND: A Dataset for Markerless Capture of Hand Pose
@@ -58,12 +58,18 @@ class FreiHandDataset(HandBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
-
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
+        # TODO: These will be removed in the later versions.
         assert self.ann_info['num_joints'] == 21
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)

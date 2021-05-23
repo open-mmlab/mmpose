@@ -41,20 +41,26 @@ dataset_info = dict(
             type='',
             swap='left hem'),
     },
-    skeleton_info={
-        0:
-        dict(
-            link=('left waistline', 'right waistline'),
-            id=0,
-            color=[255, 255, 255]),
-        1:
-        dict(
-            link=('right waistline', 'right hem'), id=1, color=[255, 255,
-                                                                255]),
-        2:
-        dict(link=('right hem', 'left hem'), id=2, color=[255, 255, 255]),
-        3:
-        dict(link=('left hem', 'left waistline'), id=3, color=[255, 255, 255]),
-    },
+    skeleton_info={},
     joint_weights=[1.] * 4,
     sigmas=[])
+
+data_root = 'data/fld'
+
+data = dict(
+    train=dict(
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_train.json',
+        img_prefix=f'{data_root}/img/',
+        dataset_info=dataset_info),
+    val=dict(
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_val.json',
+        img_prefix=f'{data_root}/img/',
+        dataset_info=dataset_info),
+    test=dict(
+        type='DeepFashionDataset',
+        ann_file=f'{data_root}/annotations/fld_lower_test.json',
+        img_prefix=f'{data_root}/img/',
+        dataset_info=dataset_info),
+)

@@ -1,16 +1,14 @@
 import os
 from collections import OrderedDict
 
-import json_tricks as json
 import numpy as np
 
-from mmpose.core.evaluation.top_down_eval import keypoint_nme
 from mmpose.datasets.builder import DATASETS
-from .face_base_dataset import FaceBaseDataset
+from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class FaceAFLWDataset(FaceBaseDataset):
+class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Face AFLW dataset for top-down face keypoint localization.
 
     `Annotated Facial Landmarks in the Wild: A Large-scale,
@@ -40,11 +38,17 @@ class FaceAFLWDataset(FaceBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
-
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
+        # TODO: These will be removed in the later versions.
         self.ann_info['use_different_joint_weights'] = False
         assert self.ann_info['num_joints'] == 19
         self.ann_info['joint_weights'] = \
@@ -52,8 +56,8 @@ class FaceAFLWDataset(FaceBaseDataset):
 
         self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [6, 11],
                                        [7, 10], [8, 9], [12, 14], [15, 17]]
-
         self.dataset_name = 'aflw'
+
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -120,46 +124,6 @@ class FaceAFLWDataset(FaceBaseDataset):
         """
 
         return np.tile(box_sizes, [1, 2])
-
-    def _report_metric(self, res_file, metrics):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'NME'.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-        box_sizes = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-            box_sizes.append(item['box_size'])
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-        box_sizes = np.array(box_sizes).reshape([-1, 1])
-
-        if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(box_sizes)
-            info_str.append(
-                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
-
-        return info_str
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will

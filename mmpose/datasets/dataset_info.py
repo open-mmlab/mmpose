@@ -1,13 +1,10 @@
 import numpy as np
-from mmcv import Config
 
 
 class DatasetInfo:
 
-    def __init__(self, dataset_info_file):
-        self.cfg = Config.fromfile(dataset_info_file)
-
-        self.dataset_info = self.cfg._cfg_dict['dataset_info']
+    def __init__(self, dataset_info):
+        self.dataset_info = dataset_info
         self.dataset_name = self.dataset_info['dataset_name']
         self.paper_info = self.dataset_info['paper_info']
         self.keypoint_info = self.dataset_info['keypoint_info']

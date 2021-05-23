@@ -142,3 +142,23 @@ dataset_info = dict(
         0.0277, 0.0823, 0.0831, 0.0202, 0.0716, 0.0263, 0.0646, 0.0302, 0.0440,
         0.0316, 0.0333, 0.0547, 0.0263, 0.0683, 0.0539
     ])
+
+data_root = 'data/atrw'
+
+data = dict(
+    train=dict(
+        type='AnimalATRWDataset',
+        ann_file=f'{data_root}/annotations/keypoint_train.json',
+        img_prefix=f'{data_root}/images/train/',
+        dataset_info=dataset_info),
+    val=dict(
+        type='AnimalATRWDataset',
+        ann_file=f'{data_root}/annotations/keypoint_val.json',
+        img_prefix=f'{data_root}/images/val/',
+        dataset_info=dataset_info),
+    test=dict(
+        type='AnimalATRWDataset',
+        ann_file=f'{data_root}/annotations/keypoint_val.json',
+        img_prefix=f'{data_root}/images/val/',
+        dataset_info=dataset_info),
+)
