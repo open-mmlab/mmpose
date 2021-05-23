@@ -50,7 +50,7 @@ class FaceCOFWDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.ann_info['joint_weights'] = \
             np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
 
-        self.ann_info['flip_pairs'] = [[0, 1], [4, 6], [2, 3], [5, 7], [8, 9],
+        self.ann_info['flip_pairs'] = [[0, 1], [2, 3], [4, 6], [5, 7], [8, 9],
                                        [10, 11], [12, 14], [16, 17], [13, 15],
                                        [18, 19], [22, 23]]
         self.dataset_name = 'cofw'

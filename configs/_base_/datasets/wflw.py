@@ -83,12 +83,7 @@ dataset_info = dict(
             type='',
             swap='kpt-17'),
         16:
-        dict(
-            name='kpt-16',
-            id=16,
-            color=[255, 255, 255],
-            type='',
-            swap='kpt-16'),
+        dict(name='kpt-16', id=16, color=[255, 255, 255], type='', swap=''),
         17:
         dict(
             name='kpt-17',
