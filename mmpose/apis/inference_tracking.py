@@ -229,6 +229,7 @@ def vis_pose_tracking_result(model,
                              thickness=1,
                              kpt_score_thr=0.3,
                              dataset='TopDownCocoDataset',
+                             dataset_info=None,
                              show=False,
                              out_file=None):
     """Visualize the pose tracking results on the image.
@@ -238,6 +239,8 @@ def vis_pose_tracking_result(model,
         img (str | np.ndarray): Image filename or loaded image.
         result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
+        radius (int): Radius of circles.
+        thickness (int): Thickness of lines.
         kpt_score_thr (float): The threshold to visualize the keypoints.
         skeleton (list[tuple()]): Default None.
         show (bool):  Whether to show the image. Default True.
@@ -254,57 +257,68 @@ def vis_pose_tracking_result(model,
                         [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
                         [255, 255, 255]])
 
-    if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
-                   'TopDownOCHumanDataset'):
-        kpt_num = 17
-        skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                    [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                    [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
+    if dataset_info is None and dataset is not None:
+        warnings.warn(
+            'dataset is deprecated.'
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+        # TODO: These will be removed in the later versions.
+        if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
+                       'TopDownOCHumanDataset'):
+            kpt_num = 17
+            skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
+                        [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
+                        [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
 
-    elif dataset == 'TopDownCocoWholeBodyDataset':
-        kpt_num = 133
-        skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
-                    [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                    [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [16, 18],
-                    [16, 19], [16, 20], [17, 21], [17, 22], [17, 23], [92, 93],
-                    [93, 94], [94, 95], [95, 96], [92, 97], [97, 98], [98, 99],
-                    [99, 100], [92, 101], [101, 102], [102, 103], [103, 104],
-                    [92, 105], [105, 106], [106, 107], [107, 108], [92, 109],
-                    [109, 110], [110, 111], [111, 112], [113, 114], [114, 115],
-                    [115, 116], [116, 117], [113, 118], [118, 119], [119, 120],
-                    [120, 121], [113, 122], [122, 123], [123, 124], [124, 125],
-                    [113, 126], [126, 127], [127, 128], [128, 129], [113, 130],
-                    [130, 131], [131, 132], [132, 133]]
+        elif dataset == 'TopDownCocoWholeBodyDataset':
+            kpt_num = 133
+            skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12],
+                        [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
+                        [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7], [16, 18],
+                        [16, 19], [16, 20], [17, 21], [17, 22], [17, 23], [92, 93],
+                        [93, 94], [94, 95], [95, 96], [92, 97], [97, 98], [98, 99],
+                        [99, 100], [92, 101], [101, 102], [102, 103], [103, 104],
+                        [92, 105], [105, 106], [106, 107], [107, 108], [92, 109],
+                        [109, 110], [110, 111], [111, 112], [113, 114], [114, 115],
+                        [115, 116], [116, 117], [113, 118], [118, 119], [119, 120],
+                        [120, 121], [113, 122], [122, 123], [123, 124], [124, 125],
+                        [113, 126], [126, 127], [127, 128], [128, 129], [113, 130],
+                        [130, 131], [131, 132], [132, 133]]
 
-    elif dataset == 'TopDownAicDataset':
-        kpt_num = 14
-        skeleton = [[3, 2], [2, 1], [1, 14], [14, 4], [4, 5], [5, 6], [9, 8],
-                    [8, 7], [7, 10], [10, 11], [11, 12], [13, 14], [1, 7],
-                    [4, 10]]
+        elif dataset == 'TopDownAicDataset':
+            kpt_num = 14
+            skeleton = [[3, 2], [2, 1], [1, 14], [14, 4], [4, 5], [5, 6], [9, 8],
+                        [8, 7], [7, 10], [10, 11], [11, 12], [13, 14], [1, 7],
+                        [4, 10]]
 
-    elif dataset == 'TopDownMpiiDataset':
-        kpt_num = 16
-        skeleton = [[1, 2], [2, 3], [3, 7], [7, 4], [4, 5], [5, 6], [7, 8],
-                    [8, 9], [9, 10], [9, 13], [13, 12], [12, 11], [9, 14],
-                    [14, 15], [15, 16]]
+        elif dataset == 'TopDownMpiiDataset':
+            kpt_num = 16
+            skeleton = [[1, 2], [2, 3], [3, 7], [7, 4], [4, 5], [5, 6], [7, 8],
+                        [8, 9], [9, 10], [9, 13], [13, 12], [12, 11], [9, 14],
+                        [14, 15], [15, 16]]
 
-    elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
-                     'PanopticDataset'):
-        kpt_num = 21
-        skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
-                    [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
-                    [14, 15], [15, 16], [16, 17], [1, 18], [18, 19], [19, 20],
-                    [20, 21]]
+        elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
+                         'PanopticDataset'):
+            kpt_num = 21
+            skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
+                        [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
+                        [14, 15], [15, 16], [16, 17], [1, 18], [18, 19], [19, 20],
+                        [20, 21]]
 
-    elif dataset == 'InterHand2DDataset':
-        kpt_num = 21
-        skeleton = [[1, 2], [2, 3], [3, 4], [5, 6], [6, 7], [7, 8], [9, 10],
-                    [10, 11], [11, 12], [13, 14], [14, 15], [15, 16], [17, 18],
-                    [18, 19], [19, 20], [4, 21], [8, 21], [12, 21], [16, 21],
-                    [20, 21]]
+        elif dataset == 'InterHand2DDataset':
+            kpt_num = 21
+            skeleton = [[1, 2], [2, 3], [3, 4], [5, 6], [6, 7], [7, 8], [9, 10],
+                        [10, 11], [11, 12], [13, 14], [14, 15], [15, 16], [17, 18],
+                        [18, 19], [19, 20], [4, 21], [8, 21], [12, 21], [16, 21],
+                        [20, 21]]
 
-    else:
-        raise NotImplementedError()
+        else:
+            raise NotImplementedError()
+
+    elif dataset_info is not None:
+        kpt_num = dataset_info.keypoint_num
+        skeleton = dataset_info.skeleton
 
     for res in result:
         track_id = res['track_id']
