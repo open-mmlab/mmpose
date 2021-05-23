@@ -12,8 +12,10 @@ class DatasetInfo:
         self.paper_info = self.dataset_info['paper_info']
         self.keypoint_info = self.dataset_info['keypoint_info']
         self.skeleton_info = self.dataset_info['skeleton_info']
-        self.joint_weights = self.dataset_info['joint_weights']
-        self.sigmas = self.dataset_info['sigmas']
+        self.joint_weights = np.array(
+            self.dataset_info['joint_weights'], dtype=np.float32)[:, None]
+
+        self.sigmas = np.array(self.dataset_info['sigmas'])
 
         self._parse_keypoint_info()
         self._parse_skeleton_info()
@@ -21,26 +23,26 @@ class DatasetInfo:
     def _parse_skeleton_info(self):
         """Parse skeleton info.
 
-        - limb_num (int): number of limbs.
-        - skeleton (list((2,))): list of limbs (id).
-        - skeleton_name (list((2,))): list of limbs (name).
-        - pose_limb_color (np.ndarray): the color of the limb for
+        - link_num (int): number of links.
+        - skeleton (list((2,))): list of links (id).
+        - skeleton_name (list((2,))): list of links (name).
+        - pose_link_color (np.ndarray): the color of the link for
             visualization.
         """
-        self.limb_num = len(self.skeleton_info.keys())
-        self.pose_limb_color = []
+        self.link_num = len(self.skeleton_info.keys())
+        self.pose_link_color = []
 
         self.skeleton_name = []
         self.skeleton = []
         for skid in self.skeleton_info.keys():
-            limb = self.skeleton_info[skid]['limb']
-            self.skeleton_name.append(limb)
+            link = self.skeleton_info[skid]['link']
+            self.skeleton_name.append(link)
             self.skeleton.append([
-                self.keypoint_name2id[limb[0]], self.keypoint_name2id[limb[1]]
+                self.keypoint_name2id[link[0]], self.keypoint_name2id[link[1]]
             ])
-            self.pose_limb_color.append(self.skeleton_info[skid].get(
+            self.pose_link_color.append(self.skeleton_info[skid].get(
                 'color', [255, 128, 0]))
-        self.pose_limb_color = np.array(self.pose_limb_color)
+        self.pose_link_color = np.array(self.pose_link_color)
 
     def _parse_keypoint_info(self):
         """Parse keypoint info.

@@ -6,6 +6,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
+from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 
 
@@ -31,6 +32,7 @@ class AnimalBaseDataset(Dataset, metaclass=ABCMeta):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info_file='',
                  test_mode=False):
 
         self.image_info = {}
@@ -50,6 +52,22 @@ class AnimalBaseDataset(Dataset, metaclass=ABCMeta):
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['num_output_channels'] = data_cfg['num_output_channels']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
+
+        if dataset_info_file == '':
+            raise ValueError(
+                'Please set `dataset_info` in the config.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.')
+
+        dataset_info = DatasetInfo(dataset_info_file)
+
+        self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
+        self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
+        self.ann_info['use_different_joint_weights'] = False
+        self.ann_info['joint_weights'] = dataset_info.joint_weights
+        self.sigmas = dataset_info.sigmas
+        self.dataset_name = dataset_info.dataset_name
 
         self.coco = COCO(ann_file)
         self.img_ids = self.coco.getImgIds()

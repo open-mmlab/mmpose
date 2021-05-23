@@ -1,6 +1,4 @@
-import json
 import os
-import warnings
 
 import cv2
 import mmcv
@@ -10,7 +8,6 @@ from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
 
 from mmpose.core.post_processing import oks_nms
-from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
@@ -464,12 +461,9 @@ def inference_top_down_pose_model(model,
             Includes 'heatmap' if `return_heatmap` is True.
     """
     if dataset_info is None and dataset is not None:
-        warnings.warn(
-            'dataset is deprecated, please use dataset_info instead.'
-            'Check https://github.com/open-mmlab/mmpose/pull/663 for details')
-        with open('dataset_info/dataset_info.json', 'r') as f:
-            dataset_info_files = json.load(f)
-        dataset_info = DatasetInfo(dataset_info_files[dataset])
+        raise ValueError(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.')
 
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
@@ -647,12 +641,9 @@ def vis_pose_result(model,
     """
 
     if dataset_info is None and dataset is not None:
-        warnings.warn(
-            'dataset is deprecated, please use dataset_info instead.'
-            'Check https://github.com/open-mmlab/mmpose/pull/663 for details')
-        with open('dataset_info/dataset_info.json', 'r') as f:
-            dataset_info_files = json.load(f)
-        dataset_info = DatasetInfo(dataset_info_files[dataset])
+        raise ValueError(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.')
 
     if hasattr(model, 'module'):
         model = model.module
@@ -674,7 +665,7 @@ def vis_pose_result(model,
     #                 [2, 3],
     #                 [1, 2], [1, 3], [2, 4], [3, 5], [4, 6], [5, 7]]
     #
-    #     pose_limb_color = palette[[
+    #     pose_link_color = palette[[
     #         0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 16
     #     ]]
     #     pose_kpt_color = palette[[
@@ -707,7 +698,7 @@ def vis_pose_result(model,
     #                 [113, 130],
     #                 [130, 131], [131, 132], [132, 133]]
     #
-    #     pose_limb_color = palette[
+    #     pose_link_color = palette[
     #         [0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16,
     #         16] +
     #         [16, 16, 16, 16, 16, 16] + [
@@ -729,7 +720,7 @@ def vis_pose_result(model,
     #                 [8, 7], [7, 10], [10, 11], [11, 12], [13, 14], [1, 7],
     #                 [4, 10]]
     #
-    #     pose_limb_color = palette[[
+    #     pose_link_color = palette[[
     #         9, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 0, 7, 7
     #     ]]
     #     pose_kpt_color = palette[[
@@ -742,7 +733,7 @@ def vis_pose_result(model,
     #                 [8, 9], [9, 10], [9, 13], [13, 12], [12, 11], [9, 14],
     #                 [14, 15], [15, 16]]
     #
-    #     pose_limb_color = palette[[
+    #     pose_link_color = palette[[
     #         16, 16, 16, 16, 16, 16, 7, 7, 0, 9, 9, 9, 9, 9, 9
     #     ]]
     #     pose_kpt_color = palette[[
@@ -760,7 +751,7 @@ def vis_pose_result(model,
     #                 [37, 38],
     #                 [39, 40]]
     #
-    #     pose_limb_color = palette[[16] * 14 + [19] * 13]
+    #     pose_link_color = palette[[16] * 14 + [19] * 13]
     #     pose_kpt_color = palette[[16] * 14 + [0] * 26]
     #
     # elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
@@ -773,7 +764,7 @@ def vis_pose_result(model,
     #                 [19, 20],
     #                 [20, 21]]
     #
-    #     pose_limb_color = palette[[
+    #     pose_link_color = palette[[
     #         0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16,
     #         16, 16
     #     ]]
@@ -792,7 +783,7 @@ def vis_pose_result(model,
     #                 [16, 21],
     #                 [20, 21]]
     #
-    #     pose_limb_color = palette[[
+    #     pose_link_color = palette[[
     #         0, 0, 0, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 16, 0, 4, 8,
     #         12, 16
     #     ]]
@@ -806,7 +797,7 @@ def vis_pose_result(model,
     #     # show the results
     #     skeleton = []
     #
-    #     pose_limb_color = palette[[]]
+    #     pose_link_color = palette[[]]
     #     pose_kpt_color = palette[[19] * 68]
     #     kpt_score_thr = 0
     #
@@ -814,7 +805,7 @@ def vis_pose_result(model,
     #     # show the results
     #     skeleton = []
     #
-    #     pose_limb_color = palette[[]]
+    #     pose_link_color = palette[[]]
     #     pose_kpt_color = palette[[19] * 19]
     #     kpt_score_thr = 0
     #
@@ -822,7 +813,7 @@ def vis_pose_result(model,
     #     # show the results
     #     skeleton = []
     #
-    #     pose_limb_color = palette[[]]
+    #     pose_link_color = palette[[]]
     #     pose_kpt_color = palette[[19] * 29]
     #     kpt_score_thr = 0
     #
@@ -830,7 +821,7 @@ def vis_pose_result(model,
     #     # show the results
     #     skeleton = []
     #
-    #     pose_limb_color = palette[[]]
+    #     pose_link_color = palette[[]]
     #     pose_kpt_color = palette[[19] * 98]
     #     kpt_score_thr = 0
     #
@@ -842,7 +833,7 @@ def vis_pose_result(model,
     #                 [6, 7], [7, 8], [14, 15], [15, 16], [19, 20],
     #                 [20, 21]]
     #
-    #     pose_limb_color = palette[[4] * 10 + [6] * 2 + [6] * 2 + [7] *
+    #     pose_link_color = palette[[4] * 10 + [6] * 2 + [6] * 2 + [7] *
     #     2 +
     #                               [7] * 2]
     #     pose_kpt_color = palette[[
@@ -860,7 +851,7 @@ def vis_pose_result(model,
     #                 [26, 25], [28, 27], [29, 28], [30, 29], [31, 4],
     #                 [32, 4]]
     #
-    #     pose_limb_color = palette[[0] * 25]
+    #     pose_link_color = palette[[0] * 25]
     #     pose_kpt_color = palette[[0] * 32]
     #
     # elif dataset == 'AnimalLocustDataset':
@@ -873,14 +864,14 @@ def vis_pose_result(model,
     #                 [34, 33],
     #                 [35, 34]]
     #
-    #     pose_limb_color = palette[[0] * 26]
+    #     pose_link_color = palette[[0] * 26]
     #     pose_kpt_color = palette[[0] * 35]
     #
     # elif dataset == 'AnimalZebraDataset':
     #     skeleton = [[2, 1], [3, 2], [4, 3], [5, 3], [6, 8], [7, 8], [8, 3],
     #                 [9, 8]]
     #
-    #     pose_limb_color = palette[[0] * 8]
+    #     pose_link_color = palette[[0] * 8]
     #     pose_kpt_color = palette[[0] * 9]
     #
     # elif dataset in 'AnimalPoseDataset':
@@ -889,7 +880,7 @@ def vis_pose_result(model,
     #                 [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
     #                 [16, 20]]
     #
-    #     pose_limb_color = palette[[0] * 20]
+    #     pose_link_color = palette[[0] * 20]
     #     pose_kpt_color = palette[[0] * 20]
     #
     # else:
@@ -902,7 +893,7 @@ def vis_pose_result(model,
         radius=radius,
         thickness=thickness,
         pose_kpt_color=dataset_info.pose_kpt_color,
-        pose_limb_color=dataset_info.pose_limb_color,
+        pose_link_color=dataset_info.pose_link_color,
         kpt_score_thr=kpt_score_thr,
         show=show,
         out_file=out_file)

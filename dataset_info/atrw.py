@@ -105,37 +105,37 @@ dataset_info = dict(
     },
     skeleton_info={
         0:
-        dict(limb=('left_ear', 'nose'), id=0, color=[0, 255, 0]),
+        dict(link=('left_ear', 'nose'), id=0, color=[0, 255, 0]),
         1:
-        dict(limb=('right_ear', 'nose'), id=1, color=[255, 128, 0]),
+        dict(link=('right_ear', 'nose'), id=1, color=[255, 128, 0]),
         2:
-        dict(limb=('nose', 'center'), id=2, color=[51, 153, 255]),
+        dict(link=('nose', 'center'), id=2, color=[51, 153, 255]),
         3:
         dict(
-            limb=('left_shoulder', 'left_front_paw'), id=3, color=[0, 255, 0]),
+            link=('left_shoulder', 'left_front_paw'), id=3, color=[0, 255, 0]),
         4:
-        dict(limb=('left_shoulder', 'center'), id=4, color=[0, 255, 0]),
+        dict(link=('left_shoulder', 'center'), id=4, color=[0, 255, 0]),
         5:
         dict(
-            limb=('right_shoulder', 'right_front_paw'),
+            link=('right_shoulder', 'right_front_paw'),
             id=5,
             color=[255, 128, 0]),
         6:
-        dict(limb=('right_shoulder', 'center'), id=6, color=[255, 128, 0]),
+        dict(link=('right_shoulder', 'center'), id=6, color=[255, 128, 0]),
         7:
-        dict(limb=('tail', 'center'), id=7, color=[51, 153, 255]),
+        dict(link=('tail', 'center'), id=7, color=[51, 153, 255]),
         8:
-        dict(limb=('right_back_paw', 'right_knee'), id=8, color=[255, 128, 0]),
+        dict(link=('right_back_paw', 'right_knee'), id=8, color=[255, 128, 0]),
         9:
-        dict(limb=('right_knee', 'right_hip'), id=9, color=[255, 128, 0]),
+        dict(link=('right_knee', 'right_hip'), id=9, color=[255, 128, 0]),
         10:
-        dict(limb=('right_hip', 'tail'), id=10, color=[255, 128, 0]),
+        dict(link=('right_hip', 'tail'), id=10, color=[255, 128, 0]),
         11:
-        dict(limb=('left_back_paw', 'left_knee'), id=11, color=[0, 255, 0]),
+        dict(link=('left_back_paw', 'left_knee'), id=11, color=[0, 255, 0]),
         12:
-        dict(limb=('left_knee', 'left_hip'), id=12, color=[0, 255, 0]),
+        dict(link=('left_knee', 'left_hip'), id=12, color=[0, 255, 0]),
         13:
-        dict(limb=('left_hip', 'tail'), id=13, color=[0, 255, 0]),
+        dict(link=('left_hip', 'tail'), id=13, color=[0, 255, 0]),
     },
     joint_weights=[1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
     sigmas=[

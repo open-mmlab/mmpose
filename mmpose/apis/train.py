@@ -12,8 +12,9 @@ from mmpose.utils import get_root_logger
 try:
     from mmcv.runner import Fp16OptimizerHook
 except ImportError:
-    warnings.warn('Fp16OptimizerHook from mmpose will be deprecated from '
-                  'v0.15.0. Please install mmcv>=1.1.4')
+    warnings.warn(
+        'Fp16OptimizerHook from mmpose will be deprecated from '
+        'v0.15.0. Please install mmcv>=1.1.4', DeprecationWarning)
     from mmpose.core import Fp16OptimizerHook
 
 

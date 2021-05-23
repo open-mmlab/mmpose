@@ -1,5 +1,6 @@
 import json
 import os
+import warnings
 from argparse import ArgumentParser
 
 from xtcocotools.coco import COCO
@@ -58,11 +59,18 @@ def main():
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
-    dataset = pose_model.cfg.data['test']['type']
-
-    with open('dataset_info/dataset_info.json', 'r') as f:
-        dataset_info_files = json.load(f)
-    dataset_info = DatasetInfo(dataset_info_files[dataset])
+    dataset_info_file = pose_model.cfg.data['test'].get('dataset_info', '')
+    if dataset_info_file == '':
+        warnings.warn(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+        dataset = pose_model.cfg.data['test']['type']
+        with open('dataset_info/dataset_info.json', 'r') as f:
+            dataset_info_files = json.load(f)
+        dataset_info = DatasetInfo(dataset_info_files[dataset])
+    else:
+        dataset_info = DatasetInfo(dataset_info_file)
 
     img_keys = list(coco.imgs.keys())
 

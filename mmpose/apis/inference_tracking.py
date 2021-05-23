@@ -310,14 +310,14 @@ def vis_pose_tracking_result(model,
         track_id = res['track_id']
         bbox_color = palette[track_id % len(palette)]
         pose_kpt_color = palette[[track_id % len(palette)] * kpt_num]
-        pose_limb_color = palette[[track_id % len(palette)] * len(skeleton)]
+        pose_link_color = palette[[track_id % len(palette)] * len(skeleton)]
         img = model.show_result(
             img, [res],
             skeleton,
             radius=radius,
             thickness=thickness,
             pose_kpt_color=pose_kpt_color,
-            pose_limb_color=pose_limb_color,
+            pose_link_color=pose_link_color,
             bbox_color=tuple(bbox_color.tolist()),
             kpt_score_thr=kpt_score_thr,
             show=show,

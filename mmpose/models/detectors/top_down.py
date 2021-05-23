@@ -221,7 +221,7 @@ class TopDown(BasePose):
                     kpt_score_thr=0.3,
                     bbox_color='green',
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     text_color=(255, 0, 0),
                     radius=4,
                     thickness=1,
@@ -244,7 +244,7 @@ class TopDown(BasePose):
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
+            pose_link_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
             text_color (str or tuple or :obj:`Color`): Color of texts.
             radius (int): Radius of circles.
@@ -285,7 +285,7 @@ class TopDown(BasePose):
                 show=False)
 
             imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                             pose_kpt_color, pose_limb_color, radius,
+                             pose_kpt_color, pose_link_color, radius,
                              thickness)
 
         if show:
