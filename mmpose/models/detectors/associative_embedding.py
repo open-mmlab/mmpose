@@ -326,8 +326,8 @@ class AssociativeEmbedding(BasePose):
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_link_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.

@@ -244,8 +244,8 @@ class TopDown(BasePose):
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_link_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             text_color (str or tuple or :obj:`Color`): Color of texts.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
