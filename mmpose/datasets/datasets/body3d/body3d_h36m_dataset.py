@@ -20,12 +20,12 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
     Human3.6M keypoint indexes::
         0: 'root (pelvis)',
-        1: 'left_hip',
-        2: 'left_knee',
-        3: 'left_foot',
-        4: 'right_hip',
-        5: 'right_knee',
-        6: 'right_foot',
+        1: 'right_hip',
+        2: 'right_knee',
+        3: 'right_foot',
+        4: 'left_hip',
+        5: 'left_knee',
+        6: 'left_foot',
         7: 'spine',
         8: 'thorax',
         9: 'neck_base',
@@ -49,7 +49,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
     """
 
     JOINT_NAMES = [
-        'Root', 'LHip', 'LKnee', 'LFoot', 'RHip', 'RKnee', 'RFoot', 'Spine',
+        'Root', 'RHip', 'RKnee', 'RFoot', 'LHip', 'LKnee', 'LFoot', 'Spine',
         'Thorax', 'NeckBase', 'Head', 'LShoulder', 'LElbow', 'LWrist',
         'RShoulder', 'RElbow', 'RWrist'
     ]
@@ -87,6 +87,16 @@ class Body3DH36MDataset(Body3DBaseDataset):
         ann_info['upper_body_ids'] = (0, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
         ann_info['lower_body_ids'] = (1, 2, 3, 4, 5, 6)
         ann_info['use_different_joint_weights'] = False
+
+        # action filter
+        actions = data_cfg.get('actions', '_all_')
+        self.actions = set(
+            actions if isinstance(actions, (list, tuple)) else [actions])
+
+        # subject filter
+        subjects = data_cfg.get('subjects', '_all_')
+        self.subjects = set(
+            subjects if isinstance(subjects, (list, tuple)) else [subjects])
 
         self.ann_info.update(ann_info)
 
@@ -132,6 +142,13 @@ class Body3DH36MDataset(Body3DBaseDataset):
         video_frames = defaultdict(list)
         for idx, imgname in enumerate(self.data_info['imgnames']):
             subj, action, camera = self._parse_h36m_imgname(imgname)
+
+            if '_all_' not in self.actions and action not in self.actions:
+                continue
+
+            if '_all_' not in self.subjects and subj not in self.subjects:
+                continue
+
             video_frames[(subj, action, camera)].append(idx)
 
         # build sample indices
@@ -256,9 +273,9 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         return name_value_tuples
 
-    def _load_camera_param(self, camear_param_file):
+    def _load_camera_param(self, camera_param_file):
         """Load camera parameters from file."""
-        return mmcv.load(camear_param_file)
+        return mmcv.load(camera_param_file)
 
     def get_camera_param(self, imgname):
         """Get camera parameters of a frame by its image name."""
