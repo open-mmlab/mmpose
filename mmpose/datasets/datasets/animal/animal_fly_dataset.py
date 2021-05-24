@@ -1,7 +1,9 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from ...builder import DATASETS
 from .._base_ import Kpt2dSviewRgbImgTopDownDataset
@@ -71,6 +73,15 @@ class AnimalFlyDataset(Kpt2dSviewRgbImgTopDownDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/fly.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -80,17 +91,6 @@ class AnimalFlyDataset(Kpt2dSviewRgbImgTopDownDataset):
             test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        assert self.ann_info['num_joints'] == 32
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[1, 2], [6, 18], [7, 19], [8, 20],
-                                       [9, 21], [10, 22], [11, 23], [12, 24],
-                                       [13, 25], [14, 26], [15, 27], [16, 28],
-                                       [17, 29], [30, 31]]
-        self.dataset_name = 'fly'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

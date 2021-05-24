@@ -5,6 +5,7 @@ from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
+from mmcv import Config
 from poseval import eval_helpers
 from poseval.evaluateAP import evaluateAP
 
@@ -60,6 +61,15 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/posetrack18.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
             ann_file,
             img_prefix,
@@ -78,30 +88,6 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-        self.ann_info['flip_pairs'] = [[3, 4], [5, 6], [7, 8], [9, 10],
-                                       [11, 12], [13, 14], [15, 16]]
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # Adapted from COCO dataset
-        self.sigmas = np.array([
-            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
-            .87, .87, .89, .89
-        ]) / 10.0
-        self.dataset_name = 'posetrack18'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

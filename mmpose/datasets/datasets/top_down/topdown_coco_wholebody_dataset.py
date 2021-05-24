@@ -2,6 +2,7 @@ import os
 import warnings
 
 import numpy as np
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from ...builder import DATASETS
@@ -44,6 +45,15 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/coco_wholebody.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
             ann_file,
             img_prefix,
@@ -69,77 +79,10 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.left_hand_num = 21
         self.right_hand_num = 21
 
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-        self.ann_info['flip_pairs'] = self._make_flip_pairs()
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-        self.ann_info['lower_body_ids'] = (11, 12, 13, 14, 15, 16)
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        # 'https://github.com/jin-s13/COCO-WholeBody/blob/master/'
-        # 'evaluation/myeval_wholebody.py#L170'
-        self.sigmas_body = [
-            0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072,
-            0.062, 0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
-        ]
-        self.sigmas_foot = [0.068, 0.066, 0.066, 0.092, 0.094, 0.094]
-        self.sigmas_face = [
-            0.042, 0.043, 0.044, 0.043, 0.040, 0.035, 0.031, 0.025, 0.020,
-            0.023, 0.029, 0.032, 0.037, 0.038, 0.043, 0.041, 0.045, 0.013,
-            0.012, 0.011, 0.011, 0.012, 0.012, 0.011, 0.011, 0.013, 0.015,
-            0.009, 0.007, 0.007, 0.007, 0.012, 0.009, 0.008, 0.016, 0.010,
-            0.017, 0.011, 0.009, 0.011, 0.009, 0.007, 0.013, 0.008, 0.011,
-            0.012, 0.010, 0.034, 0.008, 0.008, 0.009, 0.008, 0.008, 0.007,
-            0.010, 0.008, 0.009, 0.009, 0.009, 0.007, 0.007, 0.008, 0.011,
-            0.008, 0.008, 0.008, 0.01, 0.008
-        ]
-        self.sigmas_lefthand = [
-            0.029, 0.022, 0.035, 0.037, 0.047, 0.026, 0.025, 0.024, 0.035,
-            0.018, 0.024, 0.022, 0.026, 0.017, 0.021, 0.021, 0.032, 0.02,
-            0.019, 0.022, 0.031
-        ]
-        self.sigmas_righthand = [
-            0.029, 0.022, 0.035, 0.037, 0.047, 0.026, 0.025, 0.024, 0.035,
-            0.018, 0.024, 0.022, 0.026, 0.017, 0.021, 0.021, 0.032, 0.02,
-            0.019, 0.022, 0.031
-        ]
-
-        self.sigmas_wholebody = (
-            self.sigmas_body + self.sigmas_foot + self.sigmas_face +
-            self.sigmas_lefthand + self.sigmas_righthand)
-
-        self.sigmas = np.array(self.sigmas_wholebody)
-        self.dataset_name = 'coco_wholebody'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
-
-    @staticmethod
-    def _make_flip_pairs():
-        body = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14],
-                [15, 16]]
-        foot = [[17, 20], [18, 21], [19, 22]]
-
-        face = [[23, 39], [24, 38], [25, 37], [26, 36], [27, 35], [28, 34],
-                [29, 33], [30, 32], [40, 49], [41, 48], [42, 47], [43, 46],
-                [44, 45], [54, 58], [55, 57], [59, 68], [60, 67], [61, 66],
-                [62, 65], [63, 70], [64, 69], [71, 77], [72, 76], [73, 75],
-                [78, 82], [79, 81], [83, 87], [84, 86], [88, 90]]
-
-        hand = [[91, 112], [92, 113], [93, 114], [94, 115], [95, 116],
-                [96, 117], [97, 118], [98, 119], [99, 120], [100, 121],
-                [101, 122], [102, 123], [103, 124], [104, 125], [105, 126],
-                [106, 127], [107, 128], [108, 129], [109, 130], [110, 131],
-                [111, 132]]
-
-        return body + foot + face + hand
 
     def _load_coco_keypoint_annotation_kernel(self, img_id):
         """load annotation from COCOAPI.
@@ -245,11 +188,16 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         """Keypoint evaluation using COCOAPI."""
         coco_det = self.coco.loadRes(res_file)
 
+        cuts = np.cumsum([
+            0, self.body_num, self.foot_num, self.face_num, self.left_hand_num,
+            self.right_hand_num
+        ])
+
         coco_eval = COCOeval(
             self.coco,
             coco_det,
             'keypoints_body',
-            np.array(self.sigmas_body),
+            self.sigmas[cuts[0]:cuts[1]],
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -260,7 +208,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             self.coco,
             coco_det,
             'keypoints_foot',
-            np.array(self.sigmas_foot),
+            self.sigmas[cuts[1]:cuts[2]],
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -271,7 +219,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             self.coco,
             coco_det,
             'keypoints_face',
-            np.array(self.sigmas_face),
+            self.sigmas[cuts[2]:cuts[3]],
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -282,7 +230,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             self.coco,
             coco_det,
             'keypoints_lefthand',
-            np.array(self.sigmas_lefthand),
+            self.sigmas[cuts[3]:cuts[4]],
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -293,7 +241,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             self.coco,
             coco_det,
             'keypoints_righthand',
-            np.array(self.sigmas_righthand),
+            self.sigmas[cuts[4]:cuts[5]],
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -304,7 +252,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             self.coco,
             coco_det,
             'keypoints_wholebody',
-            np.array(self.sigmas_wholebody),
+            self.sigmas,
             use_area=True)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()

@@ -1,19 +1,19 @@
 import os
+import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-import xtcocotools
-from xtcocotools.coco import COCO
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.datasets.builder import DATASETS
-from .bottom_up_base_dataset import BottomUpBaseDataset
+from mmpose.datasets.datasets._base_ import Kpt2dSviewRgbImgBottomUpDataset
 
 
 @DATASETS.register_module()
-class BottomUpCocoDataset(BottomUpBaseDataset):
+class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
     """COCO dataset for bottom-up pose estimation.
 
     The dataset loads raw features and apply specified transforms
@@ -54,79 +54,27 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
-        super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
-        self.ann_info['flip_index'] = [
-            0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
-        ]
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/coco.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
+        super().__init__(
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # joint index starts from 1
-        self.ann_info['skeleton'] = [[16, 14], [14, 12], [17, 15], [15, 13],
-                                     [12, 13], [6, 12], [7, 13], [6, 7],
-                                     [6, 8], [7, 9], [8, 10], [9, 11], [2, 3],
-                                     [1, 2], [1, 3], [2, 4], [3, 5], [4, 6],
-                                     [5, 7]]
-
-        # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
-        # 'pycocotools/cocoeval.py#L523'
-        self.sigmas = np.array([
-            .26, .25, .25, .35, .35, .79, .79, .72, .72, .62, .62, 1.07, 1.07,
-            .87, .87, .89, .89
-        ]) / 10.0
-
-        self.coco = COCO(ann_file)
-
-        cats = [
-            cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
-        ]
-        self.classes = ['__background__'] + cats
-        self.num_classes = len(self.classes)
-        self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
-        self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict(
-            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
-            for cls in self.classes[1:])
-        self.img_ids = self.coco.getImgIds()
-        if not test_mode:
-            self.img_ids = [
-                img_id for img_id in self.img_ids
-                if len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
-            ]
-        self.num_images = len(self.img_ids)
-        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'coco'
-
         print(f'=> num_images: {self.num_images}')
-
-    @staticmethod
-    def _get_mapping_id_name(imgs):
-        """
-        Args:
-            imgs (dict): dict of image info.
-
-        Returns:
-            tuple: Image name & id mapping dicts.
-
-            - id2name (dict): Mapping image id to name.
-            - name2id (dict): Mapping image name to id.
-        """
-        id2name = {}
-        name2id = {}
-        for image_id, image in imgs.items():
-            file_name = image['file_name']
-            id2name[image_id] = file_name
-            name2id[file_name] = image_id
-
-        return id2name, name2id
 
     def _get_single(self, idx):
         """Get anno for a single image.
@@ -188,29 +136,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                 joints[i, :, 3] = sigma
 
         return joints
-
-    def _get_mask(self, anno, idx):
-        """Get ignore masks to mask out losses."""
-        coco = self.coco
-        img_info = coco.loadImgs(self.img_ids[idx])[0]
-
-        m = np.zeros((img_info['height'], img_info['width']), dtype=np.float32)
-
-        for obj in anno:
-            if 'segmentation' in obj:
-                if obj['iscrowd']:
-                    rle = xtcocotools.mask.frPyObjects(obj['segmentation'],
-                                                       img_info['height'],
-                                                       img_info['width'])
-                    m += xtcocotools.mask.decode(rle)
-                elif obj['num_keypoints'] == 0:
-                    rles = xtcocotools.mask.frPyObjects(
-                        obj['segmentation'], img_info['height'],
-                        img_info['width'])
-                    for rle in rles:
-                        m += xtcocotools.mask.decode(rle)
-
-        return m < 0.5
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be

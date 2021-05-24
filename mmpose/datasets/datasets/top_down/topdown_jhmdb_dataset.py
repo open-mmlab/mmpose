@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
+from mmcv import Config
 
 from mmpose.core.evaluation.top_down_eval import keypoint_pck_accuracy
 from ...builder import DATASETS
@@ -55,6 +56,15 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/jhmdb.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
             ann_file,
             img_prefix,
@@ -72,32 +82,6 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-
-        self.ann_info['flip_pairs'] = [[3, 4], [5, 6], [7, 8], [9, 10],
-                                       [9, 10], [11, 12], [13, 14]]
-
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 7, 8, 11, 12)
-        self.ann_info['lower_body_ids'] = (5, 6, 9, 10, 13, 14)
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.2, 1.2, 1.5, 1.5, 1.5,
-                1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # Adapted from COCO dataset
-        self.sigmas = np.array([
-            .25, 1.07, .25, .79, .79, 1.07, 1.07, .72, .72, .87, .87, .62, .62,
-            .89, .89
-        ]) / 10.0
-        self.dataset_name = 'jhmdb'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

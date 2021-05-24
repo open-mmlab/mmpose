@@ -15,14 +15,14 @@ dataset_info = dict(
         dict(
             name='left_ear',
             id=0,
-            color=[0, 255, 0],
+            color=[51, 153, 255],
             type='upper',
             swap='right_ear'),
         1:
         dict(
             name='right_ear',
             id=1,
-            color=[255, 128, 0],
+            color=[51, 153, 255],
             type='upper',
             swap='left_ear'),
         2:
@@ -105,9 +105,9 @@ dataset_info = dict(
     },
     skeleton_info={
         0:
-        dict(link=('left_ear', 'nose'), id=0, color=[0, 255, 0]),
+        dict(link=('left_ear', 'nose'), id=0, color=[51, 153, 255]),
         1:
-        dict(link=('right_ear', 'nose'), id=1, color=[255, 128, 0]),
+        dict(link=('right_ear', 'nose'), id=1, color=[51, 153, 255]),
         2:
         dict(link=('nose', 'center'), id=2, color=[51, 153, 255]),
         3:

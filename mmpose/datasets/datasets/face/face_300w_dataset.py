@@ -1,7 +1,9 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
 from .._base_ import Kpt2dSviewRgbImgTopDownDataset
@@ -37,6 +39,15 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/300w.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -45,24 +56,8 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
             dataset_info=dataset_info,
             test_mode=test_mode)
 
-        # TODO: These will be removed in the later versions.
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 68
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[0, 16], [1, 15], [2, 14], [3, 13],
-                                       [4, 12], [5, 11], [6, 10], [7, 9],
-                                       [17, 26], [18, 25], [19, 24], [20, 23],
-                                       [21, 22], [31, 35], [32, 34], [36, 45],
-                                       [37, 44], [38, 43], [39, 42], [40, 47],
-                                       [41, 46], [48, 54], [49, 53], [50, 52],
-                                       [61, 63], [60, 64], [67, 65], [58, 56],
-                                       [59, 55]]
-        self.dataset_name = '300w'
-
         self.db = self._get_db()
-
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 

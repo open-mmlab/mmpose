@@ -1,7 +1,9 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
 from .._base_ import Kpt2dSviewRgbImgTopDownDataset
@@ -60,6 +62,15 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/panoptic_hand2d.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -69,12 +80,6 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
             test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        assert self.ann_info['num_joints'] == 21
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.dataset_name = 'panoptic'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -100,9 +105,9 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the bbox is the tightest bbox enclosing keypoints
-                # the paper use 2.2bbox as input
-                # we use 1.76bbox(2.2 * 0.8) as input
+                # The bbox is the tightest bbox enclosing keypoints.
+                # The paper uses 2.2 bbox as the input, while
+                # we use 1.76 (2.2 * 0.8) bbox as the input.
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.76)
 
                 image_file = os.path.join(self.img_prefix,

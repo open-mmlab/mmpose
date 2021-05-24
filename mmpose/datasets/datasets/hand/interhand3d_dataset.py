@@ -1,8 +1,10 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
+from mmcv import Config
 
 from mmpose.core.evaluation.top_down_eval import keypoint_epe
 from mmpose.datasets.builder import DATASETS
@@ -90,6 +92,15 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
                  rootnet_result_file=None,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/interhand3d.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -103,13 +114,6 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         self.ann_info['heatmap_size_root'] = data_cfg['heatmap_size_root']
         self.ann_info['root_depth_bound'] = data_cfg['root_depth_bound']
         self.ann_info['use_different_joint_weights'] = False
-
-        # TODO: These will be removed in the later versions.
-        self.ann_info['flip_pairs'] = [[i, 21 + i] for i in range(21)]
-        assert self.ann_info['num_joints'] == 42
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-        self.dataset_name = 'interhand3d'
 
         self.camera_file = camera_file
         self.joint_file = joint_file

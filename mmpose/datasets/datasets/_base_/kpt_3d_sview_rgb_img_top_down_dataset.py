@@ -212,7 +212,7 @@ class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
+    def evaluate(self, cfg, outputs, res_folder, metric, *args, **kwargs):
         """Evaluate keypoint results."""
         raise NotImplementedError
 

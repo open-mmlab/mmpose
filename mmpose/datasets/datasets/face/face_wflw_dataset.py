@@ -1,7 +1,9 @@
 import os
+import warnings
 from collections import OrderedDict
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
 from .._base_ import Kpt2dSviewRgbImgTopDownDataset
@@ -37,6 +39,15 @@ class FaceWFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/wflw.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -45,25 +56,7 @@ class FaceWFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
             dataset_info=dataset_info,
             test_mode=test_mode)
 
-        # TODO: These will be removed in the later versions.
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 98
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[0, 32], [1, 31], [2, 30], [3, 29],
-                                       [4, 28], [5, 27], [6, 26], [7, 25],
-                                       [8, 24], [9, 23], [10, 22], [11, 21],
-                                       [12, 20], [13, 19], [14, 18], [15, 17],
-                                       [33, 46], [34, 45], [35, 44], [36, 43],
-                                       [37, 42], [38, 50], [39, 49], [40, 48],
-                                       [41, 47], [60, 72], [61, 71], [62, 70],
-                                       [63, 69], [64, 68], [65, 75], [66, 74],
-                                       [67, 73], [55, 59], [56, 58], [76, 82],
-                                       [77, 81], [78, 80], [87, 83], [86, 84],
-                                       [88, 92], [89, 91], [95, 93], [96, 97]]
-        self.dataset_name = 'wflw'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

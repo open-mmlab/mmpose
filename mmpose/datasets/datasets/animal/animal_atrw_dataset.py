@@ -4,6 +4,7 @@ from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
@@ -58,6 +59,15 @@ class AnimalATRWDataset(Kpt2dSviewRgbImgTopDownDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/atrw.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
             ann_file,
             img_prefix,
@@ -76,28 +86,6 @@ class AnimalATRWDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-
-        self.ann_info['flip_pairs'] = [[0, 1], [3, 5], [4, 6], [7, 10],
-                                       [8, 11], [9, 12]]
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
-        self.ann_info['lower_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14)
-        self.ann_info['joint_weights'] = np.array(
-            [1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # `ATRW: A Benchmark for Amur Tiger Re-identification in the Wild'
-        self.sigmas = np.array([
-            2.77, 8.23, 8.31, 2.02, 7.16, 2.63, 6.46, 3.02, 4.40, 3.16, 3.33,
-            5.47, 2.63, 6.83, 5.39
-        ]) / 100.0
-        self.dataset_name = 'atrw'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

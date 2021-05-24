@@ -1,6 +1,6 @@
 import warnings
 
-import numpy as np
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from ...builder import DATASETS
@@ -50,6 +50,15 @@ class TopDownAicDataset(TopDownCocoDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/aic.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
             ann_file,
             img_prefix,
@@ -68,31 +77,6 @@ class TopDownAicDataset(TopDownCocoDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-
-        self.ann_info['flip_pairs'] = [[0, 3], [1, 4], [2, 5], [6, 9], [7, 10],
-                                       [8, 11]]
-        self.ann_info['upper_body_ids'] = (0, 1, 2, 3, 4, 5, 12, 13)
-        self.ann_info['lower_body_ids'] = (6, 7, 8, 9, 10, 11)
-        self.ann_info['joint_weights'] = np.array(
-            [1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # 'https://github.com/AIChallenger/AI_Challenger_2017/blob/master/'
-        # 'Evaluation/keypoint_eval/keypoint_eval.py#L50'
-        # delta = 2 x sigma
-        self.sigmas = np.array([
-            0.01388152, 0.01515228, 0.01057665, 0.01417709, 0.01497891,
-            0.01402144, 0.03909642, 0.03686941, 0.01981803, 0.03843971,
-            0.03412318, 0.02415081, 0.01291456, 0.01236173
-        ])
-        self.dataset_name = 'aic'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

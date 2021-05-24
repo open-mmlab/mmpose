@@ -1,6 +1,6 @@
 import warnings
 
-import numpy as np
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from ...builder import DATASETS
@@ -61,6 +61,15 @@ class TopDownMhpDataset(TopDownCocoDataset):
                  pipeline,
                  dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/mhp.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
             ann_file,
             img_prefix,
@@ -79,31 +88,6 @@ class TopDownMhpDataset(TopDownCocoDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        # TODO: These will be removed in the later versions.
-        if 'image_thr' in data_cfg:
-            warnings.warn(
-                'image_thr is deprecated, '
-                'please use det_bbox_thr instead', DeprecationWarning)
-            self.det_bbox_thr = data_cfg['image_thr']
-        self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [10, 15],
-                                       [11, 14], [12, 13]]
-
-        self.ann_info['upper_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14, 15)
-        self.ann_info['lower_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1.5, 1.2, 1., 1., 1.2, 1.5, 1., 1., 1., 1., 1.5, 1.2, 1., 1.,
-                1.2, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # Adapted from COCO dataset.
-        self.sigmas = np.array([
-            .89, .83, 1.07, 1.07, .83, .89, .26, .26, .26, .26, .62, .72, 1.79,
-            1.79, .72, .62
-        ]) / 10.0
-        self.dataset_name = 'mhp'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

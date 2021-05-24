@@ -42,7 +42,7 @@ class OneEuroFilter:
         self.beta = np.full(x0.shape, beta)
         self.d_cutoff = np.full(x0.shape, d_cutoff)
         # Previous values.
-        self.x_prev = x0.astype(np.float)
+        self.x_prev = x0.astype(np.float32)
         self.dx_prev = np.full(x0.shape, dx0)
         self.mask_prev = np.ma.masked_where(x0 <= 0, x0)
         self.realtime = True
