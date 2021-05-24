@@ -25,13 +25,14 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
             - seq_len: Number of frames in a sequence. Default: 1.
             - seq_frame_interval: Extract frames from the video at certain
                 intervals. Default: 1.
-            - causal: Whether to use causal convolutions. If set to True, the
-                rightmost input frame will be the target frame. Otherwise, the
-                middle input frame will be the target frame. Default: True.
+            - causal: If set to True, the rightmost input frame will be the
+                target frame. Otherwise, the middle input frame will be the
+                target frame. Default: True.
             - temporal_padding: Whether to pad the video so that poses will be
                 predicted for every frame in the video. Default: False
             - subset: Reduce dataset size by fraction. Default: 1.
-            - need_2d_label: Whether need 2D joint labels. Default: False.
+            - need_2d_label: Whether need 2D joint labels or not.
+                Default: False.
 
         pipeline (list[dict | callable]): A sequence of data transforms.
         test_mode (bool): Store True when building test or

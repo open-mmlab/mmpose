@@ -160,11 +160,11 @@ class ImageCoordinateNormalization:
 
         if self.norm_camera:
             if self.static_camera:
-                camera_param = self.camera_param
+                camera_param = copy.deepcopy(self.camera_param)
             else:
                 assert 'camera_param' in results, \
                     'Camera parameters are missing.'
-                camera_param = copy.deepcopy(results['camera_param'])
+                camera_param = results['camera_param']
             assert 'f' in camera_param and 'c' in camera_param
             camera_param['f'] = camera_param['f'] / scale
             camera_param['c'] = (camera_param['c'] - center[:, None]) / scale
@@ -203,7 +203,7 @@ class CollectCameraIntrinsics:
 
     def __call__(self, results):
         if self.static_camera:
-            camera_param = self.camera_param
+            camera_param = copy.deepcopy(self.camera_param)
         else:
             assert 'camera_param' in results, 'Camera parameters are missing.'
             camera_param = results['camera_param']
@@ -313,9 +313,11 @@ class RelativeJointRandomFlip:
 
     Args:
         item (str|list[str]): The name of the pose to flip.
-        root_index (int): Root joint index in the pose.
+        flip_cfg (dict|list[dict]): Configurations of the fliplr_regression
+            function. It should specify `center_mode` and `center_x` or
+            `center_index`.
         visible_item (str|list[str]): The name of the visibility item which
-        will be flipped accordingly along with the pose.
+            will be flipped accordingly along with the pose.
         flip_prob (float): Probability of flip.
         flip_camera (bool): Whether to flip horizontal distortion coefficients.
         camera_param (dict|None): The camera parameter dict. See the camera
@@ -390,14 +392,16 @@ class RelativeJointRandomFlip:
             # flip horizontal distortion coefficients
             if self.flip_camera:
                 if self.static_camera:
-                    camera_param = self.camera_param
+                    camera_param = copy.deepcopy(self.camera_param)
                 else:
                     assert 'camera_param' in results, \
                         'Camera parameters are missing.'
-                    camera_param = copy.deepcopy(results['camera_param'])
-                assert 'c' in camera_param and 'p' in camera_param
+                    camera_param = results['camera_param']
+                assert 'c' in camera_param
                 camera_param['c'][0] *= -1
-                camera_param['p'][0] *= -1
+
+                if 'p' in camera_param:
+                    camera_param['p'][0] *= -1
 
                 if 'camera_param' not in results:
                     results['camera_param'] = dict()

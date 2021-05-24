@@ -9,8 +9,8 @@ class Body3DSemiSupervisionDataset(Dataset):
     """Mix Dataset for semi-supervised training in 3D human pose estimation
     task.
 
-    The dataset combines data from two datasets and
-    return a dict containing data from two datasets.
+    The dataset combines data from two datasets (a labeled one and an unlabeled
+    one) and return a dict containing data from two datasets.
 
     Args:
         labeled_dataset (Dataset): Dataset with 3D keypoint annotations.
