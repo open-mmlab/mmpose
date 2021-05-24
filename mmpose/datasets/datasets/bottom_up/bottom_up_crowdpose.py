@@ -52,7 +52,7 @@ class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
 
         if dataset_info is None:
             warnings.warn(
-                'dataset_info is missing.'
+                'dataset_info is missing. '
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
                 'for details.', DeprecationWarning)
             cfg = Config.fromfile('configs/_base_/datasets/crowdpose.py')

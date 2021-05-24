@@ -89,10 +89,7 @@ def imshow_keypoints(img,
                         cv2.fillConvexPoly(img_copy, polygon,
                                            (int(r), int(g), int(b)))
                         transparency = max(
-                            0,
-                            min(
-                                1, 0.5 *
-                                (kpts[sk[0], 2] + kpts[sk[1], 2])))
+                            0, min(1, 0.5 * (kpts[sk[0], 2] + kpts[sk[1], 2])))
                         cv2.addWeighted(
                             img_copy,
                             transparency,
@@ -216,15 +213,15 @@ def imshow_keypoints_3d(
         if skeleton is not None and pose_link_color is not None:
             pose_link_color = np.array(pose_link_color)
             assert len(pose_link_color) == len(skeleton)
-            for limb, limb_color in zip(skeleton, pose_link_color):
-                limb_indices = [_i - 1 for _i in limb]
-                xs_3d = kpts[limb_indices, 0]
-                ys_3d = kpts[limb_indices, 1]
-                zs_3d = kpts[limb_indices, 2]
-                kpt_score = kpts[limb_indices, 3]
+            for link, link_color in zip(skeleton, pose_link_color):
+                link_indices = [_i for _i in link]
+                xs_3d = kpts[link_indices, 0]
+                ys_3d = kpts[link_indices, 1]
+                zs_3d = kpts[link_indices, 2]
+                kpt_score = kpts[link_indices, 3]
                 if kpt_score.min() > kpt_score_thr:
                     # matplotlib uses RGB color in [0, 1] value range
-                    _color = limb_color[::-1] / 255.
+                    _color = link_color[::-1] / 255.
                     ax.plot(xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
         if 'title' in res:

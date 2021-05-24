@@ -207,14 +207,14 @@ def vis_3d_pose_result(model,
                         [255, 255, 255]])
 
     if dataset == 'Body3DH36MDataset':
-        skeleton = [[1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [1, 8],
-                    [8, 9], [9, 10], [10, 11], [9, 12], [12, 13], [13, 14],
-                    [9, 15], [15, 16], [16, 17]]
+        skeleton = [[0, 1], [1, 2], [2, 3], [0, 4], [4, 5], [5, 6], [0, 7],
+                    [7, 8], [8, 9], [9, 10], [8, 11], [11, 12], [12, 13],
+                    [8, 14], [14, 15], [15, 16]]
 
         pose_kpt_color = palette[[
             9, 0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
         ]]
-        pose_limb_color = palette[[
+        pose_link_color = palette[[
             0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
         ]]
     elif dataset == 'InterHand3DDataset':
@@ -265,7 +265,7 @@ def vis_3d_pose_result(model,
         radius=radius,
         thickness=thickness,
         pose_kpt_color=pose_kpt_color,
-        pose_limb_color=pose_limb_color,
+        pose_link_color=pose_link_color,
         show=show,
         out_file=out_file)
 
