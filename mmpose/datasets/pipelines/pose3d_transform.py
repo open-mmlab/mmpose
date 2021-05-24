@@ -458,11 +458,13 @@ class Generate3DHeatmapTarget:
         sigma: Sigma of heatmap gaussian.
         joint_indices (list): Indices of joints used for heatmap generation.
         If None (default) is given, all joints will be used.
+        max_bound (float): The maximal value of heatmap.
     """
 
-    def __init__(self, sigma=2, joint_indices=None):
+    def __init__(self, sigma=2, joint_indices=None, max_bound=1.0):
         self.sigma = sigma
         self.joint_indices = joint_indices
+        self.max_bound = max_bound
 
     def __call__(self, results):
         """Generate the target heatmap."""
@@ -475,34 +477,60 @@ class Generate3DHeatmapTarget:
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
 
+        # select the joints used for target generation
         if self.joint_indices is not None:
             joints_3d = joints_3d[self.joint_indices, ...]
             joints_3d_visible = joints_3d_visible[self.joint_indices, ...]
             joint_weights = joint_weights[self.joint_indices, ...]
+        num_joints = joints_3d.shape[0]
 
+        # get the joint location in heatmap coordinates
         mu_x = joints_3d[:, 0] * W / image_size[0]
         mu_y = joints_3d[:, 1] * H / image_size[1]
         mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D
 
-        target_weight = joints_3d_visible[:, 0]
+        target = np.zeros([num_joints, D, H, W], dtype=np.float32)
+
+        target_weight = joints_3d_visible[:, 0].astype(np.float32)
         target_weight = target_weight * (mu_z >= 0) * (mu_z < D)
         if use_different_joint_weights:
             target_weight = target_weight * joint_weights
         target_weight = target_weight[:, None]
 
-        x, y, z = np.arange(W), np.arange(H), np.arange(D)
+        # only compute the voxel value near the joints location
+        tmp_size = 3 * self.sigma
+
+        # get neighboring voxels coordinates
+        x = y = z = np.arange(2 * tmp_size + 1, dtype=np.float32) - tmp_size
         zz, yy, xx = np.meshgrid(z, y, x)
         xx = xx[None, ...].astype(np.float32)
         yy = yy[None, ...].astype(np.float32)
         zz = zz[None, ...].astype(np.float32)
-
         mu_x = mu_x[..., None, None, None]
         mu_y = mu_y[..., None, None, None]
         mu_z = mu_z[..., None, None, None]
+        xx, yy, zz = xx + mu_x, yy + mu_y, zz + mu_z
 
-        target = np.exp(-((xx - mu_x)**2 + (yy - mu_y)**2 + (zz - mu_z)**2) /
-                        (2 * self.sigma**2))
+        # round the coordinates
+        xx = xx.round().clip(0, W - 1)
+        yy = yy.round().clip(0, H - 1)
+        zz = zz.round().clip(0, D - 1)
 
+        # compute the target value near joints
+        local_target = \
+            np.exp(-((xx - mu_x)**2 + (yy - mu_y)**2 + (zz - mu_z)**2) /
+                   (2 * self.sigma**2))
+
+        # put the local target value to the full target heatmap
+        local_size = xx.shape[1]
+        idx_joints = np.tile(
+            np.arange(num_joints)[:, None, None, None],
+            [1, local_size, local_size, local_size])
+        idx = np.stack([idx_joints, zz, yy, xx],
+                       axis=-1).astype(np.long).reshape(-1, 4)
+        target[idx[:, 0], idx[:, 1], idx[:, 2],
+               idx[:, 3]] = local_target.reshape(-1)
+        target = target * self.max_bound
         results['target'] = target
         results['target_weight'] = target_weight
         return results

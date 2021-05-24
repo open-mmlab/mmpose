@@ -3,7 +3,8 @@ import pytest
 from numpy.testing import assert_array_almost_equal
 
 from mmpose.core import (keypoint_auc, keypoint_epe, keypoint_pck_accuracy,
-                         keypoints_from_heatmaps, pose_pck_accuracy)
+                         keypoints_from_heatmaps, keypoints_from_heatmaps3d,
+                         multilabel_classification_accuracy, pose_pck_accuracy)
 
 
 def test_pose_pck_accuracy():
@@ -126,3 +127,38 @@ def test_keypoint_epe():
 
     epe = keypoint_epe(output, target, mask)
     assert abs(epe - 11.5355339) < 1e-4
+
+
+def test_keypoints_from_heatmaps3d():
+    heatmaps = np.ones((1, 1, 64, 64, 64), dtype=np.float32)
+    heatmaps[0, 0, 10, 31, 40] = 2
+    center = np.array([[127, 127]])
+    scale = np.array([[64 / 200.0, 64 / 200.0]])
+    preds, maxvals = keypoints_from_heatmaps3d(heatmaps, center, scale)
+
+    assert_array_almost_equal(preds, np.array([[[135, 126, 10]]]), decimal=4)
+    assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
+    assert isinstance(preds, np.ndarray)
+    assert isinstance(maxvals, np.ndarray)
+
+
+def test_multilabel_classification_accuracy():
+    output = np.array([[0.7, 0.8, 0.4], [0.8, 0.1, 0.1]])
+    target = np.array([[1, 0, 0], [1, 0, 1]])
+    mask = np.array([[True, True, True], [True, True, True]])
+    thr = 0.5
+    acc = multilabel_classification_accuracy(output, target, mask, thr)
+    assert acc == 0
+
+    output = np.array([[0.7, 0.2, 0.4], [0.8, 0.1, 0.9]])
+    thr = 0.5
+    acc = multilabel_classification_accuracy(output, target, mask, thr)
+    assert acc == 1
+
+    thr = 0.3
+    acc = multilabel_classification_accuracy(output, target, mask, thr)
+    assert acc == 0.5
+
+    mask = np.array([[True, True, False], [True, True, True]])
+    acc = multilabel_classification_accuracy(output, target, mask, thr)
+    assert acc == 1
