@@ -82,7 +82,6 @@ train_pipeline = [
         rot_factor=45,
         scale_factor=0.25,
         rot_prob=0.6),
-    # dict(type='MeshRandomChannelNoise', noise_factor=0.2),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(

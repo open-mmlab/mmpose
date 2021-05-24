@@ -9,7 +9,8 @@ def test_top_down_demo():
     # COCO demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py',
+        'configs/body/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'coco/res50_coco_256x192.py',
         None,
         device='cpu')
     image_name = 'tests/data/coco/000000000785.jpg'
@@ -24,7 +25,8 @@ def test_top_down_demo():
 
     # AIC demo
     pose_model = init_pose_model(
-        'configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/aic/res50_aic_256x192.py',
+        'configs/body/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'aic/res50_aic_256x192.py',
         None,
         device='cpu')
     image_name = 'tests/data/aic/054d9ce9201beffc76e5ff2169d2af2f027002ca.jpg'
@@ -42,8 +44,8 @@ def test_top_down_demo():
     # OneHand10K demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/hand/2D_Kpt_SV_RGB_Img/topdown_hm/onehand10k/'
-        'res50_onehand10k_256x256.py',
+        'configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'onehand10k/res50_onehand10k_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/onehand10k/9.jpg'
@@ -61,8 +63,8 @@ def test_top_down_demo():
     # InterHand2DDataset demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/hand/2D_Kpt_SV_RGB_Img/topdown_hm/interhand2d/'
-        'res50_interhand2d_all_256x256.py',
+        'configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'interhand2d/res50_interhand2d_all_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/interhand2.6m/image2017.jpg'
@@ -80,7 +82,8 @@ def test_top_down_demo():
     # Face300WDataset demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/face/2D_Kpt_SV_RGB_Img/topdown_hm/300w/res50_300w_256x256.py',
+        'configs/face/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        '300w/res50_300w_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/300w/indoor_020.png'
@@ -98,7 +101,8 @@ def test_top_down_demo():
     # FaceAFLWDataset demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/face/2D_Kpt_SV_RGB_Img/topdown_hm/aflw/res50_aflw_256x256.py',
+        'configs/face/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'aflw/res50_aflw_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/aflw/image04476.jpg'
@@ -116,7 +120,8 @@ def test_top_down_demo():
     # FaceCOFWDataset demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/face/2D_Kpt_SV_RGB_Img/topdown_hm/cofw/res50_cofw_256x256.py',
+        'configs/face/2d_kpt_sview_rgb_img/top_down_heatmap/'
+        'cofw/res50_cofw_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/cofw/001766.jpg'
@@ -144,7 +149,8 @@ def test_bottom_up_demo():
 
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/body/2D_Kpt_SV_RGB_Img/AE/coco/res50_coco_512x512.py',
+        'configs/body/2d_kpt_sview_rgb_img/associative_embedding/'
+        'coco/res50_coco_512x512.py',
         None,
         device='cpu')
 

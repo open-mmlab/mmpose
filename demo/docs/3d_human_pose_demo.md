@@ -26,7 +26,7 @@ Example:
 
 ```shell
 python demo/body3d_two_stage_img_demo.py \
-    configs/body3d/simple_baseline/h36m/simple3Dbaseline_h36m.py \
+    configs/body/3d_kpt_sview_rgb_img/simple_baseline_3d/h36m/simple3Dbaseline_h36m.py \
     https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth \
     --json-file tests/data/h36m/h36m_coco.json \
     --img-root tests/data/h36m \
