@@ -147,8 +147,9 @@ def _inference_single_pose_model(model,
                                  bboxes,
                                  dataset,
                                  return_heatmap=False):
-    """Inference a single bbox.
+    """Inference human bounding boxes.
 
+    num_bboxes: N
     num_keypoints: K
 
     Args:
@@ -162,7 +163,7 @@ def _inference_single_pose_model(model,
             to be returned, default: None
 
     Returns:
-        ndarray[Kx3]: Predicted pose x, y, score.
+        ndarray[NxKx3]: Predicted pose x, y, score.
         heatmap[N, K, H, W]: Model output heatmap.
     """
 
