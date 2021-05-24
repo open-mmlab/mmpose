@@ -73,18 +73,20 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
 
         if coco_style:
             self.coco = COCO(ann_file)
-            cats = [
-                cat['name']
-                for cat in self.coco.loadCats(self.coco.getCatIds())
-            ]
-            self.classes = ['__background__'] + cats
-            self.num_classes = len(self.classes)
-            self._class_to_ind = dict(
-                zip(self.classes, range(self.num_classes)))
-            self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-            self._coco_ind_to_class_ind = dict(
-                (self._class_to_coco_ind[cls], self._class_to_ind[cls])
-                for cls in self.classes[1:])
+            if 'categories' in self.coco.dataset:
+                cats = [
+                    cat['name']
+                    for cat in self.coco.loadCats(self.coco.getCatIds())
+                ]
+                self.classes = ['__background__'] + cats
+                self.num_classes = len(self.classes)
+                self._class_to_ind = dict(
+                    zip(self.classes, range(self.num_classes)))
+                self._class_to_coco_ind = dict(
+                    zip(cats, self.coco.getCatIds()))
+                self._coco_ind_to_class_ind = dict(
+                    (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+                    for cls in self.classes[1:])
             self.img_ids = self.coco.getImgIds()
             self.num_images = len(self.img_ids)
             self.id2name, self.name2id = self._get_mapping_id_name(
@@ -145,7 +147,7 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
 
         return center, scale
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, gts, *args, **kwargs):
         """Get the normalize factor. generally inter-ocular distance measured
         as the Euclidean distance between the outer corners of the eyes is
         used. This function should be overrided to measure NME.
@@ -203,6 +205,7 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
         outputs = []
         gts = []
         masks = []
+        box_sizes = []
         threshold_bbox = []
         threshold_head_box = []
 
@@ -218,12 +221,14 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
                 head_box_thr = item['head_size']
                 threshold_head_box.append(
                     np.array([head_box_thr, head_box_thr]))
+            box_sizes.append(item.get('box_size', 1))
 
         outputs = np.array(outputs)
         gts = np.array(gts)
         masks = np.array(masks)
         threshold_bbox = np.array(threshold_bbox)
         threshold_head_box = np.array(threshold_head_box)
+        box_sizes = np.array(box_sizes).reshape([-1, 1])
 
         if 'PCK' in metrics:
             _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
@@ -243,7 +248,8 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
             info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
 
         if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(gts)
+            normalize_factor = self._get_normalize_factor(
+                gts=gts, box_sizes=box_sizes)
             info_str.append(
                 ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
 

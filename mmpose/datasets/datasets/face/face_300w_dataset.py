@@ -106,7 +106,7 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, gts, *args, **kwargs):
         """Get inter-ocular distance as the normalize factor, measured as the
         Euclidean distance between the outer corners of the eyes.
 

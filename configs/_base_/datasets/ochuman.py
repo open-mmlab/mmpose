@@ -1,5 +1,5 @@
 dataset_info = dict(
-    dataset_name='macaque',
+    dataset_name='ochuman',
     paper_info=dict(
         author='Zhang, Song-Hai and Li, Ruilong and Dong, Xin and '
         'Rosin, Paul and Cai, Zixi and Han, Xi and '

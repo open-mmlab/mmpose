@@ -34,6 +34,7 @@ class Kpt2dSviewRgbImgBottomUpDataset(Dataset, metaclass=ABCMeta):
                  data_cfg,
                  pipeline,
                  dataset_info=None,
+                 coco_style=True,
                  test_mode=False):
 
         self.image_info = {}
@@ -79,28 +80,32 @@ class Kpt2dSviewRgbImgBottomUpDataset(Dataset, metaclass=ABCMeta):
         self.sigmas = dataset_info.sigmas
         self.dataset_name = dataset_info.dataset_name
 
-        self.coco = COCO(ann_file)
+        if coco_style:
+            self.coco = COCO(ann_file)
+            if 'categories' in self.coco.dataset:
+                cats = [
+                    cat['name']
+                    for cat in self.coco.loadCats(self.coco.getCatIds())
+                ]
+                self.classes = ['__background__'] + cats
+                self.num_classes = len(self.classes)
+                self._class_to_ind = dict(
+                    zip(self.classes, range(self.num_classes)))
+                self._class_to_coco_ind = dict(
+                    zip(cats, self.coco.getCatIds()))
+                self._coco_ind_to_class_ind = dict(
+                    (self._class_to_coco_ind[cls], self._class_to_ind[cls])
+                    for cls in self.classes[1:])
+            self.img_ids = self.coco.getImgIds()
+            if not test_mode:
+                self.img_ids = [
+                    img_id for img_id in self.img_ids if
+                    len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
+                ]
+            self.num_images = len(self.img_ids)
+            self.id2name, self.name2id = self._get_mapping_id_name(
+                self.coco.imgs)
 
-        cats = [
-            cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
-        ]
-        self.classes = ['__background__'] + cats
-        self.num_classes = len(self.classes)
-        self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
-        self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict(
-            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
-            for cls in self.classes[1:])
-        self.img_ids = self.coco.getImgIds()
-        if not test_mode:
-            self.img_ids = [
-                img_id for img_id in self.img_ids
-                if len(self.coco.getAnnIds(imgIds=img_id, iscrowd=None)) > 0
-            ]
-        self.num_images = len(self.img_ids)
-        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-
-        self.img_ids = []
         self.pipeline = Compose(self.pipeline)
 
     @staticmethod

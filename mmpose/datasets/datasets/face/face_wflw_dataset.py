@@ -107,7 +107,7 @@ class FaceWFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, gts, *args, **kwargs):
         """Get normalize factor for evaluation.
 
         Args:

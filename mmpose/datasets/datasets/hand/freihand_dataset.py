@@ -68,7 +68,7 @@ class FreiHandDataset(Kpt2dSviewRgbImgTopDownDataset):
                 'dataset_info is missing.'
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
                 'for details.', DeprecationWarning)
-            cfg = Config.fromfile('configs/_base_/datasets/freihand.py')
+            cfg = Config.fromfile('configs/_base_/datasets/freihand2d.py')
             dataset_info = cfg._cfg_dict['dataset_info']
 
         super().__init__(

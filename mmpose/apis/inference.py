@@ -146,7 +146,7 @@ class LoadImage:
 def _inference_single_pose_model(model,
                                  img_or_path,
                                  bboxes,
-                                 dataset=None,
+                                 dataset='TopDownCocoDataset',
                                  dataset_info=None,
                                  return_heatmap=False):
     """Inference human bounding boxes.
@@ -180,7 +180,10 @@ def _inference_single_pose_model(model,
 
     assert len(bboxes[0]) in [4, 5]
 
-    if dataset_info is None and dataset is not None:
+    if dataset_info is not None:
+        dataset_name = dataset_info.dataset_name
+        flip_pairs = dataset_info.flip_pairs
+    else:
         warnings.warn(
             'dataset is deprecated.'
             'Please set `dataset_info` in the config.'
@@ -267,11 +270,7 @@ def _inference_single_pose_model(model,
                           [16, 17], [18, 19]]
         else:
             raise NotImplementedError()
-
         dataset_name = dataset
-    else:
-        dataset_name = dataset_info.dataset_name
-        flip_pairs = dataset_info.flip_pairs
 
     batch_data = []
     for bbox in bboxes:
@@ -332,7 +331,7 @@ def inference_top_down_pose_model(model,
                                   person_results,
                                   bbox_thr=None,
                                   format='xywh',
-                                  dataset=None,
+                                  dataset='TopDownCocoDataset',
                                   dataset_info=None,
                                   return_heatmap=False,
                                   outputs=None):
@@ -372,7 +371,7 @@ def inference_top_down_pose_model(model,
             Output feature maps from layers specified in `outputs`.
             Includes 'heatmap' if `return_heatmap` is True.
     """
-    if dataset_info is None and dataset is not None:
+    if dataset_info is None:
         warnings.warn(
             'dataset is deprecated.'
             'Please set `dataset_info` in the config.'
@@ -439,7 +438,7 @@ def inference_top_down_pose_model(model,
 
 def inference_bottom_up_pose_model(model,
                                    img_or_path,
-                                   dataset=None,
+                                   dataset='BottomUpCocoDataset',
                                    dataset_info=None,
                                    pose_nms_thr=0.9,
                                    return_heatmap=False,
@@ -483,7 +482,10 @@ def inference_bottom_up_pose_model(model,
                      ] + cfg.test_pipeline[1:]
     test_pipeline = Compose(test_pipeline)
 
-    if dataset_info is None:
+    if dataset_info is not None:
+        dataset_name = dataset_info.dataset_name
+        flip_index = dataset_info.flip_index
+    else:
         warnings.warn(
             'dataset is deprecated.'
             'Please set `dataset_info` in the config.'
@@ -492,9 +494,6 @@ def inference_bottom_up_pose_model(model,
         assert (dataset == 'BottomUpCocoDataset')
         dataset_name = dataset
         flip_index = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
-    else:
-        dataset_name = dataset_info.dataset_name
-        flip_index = dataset_info.flip_index
 
     # prepare data
     data = {
@@ -552,7 +551,7 @@ def vis_pose_result(model,
                     radius=4,
                     thickness=1,
                     kpt_score_thr=0.3,
-                    dataset=None,
+                    dataset='TopDownCocoDataset',
                     dataset_info=None,
                     show=False,
                     out_file=None):
@@ -570,8 +569,11 @@ def vis_pose_result(model,
         show (bool):  Whether to show the image. Default True.
         out_file (str|None): The filename of the output visualization image.
     """
-
-    if dataset_info is None and dataset is not None:
+    if dataset_info is not None:
+        skeleton = dataset_info.skeleton
+        pose_kpt_color = dataset_info.pose_kpt_color
+        pose_link_color = dataset_info.pose_link_color
+    else:
         warnings.warn(
             'dataset is deprecated.'
             'Please set `dataset_info` in the config.'
@@ -589,10 +591,10 @@ def vis_pose_result(model,
         if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
                        'TopDownOCHumanDataset', 'AnimalMacaqueDataset'):
             # show the results
-            skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13],
-                        [6, 12], [7, 13], [6, 7], [6, 8], [7, 9], [8, 10],
-                        [9, 11], [2, 3], [1, 2], [1, 3], [2, 4], [3, 5],
-                        [4, 6], [5, 7]]
+            skeleton = [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
+                        [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
+                        [8, 10], [1, 2], [0, 1], [0, 2], [1, 3], [2, 4],
+                        [3, 5], [4, 6]]
 
             pose_link_color = palette[[
                 0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 16
@@ -603,21 +605,21 @@ def vis_pose_result(model,
 
         elif dataset == 'TopDownCocoWholeBodyDataset':
             # show the results
-            skeleton = [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13],
-                        [6, 12], [7, 13], [6, 7], [6, 8], [7, 9], [8, 10],
-                        [9, 11], [2, 3], [1, 2], [1, 3],
-                        [2, 4], [3, 5], [4, 6], [5, 7], [16, 18], [16, 19],
-                        [16, 20], [17, 21], [17, 22], [17, 23], [92, 93],
-                        [93, 94], [94, 95], [95, 96], [92, 97], [97, 98],
-                        [98, 99], [99, 100], [92, 101], [101, 102], [102, 103],
-                        [103, 104], [92, 105], [105, 106], [106, 107],
-                        [107, 108], [92, 109], [109, 110], [110, 111],
-                        [111, 112], [113, 114], [114, 115], [115, 116],
-                        [116, 117], [113, 118], [118, 119], [119, 120],
-                        [120, 121], [113, 122], [122, 123], [123, 124],
-                        [124, 125], [113, 126], [126, 127], [127, 128],
-                        [128, 129], [113, 130], [130, 131], [131, 132],
-                        [132, 133]]
+            skeleton = [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
+                        [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
+                        [8, 10], [1, 2], [0, 1], [0, 2],
+                        [1, 3], [2, 4], [3, 5], [4, 6], [15, 17], [15, 18],
+                        [15, 19], [16, 20], [16, 21], [16, 22], [91, 92],
+                        [92, 93], [93, 94], [94, 95], [91, 96], [96, 97],
+                        [97, 98], [98, 99], [91, 100], [100, 101], [101, 102],
+                        [102, 103], [91, 104], [104, 105], [105, 106],
+                        [106, 107], [91, 108], [108, 109], [109, 110],
+                        [110, 111], [112, 113], [113, 114], [114, 115],
+                        [115, 116], [112, 117], [117, 118], [118, 119],
+                        [119, 120], [112, 121], [121, 122], [122, 123],
+                        [123, 124], [112, 125], [125, 126], [126, 127],
+                        [127, 128], [112, 129], [129, 130], [130, 131],
+                        [131, 132]]
 
             pose_link_color = palette[[
                 0, 0, 0, 0, 7, 7, 7, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 16, 16
@@ -633,9 +635,9 @@ def vis_pose_result(model,
                 [0, 0, 0, 0, 0, 0] + [19] * (68 + 42)]
 
         elif dataset == 'TopDownAicDataset':
-            skeleton = [[3, 2], [2, 1], [1, 14], [14, 4], [4, 5], [5, 6],
-                        [9, 8], [8, 7], [7, 10], [10, 11], [11, 12], [13, 14],
-                        [1, 7], [4, 10]]
+            skeleton = [[2, 1], [1, 0], [0, 13], [13, 3], [3, 4], [4, 5],
+                        [8, 7], [7, 6], [6, 9], [9, 10], [10, 11], [12, 13],
+                        [0, 6], [3, 9]]
 
             pose_link_color = palette[[
                 9, 9, 9, 9, 9, 9, 16, 16, 16, 16, 16, 0, 7, 7
@@ -645,9 +647,9 @@ def vis_pose_result(model,
             ]]
 
         elif dataset == 'TopDownMpiiDataset':
-            skeleton = [[1, 2], [2, 3], [3, 7], [7, 4], [4, 5], [5, 6], [7, 8],
-                        [8, 9], [9, 10], [9, 13], [13, 12], [12, 11], [9, 14],
-                        [14, 15], [15, 16]]
+            skeleton = [[0, 1], [1, 2], [2, 6], [6, 3], [3, 4], [4, 5], [6, 7],
+                        [7, 8], [8, 9], [8, 12], [12, 11], [11, 10], [8, 13],
+                        [13, 14], [14, 15]]
 
             pose_link_color = palette[[
                 16, 16, 16, 16, 16, 16, 7, 7, 0, 9, 9, 9, 9, 9, 9
@@ -657,21 +659,22 @@ def vis_pose_result(model,
             ]]
 
         elif dataset == 'TopDownMpiiTrbDataset':
-            skeleton = [[13, 14], [14, 1], [14, 2], [1, 3], [2, 4], [3, 5],
-                        [4, 6], [1, 7], [2, 8], [7, 8], [7, 9], [8, 10],
-                        [9, 11], [10, 12], [15, 16], [17, 18], [19, 20],
-                        [21, 22], [23, 24], [25, 26], [27, 28], [29, 30],
-                        [31, 32], [33, 34], [35, 36], [37, 38], [39, 40]]
+            skeleton = [[12, 13], [13, 0], [13, 1], [0, 2], [1, 3], [2, 4],
+                        [3, 5], [0, 6], [1, 7], [6, 7], [6, 8], [7,
+                                                                 9], [8, 10],
+                        [9, 11], [14, 15], [16, 17], [18, 19], [20, 21],
+                        [22, 23], [24, 25], [26, 27], [28, 29], [30, 31],
+                        [32, 33], [34, 35], [36, 37], [38, 39]]
 
             pose_link_color = palette[[16] * 14 + [19] * 13]
             pose_kpt_color = palette[[16] * 14 + [0] * 26]
 
         elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
                          'PanopticDataset'):
-            skeleton = [[1, 2], [2, 3], [3, 4], [4, 5], [1, 6], [6, 7], [7, 8],
-                        [8, 9], [1, 10], [10, 11], [11, 12], [12, 13], [1, 14],
-                        [14, 15], [15, 16], [16, 17], [1, 18], [18, 19],
-                        [19, 20], [20, 21]]
+            skeleton = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7],
+                        [7, 8], [0, 9], [9, 10], [10, 11], [11, 12], [0, 13],
+                        [13, 14], [14, 15], [15, 16], [0, 17], [17, 18],
+                        [18, 19], [19, 20]]
 
             pose_link_color = palette[[
                 0, 0, 0, 0, 4, 4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 12, 16, 16, 16,
@@ -683,10 +686,10 @@ def vis_pose_result(model,
             ]]
 
         elif dataset == 'InterHand2DDataset':
-            skeleton = [[1, 2], [2, 3], [3, 4], [5, 6],
-                        [6, 7], [7, 8], [9, 10], [10, 11], [11, 12], [13, 14],
-                        [14, 15], [15, 16], [17, 18], [18, 19], [19, 20],
-                        [4, 21], [8, 21], [12, 21], [16, 21], [20, 21]]
+            skeleton = [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6], [6, 7], [8, 9],
+                        [9, 10], [10, 11], [12, 13], [13, 14], [14, 15],
+                        [16, 17], [17, 18], [18, 19], [3, 20], [7, 20],
+                        [11, 20], [15, 20], [19, 20]]
 
             pose_link_color = palette[[
                 0, 0, 0, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 16, 0, 4, 8, 12,
@@ -730,10 +733,10 @@ def vis_pose_result(model,
             kpt_score_thr = 0
 
         elif dataset == 'AnimalHorse10Dataset':
-            skeleton = [[1, 2], [2, 13], [13, 17], [17, 22], [22, 18],
-                        [18, 12], [12, 11], [11, 9], [9, 10], [10, 13], [3, 4],
-                        [4, 5], [6, 7], [7, 8], [14, 15], [15, 16], [19, 20],
-                        [20, 21]]
+            skeleton = [[0, 1], [1, 12], [12, 16], [16, 21], [21, 17],
+                        [17, 11], [11, 10], [10, 8], [8, 9], [9, 12], [2, 3],
+                        [3, 4], [5, 6], [6, 7], [13, 14], [14, 15], [18, 19],
+                        [19, 20]]
 
             pose_link_color = palette[[4] * 10 + [6] * 2 + [6] * 2 + [7] * 2 +
                                       [7] * 2]
@@ -743,47 +746,42 @@ def vis_pose_result(model,
             ]]
 
         elif dataset == 'AnimalFlyDataset':
-            skeleton = [[2, 1], [3, 1], [4, 1], [5, 4], [6, 5], [8, 7], [9, 8],
-                        [10, 9], [12, 11], [13, 12], [14, 13], [16, 15],
-                        [17, 16], [18, 17], [20, 19], [21, 20], [22, 21],
-                        [24, 23], [25, 24], [26, 25], [28, 27], [29, 28],
-                        [30, 29], [31, 4], [32, 4]]
+            skeleton = [[1, 0], [2, 0], [3, 0], [4, 3], [5, 4], [7, 6], [8, 7],
+                        [9, 8], [11, 10], [12, 11], [13, 12], [15, 14],
+                        [16, 15], [17, 16], [19, 18], [20, 19], [21, 20],
+                        [23, 22], [24, 23], [25, 24], [27, 26], [28, 27],
+                        [29, 28], [30, 3], [31, 3]]
 
             pose_link_color = palette[[0] * 25]
             pose_kpt_color = palette[[0] * 32]
 
         elif dataset == 'AnimalLocustDataset':
-            skeleton = [[2, 1], [3, 2], [4, 3], [5, 4], [7, 6], [8, 7],
-                        [10, 9], [11, 10], [12, 11], [14, 13], [15, 14],
-                        [16, 15], [18, 17], [19, 18], [20, 19], [22, 21],
-                        [23, 22], [25, 24], [26, 25], [27, 26], [29, 28],
-                        [30, 29], [31, 30], [33, 32], [34, 33], [35, 34]]
+            skeleton = [[1, 0], [2, 1], [3, 2], [4, 3], [6, 5], [7, 6], [9, 8],
+                        [10, 9], [11, 10], [13, 12], [14, 13], [15, 14],
+                        [17, 16], [18, 17], [19, 18], [21, 20], [22, 21],
+                        [24, 23], [25, 24], [26, 25], [28, 27], [29, 28],
+                        [30, 29], [32, 31], [33, 32], [34, 33]]
 
             pose_link_color = palette[[0] * 26]
             pose_kpt_color = palette[[0] * 35]
 
         elif dataset == 'AnimalZebraDataset':
-            skeleton = [[2, 1], [3, 2], [4, 3], [5, 3], [6, 8], [7, 8], [8, 3],
-                        [9, 8]]
+            skeleton = [[1, 0], [2, 1], [3, 2], [4, 2], [5, 7], [6, 7], [7, 2],
+                        [8, 7]]
 
             pose_link_color = palette[[0] * 8]
             pose_kpt_color = palette[[0] * 9]
 
         elif dataset in 'AnimalPoseDataset':
-            skeleton = [[1, 2], [1, 3], [2, 4], [1, 5], [2, 5], [5, 6], [6, 8],
-                        [7, 8], [6, 9], [9, 13], [13, 17], [6, 10], [10, 14],
-                        [14, 18], [7, 11], [11, 15], [15, 19], [7, 12],
-                        [12, 16], [16, 20]]
+            skeleton = [[0, 1], [0, 2], [1, 3], [0, 4], [1, 4], [4, 5], [5, 7],
+                        [6, 7], [5, 8], [8, 12], [12, 16], [5, 9], [9, 13],
+                        [13, 17], [6, 10], [10, 14], [14, 18], [6, 11],
+                        [11, 15], [15, 19]]
 
             pose_link_color = palette[[0] * 20]
             pose_kpt_color = palette[[0] * 20]
         else:
             NotImplementedError()
-
-    elif dataset_info is not None:
-        skeleton = dataset_info.skeleton
-        pose_kpt_color = dataset_info.pose_kpt_color
-        pose_link_color = dataset_info.pose_link_color
 
     if hasattr(model, 'module'):
         model = model.module
