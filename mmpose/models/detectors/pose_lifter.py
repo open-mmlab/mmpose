@@ -14,7 +14,26 @@ except ImportError:
 
 @POSENETS.register_module()
 class PoseLifter(BasePose):
-    """Pose lifter that lifts 2D pose to 3D pose."""
+    """Pose lifter that lifts 2D pose to 3D pose.
+
+    The basic model is a pose model that predicts root-relative pose. If
+    traj_head is not None, a trajectory model that predicts absolute root joint
+    position is also built.
+
+    Args:
+        backbone (dict): Config for the backbone of pose model.
+        neck (dict|None): Config for the neck of pose model.
+        keypoint_head (dict|None): Config for the head of pose model.
+        traj_backbone (dict|None): Config for the backbone of trajectory model.
+            If traj_backbone is None and traj_head is not None, trajectory
+            model will share backbone with pose model.
+        traj_neck (dict|None): Config for the neck of trajectory model.
+        traj_head (dict|None): Config for the head of trajectory model.
+        loss_semi (dict|None): Config for semi-supervision loss.
+        train_cfg (dict|None): Config for keypoint head during training.
+        test_cfg (dict|None): Config for keypoint head during testing.
+        pretrained (str|None): Path to pretrained weights.
+    """
 
     def __init__(self,
                  backbone,
@@ -24,7 +43,6 @@ class PoseLifter(BasePose):
                  traj_neck=None,
                  traj_head=None,
                  loss_semi=None,
-                 warmup_epochs=0,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None):
@@ -34,10 +52,7 @@ class PoseLifter(BasePose):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
 
-        # semi-supervised learning
-        self.semi = keypoint_head is not None and traj_head is not None and \
-            loss_semi is not None
-
+        # pose model
         self.backbone = builder.build_backbone(backbone)
 
         if neck is not None:
@@ -48,20 +63,25 @@ class PoseLifter(BasePose):
             keypoint_head['test_cfg'] = test_cfg
             self.keypoint_head = builder.build_head(keypoint_head)
 
-        if traj_backbone is not None:
-            self.traj_backbone = builder.build_backbone(traj_backbone)
+        # trajectory model
+        if traj_head is not None:
+            self.traj_head = builder.build_head(traj_head)
+
+            if traj_backbone is not None:
+                self.traj_backbone = builder.build_backbone(traj_backbone)
+            else:
+                self.traj_backbone = self.backbone
+
             if traj_neck is not None:
                 self.traj_neck = builder.build_neck(traj_neck)
-            if traj_head is not None:
-                self.traj_head = builder.build_head(traj_head)
 
+        # semi-supervised learning
+        self.semi = loss_semi is not None
         if self.semi:
+            assert keypoint_head is not None and traj_head is not None
             self.loss_semi = builder.build_loss(loss_semi)
 
         self.init_weights(pretrained=pretrained)
-
-        self.warmup_epochs = warmup_epochs
-        self.epoch = 0
 
     @property
     def with_neck(self):
@@ -155,12 +175,6 @@ class PoseLifter(BasePose):
             features = self.neck(features)
         if self.with_keypoint:
             output = self.keypoint_head(features)
-        # trajectory model
-        if self.with_traj:
-            traj_features = self.traj_backbone(input)
-            if self.with_traj_neck:
-                traj_features = self.traj_neck(traj_features)
-            traj_output = self.traj_head(traj_features)
 
         losses = dict()
         if self.with_keypoint:
@@ -170,13 +184,20 @@ class PoseLifter(BasePose):
                 output, target, target_weight, metas)
             losses.update(keypoint_losses)
             losses.update(keypoint_accuracy)
+
+        # trajectory model
         if self.with_traj:
+            traj_features = self.traj_backbone(input)
+            if self.with_traj_neck:
+                traj_features = self.traj_neck(traj_features)
+            traj_output = self.traj_head(traj_features)
+
             traj_losses = self.traj_head.get_loss(traj_output,
                                                   kwargs['traj_target'], None)
             losses.update(traj_losses)
 
         # semi-supervised learning
-        if self.semi and self.epoch >= self.warmup_epochs:
+        if self.semi:
             ul_input = kwargs['unlabeled_input']
             ul_features = self.backbone(ul_input)
             if self.with_neck:
@@ -222,8 +243,6 @@ class PoseLifter(BasePose):
             traj_output = self.traj_head.inference_model(traj_features)
             results['traj_preds'] = traj_output
 
-        self.epoch += 1
-
         return results
 
     def forward_dummy(self, input):
@@ -237,11 +256,11 @@ class PoseLifter(BasePose):
         Returns:
             Tensor: Model output
         """
-        features = self.backbone(input)
+        output = self.backbone(input)
         if self.with_neck:
-            features = self.neck(features)
+            output = self.neck(output)
         if self.with_keypoint:
-            output = self.keypoint_head(features)
+            output = self.keypoint_head(output)
 
         if self.with_traj:
             traj_features = self.traj_backbone(input)

@@ -23,6 +23,10 @@ class TemporalRegressionHead(nn.Module):
          loss_keypoint (dict): Config for keypoint loss. Default: None.
          max_norm (float|None): if not None, the weight of convolution layers
             will be clipped to have a maximum norm of max_norm.
+        is_trajectory (bool): If the model only predicts root joint
+            position, then this arg should be set to True. In this case,
+            traj_loss will be calculated. Otherwise, it should be set to
+            False. Default: False.
     """
 
     def __init__(self,
@@ -30,6 +34,7 @@ class TemporalRegressionHead(nn.Module):
                  num_joints,
                  max_norm=None,
                  loss_keypoint=None,
+                 is_trajectory=False,
                  train_cfg=None,
                  test_cfg=None):
         super().__init__()
@@ -38,6 +43,9 @@ class TemporalRegressionHead(nn.Module):
         self.num_joints = num_joints
         self.max_norm = max_norm
         self.loss = build_loss(loss_keypoint)
+        self.is_trajectory = is_trajectory
+        if self.is_trajectory:
+            assert self.num_joints == 1
 
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
@@ -91,12 +99,15 @@ class TemporalRegressionHead(nn.Module):
             target (torch.Tensor[N, K, 3]): Target keypoints.
             target_weight (torch.Tensor[N, K, 3]):
                 Weights across different joint types.
+                If self.is_trajectory is True and target_weight is None,
+                target_weight will be set inversely proportional to joint
+                depth.
         """
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
 
         # trajectory model
-        if self.num_joints == 1:
+        if self.is_trajectory:
             if target.dim() == 2:
                 target.unsqueeze_(1)
 

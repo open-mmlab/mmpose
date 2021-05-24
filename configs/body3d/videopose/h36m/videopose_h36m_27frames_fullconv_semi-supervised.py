@@ -68,11 +68,12 @@ model = dict(
         type='TemporalRegressionHead',
         in_channels=1024,
         num_joints=1,
-        loss_keypoint=dict(type='MPJPELoss', use_target_weight=True)),
+        loss_keypoint=dict(type='MPJPELoss', use_target_weight=True),
+        is_trajectory=True),
     loss_semi=dict(
         type='SemiSupervisionLoss',
-        joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15]),
-    warmup_epochs=1,
+        joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15],
+        warmup_iterations=12805),  # num_GPUs = 8
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
 

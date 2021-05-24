@@ -219,7 +219,14 @@ class MSELoss(nn.Module):
 
 @LOSSES.register_module()
 class BoneLoss(nn.Module):
-    """Bone length loss."""
+    """Bone length loss.
+
+    Args:
+        joint_parents (list): Indices of each joint's parent joint.
+        use_target_weight (bool): Option to use weighted bone loss.
+            Different bone types may have different target weights.
+        loss_weight (float): Weight of the loss. Default: 1.0.
+    """
 
     def __init__(self, joint_parents, use_target_weight=False, loss_weight=1.):
         super().__init__()
@@ -268,20 +275,34 @@ class SemiSupervisionLoss(nn.Module):
     """Semi-supervision loss for unlabeled data. It is composed of projection
     loss and bone loss.
 
+     Paper ref: `3D human pose estimation in video with temporal convolutions
+     and semi-supervised training` Dario Pavllo et al. CVPR'2019.
+
     Args:
+        joint_parents (list): Indices of each joint's parent joint.
         projection_loss_weight (float): Weight for projection loss.
         bone_loss_weight (float): Weight for bone loss.
+        warmup_iterations (int): Number of warmup iterations. In the first
+            `warmup_iterations` iterations, the model is trained only on
+            labeled data, and semi-supervision loss will be 0.
+            This is a workaround since currently we cannot access
+            epoch number in loss functions. Note that the iteration number in
+            an epoch can be changed due to different GPU numbers in multi-GPU
+            settings. So please set this parameter carefully.
     """
 
     def __init__(self,
                  joint_parents,
                  projection_loss_weight=1.,
-                 bone_loss_weight=1.):
+                 bone_loss_weight=1.,
+                 warmup_iterations=0):
         super().__init__()
         self.criterion_projection = MPJPELoss(
             loss_weight=projection_loss_weight)
         self.criterion_bone = BoneLoss(
             joint_parents, loss_weight=bone_loss_weight)
+        self.warmup_iterations = warmup_iterations
+        self.num_iterations = 0
 
     @staticmethod
     def project_joints(x, intrinsics):
@@ -314,6 +335,10 @@ class SemiSupervisionLoss(nn.Module):
 
     def forward(self, output, target):
         losses = dict()
+
+        self.num_iterations += 1
+        if self.num_iterations <= self.warmup_iterations:
+            return losses
 
         labeled_pose = output['labeled_pose']
         unlabeled_pose = output['unlabeled_pose']
