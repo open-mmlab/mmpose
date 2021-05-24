@@ -118,7 +118,7 @@ configs/{task}/{model}/{dataset}/{backbone}_[model_setting]_{dataset}_{input_siz
             type='ResNet',  # Name of the backbone
             depth=50),  # Depth of ResNet model
         keypoint_head=dict(  # Dict for keypoint head
-            type='TopDownSimpleHead',  # Name of keypoint head
+            type='TopdownHeatmapSimpleHead',  # Name of keypoint head
             in_channels=2048,  # The input channels of keypoint head
             out_channels=channel_cfg['num_output_channels'],  # The output channels of keypoint head
             loss_keypoint=dict(  # Dict for keypoint loss

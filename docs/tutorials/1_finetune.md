@@ -21,7 +21,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ResNet', depth=18),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=512,
         out_channels=17,
     ),

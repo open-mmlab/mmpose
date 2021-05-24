@@ -16,7 +16,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
     """Top-down heatmap simple head. paper ref: Bin Xiao et al. ``Simple
     Baselines for Human Pose Estimation and Tracking``.
 
-    TopDownSimpleHead is consisted of (>=0) number of deconv layers
+    TopdownHeatmapSimpleHead is consisted of (>=0) number of deconv layers
     and a simple conv2d layer.
 
     Args:

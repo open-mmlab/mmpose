@@ -2,9 +2,10 @@ import warnings
 
 from .datasets.builder import DATASETS
 from .datasets.datasets.top_down.topdown_base_dataset import TopDownBaseDataset
-from .models.builder import HEADS
+from .models.builder import HEADS, POSENETS
 from .models.detectors import AssociativeEmbedding
-from .models.heads import (AEHigherResolutionHead, AESimpleHead, HMRMeshHead,
+from .models.heads import (AEHigherResolutionHead, AESimpleHead,
+                           DeepposeRegressionHead, HMRMeshHead,
                            TopdownHeatmapMSMUHead,
                            TopdownHeatmapMultiStageHead,
                            TopdownHeatmapSimpleHead)
@@ -155,6 +156,22 @@ class MeshHMRHead(HMRMeshHead):
 
 
 @HEADS.register_module()
+class FcHead(DeepposeRegressionHead):
+    """FcHead (deprecated).
+
+    FcHead has been renamed into DeepposeRegressionHead, check
+    https://github.com/open-mmlab/mmpose/pull/656 for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'FcHead has been renamed into '
+            'DeepposeRegressionHead, check '
+            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+
+
+@POSENETS.register_module()
 class BottomUp(AssociativeEmbedding):
     """Associative Embedding.
 
