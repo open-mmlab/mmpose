@@ -28,4 +28,4 @@ def test_imshow_keypoints():
         skeleton=skeleton,
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
-        viz_height=400)
+        vis_height=400)

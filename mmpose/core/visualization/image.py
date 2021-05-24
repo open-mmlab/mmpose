@@ -116,7 +116,7 @@ def imshow_keypoints_3d(
     skeleton=None,
     pose_kpt_color=None,
     pose_limb_color=None,
-    viz_height=400,
+    vis_height=400,
     *,
     axis_azimuth=70,
     axis_limit=1.7,
@@ -139,8 +139,8 @@ def imshow_keypoints_3d(
             not nddraw keypoints.
         pose_limb_color (np.array[Mx3]): Color of M limbs. If None, do not
             draw limbs.
-        viz_height (int): The image hight of the visualization. The width
-                will be N*viz_height depending on the number of visualized
+        vis_height (int): The image hight of the visualization. The width
+                will be N*vis_height depending on the number of visualized
                 items.
         axis_azimuth (float): axis azimuth angle for 3D visualizations.
         axis_dist (float): axis distance for 3D visualizations.
@@ -158,12 +158,12 @@ def imshow_keypoints_3d(
     num_axis = len(pose_result) + 1 if show_img else len(pose_result)
 
     plt.ioff()
-    fig = plt.figure(figsize=(viz_height * num_axis * 0.01, viz_height * 0.01))
+    fig = plt.figure(figsize=(vis_height * num_axis * 0.01, vis_height * 0.01))
 
     if show_img:
         img = mmcv.imread(img, channel_order='bgr')
         img = mmcv.bgr2rgb(img)
-        img = mmcv.imrescale(img, scale=viz_height / img.shape[0])
+        img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
 
         ax_img = fig.add_subplot(1, num_axis, 1)
         ax_img.get_xaxis().set_visible(False)
