@@ -63,7 +63,7 @@ jobs:
       - name: Install MMCV
         run: |
           pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/torch${{matrix.torch}}/index.html
-          python -c 'import mmcv; print(mmcv.__version)'
+          python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
         run: pip install -r requirements.txt
       - name: Build and install
