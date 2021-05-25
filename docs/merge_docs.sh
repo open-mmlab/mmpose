@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 sed -i '$a\\n' ../configs/README/datasets/*.md
+sed -i '$a\\n' ../configs/README/backbones/*.md
 sed -i '$a\\n' ../configs/README/techniques/*.md
 
-cat ../configs/README/datasets/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Datasets' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >datasets_models.md
-cat ../configs/README/techniques/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Techniques' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >techniques_models.md
+cat ../configs/README/datasets/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Model Zoo Sorted by Datasets' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >modelzoo_dataset.md
+cat ../configs/README/backbones/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Model Zoo Sorted by Backbones' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >modelzoo_backbone.md
+cat ../configs/README/techniques/*.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Model Zoo Sorted by Techniques' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >modelzoo_technique.md
 
 sed -i '$a\\n' ../demo/docs/*_demo.md
 cat ../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Demo' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md

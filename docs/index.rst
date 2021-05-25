@@ -27,8 +27,9 @@ Welcome to MMPose's documentation!
    :caption: Model Zoo
 
    modelzoo.md
-   datasets_models.md
-   techniques_models.md
+   modelzoo_dataset.md
+   modelzoo_backbone.md
+   modelzoo_technique.md
 
 .. toctree::
    :maxdepth: 2
