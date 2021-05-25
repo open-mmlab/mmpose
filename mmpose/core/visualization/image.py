@@ -107,7 +107,7 @@ def imshow_keypoints(img,
                             pos2, (int(r), int(g), int(b)),
                             thickness=thickness)
 
-        return img
+    return img
 
 
 def imshow_keypoints_3d(
