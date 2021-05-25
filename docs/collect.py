@@ -14,8 +14,9 @@ def anchor(name):
 # Count algorithms
 root_dir = '../configs'
 
-collect_files = sorted(glob.glob('configs/README/*.md'))
+collect_files = sorted(glob.glob('../configs/README/*.md'))
 for cf in collect_files:
+    res_dict = {}
     with open(cf, 'r') as collect_content_file:
         collect_content = collect_content_file.read()
         collect_papers = set(
@@ -25,6 +26,7 @@ for cf in collect_files:
                 collect_content, re.DOTALL))
 
     for root, dirs, files in os.walk(root_dir, topdown=True):
+        SPL = root.split('/')
         if '_result' in dirs:
             res_files = sorted(glob.glob(os.path.join(root, '_result/*.md')))
             for rf in res_files:
@@ -43,5 +45,34 @@ for cf in collect_files:
                             Flag = False
                             break
                     if Flag:
-                        with open(cf, 'a') as file_out:
-                            file_out.write('\n' + res_content.split('# ')[-1])
+                        topic = SPL[-3]
+                        task = SPL[-2]
+                        algorithm = SPL[-1]
+
+                        if task == '2d_kpt_sview_rgb_img':
+                            task_str = 'Single-view RGB image based 2D ' \
+                                f'{topic} keypoint estimation'
+                        elif task == '3d_kpt_sview_rgb_img':
+                            task_str = 'Single-view RGB image based 3D ' \
+                                f'{topic} keypoint estimation'
+                        elif task == '3d_kpt_sview_rgb_vid':
+                            task_str = 'Single-view RGB video based 3D ' \
+                                f'{topic} keypoint estimation'
+                        elif task == '3d_mesh_sview_rgb_img':
+                            task_str = 'Single-view RGB image based 3D ' \
+                                f'{topic} mesh recovery'
+
+                        if task_str not in res_dict:
+                            res_dict[task_str] = [
+                                res_content[res_content.find('####'):]
+                            ]
+                        else:
+                            res_dict[task_str].append(
+                                res_content[res_content.find('####'):])
+
+    with open(cf, 'a') as file_out:
+        for (key, value) in res_dict.items():
+            file_out.write(f'\n### {key}\n\n')
+            for v in value:
+                file_out.write(v)
+                file_out.write('\n')
