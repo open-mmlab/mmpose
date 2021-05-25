@@ -117,7 +117,7 @@ dataset_info = dict(
         1:
         dict(link=('left_hip', 'left_knee'), id=1, color=[0, 255, 0]),
         2:
-        dict(link=('left_knee', 'left_ankle'), id=2, color=[0, 255, 0]),
+        dict(link=('left_knee', 'left_foot'), id=2, color=[0, 255, 0]),
         3:
         dict(link=('root', 'right_hip'), id=3, color=[255, 128, 0]),
         4:

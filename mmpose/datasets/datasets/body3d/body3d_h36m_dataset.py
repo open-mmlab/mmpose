@@ -79,7 +79,7 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
                 'dataset_info is missing. '
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
                 'for details.', DeprecationWarning)
-            cfg = Config.fromfile('configs/_base_/datasets/atrw.py')
+            cfg = Config.fromfile('configs/_base_/datasets/h36m.py')
             dataset_info = cfg._cfg_dict['dataset_info']
 
         super().__init__(
