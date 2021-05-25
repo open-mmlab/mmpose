@@ -385,7 +385,7 @@ class RelativeJointRandomFlip:
                 results[item] = joints_flipped
 
             # flip joint visibility
-            for i, vis_item in enumerate(self.vis_item):
+            for vis_item in self.vis_item:
                 assert vis_item in results
                 visible = results[vis_item]
                 visible_flipped = visible.copy()
