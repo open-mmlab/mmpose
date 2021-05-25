@@ -48,10 +48,13 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     Args:
         ann_file (str): Path to the annotation file.
+        camera_file (str): Path to the camera file.
+        joint_file (str): Path to the joint file.
         img_prefix (str): Path to a directory where images are held.
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (str): Store True when building test or
             validation dataset. Default: False.
     """

@@ -23,7 +23,9 @@ class Kpt2dSviewRgbImgBottomUpDataset(Dataset, metaclass=ABCMeta):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
-
+        dataset_info (DatasetInfo): A class containing all dataset info.
+        coco_style (bool): Whether the annotation json is coco-style.
+            Default: True
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """

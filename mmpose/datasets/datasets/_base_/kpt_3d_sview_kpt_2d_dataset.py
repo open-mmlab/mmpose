@@ -4,10 +4,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from torch.utils.data import Dataset
 
+from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 
 
-class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
+class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
     """Base class for 3D human pose datasets.
 
     Subclasses should consider overwriting following methods:
@@ -35,6 +36,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
                 Default: False.
 
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -44,6 +46,7 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
 
         self.ann_file = ann_file
@@ -52,6 +55,22 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         self.pipeline = pipeline
         self.test_mode = test_mode
         self.ann_info = {}
+
+        if dataset_info is None:
+            raise ValueError(
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.')
+
+        dataset_info = DatasetInfo(dataset_info)
+
+        assert self.ann_info['num_joints'] == dataset_info.keypoint_num
+        self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
+        self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
+        self.ann_info['joint_weights'] = dataset_info.joint_weights
+        self.ann_info['skeleton'] = dataset_info.skeleton
+        self.sigmas = dataset_info.sigmas
+        self.dataset_name = dataset_info.dataset_name
 
         self.load_config(self.data_cfg)
         self.data_info = self.load_annotations()

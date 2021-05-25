@@ -70,6 +70,8 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
     Args:
         ann_file (str): Path to the annotation file.
+        camera_file (str): Path to the camera file.
+        joint_file (str): Path to the joint file.
         img_prefix (str): Path to a directory where images are held.
             Default: None.
         data_cfg (dict): config
@@ -77,6 +79,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         use_gt_root_depth (bool): Using the ground truth depth of the wrist
             or given depth from rootnet_result_file.
         rootnet_result_file (str): Path to the wrist depth file.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (str): Store True when building test or
             validation dataset. Default: False.
     """

@@ -51,6 +51,7 @@ class AnimalHorse10Dataset(Kpt2dSviewRgbImgTopDownDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """

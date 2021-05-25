@@ -1,16 +1,18 @@
 import os.path as osp
+import warnings
 from collections import OrderedDict, defaultdict
 
 import mmcv
 import numpy as np
+from mmcv import Config
 
 from mmpose.core.evaluation import keypoint_mpjpe
 from ...builder import DATASETS
-from .body3d_base_dataset import Body3DBaseDataset
+from mmpose.datasets.datasets._base_ import Kpt3dSviewKpt2dDataset
 
 
 @DATASETS.register_module()
-class Body3DH36MDataset(Body3DBaseDataset):
+class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
     """Human3.6M dataset for 3D human pose estimation.
 
     `Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human
@@ -44,6 +46,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -62,6 +65,30 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
     # metric
     ALLOWED_METRICS = {'mpjpe', 'p-mpjpe', 'n-mpjpe'}
+
+    def __init__(self,
+                 ann_file,
+                 img_prefix,
+                 data_cfg,
+                 pipeline,
+                 dataset_info=None,
+                 test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/atrw.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
+        super().__init__(
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
     def load_config(self, data_cfg):
         super().load_config(data_cfg)
@@ -82,12 +109,7 @@ class Body3DH36MDataset(Body3DBaseDataset):
 
         # h36m specific annotation info
         ann_info = {}
-        ann_info['flip_pairs'] = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15],
-                                  [13, 16]]
-        ann_info['upper_body_ids'] = (0, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
-        ann_info['lower_body_ids'] = (1, 2, 3, 4, 5, 6)
         ann_info['use_different_joint_weights'] = False
-
         # action filter
         actions = data_cfg.get('actions', '_all_')
         self.actions = set(

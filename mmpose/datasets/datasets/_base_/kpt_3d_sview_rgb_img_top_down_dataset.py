@@ -24,6 +24,9 @@ class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
+        coco_style (bool): Whether the annotation json is coco-style.
+            Default: True
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -62,9 +65,11 @@ class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
 
         assert self.ann_info['num_joints'] == dataset_info.keypoint_num
         self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['flip_index'] = dataset_info.flip_index
         self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
         self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
         self.ann_info['joint_weights'] = dataset_info.joint_weights
+        self.ann_info['skeleton'] = dataset_info.skeleton
         self.sigmas = dataset_info.sigmas
         self.dataset_name = dataset_info.dataset_name
 
