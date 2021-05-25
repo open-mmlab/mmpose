@@ -1,16 +1,16 @@
-# Simple baselines for human pose estimation and tracking
+# Deep residual learning for image recognition
 
 ## Introduction
 
-<!-- [ALGORITHM] -->
+<!-- [BACKBONE] -->
 
 ```bibtex
-@inproceedings{xiao2018simple,
-  title={Simple baselines for human pose estimation and tracking},
-  author={Xiao, Bin and Wu, Haiping and Wei, Yichen},
-  booktitle={Proceedings of the European conference on computer vision (ECCV)},
-  pages={466--481},
-  year={2018}
+@inproceedings{he2016deep,
+  title={Deep residual learning for image recognition},
+  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={770--778},
+  year={2016}
 }
 ```
 

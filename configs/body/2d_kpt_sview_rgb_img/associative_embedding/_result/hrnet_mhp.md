@@ -1,6 +1,18 @@
 <!-- [ALGORITHM] -->
 
 ```bibtex
+@inproceedings{newell2017associative,
+  title={Associative embedding: End-to-end learning for joint detection and grouping},
+  author={Newell, Alejandro and Huang, Zhiao and Deng, Jia},
+  booktitle={Advances in neural information processing systems},
+  pages={2277--2287},
+  year={2017}
+}
+```
+
+<!-- [ALGORITHM] -->
+
+```bibtex
 @inproceedings{sun2019deep,
   title={Deep high-resolution representation learning for human pose estimation},
   author={Sun, Ke and Xiao, Bin and Liu, Dong and Wang, Jingdong},
