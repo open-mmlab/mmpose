@@ -37,10 +37,20 @@ This page provides tutorials about running demos. Please click the caption for m
 <br>
 
 <div align="center">
+    <img src="https://user-images.githubusercontent.com/15977946/118820606-02df2000-b8e9-11eb-9984-b9228101e780.gif" width="600px" alt><br>
+
+[3D human pose demo](docs/3d_human_pose_demo.md)
+</div>
+
+<br>
+
+<div align="center">
     <img src="https://user-images.githubusercontent.com/11788150/109099201-a93dde00-775d-11eb-9624-f9676fc0e478.gif" width="600px" alt><br>
 
 [2D pose tracking demo](docs/2d_pose_tracking_demo.md)
 </div>
+
+<br>
 
 <div align="center">
     <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
