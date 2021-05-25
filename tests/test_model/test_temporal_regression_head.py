@@ -75,6 +75,7 @@ def test_temporal_regression_head():
         in_channels=1024,
         num_joints=1,
         loss_keypoint=dict(type='MPJPELoss', use_target_weight=True),
+        is_trajectory=True,
         test_cfg=dict(restore_global_position=False))
 
     head.init_weights()
