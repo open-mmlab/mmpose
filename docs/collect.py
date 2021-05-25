@@ -14,7 +14,7 @@ def anchor(name):
 # Count algorithms
 root_dir = '../configs'
 
-collect_files = sorted(glob.glob('../configs/README/*.md'))
+collect_files = sorted(glob.glob('../configs/README/*/*.md'))
 for cf in collect_files:
     res_dict = {}
     with open(cf, 'r') as collect_content_file:
