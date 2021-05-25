@@ -290,7 +290,7 @@ class SemiSupervisionLoss(nn.Module):
             an epoch can be changed due to different GPU numbers in multi-GPU
             settings. So please set this parameter carefully.
             warmup_iterations = dataset_size // samples_per_gpu // gpu_num
-            * warm_epochs
+            * warmup_epochs
     """
 
     def __init__(self,
