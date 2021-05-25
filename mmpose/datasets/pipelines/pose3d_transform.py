@@ -314,8 +314,13 @@ class RelativeJointRandomFlip:
     Args:
         item (str|list[str]): The name of the pose to flip.
         flip_cfg (dict|list[dict]): Configurations of the fliplr_regression
-            function. It should specify `center_mode` and `center_x` or
-            `center_index`.
+            function. It should contain the following arguments:
+                - `center_mode`: The mode to set the center location on the
+                    x-axis to flip around.
+                -`center_x` or `center_index`: Set the x-axis location or the
+                    root joint's index to define the flip center.
+            Please refer to the docstring of the fliplr_regression function for
+            more details.
         visible_item (str|list[str]): The name of the visibility item which
             will be flipped accordingly along with the pose.
         flip_prob (float): Probability of flip.
@@ -352,7 +357,7 @@ class RelativeJointRandomFlip:
         if isinstance(self.item, str):
             self.item = [self.item]
         if isinstance(self.flip_cfg, dict):
-            self.flip_cfg = [self.flip_cfg]
+            self.flip_cfg = [self.flip_cfg] * len(self.item)
         assert len(self.item) == len(self.flip_cfg)
         if isinstance(self.vis_item, str):
             self.vis_item = [self.vis_item]
