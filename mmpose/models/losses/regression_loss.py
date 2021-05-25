@@ -289,6 +289,8 @@ class SemiSupervisionLoss(nn.Module):
             epoch number in loss functions. Note that the iteration number in
             an epoch can be changed due to different GPU numbers in multi-GPU
             settings. So please set this parameter carefully.
+            warmup_iterations = dataset_size // samples_per_gpu // gpu_num
+            * warm_epochs
     """
 
     def __init__(self,

@@ -73,7 +73,8 @@ model = dict(
     loss_semi=dict(
         type='SemiSupervisionLoss',
         joint_parents=[0, 0, 1, 2, 0, 4, 5, 0, 7, 8, 9, 8, 11, 12, 8, 14, 15],
-        warmup_iterations=12805),  # num_GPUs = 8
+        warmup_iterations=1311376 // 64 // 8 *
+        5),  # dataset_size // samples_per_gpu // gpu_num * warm_epochs
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
 
