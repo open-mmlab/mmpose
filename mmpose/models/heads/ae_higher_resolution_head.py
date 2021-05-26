@@ -185,9 +185,9 @@ class AEHigherResolutionHead(nn.Module):
             outputs (List(torch.Tensor[NxKxHxW])): Multi-scale output heatmaps.
             targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
             masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                               heatmaps
+                heatmaps
             joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                  heatmaps for ae loss
+                heatmaps for ae loss
         """
 
         losses = dict()
