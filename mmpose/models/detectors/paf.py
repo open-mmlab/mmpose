@@ -17,7 +17,7 @@ from .base import BasePose
 
 
 @POSENETS.register_module()
-class BottomUp(BasePose):
+class PartAffinityField(BasePose):
     """Bottom-up pose detectors.
 
     Args:
