@@ -1,9 +1,6 @@
-import math
 import warnings
 
-import cv2
 import mmcv
-import numpy as np
 import torch
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
@@ -11,6 +8,7 @@ from mmcv.visualization.image import imshow
 from mmpose.core.evaluation import (aggregate_results_paf, get_group_preds,
                                     get_multi_stage_outputs_paf)
 from mmpose.core.post_processing.group import PAFParser
+from mmpose.core.visualization import imshow_keypoints
 from .. import builder
 from ..registry import POSENETS
 from .base import BasePose
@@ -290,6 +288,7 @@ class PartAffinityField(BasePose):
                     result,
                     skeleton=None,
                     kpt_score_thr=0.3,
+                    bbox_color=None,
                     pose_kpt_color=None,
                     pose_limb_color=None,
                     radius=4,
@@ -306,15 +305,20 @@ class PartAffinityField(BasePose):
             img (str or Tensor): The image to be displayed.
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
+            skeleton (list[list]): The connection of keypoints.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
             pose_limb_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
+            radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.
             win_name (str): The window name.
+            show (bool): Whether to show the image. Default: False.
+            show_keypoint_weight (bool): Whether to change the transparency
+                using the predicted confidence scores of keypoints.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.
@@ -332,79 +336,8 @@ class PartAffinityField(BasePose):
         for res in result:
             pose_result.append(res['keypoints'])
 
-        for _, kpts in enumerate(pose_result):
-            # draw each point on image
-            if pose_kpt_color is not None:
-                assert len(pose_kpt_color) == len(kpts)
-                for kid, kpt in enumerate(kpts):
-                    x_coord, y_coord, kpt_score = int(kpt[0]), int(
-                        kpt[1]), kpt[2]
-                    if kpt_score > kpt_score_thr:
-                        if show_keypoint_weight:
-                            img_copy = img.copy()
-                            r, g, b = pose_kpt_color[kid]
-                            cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                       radius, (int(r), int(g), int(b)), -1)
-                            transparency = max(0, min(1, kpt_score))
-                            cv2.addWeighted(
-                                img_copy,
-                                transparency,
-                                img,
-                                1 - transparency,
-                                0,
-                                dst=img)
-                        else:
-                            r, g, b = pose_kpt_color[kid]
-                            cv2.circle(img, (int(x_coord), int(y_coord)),
-                                       radius, (int(r), int(g), int(b)), -1)
-
-            # draw limbs
-            if skeleton is not None and pose_limb_color is not None:
-                assert len(pose_limb_color) == len(skeleton)
-                for sk_id, sk in enumerate(skeleton):
-                    pos1 = (int(kpts[sk[0] - 1, 0]), int(kpts[sk[0] - 1, 1]))
-                    pos2 = (int(kpts[sk[1] - 1, 0]), int(kpts[sk[1] - 1, 1]))
-                    if (pos1[0] > 0 and pos1[0] < img_w and pos1[1] > 0
-                            and pos1[1] < img_h and pos2[0] > 0
-                            and pos2[0] < img_w and pos2[1] > 0
-                            and pos2[1] < img_h
-                            and kpts[sk[0] - 1, 2] > kpt_score_thr
-                            and kpts[sk[1] - 1, 2] > kpt_score_thr):
-                        r, g, b = pose_limb_color[sk_id]
-                        if show_keypoint_weight:
-                            img_copy = img.copy()
-                            X = (pos1[0], pos2[0])
-                            Y = (pos1[1], pos2[1])
-                            mX = np.mean(X)
-                            mY = np.mean(Y)
-                            length = ((Y[0] - Y[1])**2 + (X[0] - X[1])**2)**0.5
-                            angle = math.degrees(
-                                math.atan2(Y[0] - Y[1], X[0] - X[1]))
-                            stickwidth = 2
-                            polygon = cv2.ellipse2Poly(
-                                (int(mX), int(mY)),
-                                (int(length / 2), int(stickwidth)), int(angle),
-                                0, 360, 1)
-                            cv2.fillConvexPoly(img_copy, polygon,
-                                               (int(r), int(g), int(b)))
-                            transparency = max(
-                                0,
-                                min(
-                                    1, 0.5 *
-                                    (kpts[sk[0] - 1, 2] + kpts[sk[1] - 1, 2])))
-                            cv2.addWeighted(
-                                img_copy,
-                                transparency,
-                                img,
-                                1 - transparency,
-                                0,
-                                dst=img)
-                        else:
-                            cv2.line(
-                                img,
-                                pos1,
-                                pos2, (int(r), int(g), int(b)),
-                                thickness=thickness)
+        imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
+                         pose_kpt_color, pose_limb_color, radius, thickness)
 
         if show:
             imshow(img, win_name, wait_time)
