@@ -14,8 +14,7 @@ __all__ = [
     'EvalHook', 'DistEvalHook', 'pose_pck_accuracy', 'keypoints_from_heatmaps',
     'keypoints_from_regression', 'keypoint_pck_accuracy', 'keypoint_auc',
     'keypoint_epe', 'get_group_preds', 'get_multi_stage_outputs',
-    'get_multi_stage_outputs_paf',
-    'aggregate_results_paf',
+    'get_multi_stage_outputs_paf', 'aggregate_results_paf',
     'aggregate_results', 'compute_similarity_transform', 'post_dark_udp',
     'keypoint_mpjpe', 'keypoints_from_heatmaps3d',
     'multilabel_classification_accuracy'
