@@ -2,7 +2,7 @@ dataset_info = dict(
     dataset_name='cofw',
     paper_info=dict(
         author='Burgos-Artizzu, Xavier P and Perona, '
-        'Pietro and Doll{\'a}r, Piotr',
+        r'Pietro and Doll{\'a}r, Piotr',
         title='Robust face landmark estimation under occlusion',
         container='Proceedings of the IEEE international '
         'conference on computer vision',
