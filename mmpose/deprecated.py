@@ -18,7 +18,8 @@ class TopDownFreiHandDataset(TopDownBaseDataset):
     def __init__(self, *args, **kwargs):
         raise (ImportError(
             'TopDownFreiHandDataset has been renamed into FreiHandDataset,'
-            'check https://github.com/open-mmlab/mmpose/pull/202 for details'))
+            'check https://github.com/open-mmlab/mmpose/pull/202 for details.')
+               )
 
     def _get_db(self):
         return []
@@ -34,7 +35,8 @@ class TopDownOneHand10KDataset(TopDownBaseDataset):
     def __init__(self, *args, **kwargs):
         raise (ImportError(
             'TopDownOneHand10KDataset has been renamed into OneHand10KDataset,'
-            'check https://github.com/open-mmlab/mmpose/pull/202 for details'))
+            'check https://github.com/open-mmlab/mmpose/pull/202 for details.')
+               )
 
     def _get_db(self):
         return []
@@ -50,7 +52,8 @@ class TopDownPanopticDataset(TopDownBaseDataset):
     def __init__(self, *args, **kwargs):
         raise (ImportError(
             'TopDownPanopticDataset has been renamed into PanopticDataset,'
-            'check https://github.com/open-mmlab/mmpose/pull/202 for details'))
+            'check https://github.com/open-mmlab/mmpose/pull/202 for details.')
+               )
 
     def _get_db(self):
         return []
@@ -72,7 +75,8 @@ class BottomUpHigherResolutionHead(AEHigherResolutionHead):
         warnings.warn(
             'BottomUpHigherResolutionHead has been renamed into '
             'AEHigherResolutionHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -88,7 +92,8 @@ class BottomUpSimpleHead(AESimpleHead):
         warnings.warn(
             'BottomUpHigherResolutionHead has been renamed into '
             'AEHigherResolutionHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -104,7 +109,8 @@ class TopDownSimpleHead(TopdownHeatmapSimpleHead):
         warnings.warn(
             'TopDownSimpleHead has been renamed into '
             'TopdownHeatmapSimpleHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -120,7 +126,8 @@ class TopDownMultiStageHead(TopdownHeatmapMultiStageHead):
         warnings.warn(
             'TopDownMultiStageHead has been renamed into '
             'TopdownHeatmapMultiStageHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -136,7 +143,8 @@ class TopDownMSMUHead(TopdownHeatmapMSMUHead):
         warnings.warn(
             'TopDownMSMUHead has been renamed into '
             'TopdownHeatmapMSMUHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -152,7 +160,8 @@ class MeshHMRHead(HMRMeshHead):
         warnings.warn(
             'MeshHMRHead has been renamed into '
             'HMRMeshHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @HEADS.register_module()
@@ -168,7 +177,8 @@ class FcHead(DeepposeRegressionHead):
         warnings.warn(
             'FcHead has been renamed into '
             'DeepposeRegressionHead, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
 
 
 @POSENETS.register_module()
@@ -184,4 +194,5 @@ class BottomUp(AssociativeEmbedding):
         warnings.warn(
             'BottomUp has been renamed into '
             'AssociativeEmbedding, check '
-            'https://github.com/open-mmlab/mmpose/pull/656 for details')
+            'https://github.com/open-mmlab/mmpose/pull/656 for details.',
+            DeprecationWarning)
