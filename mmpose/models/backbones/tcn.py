@@ -5,7 +5,7 @@ from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from mmpose.core import WeightNormClipHook
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 
 

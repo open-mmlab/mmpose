@@ -5,11 +5,10 @@ from functools import partial
 import numpy as np
 from mmcv.parallel import collate
 from mmcv.runner import get_dist_info
-from mmcv.utils import build_from_cfg
+from mmcv.utils import Registry, build_from_cfg
 from mmcv.utils.parrots_wrapper import _get_dataloader
 
 from .dataset_wrappers import RepeatDataset
-from .registry import DATASETS
 from .samplers import DistributedSampler
 
 if platform.system() != 'Windows':
@@ -19,6 +18,9 @@ if platform.system() != 'Windows':
     hard_limit = rlimit[1]
     soft_limit = min(4096, hard_limit)
     resource.setrlimit(resource.RLIMIT_NOFILE, (soft_limit, hard_limit))
+
+DATASETS = Registry('dataset')
+PIPELINES = Registry('pipeline')
 
 
 def build_dataset(cfg, default_args=None):

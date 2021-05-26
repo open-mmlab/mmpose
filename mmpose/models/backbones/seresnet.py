@@ -1,6 +1,6 @@
 import torch.utils.checkpoint as cp
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .resnet import Bottleneck, ResLayer, ResNet
 from .utils.se_layer import SELayer
 

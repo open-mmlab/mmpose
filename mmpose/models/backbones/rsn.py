@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from mmcv.cnn import (ConvModule, MaxPool2d, constant_init, kaiming_init,
                       normal_init)
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 
 

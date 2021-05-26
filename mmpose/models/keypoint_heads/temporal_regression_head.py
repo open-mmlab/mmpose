@@ -5,8 +5,7 @@ from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from mmpose.core import (WeightNormClipHook, compute_similarity_transform,
                          fliplr_regression)
-from mmpose.models.builder import build_loss
-from mmpose.models.registry import HEADS
+from mmpose.models.builder import HEADS, build_loss
 
 
 @HEADS.register_module()

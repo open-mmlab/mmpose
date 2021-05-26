@@ -2,8 +2,8 @@ import numpy as np
 import torch
 
 from .. import builder
+from ..builder import POSENETS
 from ..mesh_heads.discriminator import SMPLDiscriminator
-from ..registry import POSENETS
 from .base import BasePose
 
 try:

@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .resnet import Bottleneck, ResNet
 
 

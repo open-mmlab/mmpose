@@ -1,4 +1,4 @@
-from ..registry import POSENETS
+from ..builder import POSENETS
 from .top_down import TopDown
 
 

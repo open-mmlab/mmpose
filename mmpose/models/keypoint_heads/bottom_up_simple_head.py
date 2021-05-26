@@ -3,7 +3,7 @@ from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
 from mmpose.models.builder import build_loss
-from ..registry import HEADS
+from ..builder import HEADS
 
 
 @HEADS.register_module()

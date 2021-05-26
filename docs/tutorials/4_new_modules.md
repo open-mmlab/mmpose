@@ -84,7 +84,7 @@ We basically categorize model components into 3 types.
 ```python
 import torch.nn as nn
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 
 @BACKBONES.register_module()
 class MyModel(nn.Module):
@@ -111,7 +111,7 @@ You can write a new classification head inherit from `nn.Module`,
 and overwrite `init_weights(self)` and `forward(self, x)` method.
 
 ```python
-from ..registry import HEADS
+from ..builder import HEADS
 
 
 @HEADS.register_module()

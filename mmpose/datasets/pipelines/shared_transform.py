@@ -8,7 +8,7 @@ from mmcv.utils import build_from_cfg
 from numpy import random
 from torchvision.transforms import functional as F
 
-from ..registry import PIPELINES
+from ..builder import PIPELINES
 
 try:
     import albumentations

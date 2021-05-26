@@ -7,7 +7,7 @@ from mmcv.visualization.image import imshow
 
 from mmpose.core import imshow_keypoints
 from .. import builder
-from ..registry import POSENETS
+from ..builder import POSENETS
 from .base import BasePose
 
 try:
