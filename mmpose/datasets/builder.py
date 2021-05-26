@@ -8,7 +8,6 @@ from mmcv.runner import get_dist_info
 from mmcv.utils import Registry, build_from_cfg
 from mmcv.utils.parrots_wrapper import _get_dataloader
 
-from .dataset_wrappers import RepeatDataset
 from .samplers import DistributedSampler
 
 if platform.system() != 'Windows':
@@ -34,6 +33,8 @@ def build_dataset(cfg, default_args=None):
     Returns:
         Dataset: The constructed dataset.
     """
+    from .dataset_wrappers import RepeatDataset
+
     if cfg['type'] == 'RepeatDataset':
         dataset = RepeatDataset(
             build_dataset(cfg['dataset'], default_args), cfg['times'])
