@@ -3,16 +3,14 @@ from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
 from mmpose.models.builder import build_loss
-from ..registry import HEADS
 
 
-@HEADS.register_module()
-class PAFSimpleHead(nn.Module):
-    """Bottom-up simple head.
+class DeconvHead(nn.Module):
+    """Simple deconv head.
 
     Args:
         in_channels (int): Number of input channels.
-        num_joints (int): Number of joints.
+        out_channels (int): Number of output channels.
         num_deconv_layers (int): Number of deconv layers.
             num_deconv_layers should >= 0. Note that 0 means
             no deconv layers.
@@ -24,7 +22,7 @@ class PAFSimpleHead(nn.Module):
 
     def __init__(self,
                  in_channels,
-                 num_joints,
+                 out_channels,
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
@@ -35,7 +33,6 @@ class PAFSimpleHead(nn.Module):
         self.loss = build_loss(loss_keypoint)
 
         self.in_channels = in_channels
-        out_channels = num_joints
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -71,43 +68,6 @@ class PAFSimpleHead(nn.Module):
             kernel_size=kernel_size,
             stride=1,
             padding=padding)
-
-    def get_loss(self, outputs, targets, masks):
-        """Calculate bottom-up masked mse loss.
-
-        Note:
-            batch_size: N
-            num_channels: C
-            heatmaps height: H
-            heatmaps weight: W
-
-        Args:
-            outputs (List(torch.Tensor[NxCxHxW])): Multi-scale outputs.
-            targets (List(torch.Tensor[NxCxHxW])): Multi-scale targets.
-            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale targets.
-        """
-
-        losses = dict()
-
-        for idx in range(len(targets)):
-            if 'loss' not in losses:
-                losses['loss'] = self.loss(outputs[idx], targets[idx],
-                                           masks[idx])
-            else:
-                losses['loss'] += self.loss(outputs[idx], targets[idx],
-                                            masks[idx])
-
-        return losses
-
-    def forward(self, x):
-        """Forward function."""
-        if isinstance(x, list):
-            x = x[0]
-        final_outputs = []
-        x = self.deconv_layers(x)
-        y = self.final_layer(x)
-        final_outputs.append(y)
-        return final_outputs
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""
@@ -158,6 +118,43 @@ class PAFSimpleHead(nn.Module):
             raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
 
         return deconv_kernel, padding, output_padding
+
+    def get_loss(self, outputs, targets, masks):
+        """Calculate bottom-up masked mse loss.
+
+        Note:
+            batch_size: N
+            num_channels: C
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            outputs (List(torch.Tensor[NxCxHxW])): Multi-scale outputs.
+            targets (List(torch.Tensor[NxCxHxW])): Multi-scale targets.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale targets.
+        """
+
+        losses = dict()
+
+        for idx in range(len(targets)):
+            if 'loss' not in losses:
+                losses['loss'] = self.loss(outputs[idx], targets[idx],
+                                           masks[idx])
+            else:
+                losses['loss'] += self.loss(outputs[idx], targets[idx],
+                                            masks[idx])
+
+        return losses
+
+    def forward(self, x):
+        """Forward function."""
+        if isinstance(x, list):
+            x = x[0]
+        final_outputs = []
+        x = self.deconv_layers(x)
+        y = self.final_layer(x)
+        final_outputs.append(y)
+        return final_outputs
 
     def init_weights(self):
         """Initialize model weights."""
