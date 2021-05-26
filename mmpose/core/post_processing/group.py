@@ -407,7 +407,11 @@ class HeatmapParser:
 
 
 class PAFParser:
-    """The paf parser for post processing."""
+    """The paf parser for post processing.
+
+    Paper ref: Cao, Zhe, et al. "OpenPose: realtime multi-person 2D pose
+    estimation using Part Affinity Fields." (TPAMI'2019)
+    """
 
     def __init__(self, cfg):
         self.params = _Params(cfg)

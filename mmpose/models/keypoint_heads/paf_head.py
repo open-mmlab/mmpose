@@ -8,6 +8,9 @@ from ..registry import HEADS
 class PAFHead(nn.Module):
     """Bottom-up PAF head.
 
+    Paper ref: Cao, Zhe, et al. "OpenPose: realtime multi-person
+    2D pose estimation using Part Affinity Fields." (TPAMI'2019)
+
     Args:
         heatmap_heads_cfg (list(dict)): Configs of heatmap heads.
         paf_heads_cfg (list(dict)): Configs of paf heads.
