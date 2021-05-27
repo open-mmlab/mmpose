@@ -85,6 +85,7 @@ Supported algorithms:
 - [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
 - [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
 - [x] [InterNet](configs/hand3d/InterNet/README.md) (ECCV'2020)
+- [x] [VideoPose3D](configs/body3d/videopose/README.md) (CVPR'2019)
 
 </details>
 
