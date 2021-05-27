@@ -34,7 +34,7 @@ def test_temporal_regression_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 17, 3])
 
-    loss = head.get_loss(out, out, torch.ones_like(out))
+    loss = head.get_loss(out, out, None)
     assert torch.allclose(loss['reg_loss'], torch.tensor(0.))
 
     _ = head.inference_model(inputs)
@@ -69,6 +69,24 @@ def test_temporal_regression_head():
     np.testing.assert_almost_equal(acc['p_mpjpe'], 0.)
 
     _ = head.decode(metas, inference_out)
+
+    # trajectory model (only predict root position)
+    head = TemporalRegressionHead(
+        in_channels=1024,
+        num_joints=1,
+        loss_keypoint=dict(type='MPJPELoss', use_target_weight=True),
+        is_trajectory=True,
+        test_cfg=dict(restore_global_position=False))
+
+    head.init_weights()
+
+    input_shape = (1, 1024, 1)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 1, 3])
+
+    loss = head.get_loss(out, out.squeeze(1), torch.ones_like(out))
+    assert torch.allclose(loss['traj_loss'], torch.tensor(0.))
 
 
 def _demo_inputs(input_shape=(1, 1024, 1)):

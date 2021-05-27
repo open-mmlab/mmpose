@@ -57,6 +57,10 @@ def get_data_sample():
     subj, _, camera = _parse_h36m_imgname(_imgnames[frame_ids[0]])
     results['camera_param'] = cameras[(subj, camera)]
 
+    # add image size
+    results['image_width'] = results['camera_param']['w']
+    results['image_height'] = results['camera_param']['h']
+
     # add ann_info
     ann_info = {}
     ann_info['num_joints'] = 17
@@ -82,9 +86,10 @@ def test_joint_transforms():
         dict(
             type='RelativeJointRandomFlip',
             item='target',
-            root_index=0,
+            flip_cfg=dict(center_mode='root', center_index=0),
             visible_item='target_visible',
-            flip_prob=1.),
+            flip_prob=1.,
+            flip_camera=True),
         dict(
             type='GetRootCenteredPose',
             item='target',
@@ -96,35 +101,73 @@ def test_joint_transforms():
             std=std),
         dict(type='PoseSequenceToTensor', item='target'),
         dict(
+            type='ImageCoordinateNormalization',
+            item='input_2d',
+            norm_camera=True),
+        dict(type='CollectCameraIntrinsics'),
+        dict(
             type='Collect',
-            keys=[('target', 'output'), 'flip_pairs'],
-            meta_keys=[])
+            keys=[('input_2d', 'input'), ('target', 'output'), 'flip_pairs',
+                  'intrinsics'],
+            meta_name='metas',
+            meta_keys=['camera_param'])
     ]
 
     pipeline = Compose(pipeline)
     output = pipeline(copy.deepcopy(results))
 
+    # test transformation of target
     joints_0 = results['target']
     joints_1 = output['output'].numpy()
-
     # manually do transformations
     flip_pairs = output['flip_pairs']
     _joints_0_flipped = joints_0.copy()
     for _l, _r in flip_pairs:
         _joints_0_flipped[..., _l, :] = joints_0[..., _r, :]
         _joints_0_flipped[..., _r, :] = joints_0[..., _l, :]
-
     _joints_0_flipped[...,
                       0] = 2 * joints_0[..., 0:1, 0] - _joints_0_flipped[...,
                                                                          0]
-
     joints_0 = _joints_0_flipped
     joints_0 = (joints_0[..., 1:, :] - joints_0[..., 0:1, :] - mean) / std
-
     # convert to [K*C, T]
     joints_0 = joints_0.reshape(-1)[..., None]
-
     np.testing.assert_array_almost_equal(joints_0, joints_1)
+
+    # test transformation of input
+    joints_0 = results['input_2d']
+    joints_1 = output['input']
+    # manually do transformations
+    center = np.array(
+        [0.5 * results['image_width'], 0.5 * results['image_height']],
+        dtype=np.float32)
+    scale = np.array(0.5 * results['image_width'], dtype=np.float32)
+    joints_0 = (joints_0 - center) / scale
+    np.testing.assert_array_almost_equal(joints_0, joints_1)
+
+    # test transformation of camera parameters
+    camera_param_0 = results['camera_param']
+    camera_param_1 = output['metas'].data['camera_param']
+    # manually flip and normalization
+    camera_param_0['c'][0] *= -1
+    camera_param_0['p'][0] *= -1
+    camera_param_0['c'] = (camera_param_0['c'] -
+                           np.array(center)[:, None]) / scale
+    camera_param_0['f'] = camera_param_0['f'] / scale
+    np.testing.assert_array_almost_equal(camera_param_0['c'],
+                                         camera_param_1['c'])
+    np.testing.assert_array_almost_equal(camera_param_0['f'],
+                                         camera_param_1['f'])
+
+    # test CollectCameraIntrinsics
+    intrinsics_0 = np.concatenate([
+        results['camera_param']['f'].reshape(2),
+        results['camera_param']['c'].reshape(2),
+        results['camera_param']['k'].reshape(3),
+        results['camera_param']['p'].reshape(2)
+    ])
+    intrinsics_1 = output['intrinsics']
+    np.testing.assert_array_almost_equal(intrinsics_0, intrinsics_1)
 
     # test load mean/std from file
     with tempfile.TemporaryDirectory() as tmpdir:

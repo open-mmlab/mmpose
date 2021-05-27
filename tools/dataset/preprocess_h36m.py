@@ -70,6 +70,24 @@ class PreprocessH36m:
             0, 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 17, 18, 19, 25, 26, 27
         ]
         self.scale_factor = 1.2
+        self.image_sizes = {
+            '54138969': {
+                'width': 1000,
+                'height': 1002
+            },
+            '55011271': {
+                'width': 1000,
+                'height': 1000
+            },
+            '58860488': {
+                'width': 1000,
+                'height': 1000
+            },
+            '60457274': {
+                'width': 1000,
+                'height': 1002
+            }
+        }
 
     def extract_tgz(self):
         """Extract files from self.extrct_files."""
@@ -99,7 +117,8 @@ class PreprocessH36m:
 
     def generate_annotations(self):
         """Generate annotations for training and testing data."""
-        output_dir = join(self.processed_dir, 'annotation_body3d')
+        output_dir = join(self.processed_dir, 'annotation_body3d',
+                          f'fps{50 // self.sample_rate}')
         os.makedirs(output_dir, exist_ok=True)
 
         for data_split in ('train', 'test'):
@@ -271,6 +290,8 @@ class PreprocessH36m:
             'f': f,
             'k': k,
             'p': p,
+            'w': self.image_sizes[self.camera_ids[camera]]['width'],
+            'h': self.image_sizes[self.camera_ids[camera]]['height'],
             'name': f'camera{camera + 1}',
             'id': self.camera_ids[camera]
         }
