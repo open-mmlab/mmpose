@@ -191,7 +191,7 @@ class BottomUp(BasePose):
         """
         output = self.backbone(img)
         if self.with_keypoint:
-            output = self.keypoint_head(output)
+            output = self.keypoint_head(output)[0]
         return output
 
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
