@@ -5,4 +5,4 @@ scipy
 titlecase
 torch
 torchvision
-xtcocotools>=1.6
+xtcocotools>=1.8
