@@ -109,6 +109,9 @@ class Body3DH36MDataset(Body3DBaseDataset):
         elif self.joint_2d_src == 'detection':
             data_info['joints_2d'] = self._load_joint_2d_detection(
                 self.joint_2d_det_file)
+            assert data_info['joints_2d'].shape[0] == data_info[
+                'joints_3d'].shape[0]
+            assert data_info['joints_2d'].shape[2] == 3
         elif self.joint_2d_src == 'pipeline':
             # joint_2d will be generated in the pipeline
             pass
@@ -157,19 +160,44 @@ class Body3DH36MDataset(Body3DBaseDataset):
         _step = self.seq_frame_interval
         for _, _indices in sorted(video_frames.items()):
             n_frame = len(_indices)
-            seqs_from_video = [
-                _indices[i:(i + _len):_step]
-                for i in range(0, n_frame - _len + 1)
-            ]
-            sample_indices.extend(seqs_from_video)
 
-        return sample_indices
+            if self.temporal_padding:
+                # Pad the sequence so that every frame in the sequence will be
+                # predicted.
+                if self.causal:
+                    frames_left = self.seq_len - 1
+                    frames_right = 0
+                else:
+                    frames_left = (self.seq_len - 1) // 2
+                    frames_right = frames_left
+                for i in range(n_frame):
+                    pad_left = max(0, frames_left - i // _step)
+                    pad_right = max(0,
+                                    frames_right - (n_frame - 1 - i) // _step)
+                    start = max(i % _step, i - frames_left * _step)
+                    end = min(n_frame - (n_frame - 1 - i) % _step,
+                              i + frames_right * _step + 1)
+                    sample_indices.append([_indices[0]] * pad_left +
+                                          _indices[start:end:_step] +
+                                          [_indices[-1]] * pad_right)
+            else:
+                seqs_from_video = [
+                    _indices[i:(i + _len):_step]
+                    for i in range(0, n_frame - _len + 1)
+                ]
+                sample_indices.extend(seqs_from_video)
+
+        # reduce dataset size if self.subset < 1
+        assert 0 < self.subset <= 1
+        subset_size = int(len(sample_indices) * self.subset)
+        start = np.random.randint(0, len(sample_indices) - subset_size + 1)
+        end = start + subset_size
+
+        return sample_indices[start:end]
 
     def _load_joint_2d_detection(self, det_file):
         """"Load 2D joint detection results from file."""
         joints_2d = np.load(det_file).astype(np.float32)
-        assert joints_2d.shape[0] == self.data_info['joint_3d'].shape[0]
-        assert joints_2d.shape[2] == 3
 
         return joints_2d
 
