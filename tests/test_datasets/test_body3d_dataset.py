@@ -178,7 +178,7 @@ def test_body3d_mpi_inf_3dhp_dataset():
         num_joints=17,
         seq_len=1,
         seq_frame_interval=1,
-        joint_2d_src='pipeline',
+        joint_2d_src='gt',
         joint_2d_det_file=None,
         causal=False,
         need_camera_param=True,
@@ -189,7 +189,7 @@ def test_body3d_mpi_inf_3dhp_dataset():
         num_joints=17,
         seq_len=27,
         seq_frame_interval=1,
-        joint_2d_src='pipeline',
+        joint_2d_src='gt',
         joint_2d_det_file=None,
         causal=True,
         temporal_padding=True,
@@ -244,10 +244,14 @@ def test_body3d_mpi_inf_3dhp_dataset():
                     'target_image_paths': [result['target_image_path']],
                 })
 
-            metrics = ['mpjpe', 'p-mpjpe', '3dpck', '3dauc']
+            metrics = [
+                'mpjpe', 'p-mpjpe', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc'
+            ]
             infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
 
             np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
             np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
             np.testing.assert_almost_equal(infos['3DPCK'], 100.)
+            np.testing.assert_almost_equal(infos['P-3DPCK'], 100.)
             np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
+            np.testing.assert_almost_equal(infos['P-3DAUC'], 30 / 31 * 100)
