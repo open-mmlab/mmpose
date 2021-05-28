@@ -28,13 +28,13 @@ class ExampleDataset(Dataset):
         return 1
 
     @mock.create_autospec
-    def evaluate(self, results, work_dir=None, logger=None):
+    def evaluate(self, results, res_folder=None, logger=None):
         pass
 
 
 class EvalDataset(ExampleDataset):
 
-    def evaluate(self, results, work_dir=None, logger=None):
+    def evaluate(self, results, res_folder=None, logger=None):
         acc = self.eval_result[self.index]
         output = OrderedDict(acc=acc, index=self.index, score=acc)
         self.index += 1

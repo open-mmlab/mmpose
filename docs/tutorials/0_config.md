@@ -74,7 +74,7 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
     evaluation = dict(  # Config of evaluation during training
         interval=10,  # Interval to perform evaluation
         metric='mAP',  # Metrics to be performed
-        key_indicator='AP')  # set `AP` as key indicator to save best checkpoint
+        save_best='AP')  # set `AP` as key indicator to save best checkpoint
     # optimizer
     optimizer = dict(
         # Config used to build optimizer, support (1). All the optimizers in PyTorch

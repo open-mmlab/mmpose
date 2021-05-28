@@ -7,7 +7,7 @@ checkpoint_config = dict(interval=1)
 evaluation = dict(
     interval=1,
     metric=['MRRPE', 'MPJPE', 'Handedness_acc'],
-    key_indicator='MPJPE_all')
+    save_best='MPJPE_all')
 
 optimizer = dict(
     type='Adam',
