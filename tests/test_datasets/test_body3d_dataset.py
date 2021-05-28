@@ -155,3 +155,99 @@ def test_body3d_semi_supervision_dataset():
 
     unlabeled_dataset = build_dataset(unlabeled_dataset)
     assert len(unlabeled_dataset) == len(custom_dataset)
+
+
+def test_body3d_mpi_inf_3dhp_dataset():
+    # Test MPI-INF-3DHP dataset
+    dataset = 'Body3DMpiInf3dhpDataset'
+    dataset_class = DATASETS.get(dataset)
+
+    # Test single-frame input on trainset
+    single_frame_train_data_cfg = dict(
+        num_joints=17,
+        seq_len=1,
+        seq_frame_interval=1,
+        joint_2d_src='pipeline',
+        joint_2d_det_file=None,
+        causal=False,
+        need_camera_param=True,
+        camera_param_file='tests/data/mpi_inf_3dhp/cameras_train.pkl')
+
+    # Test single-frame input on testset
+    single_frame_test_data_cfg = dict(
+        num_joints=17,
+        seq_len=1,
+        seq_frame_interval=1,
+        joint_2d_src='pipeline',
+        joint_2d_det_file=None,
+        causal=False,
+        need_camera_param=True,
+        camera_param_file='tests/data/mpi_inf_3dhp/cameras_test.pkl')
+
+    # Test multi-frame input on trainset
+    multi_frame_train_data_cfg = dict(
+        num_joints=17,
+        seq_len=27,
+        seq_frame_interval=1,
+        joint_2d_src='pipeline',
+        joint_2d_det_file=None,
+        causal=True,
+        temporal_padding=True,
+        need_camera_param=True,
+        camera_param_file='tests/data/mpi_inf_3dhp/cameras_train.pkl')
+
+    # Test multi-frame input on testset
+    multi_frame_test_data_cfg = dict(
+        num_joints=17,
+        seq_len=27,
+        seq_frame_interval=1,
+        joint_2d_src='pipeline',
+        joint_2d_det_file=None,
+        causal=False,
+        temporal_padding=True,
+        need_camera_param=True,
+        camera_param_file='tests/data/mpi_inf_3dhp/cameras_test.pkl')
+
+    ann_files = [
+        'tests/data/mpi_inf_3dhp/test_3dhp_train.npz',
+        'tests/data/mpi_inf_3dhp/test_3dhp_test.npz'
+    ] * 2
+    data_cfgs = [
+        single_frame_train_data_cfg, single_frame_test_data_cfg,
+        multi_frame_train_data_cfg, multi_frame_test_data_cfg
+    ]
+
+    for ann_file, data_cfg in zip(ann_files, data_cfgs):
+        _ = dataset_class(
+            ann_file=ann_file,
+            img_prefix='tests/data/mpi_inf_3dhp',
+            data_cfg=data_cfg,
+            pipeline=[],
+            test_mode=False)
+
+        custom_dataset = dataset_class(
+            ann_file=ann_file,
+            img_prefix='tests/data/mpi_inf_3dhp',
+            data_cfg=data_cfg,
+            pipeline=[],
+            test_mode=True)
+
+        assert custom_dataset.test_mode is True
+        _ = custom_dataset[0]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            outputs = []
+            for result in custom_dataset:
+                outputs.append({
+                    'preds':
+                    result['target'][None, ...],
+                    'target_image_paths': [result['target_image_path']],
+                })
+
+            metrics = ['mpjpe', 'p-mpjpe', '3dpck', '3dauc']
+            infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
+
+            np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
+            np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
+            np.testing.assert_almost_equal(infos['3DPCK'], 100.)
+            np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
