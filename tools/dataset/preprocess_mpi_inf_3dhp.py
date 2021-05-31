@@ -6,9 +6,9 @@ from os.path import join
 
 import cv2
 import h5py
+import mmcv
 import numpy as np
 from scipy.io import loadmat
-from tqdm import tqdm
 
 train_subjects = [i for i in range(1, 9)]
 test_subjects = [i for i in range(1, 7)]
@@ -171,18 +171,16 @@ def load_trainset(data_root, out_dir):
                 _joints_3d.append(joints_3d)
 
                 # extract frames from video
-                video = join(seq_path, 'imageSequence', f'video_{cam}.avi')
-                cap = cv2.VideoCapture(video)
-                for i in tqdm(
-                        range(num_frames),
-                        desc=f'Extracting frames from {video}'):
-                    success, img = cap.read()
-                    if not success:
+                video_path = join(seq_path, 'imageSequence',
+                                  f'video_{cam}.avi')
+                video = mmcv.VideoReader(video_path)
+                for i in mmcv.track_iter_progress(range(num_frames)):
+                    img = video.read()
+                    if img is None:
                         break
                     imgname = f'S{subj}_Seq{seq}_Cam{cam}_{i+1:06d}.jpg'
                     _imgnames.append(imgname)
                     cv2.imwrite(join(img_dir, imgname), img)
-                cap.release()
 
     _imgnames = np.array(_imgnames)
     _centers = np.concatenate(_centers)
