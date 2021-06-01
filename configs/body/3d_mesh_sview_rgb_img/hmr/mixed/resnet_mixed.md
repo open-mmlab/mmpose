@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HMR (CVPR 2018)</summary>
+<summary>HMR (CVPR'2018)</summary>
 
 ```bibtex
 @inProceedings{kanazawaHMR18,

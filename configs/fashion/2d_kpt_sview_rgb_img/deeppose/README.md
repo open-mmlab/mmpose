@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DeepPose (CVPR 2014)</summary>
+<summary>DeepPose (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{toshev2014deeppose,
