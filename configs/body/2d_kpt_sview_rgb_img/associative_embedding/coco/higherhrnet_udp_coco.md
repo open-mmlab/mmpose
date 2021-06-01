@@ -34,6 +34,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>UDP (CVPR'2020)</summary>
+
 ```bibtex
 @InProceedings{Huang_2020_CVPR,
   author = {Huang, Junjie and Zhu, Zheng and Guo, Feng and Huang, Guan},
@@ -43,6 +46,8 @@
   year = {2020}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

@@ -34,6 +34,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>Wingloss (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{feng2018wing,
   title={Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural Networks},
@@ -44,6 +47,8 @@
   organization={IEEE}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

@@ -17,6 +17,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>DarkPose (CVPR'2020)</summary>
+
 ```bibtex
 @inproceedings{zhang2020distribution,
   title={Distribution-aware coordinate representation for human pose estimation},
@@ -26,6 +29,8 @@
   year={2020}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

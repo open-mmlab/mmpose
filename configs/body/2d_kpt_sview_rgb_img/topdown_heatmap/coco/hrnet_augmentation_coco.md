@@ -17,6 +17,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>Albumentations (Information'2020)</summary>
+
 ```bibtex
 @article{buslaev2020albumentations,
   title={Albumentations: fast and flexible image augmentations},
@@ -29,6 +32,8 @@
   publisher={Multidisciplinary Digital Publishing Institute}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

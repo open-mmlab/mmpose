@@ -17,6 +17,9 @@
 
 <!-- [OTHERS] -->
 
+<details>
+<summary>FP16 (ArXiv'2017)</summary>
+
 ```bibtex
 @article{micikevicius2017mixed,
   title={Mixed precision training},
@@ -25,6 +28,8 @@
   year={2017}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 
