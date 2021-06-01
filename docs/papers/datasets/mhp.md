@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MHP (ACM MM'2018)</summary>
+<summary align="right">MHP (ACM MM'2018)</summary>
 
 ```bibtex
 @inproceedings{zhao2018understanding,

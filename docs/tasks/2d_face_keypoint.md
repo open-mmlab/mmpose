@@ -88,7 +88,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>WFLW (CVPR'2018)</summary>
+<summary align="right">WFLW (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{wu2018look,
@@ -144,7 +144,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>AFLW (ICCVW'2011)</summary>
+<summary align="right">AFLW (ICCVW'2011)</summary>
 
 ```bibtex
 @inproceedings{koestinger2011annotated,

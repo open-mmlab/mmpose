@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>AI Challenger (ArXiv'2017)</summary>
+<summary align="right">AI Challenger (ArXiv'2017)</summary>
 
 ```bibtex
 @article{wu2017ai,

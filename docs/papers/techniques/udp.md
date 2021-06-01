@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>UDP (CVPR'2020)</summary>
+<summary align="right">UDP (CVPR'2020)</summary>
 
 ```bibtex
 @InProceedings{Huang_2020_CVPR,

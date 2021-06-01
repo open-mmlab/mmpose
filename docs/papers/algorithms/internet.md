@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>InterNet (ECCV'2020)</summary>
+<summary align="right">InterNet (ECCV'2020)</summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,

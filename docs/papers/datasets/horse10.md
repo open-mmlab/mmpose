@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Horse-10 (WACV'2021)</summary>
+<summary align="right">Horse-10 (WACV'2021)</summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,

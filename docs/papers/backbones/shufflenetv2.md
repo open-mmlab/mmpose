@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ShufflenetV2 (ECCV'2018)</summary>
+<summary align="right">ShufflenetV2 (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{ma2018shufflenet,

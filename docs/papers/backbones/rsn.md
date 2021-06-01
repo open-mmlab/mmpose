@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>RSN (ECCV'2020)</summary>
+<summary align="right">RSN (ECCV'2020)</summary>
 
 ```bibtex
 @misc{cai2020learning,

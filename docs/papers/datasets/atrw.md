@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>ATRW (ACM MM'2020)</summary>
+<summary align="right">ATRW (ACM MM'2020)</summary>
 
 ```bibtex
 @inproceedings{li2020atrw,

@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HigherHRNet (CVPR'2020)</summary>
+<summary align="right">HigherHRNet (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{cheng2020higherhrnet,

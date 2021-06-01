@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO-WholeBody (ECCV'2020)</summary>
+<summary align="right">COCO-WholeBody (ECCV'2020)</summary>
 
 ```bibtex
 @inproceedings{jin2020whole,

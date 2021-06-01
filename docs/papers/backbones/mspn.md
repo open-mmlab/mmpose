@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>MSPN (ArXiv'2019)</summary>
+<summary align="right">MSPN (ArXiv'2019)</summary>
 
 ```bibtex
 @article{li2019rethinking,

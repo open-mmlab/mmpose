@@ -12,7 +12,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion (CVPR'2016)</summary>
+<summary align="right">DeepFashion (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -29,7 +29,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion (ECCV'2016)</summary>
+<summary align="right">DeepFashion (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,

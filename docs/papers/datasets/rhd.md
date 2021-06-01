@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>RHD (ICCV'2017)</summary>
+<summary align="right">RHD (ICCV'2017)</summary>
 
 ```bibtex
 @TechReport{zb2017hand,

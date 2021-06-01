@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Desert Locust (Elife'2019)</summary>
+<summary align="right">Desert Locust (Elife'2019)</summary>
 
 ```bibtex
 @article{graving2019deepposekit,

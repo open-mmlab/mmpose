@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNeSt (ArXiv'2020)</summary>
+<summary align="right">ResNeSt (ArXiv'2020)</summary>
 
 ```bibtex
 @article{zhang2020resnest,

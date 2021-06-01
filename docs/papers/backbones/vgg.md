@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>VGG (ICLR'2015)</summary>
+<summary align="right">VGG (ICLR'2015)</summary>
 
 ```bibtex
 @article{simonyan2014very,

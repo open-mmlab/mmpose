@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Wingloss (CVPR'2018)</summary>
+<summary align="right">Wingloss (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{feng2018wing,

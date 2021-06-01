@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNetV1D (CVPR'2019)</summary>
+<summary align="right">ResNetV1D (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{he2019bag,

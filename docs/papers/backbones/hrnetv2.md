@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNetv2 (TPAMI'2019)</summary>
+<summary align="right">HRNetv2 (TPAMI'2019)</summary>
 
 ```bibtex
 @article{WangSCJDZLMTWLX19,

@@ -87,7 +87,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -127,7 +127,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>Human3.6M (TPAMI'2014)</summary>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
 
 ```bibtex
 @article{h36m_pami,

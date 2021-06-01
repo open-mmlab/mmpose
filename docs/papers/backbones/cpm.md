@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>CPM (CVPR'2016)</summary>
+<summary align="right">CPM (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{wei2016convolutional,

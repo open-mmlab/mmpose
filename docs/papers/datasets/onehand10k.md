@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>OneHand10K (TCSVT'2019)</summary>
+<summary align="right">OneHand10K (TCSVT'2019)</summary>
 
 ```bibtex
 @article{wang2018mask,

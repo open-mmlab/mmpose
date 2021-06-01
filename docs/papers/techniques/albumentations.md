@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Albumentations (Information'2020)</summary>
+<summary align="right">Albumentations (Information'2020)</summary>
 
 ```bibtex
 @article{buslaev2020albumentations,

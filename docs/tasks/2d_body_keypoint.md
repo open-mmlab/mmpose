@@ -22,7 +22,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -77,7 +77,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,
@@ -133,7 +133,7 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII-TRB (ICCV'2019)</summary>
+<summary align="right">MPII-TRB (ICCV'2019)</summary>
 
 ```bibtex
 @inproceedings{duan2019trb,
@@ -174,7 +174,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>AI Challenger (ArXiv'2017)</summary>
+<summary align="right">AI Challenger (ArXiv'2017)</summary>
 
 ```bibtex
 @article{wu2017ai,
@@ -220,7 +220,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>CrowdPose (CVPR'2019)</summary>
+<summary align="right">CrowdPose (CVPR'2019)</summary>
 
 ```bibtex
 @article{li2018crowdpose,
@@ -266,7 +266,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>OCHuman (CVPR'2019)</summary>
+<summary align="right">OCHuman (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{zhang2019pose2seg,
@@ -308,7 +308,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>MHP (ACM MM'2018)</summary>
+<summary align="right">MHP (ACM MM'2018)</summary>
 
 ```bibtex
 @inproceedings{zhao2018understanding,
@@ -363,7 +363,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>PoseTrack18 (CVPR'2018)</summary>
+<summary align="right">PoseTrack18 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{andriluka2018posetrack,
@@ -454,7 +454,7 @@ pip install git+https://github.com/svenkreiss/poseval.git
 <!-- [DATASET] -->
 
 <details>
-<summary>RSN (ECCV'2020)</summary>
+<summary align="right">RSN (ECCV'2020)</summary>
 
 ```bibtex
 @misc{cai2020learning,

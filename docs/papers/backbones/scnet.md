@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SCNet (CVPR'2020)</summary>
+<summary align="right">SCNet (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{liu2020improving,

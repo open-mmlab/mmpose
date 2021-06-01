@@ -12,7 +12,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>InterHand2.6M (ECCV'2020)</summary>
+<summary align="right">InterHand2.6M (ECCV'2020)</summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,

@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII-TRB (ICCV'2019)</summary>
+<summary align="right">MPII-TRB (ICCV'2019)</summary>
 
 ```bibtex
 @inproceedings{duan2019trb,

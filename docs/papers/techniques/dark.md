@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DarkPose (CVPR'2020)</summary>
+<summary align="right">DarkPose (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{zhang2020distribution,

@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>MobilenetV2 (CVPR'2018)</summary>
+<summary align="right">MobilenetV2 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,

@@ -16,7 +16,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>OneHand10K (TCSVT'2019)</summary>
+<summary align="right">OneHand10K (TCSVT'2019)</summary>
 
 ```bibtex
 @article{wang2018mask,
@@ -66,7 +66,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>FreiHand (ICCV'2019)</summary>
+<summary align="right">FreiHand (ICCV'2019)</summary>
 
 ```bibtex
 @inproceedings{zimmermann2019freihand,
@@ -114,7 +114,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>CMU Panoptic HandDB (CVPR'2017)</summary>
+<summary align="right">CMU Panoptic HandDB (CVPR'2017)</summary>
 
 ```bibtex
 @inproceedings{simon2017hand,
@@ -169,7 +169,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>InterHand2.6M (ECCV'2020)</summary>
+<summary align="right">InterHand2.6M (ECCV'2020)</summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,
@@ -216,7 +216,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>RHD (ICCV'2017)</summary>
+<summary align="right">RHD (ICCV'2017)</summary>
 
 ```bibtex
 @TechReport{zb2017hand,

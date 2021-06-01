@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Hourglass (ECCV'2016)</summary>
+<summary align="right">Hourglass (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{newell2016stacked,

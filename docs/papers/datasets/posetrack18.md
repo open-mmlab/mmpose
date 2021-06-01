@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>PoseTrack18 (CVPR'2018)</summary>
+<summary align="right">PoseTrack18 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{andriluka2018posetrack,

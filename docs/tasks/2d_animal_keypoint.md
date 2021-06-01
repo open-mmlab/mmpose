@@ -18,7 +18,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary>Animal-Pose (ICCV'2019)</summary>
+<summary align="right">Animal-Pose (ICCV'2019)</summary>
 
 ```bibtex
 @InProceedings{Cao_2019_ICCV,
@@ -102,7 +102,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 <!-- [DATASET] -->
 
 <details>
-<summary>Horse-10 (WACV'2021)</summary>
+<summary align="right">Horse-10 (WACV'2021)</summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,
@@ -148,7 +148,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary>MacaquePose (bioRxiv'2020)</summary>
+<summary align="right">MacaquePose (bioRxiv'2020)</summary>
 
 ```bibtex
 @article{labuguen2020macaquepose,
@@ -195,7 +195,7 @@ Since the official dataset does not provide the test set, we randomly select 125
 <!-- [DATASET] -->
 
 <details>
-<summary>Vinegar Fly (Nature Methods'2019)</summary>
+<summary align="right">Vinegar Fly (Nature Methods'2019)</summary>
 
 ```bibtex
 @article{pereira2019fast,
@@ -244,7 +244,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary>Desert Locust (Elife'2019)</summary>
+<summary align="right">Desert Locust (Elife'2019)</summary>
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -292,7 +292,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary>Desert Locust (Elife'2019)</summary>
+<summary align="right">Desert Locust (Elife'2019)</summary>
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -340,7 +340,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary>ATRW (ACM MM'2020)</summary>
+<summary align="right">ATRW (ACM MM'2020)</summary>
 
 ```bibtex
 @inproceedings{li2020atrw,
