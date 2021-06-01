@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Albumentations (Information'2020)</summary>
+<summary align="right">Albumentations (Information'2020)</summary>
 
 ```bibtex
 @article{buslaev2020albumentations,
@@ -38,7 +38,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

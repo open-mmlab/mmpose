@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>InterNet (ECCV'2020)</summary>
+<summary align="right">InterNet (ECCV'2020)</summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,
@@ -17,7 +17,7 @@ year = {2020}
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNet (CVPR'2016)</summary>
+<summary align="right">ResNet (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -34,7 +34,7 @@ year = {2020}
 <!-- [DATASET] -->
 
 <details>
-<summary>InterHand2.6M (ECCV'2020)</summary>
+<summary align="right">InterHand2.6M (ECCV'2020)</summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,

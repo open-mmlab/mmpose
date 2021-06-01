@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MacaquePose (bioRxiv'2020)</summary>
+<summary align="right">MacaquePose (bioRxiv'2020)</summary>
 
 ```bibtex
 @article{labuguen2020macaquepose,

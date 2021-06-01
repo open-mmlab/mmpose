@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HMR (CVPR'2018)</summary>
+<summary align="right">HMR (CVPR'2018)</summary>
 
 ```bibtex
 @inProceedings{kanazawaHMR18,
@@ -20,7 +20,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNet (CVPR'2016)</summary>
+<summary align="right">ResNet (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -37,7 +37,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Human3.6M (TPAMI'2014)</summary>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
 
 ```bibtex
 @article{h36m_pami,

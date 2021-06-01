@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNetv2 (TPAMI'2019)</summary>
+<summary align="right">HRNetv2 (TPAMI'2019)</summary>
 
 ```bibtex
 @article{WangSCJDZLMTWLX19,
@@ -19,7 +19,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>UDP (CVPR'2020)</summary>
+<summary align="right">UDP (CVPR'2020)</summary>
 
 ```bibtex
 @InProceedings{Huang_2020_CVPR,
@@ -36,7 +36,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>OneHand10K (TCSVT'2019)</summary>
+<summary align="right">OneHand10K (TCSVT'2019)</summary>
 
 ```bibtex
 @article{wang2018mask,

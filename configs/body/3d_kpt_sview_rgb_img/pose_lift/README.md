@@ -3,7 +3,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline3D (ICCV'2017)</summary>
+<summary align="right">SimpleBaseline3D (ICCV'2017)</summary>
 
 ```bibtex
 @inproceedings{martinez_2017_3dbaseline,

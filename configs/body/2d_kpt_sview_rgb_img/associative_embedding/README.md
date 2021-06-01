@@ -3,7 +3,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Associative Embedding (NIPS'2017)</summary>
+<summary align="right">Associative Embedding (NIPS'2017)</summary>
 
 ```bibtex
 @inproceedings{newell2017associative,

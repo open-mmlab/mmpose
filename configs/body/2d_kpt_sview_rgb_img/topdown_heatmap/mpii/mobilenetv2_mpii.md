@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>MobilenetV2 (CVPR'2018)</summary>
+<summary align="right">MobilenetV2 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

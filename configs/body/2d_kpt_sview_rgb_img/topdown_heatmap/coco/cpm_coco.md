@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>CPM (CVPR'2016)</summary>
+<summary align="right">CPM (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{wei2016convolutional,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

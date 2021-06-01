@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Horse-10 (WACV'2021)</summary>
+<summary align="right">Horse-10 (WACV'2021)</summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,

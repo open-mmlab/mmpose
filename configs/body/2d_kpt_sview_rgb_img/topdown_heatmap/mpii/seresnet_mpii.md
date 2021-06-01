@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>SEResNet (CVPR'2018)</summary>
+<summary align="right">SEResNet (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{hu2018squeeze,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

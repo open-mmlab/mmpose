@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Associative Embedding (NIPS'2017)</summary>
+<summary align="right">Associative Embedding (NIPS'2017)</summary>
 
 ```bibtex
 @inproceedings{newell2017associative,
@@ -18,7 +18,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>AI Challenger (ArXiv'2017)</summary>
+<summary align="right">AI Challenger (ArXiv'2017)</summary>
 
 ```bibtex
 @article{wu2017ai,

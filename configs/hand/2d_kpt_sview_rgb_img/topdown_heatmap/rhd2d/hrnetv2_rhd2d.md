@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNetv2 (TPAMI'2019)</summary>
+<summary align="right">HRNetv2 (TPAMI'2019)</summary>
 
 ```bibtex
 @article{WangSCJDZLMTWLX19,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>RHD (ICCV'2017)</summary>
+<summary align="right">RHD (ICCV'2017)</summary>
 
 ```bibtex
 @TechReport{zb2017hand,

@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNeSt (ArXiv'2020)</summary>
+<summary align="right">ResNeSt (ArXiv'2020)</summary>
 
 ```bibtex
 @article{zhang2020resnest,
@@ -17,7 +17,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

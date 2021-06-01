@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DarkPose (CVPR'2020)</summary>
+<summary align="right">DarkPose (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{zhang2020distribution,

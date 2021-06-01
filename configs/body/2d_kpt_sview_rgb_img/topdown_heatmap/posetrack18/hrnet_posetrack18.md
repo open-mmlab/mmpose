@@ -2,7 +2,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>PoseTrack18 (CVPR'2018)</summary>
+<summary align="right">PoseTrack18 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{andriluka2018posetrack,

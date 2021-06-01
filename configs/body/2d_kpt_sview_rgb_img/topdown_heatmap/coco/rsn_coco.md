@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>RSN (ECCV'2020)</summary>
+<summary align="right">RSN (ECCV'2020)</summary>
 
 ```bibtex
 @misc{cai2020learning,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

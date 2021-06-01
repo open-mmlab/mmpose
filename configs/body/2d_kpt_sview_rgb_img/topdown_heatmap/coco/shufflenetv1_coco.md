@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ShufflenetV1 (CVPR'2018)</summary>
+<summary align="right">ShufflenetV1 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{zhang2018shufflenet,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

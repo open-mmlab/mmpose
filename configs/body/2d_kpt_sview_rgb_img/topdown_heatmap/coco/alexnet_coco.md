@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>AlexNet (NeurIPS'2012)</summary>
+<summary align="right">AlexNet (NeurIPS'2012)</summary>
 
 ```bibtex
 @inproceedings{krizhevsky2012imagenet,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

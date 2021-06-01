@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Associative Embedding (NIPS'2017)</summary>
+<summary align="right">Associative Embedding (NIPS'2017)</summary>
 
 ```bibtex
 @inproceedings{newell2017associative,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>MobilenetV2 (CVPR'2018)</summary>
+<summary align="right">MobilenetV2 (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

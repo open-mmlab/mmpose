@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNetV1D (CVPR'2019)</summary>
+<summary align="right">ResNetV1D (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{he2019bag,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

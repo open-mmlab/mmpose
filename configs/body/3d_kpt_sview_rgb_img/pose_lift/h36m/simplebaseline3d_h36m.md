@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline3D (ICCV'2017)</summary>
+<summary align="right">SimpleBaseline3D (ICCV'2017)</summary>
 
 ```bibtex
 @inproceedings{martinez_2017_3dbaseline,
@@ -17,7 +17,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Human3.6M (TPAMI'2014)</summary>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
 
 ```bibtex
 @article{h36m_pami,

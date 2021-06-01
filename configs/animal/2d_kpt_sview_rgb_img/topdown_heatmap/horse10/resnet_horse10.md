@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Horse-10 (WACV'2021)</summary>
+<summary align="right">Horse-10 (WACV'2021)</summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,

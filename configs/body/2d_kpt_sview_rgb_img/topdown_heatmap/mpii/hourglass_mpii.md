@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Hourglass (ECCV'2016)</summary>
+<summary align="right">Hourglass (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{newell2016stacked,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DeepPose (CVPR'2014)</summary>
+<summary align="right">DeepPose (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{toshev2014deeppose,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNet (CVPR'2016)</summary>
+<summary align="right">ResNet (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -35,7 +35,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>Wingloss (CVPR'2018)</summary>
+<summary align="right">Wingloss (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{feng2018wing,
@@ -53,7 +53,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>WFLW (CVPR'2018)</summary>
+<summary align="right">WFLW (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{wu2018look,

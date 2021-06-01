@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>VideoPose3D (CVPR'2019)</summary>
+<summary align="right">VideoPose3D (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{pavllo20193d,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Human3.6M (TPAMI'2014)</summary>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
 
 ```bibtex
 @article{h36m_pami,

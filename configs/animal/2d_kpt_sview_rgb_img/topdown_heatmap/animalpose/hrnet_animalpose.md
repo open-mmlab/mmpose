@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Animal-Pose (ICCV'2019)</summary>
+<summary align="right">Animal-Pose (ICCV'2019)</summary>
 
 ```bibtex
 @InProceedings{Cao_2019_ICCV,

@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNext (CVPR'2017)</summary>
+<summary align="right">ResNext (CVPR'2017)</summary>
 
 ```bibtex
 @inproceedings{xie2017aggregated,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

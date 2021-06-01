@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DarkPose (CVPR'2020)</summary>
+<summary align="right">DarkPose (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{zhang2020distribution,
@@ -35,7 +35,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>UDP (CVPR'2020)</summary>
+<summary align="right">UDP (CVPR'2020)</summary>
 
 ```bibtex
 @InProceedings{Huang_2020_CVPR,
@@ -52,7 +52,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

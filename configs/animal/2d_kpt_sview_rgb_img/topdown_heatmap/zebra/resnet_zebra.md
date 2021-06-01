@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Desert Locust (Elife'2019)</summary>
+<summary align="right">Desert Locust (Elife'2019)</summary>
 
 ```bibtex
 @article{graving2019deepposekit,

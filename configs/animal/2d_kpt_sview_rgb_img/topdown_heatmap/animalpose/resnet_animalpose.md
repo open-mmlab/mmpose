@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Animal-Pose (ICCV'2019)</summary>
+<summary align="right">Animal-Pose (ICCV'2019)</summary>
 
 ```bibtex
 @InProceedings{Cao_2019_ICCV,

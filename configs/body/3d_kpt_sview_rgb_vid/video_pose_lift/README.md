@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>VideoPose3D (CVPR'2019)</summary>
+<summary align="right">VideoPose3D (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{pavllo20193d,

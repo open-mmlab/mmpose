@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNet (CVPR'2019)</summary>
+<summary align="right">HRNet (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -18,7 +18,7 @@
 <!-- [OTHERS] -->
 
 <details>
-<summary>FP16 (ArXiv'2017)</summary>
+<summary align="right">FP16 (ArXiv'2017)</summary>
 
 ```bibtex
 @article{micikevicius2017mixed,
@@ -34,7 +34,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO (ECCV'2014)</summary>
+<summary align="right">COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>HRNetv2 (TPAMI'2019)</summary>
+<summary align="right">HRNetv2 (TPAMI'2019)</summary>
 
 ```bibtex
 @article{WangSCJDZLMTWLX19,
@@ -19,7 +19,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DarkPose (CVPR'2020)</summary>
+<summary align="right">DarkPose (CVPR'2020)</summary>
 
 ```bibtex
 @inproceedings{zhang2020distribution,
@@ -36,7 +36,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>CMU Panoptic HandDB (CVPR'2017)</summary>
+<summary align="right">CMU Panoptic HandDB (CVPR'2017)</summary>
 
 ```bibtex
 @inproceedings{simon2017hand,

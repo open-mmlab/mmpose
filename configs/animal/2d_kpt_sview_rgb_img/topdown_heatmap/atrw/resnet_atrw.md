@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>ATRW (ACM MM'2020)</summary>
+<summary align="right">ATRW (ACM MM'2020)</summary>
 
 ```bibtex
 @inproceedings{li2020atrw,

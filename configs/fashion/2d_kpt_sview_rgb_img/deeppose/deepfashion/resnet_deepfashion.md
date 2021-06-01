@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>DeepPose (CVPR'2014)</summary>
+<summary align="right">DeepPose (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{toshev2014deeppose,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNet (CVPR'2016)</summary>
+<summary align="right">ResNet (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion (CVPR'2016)</summary>
+<summary align="right">DeepFashion (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -52,7 +52,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion (ECCV'2016)</summary>
+<summary align="right">DeepFashion (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,

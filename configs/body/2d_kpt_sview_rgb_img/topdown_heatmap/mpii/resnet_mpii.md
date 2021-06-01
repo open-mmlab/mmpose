@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary>SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary>ResNet (CVPR'2016)</summary>
+<summary align="right">ResNet (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII (CVPR'2014)</summary>
+<summary align="right">MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,
