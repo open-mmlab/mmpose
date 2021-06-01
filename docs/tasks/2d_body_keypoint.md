@@ -132,6 +132,9 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MPII-TRB (ICCV'2019)</summary>
+
 ```bibtex
 @inproceedings{duan2019trb,
   title={TRB: A Novel Triplet Representation for Understanding 2D Human Body},
@@ -141,6 +144,8 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
   year={2019}
 }
 ```
+
+</details>
 
 For [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
@@ -261,6 +266,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>OCHuman (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{zhang2019pose2seg,
   title={Pose2seg: Detection free human instance segmentation},
@@ -270,6 +278,8 @@ mmpose
   year={2019}
 }
 ```
+
+</details>
 
 For [OCHuman](https://github.com/liruilong940607/OCHumanApi) data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
 Move them under $MMPOSE/data, and make them look like this:
@@ -354,6 +364,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>PoseTrack18 (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{andriluka2018posetrack,
   title={Posetrack: A benchmark for human pose estimation and tracking},
@@ -363,6 +376,8 @@ mmpose
   year={2018}
 }
 ```
+
+</details>
 
 For [PoseTrack18](https://posetrack.net/users/download.php) data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
 Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).

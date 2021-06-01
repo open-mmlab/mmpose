@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>OCHuman (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{zhang2019pose2seg,
   title={Pose2seg: Detection free human instance segmentation},
@@ -43,6 +46,8 @@
   year={2019}
 }
 ```
+
+</details>
 
 #### Results on OCHuman test dataset with ground-truth bounding boxes
 

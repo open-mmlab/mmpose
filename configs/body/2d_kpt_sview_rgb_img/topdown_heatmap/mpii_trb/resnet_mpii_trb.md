@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MPII-TRB (ICCV'2019)</summary>
+
 ```bibtex
 @inproceedings{duan2019trb,
   title={TRB: A Novel Triplet Representation for Understanding 2D Human Body},
@@ -43,6 +46,8 @@
   year={2019}
 }
 ```
+
+</details>
 
 #### Results on MPII-TRB val set
 
