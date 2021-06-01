@@ -28,6 +28,7 @@ Welcome to MMPose's documentation!
 
    modelzoo.md
    modelzoo_dataset.md
+   modelzoo_algorithm.md
    modelzoo_backbone.md
    modelzoo_technique.md
 
