@@ -188,21 +188,20 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
             'centers': _centers,
         }
 
-        # get image size
-        _cam_param = self.get_camera_param(_imgnames[0])
-        if 'w' in _cam_param and 'h' in _cam_param:
-            # get image size from camera parameters
-            results['image_width'] = _cam_param['w']
-            results['image_height'] = _cam_param['h']
-        else:
-            # get image size from images
-            raise NotImplementedError
-
         if self.need_2d_label:
             results['target_2d'] = _joints_2d[target_idx, :, :2]
 
         if self.need_camera_param:
+            _cam_param = self.get_camera_param(_imgnames[0])
             results['camera_param'] = _cam_param
+            # get image size
+            if 'w' in _cam_param and 'h' in _cam_param:
+                # get image size from camera parameters
+                results['image_width'] = _cam_param['w']
+                results['image_height'] = _cam_param['h']
+            else:
+                # get image size from images
+                raise NotImplementedError
 
         return results
 
