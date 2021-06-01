@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>VideoPose3D (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{pavllo20193d,
   title={3d human pose estimation in video with temporal convolutions and semi-supervised training},
@@ -13,5 +16,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 Based on the success of 2d human pose estimation, it directly "lifts" a sequence of 2d keypoints to 3d keypoints.
