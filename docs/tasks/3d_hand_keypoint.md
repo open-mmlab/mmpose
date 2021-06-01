@@ -11,6 +11,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary>InterHand2.6M (ECCV'2020)</summary>
+
 ```bibtex
 @article{moon2020interhand2,
   title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
@@ -20,6 +23,8 @@ MMPose supported datasets:
   publisher={Springer}
 }
 ```
+
+</details>
 
 For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
 Please download the annotation files from [annotations](https://github.com/facebookresearch/InterHand2.6M/releases/download/v0.0/InterHand2.6M.annotations.5.fps.zip).

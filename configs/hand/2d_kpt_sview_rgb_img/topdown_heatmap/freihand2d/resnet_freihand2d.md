@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>FreiHand (ICCV'2019)</summary>
+
 ```bibtex
 @inproceedings{zimmermann2019freihand,
   title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
@@ -43,6 +46,8 @@
   year={2019}
 }
 ```
+
+</details>
 
 #### Results on FreiHand val & test set
 

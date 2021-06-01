@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>OneHand10K (TCSVT'2019)</summary>
+
 ```bibtex
 @article{wang2018mask,
   title={Mask-pose cascaded cnn for 2d hand pose estimation from single color image},
@@ -29,6 +32,8 @@
   publisher={IEEE}
 }
 ```
+
+</details>
 
 #### Results on OneHand10K val set
 

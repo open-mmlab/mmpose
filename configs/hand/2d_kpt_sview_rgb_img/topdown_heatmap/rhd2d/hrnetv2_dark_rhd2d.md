@@ -35,6 +35,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>RHD (ICCV'2017)</summary>
+
 ```bibtex
 @TechReport{zb2017hand,
   author={Christian Zimmermann and Thomas Brox},
@@ -45,6 +48,8 @@
   url="https://lmb.informatik.uni-freiburg.de/projects/hand3d/"
 }
 ```
+
+</details>
 
 #### Results on RHD test set
 

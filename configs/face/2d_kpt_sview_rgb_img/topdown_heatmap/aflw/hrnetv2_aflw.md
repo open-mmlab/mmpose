@@ -18,6 +18,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>AFLW (ICCVW'2011)</summary>
+
 ```bibtex
 @inproceedings{koestinger2011annotated,
   title={Annotated facial landmarks in the wild: A large-scale, real-world database for facial landmark localization},
@@ -28,6 +31,8 @@
   organization={IEEE}
 }
 ```
+
+</details>
 
 #### Results on AFLW dataset
 

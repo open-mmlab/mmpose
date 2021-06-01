@@ -35,6 +35,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>WFLW (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{wu2018look,
   title={Look at boundary: A boundary-aware face alignment algorithm},
@@ -44,6 +47,8 @@
   year={2018}
 }
 ```
+
+</details>
 
 #### Results on WFLW dataset
 

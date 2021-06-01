@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>InterHand2.6M (ECCV'2020)</summary>
+
 ```bibtex
 @article{moon2020interhand2,
   title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
@@ -43,6 +46,8 @@
   publisher={Springer}
 }
 ```
+
+</details>
 
 #### Results on InterHand2.6M val & test set
 
