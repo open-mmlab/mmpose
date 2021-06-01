@@ -46,6 +46,9 @@ year = {2020}
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -56,6 +59,8 @@ year = {2020}
   organization={Springer}
 }
 ```
+
+</details>
 
 ## Results and models
 

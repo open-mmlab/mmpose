@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -27,6 +30,8 @@
   organization={Springer}
 }
 ```
+
+</details>
 
 #### Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 

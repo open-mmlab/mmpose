@@ -21,6 +21,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -31,6 +34,8 @@ MMPose supported datasets:
   organization={Springer}
 }
 ```
+
+</details>
 
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results.

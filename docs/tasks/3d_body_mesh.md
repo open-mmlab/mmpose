@@ -86,6 +86,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -96,6 +99,8 @@ mmpose
   organization={Springer}
 }
 ```
+
+</details>
 
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download). COCO'2014 Train is needed for human mesh estimation training.
 Download and extract them under $MMPOSE/data, and make them look like this:
