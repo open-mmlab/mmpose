@@ -42,11 +42,11 @@ for subtopic, topic, task in sorted(subtopics):
 
 # Step 4: write files
 for subtopic, datasets in contents.items():
-    lines = [f'# {titlecase(subtopic)}', '']
+    lines = [f'# {titlecase(subtopic)} Models', '']
     for dataset, keywords in datasets.items():
         if len(keywords) == 0:
             continue
-        lines += ['<hr/>', '', f'## {titlecase(dataset)}', '']
+        lines += ['<hr/>', '', f'## {titlecase(dataset)} Dataset', '']
         for keyword, info in keywords.items():
             lines += [
                 f'### {" + ".join([titlecase(x.replace("_", " ")) for x in keyword])}',
