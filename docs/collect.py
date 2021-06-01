@@ -44,7 +44,9 @@ for subtopic, topic, task in sorted(subtopics):
 for subtopic, datasets in contents.items():
     lines = [f'# {titlecase(subtopic)}', '']
     for dataset, keywords in datasets.items():
-        lines += [f'## {titlecase(dataset)}', '']
+        if len(keywords) == 0:
+            continue
+        lines += ['<hr/>', '', f'## {titlecase(dataset)}', '']
         for keyword, info in keywords.items():
             lines += [
                 f'### {" + ".join(map(titlecase, keyword))}', '', info, ''
