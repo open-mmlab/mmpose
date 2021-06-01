@@ -48,7 +48,6 @@
 ```
 
 </details>
-```
 
 #### Results on MHP v2.0 val set
 

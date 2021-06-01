@@ -47,7 +47,6 @@
 ```
 
 </details>
-```
 
 #### Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector
 

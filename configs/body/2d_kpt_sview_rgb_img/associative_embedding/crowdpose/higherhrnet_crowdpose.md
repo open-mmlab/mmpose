@@ -47,7 +47,6 @@
 ```
 
 </details>
-```
 
 #### Results on CrowdPose test without multi-scale test
 
