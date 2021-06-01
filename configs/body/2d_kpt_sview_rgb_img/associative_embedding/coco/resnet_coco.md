@@ -1,5 +1,8 @@
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>Associative Embedding (NIPS 2017)</summary>
+
 ```bibtex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
@@ -9,6 +12,8 @@
   year={2017}
 }
 ```
+
+</details>
 
 <!-- [BACKBONE] -->
 

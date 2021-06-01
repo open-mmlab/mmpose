@@ -2,6 +2,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>Associative Embedding (NIPS 2017)</summary>
+
 ```bibtex
 @inproceedings{newell2017associative,
   title={Associative embedding: End-to-end learning for joint detection and grouping},
@@ -11,6 +14,8 @@
   year={2017}
 }
 ```
+
+</details>
 
 AE is one of the most popular 2D bottom-up pose estimation approaches, that first detect all the keypoints and
 then group/associate them into person instances.
