@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>DeepPose (CVPR 2014)</summary>
+
 ```bibtex
 @inproceedings{toshev2014deeppose,
   title={Deeppose: Human pose estimation via deep neural networks},
@@ -13,6 +16,8 @@
   year={2014}
 }
 ```
+
+</details>
 
 DeepPose first proposes using deep neural networks (DNNs) to tackle the problem of human pose estimation.
 It follows the top-down paradigm, that first detects human bounding boxes and then estimates poses.
