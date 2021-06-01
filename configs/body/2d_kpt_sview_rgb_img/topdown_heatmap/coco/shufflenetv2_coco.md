@@ -1,5 +1,8 @@
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ShufflenetV2 (ECCV'2018)</summary>
+
 ```bibtex
 @inproceedings{ma2018shufflenet,
   title={Shufflenet v2: Practical guidelines for efficient cnn architecture design},
@@ -9,6 +12,8 @@
   year={2018}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

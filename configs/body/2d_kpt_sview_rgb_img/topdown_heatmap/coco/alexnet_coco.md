@@ -1,5 +1,8 @@
 <!-- [BACKBONE] -->
 
+<details>
+<summary>AlexNet (NeurIPS'2012)</summary>
+
 ```bibtex
 @inproceedings{krizhevsky2012imagenet,
   title={Imagenet classification with deep convolutional neural networks},
@@ -9,6 +12,8 @@
   year={2012}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

@@ -1,5 +1,8 @@
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>CPM (CVPR'2016)</summary>
+
 ```bibtex
 @inproceedings{wei2016convolutional,
   title={Convolutional pose machines},
@@ -9,6 +12,8 @@
   year={2016}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

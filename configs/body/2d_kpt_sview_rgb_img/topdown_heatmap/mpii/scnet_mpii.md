@@ -1,5 +1,8 @@
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>SCNet (CVPR'2020)</summary>
+
 ```bibtex
 @inproceedings{liu2020improving,
   title={Improving Convolutional Networks with Self-Calibrated Convolutions},
@@ -9,6 +12,8 @@
   year={2020}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

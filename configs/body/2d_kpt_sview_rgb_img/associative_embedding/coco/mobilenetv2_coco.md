@@ -17,6 +17,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>MobilenetV2 (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{sandler2018mobilenetv2,
   title={Mobilenetv2: Inverted residuals and linear bottlenecks},
@@ -26,6 +29,8 @@
   year={2018}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 

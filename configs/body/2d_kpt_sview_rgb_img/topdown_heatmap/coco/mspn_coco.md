@@ -1,5 +1,8 @@
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>MSPN (ArXiv'2019)</summary>
+
 ```bibtex
 @article{li2019rethinking,
   title={Rethinking on Multi-Stage Networks for Human Pose Estimation},
@@ -8,6 +11,8 @@
   year={2019}
 }
 ```
+
+</details>
 
 <!-- [DATASET] -->
 
