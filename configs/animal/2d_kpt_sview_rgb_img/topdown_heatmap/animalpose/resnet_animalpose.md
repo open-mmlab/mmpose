@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Animal-Pose [homepage] (ICCV'2019)</summary>
+
 ```bibtex
 @InProceedings{Cao_2019_ICCV,
     author = {Cao, Jinkun and Tang, Hongyang and Fang, Hao-Shu and Shen, Xiaoyong and Lu, Cewu and Tai, Yu-Wing},
@@ -26,6 +29,8 @@
     year = {2019}
 }
 ```
+
+</details>
 
 #### Results on AnimalPose validation set (1117 instances)
 

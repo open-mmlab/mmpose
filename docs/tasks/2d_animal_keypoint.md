@@ -17,6 +17,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Animal-Pose [homepage] (ICCV'2019)</summary>
+
 ```bibtex
 @InProceedings{Cao_2019_ICCV,
     author = {Cao, Jinkun and Tang, Hongyang and Fang, Hao-Shu and Shen, Xiaoyong and Lu, Cewu and Tai, Yu-Wing},
@@ -26,6 +29,8 @@ MMPose supported datasets:
     year = {2019}
 }
 ```
+
+</details>
 
 For [Animal-Pose](https://sites.google.com/view/animal-pose/) datatset, we prepare the dataset as follows:
 
