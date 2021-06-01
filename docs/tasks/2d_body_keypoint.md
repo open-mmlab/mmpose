@@ -158,6 +158,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>AI Challenger (ArXiv'2017)</summary>
+
 ```bibtex
 @article{wu2017ai,
   title={Ai challenger: A large-scale dataset for going deeper in image understanding},
@@ -166,6 +169,8 @@ mmpose
   year={2017}
 }
 ```
+
+</details>
 
 For [AIC](https://github.com/AIChallenger/AI_Challenger_2017) data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
 Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).

@@ -18,6 +18,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>AI Challenger (ArXiv'2017)</summary>
+
 ```bibtex
 @article{wu2017ai,
   title={Ai challenger: A large-scale dataset for going deeper in image understanding},
@@ -26,6 +29,8 @@
   year={2017}
 }
 ```
+
+</details>
 
 #### Results on AIC val set with ground-truth bounding boxes
 
