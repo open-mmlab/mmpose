@@ -63,7 +63,8 @@ class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
 
         dataset_info = DatasetInfo(dataset_info)
 
-        self.ann_info['num_joints'] = data_cfg['num_joints']
+        self.load_config(self.data_cfg)
+
         assert self.ann_info['num_joints'] == dataset_info.keypoint_num
         self.ann_info['flip_pairs'] = dataset_info.flip_pairs
         self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
@@ -73,7 +74,6 @@ class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
         self.sigmas = dataset_info.sigmas
         self.dataset_name = dataset_info.dataset_name
 
-        self.load_config(self.data_cfg)
         self.data_info = self.load_annotations()
         self.sample_indices = self.build_sample_indices()
         self.pipeline = Compose(pipeline)
@@ -96,19 +96,7 @@ class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
         self.temporal_padding = data_cfg.get('temporal_padding', False)
         self.subset = data_cfg.get('subset', 1)
         self.need_2d_label = data_cfg.get('need_2d_label', False)
-
         self.need_camera_param = False
-
-        # create annotation information
-        ann_info = {}
-        ann_info['num_joints'] = self.num_joints
-        ann_info['flip_pairs'] = None
-        ann_info['upper_body_ids'] = None
-        ann_info['lower_body_ids'] = None
-        ann_info['joint_weights'] = np.full(
-            self.num_joints, 1.0, dtype=np.float32)
-
-        self.ann_info.update(ann_info)
 
     def load_annotations(self):
         """Load data annotation."""
