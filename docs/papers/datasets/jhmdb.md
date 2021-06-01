@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>JHMDB [homepage] (ICCV'2013)</summary>
+<summary>JHMDB (ICCV'2013)</summary>
 
 ```bibtex
 @inproceedings{Jhuang:ICCV:2013,

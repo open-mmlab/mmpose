@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>CrowdPose [homepage] (CVPR'2019)</summary>
+<summary>CrowdPose (CVPR'2019)</summary>
 
 ```bibtex
 @article{li2018crowdpose,

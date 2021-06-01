@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MPII [homepage] (CVPR'2014)</summary>
+<summary>MPII (CVPR'2014)</summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

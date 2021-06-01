@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>InterHand2.6M [homepage] (ECCV'2020)</summary>
+<summary>InterHand2.6M (ECCV'2020)</summary>
 
 ```bibtex
 @article{moon2020interhand2,

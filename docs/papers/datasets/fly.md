@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Vinegar Fly [homepage] (Nature Methods'2019)</summary>
+<summary>Vinegar Fly (Nature Methods'2019)</summary>
 
 ```bibtex
 @article{pereira2019fast,

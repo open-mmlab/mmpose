@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>OCHuman [homepage] (CVPR'2019)</summary>
+<summary>OCHuman (CVPR'2019)</summary>
 
 ```bibtex
 @inproceedings{zhang2019pose2seg,

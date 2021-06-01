@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COCO [homepage] (ECCV'2014)</summary>
+<summary>COCO (ECCV'2014)</summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

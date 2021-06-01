@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion [homepage] (CVPR'2016)</summary>
+<summary>DeepFashion (CVPR'2016)</summary>
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -22,7 +22,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>DeepFashion [homepage] (ECCV'2016)</summary>
+<summary>DeepFashion (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,

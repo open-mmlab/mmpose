@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>CMU Panoptic HandDB [homepage] (CVPR'2017)</summary>
+<summary>CMU Panoptic HandDB (CVPR'2017)</summary>
 
 ```bibtex
 @inproceedings{simon2017hand,

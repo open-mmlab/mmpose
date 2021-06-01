@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Animal-Pose [homepage] (ICCV'2019)</summary>
+<summary>Animal-Pose (ICCV'2019)</summary>
 
 ```bibtex
 @InProceedings{Cao_2019_ICCV,

@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>WFLW [homepage] (CVPR'2018)</summary>
+<summary>WFLW (CVPR'2018)</summary>
 
 ```bibtex
 @inproceedings{wu2018look,

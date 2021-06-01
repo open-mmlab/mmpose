@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>COFW [homepage] (ICCV'2013)</summary>
+<summary>COFW (ICCV'2013)</summary>
 
 ```bibtex
 @inproceedings{burgos2013robust,

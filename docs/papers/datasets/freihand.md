@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>FreiHand [homepage] (ICCV'2019)</summary>
+<summary>FreiHand (ICCV'2019)</summary>
 
 ```bibtex
 @inproceedings{zimmermann2019freihand,

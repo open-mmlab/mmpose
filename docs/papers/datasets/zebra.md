@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>Grévy’s Zebra [homepage] (Elife'2019)</summary>
+<summary>Grévy’s Zebra (Elife'2019)</summary>
 
 ```bibtex
 @article{graving2019deepposekit,

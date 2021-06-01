@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>AFLW [homepage] (ICCVW'2011)</summary>
+<summary>AFLW (ICCVW'2011)</summary>
 
 ```bibtex
 @inproceedings{koestinger2011annotated,

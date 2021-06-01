@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary>MacaquePose [homepage] (bioRxiv'2020)</summary>
+<summary>MacaquePose (bioRxiv'2020)</summary>
 
 ```bibtex
 @article{labuguen2020macaquepose,
