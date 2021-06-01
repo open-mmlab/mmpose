@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Desert Locust (Elife'2019)</summary>
+
 ```bibtex
 @article{graving2019deepposekit,
   title={DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning},
@@ -28,6 +31,8 @@
   publisher={eLife Sciences Publications Limited}
 }
 ```
+
+</details>
 
 #### Results on Desert Locust test set
 

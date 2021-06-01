@@ -101,6 +101,9 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Horse-10 (WACV'2021)</summary>
+
 ```bibtex
 @inproceedings{mathis2021pretraining,
   title={Pretraining boosts out-of-domain robustness for pose estimation},
@@ -110,6 +113,8 @@ Those images from other sources (1000 images with 1000 annotations) are used for
   year={2021}
 }
 ```
+
+</details>
 
 For [Horse-10](http://www.mackenziemathislab.org/horse10) datatset, images can be downloaded from [download](http://www.mackenziemathislab.org/horse10).
 Please download the annotation files from [horse10_annotations](https://download.openmmlab.com/mmpose/datasets/horse10_annotations.tar). Note, this data and annotation data is for non-commercial use only, per the authors (see http://horse10.deeplabcut.org for more information).
@@ -184,6 +189,9 @@ Since the official dataset does not provide the test set, we randomly select 125
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Vinegar Fly (Nature Methods'2019)</summary>
+
 ```bibtex
 @article{pereira2019fast,
   title={Fast animal pose estimation using deep neural networks},
@@ -196,6 +204,8 @@ Since the official dataset does not provide the test set, we randomly select 125
   publisher={Nature Publishing Group}
 }
 ```
+
+</details>
 
 For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [vinegar_fly_images](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_images.tar).
 Please download the annotation files from [vinegar_fly_annotations](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_annotations.tar).
@@ -228,6 +238,9 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Desert Locust (Elife'2019)</summary>
+
 ```bibtex
 @article{graving2019deepposekit,
   title={DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning},
@@ -239,6 +252,8 @@ Since the official dataset does not provide the test set, we randomly select 90\
   publisher={eLife Sciences Publications Limited}
 }
 ```
+
+</details>
 
 For [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [locust_images](https://download.openmmlab.com/mmpose/datasets/locust_images.tar).
 Please download the annotation files from [locust_annotations](https://download.openmmlab.com/mmpose/datasets/locust_annotations.tar).
@@ -271,6 +286,9 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Desert Locust (Elife'2019)</summary>
+
 ```bibtex
 @article{graving2019deepposekit,
   title={DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning},
@@ -282,6 +300,8 @@ Since the official dataset does not provide the test set, we randomly select 90\
   publisher={eLife Sciences Publications Limited}
 }
 ```
+
+</details>
 
 For [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) datatset, images can be downloaded from [zebra_images](https://download.openmmlab.com/mmpose/datasets/zebra_images.tar).
 Please download the annotation files from [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar).

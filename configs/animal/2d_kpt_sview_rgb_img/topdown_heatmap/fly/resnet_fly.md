@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Vinegar Fly (Nature Methods'2019)</summary>
+
 ```bibtex
 @article{pereira2019fast,
   title={Fast animal pose estimation using deep neural networks},
@@ -29,6 +32,8 @@
   publisher={Nature Publishing Group}
 }
 ```
+
+</details>
 
 #### Results on Vinegar Fly test set
 
