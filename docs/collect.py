@@ -49,7 +49,8 @@ for subtopic, datasets in contents.items():
         lines += ['<hr/>', '', f'## {titlecase(dataset)}', '']
         for keyword, info in keywords.items():
             lines += [
-                f'### {" + ".join(map(titlecase, keyword))}', '', info, ''
+                f'### {" + ".join([titlecase(x.replace("_", " ")) for x in keyword])}',
+                '', info, ''
             ]
 
     with open(f'topics/{subtopic}.md', 'w') as f:
