@@ -1,6 +1,5 @@
 <!-- [ALGORITHM] -->
 
-```bibtex
 <details>
 <summary>RSN (ECCV'2020)</summary>
 
