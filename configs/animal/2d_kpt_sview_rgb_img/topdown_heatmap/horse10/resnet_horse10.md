@@ -32,7 +32,7 @@
 
 </details>
 
-#### Results on Horse-10 test set
+Results on Horse-10 test set
 
 |Set   | Arch  | Input Size | PCK@0.3 |  NME  | ckpt    | log     |
 | :--- | :---: | :--------: | :------: | :------: |:------: |:------: |

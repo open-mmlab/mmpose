@@ -33,7 +33,7 @@
 
 </details>
 
-#### Results on Sub-JHMDB dataset
+Results on Sub-JHMDB dataset
 
 The models are pre-trained on MPII dataset only. NO test-time augmentation (multi-scale /rotation testing) is used.
 

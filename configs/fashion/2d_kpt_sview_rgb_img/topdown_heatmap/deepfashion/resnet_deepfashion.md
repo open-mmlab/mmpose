@@ -66,7 +66,7 @@
 
 </details>
 
-#### Results on DeepFashion val set
+Results on DeepFashion val set
 
 |Set   | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :---: | :--------: | :------: | :------: | :------: |:------: |:------: |

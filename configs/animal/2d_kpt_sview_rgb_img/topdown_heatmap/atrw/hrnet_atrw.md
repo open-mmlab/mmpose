@@ -32,7 +32,7 @@
 
 </details>
 
-#### Results on ATRW validation set
+Results on ATRW validation set
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |

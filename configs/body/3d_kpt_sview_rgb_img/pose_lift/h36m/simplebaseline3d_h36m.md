@@ -35,7 +35,7 @@
 
 </details>
 
-#### Results on Human3.6M dataset with ground truth 2D detections
+Results on Human3.6M dataset with ground truth 2D detections
 
 | Arch | MPJPE | P-MPJPE | ckpt | log |
 | :--- | :---: | :---: | :---: | :---: |

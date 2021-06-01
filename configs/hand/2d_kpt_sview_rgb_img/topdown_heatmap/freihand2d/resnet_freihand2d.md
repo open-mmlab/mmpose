@@ -49,7 +49,7 @@
 
 </details>
 
-#### Results on FreiHand val & test set
+Results on FreiHand val & test set
 
 | Set | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :--------: | :------: | :------: | :------: |:------: |:------: |

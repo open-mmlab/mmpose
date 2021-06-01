@@ -67,7 +67,7 @@
 
 </details>
 
-#### Results on COCO val2017 without multi-scale test
+Results on COCO val2017 without multi-scale test
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |

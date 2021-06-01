@@ -32,7 +32,7 @@
 
 </details>
 
-#### Results on AnimalPose validation set (1117 instances)
+Results on AnimalPose validation set (1117 instances)
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |

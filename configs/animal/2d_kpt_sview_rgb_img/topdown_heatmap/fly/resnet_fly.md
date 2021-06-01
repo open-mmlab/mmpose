@@ -35,7 +35,7 @@
 
 </details>
 
-#### Results on Vinegar Fly test set
+Results on Vinegar Fly test set
 
 |  Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :-------- | :--------: | :------: | :------: | :------: |:------: |:------: |

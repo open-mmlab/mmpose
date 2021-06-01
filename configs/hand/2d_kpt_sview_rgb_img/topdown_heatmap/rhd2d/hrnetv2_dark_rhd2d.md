@@ -51,7 +51,7 @@
 
 </details>
 
-#### Results on RHD test set
+Results on RHD test set
 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |

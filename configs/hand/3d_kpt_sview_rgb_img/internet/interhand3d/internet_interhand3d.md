@@ -47,7 +47,7 @@ year = {2020}
 
 </details>
 
-#### Results on InterHand2.6M val & test set
+Results on InterHand2.6M val & test set
 
 |Train Set| Set | Arch  | Input Size | MPJPE-single |  MPJPE-interacting  |  MPJPE-all  | MRRPE | APh   | ckpt    | log     |
 | :--- | :--- | :--------: | :--------: | :------: | :------: | :------: |:------: |:------: |:------: |:------: |

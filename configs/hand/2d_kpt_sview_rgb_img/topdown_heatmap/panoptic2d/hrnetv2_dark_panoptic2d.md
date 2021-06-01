@@ -50,7 +50,7 @@
 
 </details>
 
-#### Results on CMU Panoptic (MPII+NZSL val set)
+Results on CMU Panoptic (MPII+NZSL val set)
 
 | Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |

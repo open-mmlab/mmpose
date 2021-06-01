@@ -36,7 +36,7 @@
 
 </details>
 
-#### Results on OneHand10K val set
+Results on OneHand10K val set
 
 | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |

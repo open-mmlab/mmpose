@@ -34,7 +34,7 @@
 
 </details>
 
-#### Results on AFLW dataset
+Results on AFLW dataset
 
 The model is trained on AFLW train and evaluated on AFLW full and frontal.
 

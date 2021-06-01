@@ -32,7 +32,7 @@
 
 </details>
 
-#### Results on MPII val set
+Results on MPII val set
 
 | Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |

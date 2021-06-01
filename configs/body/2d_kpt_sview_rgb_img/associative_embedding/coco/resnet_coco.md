@@ -50,7 +50,7 @@
 
 </details>
 
-#### Results on COCO val2017 without multi-scale test
+Results on COCO val2017 without multi-scale test
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
@@ -59,7 +59,7 @@
 | [pose_resnet_101](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py)  | 512x512 | 0.554 | 0.807 | 0.599 | 0.622 | 0.841 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512_20200816.log.json) |
 | [pose_resnet_152](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py)  | 512x512 | 0.595 | 0.829 | 0.648 | 0.651 | 0.856 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512_20200822.log.json) |
 
-#### Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
+Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |

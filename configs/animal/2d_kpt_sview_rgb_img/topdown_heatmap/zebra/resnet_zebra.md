@@ -34,7 +34,7 @@
 
 </details>
 
-#### Results on Grévy’s Zebra test set
+Results on Grévy’s Zebra test set
 
 |  Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :-------- | :--------: | :------: | :------: | :------: |:------: |:------: |

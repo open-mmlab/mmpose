@@ -49,7 +49,7 @@
 
 </details>
 
-#### Results on MHP v2.0 val set
+Results on MHP v2.0 val set
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |

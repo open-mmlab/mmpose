@@ -33,7 +33,7 @@
 
 </details>
 
-#### Results on WFLW dataset
+Results on WFLW dataset
 
 The model is trained on WFLW train.
 

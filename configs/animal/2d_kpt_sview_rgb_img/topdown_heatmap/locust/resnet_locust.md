@@ -34,7 +34,7 @@
 
 </details>
 
-#### Results on Desert Locust test set
+Results on Desert Locust test set
 
 |  Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
 | :-------- | :--------: | :------: | :------: | :------: |:------: |:------: |

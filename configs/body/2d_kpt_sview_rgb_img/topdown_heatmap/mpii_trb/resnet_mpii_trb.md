@@ -49,7 +49,7 @@
 
 </details>
 
-#### Results on MPII-TRB val set
+Results on MPII-TRB val set
 
 | Arch  | Input Size | Skeleton Acc   | Contour Acc   | Mean Acc | ckpt    | log     |
 | :--- | :--------: | :------: | :------: |:------: |:------: |:------: |

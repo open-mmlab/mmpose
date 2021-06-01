@@ -49,7 +49,7 @@
 
 </details>
 
-#### Results on OCHuman test dataset with ground-truth bounding boxes
+Results on OCHuman test dataset with ground-truth bounding boxes
 
 Following the common setting, the models are trained on COCO train dataset, and evaluate on OCHuman dataset.
 
