@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>ATRW (ACM MM'2020)</summary>
+
 ```bibtex
 @inproceedings{li2020atrw,
   title={ATRW: A Benchmark for Amur Tiger Re-identification in the Wild},
@@ -26,6 +29,8 @@
   year={2020}
 }
 ```
+
+</details>
 
 #### Results on ATRW validation set
 

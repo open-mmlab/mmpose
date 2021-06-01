@@ -314,6 +314,9 @@ Since the official dataset does not provide the test set, we randomly select 90\
 
 <!-- [DATASET] -->
 
+<details>
+<summary>ATRW (ACM MM'2020)</summary>
+
 ```bibtex
 @inproceedings{li2020atrw,
   title={ATRW: A Benchmark for Amur Tiger Re-identification in the Wild},
@@ -323,6 +326,8 @@ Since the official dataset does not provide the test set, we randomly select 90\
   year={2020}
 }
 ```
+
+</details>
 
 ATRW captures images of the Amur tiger (also known as Siberian tiger, Northeast-China tiger) in the wild.
 For [ATRW](https://cvwc2019.github.io/challenge.html) datatset, please download images from
