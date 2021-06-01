@@ -115,6 +115,7 @@ mmpose/version.py
 *.log.json
 *.npy
 work_dirs/
+docs/topics/
 
 # Pytorch
 *.pth
