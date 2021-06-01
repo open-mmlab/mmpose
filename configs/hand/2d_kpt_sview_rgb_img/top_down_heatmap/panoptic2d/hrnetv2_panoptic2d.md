@@ -11,18 +11,6 @@
 }
 ```
 
-<!-- [ALGORITHM] -->
-
-```bibtex
-@inproceedings{zhang2020distribution,
-  title={Distribution-aware coordinate representation for human pose estimation},
-  author={Zhang, Feng and Zhu, Xiatian and Dai, Hanbin and Ye, Mao and Zhu, Ce},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={7093--7102},
-  year={2020}
-}
-```
-
 <!-- [DATASET] -->
 
 ```bibtex
@@ -39,4 +27,4 @@
 
 | Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_hrnetv2_w18_dark](/configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/panoptic/hrnetv2_w18_panoptic_256x256_dark.py) | 256x256 | 0.999 | 0.745 | 7.77 | [ckpt](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark-1f1e4b74_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark_20210330.log.json) |
+| [pose_hrnetv2_w18](/configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256.py) | 256x256 | 0.999 | 0.744 | 7.79 | [ckpt](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_panoptic_256x256-53b12345_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_panoptic_256x256_20210330.log.json) |

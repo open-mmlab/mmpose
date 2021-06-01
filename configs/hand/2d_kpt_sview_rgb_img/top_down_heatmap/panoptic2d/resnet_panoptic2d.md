@@ -38,4 +38,4 @@
 
 | Arch  | Input Size | PCKh@0.7 |  AUC  |  EPE  | ckpt    | log     |
 | :--- | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/panoptic/res50_panoptic_256x256.py) | 256x256 | 0.999 | 0.713 | 9.00 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-4eafc561_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256_20210330.log.json) |
+| [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/top_down_heatmap/panoptic2d/res50_panoptic_256x256.py) | 256x256 | 0.999 | 0.713 | 9.00 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-4eafc561_20210330.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256_20210330.log.json) |
