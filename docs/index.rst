@@ -26,11 +26,15 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Model Zoo
 
-   modelzoo.md
-   modelzoo_dataset.md
-   modelzoo_algorithm.md
-   modelzoo_backbone.md
-   modelzoo_technique.md
+   topics/animal.md
+   topics/body(2d,kpt,img).md
+   topics/body(3d,kpt,img).md
+   topics/body(3d,kpt,vid).md
+   topics/body(3d,mesh,img).md
+   topics/face.md
+   topics/fashion.md
+   topics/hand(2d).md
+   topics/hand(3d).md
 
 .. toctree::
    :maxdepth: 2

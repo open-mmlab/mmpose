@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import glob
+import os
 
 from titlecase import titlecase
+
+os.makedirs('topics', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
 sections = [x.split('/')[-2:] for x in glob.glob('../configs/*/*')]
@@ -47,5 +50,5 @@ for subtopic, datasets in contents.items():
                 f'### {" + ".join(map(titlecase, keyword))}', '', info, ''
             ]
 
-    with open(f'{subtopic}.md', 'w') as f:
+    with open(f'topics/{subtopic}.md', 'w') as f:
         f.write('\n'.join(lines))

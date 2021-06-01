@@ -75,8 +75,8 @@ master_doc = 'index'
 
 def builder_inited_handler(app):
     subprocess.run(['./collect.py'])
-    subprocess.run(['./merge_docs.sh'])
-    subprocess.run(['./stats.py'])
+    # subprocess.run(['./merge_docs.sh'])
+    # subprocess.run(['./stats.py'])
 
 
 def setup(app):
