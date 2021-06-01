@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>RSN (ECCV'2020)</summary>
+
 ```bibtex
 @misc{cai2020learning,
     title={Learning Delicate Local Representations for Multi-Person Pose Estimation},
@@ -14,5 +17,7 @@
     primaryClass={cs.CV}
 }
 ```
+
+</details>
 
 ## Results and models

@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>OCHuman [homepage] (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{zhang2019pose2seg,
   title={Pose2seg: Detection free human instance segmentation},
@@ -13,5 +16,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 ## Results and models

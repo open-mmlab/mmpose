@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>HigherHRNet (CVPR'2020)</summary>
+
 ```bibtex
 @inproceedings{cheng2020higherhrnet,
   title={HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation},
@@ -13,5 +16,7 @@
   year={2020}
 }
 ```
+
+</details>
 
 ## Results and models

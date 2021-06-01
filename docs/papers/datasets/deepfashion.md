@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>DeepFashion [homepage] (CVPR'2016)</summary>
+
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
  author = {Liu, Ziwei and Luo, Ping and Qiu, Shi and Wang, Xiaogang and Tang, Xiaoou},
@@ -14,7 +17,12 @@
 }
 ```
 
+</details>
+
 <!-- [DATASET] -->
+
+<details>
+<summary>DeepFashion [homepage] (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,
@@ -25,5 +33,7 @@
  year = {2016}
  }
 ```
+
+</details>
 
 ## Results and models

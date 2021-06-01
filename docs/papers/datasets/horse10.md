@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Horse-10 [homepage] (WACV'2021)</summary>
+
 ```bibtex
 @inproceedings{mathis2021pretraining,
   title={Pretraining boosts out-of-domain robustness for pose estimation},
@@ -13,5 +16,7 @@
   year={2021}
 }
 ```
+
+</details>
 
 ## Results and models

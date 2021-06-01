@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>SEResNet (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{hu2018squeeze,
   title={Squeeze-and-excitation networks},
@@ -13,5 +16,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

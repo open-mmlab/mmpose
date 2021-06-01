@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COFW [homepage] (ICCV'2013)</summary>
+
 ```bibtex
 @inproceedings{burgos2013robust,
   title={Robust face landmark estimation under occlusion},
@@ -13,5 +16,7 @@
   year={2013}
 }
 ```
+
+</details>
 
 ## Results and models

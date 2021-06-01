@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MPII [homepage] (CVPR'2014)</summary>
+
 ```bibtex
 @inproceedings{andriluka14cvpr,
   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt}
@@ -13,5 +16,7 @@
   month = {June}
 }
 ```
+
+</details>
 
 ## Results and models

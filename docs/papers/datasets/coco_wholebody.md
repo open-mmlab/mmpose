@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO-WholeBody [homepage] (ECCV'2020)</summary>
+
 ```bibtex
 @inproceedings{jin2020whole,
   title={Whole-Body Human Pose Estimation in the Wild},
@@ -12,5 +15,7 @@
   year={2020}
 }
 ```
+
+</details>
 
 ## Results and models

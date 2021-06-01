@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>SimpleBaseline2D (ECCV'2018)</summary>
+
 ```bibtex
 @inproceedings{xiao2018simple,
   title={Simple baselines for human pose estimation and tracking},
@@ -13,5 +16,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

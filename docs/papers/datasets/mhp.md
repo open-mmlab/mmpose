@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MHP [homepage] (ACM MM'2018)</summary>
+
 ```bibtex
 @inproceedings{zhao2018understanding,
   title={Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing},
@@ -13,5 +16,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

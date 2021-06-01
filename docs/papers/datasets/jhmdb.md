@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>JHMDB [homepage] (ICCV'2013)</summary>
+
 ```bibtex
 @inproceedings{Jhuang:ICCV:2013,
   title = {Towards understanding action recognition},
@@ -14,5 +17,7 @@
   year = {2013}
 }
 ```
+
+</details>
 
 ## Results and models

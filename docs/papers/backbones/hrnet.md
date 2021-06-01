@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>HRNet (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{sun2019deep,
   title={Deep high-resolution representation learning for human pose estimation},
@@ -13,5 +16,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 ## Results and models

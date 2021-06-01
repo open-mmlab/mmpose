@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ResNet (CVPR'2016)</summary>
+
 ```bibtex
 @inproceedings{he2016deep,
   title={Deep residual learning for image recognition},
@@ -13,5 +16,7 @@
   year={2016}
 }
 ```
+
+</details>
 
 ## Results and models

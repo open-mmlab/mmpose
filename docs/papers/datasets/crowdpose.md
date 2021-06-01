@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>CrowdPose [homepage] (CVPR'2019)</summary>
+
 ```bibtex
 @article{li2018crowdpose,
   title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
@@ -12,5 +15,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>PoseTrack18 [homepage] (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{andriluka2018posetrack,
   title={Posetrack: A benchmark for human pose estimation and tracking},
@@ -13,5 +16,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

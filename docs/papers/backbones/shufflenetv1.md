@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ShufflenetV1 (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{zhang2018shufflenet,
   title={Shufflenet: An extremely efficient convolutional neural network for mobile devices},
@@ -13,5 +16,7 @@
   year={2018}
 }
 ```
+
+</details>
 
 ## Results and models

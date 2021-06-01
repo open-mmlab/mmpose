@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>Hourglass (ECCV'2016)</summary>
+
 ```bibtex
 @inproceedings{newell2016stacked,
   title={Stacked hourglass networks for human pose estimation},
@@ -14,5 +17,7 @@
   organization={Springer}
 }
 ```
+
+</details>
 
 ## Results and models

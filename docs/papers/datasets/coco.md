@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>COCO [homepage] (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -14,5 +17,7 @@
   organization={Springer}
 }
 ```
+
+</details>
 
 ## Results and models

@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ResNetV1D (CVPR'2019)</summary>
+
 ```bibtex
 @inproceedings{he2019bag,
   title={Bag of tricks for image classification with convolutional neural networks},
@@ -13,5 +16,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 ## Results and models

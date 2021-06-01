@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>SimpleBaseline3D (ICCV'2017)</summary>
+
 ```bibtex
 @inproceedings{martinez_2017_3dbaseline,
   title={A simple yet effective baseline for 3d human pose estimation},
@@ -12,5 +15,7 @@
   year={2017}
 }
 ```
+
+</details>
 
 ## Results and models

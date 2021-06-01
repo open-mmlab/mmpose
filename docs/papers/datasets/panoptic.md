@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>CMU Panoptic HandDB [homepage] (CVPR'2017)</summary>
+
 ```bibtex
 @inproceedings{simon2017hand,
   title={Hand keypoint detection in single images using multiview bootstrapping},
@@ -13,5 +16,7 @@
   year={2017}
 }
 ```
+
+</details>
 
 ## Results and models

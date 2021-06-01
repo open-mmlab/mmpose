@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MacaquePose [homepage] (bioRxiv'2020)</summary>
+
 ```bibtex
 @article{labuguen2020macaquepose,
   title={MacaquePose: A novel ‘in the wild’macaque monkey pose dataset for markerless motion capture},
@@ -13,5 +16,7 @@
   publisher={Cold Spring Harbor Laboratory}
 }
 ```
+
+</details>
 
 ## Results and models

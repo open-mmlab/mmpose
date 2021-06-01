@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Vinegar Fly [homepage] (Nature Methods'2019)</summary>
+
 ```bibtex
 @article{pereira2019fast,
   title={Fast animal pose estimation using deep neural networks},
@@ -16,5 +19,7 @@
   publisher={Nature Publishing Group}
 }
 ```
+
+</details>
 
 ## Results and models

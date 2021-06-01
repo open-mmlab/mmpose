@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>VGG (ICLR'2015)</summary>
+
 ```bibtex
 @article{simonyan2014very,
   title={Very deep convolutional networks for large-scale image recognition},
@@ -12,5 +15,7 @@
   year={2014}
 }
 ```
+
+</details>
 
 ## Results and models

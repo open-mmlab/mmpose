@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ResNext (CVPR'2017)</summary>
+
 ```bibtex
 @inproceedings{xie2017aggregated,
   title={Aggregated residual transformations for deep neural networks},
@@ -13,5 +16,7 @@
   year={2017}
 }
 ```
+
+</details>
 
 ## Results and models

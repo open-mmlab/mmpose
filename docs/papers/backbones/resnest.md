@@ -4,6 +4,9 @@
 
 <!-- [BACKBONE] -->
 
+<details>
+<summary>ResNeSt (ArXiv'2020)</summary>
+
 ```bibtex
 @article{zhang2020resnest,
   title={ResNeSt: Split-Attention Networks},
@@ -12,5 +15,7 @@
   year={2020}
 }
 ```
+
+</details>
 
 ## Results and models

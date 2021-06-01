@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>HRNetv2 (TPAMI'2019)</summary>
+
 ```bibtex
 @article{WangSCJDZLMTWLX19,
   title={Deep High-Resolution Representation Learning for Visual Recognition},
@@ -14,5 +17,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 ## Results and models

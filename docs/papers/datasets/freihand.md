@@ -4,6 +4,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>FreiHand [homepage] (ICCV'2019)</summary>
+
 ```bibtex
 @inproceedings{zimmermann2019freihand,
   title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
@@ -13,5 +16,7 @@
   year={2019}
 }
 ```
+
+</details>
 
 ## Results and models
