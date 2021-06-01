@@ -126,6 +126,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Human3.6M (TPAMI'2014)</summary>
+
 ```bibtex
 @article{h36m_pami,
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
@@ -139,6 +142,8 @@ mmpose
   year = {2014}
 }
 ```
+
+</details>
 
 For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), we use the MoShed data provided in [HMR](https://github.com/akanazawa/hmr) for training.
 However, due to license limitations, we are not allowed to redistribute the MoShed data.

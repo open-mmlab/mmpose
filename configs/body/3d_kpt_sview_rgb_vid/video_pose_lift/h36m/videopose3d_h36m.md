@@ -17,6 +17,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Human3.6M (TPAMI'2014)</summary>
+
 ```bibtex
 @article{h36m_pami,
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
@@ -30,6 +33,8 @@
   year = {2014}
 }
 ```
+
+</details>
 
 #### Results on Human3.6M dataset with ground truth 2D detections, supervised training
 

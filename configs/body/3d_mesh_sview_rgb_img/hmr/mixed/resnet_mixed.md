@@ -16,7 +16,6 @@
 ```
 
 </details>
-```
 
 <!-- [BACKBONE] -->
 
@@ -37,6 +36,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>Human3.6M (TPAMI'2014)</summary>
+
 ```bibtex
 @article{h36m_pami,
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
@@ -50,6 +52,8 @@
   year = {2014}
 }
 ```
+
+</details>
 
 #### Results on Human3.6M with ground-truth bounding box having MPJPE-PA of 52.60 mm on Protocol2
 

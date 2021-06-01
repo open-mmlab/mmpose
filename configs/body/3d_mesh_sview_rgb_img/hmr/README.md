@@ -20,6 +20,5 @@
 ```
 
 </details>
-```
 
 HMR is an end-to-end framework for reconstructing a full 3D mesh of a human body from a single RGB image.
