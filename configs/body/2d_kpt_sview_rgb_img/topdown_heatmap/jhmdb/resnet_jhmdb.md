@@ -34,16 +34,21 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>RSN (ECCV'2020)</summary>
+
 ```bibtex
-@inproceedings{Jhuang:ICCV:2013,
-  title = {Towards understanding action recognition},
-  author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
-  booktitle = {International Conf. on Computer Vision (ICCV)},
-  month = Dec,
-  pages = {3192-3199},
-  year = {2013}
+@misc{cai2020learning,
+    title={Learning Delicate Local Representations for Multi-Person Pose Estimation},
+    author={Yuanhao Cai and Zhicheng Wang and Zhengxiong Luo and Binyi Yin and Angang Du and Haoqian Wang and Xinyu Zhou and Erjin Zhou and Xiangyu Zhang and Jian Sun},
+    year={2020},
+    eprint={2003.04030},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
 }
 ```
+
+</details>
 
 #### Results on Sub-JHMDB dataset
 

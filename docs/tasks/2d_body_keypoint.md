@@ -76,6 +76,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MPII (CVPR'2014)</summary>
+
 ```bibtex
 @inproceedings{andriluka14cvpr,
   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt},
@@ -85,6 +88,8 @@ mmpose
   month = {June}
 }
 ```
+
+</details>
 
 For [MPII](http://human-pose.mpi-inf.mpg.de/) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
 We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
@@ -435,16 +440,21 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 <!-- [DATASET] -->
 
+<details>
+<summary>RSN (ECCV'2020)</summary>
+
 ```bibtex
-@inproceedings{Jhuang:ICCV:2013,
-  title = {Towards understanding action recognition},
-  author = {H. Jhuang and J. Gall and S. Zuffi and C. Schmid and M. J. Black},
-  booktitle = {International Conf. on Computer Vision (ICCV)},
-  month = Dec,
-  pages = {3192-3199},
-  year = {2013}
+@misc{cai2020learning,
+    title={Learning Delicate Local Representations for Multi-Person Pose Estimation},
+    author={Yuanhao Cai and Zhicheng Wang and Zhengxiong Luo and Binyi Yin and Angang Du and Haoqian Wang and Xinyu Zhou and Erjin Zhou and Xiangyu Zhang and Jian Sun},
+    year={2020},
+    eprint={2003.04030},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
 }
 ```
+
+</details>
 
 For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
 Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).

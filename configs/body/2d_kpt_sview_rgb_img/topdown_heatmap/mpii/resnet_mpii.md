@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MPII (CVPR'2014)</summary>
+
 ```bibtex
 @inproceedings{andriluka14cvpr,
   author = {Mykhaylo Andriluka and Leonid Pishchulin and Peter Gehler and Schiele, Bernt},
@@ -43,6 +46,8 @@
   month = {June}
 }
 ```
+
+</details>
 
 #### Results on MPII val set
 
