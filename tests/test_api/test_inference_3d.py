@@ -9,8 +9,8 @@ from mmpose.apis import (inference_pose_lifter_model, init_pose_model,
 def test_pose_lifter_demo():
     # H36M demo
     pose_model = init_pose_model(
-        'configs/body/3d_kpt_sview_rgb_img/simple_baseline_3d/'
-        'h36m/simple3Dbaseline_h36m.py',
+        'configs/body/3d_kpt_sview_rgb_img/pose_lift/'
+        'h36m/simple_baseline_3d_h36m.py',
         None,
         device='cpu')
 
