@@ -147,6 +147,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MacaquePose (bioRxiv'2020)</summary>
+
 ```bibtex
 @article{labuguen2020macaquepose,
   title={MacaquePose: A novel ‘in the wild’macaque monkey pose dataset for markerless motion capture},
@@ -156,6 +159,8 @@ mmpose
   publisher={Cold Spring Harbor Laboratory}
 }
 ```
+
+</details>
 
 For [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) datatset, images can be downloaded from [download](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html).
 Please download the annotation files from [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar).
