@@ -209,6 +209,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>CrowdPose (CVPR'2019)</summary>
+
 ```bibtex
 @article{li2018crowdpose,
   title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
@@ -216,6 +219,9 @@ mmpose
   journal={arXiv preprint arXiv:1812.00324},
   year={2018}
 }
+```
+
+</details>
 ```
 
 For [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
@@ -287,6 +293,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MHP (ACM MM'2018)</summary>
+
 ```bibtex
 @inproceedings{zhao2018understanding,
   title={Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing},
@@ -295,6 +304,9 @@ mmpose
   pages={792--800},
   year={2018}
 }
+```
+
+</details>
 ```
 
 For [MHP](https://lv-mhp.github.io/dataset) data, please download from [MHP](https://lv-mhp.github.io/dataset).

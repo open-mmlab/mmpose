@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>MHP (ACM MM'2018)</summary>
+
 ```bibtex
 @inproceedings{zhao2018understanding,
   title={Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing},
@@ -42,6 +45,9 @@
   pages={792--800},
   year={2018}
 }
+```
+
+</details>
 ```
 
 #### Results on MHP v2.0 val set

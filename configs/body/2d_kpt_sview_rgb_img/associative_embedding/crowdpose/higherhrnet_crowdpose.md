@@ -34,6 +34,9 @@
 
 <!-- [DATASET] -->
 
+<details>
+<summary>CrowdPose (CVPR'2019)</summary>
+
 ```bibtex
 @article{li2018crowdpose,
   title={CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark},
@@ -41,6 +44,9 @@
   journal={arXiv preprint arXiv:1812.00324},
   year={2018}
 }
+```
+
+</details>
 ```
 
 #### Results on CrowdPose test without multi-scale test
