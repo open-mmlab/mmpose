@@ -4,6 +4,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>HMR (CVPR 2018)</summary>
+
 ```bibtex
 @inProceedings{kanazawaHMR18,
   title={End-to-end Recovery of Human Shape and Pose},
@@ -14,6 +17,9 @@
   booktitle={Computer Vision and Pattern Recognition (CVPR)},
   year={2018}
 }
+```
+
+</details>
 ```
 
 ## Results and models
