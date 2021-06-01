@@ -2,6 +2,9 @@
 
 <!-- [ALGORITHM] -->
 
+<details>
+<summary>SimpleBaseline3D (ICCV'2017)</summary>
+
 ```bibtex
 @inproceedings{martinez_2017_3dbaseline,
   title={A simple yet effective baseline for 3d human pose estimation},
@@ -10,6 +13,8 @@
   year={2017}
 }
 ```
+
+</details>
 
 Simple 3D baseline proposes to break down the task of 3d human pose estimation into 2 stages: (1) Image → 2D pose
 (2) 2D pose → 3D pose.
