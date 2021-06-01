@@ -46,11 +46,14 @@ for subtopic, datasets in contents.items():
     for dataset, keywords in datasets.items():
         if len(keywords) == 0:
             continue
-        lines += ['<hr/>', '', f'## {titlecase(dataset)} Dataset', '']
+        lines += [
+            '<hr/>', '',
+            f'## <div align="center">{titlecase(dataset)} Dataset</div>', ''
+        ]
         for keyword, info in keywords.items():
+            keyword_strs = [titlecase(x.replace('_', ' ')) for x in keyword]
             lines += [
-                f'### {" + ".join([titlecase(x.replace("_", " ")) for x in keyword])}',
-                '', info, ''
+                '<br/>', '', f'### {" + ".join(keyword_strs)}', '', info, ''
             ]
 
     with open(f'topics/{subtopic}.md', 'w') as f:
