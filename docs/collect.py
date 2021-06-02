@@ -57,7 +57,7 @@ for subtopic, datasets in contents.items():
                 '<br/>', '', f'### {" + ".join(keyword_strs)}', '', info, ''
             ]
 
-    with open(f'topics/{subtopic}.md', 'w') as f:
+    with open(f'topics/{subtopic.lower()}.md', 'w') as f:
         f.write('\n'.join(lines))
 
 # Step 5: write files by paper
