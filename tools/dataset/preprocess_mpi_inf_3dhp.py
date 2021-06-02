@@ -144,9 +144,7 @@ def load_trainset(data_root, out_dir):
                     R = RT[:3, :3]
                     # convert unit from millimeter to meter
                     T = RT[:3, 3:] * 0.001
-                    size = [
-                        float(s) for s in lines[cam * 7 + 3][14:-2].split()
-                    ]
+                    size = [int(s) for s in lines[cam * 7 + 3][14:].split()]
                     w, h = size
                     cam_param = dict(
                         R=R, T=T, c=c, f=f, w=w, h=h, name=f'train_cam_{cam}')
