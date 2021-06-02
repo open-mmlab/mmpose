@@ -49,7 +49,7 @@ for subtopic, datasets in contents.items():
         if len(keywords) == 0:
             continue
         lines += [
-            '<hr/>', '',
+            '<hr/>', '<br/><br/>', '',
             f'## <div align="center">{titlecase(dataset)} Dataset</div>', ''
         ]
         for keyword, info in keywords.items():
@@ -92,7 +92,8 @@ for section in sections:
                     ]
         if len(paperlines) > 0:
             lines += [
-                '<hr/>', '', f'## <div align="center">{papername}</div>', ''
+                '<hr/>', '<br/><br/>', '',
+                f'## <div align="center">{papername}</div>', ''
             ]
             lines += paperlines
 
