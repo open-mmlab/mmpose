@@ -47,7 +47,7 @@ for f in files:
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
     configs = set(x.lower().strip()
-                  for x in re.findall(r'https.*configs/.*\.py', content))
+                  for x in re.findall(r'.*configs/.*\.py', content))
 
     # count ckpts
     ckpts = set(x.lower().strip()
