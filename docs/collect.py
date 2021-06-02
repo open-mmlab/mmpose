@@ -19,10 +19,10 @@ for t in alltopics:
             valid_ids.append(i)
     if len(valid_ids) > 0:
         subtopics.extend(
-            [f"{t}({','.join([d[i] for i in valid_ids])})", t, '_'.join(d)]
+            [f"{titlecase(t)}({','.join([d[i].title() for i in valid_ids])})", t, '_'.join(d)]
             for d in data)
     else:
-        subtopics.append([t, t, '_'.join(data[0])])
+        subtopics.append([titlecase(t), t, '_'.join(data[0])])
 
 contents = {}
 for subtopic, topic, task in sorted(subtopics):
@@ -43,7 +43,7 @@ for subtopic, topic, task in sorted(subtopics):
 
 # Step 4: write files by topic
 for subtopic, datasets in contents.items():
-    lines = [f'# {titlecase(subtopic)}', '']
+    lines = [f'# {subtopic}', '']
     for dataset, keywords in datasets.items():
         if len(keywords) == 0:
             continue
