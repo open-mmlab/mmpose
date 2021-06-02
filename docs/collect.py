@@ -72,7 +72,7 @@ for section in sections:
                 line for line in f.readlines() if line.startswith('<summary')
             ][0]
         papername = re.sub(r'\<.*?\>', '', keyline).strip()
-        lines += ['<hr/>', '', f'## <div align="center">{papername}</div>', '']
+        paperlines = []
         for subtopic, datasets in contents.items():
             for dataset, keywords in datasets.items():
                 keywords = {k: v for k, v in keywords.items() if keyline in v}
@@ -82,11 +82,16 @@ for section in sections:
                     keyword_strs = [
                         titlecase(x.replace('_', ' ')) for x in keyword
                     ]
-                    lines += [
+                    paperlines += [
                         '<br/>', '',
                         (f'### {" + ".join(keyword_strs)}'
                          f' on {titlecase(dataset)}'), '', info, ''
                     ]
+        if len(paperlines) > 0:
+            lines += [
+                '<hr/>', '', f'## <div align="center">{papername}</div>', ''
+            ]
+            lines += paperlines
 
     with open(f'papers/{section}.md', 'w') as f:
         f.write('\n'.join(lines))
