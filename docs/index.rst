@@ -36,6 +36,7 @@ Welcome to MMPose's documentation!
    topics/fashion.md
    topics/hand(2d).md
    topics/hand(3d).md
+   topics/wholebody.md
 
 .. toctree::
    :maxdepth: 2
