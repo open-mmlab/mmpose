@@ -1,17 +1,18 @@
 #!/usr/bin/env python
-import glob
 import os
+import re
+from glob import glob
 
 from titlecase import titlecase
 
 os.makedirs('topics', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
-sections = [x.split('/')[-2:] for x in glob.glob('../configs/*/*')]
-alltopics = sorted(list(set(x[0] for x in sections)))
+minisections = [x.split('/')[-2:] for x in glob('../configs/*/*')]
+alltopics = sorted(list(set(x[0] for x in minisections)))
 subtopics = []
 for t in alltopics:
-    data = [x[1].split('_') for x in sections if x[0] == t]
+    data = [x[1].split('_') for x in minisections if x[0] == t]
     valid_ids = []
     for i in range(len(data[0])):
         if len(set(x[i] for x in data)) > 1:
@@ -30,19 +31,19 @@ for subtopic, topic, task in sorted(subtopics):
         list(
             set(
                 x.split('/')[-2]
-                for x in glob.glob(f'../configs/{topic}/{task}/*/*/'))))
+                for x in glob(f'../configs/{topic}/{task}/*/*/'))))
     contents[subtopic] = {d: {} for d in datasets}
     for dataset in datasets:
         # Step 3: get all settings: algorithm + backbone + trick
-        for file in glob.glob(f'../configs/{topic}/{task}/*/{dataset}/*.md'):
+        for file in glob(f'../configs/{topic}/{task}/*/{dataset}/*.md'):
             keywords = (file.split('/')[-3],
                         *file.split('/')[-1].split('_')[:-1])
             with open(file, 'r') as f:
                 contents[subtopic][dataset][keywords] = f.read()
 
-# Step 4: write files
+# Step 4: write files by topic
 for subtopic, datasets in contents.items():
-    lines = [f'# {titlecase(subtopic)} Models', '']
+    lines = [f'# {titlecase(subtopic)}', '']
     for dataset, keywords in datasets.items():
         if len(keywords) == 0:
             continue
@@ -57,4 +58,35 @@ for subtopic, datasets in contents.items():
             ]
 
     with open(f'topics/{subtopic}.md', 'w') as f:
+        f.write('\n'.join(lines))
+
+# Step 5: write files by paper
+allfiles = [x.split('/')[-2:] for x in glob('../docs/papers/*/*.md')]
+sections = sorted(list(set(x[0] for x in allfiles)))
+for section in sections:
+    lines = [f'# {titlecase(section)}', '']
+    files = [f for s, f in allfiles if s == section]
+    for file in files:
+        with open(f'../docs/papers/{section}/{file}', 'r') as f:
+            keyline = [
+                line for line in f.readlines() if line.startswith('<summary')
+            ][0]
+        papername = re.sub(r'\<.*?\>', '', keyline).strip()
+        lines += ['<hr/>', '', f'## <div align="center">{papername}</div>', '']
+        for subtopic, datasets in contents.items():
+            for dataset, keywords in datasets.items():
+                keywords = {k: v for k, v in keywords.items() if keyline in v}
+                if len(keywords) == 0:
+                    continue
+                for keyword, info in keywords.items():
+                    keyword_strs = [
+                        titlecase(x.replace('_', ' ')) for x in keyword
+                    ]
+                    lines += [
+                        '<br/>', '',
+                        (f'### {" + ".join(keyword_strs)}'
+                         f' on {titlecase(dataset)}'), '', info, ''
+                    ]
+
+    with open(f'papers/{section}.md', 'w') as f:
         f.write('\n'.join(lines))

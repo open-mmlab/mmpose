@@ -38,6 +38,15 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 2
+   :caption: Model Zoo (by paper)
+
+   papers/algorithms.md
+   papers/backbones.md
+   papers/datasets.md
+   papers/techniques.md
+
+.. toctree::
+   :maxdepth: 2
    :caption: Tutorials
 
    tutorials/0_config.md

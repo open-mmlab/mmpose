@@ -35,5 +35,3 @@
 ```
 
 </details>
-
-## Results and models

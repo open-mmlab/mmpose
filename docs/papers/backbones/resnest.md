@@ -17,5 +17,3 @@
 ```
 
 </details>
-
-## Results and models

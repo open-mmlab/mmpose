@@ -17,5 +17,3 @@ year = {2020}
 ```
 
 </details>
-
-## Results and models
