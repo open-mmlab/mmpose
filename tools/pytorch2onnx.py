@@ -81,7 +81,10 @@ def pytorch2onnx(model,
 
         # check the numerical value
         # get pytorch output
-        pytorch_result = model(one_img).detach().numpy()
+        pytorch_results = model(one_img)
+        if not isinstance(pytorch_results, (list, tuple)):
+            assert isinstance(pytorch_results, torch.Tensor)
+            pytorch_results = [pytorch_results]
 
         # get onnx output
         input_all = [node.name for node in onnx_model.graph.input]
@@ -91,13 +94,15 @@ def pytorch2onnx(model,
         net_feed_input = list(set(input_all) - set(input_initializer))
         assert len(net_feed_input) == 1
         sess = rt.InferenceSession(output_file)
-        onnx_result = sess.run(None,
-                               {net_feed_input[0]: one_img.detach().numpy()
-                                })[0]
-        # only compare part of results
-        assert np.allclose(
-            pytorch_result, onnx_result,
-            atol=1.e-5), 'The outputs are different between Pytorch and ONNX'
+        onnx_results = sess.run(None,
+                                {net_feed_input[0]: one_img.detach().numpy()})
+
+        # compare results
+        assert len(pytorch_results) == len(onnx_results)
+        for pt_result, onnx_result in zip(pytorch_results, onnx_results):
+            assert np.allclose(
+                pt_result.detach().cpu(), onnx_result, atol=1.e-5
+            ), 'The outputs are different between Pytorch and ONNX'
         print('The numerical values are same between Pytorch and ONNX')
 
 
