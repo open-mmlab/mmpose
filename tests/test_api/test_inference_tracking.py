@@ -9,7 +9,8 @@ def test_top_down_pose_tracking_demo():
     # COCO demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/top_down/resnet/coco/res50_coco_256x192.py',
+        'configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'coco/res50_coco_256x192.py',
         None,
         device='cpu')
     image_name = 'tests/data/coco/000000000785.jpg'
@@ -26,7 +27,10 @@ def test_top_down_pose_tracking_demo():
 
     # AIC demo
     pose_model = init_pose_model(
-        'configs/top_down/resnet/aic/res50_aic_256x192.py', None, device='cpu')
+        'configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'aic/res50_aic_256x192.py',
+        None,
+        device='cpu')
     image_name = 'tests/data/aic/054d9ce9201beffc76e5ff2169d2af2f027002ca.jpg'
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
@@ -49,7 +53,8 @@ def test_top_down_pose_tracking_demo():
     # OneHand10K demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py',
+        'configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'onehand10k/res50_onehand10k_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/onehand10k/9.jpg'
@@ -69,7 +74,8 @@ def test_top_down_pose_tracking_demo():
 
     # InterHand2D demo
     pose_model = init_pose_model(
-        'configs/hand/resnet/interhand2d/res50_interhand2d_all_256x256.py',
+        'configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'interhand2d/res50_interhand2d_all_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/interhand2.6m/image2017.jpg'
@@ -89,7 +95,8 @@ def test_top_down_pose_tracking_demo():
 
     # MPII demo
     pose_model = init_pose_model(
-        'configs/top_down/resnet/mpii/res50_mpii_256x256.py',
+        'configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'mpii/res50_mpii_256x256.py',
         None,
         device='cpu')
     image_name = 'tests/data/mpii/004645041.jpg'
@@ -116,7 +123,8 @@ def test_bottom_up_pose_tracking_demo():
     # COCO demo
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
-        'configs/bottom_up/resnet/coco/res50_coco_512x512.py',
+        'configs/body/2d_kpt_sview_rgb_img/associative_embedding/'
+        'coco/res50_coco_512x512.py',
         None,
         device='cpu')
 
