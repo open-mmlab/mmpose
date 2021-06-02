@@ -11,6 +11,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">DeepFashion (CVPR'2016)</summary>
+
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
  author = {Liu, Ziwei and Luo, Ping and Qiu, Shi and Wang, Xiaogang and Tang, Xiaoou},
@@ -21,7 +24,12 @@ MMPose supported datasets:
 }
 ```
 
+</details>
+
 <!-- [DATASET] -->
+
+<details>
+<summary align="right">DeepFashion (ECCV'2016)</summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,
@@ -32,6 +40,8 @@ MMPose supported datasets:
  year = {2016}
  }
 ```
+
+</details>
 
 For [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) datatset, images can be downloaded from [download](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html).
 Please download the annotation files from [fld_annotations](https://download.openmmlab.com/mmpose/datasets/fld_annotations.tar).

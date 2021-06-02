@@ -65,24 +65,34 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 <details open>
 <summary>(点击收起)</summary>
 
-- [x] [DeepPose](configs/top_down/deeppose/README.md) (CVPR'2014)
-- [x] [Wingloss](configs/face/deeppose/README.md) (CVPR'2018)
-- [x] [CPM](configs/top_down/cpm/README.md) (CVPR'2016)
-- [x] [Hourglass](configs/top_down/hourglass/README.md) (ECCV'2016)
-- [x] [SimpleBaseline](configs/top_down/resnet/README.md) (ECCV'2018)
-- [x] [HRNet](configs/top_down/hrnet/README.md) (CVPR'2019)
-- [x] [HRNetv2](configs/face/hrnetv2/README.md) (TPAMI'2019)
-- [x] [SCNet](configs/top_down/scnet/README.md) (CVPR'2020)
-- [x] [Associative Embedding](configs/bottom_up/hrnet/README.md) (NeurIPS'2017)
-- [x] [HigherHRNet](configs/bottom_up/higherhrnet/README.md) (CVPR'2020)
-- [x] [DarkPose](configs/top_down/darkpose/README.md) (CVPR'2020)
-- [x] [UDP](configs/top_down/udp/README.md) (CVPR'2020)
-- [x] [MSPN](configs/top_down/mspn/README.md) (ArXiv'2019)
-- [x] [RSN](configs/top_down/rsn/README.md) (ECCV'2020)
-- [x] [HMR](configs/mesh/hmr/README.md) (CVPR'2018)
-- [x] [Simple 3D Baseline](configs/body3d/simple_baseline/README.md) (ICCV'2017)
-- [x] [InterNet](configs/hand3d/InterNet/README.md) (ECCV'2020)
-- [x] [VideoPose3D](configs/body3d/videopose/README.md) (CVPR'2019)
+- [x] [DeepPose](docs/papers/algorithms/deeppose.md) (CVPR'2014)
+- [x] [CPM](docs/papers/backbones/cpm.md) (CVPR'2016)
+- [x] [Hourglass](docs/papers/backbones/hourglass.md) (ECCV'2016)
+- [x] [MSPN](docs/papers/backbones/mspn.md) (ArXiv'2019)
+- [x] [RSN](docs/papers/backbones/rsn.md) (ECCV'2020)
+- [x] [SimpleBaseline2D](docs/papers/algorithms/simplebaseline2d.md) (ECCV'2018)
+- [x] [HRNet](docs/papers/backbones/hrnet.md) (CVPR'2019)
+- [x] [HRNetv2](docs/papers/backbones/hrnetv2.md) (TPAMI'2019)
+- [x] [SCNet](docs/papers/backbones/scnet.md) (CVPR'2020)
+- [x] [Associative Embedding](docs/papers/algorithms/associative_embedding.md) (NeurIPS'2017)
+- [x] [HigherHRNet](docs/papers/backbones/higherhrnet.md) (CVPR'2020)
+- [x] [HMR](docs/papers/algorithms/hmr.md) (CVPR'2018)
+- [x] [SimpleBaseline3D](docs/papers/algorithms/simplebaseline3d.md) (ICCV'2017)
+- [x] [InterNet](docs/papers/algorithms/internet.md) (ECCV'2020)
+- [x] [VideoPose3D](docs/papers/algorithms/videopose3d.md) (CVPR'2019)
+
+</details>
+
+支持的技术:
+
+<details open>
+<summary>(click to collapse)</summary>
+
+- [x] [Wingloss](docs/papers/techniques/wingloss.md) (CVPR'2018)
+- [x] [DarkPose](docs/papers/techniques/dark.md) (CVPR'2020)
+- [x] [UDP](docs/papers/techniques/udp.md) (CVPR'2020)
+- [x] [FP16](docs/papers/techniques/fp16.md) (ArXiv'2017)
+- [x] [Albumentations](docs/papers/techniques/albumentations.md) (Information'2020)
 
 </details>
 
@@ -91,34 +101,34 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 <details open>
 <summary>(点击收起)</summary>
 
-- [x] [COCO](http://cocodataset.org/) (ECCV'2014)
-- [x] [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) (ECCV'2020)
-- [x] [MPII](http://human-pose.mpi-inf.mpg.de/) (CVPR'2014)
-- [x] [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) (ICCV'2019)
-- [x] [AI Challenger](https://github.com/AIChallenger/AI_Challenger_2017) (ArXiv'2017)
-- [x] [OCHuman](https://github.com/liruilong940607/OCHumanApi) (CVPR'2019)
-- [x] [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) (CVPR'2019)
-- [x] [PoseTrack18](https://posetrack.net/users/download.php) (CVPR'2018)
-- [x] [MHP](https://lv-mhp.github.io/dataset) (ACM MM'2018)
-- [x] [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) (ICCV'2013)
-- [x] [Human3.6M](http://vision.imar.ro/human3.6m/description.php) (TPAMI'2014)
-- [x] [300W](https://ibug.doc.ic.ac.uk/resources/300-W/) (IMAVIS'2016)
-- [x] [WFLW](https://wywu.github.io/projects/LAB/WFLW.html) (CVPR'2018)
-- [x] [AFLW](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/) (ICCVW'2011)
-- [x] [COFW](http://www.vision.caltech.edu/xpburgos/ICCV13/) (ICCV'2013)
-- [x] [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) (TCSVT'2019)
-- [x] [FreiHand](https://lmb.informatik.uni-freiburg.de/projects/freihand/) (ICCV'2019)
-- [x] [RHD](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html) (ICCV'2017)
-- [x] [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html) (CVPR'2017)
-- [x] [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/) (ECCV'2020)
-- [x] [DeepFashion](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html) (CVPR'2016)
-- [x] [Animal-Pose](https://sites.google.com/view/animal-pose/) (ICCV'2019)
-- [x] [Horse-10](http://www.mackenziemathislab.org/horse10) (WACV'2021)
-- [x] [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) (bioRxiv'2020)
-- [x] [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data) (Nature Methods'2019)
-- [x] [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
-- [x] [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) (Elife'2019)
-- [x] [ATRW](https://cvwc2019.github.io/challenge.html) (ACM MM'2020)
+- [x] [COCO](docs/papers/datasets/coco.md) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
+- [x] [COCO-WholeBody](docs/papers/datasets/coco_wholebody.md) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
+- [x] [MPII](docs/papers/datasets/mpii.md) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
+- [x] [MPII-TRB](docs/papers/datasets/mpii_trb.md) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
+- [x] [AI Challenger](docs/papers/datasets/aic.md) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
+- [x] [OCHuman](docs/papers/datasets/ochuman.md) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
+- [x] [CrowdPose](docs/papers/datasets/crowdpose.md) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
+- [x] [PoseTrack18](docs/papers/datasets/posetrack18.md) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
+- [x] [MHP](docs/papers/datasets/mhp.md) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
+- [x] [sub-JHMDB](docs/papers/datasets/jhmdb.md) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
+- [x] [Human3.6M](docs/papers/datasets/h36m.md) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
+- [x] [300W](docs/papers/datasets/300w.md) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
+- [x] [WFLW](docs/papers/datasets/wflw.md) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
+- [x] [AFLW](docs/papers/datasets/aflw.md) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
+- [x] [COFW](docs/papers/datasets/cofw.md) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [OneHand10K](docs/papers/datasets/onehand10k.md) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
+- [x] [FreiHand](docs/papers/datasets/freihand.md) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
+- [x] [RHD](docs/papers/datasets/rhd.md) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
+- [x] [CMU Panoptic HandDB](docs/papers/datasets/panoptic.md) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
+- [x] [InterHand2.6M](docs/papers/datasets/interhand.md) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
+- [x] [DeepFashion](docs/papers/datasets/deepfashion.md) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
+- [x] [Animal-Pose](docs/papers/datasets/animalpose.md) \[[homepage](https://sites.google.com/view/animal-pose/)\] (ICCV'2019)
+- [x] [Horse-10](docs/papers/datasets/horse10.md) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
+- [x] [MacaquePose](docs/papers/datasets/macaque.md) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
+- [x] [Vinegar Fly](docs/papers/datasets/fly.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
+- [x] [Desert Locust](docs/papers/datasets/locust.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [Grévy’s Zebra](docs/papers/datasets/zebra.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [ATRW](docs/papers/datasets/atrw.md) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
 
 </details>
 
@@ -127,18 +137,16 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 <details>
 <summary>(点击打开)</summary>
 
-- [x] [AlexNet](configs/top_down/alexnet/README.md) (NeurIPS'2012)
-- [x] [VGG](configs/top_down/vgg/README.md) (ICLR'2015)
-- [x] [HRNet](configs/top_down/hrnet/README.md) (CVPR'2019)
-- [x] [ResNet](configs/top_down/resnet/README.md) (CVPR'2016)
-- [x] [ResNetV1D](configs/top_down/resnetv1d/README.md) (CVPR'2019)
-- [x] [ResNeSt](configs/top_down/resnest/README.md) (ArXiv'2020)
-- [x] [ResNext](configs/top_down/resnext/README.md) (CVPR'2017)
-- [x] [SCNet](configs/top_down/scnet/README.md) (CVPR'2020)
-- [x] [SEResNet](configs/top_down/seresnet/README.md) (CVPR'2018)
-- [x] [ShufflenetV1](configs/top_down/shufflenet_v1/README.md) (CVPR'2018)
-- [x] [ShufflenetV2](configs/top_down/shufflenet_v2/README.md) (ECCV'2018)
-- [x] [MobilenetV2](configs/top_down/mobilenet_v2/README.md) (CVPR'2018)
+- [x] [AlexNet](docs/papers/backbones/alexnet.md) (NeurIPS'2012)
+- [x] [VGG](docs/papers/backbones/vgg.md) (ICLR'2015)
+- [x] [ResNet](docs/papers/backbones/resnet.md) (CVPR'2016)
+- [x] [ResNetV1D](docs/papers/backbones/resnetv1d.md) (CVPR'2019)
+- [x] [ResNeSt](docs/papers/backbones/resnest.md) (ArXiv'2020)
+- [x] [ResNext](docs/papers/backbones/resnext.md) (CVPR'2017)
+- [x] [SEResNet](docs/papers/backbones/seresnet.md) (CVPR'2018)
+- [x] [ShufflenetV1](docs/papers/backbones/shufflenetv1.md) (CVPR'2018)
+- [x] [ShufflenetV2](docs/papers/backbones/shufflenetv2.md) (ECCV'2018)
+- [x] [MobilenetV2](docs/papers/backbones/mobilenetv2.md) (CVPR'2018)
 
 </details>
 

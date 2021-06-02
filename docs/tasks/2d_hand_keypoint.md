@@ -15,6 +15,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">OneHand10K (TCSVT'2019)</summary>
+
 ```bibtex
 @article{wang2018mask,
   title={Mask-pose cascaded cnn for 2d hand pose estimation from single color image},
@@ -27,6 +30,8 @@ MMPose supported datasets:
   publisher={IEEE}
 }
 ```
+
+</details>
 
 For [OneHand10K](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html) data, please download from [OneHand10K Dataset](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html).
 Please download the annotation files from [onehand10k_annotations](https://download.openmmlab.com/mmpose/datasets/onehand10k_annotations.tar).
@@ -60,6 +65,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">FreiHand (ICCV'2019)</summary>
+
 ```bibtex
 @inproceedings{zimmermann2019freihand,
   title={Freihand: A dataset for markerless capture of hand pose and shape from single rgb images},
@@ -69,6 +77,8 @@ mmpose
   year={2019}
 }
 ```
+
+</details>
 
 For [FreiHAND](https://lmb.informatik.uni-freiburg.de/projects/freihand/) data, please download from [FreiHand Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html).
 Since the official dataset does not provide validation set, we randomly split the training data into 8:1:1 for train/val/test.
@@ -103,6 +113,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">CMU Panoptic HandDB (CVPR'2017)</summary>
+
 ```bibtex
 @inproceedings{simon2017hand,
   title={Hand keypoint detection in single images using multiview bootstrapping},
@@ -112,6 +125,8 @@ mmpose
   year={2017}
 }
 ```
+
+</details>
 
 For [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html), please download from [CMU Panoptic HandDB](http://domedb.perception.cs.cmu.edu/handdb.html).
 Following [Simon et al](https://arxiv.org/abs/1704.07809), panoptic images (hand143_panopticdb) and MPII & NZSL training sets (manual_train) are used for training, while MPII & NZSL test set (manual_test) for testing.
@@ -153,15 +168,19 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">InterHand2.6M (ECCV'2020)</summary>
+
 ```bibtex
-@article{moon2020interhand2,
-  title={InterHand2.6M: A dataset and baseline for 3D interacting hand pose estimation from a single RGB image},
-  author={Moon, Gyeongsik and Yu, Shoou-I and Wen, He and Shiratori, Takaaki and Lee, Kyoung Mu},
-  journal={arXiv preprint arXiv:2008.09309},
-  year={2020},
-  publisher={Springer}
+@InProceedings{Moon_2020_ECCV_InterHand2.6M,
+author = {Moon, Gyeongsik and Yu, Shoou-I and Wen, He and Shiratori, Takaaki and Lee, Kyoung Mu},
+title = {InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation from a Single RGB Image},
+booktitle = {European Conference on Computer Vision (ECCV)},
+year = {2020}
 }
 ```
+
+</details>
 
 For [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/), please download from [InterHand2.6M](https://mks0601.github.io/InterHand2.6M/).
 Please download the annotation files from [annotations](https://github.com/facebookresearch/InterHand2.6M/releases/download/v0.0/InterHand2.6M.annotations.5.fps.zip).
@@ -196,16 +215,21 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">RHD (ICCV'2017)</summary>
+
 ```bibtex
 @TechReport{zb2017hand,
-  author    = {Christian Zimmermann and Thomas Brox},
-  title     = {Learning to Estimate 3D Hand Pose from Single RGB Images},
-  institution    = {arXiv:1705.01389},
-  year      = {2017},
-  note         = "https://arxiv.org/abs/1705.01389",
-  url          = "https://lmb.informatik.uni-freiburg.de/projects/hand3d/"
+  author={Christian Zimmermann and Thomas Brox},
+  title={Learning to Estimate 3D Hand Pose from Single RGB Images},
+  institution={arXiv:1705.01389},
+  year={2017},
+  note="https://arxiv.org/abs/1705.01389",
+  url="https://lmb.informatik.uni-freiburg.de/projects/hand3d/"
 }
 ```
+
+</details>
 
 For [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html), please download from [RHD Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html).
 Please download the annotation files from [rhd_annotations](https://download.openmmlab.com/mmpose/datasets/rhd_annotations.zip).

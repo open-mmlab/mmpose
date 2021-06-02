@@ -54,7 +54,7 @@ If the contents here do not cover your issue, please create an issue using the [
 - **RuntimeError: Address already in use**
 
   Set the environment variables `MASTER_PORT=XXX`. For example,
-  `MASTER_PORT=29517 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/top_down/resnet/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192`
+  `MASTER_PORT=29517 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192`
 
 - **"Unexpected keys in source state dict" when loading pre-trained weights**
 
@@ -76,11 +76,11 @@ If the contents here do not cover your issue, please create an issue using the [
   log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
   ```
 
-  You can refer to [tutorials/6_customize_runtime.md](/tutorials/6_customize_runtime.md#log-config) and the example [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
+  You can refer to [tutorials/6_customize_runtime.md](/tutorials/6_customize_runtime.md#log-config) and the example [config](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
 
 - **Log info is NOT printed**
 
-  Use smaller log interval. For example, change `interval=50` to `interval=1` in the [config](/configs/top_down/resnet/coco/res50_coco_256x192.py#L23).
+  Use smaller log interval. For example, change `interval=50` to `interval=1` in the [config](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L23).
 
 - **How to fix stages of backbone when finetuning a model ?**
 
@@ -103,16 +103,16 @@ If the contents here do not cover your issue, please create an issue using the [
 
   For top-down models, try to edit the config file. For example,
 
-  1. set `flip_test=False` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-  1. set `post_process='default'` in [topdown-res50](/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+  1. set `flip_test=False` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
+  1. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
   1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
   For bottom-up models, try to edit the config file. For example,
 
-  1. set `flip_test=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91).
-  1. set `adjust=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
-  1. set `refine=False` in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
-  1. use smaller input image size in [bottomup-res50](/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
+  1. set `flip_test=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91).
+  1. set `adjust=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
+  1. set `refine=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
+  1. use smaller input image size in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
 
 ## Deployment
 

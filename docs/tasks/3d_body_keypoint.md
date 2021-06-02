@@ -11,6 +11,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
+
 ```bibtex
 @article{h36m_pami,
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
@@ -24,6 +27,8 @@ MMPose supported datasets:
   year = {2014}
 }
 ```
+
+</details>
 
 For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and run the [preprocessing script](/tools/dataset/preprocess_h36m.py), which will extract camera parameters and pose annotations at full framerate (50 FPS) and downsampled framerate (10 FPS). The processed data should have the following structure:
 
