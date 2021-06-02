@@ -68,21 +68,21 @@ Supported algorithms:
 <details open>
 <summary>(click to collapse)</summary>
 
-- [x] [DeepPose](docs/papers/algorithms/deeppose.md) (CVPR'2014)
-- [x] [CPM](docs/papers/backbones/cpm.md) (CVPR'2016)
-- [x] [Hourglass](docs/papers/backbones/hourglass.md) (ECCV'2016)
-- [x] [MSPN](docs/papers/backbones/mspn.md) (ArXiv'2019)
-- [x] [RSN](docs/papers/backbones/rsn.md) (ECCV'2020)
-- [x] [SimpleBaseline2D](docs/papers/algorithms/simplebaseline2d.md) (ECCV'2018)
-- [x] [HRNet](docs/papers/backbones/hrnet.md) (CVPR'2019)
-- [x] [HRNetv2](docs/papers/backbones/hrnetv2.md) (TPAMI'2019)
-- [x] [SCNet](docs/papers/backbones/scnet.md) (CVPR'2020)
-- [x] [Associative Embedding](docs/papers/algorithms/associative_embedding.md) (NeurIPS'2017)
-- [x] [HigherHRNet](docs/papers/backbones/higherhrnet.md) (CVPR'2020)
-- [x] [HMR](docs/papers/algorithms/hmr.md) (CVPR'2018)
-- [x] [SimpleBaseline3D](docs/papers/algorithms/simplebaseline3d.md) (ICCV'2017)
-- [x] [InterNet](docs/papers/algorithms/internet.md) (ECCV'2020)
-- [x] [VideoPose3D](docs/papers/algorithms/videopose3d.md) (CVPR'2019)
+- [x] [DeepPose](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-deeppose-cvpr-2014-div) (CVPR'2014)
+- [x] [CPM](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-cpm-cvpr-2016-div) (CVPR'2016)
+- [x] [Hourglass](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-hourglass-eccv-2016-div) (ECCV'2016)
+- [x] [MSPN](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-mspn-arxiv-2019-div) (ArXiv'2019)
+- [x] [RSN](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-rsn-eccv-2020-div) (ECCV'2020)
+- [x] [SimpleBaseline2D](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-simplebaseline2d-eccv-2018-div) (ECCV'2018)
+- [x] [HRNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-hrnet-cvpr-2019-div) (CVPR'2019)
+- [x] [HRNetv2](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-hrnetv2-tpami-2019-div) (TPAMI'2019)
+- [x] [SCNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-scnet-cvpr-2020-div) (CVPR'2020)
+- [x] [Associative Embedding](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-associative-embedding-nips-2017-div) (NeurIPS'2017)
+- [x] [HigherHRNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-higherhrnet-cvpr-2020-div) (CVPR'2020)
+- [x] [HMR](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-hmr-cvpr-2018-div) (CVPR'2018)
+- [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-simplebaseline3d-iccv-2017-div) (ICCV'2017)
+- [x] [InterNet](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-internet-eccv-2020-div) (ECCV'2020)
+- [x] [VideoPose3D](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-videopose3d-cvpr-2019-div) (CVPR'2019)
 
 </details>
 
@@ -91,11 +91,11 @@ Supported techniques:
 <details open>
 <summary>(click to collapse)</summary>
 
-- [x] [Wingloss](docs/papers/techniques/wingloss.md) (CVPR'2018)
-- [x] [DarkPose](docs/papers/techniques/dark.md) (CVPR'2020)
-- [x] [UDP](docs/papers/techniques/udp.md) (CVPR'2020)
-- [x] [FP16](docs/papers/techniques/fp16.md) (ArXiv'2017)
-- [x] [Albumentations](docs/papers/techniques/albumentations.md) (Information'2020)
+- [x] [Wingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#div-align-center-wingloss-cvpr-2018-div) (CVPR'2018)
+- [x] [DarkPose](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#div-align-center-darkpose-cvpr-2020-div) (CVPR'2020)
+- [x] [UDP](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#div-align-center-udp-cvpr-2020-div) (CVPR'2020)
+- [x] [FP16](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#div-align-center-fp16-arxiv-2017-div) (ArXiv'2017)
+- [x] [Albumentations](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#div-align-center-albumentations-information-2020-div) (Information'2020)
 
 </details>
 
@@ -104,34 +104,34 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 <details open>
 <summary>(click to collapse)</summary>
 
-- [x] [COCO](docs/papers/datasets/coco.md) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
-- [x] [COCO-WholeBody](docs/papers/datasets/coco_wholebody.md) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
-- [x] [MPII](docs/papers/datasets/mpii.md) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
-- [x] [MPII-TRB](docs/papers/datasets/mpii_trb.md) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
-- [x] [AI Challenger](docs/papers/datasets/aic.md) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
-- [x] [OCHuman](docs/papers/datasets/ochuman.md) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
-- [x] [CrowdPose](docs/papers/datasets/crowdpose.md) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
-- [x] [PoseTrack18](docs/papers/datasets/posetrack18.md) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
-- [x] [MHP](docs/papers/datasets/mhp.md) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
-- [x] [sub-JHMDB](docs/papers/datasets/jhmdb.md) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
-- [x] [Human3.6M](docs/papers/datasets/h36m.md) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
-- [x] [300W](docs/papers/datasets/300w.md) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
-- [x] [WFLW](docs/papers/datasets/wflw.md) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
-- [x] [AFLW](docs/papers/datasets/aflw.md) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
-- [x] [COFW](docs/papers/datasets/cofw.md) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
-- [x] [OneHand10K](docs/papers/datasets/onehand10k.md) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
-- [x] [FreiHand](docs/papers/datasets/freihand.md) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
-- [x] [RHD](docs/papers/datasets/rhd.md) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
-- [x] [CMU Panoptic HandDB](docs/papers/datasets/panoptic.md) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
-- [x] [InterHand2.6M](docs/papers/datasets/interhand.md) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
-- [x] [DeepFashion](docs/papers/datasets/deepfashion.md) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
-- [x] [Animal-Pose](docs/papers/datasets/animalpose.md) \[[homepage](https://sites.google.com/view/animal-pose/)\] (ICCV'2019)
-- [x] [Horse-10](docs/papers/datasets/horse10.md) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
-- [x] [MacaquePose](docs/papers/datasets/macaque.md) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
-- [x] [Vinegar Fly](docs/papers/datasets/fly.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
-- [x] [Desert Locust](docs/papers/datasets/locust.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
-- [x] [Grévy’s Zebra](docs/papers/datasets/zebra.md) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
-- [x] [ATRW](docs/papers/datasets/atrw.md) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
+- [x] [COCO](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-coco-eccv-2014-div) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
+- [x] [COCO-WholeBody](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-coco-wholebody-eccv-2020-div) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
+- [x] [MPII](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-mpii-cvpr-2014-div) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
+- [x] [MPII-TRB](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-mpii-trb-iccv-2019-div) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
+- [x] [AI Challenger](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-ai-challenger-arxiv-2017-div) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
+- [x] [OCHuman](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-ochuman-cvpr-2019-div) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
+- [x] [CrowdPose](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-crowdpose-cvpr-2019-div) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
+- [x] [PoseTrack18](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-posetrack18-cvpr-2018-div) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
+- [x] [MHP](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-mhp-acm-mm-2018-div) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
+- [x] [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-jhmdb-iccv-2013-div) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
+- [x] [Human3.6M](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-human3-6m-tpami-2014-div) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
+- [x] [300W](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-300w-imavis-2016-div) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
+- [x] [WFLW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-wflw-cvpr-2018-div) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
+- [x] [AFLW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-aflw-iccvw-2011-div) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
+- [x] [COFW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-cofw-iccv-2013-div) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [OneHand10K](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-onehand10k-tcsvt-2019-div) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
+- [x] [FreiHand](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-freihand-iccv-2019-div) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
+- [x] [RHD](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-rhd-iccv-2017-div) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
+- [x] [CMU Panoptic HandDB](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-cmu-panoptic-handdb-cvpr-2017-div) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
+- [x] [InterHand2.6M](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-interhand2-6m-eccv-2020-div) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
+- [x] [DeepFashion](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-deepfashion-cvpr-2016-div) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
+- [x] [Animal-Pose](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-animal-pose-iccv-2019-div) \[[homepage](https://sites.google.com/view/animal-pose/)\] (ICCV'2019)
+- [x] [Horse-10](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-horse-10-wacv-2021-div) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
+- [x] [MacaquePose](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-macaquepose-biorxiv-2020-div) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
+- [x] [Vinegar Fly](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-vinegar-fly-nature-methods-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
+- [x] [Desert Locust](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-desert-locust-elife-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [Grévy’s Zebra](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-grevys-zebra-elife-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [ATRW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-atrw-acm-mm-2020-div) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
 
 </details>
 
@@ -140,16 +140,16 @@ Supported backbones:
 <details>
 <summary>(click to expand)</summary>
 
-- [x] [AlexNet](docs/papers/backbones/alexnet.md) (NeurIPS'2012)
-- [x] [VGG](docs/papers/backbones/vgg.md) (ICLR'2015)
-- [x] [ResNet](docs/papers/backbones/resnet.md) (CVPR'2016)
-- [x] [ResNetV1D](docs/papers/backbones/resnetv1d.md) (CVPR'2019)
-- [x] [ResNeSt](docs/papers/backbones/resnest.md) (ArXiv'2020)
-- [x] [ResNext](docs/papers/backbones/resnext.md) (CVPR'2017)
-- [x] [SEResNet](docs/papers/backbones/seresnet.md) (CVPR'2018)
-- [x] [ShufflenetV1](docs/papers/backbones/shufflenetv1.md) (CVPR'2018)
-- [x] [ShufflenetV2](docs/papers/backbones/shufflenetv2.md) (ECCV'2018)
-- [x] [MobilenetV2](docs/papers/backbones/mobilenetv2.md) (CVPR'2018)
+- [x] [AlexNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-alexnet-neurips-2012-div) (NeurIPS'2012)
+- [x] [VGG](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-vgg-iclr-2015-div) (ICLR'2015)
+- [x] [ResNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnet-cvpr-2016-div) (CVPR'2016)
+- [x] [ResNetV1D](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnetv1d-cvpr-2019-div) (CVPR'2019)
+- [x] [ResNeSt](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnest-arxiv-2020-div) (ArXiv'2020)
+- [x] [ResNext](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnext-cvpr-2017-div) (CVPR'2017)
+- [x] [SEResNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-seresnet-cvpr-2018-div) (CVPR'2018)
+- [x] [ShufflenetV1](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-shufflenetv1-cvpr-2018-div) (CVPR'2018)
+- [x] [ShufflenetV2](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-shufflenetv2-eccv-2018-div) (ECCV'2018)
+- [x] [MobilenetV2](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-mobilenetv2-cvpr-2018-div) (CVPR'2018)
 
 </details>
 
