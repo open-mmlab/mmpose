@@ -6,10 +6,10 @@ import torch.nn as nn
 from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
 
 
-class TopDownBaseHead(nn.Module):
-    """Base class for top-down keypoint heads.
+class TopdownHeatmapBaseHead(nn.Module):
+    """Base class for top-down heatmap heads.
 
-    All top-down keypoint heads should subclass it.
+    All top-down heatmap heads should subclass it.
     All subclass should overwrite:
 
     Methods:`get_loss`, supporting to calculate loss.

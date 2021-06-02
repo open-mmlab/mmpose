@@ -1,16 +1,16 @@
 import numpy as np
 import torch
 
-from mmpose.models.detectors import BottomUp
+from mmpose.models.detectors import AssociativeEmbedding
 
 
 def test_bottomup_forward():
     model_cfg = dict(
-        type='BottomUp',
+        type='AssociativeEmbedding',
         pretrained=None,
         backbone=dict(type='ResNet', depth=18),
         keypoint_head=dict(
-            type='BottomUpSimpleHead',
+            type='AESimpleHead',
             in_channels=512,
             num_joints=17,
             num_deconv_layers=0,
@@ -53,9 +53,11 @@ def test_bottomup_forward():
                         [13, 14], [15, 16]],
         ))
 
-    detector = BottomUp(model_cfg['backbone'], model_cfg['keypoint_head'],
-                        model_cfg['train_cfg'], model_cfg['test_cfg'],
-                        model_cfg['pretrained'])
+    detector = AssociativeEmbedding(model_cfg['backbone'],
+                                    model_cfg['keypoint_head'],
+                                    model_cfg['train_cfg'],
+                                    model_cfg['test_cfg'],
+                                    model_cfg['pretrained'])
 
     detector.init_weights()
 

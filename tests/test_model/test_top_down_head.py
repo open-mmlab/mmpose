@@ -2,33 +2,34 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import (FcHead, TopDownMSMUHead, TopDownMultiStageHead,
-                           TopDownSimpleHead)
+from mmpose.models import (DeepposeRegressionHead, TopdownHeatmapMSMUHead,
+                           TopdownHeatmapMultiStageHead,
+                           TopdownHeatmapSimpleHead)
 
 
 def test_top_down_simple_head():
     """Test simple head."""
     with pytest.raises(TypeError):
         # extra
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             extra=[],
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
     with pytest.raises(TypeError):
-        head = TopDownSimpleHead(
+        head = TopdownHeatmapSimpleHead(
             out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
 
     # test num deconv layers
     with pytest.raises(ValueError):
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=-1,
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
-    _ = TopDownSimpleHead(
+    _ = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
@@ -36,7 +37,7 @@ def test_top_down_simple_head():
 
     with pytest.raises(ValueError):
         # the number of layers should match
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -46,7 +47,7 @@ def test_top_down_simple_head():
 
     with pytest.raises(ValueError):
         # the number of kernels should match
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -56,7 +57,7 @@ def test_top_down_simple_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -66,7 +67,7 @@ def test_top_down_simple_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = TopDownSimpleHead(
+        _ = TopdownHeatmapSimpleHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -75,26 +76,26 @@ def test_top_down_simple_head():
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
     # test final_conv_kernel
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 3},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     head.init_weights()
     assert head.final_layer.padding == (1, 1)
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 1},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     assert head.final_layer.padding == (0, 0)
-    _ = TopDownSimpleHead(
+    _ = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 0},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
@@ -102,7 +103,7 @@ def test_top_down_simple_head():
             final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )))
     assert len(head.final_layer) == 4
 
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
@@ -111,7 +112,7 @@ def test_top_down_simple_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 3, 256, 256])
 
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
@@ -121,7 +122,7 @@ def test_top_down_simple_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 3, 32, 32])
 
-    head = TopDownSimpleHead(
+    head = TopdownHeatmapSimpleHead(
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
@@ -138,7 +139,7 @@ def test_top_down_multistage_head():
     """Test multistage head."""
     with pytest.raises(TypeError):
         # the number of layers should match
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -147,13 +148,13 @@ def test_top_down_multistage_head():
 
     # test num deconv layers
     with pytest.raises(ValueError):
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=-1,
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
-    _ = TopDownMultiStageHead(
+    _ = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
@@ -161,7 +162,7 @@ def test_top_down_multistage_head():
 
     with pytest.raises(ValueError):
         # the number of layers should match
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -172,7 +173,7 @@ def test_top_down_multistage_head():
 
     with pytest.raises(ValueError):
         # the number of kernels should match
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -183,7 +184,7 @@ def test_top_down_multistage_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_stages=1,
@@ -194,7 +195,7 @@ def test_top_down_multistage_head():
 
     with pytest.raises(ValueError):
         # the deconv kernels should be 4, 3, 2
-        _ = TopDownMultiStageHead(
+        _ = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             num_deconv_layers=3,
@@ -204,7 +205,7 @@ def test_top_down_multistage_head():
 
     with pytest.raises(AssertionError):
         # inputs should be list
-        head = TopDownMultiStageHead(
+        head = TopdownHeatmapMultiStageHead(
             out_channels=3,
             in_channels=512,
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
@@ -213,26 +214,26 @@ def test_top_down_multistage_head():
         out = head(inputs)
 
     # test final_conv_kernel
-    head = TopDownMultiStageHead(
+    head = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 3},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     head.init_weights()
     assert head.multi_final_layers[0].padding == (1, 1)
-    head = TopDownMultiStageHead(
+    head = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 1},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
     assert head.multi_final_layers[0].padding == (0, 0)
-    _ = TopDownMultiStageHead(
+    _ = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         extra={'final_conv_kernel': 0},
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
 
-    head = TopDownMultiStageHead(
+    head = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
@@ -242,7 +243,7 @@ def test_top_down_multistage_head():
     assert len(out) == 1
     assert out[0].shape == torch.Size([1, 3, 256, 256])
 
-    head = TopDownMultiStageHead(
+    head = TopdownHeatmapMultiStageHead(
         out_channels=3,
         in_channels=512,
         num_deconv_layers=0,
@@ -259,7 +260,7 @@ def test_top_down_msmu_head():
     """Test multi-stage multi-unit head."""
     with pytest.raises(AssertionError):
         # inputs should be list
-        head = TopDownMSMUHead(
+        head = TopdownHeatmapMSMUHead(
             out_shape=(64, 48),
             unit_channels=256,
             num_stages=2,
@@ -273,7 +274,7 @@ def test_top_down_msmu_head():
 
     with pytest.raises(AssertionError):
         # inputs should be list[list, ...]
-        head = TopDownMSMUHead(
+        head = TopdownHeatmapMSMUHead(
             out_shape=(64, 48),
             unit_channels=256,
             num_stages=2,
@@ -288,7 +289,7 @@ def test_top_down_msmu_head():
 
     with pytest.raises(AssertionError):
         # len(inputs) should equal to num_stages
-        head = TopDownMSMUHead(
+        head = TopdownHeatmapMSMUHead(
             out_shape=(64, 48),
             unit_channels=256,
             num_stages=2,
@@ -303,7 +304,7 @@ def test_top_down_msmu_head():
 
     with pytest.raises(AssertionError):
         # len(inputs[0]) should equal to num_units
-        head = TopDownMSMUHead(
+        head = TopdownHeatmapMSMUHead(
             out_shape=(64, 48),
             unit_channels=256,
             num_stages=2,
@@ -318,7 +319,7 @@ def test_top_down_msmu_head():
 
     with pytest.raises(AssertionError):
         # input channels should equal to param unit_channels
-        head = TopDownMSMUHead(
+        head = TopdownHeatmapMSMUHead(
             out_shape=(64, 48),
             unit_channels=256,
             num_stages=2,
@@ -331,7 +332,7 @@ def test_top_down_msmu_head():
         inputs = [[inputs] * 2] * 2
         _ = head(inputs)
 
-    head = TopDownMSMUHead(
+    head = TopdownHeatmapMSMUHead(
         out_shape=(64, 48),
         unit_channels=256,
         out_channels=17,
@@ -352,7 +353,7 @@ def test_top_down_msmu_head():
 
 def test_fc_head():
     """Test fc head."""
-    head = FcHead(
+    head = DeepposeRegressionHead(
         in_channels=2048,
         num_joints=17,
         loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True))

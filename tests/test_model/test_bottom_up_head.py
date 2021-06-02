@@ -2,15 +2,15 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.models import BottomUpHigherResolutionHead, BottomUpSimpleHead
+from mmpose.models import AEHigherResolutionHead, AESimpleHead
 
 
-def test_bottom_up_simple_head():
-    """test bottom up simple head."""
+def test_ae_simple_head():
+    """test bottom up AE simple head."""
 
     with pytest.raises(TypeError):
         # extra
-        _ = BottomUpSimpleHead(
+        _ = AESimpleHead(
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True],
@@ -27,7 +27,7 @@ def test_bottom_up_simple_head():
                 heatmaps_loss_factor=[1.0]))
     # test final_conv_kernel
     with pytest.raises(AssertionError):
-        _ = BottomUpSimpleHead(
+        _ = AESimpleHead(
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True],
@@ -42,7 +42,7 @@ def test_bottom_up_simple_head():
                 pull_loss_factor=[0.001],
                 with_heatmaps_loss=[True],
                 heatmaps_loss_factor=[1.0]))
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
@@ -59,7 +59,7 @@ def test_bottom_up_simple_head():
             heatmaps_loss_factor=[1.0]))
     head.init_weights()
     assert head.final_layer.padding == (1, 1)
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
@@ -76,7 +76,7 @@ def test_bottom_up_simple_head():
             heatmaps_loss_factor=[1.0]))
     head.init_weights()
     assert head.final_layer.padding == (0, 0)
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True],
@@ -93,7 +93,7 @@ def test_bottom_up_simple_head():
     head.init_weights()
     assert head.final_layer.padding == (0, 0)
     # test with_ae_loss
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         num_deconv_layers=0,
@@ -114,7 +114,7 @@ def test_bottom_up_simple_head():
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 34, 32, 32])
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         num_deconv_layers=0,
@@ -136,7 +136,7 @@ def test_bottom_up_simple_head():
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 17, 32, 32])
     # test tag_per_joint
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         num_deconv_layers=0,
@@ -158,7 +158,7 @@ def test_bottom_up_simple_head():
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 17, 32, 32])
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         num_deconv_layers=0,
@@ -180,7 +180,7 @@ def test_bottom_up_simple_head():
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 18, 32, 32])
-    head = BottomUpSimpleHead(
+    head = AESimpleHead(
         in_channels=512,
         num_joints=17,
         num_deconv_layers=0,
@@ -204,12 +204,12 @@ def test_bottom_up_simple_head():
     assert out[0].shape == torch.Size([1, 18, 32, 32])
 
 
-def test_bottom_up_higherresolution_head():
-    """test bottom up higherresolution head."""
+def test_ae_higherresolution_head():
+    """test bottom up AE higherresolution head."""
 
     # test final_conv_kernel
     with pytest.raises(AssertionError):
-        _ = BottomUpHigherResolutionHead(
+        _ = AEHigherResolutionHead(
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True, False],
@@ -224,7 +224,7 @@ def test_bottom_up_higherresolution_head():
                 pull_loss_factor=[0.001, 0.001],
                 with_heatmaps_loss=[True, True],
                 heatmaps_loss_factor=[1.0, 1.0]))
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -242,7 +242,7 @@ def test_bottom_up_higherresolution_head():
             heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.final_layers[0].padding == (1, 1)
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -260,7 +260,7 @@ def test_bottom_up_higherresolution_head():
             heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.final_layers[0].padding == (0, 0)
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -279,7 +279,7 @@ def test_bottom_up_higherresolution_head():
     assert head.final_layers[0].padding == (0, 0)
     # test deconv layers
     with pytest.raises(ValueError):
-        _ = BottomUpHigherResolutionHead(
+        _ = AEHigherResolutionHead(
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True, False],
@@ -295,7 +295,7 @@ def test_bottom_up_higherresolution_head():
                 pull_loss_factor=[0.001, 0.001],
                 with_heatmaps_loss=[True, True],
                 heatmaps_loss_factor=[1.0, 1.0]))
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -313,7 +313,7 @@ def test_bottom_up_higherresolution_head():
             heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (0, 0)
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -331,7 +331,7 @@ def test_bottom_up_higherresolution_head():
             heatmaps_loss_factor=[1.0, 1.0]))
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (1, 1)
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         with_ae_loss=[True, False],
@@ -350,7 +350,7 @@ def test_bottom_up_higherresolution_head():
     head.init_weights()
     assert head.deconv_layers[0][0][0].output_padding == (0, 0)
     # test tag_per_joint & ae loss
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         tag_per_joint=False,
@@ -373,7 +373,7 @@ def test_bottom_up_higherresolution_head():
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 17, 32, 32])
     assert out[1].shape == torch.Size([1, 17, 64, 64])
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         tag_per_joint=False,
@@ -396,7 +396,7 @@ def test_bottom_up_higherresolution_head():
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 18, 32, 32])
     assert out[1].shape == torch.Size([1, 17, 64, 64])
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         tag_per_joint=True,
@@ -420,7 +420,7 @@ def test_bottom_up_higherresolution_head():
     assert out[0].shape == torch.Size([1, 34, 32, 32])
     assert out[1].shape == torch.Size([1, 34, 64, 64])
     # cat_output
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         tag_per_joint=True,
@@ -443,7 +443,7 @@ def test_bottom_up_higherresolution_head():
     out = head(inputs)
     assert out[0].shape == torch.Size([1, 34, 32, 32])
     assert out[1].shape == torch.Size([1, 34, 64, 64])
-    head = BottomUpHigherResolutionHead(
+    head = AEHigherResolutionHead(
         in_channels=512,
         num_joints=17,
         tag_per_joint=True,
