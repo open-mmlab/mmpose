@@ -37,8 +37,9 @@ for f in files:
     paperlinks = {}
     for _, p in papers:
         print(p)
-        paperlinks[p] = ' '.join(
-            (f'[⇨](topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})'
+        paperlinks[p] = ', '.join(
+            ((f'[{paperlink} ⇨]'
+              f'(topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})')
              for paperlink in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))
