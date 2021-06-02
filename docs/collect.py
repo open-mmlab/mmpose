@@ -18,9 +18,10 @@ for t in alltopics:
         if len(set(x[i] for x in data)) > 1:
             valid_ids.append(i)
     if len(valid_ids) > 0:
-        subtopics.extend(
-            [f"{titlecase(t)}({','.join([d[i].title() for i in valid_ids])})", t, '_'.join(d)]
-            for d in data)
+        subtopics.extend([
+            f"{titlecase(t)}({','.join([d[i].title() for i in valid_ids])})",
+            t, '_'.join(d)
+        ] for d in data)
     else:
         subtopics.append([titlecase(t), t, '_'.join(data[0])])
 

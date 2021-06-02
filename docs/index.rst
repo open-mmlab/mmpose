@@ -26,6 +26,7 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Model Zoo
 
+   modelzoo.md
    topics/animal.md
    topics/body(2d,kpt,img).md
    topics/body(3d,kpt,img).md
