@@ -1,7 +1,7 @@
-from mmcv.cnn import MODELS as MMCV_MODELS
+from mmcv.cnn import build_model_from_cfg
 from mmcv.utils import Registry
 
-MODELS = Registry('models', parent=MMCV_MODELS)
+MODELS = Registry('models', build_func=build_model_from_cfg)
 
 BACKBONES = MODELS
 NECKS = MODELS
