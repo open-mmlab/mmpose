@@ -12,6 +12,7 @@ from mmpose.models.builder import build_loss
 from ..builder import HEADS
 from .topdown_heatmap_base_head import TopdownHeatmapBaseHead
 
+
 @HEADS.register_module()
 class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
     """Top-down heatmap multi-stage head.
