@@ -34,5 +34,6 @@ __all__ = [
     'DeepFashionDataset', 'Face300WDataset', 'FaceAFLWDataset',
     'FaceWFLWDataset', 'FaceCOFWDataset', 'Body3DH36MDataset',
     'AnimalHorse10Dataset', 'AnimalMacaqueDataset', 'AnimalFlyDataset',
-    'AnimalLocustDataset', 'AnimalZebraDataset', 'AnimalATRWDataset', 'AnimalPoseDataset'
+    'AnimalLocustDataset', 'AnimalZebraDataset', 'AnimalATRWDataset',
+    'AnimalPoseDataset'
 ]

@@ -28,7 +28,7 @@ __all__ = [
     'TopDownOneHand10KDataset', 'TopDownPanopticDataset',
     'TopDownPoseTrack18Dataset', 'TopDownJhmdbDataset', 'TopDownMhpDataset',
     'Face300WDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
-    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset', 'AnimalPoseDataset',
-    'build_dataloader', 'build_dataset', 'Compose', 'DistributedSampler',
-    'DATASETS', 'PIPELINES'
+    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset',
+    'AnimalPoseDataset', 'build_dataloader', 'build_dataset', 'Compose',
+    'DistributedSampler', 'DATASETS', 'PIPELINES'
 ]
