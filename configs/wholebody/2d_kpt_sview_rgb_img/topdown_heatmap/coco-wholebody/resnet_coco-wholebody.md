@@ -17,6 +17,11 @@
 
 <!-- [DATASET] -->
 
+<!-- [DATASET] -->
+
+<details>
+<summary align="right">COCO-WholeBody (ECCV'2020)</summary>
+
 ```bibtex
 @inproceedings{jin2020whole,
   title={Whole-Body Human Pose Estimation in the Wild},
@@ -25,6 +30,8 @@
   year={2020}
 }
 ```
+
+</details>
 
 Results on COCO-WholeBody v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
