@@ -3,7 +3,7 @@ import torch
 from numpy.testing import assert_almost_equal
 
 from mmpose.models import build_loss
-from mmpose.models.mesh_heads.geometric_layers import batch_rodrigues
+from mmpose.models.utils.geometry import batch_rodrigues
 
 
 def test_mesh_loss():

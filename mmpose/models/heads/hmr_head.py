@@ -4,11 +4,11 @@ import torch.nn as nn
 from mmcv.cnn import xavier_init
 
 from ..builder import HEADS
-from .geometric_layers import rot6d_to_rotmat
+from ..utils.geometry import rot6d_to_rotmat
 
 
 @HEADS.register_module()
-class MeshHMRHead(nn.Module):
+class HMRMeshHead(nn.Module):
     """SMPL parameters regressor head of simple baseline paper
     ref: Angjoo Kanazawa. ``End-to-end Recovery of Human Shape and Pose''.
 
