@@ -35,4 +35,4 @@
 
 </details>
 
-Results on COFW dataset
+Checkpoints will be revealed after mmpose reaches 1k star :D
