@@ -1,6 +1,6 @@
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .resnet import Bottleneck as _Bottleneck
 from .resnet import ResLayer, ResNet
 

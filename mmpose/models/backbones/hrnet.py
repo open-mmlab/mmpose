@@ -6,7 +6,7 @@ from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.utils import get_root_logger
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .resnet import BasicBlock, Bottleneck, get_expansion
 from .utils import load_checkpoint
 

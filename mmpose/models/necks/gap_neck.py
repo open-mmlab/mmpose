@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from ..registry import NECKS
+from ..builder import NECKS
 
 
 @NECKS.register_module()

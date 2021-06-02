@@ -6,7 +6,7 @@
 import torch
 import torch.nn as nn
 
-from ..registry import LOSSES
+from ..builder import LOSSES
 
 
 def _make_input(t, requires_grad=False, device=torch.device('cpu')):

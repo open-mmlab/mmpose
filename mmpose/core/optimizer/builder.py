@@ -1,4 +1,7 @@
 from mmcv.runner import build_optimizer
+from mmcv.utils import Registry
+
+OPTIMIZERS = Registry('optimizers')
 
 
 def build_optimizers(model, cfgs):

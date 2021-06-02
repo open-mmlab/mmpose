@@ -59,7 +59,7 @@ You need to create a new directory named `mmpose/core/optimizer`.
 And then implement the new optimizer in a file, e.g., in `mmpose/core/optimizer/my_optimizer.py`:
 
 ```python
-from .registry import OPTIMIZERS
+from .builder import OPTIMIZERS
 from torch.optim import Optimizer
 
 

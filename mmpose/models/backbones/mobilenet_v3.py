@@ -5,7 +5,7 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule, constant_init, kaiming_init
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 from .utils import InvertedResidual, load_checkpoint
 

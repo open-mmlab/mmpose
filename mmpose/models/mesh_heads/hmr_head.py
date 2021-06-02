@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import xavier_init
 
-from ..registry import HEADS
+from ..builder import HEADS
 from .geometric_layers import rot6d_to_rotmat
 
 

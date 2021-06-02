@@ -10,7 +10,7 @@ from mmpose.core.evaluation.top_down_eval import (
 from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from mmpose.models.necks import GlobalAveragePooling
-from ..registry import HEADS
+from ..builder import HEADS
 
 
 class Heatmap3DHead(nn.Module):

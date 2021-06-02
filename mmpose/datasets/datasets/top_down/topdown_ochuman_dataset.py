@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 from xtcocotools.coco import COCO
 
-from ...registry import DATASETS
+from ...builder import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
 
 
