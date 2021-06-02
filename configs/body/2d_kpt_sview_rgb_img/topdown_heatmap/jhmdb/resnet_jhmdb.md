@@ -54,7 +54,7 @@ Results on Sub-JHMDB dataset
 
 The models are pre-trained on MPII dataset only. *NO* test-time augmentation (multi-scale /rotation testing) is used.
 
-##### Normalized by Person Size
+- Normalized by Person Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
@@ -67,7 +67,7 @@ The models are pre-trained on MPII dataset only. *NO* test-time augmentation (mu
 | Sub3 |  [pose_resnet_50 (2 Deconv.)](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py) | 256x256 | 98.8 | 98.4 | 94.3 |  92.1 | 99.8 | 97.5| 93.8 | 96.7 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256_20201122.log.json) |
 | Average |  pose_resnet_50 (2 Deconv.)                                                                    | 256x256 | 99.1 | 98.2 | 93.3 |  90.4 | 99.4 | 96.2| 93.4 | 96.0 | -        | -       |
 
-##### Normalized by Torso Size
+- Normalized by Torso Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |

@@ -37,7 +37,7 @@ Results on Sub-JHMDB dataset
 
 The models are pre-trained on MPII dataset only. NO test-time augmentation (multi-scale /rotation testing) is used.
 
-##### Normalized by Person Size
+- Normalized by Person Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
@@ -46,7 +46,7 @@ The models are pre-trained on MPII dataset only. NO test-time augmentation (mult
 | Sub3 |  [cpm](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py) | 368x368 | 97.9 | 94.9 | 87.3 |  84.0 | 98.6 | 94.4| 86.2 | 92.4 | [ckpt](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth)  | [log](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368_20201122.log.json) |
 | Average |  cpm                                                       | 368x368 | 97.4 | 93.5 | 81.5 |  77.9 | 96.4 | 91.4| 86.1 | 89.8 | -        | -       |
 
-##### Normalized by Torso Size
+- Normalized by Torso Size
 
 | Split| Arch        | Input Size | Head | Sho  | Elb | Wri | Hip | Knee | Ank | Mean | ckpt    | log     |
 | :--- | :--------:  | :--------: | :---: | :---: |:---: |:---: |:---: |:---:  |:---: | :---: | :-----: |:------: |
