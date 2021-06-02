@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.15.0 (02/06/2021)
+
+**Highlights**
+
+1. Support 3d video pose estimation (VideoPose3D).
+1. Support 3d hand pose estimation (InterNet).
+1. Improve presentation of modelzoo.
+
+**New Features**
+
+- Support "InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation from a Single RGB Image" (ECCV‘20) ([\#624](https://github.com/open-mmlab/mmpose/pull/624))
+- Support "3D human pose estimation in video with temporal convolutions and semi-supervised training" (CVPR'19)  ([\#602](https://github.com/open-mmlab/mmpose/pull/602),[\#681](https://github.com/open-mmlab/mmpose/pull/681))
+- Support 3d pose estimation demo ([\#653](https://github.com/open-mmlab/mmpose/pull/653),[\#670](https://github.com/open-mmlab/mmpose/pull/670))
+- Support bottom-up whole-body pose estimation ([\#689](https://github.com/open-mmlab/mmpose/pull/689))
+- Support mmcli ([\#634](https://github.com/open-mmlab/mmpose/pull/634))
+
+**Bug Fixes**
+
+- Fix opencv compatibility ([\#635](https://github.com/open-mmlab/mmpose/pull/635))
+- Fix demo with UDP ([\#637](https://github.com/open-mmlab/mmpose/pull/637))
+- Fix bottom-up model onnx convertion ([\#680](https://github.com/open-mmlab/mmpose/pull/680))
+- Fix `GPU_IDS` in distributed training ([\#668](https://github.com/open-mmlab/mmpose/pull/668))
+- Fix MANIFEST.in ([\#641](https://github.com/open-mmlab/mmpose/pull/641),[\#657](https://github.com/open-mmlab/mmpose/pull/657))
+- Fix docs ([\#643](https://github.com/open-mmlab/mmpose/pull/643),[\#684](https://github.com/open-mmlab/mmpose/pull/684),[\#688](https://github.com/open-mmlab/mmpose/pull/688),[\#690](https://github.com/open-mmlab/mmpose/pull/690),[\#692](https://github.com/open-mmlab/mmpose/pull/692))
+
+**Breaking Changes**
+
+- Reorganize configs by tasks, algorithms, datasets, and techniques ([\#647](https://github.com/open-mmlab/mmpose/pull/647))
+- Rename heads and detectors ([\#667](https://github.com/open-mmlab/mmpose/pull/667))
+
+**Improvements**
+
+- Add `radius` and `thickness` parameters in visualization ([\#638](https://github.com/open-mmlab/mmpose/pull/638))
+- Add `trans_prob` parameter in `TopDownRandomTranslation` ([\#650](https://github.com/open-mmlab/mmpose/pull/650))
+- Switch to `MMCV MODEL_REGISTRY` ([\#669](https://github.com/open-mmlab/mmpose/pull/669))
+- Update dependencies ([\#674](https://github.com/open-mmlab/mmpose/pull/674),[\#676](https://github.com/open-mmlab/mmpose/pull/676))
+
 ## v0.14.0 (06/05/2021)
 
 **Highlights**
@@ -11,15 +48,15 @@
 
 - Support "A simple yet effective baseline for 3d human pose estimation" (ICCV'17)  ([\#554](https://github.com/open-mmlab/mmpose/pull/554),[\#558](https://github.com/open-mmlab/mmpose/pull/558),[\#566](https://github.com/open-mmlab/mmpose/pull/566),[\#570](https://github.com/open-mmlab/mmpose/pull/570),[\#589](https://github.com/open-mmlab/mmpose/pull/589))
 - Support animal pose estimation ([\#559](https://github.com/open-mmlab/mmpose/pull/559),[\#561](https://github.com/open-mmlab/mmpose/pull/561),[\#563](https://github.com/open-mmlab/mmpose/pull/563),[\#571](https://github.com/open-mmlab/mmpose/pull/571),[\#603](https://github.com/open-mmlab/mmpose/pull/603),[\#605](https://github.com/open-mmlab/mmpose/pull/605))
-- Support Horse-10 dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), MacaquePose dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Vinegar Fly dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Desert Locust dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Grevy's Zebra dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), ATRW dataset ([\#571](https://github.com/open-mmlab/mmpose/pull/571)), and Animal-Pose dataset ([\#603](https://github.com/open-mmlab/mmpose/pull/603)).
-- Support bottom-up pose tracking demo ([\#574](https://github.com/open-mmlab/mmpose/pull/574)).
-- Support FP16 training ([\#584](https://github.com/open-mmlab/mmpose/pull/584),[\#616](https://github.com/open-mmlab/mmpose/pull/616),[\#626](https://github.com/open-mmlab/mmpose/pull/626)).
-- Support NMS for bottom-up ([\#609](https://github.com/open-mmlab/mmpose/pull/609)).
+- Support Horse-10 dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), MacaquePose dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Vinegar Fly dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Desert Locust dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), Grevy's Zebra dataset ([\#561](https://github.com/open-mmlab/mmpose/pull/561)), ATRW dataset ([\#571](https://github.com/open-mmlab/mmpose/pull/571)), and Animal-Pose dataset ([\#603](https://github.com/open-mmlab/mmpose/pull/603))
+- Support bottom-up pose tracking demo ([\#574](https://github.com/open-mmlab/mmpose/pull/574))
+- Support FP16 training ([\#584](https://github.com/open-mmlab/mmpose/pull/584),[\#616](https://github.com/open-mmlab/mmpose/pull/616),[\#626](https://github.com/open-mmlab/mmpose/pull/626))
+- Support NMS for bottom-up ([\#609](https://github.com/open-mmlab/mmpose/pull/609))
 
 **Bug Fixes**
 
 - Fix bugs in the top-down demo, when there are no people in the images ([\#569](https://github.com/open-mmlab/mmpose/pull/569)).
-- Fix the links in the doc ([\#612](https://github.com/open-mmlab/mmpose/pull/612)).
+- Fix the links in the doc ([\#612](https://github.com/open-mmlab/mmpose/pull/612))
 
 **Improvements**
 
