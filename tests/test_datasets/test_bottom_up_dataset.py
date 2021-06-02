@@ -7,7 +7,7 @@ from numpy.testing import assert_almost_equal
 from mmpose.datasets import DATASETS
 
 
-def convert_coco_to_output(coco):
+def convert_coco_to_output(coco, is_wholebody=False):
     outputs = []
     for img_id in coco.getImgIds():
         preds = []
@@ -15,8 +15,13 @@ def convert_coco_to_output(coco):
         image = coco.imgs[img_id]
         ann_ids = coco.getAnnIds(img_id)
         for ann_id in ann_ids:
-            keypoints = np.array(coco.anns[ann_id]['keypoints']).reshape(
-                (-1, 3))
+            obj = coco.anns[ann_id]
+            if is_wholebody:
+                keypoints = np.array(obj['keypoints'] + obj['foot_kpts'] +
+                                     obj['face_kpts'] + obj['lefthand_kpts'] +
+                                     obj['righthand_kpts']).reshape(-1, 3)
+            else:
+                keypoints = np.array(obj['keypoints']).reshape((-1, 3))
             K = keypoints.shape[0]
             if sum(keypoints[:, 2]) == 0:
                 continue
@@ -245,6 +250,62 @@ def test_bottom_up_AIC_dataset():
     _ = custom_dataset[0]
 
     outputs = convert_coco_to_output(custom_dataset.coco)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['AP'], 1.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+
+def test_bottom_up_COCO_wholebody_dataset():
+    dataset = 'BottomUpCocoWholeBodyDataset'
+    # test COCO-wholebody datasets
+    dataset_class = DATASETS.get(dataset)
+
+    channel_cfg = dict(
+        num_output_channels=133,
+        dataset_joints=133,
+        dataset_channel=[
+            list(range(133)),
+        ],
+        inference_channel=list(range(133)))
+
+    data_cfg = dict(
+        image_size=512,
+        base_size=256,
+        base_sigma=2,
+        heatmap_size=[128, 256],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        num_scales=2,
+        scale_aware_sigma=False,
+    )
+
+    _ = dataset_class(
+        ann_file='tests/data/coco/test_coco_wholebody.json',
+        img_prefix='tests/data/coco/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=False)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/coco/test_coco_wholebody.json',
+        img_prefix='tests/data/coco/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'coco_wholebody'
+
+    image_id = 785
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 4
+    _ = custom_dataset[0]
+
+    outputs = convert_coco_to_output(custom_dataset.coco, is_wholebody=True)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
         assert_almost_equal(infos['AP'], 1.0)
