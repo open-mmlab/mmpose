@@ -10,7 +10,7 @@ import titlecase
 
 def anchor(name):
     return re.sub(r'-+', '-', re.sub(r'[^a-zA-Z0-9]', '-',
-                                     name.strip().lower()))
+                                     name.strip().lower())).strip('-')
 
 
 # Count algorithms
@@ -38,7 +38,7 @@ for f in files:
     for _, p in papers:
         print(p)
         paperlinks[p] = ' '.join(
-            (f'[⇨]({splitext(basename(f))[0]}.html#{anchor(paperlink)})'
+            (f'[⇨](topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})'
              for paperlink in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))
