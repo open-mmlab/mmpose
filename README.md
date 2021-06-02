@@ -115,10 +115,10 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [MHP](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-mhp-acm-mm-2018-div) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
 - [x] [sub-JHMDB](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-jhmdb-iccv-2013-div) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
 - [x] [Human3.6M](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-human3-6m-tpami-2014-div) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
-- [x] [300W](docs/papers/datasets/300w.md) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
+- [x] [300W](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-300w-imavis-2016-div) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
 - [x] [WFLW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-wflw-cvpr-2018-div) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
 - [x] [AFLW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-aflw-iccvw-2011-div) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
-- [x] [COFW](docs/papers/datasets/cofw.md) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [COFW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-cofw-iccv-2013-div) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
 - [x] [OneHand10K](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-onehand10k-tcsvt-2019-div) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
 - [x] [FreiHand](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-freihand-iccv-2019-div) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
 - [x] [RHD](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-rhd-iccv-2017-div) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
@@ -130,7 +130,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 - [x] [MacaquePose](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-macaquepose-biorxiv-2020-div) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
 - [x] [Vinegar Fly](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-vinegar-fly-nature-methods-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
 - [x] [Desert Locust](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-desert-locust-elife-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
-- [x] [Grévy’s Zebra](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-desert-locust-elife-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [Grévy’s Zebra](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-grevys-zebra-elife-2019-div) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
 - [x] [ATRW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#div-align-center-atrw-acm-mm-2020-div) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
 
 </details>
@@ -141,7 +141,7 @@ Supported backbones:
 <summary>(click to expand)</summary>
 
 - [x] [AlexNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-alexnet-neurips-2012-div) (NeurIPS'2012)
-- [x] [VGG](docs/papers/backbones/vgg.md) (ICLR'2015)
+- [x] [VGG](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-vgg-iclr-2015-div) (ICLR'2015)
 - [x] [ResNet](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnet-cvpr-2016-div) (CVPR'2016)
 - [x] [ResNetV1D](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnetv1d-cvpr-2019-div) (CVPR'2019)
 - [x] [ResNeSt](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-resnest-arxiv-2020-div) (ArXiv'2020)
