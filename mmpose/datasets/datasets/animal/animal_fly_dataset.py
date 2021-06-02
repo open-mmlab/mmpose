@@ -6,7 +6,7 @@ import numpy as np
 
 from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
                                                   keypoint_pck_accuracy)
-from ...registry import DATASETS
+from ...builder import DATASETS
 from .animal_base_dataset import AnimalBaseDataset
 
 

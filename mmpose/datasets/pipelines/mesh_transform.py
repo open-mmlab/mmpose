@@ -5,7 +5,7 @@ import torch
 
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform)
-from mmpose.datasets.registry import PIPELINES
+from mmpose.datasets.builder import PIPELINES
 
 
 def _flip_smpl_pose(pose):

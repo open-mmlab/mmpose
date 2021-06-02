@@ -8,7 +8,7 @@ from mmcv.cnn import (ConvModule, build_activation_layer, constant_init,
                       normal_init)
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..registry import BACKBONES
+from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 from .utils import channel_shuffle, load_checkpoint, make_divisible
 

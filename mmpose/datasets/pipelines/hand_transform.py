@@ -1,6 +1,6 @@
 import numpy as np
 
-from mmpose.datasets.registry import PIPELINES
+from mmpose.datasets.builder import PIPELINES
 from .top_down_transform import TopDownRandomFlip
 
 

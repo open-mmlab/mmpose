@@ -10,7 +10,7 @@ from poseval.evaluateAP import evaluateAP
 from xtcocotools.coco import COCO
 
 from ....core.post_processing import oks_nms, soft_oks_nms
-from ...registry import DATASETS
+from ...builder import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
 
 

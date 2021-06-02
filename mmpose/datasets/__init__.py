@@ -1,6 +1,5 @@
-from .builder import build_dataloader, build_dataset
+from .builder import DATASETS, PIPELINES, build_dataloader, build_dataset
 from .pipelines import Compose
-from .registry import DATASETS, PIPELINES
 from .samplers import DistributedSampler
 
 from .datasets import (  # isort:skip

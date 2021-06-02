@@ -7,7 +7,7 @@ from mmpose.core.evaluation import pose_pck_accuracy
 from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from mmpose.models.utils.ops import resize
-from ..registry import HEADS
+from ..builder import HEADS
 from .top_down_base_head import TopDownBaseHead
 
 
