@@ -13,6 +13,8 @@
 }
 ```
 
+</details>
+
 <!-- [ALGORITHM] -->
 
 <details>
