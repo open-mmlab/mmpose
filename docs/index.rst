@@ -27,14 +27,25 @@ Welcome to MMPose's documentation!
    :caption: Model Zoo
 
    modelzoo.md
-   top_down_models.md
-   bottom_up_models.md
-   wholebody_models.md
-   face_models.md
-   hand_models.md
-   fashion_models.md
-   animal_models.md
-   mesh_models.md
+   topics/animal.md
+   topics/body(2d,kpt,img).md
+   topics/body(3d,kpt,img).md
+   topics/body(3d,kpt,vid).md
+   topics/body(3d,mesh,img).md
+   topics/face.md
+   topics/fashion.md
+   topics/hand(2d).md
+   topics/hand(3d).md
+   topics/wholebody.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Model Zoo (by paper)
+
+   papers/algorithms.md
+   papers/backbones.md
+   papers/datasets.md
+   papers/techniques.md
 
 .. toctree::
    :maxdepth: 2

@@ -86,6 +86,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">COCO (ECCV'2014)</summary>
+
 ```bibtex
 @inproceedings{lin2014microsoft,
   title={Microsoft coco: Common objects in context},
@@ -96,6 +99,8 @@ mmpose
   organization={Springer}
 }
 ```
+
+</details>
 
 For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download). COCO'2014 Train is needed for human mesh estimation training.
 Download and extract them under $MMPOSE/data, and make them look like this:
@@ -121,6 +126,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">Human3.6M (TPAMI'2014)</summary>
+
 ```bibtex
 @article{h36m_pami,
   author = {Ionescu, Catalin and Papava, Dragos and Olaru, Vlad and Sminchisescu,  Cristian},
@@ -134,6 +142,8 @@ mmpose
   year = {2014}
 }
 ```
+
+</details>
 
 For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), we use the MoShed data provided in [HMR](https://github.com/akanazawa/hmr) for training.
 However, due to license limitations, we are not allowed to redistribute the MoShed data.

@@ -80,6 +80,13 @@ class BottomUpBaseDataset(Dataset):
         results['ann_info'] = self.ann_info
         return self.pipeline(results)
 
+    def get_flip_index_from_flip_pairs(self, flip_pairs):
+        flip_index = list(range(self.ann_info['num_joints']))
+        for pair in flip_pairs:
+            flip_index[pair[1]], flip_index[pair[0]] = flip_index[
+                pair[0]], flip_index[pair[1]]
+        return flip_index
+
     def __getitem__(self, idx):
         """Get the sample for either training or testing given index."""
         if self.test_mode:

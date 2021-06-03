@@ -5,7 +5,7 @@ from collections import OrderedDict
 import numpy as np
 from scipy.io import loadmat, savemat
 
-from ...registry import DATASETS
+from ...builder import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
 

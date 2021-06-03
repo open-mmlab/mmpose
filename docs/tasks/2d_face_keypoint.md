@@ -87,6 +87,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">WFLW (CVPR'2018)</summary>
+
 ```bibtex
 @inproceedings{wu2018look,
   title={Look at boundary: A boundary-aware face alignment algorithm},
@@ -96,6 +99,8 @@ mmpose
   year={2018}
 }
 ```
+
+</details>
 
 For WFLW data, please download images from [WFLW Dataset](https://wywu.github.io/projects/LAB/WFLW.html).
 Please download the annotation files from [wflw_annotations](https://download.openmmlab.com/mmpose/datasets/wflw_annotations.tar).
@@ -138,6 +143,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right">AFLW (ICCVW'2011)</summary>
+
 ```bibtex
 @inproceedings{koestinger2011annotated,
   title={Annotated facial landmarks in the wild: A large-scale, real-world database for facial landmark localization},
@@ -148,6 +156,8 @@ mmpose
   organization={IEEE}
 }
 ```
+
+</details>
 
 For AFLW data, please download images from [AFLW Dataset](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/).
 Please download the annotation files from [aflw_annotations](https://download.openmmlab.com/mmpose/datasets/aflw_annotations.tar).

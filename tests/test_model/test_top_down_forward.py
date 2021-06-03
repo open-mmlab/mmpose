@@ -10,7 +10,7 @@ def test_topdown_forward():
         pretrained=None,
         backbone=dict(type='ResNet', depth=18),
         keypoint_head=dict(
-            type='TopDownSimpleHead',
+            type='TopdownHeatmapSimpleHead',
             in_channels=512,
             out_channels=17,
             loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -53,7 +53,7 @@ def test_topdown_forward():
             num_stacks=1,
         ),
         keypoint_head=dict(
-            type='TopDownMultiStageHead',
+            type='TopdownHeatmapMultiStageHead',
             in_channels=256,
             out_channels=17,
             num_stages=1,
@@ -88,7 +88,7 @@ def test_topdown_forward():
             num_stacks=1,
         ),
         keypoint_head=dict(
-            type='TopDownMultiStageHead',
+            type='TopdownHeatmapMultiStageHead',
             in_channels=256,
             out_channels=17,
             num_stages=1,
@@ -141,7 +141,7 @@ def test_topdown_forward():
             num_steps=4,
             norm_cfg=dict(type='BN')),
         keypoint_head=dict(
-            type='TopDownMSMUHead',
+            type='TopdownHeatmapMSMUHead',
             out_shape=(64, 48),
             unit_channels=256,
             out_channels=17,

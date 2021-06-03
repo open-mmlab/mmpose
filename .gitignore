@@ -115,6 +115,10 @@ mmpose/version.py
 *.log.json
 *.npy
 work_dirs/
+docs/topics/
+docs/papers/*.md
+docs/datasets.md
+docs/modelzoo.md
 
 # Pytorch
 *.pth

@@ -40,26 +40,26 @@ When submitting jobs using "tools/train.py" or "tools/test.py", you may specify 
 We follow the style below to name config files. Contributors are advised to follow the same style.
 
 ```
-configs/{task}/{model}/{dataset}/{backbone}_[model_setting]_{dataset}_{input_size}_[technique].py
+configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset}_[input_size]_[technique].py
 ```
 
 `{xxx}` is required field and `[yyy]` is optional.
 
-- `{task}`: method type, e.g. `top_down`, `bottom_up`, `hand`, `mesh`, etc.
-- `{model}`: model type, e.g. `hrnet`, `darkpose`, etc.
+- `{topic}`: topic type, e.g. `body`, `face`, `hand`, `animal`, etc.
+- `{task}`: task type, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]`. The task is categorized in 5: (1) 2D or 3D pose estimation, (2) representation type: keypoint (kpt), mesh, or DensePose (dense). (3) Single-view (sview) or multi-view (mview), (4) RGB or RGBD, and (5) Image (img) or Video (vid). e.g. `2d_kpt_sview_rgb_img`, `3d_kpt_sview_rgb_vid`, etc.
+- `{algorithm}`: algorithm type, e.g. `associative_embedding`, `deeppose`, etc.
 - `{dataset}`: dataset name, e.g. `coco`, etc.
 - `{backbone}`: backbone type, e.g. `res50` (ResNet-50), etc.
 - `[model setting]`: specific setting for some models.
-- `[misc]`: miscellaneous setting/plugins of model, e.g. `video`, etc.
-- `{input_size}`: input size of the model.
-- `[technique]`: some specific techniques or tricks to use, e.g. `dark`, `udp`.
+- `[input_size]`: input size of the model.
+- `[technique]`: some specific techniques, including losses, augmentation and tricks, e.g. `wingloss`, `udp`, `fp16`.
 
-### Config System for Top-down Human Pose Estimation
+### Config System
 
-- An Example of 2D Top-down Human Pose Estimation
+- An Example of 2D Top-down Heatmap-based Human Pose Estimation
 
     To help the users have a basic idea of a complete config structure and the modules in the config system,
-    we make brief comments on 'configs/top_down/resnet/coco/res50_coco_256x192.py' as the following.
+    we make brief comments on 'https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py' as the following.
     For more detailed usage and alternative for per parameter in each module, please refer to the API documentation.
 
     ```python
@@ -118,7 +118,7 @@ configs/{task}/{model}/{dataset}/{backbone}_[model_setting]_{dataset}_{input_siz
             type='ResNet',  # Name of the backbone
             depth=50),  # Depth of ResNet model
         keypoint_head=dict(  # Dict for keypoint head
-            type='TopDownSimpleHead',  # Name of keypoint head
+            type='TopdownHeatmapSimpleHead',  # Name of keypoint head
             in_channels=2048,  # The input channels of keypoint head
             out_channels=channel_cfg['num_output_channels'],  # The output channels of keypoint head
             loss_keypoint=dict(  # Dict for keypoint loss

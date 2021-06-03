@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from ..mesh_heads.geometric_layers import batch_rodrigues
-from ..registry import LOSSES
+from ..builder import LOSSES
+from ..utils.geometry import batch_rodrigues
 
 
 def perspective_projection(points, rotation, translation, focal_length,
