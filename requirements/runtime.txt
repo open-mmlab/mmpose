@@ -6,7 +6,6 @@ munkres
 numpy
 opencv-python
 pillow
-poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
 torchvision
 xtcocotools>=1.8
