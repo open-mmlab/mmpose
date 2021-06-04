@@ -532,7 +532,7 @@ class ViPNAS_ResNet(BaseBackbone):
         self.norm_eval = norm_eval
         self.zero_init_residual = zero_init_residual
         self.block = self.arch_settings[depth]
-        self.stage_blocks = dep[1:num_stages]
+        self.stage_blocks = dep[1:1+num_stages]
         self.expansion = get_expansion(self.block, expansion)
 
         self._make_stem_layer(in_channels, wid[0], ks[0])
@@ -540,9 +540,6 @@ class ViPNAS_ResNet(BaseBackbone):
         self.res_layers = []
         _in_channels = wid[0]
         _out_channels = wid[1] * self.expansion
-        print(self.stage_blocks)
-        print(len(self.stage_blocks))
-        exit()
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = strides[i]
             dilation = dilations[i]
@@ -681,11 +678,6 @@ class ViPNAS_ResNet(BaseBackbone):
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
-        print(self.res_layers)
-        print(len(self.res_layers))
-        print(self.out_indices)
-        print(len(outs))
-        exit()
         if len(outs) == 1:
             return outs[0]
         return tuple(outs)
