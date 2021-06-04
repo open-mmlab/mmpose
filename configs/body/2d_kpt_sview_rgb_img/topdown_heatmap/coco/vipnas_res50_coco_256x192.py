@@ -40,9 +40,9 @@ channel_cfg = dict(
 model = dict(
     type='TopDown',
     pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50),
+    backbone=dict(type='ViPNAS_ResNet', depth=50),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='ViPNASHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
