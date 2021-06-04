@@ -42,7 +42,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ViPNAS_ResNet', depth=50),
     keypoint_head=dict(
-        type='ViPNASHeatmapSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
