@@ -39,7 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
+    pretrained='',
     backbone=dict(type='ViPNAS_ResNet', depth=50),
     keypoint_head=dict(
         type='ViPNASHeatmapSimpleHead',
