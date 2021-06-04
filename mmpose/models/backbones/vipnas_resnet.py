@@ -293,7 +293,7 @@ def get_expansion(block, expansion=None):
         if hasattr(block, 'expansion'):
             expansion = block.expansion
         elif issubclass(block, ViPNAS_Bottleneck):
-            expansion = 4
+            expansion = 1
         else:
             raise TypeError(f'expansion is not specified for {block.__name__}')
     else:
@@ -474,11 +474,12 @@ class ViPNAS_ResNet(BaseBackbone):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
-        wid (list(int)): discovered width config for each stage.
-        dep (list(int)): discovered depth config for each stage.
-        ks (list(int)): discovered kernel size config for each stage.
-        group (list(int)): discovered group number config for each stage.
-        att (list(int)): discovered attention config for each stage.
+        wid (list(int)): searched width config for each stage.
+        expan (list(int)): searched expansion ratio config for each stage.
+        dep (list(int)): searched depth config for each stage.
+        ks (list(int)): searched kernel size config for each stage.
+        group (list(int)): searched group number config for each stage.
+        att (list(int)): searched attention config for each stage.
 
     """
 
@@ -489,7 +490,6 @@ class ViPNAS_ResNet(BaseBackbone):
     def __init__(self,
                  depth,
                  in_channels=3,
-                 expansion=None,
                  num_stages=4,
                  strides=(1, 2, 2, 2),
                  dilations=(1, 1, 1, 1),
@@ -504,6 +504,7 @@ class ViPNAS_ResNet(BaseBackbone):
                  with_cp=False,
                  zero_init_residual=True,
                  wid=[48, 80, 160, 304, 608],
+                 expan=[None, 1, 1, 1, 1],
                  dep=[None, 4, 6, 7, 3],
                  ks=[7, 3, 5, 5, 5],
                  group=[None, 16, 16, 16, 16],
@@ -533,14 +534,14 @@ class ViPNAS_ResNet(BaseBackbone):
         self.zero_init_residual = zero_init_residual
         self.block = self.arch_settings[depth]
         self.stage_blocks = dep[1:1+num_stages]
-        self.expansion = get_expansion(self.block, expansion)
 
         self._make_stem_layer(in_channels, wid[0], ks[0])
 
         self.res_layers = []
         _in_channels = wid[0]
         for i, num_blocks in enumerate(self.stage_blocks):
-            _out_channels = wid[i + 1] * self.expansion
+            expansion = get_expansion(self.block, expan[i + 1])
+            _out_channels = wid[i + 1] * expansion
             stride = strides[i]
             dilation = dilations[i]
             res_layer = self.make_res_layer(
@@ -548,7 +549,7 @@ class ViPNAS_ResNet(BaseBackbone):
                 num_blocks=num_blocks,
                 in_channels=_in_channels,
                 out_channels=_out_channels,
-                expansion=self.expansion,
+                expansion=expansion,
                 stride=stride,
                 dilation=dilation,
                 style=self.style,

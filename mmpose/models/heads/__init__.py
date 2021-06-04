@@ -9,11 +9,12 @@ from .topdown_heatmap_multi_stage_head import (TopdownHeatmapMSMUHead,
                                                TopdownHeatmapMultiStageHead)
 from .topdown_heatmap_simple_head import TopdownHeatmapSimpleHead
 from .vipnas_heatmap_simple_head import ViPNASHeatmapSimpleHead
+from .vipnas_heatmap_simple_head_wo_conv import ViPNASHeatmapSimpleHead_WoConv
 
 __all__ = [
     'TopdownHeatmapSimpleHead', 'TopdownHeatmapMultiStageHead',
     'TopdownHeatmapMSMUHead', 'TopdownHeatmapBaseHead',
     'AEHigherResolutionHead', 'AESimpleHead', 'DeepposeRegressionHead',
     'TemporalRegressionHead', 'Interhand3DHead', 'HMRMeshHead',
-    'ViPNASHeatmapSimpleHead'
+    'ViPNASHeatmapSimpleHead', 'ViPNASHeatmapSimpleHead_WoConv'
 ]
