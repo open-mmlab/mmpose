@@ -315,9 +315,16 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
             planes = num_filters[i]
             groups = num_groups[i]
             layers.append(
+                build_conv_layer(
+                    None,
+                    self.in_channels,
+                    planes,
+                    kernel_size=1,
+                    bias=False))
+            layers.append(
                 build_upsample_layer(
                     dict(type='deconv'),
-                    in_channels=self.in_channels,
+                    in_channels=planes,
                     out_channels=planes,
                     kernel_size=kernel,
                     groups=groups,
