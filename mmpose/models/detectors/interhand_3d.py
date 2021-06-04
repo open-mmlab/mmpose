@@ -1,3 +1,7 @@
+import mmcv
+import numpy as np
+
+from mmpose.core import imshow_keypoints, imshow_keypoints_3d
 from ..builder import POSENETS
 from .top_down import TopDown
 
@@ -94,3 +98,118 @@ class Interhand3D(TopDown):
         else:
             result = {}
         return result
+
+    def show_result(self,
+                    result,
+                    img=None,
+                    skeleton=None,
+                    kpt_score_thr=0.3,
+                    radius=8,
+                    bbox_color='green',
+                    thickness=2,
+                    pose_kpt_color=None,
+                    pose_limb_color=None,
+                    vis_height=400,
+                    win_name='',
+                    show=False,
+                    wait_time=0,
+                    out_file=None):
+        """Visualize 3D pose estimation results.
+
+        Args:
+            result (list[dict]): The pose estimation results containing:
+                - "keypoints_3d" ([K,4]): 3D keypoints
+                - "keypoints" ([K,3] or [T,K,3]): Optional for visualizing
+                    2D inputs. If a sequence is given, only the last frame
+                    will be used for visualization
+                - "bbox" ([4,] or [T,4]): Optional for visualizing 2D inputs
+                - "title" (str): title for the subplot
+            img (str or Tensor): Optional. The image to visualize 2D inputs on.
+            skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
+                limbs, each is a pair of joint indices.
+            kpt_score_thr (float, optional): Minimum score of keypoints
+                to be shown. Default: 0.3.
+            radius (int): Radius of circles.
+            bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
+            thickness (int): Thickness of lines.
+            pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
+                If None, do not draw keypoints.
+            pose_limb_color (np.array[Mx3]): Color of M limbs.
+                If None, do not draw limbs.
+            vis_height (int): The image hight of the visualization. The width
+                will be N*vis_height depending on the number of visualized
+                items.
+            win_name (str): The window name.
+            show (bool): Whether to show the image. Default: False.
+            wait_time (int): Value of waitKey param.
+                Default: 0.
+            out_file (str or None): The filename to write the image.
+                Default: None.
+
+        Returns:
+            Tensor: Visualized img, only if not `show` or `out_file`.
+        """
+
+        assert len(result) > 0
+        result = sorted(result, key=lambda x: x.get('track_id', 0))
+
+        # draw image and 2d poses
+        if img is not None:
+            img = mmcv.imread(img)
+
+            bbox_result = []
+            pose_2d = []
+            for res in result:
+                if 'bbox' in res:
+                    bbox = np.array(res['bbox'])
+                    if bbox.ndim != 1:
+                        assert bbox.ndim == 2
+                        bbox = bbox[-1]  # Get bbox from the last frame
+                    bbox_result.append(bbox)
+                if 'keypoints' in res:
+                    kpts = np.array(res['keypoints'])
+                    if kpts.ndim != 2:
+                        assert kpts.ndim == 3
+                        kpts = kpts[-1]  # Get 2D keypoints from the last frame
+                    pose_2d.append(kpts)
+
+            if len(bbox_result) > 0:
+                bboxes = np.vstack(bbox_result)
+                mmcv.imshow_bboxes(
+                    img,
+                    bboxes,
+                    colors=bbox_color,
+                    top_k=-1,
+                    thickness=2,
+                    show=False)
+            if len(pose_2d) > 0:
+                imshow_keypoints(
+                    img,
+                    pose_2d,
+                    skeleton,
+                    kpt_score_thr=kpt_score_thr,
+                    pose_kpt_color=pose_kpt_color,
+                    pose_limb_color=pose_limb_color,
+                    radius=radius,
+                    thickness=thickness)
+            img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
+
+        img_vis = imshow_keypoints_3d(
+            result,
+            img,
+            skeleton,
+            pose_kpt_color,
+            pose_limb_color,
+            vis_height,
+            axis_limit=300,
+            axis_azimuth=-115,
+            axis_elev=15,
+            kpt_score_thr=kpt_score_thr)
+
+        if show:
+            mmcv.visualization.imshow(img_vis, win_name, wait_time)
+
+        if out_file is not None:
+            mmcv.imwrite(img_vis, out_file)
+
+        return img_vis

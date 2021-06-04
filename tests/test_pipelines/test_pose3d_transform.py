@@ -5,7 +5,9 @@ import tempfile
 import mmcv
 import numpy as np
 import pytest
+from numpy.testing import assert_array_almost_equal
 
+from mmpose.core import SimpleCamera
 from mmpose.datasets.pipelines import Compose
 
 H36M_JOINT_IDX = [14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6]
@@ -296,6 +298,14 @@ def test_camera_projection():
             camera_param=camera_param_wo_undistortion,
             mode='camera_to_pixel')
     ])
+
+    # test pixel to camera transformation
+    camera = SimpleCamera(camera_param_wo_undistortion)
+    kpt_camera = np.random.rand(14, 3)
+    kpt_pixel = camera.camera_to_pixel(kpt_camera)
+    _kpt_camera = camera.pixel_to_camera(
+        np.concatenate([kpt_pixel, kpt_camera[:, [2]]], -1))
+    assert_array_almost_equal(_kpt_camera, kpt_camera, decimal=4)
 
 
 def test_3d_heatmap_generation():

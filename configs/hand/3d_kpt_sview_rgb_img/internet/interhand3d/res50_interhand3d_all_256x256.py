@@ -56,7 +56,7 @@ model = dict(
             hidden_dims=(512, ),
         ),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
-        loss_root_depth=dict(type='L1Loss'),
+        loss_root_depth=dict(type='L1Loss', use_target_weight=True),
         loss_hand_type=dict(type='BCELoss', use_target_weight=True),
     ),
     train_cfg={},
@@ -136,7 +136,7 @@ test_pipeline = val_pipeline
 data_root = 'data/interhand2.6m'
 data = dict(
     samples_per_gpu=16,
-    workers_per_gpu=2,
+    workers_per_gpu=1,
     train=dict(
         type='InterHand3DDataset',
         ann_file=f'{data_root}/annotations/all/'
