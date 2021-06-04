@@ -302,6 +302,10 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
             error_msg = f'num_layers({num_layers}) ' \
                         f'!= length of num_kernels({len(num_kernels)})'
             raise ValueError(error_msg)
+        if num_layers != len(num_groups):
+            error_msg = f'num_layers({num_layers}) ' \
+                        f'!= length of num_groups({len(num_groups)})'
+            raise ValueError(error_msg)
 
         layers = []
         for i in range(num_layers):
