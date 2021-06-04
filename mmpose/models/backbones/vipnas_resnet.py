@@ -209,10 +209,10 @@ class ViPNAS_Bottleneck(nn.Module):
         self.add_module(self.norm3_name, norm3)
 
         if attention:
-            self.attention = out_planes = out_channels // 16 if out_channels // 16 >= 16 else 16
+            out_planes = out_channels // 16 if out_channels // 16 >= 16 else 16
             self.attention = GCBlock(out_channels, out_planes, 'att', ['channel_add'])
         else:
-            self.att = None
+            self.attention = None
 
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
