@@ -194,8 +194,6 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
     def forward(self, x):
         """Forward function."""
-        print(x.size(), flush=True)
-        exit()
         x = self._transform_inputs(x)
         x = self.deconv_layers(x)
         x = self.final_layer(x)
