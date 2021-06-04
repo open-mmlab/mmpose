@@ -539,7 +539,7 @@ class ViPNAS_ResNet(BaseBackbone):
 
         self.res_layers = []
         _in_channels = wid[0]
-        _out_channels = wid[1]
+        _out_channels = wid[1] * self.expansion
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = strides[i]
             dilation = dilations[i]
@@ -560,7 +560,7 @@ class ViPNAS_ResNet(BaseBackbone):
                 groups=group[i+1],
                 attention=att[i+1])
             _in_channels = _out_channels
-            _out_channels = wid[i+2]
+            _out_channels = wid[i+2] * self.expansion
             layer_name = f'layer{i + 1}'
             self.add_module(layer_name, res_layer)
             self.res_layers.append(layer_name)
