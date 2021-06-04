@@ -677,9 +677,6 @@ class ViPNAS_ResNet(BaseBackbone):
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
-        print(len(outs))
-        print(outs[0].size())
-        exit()
         if len(outs) == 1:
             return outs[0]
         return tuple(outs)
