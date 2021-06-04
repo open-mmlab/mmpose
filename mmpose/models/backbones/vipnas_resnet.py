@@ -540,6 +540,8 @@ class ViPNAS_ResNet(BaseBackbone):
         self.res_layers = []
         _in_channels = wid[0]
         _out_channels = wid[1] * self.expansion
+        print(self.stage_blocks)
+        print(len(self.stage_blocks))
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = strides[i]
             dilation = dilations[i]
