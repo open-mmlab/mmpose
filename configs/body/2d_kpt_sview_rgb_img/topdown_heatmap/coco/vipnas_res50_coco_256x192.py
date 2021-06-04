@@ -39,7 +39,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='',
+    pretrained=None,
     backbone=dict(type='ViPNAS_ResNet', depth=50),
     keypoint_head=dict(
         type='ViPNASHeatmapSimpleHead',
