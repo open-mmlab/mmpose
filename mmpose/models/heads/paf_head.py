@@ -1,12 +1,11 @@
 import torch.nn as nn
 
-from mmpose.models.builder import build_head
-from ..registry import HEADS
+from mmpose.models.builder import HEADS, build_head
 
 
 @HEADS.register_module()
 class PAFHead(nn.Module):
-    """Bottom-up PAF head.
+    """Bottom-up PAF (Part Affinity Fields) head.
 
     Paper ref: Cao, Zhe, et al. "OpenPose: realtime multi-person
     2D pose estimation using Part Affinity Fields." (TPAMI'2019)

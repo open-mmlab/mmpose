@@ -10,7 +10,7 @@ from mmpose.core.evaluation import (aggregate_results_paf, get_group_preds,
 from mmpose.core.post_processing.group import PAFParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
-from ..registry import POSENETS
+from ..builder import POSENETS
 from .base import BasePose
 
 

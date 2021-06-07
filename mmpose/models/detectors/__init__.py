@@ -8,6 +8,5 @@ from .top_down import TopDown
 
 __all__ = [
     'TopDown', 'AssociativeEmbedding', 'ParametricMesh', 'MultiTask',
-    'PoseLifter', 'Interhand3D',
-    'PartAffinityField'
+    'PoseLifter', 'Interhand3D', 'PartAffinityField'
 ]
