@@ -16,7 +16,10 @@ from .base import BasePose
 
 @POSENETS.register_module()
 class PartAffinityField(BasePose):
-    """Bottom-up pose detectors.
+    """Bottom-up PAF (part affinity field) pose detectors.
+
+    Paper ref: Cao, Zhe, et al. "OpenPose: realtime multi-person
+    2D pose estimation using Part Affinity Fields." (TPAMI'2019)
 
     Args:
         backbone (dict): Backbone modules to extract feature.
@@ -40,7 +43,6 @@ class PartAffinityField(BasePose):
         self.backbone = builder.build_backbone(backbone)
 
         if keypoint_head is not None:
-
             if 'loss_keypoint' not in keypoint_head and loss_pose is not None:
                 warnings.warn(
                     '`loss_pose` for BottomUp is deprecated, '
