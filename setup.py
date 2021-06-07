@@ -1,3 +1,6 @@
+import os
+import os.path as osp
+import shutil
 from setuptools import find_packages, setup
 
 
@@ -99,7 +102,25 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     return packages
 
 
+def link_file_to_package():
+    """Create symlinks to package dependencies to support MIM."""
+    item_list = ['tools', 'configs', 'model_zoo.yml']
+
+    for item in item_list:
+        if osp.exists(item):
+            src_path = osp.join('..', item)
+            tar_path = osp.join('mmpose', item)
+
+            if osp.isfile(tar_path) or osp.islink(tar_path):
+                os.remove(tar_path)
+            elif osp.isdir(tar_path):
+                shutil.rmtree(tar_path)
+
+            os.symlink(src_path, tar_path)
+
+
 if __name__ == '__main__':
+    link_file_to_package()
     setup(
         name='mmpose',
         version=get_version(),

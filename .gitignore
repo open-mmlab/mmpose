@@ -107,6 +107,9 @@ venv.bak/
 
 # custom
 mmpose/version.py
+mmpose/configs
+mmpose/tools
+mmpose/model_zoo.yml
 /models
 /data
 .vscode
