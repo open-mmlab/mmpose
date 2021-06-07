@@ -109,6 +109,7 @@ venv.bak/
 mmpose/version.py
 mmpose/configs
 mmpose/tools
+mmpose/demo
 mmpose/model_zoo.yml
 /models
 /data
