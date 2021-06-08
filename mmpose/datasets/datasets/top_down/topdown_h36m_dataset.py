@@ -5,7 +5,8 @@ import json_tricks as json
 import numpy as np
 from xtcocotools.coco import COCO
 
-from mmpose.core.evaluation.top_down_eval import keypoint_epe
+from mmpose.core.evaluation.top_down_eval import (keypoint_epe,
+                                                  keypoint_pck_accuracy)
 from ...builder import DATASETS
 from .topdown_base_dataset import TopDownBaseDataset
 
@@ -200,7 +201,7 @@ class TopDownH36MDataset(TopDownBaseDataset):
             dict: Evaluation results for evaluation metric.
         """
         metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['EPE']
+        allowed_metrics = ['PCK', 'EPE']
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
@@ -235,15 +236,14 @@ class TopDownH36MDataset(TopDownBaseDataset):
 
         return name_value
 
-    def _report_metric(self, res_file, metrics, pck_thr=0.2, auc_nor=30):
+    def _report_metric(self, res_file, metrics, pck_thr=0.05):
         """Keypoint evaluation.
 
         Args:
             res_file (str): Json file stored prediction results.
             metrics (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'PCKh', 'AUC', 'EPE'.
-            pck_thr (float): PCK threshold, default as 0.2.
-            pckh_thr (float): PCKh threshold, default as 0.7.
+            pck_thr (float): PCK threshold, default as 0.05.
             auc_nor (float): AUC normalization factor, default as 30 pixel.
 
         Returns:
@@ -273,6 +273,11 @@ class TopDownH36MDataset(TopDownBaseDataset):
         gts = np.array(gts)
         masks = np.array(masks)
         threshold_bbox = np.array(threshold_bbox)
+
+        if 'PCK' in metrics:
+            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
+                                              threshold_bbox)
+            info_str.append(('PCK', pck))
 
         if 'EPE' in metrics:
             info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))

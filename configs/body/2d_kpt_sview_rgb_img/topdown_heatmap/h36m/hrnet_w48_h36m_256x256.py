@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='EPE', key_indicator='EPE')
+evaluation = dict(interval=10, metric=['PCK', 'EPE'], key_indicator='PCK')
 
 optimizer = dict(
     type='Adam',
@@ -154,7 +154,7 @@ data = dict(
         pipeline=val_pipeline),
     test=dict(
         type='TopDownH36MDataset',
-        ann_file=f'{data_root}/annotation_body2d/h36m_coco_test_debug.json',
+        ann_file=f'{data_root}/annotation_body2d/h36m_coco_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
