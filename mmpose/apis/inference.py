@@ -210,6 +210,8 @@ def _inference_single_pose_model(model,
                       [29, 35], [18, 24], [30, 36], [19, 25], [31,
                                                                37], [20, 26],
                       [32, 38], [21, 27], [33, 39]]
+    elif dataset == 'TopDownH36MDataset':
+        flip_pairs = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15], [13, 16]]
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset', 'PanopticDataset',
                      'InterHand2DDataset'):
         flip_pairs = []
@@ -621,6 +623,18 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[16] * 14 + [19] * 13]
         pose_kpt_color = palette[[16] * 14 + [0] * 26]
+
+    elif dataset == 'TopDownH36MDataset':
+        skeleton = [[1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [6, 7], [1, 8],
+                    [8, 9], [9, 10], [10, 11], [9, 12], [12, 13], [13, 14],
+                    [9, 15], [15, 16], [16, 17]]
+
+        pose_kpt_color = palette[[
+            9, 0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
+        ]]
+        pose_limb_color = palette[[
+            0, 0, 0, 16, 16, 16, 9, 9, 9, 9, 16, 16, 16, 0, 0, 0
+        ]]
 
     elif dataset in ('OneHand10KDataset', 'FreiHandDataset',
                      'PanopticDataset'):
