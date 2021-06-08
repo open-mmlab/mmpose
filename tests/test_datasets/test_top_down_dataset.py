@@ -764,4 +764,4 @@ def test_top_down_h36m_dataset():
         assert_almost_equal(infos['EPE'], 0.0)
 
         with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'AUC')
