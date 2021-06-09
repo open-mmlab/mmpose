@@ -93,6 +93,7 @@ def test_top_down_OneHand10K_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'onehand10k'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
@@ -149,6 +150,7 @@ def test_top_down_FreiHand_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'freihand'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
@@ -205,6 +207,7 @@ def test_top_down_RHD_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'rhd2d'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 3
     _ = custom_dataset[0]
@@ -261,6 +264,7 @@ def test_top_down_Panoptic_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'panoptic_hand2d'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
@@ -322,6 +326,7 @@ def test_top_down_InterHand2D_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'interhand2d'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     assert len(custom_dataset.db) == 6
@@ -390,6 +395,7 @@ def test_top_down_InterHand3D_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'interhand3d'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 4
     assert len(custom_dataset.db) == 4

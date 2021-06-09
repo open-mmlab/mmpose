@@ -7,6 +7,7 @@ import numpy as np
 from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
+from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
 from .._base_ import Kpt2dSviewRgbImgTopDownDataset
 

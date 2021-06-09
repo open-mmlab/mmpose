@@ -1,5 +1,5 @@
 dataset_info = dict(
-    dataset_name='interhand2d',
+    dataset_name='interhand3d',
     paper_info=dict(
         author='Moon, Gyeongsik and Yu, Shoou-I and Wen, He and '
         'Shiratori, Takaaki and Lee, Kyoung Mu',

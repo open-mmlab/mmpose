@@ -97,6 +97,7 @@ def test_animal_horse10_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'horse10'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 3
     _ = custom_dataset[0]
@@ -152,6 +153,7 @@ def test_animal_fly_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'fly'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -208,6 +210,7 @@ def test_animal_locust_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'locust'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -257,6 +260,7 @@ def test_animal_zebra_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'zebra'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -314,6 +318,7 @@ def test_animal_ATRW_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'atrw'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -373,6 +378,7 @@ def test_animal_Macaque_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'macaque'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -436,6 +442,7 @@ def test_animalpose_dataset():
         pipeline=[],
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'animalpose'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
