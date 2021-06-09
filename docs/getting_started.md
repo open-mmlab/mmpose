@@ -24,10 +24,14 @@ For installation instructions, please see [install.md](install.md).
 MMPose supports multiple tasks. Please follow the corresponding guidelines for data preparation.
 
 - [2D Body Keypoint](/docs/tasks/2d_body_keypoint.md)
+- [3D Body Keypoint](/docs/tasks/3d_body_keypoint.md)
+- [3D Body Mesh Recovery](/docs/tasks/3d_body_mesh.md)
 - [2D Hand Keypoint](/docs/tasks/2d_hand_keypoint.md)
+- [3D Hand Keypoint](/docs/tasks/3d_hand_keypoint.md)
 - [2D Face Keypoint](/docs/tasks/2d_face_keypoint.md)
 - [2D WholeBody Keypoint](/docs/tasks/2d_wholebody_keypoint.md)
-- [3D Human Mesh Recovery](/docs/tasks/3d_body_mesh.md)
+- [2D Fashion Landmark Detection](/docs/tasks/2d_fashion_landmark.md)
+- [2D Animal Keypoint Detection](/docs/tasks/2d_animal_keypoint.md)
 
 ## Inference with Pre-trained Models
 

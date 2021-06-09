@@ -13,6 +13,8 @@
 }
 ```
 
+</details>
+
 <!-- [ALGORITHM] -->
 
 <details>
@@ -29,8 +31,6 @@
 ```
 
 </details>
-
-<!-- [DATASET] -->
 
 <!-- [DATASET] -->
 

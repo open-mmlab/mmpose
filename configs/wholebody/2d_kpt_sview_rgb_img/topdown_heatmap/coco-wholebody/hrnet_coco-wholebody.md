@@ -17,8 +17,6 @@
 
 <!-- [DATASET] -->
 
-<!-- [DATASET] -->
-
 <details>
 <summary align="right">COCO-WholeBody (ECCV'2020)</summary>
 
