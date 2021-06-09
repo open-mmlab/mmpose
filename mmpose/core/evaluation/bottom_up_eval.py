@@ -5,6 +5,191 @@ from mmpose.core.post_processing import (get_warp_matrix, transform_preds,
                                          warp_affine_joints)
 
 
+def _get_multi_stage_heatmaps(outputs,
+                              outputs_flip,
+                              with_heatmaps,
+                              flip_index=None,
+                              project2image=True,
+                              size_projected=None,
+                              align_corners=False,
+                              num_joints=None,
+                              flip_paf=False):
+    """Inference the model to get multi-stage outputs (heatmaps & tags), and
+    resize them to base sizes.
+
+    Args:
+        outputs (list(torch.Tensor)): Outputs of network.
+        outputs_flip (list(torch.Tensor)): Flip outputs of network.
+        with_heatmaps (list[bool]): Option to output
+            heatmaps for different stages.
+        flip_index (list[int]): Keypoint flip index.
+        project2image (bool): Option to resize to base scale.
+        size_projected ([w, h]): Base size of heatmaps.
+        align_corners (bool): Align corners when performing interpolation.
+        num_joints (int): Number of joints.
+        flip_paf (bool): Whether to flip for paf maps.
+
+    Returns:
+        tuple: A tuple containing multi-stage outputs.
+
+        - outputs_with_flipped (list(torch.Tensor)): List of simple outputs
+          and flip outputs.
+        - heatmaps (torch.Tensor): Multi-stage heatmaps that are resized to
+          the base size.
+    """
+
+    outputs_with_flipped = outputs
+    heatmaps_avg = 0
+    num_heatmaps = 0
+    heatmaps = []
+
+    flip_test = outputs_flip is not None
+
+    # aggregate heatmaps from different stages
+    for i, output in enumerate(outputs):
+        if i != len(outputs) - 1:
+            output = torch.nn.functional.interpolate(
+                output,
+                size=(outputs[-1].size(2), outputs[-1].size(3)),
+                mode='bilinear',
+                align_corners=align_corners)
+
+        if with_heatmaps[i]:
+            if num_joints is not None:
+                heatmaps_avg += output[:, :num_joints]
+            else:
+                heatmaps_avg += output
+            num_heatmaps += 1
+
+    if num_heatmaps > 0:
+        heatmaps.append(heatmaps_avg / num_heatmaps)
+
+    if flip_test and flip_index:
+        # perform flip testing
+        heatmaps_avg = 0
+        num_heatmaps = 0
+
+        for i, output in enumerate(outputs_flip):
+            if i != len(outputs_flip) - 1:
+                output = torch.nn.functional.interpolate(
+                    output,
+                    size=(outputs_flip[-1].size(2), outputs_flip[-1].size(3)),
+                    mode='bilinear',
+                    align_corners=align_corners)
+            output = torch.flip(output, [3])
+            outputs_with_flipped.append(output)
+
+            if with_heatmaps[i]:
+                if flip_paf:
+                    heatmaps_avg[:, ::2, :, :] -= output[:,
+                                                         flip_index[::2], :, :]
+                    heatmaps_avg[:,
+                                 1::2, :, :] += output[:,
+                                                       flip_index[1::2], :, :]
+                else:
+                    if num_joints is not None:
+                        heatmaps_avg += output[:, :
+                                               num_joints][:, flip_index, :, :]
+                    else:
+                        heatmaps_avg += output[:, flip_index, :, :]
+                num_heatmaps += 1
+
+        heatmaps.append(heatmaps_avg / num_heatmaps)
+
+    if project2image and size_projected:
+        heatmaps = [
+            torch.nn.functional.interpolate(
+                hms,
+                size=(size_projected[1], size_projected[0]),
+                mode='bilinear',
+                align_corners=align_corners) for hms in heatmaps
+        ]
+
+    return outputs_with_flipped, heatmaps
+
+
+def _get_multi_stage_tags(outputs,
+                          outputs_flip,
+                          with_heatmaps,
+                          with_ae,
+                          tag_per_joint=True,
+                          flip_index=None,
+                          project2image=True,
+                          size_projected=None,
+                          align_corners=False,
+                          num_joints=None):
+    """Inference the model to get multi-stage outputs (heatmaps & tags), and
+    resize them to base sizes.
+
+    Args:
+        outputs (list(torch.Tensor)): Outputs of network.
+        outputs_flip (list(torch.Tensor)): Flip outputs of network.
+        with_heatmaps (list[bool]): Option to output
+            heatmaps for different stages.
+        with_ae (list[bool]): Option to output
+            ae tags for different stages.
+        tag_per_joint (bool): Option to use one tag map per joint.
+        flip_index (list[int]): Keypoint flip index.
+        project2image (bool): Option to resize to base scale.
+        size_projected ([w, h]): Base size of heatmaps.
+        align_corners (bool): Align corners when performing interpolation.
+        num_joints (int): Number of joints.
+
+    Returns:
+        tags (torch.Tensor): Multi-stage tags that are resized to
+        the base size.
+    """
+
+    tags = []
+
+    flip_test = outputs_flip is not None
+
+    # aggregate tags from different stages
+    for i, output in enumerate(outputs):
+        if i != len(outputs) - 1:
+            output = torch.nn.functional.interpolate(
+                output,
+                size=(outputs[-1].size(2), outputs[-1].size(3)),
+                mode='bilinear',
+                align_corners=align_corners)
+
+        # staring index of the associative embeddings
+        offset_feat = num_joints if with_heatmaps[i] else 0
+
+        if with_ae[i]:
+            tags.append(output[:, offset_feat:])
+
+    if flip_test and flip_index:
+        # perform flip testing
+
+        for i, output in enumerate(outputs_flip):
+            if i != len(outputs_flip) - 1:
+                output = torch.nn.functional.interpolate(
+                    output,
+                    size=(outputs_flip[-1].size(2), outputs_flip[-1].size(3)),
+                    mode='bilinear',
+                    align_corners=align_corners)
+            output = torch.flip(output, [3])
+
+            offset_feat = num_joints if with_heatmaps[i] else 0
+
+            if with_ae[i]:
+                tags.append(output[:, offset_feat:])
+                if tag_per_joint:
+                    tags[-1] = tags[-1][:, flip_index, :, :]
+
+    if project2image and size_projected:
+        tags = [
+            torch.nn.functional.interpolate(
+                tms,
+                size=(size_projected[1], size_projected[0]),
+                mode='bilinear',
+                align_corners=align_corners) for tms in tags
+        ]
+
+    return tags
+
+
 def get_multi_stage_outputs(outputs,
                             outputs_flip,
                             num_joints,
@@ -42,82 +227,16 @@ def get_multi_stage_outputs(outputs,
         - tags (torch.Tensor): Multi-stage tags that are resized to
           the base size.
     """
+    outputs_with_flipped, heatmaps = _get_multi_stage_heatmaps(
+        outputs, outputs_flip, num_joints, with_heatmaps, flip_index,
+        project2image, size_projected, align_corners)
 
-    heatmaps_avg = 0
-    num_heatmaps = 0
-    heatmaps = []
-    tags = []
+    tags = _get_multi_stage_tags(outputs, outputs_flip, num_joints,
+                                 with_heatmaps, with_ae, tag_per_joint,
+                                 flip_index, project2image, size_projected,
+                                 align_corners)
 
-    flip_test = outputs_flip is not None
-
-    # aggregate heatmaps from different stages
-    for i, output in enumerate(outputs):
-        if i != len(outputs) - 1:
-            output = torch.nn.functional.interpolate(
-                output,
-                size=(outputs[-1].size(2), outputs[-1].size(3)),
-                mode='bilinear',
-                align_corners=align_corners)
-
-        # staring index of the associative embeddings
-        offset_feat = num_joints if with_heatmaps[i] else 0
-
-        if with_heatmaps[i]:
-            heatmaps_avg += output[:, :num_joints]
-            num_heatmaps += 1
-
-        if with_ae[i]:
-            tags.append(output[:, offset_feat:])
-
-    if num_heatmaps > 0:
-        heatmaps.append(heatmaps_avg / num_heatmaps)
-
-    if flip_test and flip_index:
-        # perform flip testing
-        heatmaps_avg = 0
-        num_heatmaps = 0
-
-        for i, output in enumerate(outputs_flip):
-            if i != len(outputs_flip) - 1:
-                output = torch.nn.functional.interpolate(
-                    output,
-                    size=(outputs_flip[-1].size(2), outputs_flip[-1].size(3)),
-                    mode='bilinear',
-                    align_corners=align_corners)
-            output = torch.flip(output, [3])
-            outputs.append(output)
-
-            offset_feat = num_joints if with_heatmaps[i] else 0
-
-            if with_heatmaps[i]:
-                heatmaps_avg += output[:, :num_joints][:, flip_index, :, :]
-                num_heatmaps += 1
-
-            if with_ae[i]:
-                tags.append(output[:, offset_feat:])
-                if tag_per_joint:
-                    tags[-1] = tags[-1][:, flip_index, :, :]
-
-        heatmaps.append(heatmaps_avg / num_heatmaps)
-
-    if project2image and size_projected:
-        heatmaps = [
-            torch.nn.functional.interpolate(
-                hms,
-                size=(size_projected[1], size_projected[0]),
-                mode='bilinear',
-                align_corners=align_corners) for hms in heatmaps
-        ]
-
-        tags = [
-            torch.nn.functional.interpolate(
-                tms,
-                size=(size_projected[1], size_projected[0]),
-                mode='bilinear',
-                align_corners=align_corners) for tms in tags
-        ]
-
-    return outputs, heatmaps, tags
+    return outputs_with_flipped, heatmaps, tags
 
 
 def get_multi_stage_outputs_paf(outputs,
@@ -157,116 +276,25 @@ def get_multi_stage_outputs_paf(outputs,
           the base size.
     """
 
-    heatmaps = []
-    pafs = []
+    outputs['heatmaps'], heatmaps = _get_multi_stage_heatmaps(
+        outputs['heatmaps'],
+        outputs_flip['heatmaps'],
+        with_heatmaps,
+        flip_index,
+        project2image,
+        size_projected,
+        align_corners,
+        flip_paf=True)
 
-    flip_test = outputs_flip is not None
-
-    # aggregate heatmaps from different stages
-    heatmaps_avg = 0
-    num_heatmaps = 0
-
-    for i, output in enumerate(outputs['heatmaps']):
-        if i != len(outputs['heatmaps']) - 1:
-            output = torch.nn.functional.interpolate(
-                output,
-                size=(outputs['heatmaps'][-1].size(2),
-                      outputs['heatmaps'][-1].size(3)),
-                mode='bilinear',
-                align_corners=align_corners)
-
-        if with_heatmaps[i]:
-            heatmaps_avg += output
-            num_heatmaps += 1
-
-    if num_heatmaps > 0:
-        heatmaps.append(heatmaps_avg / num_heatmaps)
-
-    # aggregate pafs from different stages
-    pafs_avg = 0
-    num_pafs = 0
-
-    for i, output in enumerate(outputs['pafs']):
-        if i != len(outputs['pafs']) - 1:
-            output = torch.nn.functional.interpolate(
-                output,
-                size=(outputs['pafs'][-1].size(2),
-                      outputs['pafs'][-1].size(3)),
-                mode='bilinear',
-                align_corners=align_corners)
-
-        if with_pafs[i]:
-            pafs_avg += output
-            num_pafs += 1
-
-    if num_pafs > 0:
-        pafs.append(pafs_avg / num_pafs)
-
-    if flip_test:
-        if flip_index:
-            # perform flip testing for heatmaps
-            heatmaps_avg = 0
-            num_heatmaps = 0
-
-            for i, output in enumerate(outputs_flip['heatmaps']):
-                if i != len(outputs_flip['heatmaps']) - 1:
-                    output = torch.nn.functional.interpolate(
-                        output,
-                        size=(outputs_flip['heatmaps'][-1].size(2),
-                              outputs_flip['heatmaps'][-1].size(3)),
-                        mode='bilinear',
-                        align_corners=align_corners)
-                output = torch.flip(output, [3])
-                outputs['heatmaps'].append(output)
-
-                if with_heatmaps[i]:
-                    heatmaps_avg += output[:, flip_index, :, :]
-                    num_heatmaps += 1
-
-            heatmaps.append(heatmaps_avg / num_heatmaps)
-
-        if flip_index_paf:
-            # perform flip testing for pafs
-            pafs_avg = 0
-            num_pafs = 0
-
-            for i, output in enumerate(outputs_flip['pafs']):
-                if i != len(outputs_flip['pafs']) - 1:
-                    output = torch.nn.functional.interpolate(
-                        output,
-                        size=(outputs_flip['pafs'][-1].size(2),
-                              outputs_flip['pafs'][-1].size(3)),
-                        mode='bilinear',
-                        align_corners=align_corners)
-                output = torch.flip(output, [3])
-                outputs['pafs'].append(output)
-
-                if with_pafs[i]:
-                    pafs_avg[:, ::2, :, :] -= output[:,
-                                                     flip_index_paf[::2], :, :]
-                    pafs_avg[:,
-                             1::2, :, :] += output[:,
-                                                   flip_index_paf[1::2], :, :]
-                    num_pafs += 1
-
-            pafs.append(pafs_avg / num_pafs)
-
-    if project2image and size_projected:
-        heatmaps = [
-            torch.nn.functional.interpolate(
-                hms,
-                size=(size_projected[1], size_projected[0]),
-                mode='bilinear',
-                align_corners=align_corners) for hms in heatmaps
-        ]
-
-        pafs = [
-            torch.nn.functional.interpolate(
-                pms,
-                size=(size_projected[1], size_projected[0]),
-                mode='bilinear',
-                align_corners=align_corners) for pms in pafs
-        ]
+    outputs['pafs'], pafs = _get_multi_stage_heatmaps(
+        outputs['pafs'],
+        outputs_flip['pafs'],
+        with_heatmaps,
+        flip_index,
+        project2image,
+        size_projected,
+        align_corners,
+        flip_paf=True)
 
     return outputs, heatmaps, pafs
 
