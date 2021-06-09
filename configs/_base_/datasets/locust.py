@@ -261,23 +261,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 35,
     sigmas=[])
-
-data_root = 'data/locust'
-
-data = dict(
-    train=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='AnimalLocustDataset',
-        ann_file=f'{data_root}/annotations/locust_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

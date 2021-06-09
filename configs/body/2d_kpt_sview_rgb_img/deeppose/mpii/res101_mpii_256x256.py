@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/mpii.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -37,7 +38,7 @@ model = dict(
     backbone=dict(type='ResNet', depth=101, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
-        type='FcHead',
+        type='DeepposeRegressionHead',
         in_channels=2048,
         num_joints=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True)),
@@ -103,17 +104,20 @@ data = dict(
         ann_file=f'{data_root}/annotations/mpii_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='TopDownMpiiDataset',
         ann_file=f'{data_root}/annotations/mpii_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='TopDownMpiiDataset',
         ann_file=f'{data_root}/annotations/mpii_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline),
+        pipeline=test_pipeline,
+        dataset_info={{base.dataset_info}}),
 )

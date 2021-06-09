@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/ochuman.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -125,19 +126,22 @@ data = dict(
         ann_file='data/coco/annotations/person_keypoints_train2017.json',
         img_prefix='data/coco//train2017/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='TopDownOCHumanDataset',
         ann_file=f'{data_root}/annotations/'
         'ochuman_coco_format_val_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='TopDownOCHumanDataset',
         ann_file=f'{data_root}/annotations/'
         'ochuman_coco_format_test_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
 )

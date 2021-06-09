@@ -149,26 +149,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 17,
     sigmas=[])
-
-data_root = 'data/h36m'
-data = dict(
-    samples_per_gpu=64,
-    workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=64),
-    test_dataloader=dict(samples_per_gpu=64),
-    train=dict(
-        type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

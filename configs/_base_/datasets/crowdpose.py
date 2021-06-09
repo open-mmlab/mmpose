@@ -145,23 +145,3 @@ dataset_info = dict(
         0.079, 0.079, 0.072, 0.072, 0.062, 0.062, 0.107, 0.107, 0.087, 0.087,
         0.089, 0.089, 0.079, 0.079
     ])
-
-data_root = 'data/crowdpose'
-
-data = dict(
-    train=dict(
-        type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownCrowdPoseDataset',
-        ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

@@ -81,23 +81,3 @@ dataset_info = dict(
     skeleton_info={},
     joint_weights=[1.] * 19,
     sigmas=[])
-
-data_root = 'data/aflw'
-
-data = dict(
-    train=dict(
-        type='FaceAFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_aflw_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='FaceAFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_aflw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='FaceAFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_aflw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

@@ -179,25 +179,3 @@ dataset_info = dict(
         0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
         0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
     ])
-
-data_root = 'data/ochuman'
-
-data = dict(
-    train=dict(
-        type='TopDownCocoDataset',
-        ann_file='data/coco/annotations/person_keypoints_train2017.json',
-        img_prefix='data/coco//train2017/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownOCHumanDataset',
-        ann_file=f'{data_root}/annotations/'
-        'ochuman_coco_format_val_range_0.00_1.00.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownOCHumanDataset',
-        ann_file=f'{data_root}/annotations/'
-        'ochuman_coco_format_test_range_0.00_1.00.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

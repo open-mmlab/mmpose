@@ -164,23 +164,3 @@ dataset_info = dict(
         0.025, 0.025, 0.026, 0.035, 0.035, 0.10, 0.10, 0.10, 0.107, 0.107,
         0.107, 0.107, 0.087, 0.087, 0.087, 0.087, 0.089, 0.089, 0.089, 0.089
     ])
-
-data_root = 'data/animalpose'
-
-data = dict(
-    train=dict(
-        type='AnimalPoseDataset',
-        ann_file=f'{data_root}/annotations/animalpose_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='AnimalPoseDataset',
-        ann_file=f'{data_root}/annotations/animalpose_val.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='AnimalPoseDataset',
-        ann_file=f'{data_root}/annotations/animalpose_val.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

@@ -181,23 +181,3 @@ dataset_info = dict(
         0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
         0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
     ])
-
-data_root = 'data/macaque'
-
-data = dict(
-    train=dict(
-        type='AnimalMacaqueDataset',
-        ann_file=f'{data_root}/annotations/macaque_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='AnimalMacaqueDataset',
-        ann_file=f'{data_root}/annotations/macaque_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='AnimalMacaqueDataset',
-        ann_file=f'{data_root}/annotations/macaque_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

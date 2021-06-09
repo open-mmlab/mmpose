@@ -1148,23 +1148,3 @@ dataset_info = dict(
         0.035, 0.018, 0.024, 0.022, 0.026, 0.017, 0.021, 0.021, 0.032, 0.02,
         0.019, 0.022, 0.031
     ])
-
-data_root = 'data/coco'
-
-data = dict(
-    train=dict(
-        type='TopDownCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
-        img_prefix=f'{data_root}/train2017/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
-        dataset_info=dataset_info),
-)

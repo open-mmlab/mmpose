@@ -58,23 +58,3 @@ dataset_info = dict(
     skeleton_info={},
     joint_weights=[1.] * 6,
     sigmas=[])
-
-data_root = 'data/fld'
-
-data = dict(
-    train=dict(
-        type='DeepFashionDataset',
-        ann_file=f'{data_root}/annotations/fld_upper_train.json',
-        img_prefix=f'{data_root}/img/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='DeepFashionDataset',
-        ann_file=f'{data_root}/annotations/fld_upper_val.json',
-        img_prefix=f'{data_root}/img/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='DeepFashionDataset',
-        ann_file=f'{data_root}/annotations/fld_upper_test.json',
-        img_prefix=f'{data_root}/img/',
-        dataset_info=dataset_info),
-)

@@ -141,23 +141,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 21,
     sigmas=[])
-
-data_root = 'data/panoptic'
-
-data = dict(
-    train=dict(
-        type='PanopticDataset',
-        ann_file=f'{data_root}/annotations/panoptic_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='PanopticDataset',
-        ann_file=f'{data_root}/annotations/panoptic_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='PanopticDataset',
-        ann_file=f'{data_root}/annotations/panoptic_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

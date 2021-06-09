@@ -140,23 +140,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 21,
     sigmas=[])
-
-data_root = 'data/onehand10k'
-
-data = dict(
-    train=dict(
-        type='OneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='OneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='OneHand10KDataset',
-        ann_file=f'{data_root}/annotations/onehand10k_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

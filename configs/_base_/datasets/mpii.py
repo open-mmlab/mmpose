@@ -153,23 +153,3 @@ dataset_info = dict(
         0.089, 0.083, 0.107, 0.107, 0.083, 0.089, 0.026, 0.026, 0.026, 0.026,
         0.062, 0.072, 0.179, 0.179, 0.072, 0.062
     ])
-
-data_root = 'data/mpii'
-
-data = dict(
-    train=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownMpiiDataset',
-        ann_file=f'{data_root}/annotations/mpii_val.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/mpii_trb.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -106,13 +107,15 @@ data = dict(
         ann_file=f'{data_root}/annotations/mpii_trb_train.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='TopDownMpiiTrbDataset',
         ann_file=f'{data_root}/annotations/mpii_trb_val.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='TopDownMpiiTrbDataset',
         ann_file=f'{data_root}/annotations/mpii_trb_val.json',

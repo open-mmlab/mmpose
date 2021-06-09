@@ -378,23 +378,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 40,
     sigmas=[])
-
-data_root = 'data/mpii'
-
-data = dict(
-    train=dict(
-        type='TopDownMpiiTrbDataset',
-        ann_file=f'{data_root}/annotations/mpii_trb_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownMpiiTrbDataset',
-        ann_file=f'{data_root}/annotations/mpii_trb_val.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownMpiiTrbDataset',
-        ann_file=f'{data_root}/annotations/mpii_trb_val.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

@@ -132,23 +132,3 @@ dataset_info = dict(
     skeleton_info={},
     joint_weights=[1.] * 29,
     sigmas=[])
-
-data_root = 'data/cofw'
-
-data = dict(
-    train=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='FaceCOFWDataset',
-        ann_file=f'{data_root}/annotations/cofw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

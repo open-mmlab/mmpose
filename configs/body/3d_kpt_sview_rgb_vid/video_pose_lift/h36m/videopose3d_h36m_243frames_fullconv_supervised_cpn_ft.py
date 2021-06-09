@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/h36m.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -141,17 +142,20 @@ data = dict(
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=train_data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=test_data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='Body3DH36MDataset',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=test_data_cfg,
-        pipeline=test_pipeline),
+        pipeline=test_pipeline,
+        dataset_info={{base.dataset_info}}),
 )

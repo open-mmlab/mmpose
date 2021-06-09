@@ -235,23 +235,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 32,
     sigmas=[])
-
-data_root = 'data/fly'
-
-data = dict(
-    train=dict(
-        type='AnimalFlyDataset',
-        ann_file=f'{data_root}/annotations/fly_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='AnimalFlyDataset',
-        ann_file=f'{data_root}/annotations/fly_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='AnimalFlyDataset',
-        ann_file=f'{data_root}/annotations/fly_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

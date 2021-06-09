@@ -143,7 +143,7 @@ data = dict(
                     ann_file='data/mesh_annotation_files/coco_2014_train.npz',
                     img_prefix='data/coco',
                     data_cfg=data_cfg,
-                    pipeline=train_pipeline),
+                    pipeline=train_pipeline)
             ],
             partition=[0.35, 0.15, 0.1, 0.10, 0.10, 0.2]),
         adversarial_dataset=dict(

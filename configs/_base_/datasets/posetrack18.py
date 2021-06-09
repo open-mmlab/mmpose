@@ -174,23 +174,3 @@ dataset_info = dict(
         0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
         0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
     ])
-
-data_root = 'data/posetrack18'
-
-data = dict(
-    train=dict(
-        type='TopDownPoseTrack18Dataset',
-        ann_file=f'{data_root}/annotations/posetrack18_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownPoseTrack18Dataset',
-        ann_file=f'{data_root}/annotations/posetrack18_val.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownPoseTrack18Dataset',
-        ann_file=f'{data_root}/annotations/posetrack18_val.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

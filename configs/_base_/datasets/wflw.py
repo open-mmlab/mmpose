@@ -580,23 +580,3 @@ dataset_info = dict(
     skeleton_info={},
     joint_weights=[1.] * 98,
     sigmas=[])
-
-data_root = 'data/wflw'
-
-data = dict(
-    train=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_train.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='FaceWFLWDataset',
-        ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/images/',
-        dataset_info=dataset_info),
-)

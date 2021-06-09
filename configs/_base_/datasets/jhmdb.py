@@ -127,23 +127,3 @@ dataset_info = dict(
         0.025, 0.107, 0.025, 0.079, 0.079, 0.107, 0.107, 0.072, 0.072, 0.087,
         0.087, 0.062, 0.062, 0.089, 0.089
     ])
-
-data_root = 'data/jhmdb'
-
-data = dict(
-    train=dict(
-        type='TopDownJhmdbDataset',
-        ann_file=f'{data_root}/annotations/Sub1_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='TopDownJhmdbDataset',
-        ann_file=f'{data_root}/annotations/Sub1_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='TopDownJhmdbDataset',
-        ann_file=f'{data_root}/annotations/Sub1_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

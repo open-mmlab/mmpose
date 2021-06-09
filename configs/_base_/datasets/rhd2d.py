@@ -139,23 +139,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 21,
     sigmas=[])
-
-data_root = 'data/rhd'
-
-data = dict(
-    train=dict(
-        type='Rhd2DDataset',
-        ann_file=f'{data_root}/annotations/rhd_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='Rhd2DDataset',
-        ann_file=f'{data_root}/annotations/rhd_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='Rhd2DDataset',
-        ann_file=f'{data_root}/annotations/rhd_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/interhand3d.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -149,7 +150,8 @@ data = dict(
         data_cfg=data_cfg,
         use_gt_root_depth=True,
         rootnet_result_file=None,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='InterHand3DDataset',
         ann_file=f'{data_root}/annotations/machine_annot/'
@@ -162,7 +164,8 @@ data = dict(
         data_cfg=data_cfg,
         use_gt_root_depth=True,
         rootnet_result_file=None,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='InterHand3DDataset',
         ann_file=f'{data_root}/annotations/all/'
@@ -175,5 +178,6 @@ data = dict(
         data_cfg=data_cfg,
         use_gt_root_depth=True,
         rootnet_result_file=None,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
 )

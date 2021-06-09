@@ -1,3 +1,4 @@
+_base_ = base = ['../../../../_base_/datasets/crowdpose.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -155,13 +156,15 @@ data = dict(
         ann_file=f'{data_root}/annotations/mmpose_crowdpose_trainval.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{base.dataset_info}}),
     val=dict(
         type='TopDownCrowdPoseDataset',
         ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{base.dataset_info}}),
     test=dict(
         type='TopDownCrowdPoseDataset',
         ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',

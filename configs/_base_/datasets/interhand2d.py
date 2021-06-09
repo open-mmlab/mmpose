@@ -140,38 +140,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 21,
     sigmas=[])
-
-data_root = 'data/interhand2.6m'
-
-data = dict(
-    train=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_train_data.json',
-        camera_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_train_camera.json',
-        joint_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_train_joint_3d.json',
-        img_prefix=f'{data_root}/images/train/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_data.json',
-        camera_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_camera.json',
-        joint_file=f'{data_root}/annotations/machine_annot/'
-        'InterHand2.6M_val_joint_3d.json',
-        img_prefix=f'{data_root}/images/val/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='InterHand2DDataset',
-        ann_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_test_data.json',
-        camera_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_test_camera.json',
-        joint_file=f'{data_root}/annotations/all/'
-        'InterHand2.6M_test_joint_3d.json',
-        img_prefix=f'{data_root}/images/test/',
-        dataset_info=dataset_info),
-)

@@ -199,23 +199,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 22,
     sigmas=[])
-
-data_root = 'data/horse10'
-
-data = dict(
-    train=dict(
-        type='AnimalHorse10Dataset',
-        ann_file=f'{data_root}/annotations/horse10-train-split1.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='AnimalHorse10Dataset',
-        ann_file=f'{data_root}/annotations/horse10-test-split1.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='AnimalHorse10Dataset',
-        ann_file=f'{data_root}/annotations/horse10-test-split1.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)

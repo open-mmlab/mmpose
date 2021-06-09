@@ -142,23 +142,3 @@ dataset_info = dict(
     },
     joint_weights=[1.] * 21,
     sigmas=[])
-
-data_root = 'data/freihand'
-
-data = dict(
-    train=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_train.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    val=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_val.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-    test=dict(
-        type='FreiHandDataset',
-        ann_file=f'{data_root}/annotations/freihand_test.json',
-        img_prefix=f'{data_root}/',
-        dataset_info=dataset_info),
-)
