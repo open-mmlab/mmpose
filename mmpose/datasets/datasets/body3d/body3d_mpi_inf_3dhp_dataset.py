@@ -6,7 +6,7 @@ import numpy as np
 
 from mmpose.core.evaluation import (keypoint_3d_auc, keypoint_3d_pck,
                                     keypoint_mpjpe)
-from ...registry import DATASETS
+from ...builder import DATASETS
 from .body3d_base_dataset import Body3DBaseDataset
 
 
