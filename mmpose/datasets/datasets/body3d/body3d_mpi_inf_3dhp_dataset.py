@@ -268,7 +268,6 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = []
         gts = []
-        masks = []
         for idx, result in enumerate(keypoint_results):
             pred = result['keypoints']
             target_id = result['target_id']
@@ -276,11 +275,10 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
                 self.data_info['joints_3d'][target_id], [3], axis=-1)
             preds.append(pred)
             gts.append(gt)
-            masks.append(gt_visible)
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.stack(masks).squeeze(-1) > 0
+        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
 
         err_name = mode.upper()
         if mode == 'mpjpe':
@@ -311,7 +309,6 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = []
         gts = []
-        masks = []
         for idx, result in enumerate(keypoint_results):
             pred = result['keypoints']
             target_id = result['target_id']
@@ -319,11 +316,10 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
                 self.data_info['joints_3d'][target_id], [3], axis=-1)
             preds.append(pred)
             gts.append(gt)
-            masks.append(gt_visible)
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.stack(masks).squeeze(-1) > 0
+        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
 
         err_name = mode.upper()
         if mode == '3dpck':
@@ -354,7 +350,6 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = []
         gts = []
-        masks = []
         for idx, result in enumerate(keypoint_results):
             pred = result['keypoints']
             target_id = result['target_id']
@@ -362,11 +357,10 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
                 self.data_info['joints_3d'][target_id], [3], axis=-1)
             preds.append(pred)
             gts.append(gt)
-            masks.append(gt_visible)
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.stack(masks).squeeze(-1) > 0
+        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
 
         err_name = mode.upper()
         if mode == '3dauc':
