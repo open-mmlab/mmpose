@@ -225,6 +225,8 @@ def get_track_id(results,
 def vis_pose_tracking_result(model,
                              img,
                              result,
+                             radius=4,
+                             thickness=1,
                              kpt_score_thr=0.3,
                              dataset='TopDownCocoDataset',
                              show=False,
@@ -252,8 +254,6 @@ def vis_pose_tracking_result(model,
                         [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
                         [255, 255, 255]])
 
-    radius = 4
-
     if dataset in ('TopDownCocoDataset', 'BottomUpCocoDataset',
                    'TopDownOCHumanDataset'):
         kpt_num = 17
@@ -275,7 +275,6 @@ def vis_pose_tracking_result(model,
                     [120, 121], [113, 122], [122, 123], [123, 124], [124, 125],
                     [113, 126], [126, 127], [127, 128], [128, 129], [113, 130],
                     [130, 131], [131, 132], [132, 133]]
-        radius = 1
 
     elif dataset == 'TopDownAicDataset':
         kpt_num = 14
@@ -316,6 +315,7 @@ def vis_pose_tracking_result(model,
             img, [res],
             skeleton,
             radius=radius,
+            thickness=thickness,
             pose_kpt_color=pose_kpt_color,
             pose_limb_color=pose_limb_color,
             bbox_color=tuple(bbox_color.tolist()),

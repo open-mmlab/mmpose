@@ -79,6 +79,16 @@ def main():
         '--euro',
         action='store_true',
         help='Using One_Euro_Filter for smoothing')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -163,6 +173,8 @@ def main():
             pose_model,
             img,
             pose_results,
+            radius=args.radius,
+            thickness=args.thickness,
             dataset=dataset,
             kpt_score_thr=args.kpt_thr,
             show=False)
