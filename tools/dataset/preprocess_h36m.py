@@ -272,6 +272,8 @@ class PreprocessH36m:
                                                     np.cos(z), 0], [0, 0, 1]])
         R = (R_x @ R_y @ R_z).T
         T = metadata_slice[3:6].reshape(-1, 1)
+        # convert unit from milimeter to meter
+        T *= 0.001
 
         # intrinsics
         c = metadata_slice[8:10, None]
@@ -280,10 +282,6 @@ class PreprocessH36m:
         # distortion
         k = metadata_slice[10:13, None]
         p = metadata_slice[13:15, None]
-
-        # convert unit from milimeter to meter
-        T *= 0.001
-        f *= 0.001
 
         return {
             'R': R,
