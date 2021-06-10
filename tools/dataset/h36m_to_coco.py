@@ -15,12 +15,10 @@ def _keypoint_camera_to_world(keypoints,
                               dataset='Body3DH36MDataset'):
     """Project 3D keypoints from the camera space to the world space.
 
-    Args:
-        keypoints (np.ndarray): 3D keypoints in shape [..., 3]
-        camera_params (dict): Parameters for all cameras.
-        image_name (str): The
-        image name to specify the camera.
-        dataset (str): The dataset type, e.g. Body3DH36MDataset.
+    Args     keypoints (np.ndarray): 3D keypoints in shape [..., 3]
+    camera_params (dict): Parameters for all cameras.     image_name (str): The
+    image name to specify the camera.     dataset (str): The dataset type, e.g.
+    Body3DH36MDataset.
     """
     cam_key = None
     if dataset == 'Body3DH36MDataset':
