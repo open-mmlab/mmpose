@@ -281,6 +281,8 @@ class PoseLifter(BasePose):
                     skeleton=None,
                     pose_kpt_color=None,
                     pose_limb_color=None,
+                    radius=8,
+                    thickness=2,
                     vis_height=400,
                     win_name='',
                     show=False,
@@ -303,6 +305,8 @@ class PoseLifter(BasePose):
                 If None, do not draw keypoints.
             pose_limb_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
+            radius (int): Radius of circles.
+            thickness (int): Thickness of lines.
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
@@ -346,7 +350,7 @@ class PoseLifter(BasePose):
                     bboxes,
                     colors='green',
                     top_k=-1,
-                    thickness=2,
+                    thickness=thickness,
                     show=False)
             if len(pose_input_2d) > 0:
                 imshow_keypoints(
@@ -356,8 +360,8 @@ class PoseLifter(BasePose):
                     kpt_score_thr=0.3,
                     pose_kpt_color=pose_kpt_color,
                     pose_limb_color=pose_limb_color,
-                    radius=8,
-                    thickness=2)
+                    radius=radius,
+                    thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
 
         img_vis = imshow_keypoints_3d(result, img, skeleton, pose_kpt_color,
