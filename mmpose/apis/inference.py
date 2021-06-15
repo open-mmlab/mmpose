@@ -740,8 +740,8 @@ def vis_pose_result(model,
                     [14, 18], [7, 11], [11, 15], [15, 19], [7, 12], [12, 16],
                     [16, 20]]
 
-        pose_limb_color = palette[[0] * 20]
-        pose_kpt_color = palette[[0] * 20]
+        pose_kpt_color = palette[[15] * 5 + [0] * 7 + [9] * 8]
+        pose_limb_color = palette[[15] * 5 + [0] * 7 + [9] * 8]
 
     else:
         raise NotImplementedError()

@@ -6,6 +6,49 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
+def imshow_bboxes(img,
+                  bboxes,
+                  labels=None,
+                  colors='green',
+                  text_color='white',
+                  top_k=-1,
+                  thickness=1,
+                  font_scale=0.5,
+                  show=True,
+                  win_name='',
+                  wait_time=0,
+                  out_file=None):
+    """Draw bboxes with labels (optional) on an image. This is a wrapper of
+    mmcv.imshow_bboxes.
+
+    Args:
+        img (str or ndarray): The image to be displayed.
+        bboxes (list or ndarray): A list of ndarray of shape (k, 4).
+        colors (list[str or tuple or :obj:`Color`]): A list of colors.
+        text_color (str or tuple or :obj:`Color`): Color of texts.
+        top_k (int): Plot the first k bboxes only if set positive.
+        thickness (int): Thickness of lines.
+        font_scale (float): Font scales of texts.
+        show (bool): Whether to show the image.
+        win_name (str): The window name.
+        wait_time (int): Value of waitKey param.
+        out_file (str, optional): The filename to write the image.
+    Returns:
+        ndarray: The image with bboxes drawn on it.
+    """
+    # img = mmcv.imshow_bboxes(
+    #     img, bboxes, colors, top_k, thickness, show=False, out_file=None)
+
+    # if labels is not None:
+    #     if not isinstance(labels, list):
+    #         labels = [labels] * len(bboxes)
+    #     assert len(labels) == len(bboxes)
+
+    #     if top_k <= 0:
+    #         pass
+    pass
+
+
 def imshow_keypoints(img,
                      pose_result,
                      skeleton=None,
