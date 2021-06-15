@@ -38,6 +38,16 @@ def main():
         type=float,
         default=0.9,
         help='OKS threshold for pose NMS')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     args = parser.parse_args()
 
@@ -84,6 +94,8 @@ def main():
             pose_model,
             image_name,
             pose_results,
+            radius=args.radius,
+            thickness=args.thickness,
             dataset=dataset,
             kpt_score_thr=args.kpt_thr,
             show=args.show,

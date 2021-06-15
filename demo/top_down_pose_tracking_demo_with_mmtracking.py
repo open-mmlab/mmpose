@@ -58,6 +58,16 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     assert has_mmtrack, 'Please install mmtrack to run the demo.'
 
@@ -127,6 +137,8 @@ def main():
             pose_model,
             img,
             pose_results,
+            radius=args.radius,
+            thickness=args.thickness,
             dataset=dataset,
             kpt_score_thr=args.kpt_thr,
             show=False)

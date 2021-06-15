@@ -105,6 +105,16 @@ def main():
     parser.add_argument(
         '--device', default='cuda:0', help='Device for inference')
     parser.add_argument('--kpt-thr', type=float, default=0.3)
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     args = parser.parse_args()
     assert args.show or (args.out_img_root != '')

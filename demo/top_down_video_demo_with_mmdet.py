@@ -26,7 +26,6 @@ def process_mmdet_results(mmdet_results, cat_id=1):
         det_results = mmdet_results
 
     bboxes = det_results[cat_id - 1]
-
     person_results = []
     for bbox in bboxes:
         person = {}
@@ -71,6 +70,16 @@ def main():
         help='Bounding box score threshold')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -141,6 +150,8 @@ def main():
             pose_results,
             dataset=dataset,
             kpt_score_thr=args.kpt_thr,
+            radius=args.radius,
+            thickness=args.thickness,
             show=False)
 
         if args.show:
