@@ -144,7 +144,6 @@ def main():
     pose_det_results_list = []
     next_id = 0
     pose_det_results = []
-    cnt = 0
     for frame in video:
         pose_det_results_last = pose_det_results
 
@@ -165,9 +164,6 @@ def main():
             dataset=dataset,
             return_heatmap=False,
             outputs=None)
-        if len(pose_det_results) > 1:
-            print(cnt, pose_det_results)
-        cnt += 1
 
         # get track id for each person instance
         pose_det_results, next_id = get_track_id(
