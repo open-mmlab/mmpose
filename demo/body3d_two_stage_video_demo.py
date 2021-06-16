@@ -92,7 +92,7 @@ def main():
     parser.add_argument(
         '--bbox-thr',
         type=float,
-        default=0.3,
+        default=0.9,
         help='Bounding box score threshold')
     parser.add_argument('--kpt-thr', type=float, default=0.3)
     parser.add_argument(
@@ -103,6 +103,16 @@ def main():
         '--euro',
         action='store_true',
         help='Using One_Euro_Filter for smoothing')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=8,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=2,
+        help='Link thickness for visualization')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -134,6 +144,7 @@ def main():
     pose_det_results_list = []
     next_id = 0
     pose_det_results = []
+    cnt = 0
     for frame in video:
         pose_det_results_last = pose_det_results
 
@@ -154,6 +165,9 @@ def main():
             dataset=dataset,
             return_heatmap=False,
             outputs=None)
+        if len(pose_det_results) > 1:
+            print(cnt, pose_det_results)
+        cnt += 1
 
         # get track id for each person instance
         pose_det_results, next_id = get_track_id(
@@ -252,7 +266,9 @@ def main():
             pose_lift_model,
             result=pose_lift_results_vis,
             img=video[i],
-            out_file=None)
+            out_file=None,
+            radius=args.radius,
+            thickness=args.thickness)
 
         if save_out_video:
             if writer is None:
