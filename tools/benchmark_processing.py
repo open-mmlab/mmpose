@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 """This file is for benchmark data loading process. It can also be used to
 refresh the memcached cache. The command line to run this file is:
 
