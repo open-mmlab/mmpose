@@ -31,8 +31,8 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
         in_index (int|Sequence[int]): Input feature index. Default: -1
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
-            'resize_concat': Multiple feature maps will be resize to the
-                same size as first one and than concat together.
+            'resize_concat': Multiple feature maps will be resized to the
+                same size as the first one and then concat together.
                 Usually used in FCN head of HRNet.
             'multiple_select': Multiple feature maps will be bundle into
                 a list and passed into decode head.

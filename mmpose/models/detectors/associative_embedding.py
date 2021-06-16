@@ -5,8 +5,9 @@ import torch
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
-from mmpose.core.evaluation import (aggregate_results, get_group_preds,
-                                    get_multi_stage_outputs)
+from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
+                                    flip_feature_maps, get_group_preds,
+                                    split_ae_outputs)
 from mmpose.core.post_processing.group import HeatmapParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
@@ -48,7 +49,6 @@ class AssociativeEmbedding(BasePose):
         self.backbone = builder.build_backbone(backbone)
 
         if keypoint_head is not None:
-
             if 'loss_keypoint' not in keypoint_head and loss_pose is not None:
                 warnings.warn(
                     '`loss_pose` for BottomUp is deprecated, '
@@ -225,8 +225,9 @@ class AssociativeEmbedding(BasePose):
 
         result = {}
 
-        aggregated_heatmaps = None
-        tags_list = []
+        scale_heatmaps_list = []
+        scale_tags_list = []
+
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
@@ -234,45 +235,85 @@ class AssociativeEmbedding(BasePose):
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
 
+            heatmaps, tags = split_ae_outputs(outputs,
+                                              self.test_cfg['num_joints'],
+                                              self.test_cfg['with_heatmaps'],
+                                              self.test_cfg['with_ae'])
+
             if self.test_cfg.get('flip_test', True):
                 # use flip test
                 features_flipped = self.backbone(
                     torch.flip(image_resized, [3]))
                 if self.with_keypoint:
                     outputs_flipped = self.keypoint_head(features_flipped)
+
+                heatmaps_flipped, tags_flipped = split_ae_outputs(
+                    outputs_flipped, self.test_cfg['num_joints'],
+                    self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'])
+
+                heatmaps_flipped = flip_feature_maps(
+                    heatmaps_flipped,
+                    flip_index=img_metas['flip_index'],
+                    flip_output=True)
+                if self.test_cfg['tag_per_joint']:
+                    tags_flipped = flip_feature_maps(
+                        tags_flipped,
+                        flip_index=img_metas['flip_index'],
+                        flip_output=True)
+                else:
+                    tags_flipped = flip_feature_maps(
+                        tags_flipped, flip_index=None, flip_output=True)
+
             else:
                 outputs_flipped = None
 
-            _, heatmaps, tags = get_multi_stage_outputs(
-                outputs,
-                outputs_flipped,
-                self.test_cfg['num_joints'],
-                self.test_cfg['with_heatmaps'],
-                self.test_cfg['with_ae'],
-                self.test_cfg['tag_per_joint'],
-                img_metas['flip_index'],
-                self.test_cfg['project2image'],
-                base_size,
-                align_corners=self.use_udp)
-
-            aggregated_heatmaps, tags_list = aggregate_results(
-                s,
-                aggregated_heatmaps,
-                tags_list,
+            # TODO: move `align_corners' to test_cfg
+            aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
-                tags,
-                test_scale_factor,
-                self.test_cfg['project2image'],
-                self.test_cfg.get('flip_test', True),
-                align_corners=self.use_udp)
+                heatmaps_flipped,
+                index=-1,
+                project2image=self.test_cfg['project2image'],
+                size_projected=base_size,
+                align_corners=self.use_udp,
+                aggregate_stage='average',
+                aggregate_flip='average')
 
-        # average heatmaps of different scales
-        aggregated_heatmaps = aggregated_heatmaps / float(
-            len(test_scale_factor))
-        tags = torch.cat(tags_list, dim=4)
+            aggregated_tags = aggregate_stage_flip(
+                tags,
+                tags_flipped,
+                index=-1,
+                project2image=self.test_cfg['project2image'],
+                size_projected=base_size,
+                align_corners=self.use_udp,
+                aggregate_stage='concat',
+                aggregate_flip='concat')
+
+            if s == 1 or len(test_scale_factor) == 1:
+                if isinstance(aggregated_tags, list):
+                    scale_tags_list.extend(aggregated_tags)
+                else:
+                    scale_tags_list.append(aggregated_tags)
+
+            if isinstance(aggregated_heatmaps, list):
+                scale_heatmaps_list.extend(aggregated_heatmaps)
+            else:
+                scale_heatmaps_list.append(aggregated_heatmaps)
+
+        aggregated_heatmaps = aggregate_scale(
+            scale_heatmaps_list,
+            self.test_cfg['project2image'],
+            aggregate_scale='average',
+            align_corners=self.use_udp)
+
+        aggregated_tags = aggregate_scale(
+            scale_tags_list,
+            self.test_cfg['project2image'],
+            aggregate_scale='unsqueeze_concat',
+            align_corners=self.use_udp)
 
         # perform grouping
-        grouped, scores = self.parser.parse(aggregated_heatmaps, tags,
+        grouped, scores = self.parser.parse(aggregated_heatmaps,
+                                            aggregated_tags,
                                             self.test_cfg['adjust'],
                                             self.test_cfg['refine'])
 

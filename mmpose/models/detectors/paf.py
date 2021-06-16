@@ -5,13 +5,20 @@ import torch
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
-from mmpose.core.evaluation import (aggregate_results_paf, get_group_preds,
-                                    get_multi_stage_outputs_paf)
+from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
+                                    flip_feature_maps, get_group_preds)
 from mmpose.core.post_processing.group import PAFParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
+
+try:
+    from mmcv.runner import auto_fp16
+except ImportError:
+    warnings.warn('auto_fp16 from mmpose will be deprecated from v0.15.0'
+                  'Please install mmcv>=1.1.4')
+    from mmpose.core import auto_fp16
 
 
 @POSENETS.register_module()
@@ -39,6 +46,7 @@ class PartAffinityField(BasePose):
                  pretrained=None,
                  loss_pose=None):
         super().__init__()
+        self.fp16_enabled = False
 
         self.backbone = builder.build_backbone(backbone)
 
@@ -70,6 +78,7 @@ class PartAffinityField(BasePose):
         if self.with_keypoint:
             self.keypoint_head.init_weights()
 
+    @auto_fp16(apply_to=('img', ))
     def forward(self,
                 img=None,
                 targets=None,
@@ -214,6 +223,9 @@ class PartAffinityField(BasePose):
 
         result = {}
 
+        scale_heatmaps_list = []
+        scale_pafs_list = []
+
         aggregated_heatmaps = None
         aggregated_pafs = None
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
@@ -222,6 +234,8 @@ class PartAffinityField(BasePose):
             features = self.backbone(image_resized)
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
+                heatmaps = outputs['heatmaps']
+                pafs = outputs['pafs']
 
             if self.test_cfg.get('flip_test', True):
                 # use flip test
@@ -229,33 +243,65 @@ class PartAffinityField(BasePose):
                     torch.flip(image_resized, [3]))
                 if self.with_keypoint:
                     outputs_flipped = self.keypoint_head(features_flipped)
+
+                heatmaps_flipped = outputs_flipped['heatmaps']
+                pafs_flipped = outputs_flipped['pafs']
+
+                heatmaps_flipped = flip_feature_maps(
+                    heatmaps_flipped,
+                    flip_index=img_metas['flip_index'],
+                    flip_output=True)
+                pafs_flipped = flip_feature_maps(
+                    pafs_flipped,
+                    img_metas['flip_index_paf'],
+                    flip_output=True)
+
             else:
                 outputs_flipped = None
 
-            _, heatmaps, pafs = get_multi_stage_outputs_paf(
-                outputs,
-                outputs_flipped,
-                self.test_cfg['with_heatmaps'],
-                self.test_cfg['with_pafs'],
-                img_metas['flip_index'],
-                img_metas['flip_index_paf'],
-                self.test_cfg['project2image'],
-                base_size,
-                align_corners=self.use_udp)
-
-            aggregated_heatmaps, aggregated_pafs = aggregate_results_paf(
-                aggregated_heatmaps,
-                aggregated_pafs,
+            # TODO: move `align_corners' to test_cfg
+            aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
+                heatmaps_flipped,
+                index=-1,
+                project2image=self.test_cfg['project2image'],
+                size_projected=base_size,
+                align_corners=self.use_udp,
+                aggregate_stage='average',
+                aggregate_flip='average')
+
+            aggregated_pafs = aggregate_stage_flip(
                 pafs,
-                self.test_cfg['project2image'],
-                self.test_cfg.get('flip_test', True),
-                align_corners=self.use_udp)
+                pafs_flipped,
+                index=-1,
+                project2image=self.test_cfg['project2image'],
+                size_projected=base_size,
+                align_corners=self.use_udp,
+                aggregate_stage='average',
+                aggregate_flip='average')
+
+            if isinstance(aggregated_pafs, list):
+                scale_pafs_list.extend(aggregated_pafs)
+            else:
+                scale_pafs_list.append(aggregated_pafs)
+
+            if isinstance(aggregated_heatmaps, list):
+                scale_heatmaps_list.extend(aggregated_heatmaps)
+            else:
+                scale_heatmaps_list.append(aggregated_heatmaps)
 
         # average heatmaps of different scales
-        aggregated_heatmaps = aggregated_heatmaps / float(
-            len(test_scale_factor))
-        aggregated_pafs = aggregated_pafs / float(len(test_scale_factor))
+        aggregated_heatmaps = aggregate_scale(
+            scale_heatmaps_list,
+            self.test_cfg['project2image'],
+            aggregate_scale='average',
+            align_corners=self.use_udp)
+
+        aggregated_pafs = aggregate_scale(
+            scale_pafs_list,
+            self.test_cfg['project2image'],
+            aggregate_scale='average',
+            align_corners=self.use_udp)
 
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,
