@@ -301,15 +301,13 @@ class AssociativeEmbedding(BasePose):
 
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
-            self.test_cfg['project2image'],
-            aggregate_scale='average',
-            align_corners=self.use_udp)
+            align_corners=self.use_udp,
+            aggregate_scale='average')
 
         aggregated_tags = aggregate_scale(
             scale_tags_list,
-            self.test_cfg['project2image'],
-            aggregate_scale='unsqueeze_concat',
-            align_corners=self.use_udp)
+            align_corners=self.use_udp,
+            aggregate_scale='unsqueeze_concat')
 
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,

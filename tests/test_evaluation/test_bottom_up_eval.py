@@ -68,18 +68,12 @@ def test_aggregate_stage_flip():
 def test_aggregate_scale():
     fake_outputs = [torch.zeros((1, 4, 2, 2)), torch.zeros((1, 4, 2, 2))]
     output = aggregate_scale(
-        fake_outputs,
-        project2image=True,
-        align_corners=False,
-        aggregate_scale='average')
+        fake_outputs, align_corners=False, aggregate_scale='average')
     assert isinstance(output, torch.Tensor)
     assert output.shape == fake_outputs[0].shape
 
     output = aggregate_scale(
-        fake_outputs,
-        project2image=True,
-        align_corners=False,
-        aggregate_scale='unsqueeze_concat')
+        fake_outputs, align_corners=False, aggregate_scale='unsqueeze_concat')
 
     assert isinstance(output, torch.Tensor)
     assert len(output.shape) == len(fake_outputs[0].shape) + 1

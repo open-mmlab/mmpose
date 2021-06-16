@@ -293,13 +293,11 @@ class PartAffinityField(BasePose):
         # average heatmaps of different scales
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
-            self.test_cfg['project2image'],
             aggregate_scale='average',
             align_corners=self.use_udp)
 
         aggregated_pafs = aggregate_scale(
             scale_pafs_list,
-            self.test_cfg['project2image'],
             aggregate_scale='average',
             align_corners=self.use_udp)
 

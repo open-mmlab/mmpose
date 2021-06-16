@@ -108,7 +108,7 @@ def _resize_unsqueeze_concat(feature_maps,
     output_feature_maps = torch.cat(
         [torch.unsqueeze(fmap, dim=feat_dim + 1) for fmap in feature_map_list],
         dim=feat_dim + 1)
-    return output_feature_maps
+    return [output_feature_maps]
 
 
 def _resize_concate(feature_maps, align_corners, index=-1, resize_size=None):
@@ -237,7 +237,6 @@ def aggregate_stage_flip(feature_maps,
 
 
 def aggregate_scale(feature_maps_list,
-                    project2image,
                     align_corners=False,
                     aggregate_scale='average'):
     """Aggregate multi-scale outputs.
@@ -263,16 +262,8 @@ def aggregate_scale(feature_maps_list,
     """
 
     if aggregate_scale == 'average':
-        if project2image:
-            # already resized to the base size
-            output_feature_maps = 0
-            for feature_map in feature_maps_list:
-                output_feature_maps += feature_map
-            output_feature_maps /= len(feature_maps_list)
-
-        else:
-            output_feature_maps = _resize_average(
-                feature_maps_list, align_corners, index=0, resize_size=None)
+        output_feature_maps = _resize_average(
+            feature_maps_list, align_corners, index=0, resize_size=None)
 
     elif aggregate_scale == 'unsqueeze_concat':
         output_feature_maps = _resize_unsqueeze_concat(
@@ -280,7 +271,7 @@ def aggregate_scale(feature_maps_list,
     else:
         NotImplementedError()
 
-    return output_feature_maps
+    return output_feature_maps[0]
 
 
 def get_group_preds(grouped_joints,
