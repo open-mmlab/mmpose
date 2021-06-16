@@ -11,7 +11,6 @@ def imshow_bboxes(img,
                   labels=None,
                   colors='green',
                   text_color='white',
-                  top_k=-1,
                   thickness=1,
                   font_scale=0.5,
                   show=True,
@@ -23,30 +22,61 @@ def imshow_bboxes(img,
 
     Args:
         img (str or ndarray): The image to be displayed.
-        bboxes (list or ndarray): A list of ndarray of shape (k, 4).
+        bboxes (ndarray): ndarray of shape (k, 4), each row is a bbox in
+            format [x1, y1, x2, y2].
+        labels (str or list[str], optional): labels of each bbox.
         colors (list[str or tuple or :obj:`Color`]): A list of colors.
         text_color (str or tuple or :obj:`Color`): Color of texts.
-        top_k (int): Plot the first k bboxes only if set positive.
         thickness (int): Thickness of lines.
         font_scale (float): Font scales of texts.
         show (bool): Whether to show the image.
         win_name (str): The window name.
         wait_time (int): Value of waitKey param.
         out_file (str, optional): The filename to write the image.
+
     Returns:
         ndarray: The image with bboxes drawn on it.
     """
-    # img = mmcv.imshow_bboxes(
-    #     img, bboxes, colors, top_k, thickness, show=False, out_file=None)
+    img = mmcv.imshow_bboxes(
+        img,
+        bboxes,
+        colors,
+        top_k=-1,
+        thickness=thickness,
+        show=False,
+        out_file=None)
 
-    # if labels is not None:
-    #     if not isinstance(labels, list):
-    #         labels = [labels] * len(bboxes)
-    #     assert len(labels) == len(bboxes)
+    if labels is not None:
+        if not isinstance(labels, list):
+            labels = [labels for _ in range(len(bboxes))]
+        assert len(labels) == len(bboxes)
 
-    #     if top_k <= 0:
-    #         pass
-    pass
+        if not isinstance(colors, list):
+            colors = [colors for _ in range(len(bboxes))]
+        colors = [mmcv.color_val(c) for c in colors]
+        assert len(bboxes) == len(colors)
+
+        for bbox, label, color in zip(bboxes, labels, colors):
+            bbox_int = bbox.astype(np.int32)
+            # roughly estimate the proper font size
+            text_size, text_baseline = cv2.getTextSize(label,
+                                                       cv2.FONT_HERSHEY_DUPLEX,
+                                                       font_scale, thickness)
+            text_x1 = bbox_int[0]
+            text_y1 = max(0, bbox_int[1] - text_size[1] - text_baseline)
+            text_x2 = bbox_int[0] + text_size[0]
+            text_y2 = text_y1 + text_size[1] + text_baseline
+            cv2.rectangle(img, (text_x1, text_y1), (text_x2, text_y2), color,
+                          cv2.FILLED)
+            cv2.putText(img, label, (text_x1, text_y2 - text_baseline),
+                        cv2.FONT_HERSHEY_DUPLEX, font_scale,
+                        mmcv.color_val(text_color), thickness)
+
+    if show:
+        mmcv.imshow(img, win_name, wait_time)
+    if out_file is not None:
+        mmcv.imwrite(img, out_file)
+    return img
 
 
 def imshow_keypoints(img,

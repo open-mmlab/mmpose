@@ -3,7 +3,7 @@ import warnings
 import mmcv
 import numpy as np
 
-from mmpose.core import imshow_keypoints, imshow_keypoints_3d
+from mmpose.core import imshow_bboxes, imshow_keypoints, imshow_keypoints_3d
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
@@ -345,13 +345,8 @@ class PoseLifter(BasePose):
 
             if len(bbox_result) > 0:
                 bboxes = np.vstack(bbox_result)
-                mmcv.imshow_bboxes(
-                    img,
-                    bboxes,
-                    colors='green',
-                    top_k=-1,
-                    thickness=thickness,
-                    show=False)
+                imshow_bboxes(
+                    img, bboxes, colors='green', thickness=thickness, show=False)
             if len(pose_input_2d) > 0:
                 imshow_keypoints(
                     img,

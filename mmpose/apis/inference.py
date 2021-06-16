@@ -520,6 +520,7 @@ def vis_pose_result(model,
                     radius=4,
                     thickness=1,
                     kpt_score_thr=0.3,
+                    bbox_color='green',
                     dataset='TopDownCocoDataset',
                     show=False,
                     out_file=None):
@@ -741,7 +742,7 @@ def vis_pose_result(model,
                     [16, 20]]
 
         pose_kpt_color = palette[[15] * 5 + [0] * 7 + [9] * 8]
-        pose_limb_color = palette[[15] * 5 + [0] * 7 + [9] * 8]
+        pose_limb_color = palette[[15] * 5 + [0] * 3 + [0, 9, 9] * 4]
 
     else:
         raise NotImplementedError()
@@ -755,6 +756,7 @@ def vis_pose_result(model,
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
         kpt_score_thr=kpt_score_thr,
+        bbox_color=bbox_color,
         show=show,
         out_file=out_file)
 
