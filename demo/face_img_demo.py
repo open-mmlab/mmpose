@@ -53,6 +53,16 @@ def main():
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
+    parser.add_argument(
+        '--radius',
+        type=int,
+        default=4,
+        help='Keypoint radius for visualization')
+    parser.add_argument(
+        '--thickness',
+        type=int,
+        default=1,
+        help='Link thickness for visualization')
 
     assert has_face_det, 'Please install face_recognition to run the demo. ' \
                          '"pip install face_recognition", For more details, ' \
@@ -105,6 +115,8 @@ def main():
         pose_model,
         image_name,
         pose_results,
+        radius=args.radius,
+        thickness=args.thickness,
         dataset=dataset,
         kpt_score_thr=args.kpt_thr,
         show=args.show,
