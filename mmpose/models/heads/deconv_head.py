@@ -2,9 +2,10 @@ import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_upsample_layer, constant_init,
                       normal_init)
 
-from mmpose.models.builder import build_loss
+from mmpose.models.builder import HEADS, build_loss
 
 
+@HEADS.register_module()
 class DeconvHead(nn.Module):
     """Simple deconv head.
 
