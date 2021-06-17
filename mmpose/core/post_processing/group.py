@@ -464,7 +464,6 @@ class PAFParser(BaseBottomUpParser):
     def __init__(self, cfg):
         super().__init__(cfg)
 
-        self.thre1 = 0.1
         self.thre2 = 0.05
 
         # Heatmap indices to find each limb (joint connection).
@@ -497,7 +496,7 @@ class PAFParser(BaseBottomUpParser):
 
     def find_peaks(self, img):
         """Given a (grayscale) image, find local maxima whose value is above a
-        given threshold (param['thre1'])
+        given threshold (self.params.detection_threshold)
 
         :param img: Input image (2d array) where we want to find peaks
         :return: 2d np.array containing the [x,y] coordinates of each
@@ -507,45 +506,36 @@ class PAFParser(BaseBottomUpParser):
 
         peaks_binary = (maximum_filter(
             img, footprint=generate_binary_structure(2, 1)) == img) * (
-                img > self.thre1)
+                img > self.params.detection_threshold)
         # Note reverse ([::-1]): we return [[x y], [x y]...] instead of
-        # [[y x], [y
-        # x]...]
+        # [[y x], [y x]...]
         return np.array(np.nonzero(peaks_binary)[::-1]).T
 
     def compute_resized_coords(self, coords, resizeFactor):
-        """
-        Given the index/coordinates of a cell in some input array (e.g. image
-        ),
-        provides the new coordinates if that array was resized by making it
-        resizeFactor times bigger.
+        """ Given the index/coordinates of a cell in some input array
+        (e.g. image), provides the new coordinates if that array was resized
+        by making it resizeFactor times bigger.
         E.g.: image of size 3x3 is resized to 6x6 (resizeFactor=2), we'd like
-         to
-        know the new coordinates of cell [1,2] -> Function would return [2.5,
-        4.5]
+        to know the new coordinates of cell [1,2] -> Function would return
+        [2.5,4.5].
         :param coords: Coordinates (indices) of a cell in some input array
         :param resizeFactor: Resize coefficient = shape_dest/shape_source.
-        E.g.:
-        resizeFactor=2 means the destination array is twice as big as the
-        original one
+        E.g.: resizeFactor=2 means the destination array is twice as big as
+        the original one
+
         :return: Coordinates in an array of size
         shape_dest=resizeFactor*shape_source, expressing the array indices
-        of the
-        closest point to 'coords' if an image of size shape_source was
-        resized to
-        shape_dest
+        of the closest point to 'coords' if an image of size shape_source
+        was resized to shape_dest
         """
 
         # 1) Add 0.5 to coords to get coordinates of center of the pixel
-        # (e.g.
-        # index [0,0] represents the pixel at location [0.5,0.5])
+        # (e.g. index [0, 0] represents the pixel at location [0.5, 0.5])
         # 2) Transform those coordinates to shape_dest, by multiplying by
         # resizeFactor
         # 3) That number represents the location of the pixel center in the
-        # new array,
-        # so subtract 0.5 to get coordinates of the array index/indices
-        # (revert
-        # step 1)
+        # new array, so subtract 0.5 to get coordinates of the array
+        # index/indices (revert step 1)
         return (np.array(coords, dtype=float) + 0.5) * resizeFactor - 0.5
 
     def NMS(self,
@@ -553,47 +543,42 @@ class PAFParser(BaseBottomUpParser):
             upsampFactor=1.,
             bool_refine_center=True,
             bool_gaussian_filt=False):
-        """
-        NonMaximaSuppression: find peaks (local maxima) in a set of grayscale
-         images
+        """NonMaximaSuppression: find peaks (local maxima) in a set of grayscale
+        images.
+
         :param heatmaps: set of grayscale images on which to find local maxima
          (3d np.array,
-        with dimensions image_height x image_width x num_heatmaps)
+         with dimensions image_height x image_width x num_heatmaps)
         :param upsampFactor: Size ratio between CPM heatmap output and the
-         input image size.
-        Eg: upsampFactor=16 if original image was 480x640 and heatmaps are
-         30x40xN
+         input image size. Eg: upsampFactor=16 if original image was 480x640
+         and heatmaps are 30x40xN
         :param bool_refine_center: Flag indicating whether:
          - False: Simply return the low-res peak found upscaled by upsampFactor
          (subject to grid-snap)
-         - True: (Recommended, very accurate) Upsample a small
-         patch around each
-         low-res peak and
-         fine-tune the location of the peak at the resolution of the original
-         input image
+         - True: (Recommended, very accurate) Upsample a small patch around
+         each low-res peak and fine-tune the location of the peak at the
+         resolution of the original input image
         :param bool_gaussian_filt: Flag indicating whether to apply a
-        1d-GaussianFilter (smoothing)
-        to each upsampled patch before fine-tuning the location of each peak.
+         1d-GaussianFilter (smoothing) to each upsampled patch before
+         fine-tuning the location of each peak.
+
         :return: a NUM_JOINTS x 4 np.array where each row represents a joint
-        type (0=nose, 1=neck...)
-        and the columns indicate the {x,y} position, the score (probability)
-         and a unique id (counter)
+         type (0=nose, 1=neck...) and the columns indicate the {x,y} position,
+         the score (probability) and a unique id (counter)
         """
+
         # MODIFIED BY CARLOS: Instead of upsampling the heatmaps to
-        # heatmap_avg and
-        # then performing NMS to find peaks, this step can be sped up
-        # by ~25-50x by:
+        # heatmap_avg and then performing NMS to find peaks,
+        # this step can be sped up by ~25-50x by:
         # (9-10ms [with GaussFilt] or 5-6ms [without GaussFilt] vs
         # 250-280ms on RoG
         # 1. Perform NMS at (low-res) CPM's output resolution
         # 1.1. Find peaks using scipy.ndimage.filters.maximum_filter
         # 2. Once a peak is found, take a patch of 5x5 centered around
-        # the peak, upsample it, and
-        # fine-tune the position of the actual maximum.
-        #  '-> That's equivalent to having found the peak on heatmap_avg,
-        #  but much faster because we only
-        #      upsample and scan the 5x5 patch instead of the full (e.g.)
-        #      480x640
+        # the peak, upsample it, and fine-tune the position of the actual
+        # maximum. '-> That's equivalent to having found the peak on
+        # heatmap_avg, but much faster because we only upsample and
+        # scan the 5x5 patch instead of the full (e.g.) 480x640
 
         joint_list_per_joint_type = []
         cnt_total_joints = 0
@@ -627,10 +612,8 @@ class PAFParser(BaseBottomUpParser):
                         interpolation=cv2.INTER_CUBIC)
 
                     # Gaussian filtering takes an average of 0.8ms/peak
-                    # (and there might be
-                    # more than one peak per joint!) -> For now, skip it
-                    # (it's
-                    # accurate enough)
+                    # (and there might be more than one peak per joint!)
+                    # -> For now, skip it (it's accurate enough)
                     map_upsamp = self.gaussian_filter(
                         map_upsamp,
                         sigma=3) if bool_gaussian_filt else map_upsamp
@@ -640,13 +623,11 @@ class PAFParser(BaseBottomUpParser):
                     location_of_max = np.unravel_index(map_upsamp.argmax(),
                                                        map_upsamp.shape)
                     # Remember that peaks indicates [x,y] -> need to
-                    # reverse it for
-                    # [y,x]
+                    # reverse it for [y,x]
                     location_of_patch_center = self.compute_resized_coords(
                         peak[::-1] - [y_min, x_min], upsampFactor)
                     # Calculate the offset wrt to the patch center where
-                    # the actual
-                    # maximum is
+                    # the actual maximum is
                     refined_center = (
                         location_of_max - location_of_patch_center)
                     peak_score = map_upsamp[location_of_max]
@@ -727,16 +708,13 @@ class PAFParser(BaseBottomUpParser):
                     3, :] = self.paf_xy_coords_per_limb[limb_type][1]
                 for i, joint_src in enumerate(joints_src):
                     # Try every possible joints_src[i]-joints_dst[j]
-                    # pair and see
-                    # if it's a feasible limb
+                    # pair and see if it's a feasible limb
                     for j, joint_dst in enumerate(joints_dst):
                         # Subtract the position of both joints to obtain
-                        # the
-                        # direction of the potential limb
+                        # the direction of the potential limb
                         limb_dir = joint_dst[:2] - joint_src[:2]
                         # Compute the distance/length of the potential
-                        # limb (norm
-                        # of limb_dir)
+                        # limb (norm of limb_dir)
                         limb_dist = np.sqrt(np.sum(limb_dir**2)) + 1e-8
                         limb_dir = limb_dir / limb_dist
                         # Normalize limb_dir to be a unit vector
@@ -765,8 +743,7 @@ class PAFParser(BaseBottomUpParser):
                         score_penalizing_long_dist = score_intermed_pts.mean(
                         ) + min(0.5 * paf_upsamp.shape[0] / limb_dist - 1, 0)
                         # Criterion 1: At least 80% of the intermediate
-                        # points have
-                        # a score higher than thre2
+                        # points have a score higher than thre2
                         criterion1 = (
                             np.count_nonzero(score_intermed_pts > self.thre2) >
                             0.8 * num_intermed_pts)
@@ -800,8 +777,8 @@ class PAFParser(BaseBottomUpParser):
                 for potential_connection in connection_candidates:
                     i, j, s = potential_connection[0:3]
                     # Make sure joints_src[i] or joints_dst[j] haven't
-                    # already been
-                    # connected to other joints_dst or joints_src
+                    # already been connected to other joints_dst or joints_
+                    # src
                     if i not in connections[:, 3] and j not in connections[:,
                                                                            4]:
                         # [joint_src_id, joint_dst_id,
@@ -813,8 +790,7 @@ class PAFParser(BaseBottomUpParser):
                         ])
                         # Exit if we've already established max_connections
                         # connections (each joint can't be connected to more
-                        # than
-                        # one joint)
+                        # than one joint)
                         if len(connections) >= max_connections:
                             break
                 connected_limbs.append(connections)
@@ -881,12 +857,10 @@ class PAFParser(BaseBottomUpParser):
                         # Update which joints are connected
                         person1_limbs[:-2] += (person2_limbs[:-2] + 1)
                         # Update the overall score and total count of
-                        # joints
-                        # connected by summing their counters
+                        # joints connected by summing their counters
                         person1_limbs[-2:] += person2_limbs[-2:]
                         # Add the score of the current joint connection
-                        # to the
-                        # overall score
+                        # to the overall score
                         person1_limbs[-2] += limb_info[2]
                         person_to_joint_assoc.pop(person_assoc_idx[1])
                     else:  # Same case as len(person_assoc_idx)==1 above
@@ -894,9 +868,9 @@ class PAFParser(BaseBottomUpParser):
                         person1_limbs[-1] += 1
                         person1_limbs[-2] += joint_list[
                             limb_info[1].astype(int), 2] + limb_info[2]
-                else:  # No person has claimed any of these joints, create
-                    # a new person
-                    # Initialize person info to all -1
+                else:
+                    # No person has claimed any of these joints, create
+                    # a new person Initialize person info to all -1
                     # (no joint associations)
                     row = -1 * np.ones(20)
                     # Store the joint info of the new connection
@@ -954,11 +928,10 @@ class PAFParser(BaseBottomUpParser):
         # Bottom-up approach:
         # Step 1: find all joints in the image (organized by joint type:
         # [0]=nose, [1]=neck...)
-        # 4 = img_orig.shape[0] / float(heatmaps.shape[0])
-
         heatmaps = np.transpose(heatmaps[0], [1, 2, 0])
         pafs = np.transpose(pafs[0], [1, 2, 0])
 
+        # 4 = img_orig.shape[0] / float(heatmaps.shape[0])
         joint_list_per_joint_type = self.NMS(heatmaps, 4)
         # joint_list is an unravel'd version of joint_list_per_joint,
         # where we
@@ -970,8 +943,7 @@ class PAFParser(BaseBottomUpParser):
         ])
 
         # Step 2: find which joints go together to form limbs
-        # (which wrists go
-        # with which elbows)
+        # (which wrists go with which elbows)
         paf_upsamp = cv2.resize(
             pafs, (heatmaps.shape[1] * 4, heatmaps.shape[0] * 4),
             interpolation=cv2.INTER_CUBIC)
