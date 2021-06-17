@@ -346,7 +346,11 @@ class PoseLifter(BasePose):
             if len(bbox_result) > 0:
                 bboxes = np.vstack(bbox_result)
                 imshow_bboxes(
-                    img, bboxes, colors='green', thickness=thickness, show=False)
+                    img,
+                    bboxes,
+                    colors='green',
+                    thickness=thickness,
+                    show=False)
             if len(pose_input_2d) > 0:
                 imshow_keypoints(
                     img,

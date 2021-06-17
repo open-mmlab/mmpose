@@ -226,6 +226,7 @@ class TopDown(BasePose):
                     radius=4,
                     thickness=1,
                     font_scale=0.5,
+                    bbox_thickness=1,
                     win_name='',
                     show=False,
                     show_keypoint_weight=False,
@@ -283,7 +284,7 @@ class TopDown(BasePose):
                 labels=labels,
                 colors=bbox_color,
                 text_color=text_color,
-                thickness=thickness,
+                thickness=bbox_thickness,
                 font_scale=font_scale,
                 show=False)
 

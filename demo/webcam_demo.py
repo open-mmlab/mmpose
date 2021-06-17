@@ -1,12 +1,13 @@
 import argparse
-from collections import defaultdict
 
 import cv2
 import mmcv
 import numpy as np
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
-                         vis_pose_result)
+from mmpose.apis import (get_track_id, inference_top_down_pose_model,
+                         init_pose_model, vis_pose_result)
+from mmpose.core import apply_bugeye_effect, apply_sunglasses_effect
+from mmpose.utils import StopWatch
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -14,218 +15,11 @@ try:
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
-
-class StopWatch:
-    r"""A helper class to measure FPS and detailed time consuming of each phase
-    in a video processing loop or similar scenarios.
-
-    Args:
-        window (int): The sliding window size to calculate the running average
-            of the time consuming.
-
-    Example::
-        >>> stop_watch = StopWatch(window=10)
-        >>> while True:
-        ...     with stop_watch.timeit('total'):
-        ...         sleep(1)
-        ...         # 'timeit' support nested use
-        ...         with stop_watch.timeit('phase1'):
-        ...             sleep(1)
-        ...         with stop_watch.timeit('phase2'):
-        ...             sleep(2)
-        ...         sleep(2)
-        ...     report = stop_watch.report()
-        report = {'total': 6., 'phase1': 1., 'phase2': 2.}
-
-    """
-
-    def __init__(self, window=1):
-        self._record = defaultdict(list)
-        self._timer_stack = []
-        self.window = window
-
-    def timeit(self, timer_name='_FPS_'):
-        """Timing a code snippet with an assigned name.
-
-        Args:
-            timer_name (str): The unique name of the interested code snippet to
-                handle multiple timers and generate reports. Note that '_FPS_'
-                is a special key that the measurement will be in `fps` instead
-                of `millisecond`. Also see `report` and `report_strings`.
-                Default: '_FPS_'.
-        Note:
-            This function should always be used in a `with` statement, as shown
-            in the example.
-        """
-        self._timer_stack.append((timer_name, mmcv.Timer()))
-        return self
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_value, trackback):
-        timer_name, timer = self._timer_stack.pop()
-        self._record[timer_name].append(timer.since_start())
-        self._record[timer_name] = self._record[timer_name][-self.window:]
-
-    def report(self):
-        """Report timing information.
-
-        Returns:
-            dict: The key is the timer name and the value is the corresponding
-                average time consuming.
-        """
-        result = {
-            name: np.mean(vals) * 1000.
-            for name, vals in self._record.items()
-        }
-        return result
-
-    def report_strings(self):
-        """Report timing information in texture strings.
-
-        Returns:
-            list(str): Each element is the information string of a timed event,
-                in format of '{timer_name}: {time_in_ms}'. Specially, if
-                timer_name is '_FPS_', the measurement will be converted to
-                fps.
-        """
-        result = self.report()
-        result = result.copy()
-        strings = []
-        if '_FPS_' in result:
-            fps = 1.0 / result.pop('_FPS_')
-            strings.append(f'FPS: {fps:.1f}')
-        strings += [f'{name}: {val:.0f}' for name, val in result.items()]
-        return strings
-
-    def reset(self):
-        self._record = defaultdict(list)
-        self._timer_stack = []
-
-
-def apply_bugeye_effect(img,
-                        pose_results,
-                        dataset='TopDownCocoDataset',
-                        kpt_thr=0.5):
-    """Apply bug-eye effect.
-
-    Args:
-        img (np.ndarray): Image data.
-        pose_results (list[dict]): The pose estimation results containing:
-            - "bbox" ([K, 4(or 5)]): detection bbox in
-                [x1, y1, x2, y2, (score)]
-            - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
-        dataset (str): Dataset name (e.g. 'TopDownCocoDataset') to determine
-            the keypoint order.
-        kpt_thr (float): The score threshold of required keypoints.
-    """
-
-    if dataset == 'TopDownCocoDataset':
-        leye_idx = 1
-        reye_idx = 2
-    elif dataset == 'AnimalPoseDataset':
-        leye_idx = 0
-        reye_idx = 1
-    else:
-        raise NotImplementedError()
-
-    xx, yy = np.meshgrid(np.arange(img.shape[1]), np.arange(img.shape[0]))
-    xx = xx.astype(np.float32)
-    yy = yy.astype(np.float32)
-
-    for pose in pose_results:
-        bbox = pose['bbox']
-        kpts = pose['keypoints']
-
-        if kpts[leye_idx, 2] < kpt_thr or kpts[reye_idx, 2] < kpt_thr:
-            continue
-
-        kpt_leye = kpts[leye_idx, :2]
-        kpt_reye = kpts[reye_idx, :2]
-        for xc, yc in [kpt_leye, kpt_reye]:
-            # draw dard dot at the eye position
-            cv2.circle(img, (int(xc), int(yc)), 1, (20, 20, 20), cv2.FILLED)
-
-            # distortion parameters
-            k1 = 0.002
-            epe = 1e-5
-
-            scale = (bbox[2] - bbox[0])**2 + (bbox[3] - bbox[1])**2
-            r2 = ((xx - xc)**2 + (yy - yc)**2)
-            r2 = (r2 + epe) / scale  # normalized by bbox scale
-
-            xx = (xx - xc) / (1 + k1 / r2) + xc
-            yy = (yy - yc) / (1 + k1 / r2) + yc
-
-        img = cv2.remap(
-            img,
-            xx,
-            yy,
-            interpolation=cv2.INTER_LINEAR,
-            borderMode=cv2.BORDER_REPLICATE)
-    return img
-
-
-def apply_sunglasses_effect(img,
-                            pose_results,
-                            sunglasses_img,
-                            dataset='TopDownCocoDataset',
-                            kpt_thr=0.5):
-    """Apply sunglasses effect.
-
-    Args:
-        img (np.ndarray): Image data.
-        pose_results (list[dict]): The pose estimation results containing:
-            - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
-        sunglasses_img (np.ndarray): Sunglasses image with white background.
-        dataset (str): Dataset name (e.g. 'TopDownCocoDataset') to determine
-            the keypoint order.
-        kpt_thr (float): The score threshold of required keypoints.
-    """
-
-    if dataset == 'TopDownCocoDataset':
-        leye_idx = 1
-        reye_idx = 2
-    elif dataset == 'AnimalPoseDataset':
-        leye_idx = 0
-        reye_idx = 1
-    else:
-        raise NotImplementedError()
-
-    hm, wm = sunglasses_img.shape[:2]
-    # anchor points in the sunglasses mask
-    pts_src = np.array([[0.3 * wm, 0.3 * hm], [0.3 * wm, 0.7 * hm],
-                        [0.7 * wm, 0.3 * hm], [0.7 * wm, 0.7 * hm]],
-                       dtype=np.float32)
-
-    for pose in pose_results:
-        kpts = pose['keypoints']
-
-        if kpts[leye_idx, 2] < kpt_thr or kpts[reye_idx, 2] < kpt_thr:
-            continue
-
-        kpt_leye = kpts[leye_idx, :2]
-        kpt_reye = kpts[reye_idx, :2]
-        # orthogonal vector to the left-to-right eyes
-        vo = 0.5 * (kpt_reye - kpt_leye)[::-1]
-
-        # anchor points in the image by eye positions
-        pts_tar = np.vstack(
-            [kpt_reye + vo, kpt_reye - vo, kpt_leye + vo, kpt_leye - vo])
-
-        h_mat, _ = cv2.findHomography(pts_src, pts_tar)
-        patch = cv2.warpPerspective(
-            sunglasses_img,
-            h_mat,
-            dsize=(img.shape[1], img.shape[0]),
-            borderValue=(255, 255, 255))
-        #  mask the white background area in the patch with a threshold 200
-        mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
-        mask = (mask < 200).astype(np.uint8)
-        img = cv2.copyTo(patch, mask, img)
-
-    return img
+try:
+    import psutil
+    psutil_proc = psutil.Process()
+except (ImportError, ModuleNotFoundError):
+    psutil_proc = None
 
 
 def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
@@ -275,25 +69,36 @@ def webcam_demo(args):
         args.det_config, args.det_checkpoint, device=args.device.lower())
 
     # build pose models
-    pose_models = []
+    pose_model_list = []
     if args.enable_human_pose:
         pose_model = init_pose_model(
             args.human_pose_config,
             args.human_pose_checkpoint,
             device=args.device.lower())
-        model_name = 'HumanPose'
-        cat_ids = args.human_det_ids
-        bbox_color = 'green'
-        pose_models.append((model_name, pose_model, cat_ids, bbox_color))
+        model_info = {
+            'name': 'HumanPose',
+            'model': pose_model,
+            'cat_ids': args.human_det_ids,
+            'bbox_color': (148, 139, 255),
+        }
+        pose_model_list.append(model_info)
     if args.enable_animal_pose:
         pose_model = init_pose_model(
             args.animal_pose_config,
             args.animal_pose_checkpoint,
             device=args.device.lower())
-        model_name = 'AnimalPose'
-        cat_ids = args.animal_det_ids
-        bbox_color = 'cyan'
-        pose_models.append((model_name, pose_model, cat_ids, bbox_color))
+        model_info = {
+            'name': 'AnimalPose',
+            'model': pose_model,
+            'cat_ids': args.animal_det_ids,
+            'bbox_color': 'cyan',
+        }
+        pose_model_list.append(model_info)
+
+    # store pose history for pose tracking
+    pose_history_list = []
+    for _ in range(len(pose_model_list)):
+        pose_history_list.append({'pose_results_last': [], 'next_id': 0})
 
     # load resource
     sunglasses_img = None
@@ -324,7 +129,15 @@ def webcam_demo(args):
                 mmdet_results = inference_detector(det_model, frame)
             img = frame.copy()
 
-            for model_name, pose_model, cat_ids, color in pose_models:
+            for model_info, pose_history in zip(pose_model_list,
+                                                pose_history_list):
+                model_name = model_info['name']
+                pose_model = model_info['model']
+                cat_ids = model_info['cat_ids']
+                bbox_color = model_info['bbox_color']
+                pose_results_last = pose_history['pose_results_last']
+                next_id = pose_history['next_id']
+
                 with stop_watch.timeit(model_name):
                     det_results = process_mmdet_results(
                         mmdet_results,
@@ -340,22 +153,61 @@ def webcam_demo(args):
                         format='xyxy',
                         dataset=dataset_name)
 
+                    pose_results, next_id = get_track_id(
+                        pose_results,
+                        pose_results_last,
+                        next_id,
+                        use_oks=False,
+                        tracking_thr=0.3,
+                        use_one_euro=True,
+                        fps=None)
+                    pose_history['pose_results_last'] = pose_results
+                    pose_history['next_id'] = next_id
+
                 if args.sunglasses:
+                    if dataset_name == 'TopDownCocoDataset':
+                        leye_idx = 1
+                        reye_idx = 2
+                    elif dataset_name == 'AnimalPoseDataset':
+                        leye_idx = 0
+                        reye_idx = 1
+                    else:
+                        raise ValueError('Sunglasses effect does not support'
+                                         f'{dataset_name}')
                     img = apply_sunglasses_effect(img, pose_results,
-                                                  sunglasses_img, dataset_name)
+                                                  sunglasses_img, leye_idx,
+                                                  reye_idx)
                 elif args.bugeye:
-                    img = apply_bugeye_effect(img, pose_results, dataset_name)
+                    if dataset_name == 'TopDownCocoDataset':
+                        leye_idx = 1
+                        reye_idx = 2
+                    elif dataset_name == 'AnimalPoseDataset':
+                        leye_idx = 0
+                        reye_idx = 1
+                    else:
+                        raise ValueError('Bug-eye effect does not support'
+                                         f'{dataset_name}')
+                    img = apply_bugeye_effect(img, pose_results, leye_idx,
+                                              reye_idx)
                 else:
                     img = vis_pose_result(
                         pose_model,
                         img,
                         pose_results,
+                        radius=4,
+                        thickness=2,
                         dataset=dataset_name,
                         kpt_score_thr=args.kpt_thr,
-                        bbox_color=color)
+                        bbox_color=bbox_color)
 
             str_info = [f'Shape: {img.shape[:2]}']
             str_info += stop_watch.report_strings()
+            if psutil_proc is not None:
+                str_info += [
+                    f'CPU({psutil_proc.cpu_num()}): '
+                    f'{psutil_proc.cpu_percent():.1f}%'
+                ]
+                str_info += [f'MEM: {psutil_proc.memory_percent():.1f}%']
             str_info = ' | '.join(str_info)
             cv2.putText(img, str_info, (30, 20), cv2.FONT_HERSHEY_DUPLEX, 0.3,
                         (228, 183, 61), 1)
