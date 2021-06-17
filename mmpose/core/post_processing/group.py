@@ -500,8 +500,7 @@ class PAFParser(BaseBottomUpParser):
 
         :param img: Input image (2d array) where we want to find peaks
         :return: 2d np.array containing the [x,y] coordinates of each
-        peak found
-        in the image
+        peak found in the image
         """
 
         peaks_binary = (maximum_filter(
@@ -657,24 +656,20 @@ class PAFParser(BaseBottomUpParser):
          resolution
         :param joint_list_per_joint_type: See 'return' doc of NMS()
         :param num_intermed_pts: Int indicating how many intermediate
-        points to take
-        between joint_src and joint_dst, at which the PAFs will be
-        evaluated
+         points to take between joint_src and joint_dst, at which the
+         PAFs will be evaluated
         :return: List of NUM_LIMBS rows. For every limb_type (a row)
-        we store
-        a list of all limbs of that type found (eg: all the right
-        forearms).
-        For each limb (each item in connected_limbs[limb_type]), we
-        store 5 cells:
-        # {joint_src_id,joint_dst_id}: a unique number associated with
-        each joint,
-        # limb_score_penalizing_long_dist: a score of how good a
-         connection
-        of the joints is, penalized if the limb length is too long
-        # {joint_src_index,joint_dst_index}: the index of the joint
-         within
-        all the joints of that type found (eg: the 3rd right elbow
-         found)
+         we store a list of all limbs of that type found (eg: all the
+         right forearms). For each limb (each item in
+         connected_limbs[limb_type]), we store 5 cells:
+         # {joint_src_id,joint_dst_id}: a unique number associated with
+         each joint,
+         # limb_score_penalizing_long_dist: a score of how good a
+         connection of the joints is, penalized if the limb length is
+         too long
+         # {joint_src_index,joint_dst_index}: the index of the joint
+         within all the joints of that type found (eg: the 3rd right
+         elbow found)
         """
         connected_limbs = []
 
@@ -682,25 +677,22 @@ class PAFParser(BaseBottomUpParser):
         limb_intermed_coords = np.empty((4, num_intermed_pts), dtype=np.intp)
         for limb_type in range(self.NUM_LIMBS):
             # List of all joints of type A found, where A is specified
-            # by limb_type
-            # (eg: a right forearm starts in a right elbow)
+            # by limb_type (eg: a right forearm starts in a right elbow)
             joints_src = joint_list_per_joint_type[
                 self.joint_to_limb_heatmap_relationship[limb_type][0]]
             # List of all joints of type B found, where B is specified
-            # by limb_type
-            # (eg: a right forearm ends in a right wrist)
+            # by limb_type (eg: a right forearm ends in a right wrist)
             joints_dst = joint_list_per_joint_type[
                 self.joint_to_limb_heatmap_relationship[limb_type][1]]
             if len(joints_src) == 0 or len(joints_dst) == 0:
                 # No limbs of this type found (eg: no right forearms
-                # found because
-                # we didn't find any right wrists or right elbows)
+                # found because we didn't find any right wrists or
+                # right elbows)
                 connected_limbs.append([])
             else:
                 connection_candidates = []
                 # Specify the paf index that contains the x-coord of
-                # the paf for
-                # this limb
+                # the paf for this limb
                 limb_intermed_coords[
                     2, :] = self.paf_xy_coords_per_limb[limb_type][0]
                 # And the y-coord paf index
@@ -720,20 +712,19 @@ class PAFParser(BaseBottomUpParser):
                         # Normalize limb_dir to be a unit vector
 
                         # Linearly distribute num_intermed_pts points
-                        # from the x
-                        # coordinate of joint_src to the x coordinate
-                        # of joint_dst
+                        # from the x coordinate of joint_src to the
+                        # x coordinate of joint_dst
                         limb_intermed_coords[1, :] = np.round(
                             np.linspace(
                                 joint_src[0],
                                 joint_dst[0],
                                 num=num_intermed_pts))
+                        # Same for the y coordinate
                         limb_intermed_coords[0, :] = np.round(
                             np.linspace(
                                 joint_src[1],
                                 joint_dst[1],
-                                num=num_intermed_pts)
-                        )  # Same for the y coordinate
+                                num=num_intermed_pts))
                         intermed_paf = paf_upsamp[limb_intermed_coords[0, :],
                                                   limb_intermed_coords[1, :],
                                                   limb_intermed_coords[
@@ -752,9 +743,8 @@ class PAFParser(BaseBottomUpParser):
                         # positive
                         criterion2 = (score_penalizing_long_dist > 0)
                         if criterion1 and criterion2:
-                            # Last value is the combined paf(+limb_dist)
-                            # + heatmap
-                            # scores of both joints
+                            # Last value is the combined paf (+limb_dist)
+                            # + heatmap scores of both joints
                             connection_candidates.append([
                                 i, j, score_penalizing_long_dist,
                                 score_penalizing_long_dist + joint_src[2] +
@@ -767,20 +757,18 @@ class PAFParser(BaseBottomUpParser):
                     connection_candidates, key=lambda x: x[2], reverse=True)
                 connections = np.empty((0, 5))
                 # There can only be as many limbs as the smallest number of
-                # source
-                # or destination joints (eg: only 2 forearms if there's 5
-                # wrists
-                # but 2 elbows)
+                # source or destination joints (eg: only 2 forearms if
+                # there's 5 wrists but 2 elbows)
                 max_connections = min(len(joints_src), len(joints_dst))
                 # Traverse all potential joint connections (sorted by their
                 # score)
                 for potential_connection in connection_candidates:
                     i, j, s = potential_connection[0:3]
                     # Make sure joints_src[i] or joints_dst[j] haven't
-                    # already been connected to other joints_dst or joints_
-                    # src
-                    if i not in connections[:, 3] and j not in connections[:,
-                                                                           4]:
+                    # already been connected to other joints_dst or
+                    # joints_ src
+                    if i not in connections[:, 3] and \
+                            j not in connections[:, 4]:
                         # [joint_src_id, joint_dst_id,
                         # limb_score_penalizing_long_dist, joint_src_index,
                         # joint_dst_index]
@@ -801,17 +789,17 @@ class PAFParser(BaseBottomUpParser):
         """Associate limbs belonging to the same person together.
 
         :param connected_limbs: See 'return' doc of
-        find_connected_joints()
+         find_connected_joints()
         :param joint_list: unravel'd version of joint_list_per_joint
          [See 'return' doc of NMS()]
         :return: 2d np.array of size num_people x (NUM_JOINTS+2).
          For each person found:
-        # First NUM_JOINTS columns contain the index (in joint_list)
-         of the joints associated
-        with that person (or -1 if their i-th joint wasn't found)
-        # 2nd-to-last column: Overall score of the joints+limbs that
-        belong to this person
-        # Last column: Total count of joints found for this person
+         # First NUM_JOINTS columns contain the index (in joint_list)
+         of the joints associated with that person (or -1 if their
+         i-th joint wasn't found)
+         # 2nd-to-last column: Overall score of the joints+limbs that
+         belong to this person
+         # Last column: Total count of joints found for this person
         """
         person_to_joint_assoc = []
 
@@ -827,10 +815,8 @@ class PAFParser(BaseBottomUpParser):
                         person_assoc_idx.append(person)
 
                 # If one of the joints has been associated to a person,
-                # and either
-                # the other joint is also associated with the same
-                # person or not
-                # associated to anyone yet:
+                # and either the other joint is also associated with the same
+                # person or not associated to anyone yet:
                 if len(person_assoc_idx) == 1:
                     person_limbs = person_to_joint_assoc[person_assoc_idx[0]]
                     # If the other joint is not associated to anyone yet,
@@ -841,8 +827,8 @@ class PAFParser(BaseBottomUpParser):
                         # this person
                         person_limbs[-1] += 1
                         # And update the total score (+= heatmap score
-                        # of joint_dst
-                        # + score of connecting joint_src with joint_dst)
+                        # of joint_dst + score of connecting joint_src with
+                        # joint_dst)
                         person_limbs[-2] += joint_list[
                             limb_info[1].astype(int), 2] + limb_info[2]
                 elif len(person_assoc_idx
@@ -925,7 +911,6 @@ class PAFParser(BaseBottomUpParser):
         return ans
 
     def match(self, heatmaps, pafs):
-        # Bottom-up approach:
         # Step 1: find all joints in the image (organized by joint type:
         # [0]=nose, [1]=neck...)
         heatmaps = np.transpose(heatmaps[0], [1, 2, 0])
@@ -934,8 +919,8 @@ class PAFParser(BaseBottomUpParser):
         # 4 = img_orig.shape[0] / float(heatmaps.shape[0])
         joint_list_per_joint_type = self.NMS(heatmaps, 4)
         # joint_list is an unravel'd version of joint_list_per_joint,
-        # where we
-        # add a 5th column to indicate the joint_type (0=nose, 1=neck...)
+        # where we add a 5th column to indicate the joint_type
+        # (0=nose, 1=neck...)
         joint_list = np.array([
             tuple(peak) + (joint_type, )
             for joint_type, joint_peaks in enumerate(joint_list_per_joint_type)
