@@ -283,17 +283,20 @@ class PAFGenerator:
         min_y = max(np.floor(min(src[1], dst[1]) - self.limb_width), 0)
         max_y = min(
             np.ceil(max(src[1], dst[1]) + self.limb_width),
-            self.output_size + 1)
+            self.output_size - 1)
 
         range_x = list(range(int(min_x), int(max_x + 1), 1))
         range_y = list(range(int(min_y), int(max_y + 1), 1))
-        xx, yy = np.meshgrid(range_x, range_y)
-        delta_x = xx - src[0]
-        delta_y = yy - src[1]
-        dist = np.abs(delta_x * unit_limb_vec[1] - delta_y * unit_limb_vec[0])
-        mask_local = (dist < self.limb_width)
+
         mask = np.zeros_like(count, dtype=bool)
-        mask[xx, yy] = mask_local
+        if len(range_x) > 0 and len(range_y) > 0:
+            xx, yy = np.meshgrid(range_x, range_y)
+            delta_x = xx - src[0]
+            delta_y = yy - src[1]
+            dist = np.abs(delta_x * unit_limb_vec[1] -
+                          delta_y * unit_limb_vec[0])
+            mask_local = (dist < self.limb_width)
+            mask[xx, yy] = mask_local
 
         pafs[0, mask] += unit_limb_vec[0]
         pafs[1, mask] += unit_limb_vec[1]
@@ -312,8 +315,8 @@ class PAFGenerator:
                              dtype=np.float32)
 
             for p in joints:
-                src = p[sk[0] - 1]
-                dst = p[sk[1] - 1]
+                src = p[sk[0]]
+                dst = p[sk[1]]
                 if src[2] > 0 and dst[2] > 0:
                     self._accumulate_paf_map_(pafs[2 * idx:2 * idx + 2],
                                               src[:2], dst[:2], count)
@@ -347,9 +350,9 @@ class BottomUpRandomFlip:
         assert len(mask) == len(self.output_size)
 
         if np.random.random() < self.flip_prob:
-            image = image[:, ::-1] - np.zeros_like(image)
+            image = image[:, ::-1].copy() - np.zeros_like(image)
             for i, _output_size in enumerate(self.output_size):
-                mask[i] = mask[i][:, ::-1]
+                mask[i] = mask[i][:, ::-1].copy()
                 joints[i] = joints[i][:, self.flip_index]
                 joints[i][:, :, 0] = _output_size - joints[i][:, :, 0] - 1
         results['img'], results['mask'], results[
@@ -535,19 +538,22 @@ class BottomUpGenerateHeatmapTarget:
             self._generate(results['ann_info']['num_joints'],
                            results['ann_info']['heatmap_size'])
         target_list = list()
-        joints_list = results['joints']
+        mask_list, joints_list = results['mask'], results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             heatmaps = heatmap_generator[scale_id](joints_list[scale_id])
             target_list.append(heatmaps.astype(np.float32))
-        results['target'] = target_list
+            mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
+
+        results['targets'] = target_list
+        results['masks'] = mask_list
 
         return results
 
 
 @PIPELINES.register_module()
 class BottomUpGenerateTarget:
-    """Generate multi-scale heatmap target for bottom-up.
+    """Generate multi-scale heatmap target for associate embedding.
 
     Args:
         sigma (int): Sigma of heatmap Gaussian
@@ -633,13 +639,15 @@ class BottomUpGeneratePAFTarget:
             self._generate(results['ann_info']['heatmap_size'],
                            self.skeleton)
         target_list = list()
-        joints_list = results['joints']
+        mask_list, joints_list = results['mask'], results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             pafs = paf_generator[scale_id](joints_list[scale_id])
             target_list.append(pafs.astype(np.float32))
+            mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
 
-        results['target'] = target_list
+        results['targets'] = target_list
+        results['masks'] = mask_list
 
         return results
 

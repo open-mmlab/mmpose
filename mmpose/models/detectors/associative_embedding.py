@@ -98,11 +98,11 @@ class AssociativeEmbedding(BasePose):
             heatmaps height: H
             max_num_people: M
         Args:
-            img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            img (torch.Tensor[NxCximgHximgW]): Input image.
+            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
             img_metas(dict):Information about val&test
                 By default this includes:
@@ -144,13 +144,13 @@ class AssociativeEmbedding(BasePose):
             max_num_people: M
 
         Args:
-            img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            img (torch.Tensor[NxCximgHximgW]): Input image.
+            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
-            img_metas(dict):Information about val&test
+            img_metas (dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
                 - "aug_data": input

@@ -294,6 +294,9 @@ def get_group_preds(grouped_joints,
     Returns:
         list: List of the pose result for each person.
     """
+    if len(grouped_joints) == 0:
+        return []
+
     if use_udp:
         if grouped_joints[0].shape[0] > 0:
             heatmap_size_t = np.array(heatmap_size, dtype=np.float32) - 1.0
