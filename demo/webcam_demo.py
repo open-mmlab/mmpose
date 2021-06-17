@@ -91,6 +91,7 @@ class StopWatch:
                 fps.
         """
         result = self.report()
+        result = result.copy()
         strings = []
         if '_FPS_' in result:
             fps = 1.0 / result.pop('_FPS_')
