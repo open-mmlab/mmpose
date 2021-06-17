@@ -1,8 +1,12 @@
-"""This file is for benchmark dataloading process. The command line to run this
-file is:
+#!/usr/bin/env bash
+"""This file is for benchmark data loading process. It can also be used to
+refresh the memcached cache. The command line to run this file is:
 
-$ python -m cProfile -o program.prof tools/analysis/bench_processing.py
+$ python -m cProfile -o program.prof tools/analysis/benchmark_processing.py
 configs/task/method/[config filename]
+
+Note: When debugging, the `workers_per_gpu` in the config should be set to 0
+during benchmark.
 
 It use cProfile to record cpu running time and output to program.prof
 To visualize cProfile output program.prof, use Snakeviz and run:
@@ -19,7 +23,7 @@ from mmpose.utils import get_root_logger
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Benchmark dataloading')
+    parser = argparse.ArgumentParser(description='Benchmark data loading')
     parser.add_argument('config', help='train config file path')
     args = parser.parse_args()
     cfg = Config.fromfile(args.config)
