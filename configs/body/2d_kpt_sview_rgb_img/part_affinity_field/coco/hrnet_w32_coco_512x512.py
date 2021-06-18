@@ -150,10 +150,7 @@ train_pipeline = [
         ],
         pipeline_indices=[0, 1],
         keys=['targets', 'masks']),
-    dict(
-        type='Collect',
-        keys=['img', 'joints', 'targets', 'masks'],
-        meta_keys=[]),
+    dict(type='Collect', keys=['img', 'targets', 'masks'], meta_keys=[]),
 ]
 
 val_pipeline = [
