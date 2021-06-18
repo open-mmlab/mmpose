@@ -5,7 +5,7 @@ from mmcv.parallel import collate, scatter
 from mmpose.datasets.pipelines import Compose
 
 
-def _collate_pose_sequence(pose_results, target_frame=-1, with_track_id=True):
+def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
     """Reorganize multi-frame pose detection results into individual pose
     sequences.
 
@@ -25,12 +25,12 @@ def _collate_pose_sequence(pose_results, target_frame=-1, with_track_id=True):
                     ``with_track_id==True``
                 bbox ((4, ) or (5, )): left, top, right, bottom, [score],
                     required when ``with_bbox==True``
-        target_frame (int): The index of the target frame. Default: -1.
         with_track_id (bool): If True, the element in pose_results is expected
             to contain "track_id", which will be used to gather the pose
             sequence of a person from multiple frames. Otherwise, the pose
             results in each frame are expected to have a consistent number and
             order of identities. Default is True.
+        target_frame (int): The index of the target frame. Default: -1.
     """
     T = len(pose_results)
     assert T > 0
@@ -72,8 +72,8 @@ def _collate_pose_sequence(pose_results, target_frame=-1, with_track_id=True):
 def inference_pose_lifter_model(model,
                                 pose_results_2d,
                                 dataset,
-                                target_frame=-1,
                                 with_track_id=True,
+                                target_frame=-1,
                                 image_size=None):
     """Inference 3D pose from 2D pose sequences using a pose lifter model.
 
@@ -86,12 +86,12 @@ def inference_pose_lifter_model(model,
                 - "keypoints" (ndarray[K, 2 or 3]): x, y, [score]
                 - "track_id" (int)
         dataset (str): Dataset name, e.g. 'Body3DH36MDataset'
-        target_frame (int): The index of the target frame. Default: -1.
         with_track_id: If True, the element in pose_results_2d is expected to
             contain "track_id", which will be used to gather the pose sequence
             of a person from multiple frames. Otherwise, the pose results in
             each frame are expected to have a consistent number and order of
             identities. Default is True.
+        target_frame (int): The index of the target frame. Default: -1.
         image_size (Tuple|List): image width, image height. If None, image size
             will not be contained in dict ``data``.
     Returns:
@@ -112,8 +112,8 @@ def inference_pose_lifter_model(model,
     else:
         raise NotImplementedError()
 
-    pose_sequences_2d = _collate_pose_sequence(pose_results_2d, target_frame,
-                                               with_track_id)
+    pose_sequences_2d = _collate_pose_sequence(pose_results_2d, with_track_id,
+                                               target_frame)
 
     if not pose_sequences_2d:
         return []

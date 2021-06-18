@@ -22,9 +22,12 @@ except (ImportError, ModuleNotFoundError):
 def process_mmdet_results(mmdet_results, cat_id=1):
     """Process mmdet results, and return a list of bboxes.
 
-    :param mmdet_results:
-    :param cat_id: category id (default: 1 for human)
-    :return: a list of detected bounding boxes
+    Args:
+        mmdet_results (list|tuple): mmdet results.
+        cat_id (int): category id (default: 1 for human)
+
+    Returns:
+        person_results (list): a list of detected bounding boxes
     """
     if isinstance(mmdet_results, tuple):
         det_results = mmdet_results[0]
@@ -40,6 +43,40 @@ def process_mmdet_results(mmdet_results, cat_id=1):
         person_results.append(person)
 
     return person_results
+
+
+def dataset_transform(keypoints, pose_det_dataset, pose_lift_dataset):
+    """Thransform pose det dataset keypoints convention to 3D dataset keypoints
+    convention.
+
+    Args:
+        keypoints (ndarray[K, 2 or 3]): 2D keypoints to be transformed.
+        pose_det_dataset, (str): Name of the dataset for 2D pose detector.
+        pose_lift_dataset (str): Name of the dataset for pose lifter model.
+    """
+    if pose_det_dataset == 'TopDownH36MDataset' and \
+            pose_lift_dataset == 'Body3DH36MDataset':
+        return keypoints
+    elif pose_det_dataset == 'TopDownCocoDataset' and \
+            pose_lift_dataset == 'Body3DH36MDataset':
+        keypoints_new = np.zeros((17, 2))
+        # pelvis is in the middle of l_hip and r_hip
+        keypoints_new[0] = (keypoints[11, :2] + keypoints[12, :2]) / 2
+        # thorax is in the middle of l_shoulder and r_shoulder
+        keypoints_new[8] = (keypoints[5, :2] + keypoints[6, :2]) / 2
+        # head is in the middle of l_eye and r_eye
+        keypoints_new[10] = (keypoints[1, :2] + keypoints[2, :2]) / 2
+        # spine is in the middle of thorax and pelvis
+        keypoints_new[7] = (keypoints_new[0, :2] + keypoints_new[8, :2]) / 2
+        # rearrange other keypoints
+        keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
+            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10], :2]
+        if keypoints.shape[-1] == 3:
+            keypoints_new = np.concatenate([keypoints_new, keypoints[:, 2:3]],
+                                           axis=1)
+        return keypoints_new
+    else:
+        raise NotImplementedError
 
 
 def main():
@@ -139,7 +176,7 @@ def main():
     assert pose_det_model.cfg.model.type == 'TopDown', 'Only "TopDown"' \
         'model is supported for the 1st stage (2D pose detection)'
 
-    dataset = pose_det_model.cfg.data['test']['type']
+    pose_det_dataset = pose_det_model.cfg.data['test']['type']
 
     pose_det_results_list = []
     next_id = 0
@@ -161,7 +198,7 @@ def main():
             person_det_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
-            dataset=dataset,
+            dataset=pose_det_dataset,
             return_heatmap=False,
             outputs=None)
 
@@ -188,7 +225,7 @@ def main():
     assert pose_lift_model.cfg.model.type == 'PoseLifter', \
         'Only "PoseLifter" model is supported for the 2nd stage ' \
         '(2D-to-3D lifting)'
-    dataset = pose_lift_model.cfg.data['test']['type']
+    pose_lift_dataset = pose_lift_model.cfg.data['test']['type']
 
     if args.out_video_root == '':
         save_out_video = False
@@ -200,6 +237,14 @@ def main():
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         fps = video.fps
         writer = None
+
+    # transform the predicted 2D keypoints to the keypoints convention of pose
+    # lift dataset
+    for pose_det_results in pose_det_results_list:
+        for res in pose_det_results:
+            keypoints = res['keypoints']
+            res['keypoints'] = dataset_transform(keypoints, pose_det_dataset,
+                                                 pose_lift_dataset)
 
     # prepare for temporal padding
     seq_len = pose_lift_model.cfg.test_data_cfg.seq_len
@@ -229,9 +274,9 @@ def main():
         pose_lift_results = inference_pose_lifter_model(
             pose_lift_model,
             pose_results_2d=pose_det_results_seq,
-            dataset=dataset,
-            target_frame=target_frame_idx,
+            dataset=pose_lift_dataset,
             with_track_id=True,
+            target_frame=target_frame_idx,
             image_size=video.resolution)
 
         # Pose processing

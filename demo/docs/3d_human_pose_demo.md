@@ -45,12 +45,12 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 
 ```shell
 python demo/body3d_two_stage_video_demo.py \
-    det_config \
-    det_checkpoint \
-    pose_detector_config \
-    pose_detector_checkpoint \
-    pose_lifter_config \
-    pose_lifter_checkpoint \
+    ${MMDET_CONFIG_FILE} \
+    ${MMDET_CHECKPOINT_FILE} \
+    ${MMPOSE_CONFIG_FILE_STAGE_1} \
+    ${MMPOSE_CONFIG_FILE STAGE_1} \
+    ${MMPOSE_CONFIG_FILE_STAGE_2} \
+    ${MMPOSE_CONFIG_FILE STAGE_2} \
     --video-path ${VIDEO_PATH} \
     [--show] \
     [--out-video-root ${OUT_VIDEO_ROOT}] \
