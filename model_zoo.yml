@@ -1,3 +1,2 @@
 Import:
-  - configs/top_down/hrnet/metafile.yml
-  - configs/top_down/resnet/metafile.yml
+  - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco_metafile.yml
