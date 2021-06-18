@@ -117,6 +117,8 @@ def webcam_demo(args):
 
     # use stop_watch to measure time consuming
     stop_watch = StopWatch(window=10)
+
+    print('Press "Esc", "q" or "Q" to exit')
     while True:
         with stop_watch.timeit():
             # capture a camera frame
@@ -223,7 +225,7 @@ def webcam_demo(args):
                 vid_out.write(img)
 
             cv2.imshow('mmpose webcam demo', img)
-            if cv2.waitKey(1) == 27:  # esc to stop
+            if cv2.waitKey(1) in (27, ord('q'), ord('Q')):
                 break
 
     vid_cap.release()

@@ -202,7 +202,7 @@ test_pipeline = [
                 std=[58.395, 57.12, 57.375],
                 to_rgb=True),
             dict(type='Pad', size_divisor=32),
-            dict(type='ImageToTensor', keys=['img']),
+            dict(type='DefaultFormatBundle', keys=['img']),
             dict(type='VideoCollect', keys=['img'])
         ])
 ]
@@ -272,7 +272,7 @@ data = dict(
                         std=[58.395, 57.12, 57.375],
                         to_rgb=True),
                     dict(type='Pad', size_divisor=32),
-                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='DefaultFormatBundle', keys=['img']),
                     dict(type='VideoCollect', keys=['img'])
                 ])
         ]),
@@ -296,7 +296,7 @@ data = dict(
                         std=[58.395, 57.12, 57.375],
                         to_rgb=True),
                     dict(type='Pad', size_divisor=32),
-                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='DefaultFormatBundle', keys=['img']),
                     dict(type='VideoCollect', keys=['img'])
                 ])
         ]))
