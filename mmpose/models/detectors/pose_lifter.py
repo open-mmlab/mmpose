@@ -287,7 +287,8 @@ class PoseLifter(BasePose):
                     win_name='',
                     show=False,
                     wait_time=0,
-                    out_file=None):
+                    out_file=None,
+                    keep_undetected=True):
         """Visualize 3D pose estimation results.
 
         Args:
@@ -315,12 +316,17 @@ class PoseLifter(BasePose):
                 Default: 0.
             out_file (str or None): The filename to write the image.
                 Default: None.
+            keep_undetected (bool): When len(result) == 0, setting
+                keep_undetected to True will show the input image (if image is
+                not None), while setting keep_undetected to False will raise an
+                assertation error.
 
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
 
-        assert len(result) > 0
+        if not keep_undetected:
+            assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 0))
 
         # draw image and input 2d poses

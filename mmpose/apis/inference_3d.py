@@ -35,36 +35,59 @@ def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
     T = len(pose_results)
     assert T > 0
 
+    target_frame = (T + target_frame) % T  # convert negative index to positive
+
     N = len(pose_results[target_frame])  # use identities in the target frame
     if N == 0:
         return []
 
-    K, C = pose_results[-1][0]['keypoints'].shape
+    K, C = pose_results[target_frame][0]['keypoints'].shape
 
     track_ids = None
     if with_track_id:
-        track_ids = [res['track_id'] for res in pose_results[-1]]
+        track_ids = [res['track_id'] for res in pose_results[target_frame]]
 
     pose_sequences = []
     for idx in range(N):
-        pose_seq = dict(keypoints=np.zeros((T, K, C), dtype=np.float32))
+        pose_seq = dict()
         # gather static information
-        for k, v in pose_results[-1][idx].items():
+        for k, v in pose_results[target_frame][idx].items():
             if k != 'keypoints':
                 pose_seq[k] = v
-        pose_sequences.append(pose_seq)
-
-    for t, frame in enumerate(pose_results):
-        if with_track_id:
-            id2idx = {res['track_id']: idx for idx, res in enumerate(frame)}
-            indices = (id2idx.get(tid, None) for tid in track_ids)
+        # gather keypoints
+        if not with_track_id:
+            pose_seq['keypoints'] = np.stack(
+                [frame[idx]['keypoints'] for frame in pose_results])
         else:
-            indices = range(N)
-
-        for idx, idx_frame in enumerate(indices):
-            if idx_frame is None:
-                continue
-            pose_sequences[idx]['keypoints'][t] = frame[idx_frame]['keypoints']
+            keypoints = np.zeros((T, K, C), dtype=np.float32)
+            keypoints[target_frame] = pose_results[target_frame][idx][
+                'keypoints']
+            # find the left most frame containing track_ids[idx]
+            for frame_idx in range(target_frame - 1, -1, -1):
+                contains_idx = False
+                for res in pose_results[frame_idx]:
+                    if res['track_id'] == track_ids[idx]:
+                        keypoints[frame_idx] = res['keypoints']
+                        contains_idx = True
+                        break
+                if not contains_idx:
+                    # replicate the left most frame
+                    keypoints[:frame_idx + 1] = keypoints[frame_idx + 1]
+                    break
+            # find the right most frame containing track_idx[idx]
+            for frame_idx in range(target_frame + 1, T):
+                contains_idx = False
+                for res in pose_results[frame_idx]:
+                    if res['track_id'] == track_ids[idx]:
+                        keypoints[frame_idx] = res['keypoints']
+                        contains_idx = True
+                        break
+                if not contains_idx:
+                    # replicate the right most frame
+                    keypoints[frame_idx + 1:] = keypoints[frame_idx]
+                    break
+            pose_seq['keypoints'] = keypoints
+        pose_sequences.append(pose_seq)
 
     return pose_sequences
 

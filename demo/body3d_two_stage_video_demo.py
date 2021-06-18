@@ -46,8 +46,8 @@ def process_mmdet_results(mmdet_results, cat_id=1):
 
 
 def dataset_transform(keypoints, pose_det_dataset, pose_lift_dataset):
-    """Thransform pose det dataset keypoints convention to 3D dataset keypoints
-    convention.
+    """Transform pose det dataset keypoints convention to pose lifter dataset
+    keypoints convention.
 
     Args:
         keypoints (ndarray[K, 2 or 3]): 2D keypoints to be transformed.
