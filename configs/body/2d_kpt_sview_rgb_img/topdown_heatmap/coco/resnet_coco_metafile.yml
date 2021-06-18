@@ -1,0 +1,118 @@
+Collections:
+  - Name: PoseResNet
+    Metadata:
+      Training Techniques:
+        - Adam
+      Architecture:
+        - ResNet
+    README: configs/top_down/resnet/README.md
+    Paper: https://arxiv.org/abs/1804.06208
+
+Models:
+  - Name: res50_coco_256x192
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_256x192.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 5460000000
+      Parameters: 34000000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.718
+          AP50: 0.898
+          AP75: 0.795
+          AR: 0.773
+          AR50: 0.937
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
+
+  - Name: res50_coco_384x288
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 12290000000
+      Parameters: 34000000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.731
+          AP50: 0.900
+          AP75: 0.799
+          AR: 0.783
+          AR50: 0.931
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
+
+  - Name: res101_coco_256x192
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 9110000000
+      Parameters: 52990000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.726
+          AP50: 0.899
+          AP75: 0.806
+          AR: 0.781
+          AR50: 0.939
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
+
+  - Name: res101_coco_384x288
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 20500000000
+      Parameters: 52990000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.748
+          AP50: 0.905
+          AP75: 0.817
+          AR: 0.798
+          AR50: 0.940
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
+
+  - Name: res152_coco_256x192
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 12770000000
+      Parameters: 68640000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.735
+          AP50: 0.905
+          AP75: 0.812
+          AR: 0.790
+          AR50: 0.943
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
+
+  - Name: res152_coco_384x288
+    In Collection: PoseResNet
+    Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
+    Metadata:
+      Training Data: COCO
+      FLOPs: 28730000000
+      Parameters: 68640000
+    Results:
+      - Task: 2D Human Pose Estimation
+        Dataset: COCO
+        Metrics:
+          AP: 0.750
+          AP50: 0.908
+          AP75: 0.821
+          AR: 0.800
+          AR50: 0.942
+    Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth
