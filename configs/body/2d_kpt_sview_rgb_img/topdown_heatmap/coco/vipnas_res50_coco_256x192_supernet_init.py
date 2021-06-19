@@ -1,5 +1,5 @@
 log_level = 'INFO'
-load_from = 'pretrained_model/vipnas_res50_coco_256x192.pth'
+load_from = 'pretrained_model/mmpose_xlm_init.pth'
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
