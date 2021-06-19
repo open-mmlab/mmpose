@@ -436,7 +436,7 @@ class ViPNAS_ResLayer(nn.Sequential):
 
 
 @BACKBONES.register_module()
-class ViPNAS_ResNet(BaseBackbone):
+class ViPNAS_ResNet_Clean(BaseBackbone):
     """ResNet backbone.
 
     ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search.
