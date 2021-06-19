@@ -1,5 +1,5 @@
 log_level = 'INFO'
-load_from = None
+load_from = 'pretrained_model/mmpose_xlm_init.pth'
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
