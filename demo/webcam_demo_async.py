@@ -2,20 +2,18 @@ import argparse
 import time
 from collections import deque
 from queue import Queue
-from threading import Lock, Thread
+from threading import Event, Lock, Thread
 
 import cv2
 import numpy as np
 
-from mmpose.apis import init_pose_model
-
-# from mmpose.apis import (get_track_id, inference_top_down_pose_model,
-#                          init_pose_model, vis_pose_result)
-# from mmpose.core import apply_bugeye_effect, apply_sunglasses_effect
-# from mmpose.utils import StopWatch
+from mmpose.apis import (get_track_id, inference_top_down_pose_model,
+                         init_pose_model, vis_pose_result)
+from mmpose.core import apply_bugeye_effect, apply_sunglasses_effect
+from mmpose.utils import StopWatch
 
 try:
-    from mmdet.apis import inference_detector, init_detector  # noqa: F401
+    from mmdet.apis import inference_detector, init_detector
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
@@ -111,10 +109,24 @@ def parse_args():
         help='Record the video into a file. This may reduce the frame rate')
 
     parser.add_argument(
+        '--out-video-fps',
+        type=int,
+        default=20,
+        help='Set the FPS of the output video file.')
+
+    parser.add_argument(
         '--buffer-size',
         type=int,
-        default=1,
+        default=5,
         help='Frame buffer size. Default is 1')
+
+    parser.add_argument(
+        '--display-delay',
+        type=int,
+        default=0,
+        help='Delay the output video in milliseconds. This can be used to '
+        'align the output video and inference results. The delay can be '
+        'disabled by setting a non-positive delay time. Default: 0')
 
     return parser.parse_args()
 
@@ -156,39 +168,246 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
     return det_results
 
 
-def read_camera(args):
-
+def read_camera():
     # init video reader
+    print('Thred "input" started')
     vid_cap = cv2.VideoCapture(args.cam_id)
     if not vid_cap.isOpened():
         print(f'Cannot open camera (ID={args.cam_id})')
         exit()
 
-    while True:
+    while not event_exit.is_set():
         # capture a camera frame
         ret_val, frame = vid_cap.read()
         if not ret_val:
             break
-        timestamp = time.time()
-        frame_buffer.put((timestamp, ret_val))
+        ts_input = time.time()
+        frame_buffer.put((ts_input, frame))
+        with input_queue_mutex:
+            input_queue.append((ts_input, frame))
 
     vid_cap.release()
 
 
-def inference_detection(args):
+def inference_detection():
     print('Thread "det" started')
-    time.sleep(2)
+    stop_watch = StopWatch(window=10)
+
+    while True:
+        while len(input_queue) < 1:
+            time.sleep(0.001)
+        with input_queue_mutex:
+            ts_input, frame = input_queue.popleft()
+        # inference detection
+        with stop_watch.timeit('Det'):
+            mmdet_results = inference_detector(det_model, frame)
+
+        t_info = stop_watch.report_strings()
+        with det_result_queue_mutex:
+            det_result_queue.append((ts_input, frame, t_info, mmdet_results))
 
 
-def inference_pose(args):
+def inference_pose():
     print('Thread "pose" started')
-    time.sleep(2)
+    stop_watch = StopWatch(window=10)
+
+    while True:
+        while len(det_result_queue) < 1:
+            time.sleep(0.001)
+        with det_result_queue_mutex:
+            ts_input, frame, t_info, mmdet_results = det_result_queue.popleft()
+
+        pose_results_list = []
+        for model_info, pose_history in zip(pose_model_list,
+                                            pose_history_list):
+            model_name = model_info['name']
+            pose_model = model_info['model']
+            cat_ids = model_info['cat_ids']
+            pose_results_last = pose_history['pose_results_last']
+            next_id = pose_history['next_id']
+
+            with stop_watch.timeit(model_name):
+                # process mmdet results
+                det_results = process_mmdet_results(
+                    mmdet_results,
+                    class_names=det_model.CLASSES,
+                    cat_ids=cat_ids)
+
+                # inference pose model
+                dataset_name = pose_model.cfg.data['test']['type']
+                pose_results, _ = inference_top_down_pose_model(
+                    pose_model,
+                    frame,
+                    det_results,
+                    bbox_thr=args.det_score_thr,
+                    format='xyxy',
+                    dataset=dataset_name)
+
+                pose_results, next_id = get_track_id(
+                    pose_results,
+                    pose_results_last,
+                    next_id,
+                    use_oks=False,
+                    tracking_thr=0.3,
+                    use_one_euro=True,
+                    fps=None)
+
+                pose_results_list.append(pose_results)
+
+                # update pose history
+                pose_history['pose_results_last'] = pose_results
+                pose_history['next_id'] = next_id
+
+        t_info += stop_watch.report_strings()
+        with pose_result_queue_mutex:
+            pose_result_queue.append((ts_input, t_info, pose_results_list))
+
+
+def display():
+    print('Thred "display" started')
+    stop_watch = StopWatch(window=10)
+
+    # initialize result status
+    ts_inference = None  # timestamp of the lastet inference result
+    fps_inference = 0.  # infenrece FPS
+    t_delay_inference = 0.  # inference result time delay
+    pose_results_list = None  # latest inference result
+    t_info = []  # upstream time information (list[str])
+
+    # initialize visualization and output
+    sunglasses_img = None  # resource image for sunglasses effect
+    text_color = (228, 183, 61)  # text color to show time/system information
+    vid_out = None  # video writer
+
+    while True:
+        with stop_watch.timeit('_FPS_'):
+            # acquire a frame from buffer
+            ts_input, frame = frame_buffer.get()
+            img = frame
+
+            # get pose estimation results
+            if len(pose_result_queue) > 0:
+                with pose_result_queue_mutex:
+                    _result = pose_result_queue.popleft()
+                    _ts_input, t_info, pose_results_list = _result
+
+                _ts = time.time()
+                if ts_inference is not None:
+                    fps_inference = 1.0 / (_ts - ts_inference)
+                ts_inference = _ts
+                t_delay_inference = (_ts - _ts_input) * 1000
+
+            # visualize detection and pose results
+            if pose_results_list is not None:
+                for model_info, pose_results in zip(pose_model_list,
+                                                    pose_results_list):
+                    pose_model = model_info['model']
+                    bbox_color = model_info['bbox_color']
+
+                    dataset_name = pose_model.cfg.data['test']['type']
+
+                    if args.sunglasses:
+                        if dataset_name == 'TopDownCocoDataset':
+                            leye_idx = 1
+                            reye_idx = 2
+                        elif dataset_name == 'AnimalPoseDataset':
+                            leye_idx = 0
+                            reye_idx = 1
+                        else:
+                            raise ValueError(
+                                'Sunglasses effect does not support'
+                                f'{dataset_name}')
+                        if sunglasses_img is None:
+                            # The image attributes to:
+                            # https://www.vecteezy.com/free-vector/glass
+                            # Glass Vectors by Vecteezy
+                            sunglasses_img = cv2.imread(
+                                'demo/resources/sunglasses.jpg')
+                        img = apply_sunglasses_effect(img, pose_results,
+                                                      sunglasses_img, leye_idx,
+                                                      reye_idx)
+                    elif args.bugeye:
+                        if dataset_name == 'TopDownCocoDataset':
+                            leye_idx = 1
+                            reye_idx = 2
+                        elif dataset_name == 'AnimalPoseDataset':
+                            leye_idx = 0
+                            reye_idx = 1
+                        else:
+                            raise ValueError('Bug-eye effect does not support'
+                                             f'{dataset_name}')
+                        img = apply_bugeye_effect(img, pose_results, leye_idx,
+                                                  reye_idx)
+                    else:
+                        img = vis_pose_result(
+                            pose_model,
+                            img,
+                            pose_results,
+                            radius=4,
+                            thickness=2,
+                            dataset=dataset_name,
+                            kpt_score_thr=args.kpt_thr,
+                            bbox_color=bbox_color)
+
+            # delay control
+            if args.display_delay > 0:
+                t_sleep = args.display_delay * 0.001 - (time.time() - ts_input)
+                if t_sleep > 0:
+                    time.sleep(t_sleep)
+            t_delay = (time.time() - ts_input) * 1000
+
+            # show time information
+            t_info_display = stop_watch.report_strings()  # display fps
+            t_info_display.append(f'Inference FPS: {fps_inference:.1f}')
+            t_info_display.append(f'Delay: {t_delay:.0f}')
+            t_info_display.append(f'Inference Delay: {t_delay_inference:.0f}')
+            t_info_str = ' | '.join(t_info_display + t_info)
+            cv2.putText(img, t_info_str, (20, 20), cv2.FONT_HERSHEY_DUPLEX,
+                        0.3, text_color, 1)
+            # collect system information
+            sys_info = [
+                f'RES: {img.shape[1]}x{img.shape[0]}',
+                f'Buffer: {frame_buffer.qsize()}/{args.buffer_size}'
+            ]
+            if psutil_proc is not None:
+                sys_info += [
+                    f'CPU: {psutil_proc.cpu_percent():.1f}%',
+                    f'MEM: {psutil_proc.memory_percent():.1f}%'
+                ]
+            sys_info_str = '| '.join(sys_info)
+            cv2.putText(img, sys_info_str, (20, 40), cv2.FONT_HERSHEY_DUPLEX,
+                        0.3, text_color, 1)
+
+            # save the output video frame
+            if args.out_video_file is not None:
+                if vid_out is None:
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                    fps = args.out_video_fps
+                    frame_size = (img.shape[1], img.shape[0])
+                    vid_out = cv2.VideoWriter(args.out_video_file, fourcc, fps,
+                                              frame_size)
+
+                vid_out.write(img)
+
+            # display
+            cv2.imshow('mmpose webcam demo', img)
+            if cv2.waitKey(1) in (27, ord('q'), ord('Q')):
+                break
+
+    cv2.destroyAllWindows()
+    if vid_out is not None:
+        vid_out.release()
+    event_exit.set()
 
 
 def main():
-    global frame_buffer, det_result_queue, result_queue, det_model, \
-        pose_model_list, pose_history_list, det_result_queue_mutex,\
-        result_queue_mutex
+    global args
+    global frame_buffer
+    global input_queue, input_queue_mutex
+    global det_result_queue, det_result_queue_mutex
+    global pose_result_queue, pose_result_queue_mutex
+    global det_model, pose_model_list, pose_history_list
+    global event_exit
 
     args = parse_args()
 
@@ -232,28 +451,37 @@ def main():
     for _ in range(len(pose_model_list)):
         pose_history_list.append({'pose_results_last': [], 'next_id': 0})
 
-    # queue of input frames
-    # (timestamp, frame)
+    # frame buffer
     frame_buffer = Queue(maxsize=args.buffer_size)
 
+    # queue of input frames
+    # element: (timestamp, frame)
+    input_queue = deque(maxlen=1)
+    input_queue_mutex = Lock()
+
     # queue of detection results
-    # (timestamp, frame, messages, det_result)
+    # element: tuple(timestamp, frame, time_info, det_results)
     det_result_queue = deque(maxlen=1)
     det_result_queue_mutex = Lock()
 
     # queue of detection/pose results
-    # (timestamp, frame, messages, det_result, pose_result_list)
-    result_queue = deque(maxlen=1)
-    result_queue_mutex = Lock()
+    # element: (timestamp, time_info, pose_results_list)
+    pose_result_queue = deque(maxlen=1)
+    pose_result_queue_mutex = Lock()
 
     try:
-        t_input = Thread(target=read_camera, args=(args, ), daemon=True)
-        t_det = Thread(target=inference_detection, args=(args, ), daemon=True)
-        t_pose = Thread(target=inference_pose, args=(args, ), daemon=True)
+        event_exit = Event()
+        t_input = Thread(target=read_camera, args=())
+        t_det = Thread(target=inference_detection, args=(), daemon=True)
+        t_pose = Thread(target=inference_pose, args=(), daemon=True)
 
         t_input.start()
         t_det.start()
         t_pose.start()
+
+        # run display in the main thread
+        display()
+        # join the input thread (non-daemon)
         t_input.join()
 
     except KeyboardInterrupt:

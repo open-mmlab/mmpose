@@ -1,7 +1,6 @@
 import argparse
 
 import cv2
-import mmcv
 import numpy as np
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
@@ -106,7 +105,7 @@ def webcam_demo(args):
         # The image attributes to:
         # https://www.vecteezy.com/free-vector/glass
         # Glass Vectors by Vecteezy
-        sunglasses_img = mmcv.imread('demo/resources/sunglasses.jpg')
+        sunglasses_img = cv2.imread('demo/resources/sunglasses.jpg')
 
     # init video reader and writer
     vid_cap = cv2.VideoCapture(args.cam_id)
@@ -202,13 +201,10 @@ def webcam_demo(args):
                         kpt_score_thr=args.kpt_thr,
                         bbox_color=bbox_color)
 
-            str_info = [f'Shape: {img.shape[:2]}']
+            str_info = [f'RES: {img.shape[1]}x{img.shape[0]}']
             str_info += stop_watch.report_strings()
             if psutil_proc is not None:
-                str_info += [
-                    f'CPU({psutil_proc.cpu_num()}): '
-                    f'{psutil_proc.cpu_percent():.1f}%'
-                ]
+                str_info += [f'CPU: {psutil_proc.cpu_percent():.1f}%']
                 str_info += [f'MEM: {psutil_proc.memory_percent():.1f}%']
             str_info = ' | '.join(str_info)
             cv2.putText(img, str_info, (30, 20), cv2.FONT_HERSHEY_DUPLEX, 0.3,
@@ -217,7 +213,7 @@ def webcam_demo(args):
             if args.out_video_file is not None:
                 if vid_out is None:
                     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                    fps = 20
+                    fps = args.out_video_fps
                     frame_size = (img.shape[1], img.shape[0])
                     vid_out = cv2.VideoWriter(args.out_video_file, fourcc, fps,
                                               frame_size)
@@ -316,6 +312,13 @@ if __name__ == '__main__':
         type=str,
         default=None,
         help='Record the video into a file. This may reduce the frame rate')
+
+    parser.add_argument(
+        '--out-video-fps',
+        type=int,
+        default=20,
+        help='Set the FPS of the output video file.')
+
     args = parser.parse_args()
 
     webcam_demo(args)
