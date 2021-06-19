@@ -133,6 +133,7 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
                     in_channels=conv_channels,
                     out_channels=out_channels,
                     kernel_size=kernel_size,
+                    bias=False,
                     stride=1,
                     padding=padding))
 
@@ -317,8 +318,8 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
             layers.append(
                 build_conv_layer(
                     None,
-                    self.in_channels,
-                    planes,
+                    in_channels=self.in_channels,
+                    out_channels=planes,
                     kernel_size=1,
                     bias=False))
             layers.append(

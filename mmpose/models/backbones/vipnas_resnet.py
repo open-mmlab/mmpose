@@ -23,17 +23,17 @@ class GCBlock(nn.Module):
         self.pool = pool
         self.fusions = fusions
         if 'att' in pool:
-            self.conv_mask = nn.Conv2d(inplanes, 1, kernel_size=1)
+            self.conv_mask = nn.Conv2d(inplanes, 1, kernel_size=1, bias=False)
             self.softmax = nn.Softmax(dim=2)
         else:
             self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         if 'channel_add' in fusions:
             self.channel_add_conv = nn.Sequential(
-                nn.Conv2d(self.inplanes, self.planes, kernel_size=1),
+                nn.Conv2d(self.inplanes, self.planes, kernel_size=1, bias=False),
                 nn.LayerNorm([self.planes, 1, 1]),
                 nn.ReLU(inplace=True),
-                nn.Conv2d(self.planes, self.inplanes, kernel_size=1)
+                nn.Conv2d(self.planes, self.inplanes, kernel_size=1, bias=False)
             )
         else:
             self.channel_add_conv = None
@@ -209,8 +209,7 @@ class ViPNAS_Bottleneck(nn.Module):
         self.add_module(self.norm3_name, norm3)
 
         if attention:
-            out_planes = out_channels // 16 if out_channels // 16 >= 16 else 16
-            self.attention = GCBlock(out_channels, out_planes, 'att', ['channel_add'])
+            self.attention = GCBlock(self.mid_channels, self.mid_channels * 2, 'att', ['channel_add'])
         else:
             self.attention = None
 
