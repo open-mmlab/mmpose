@@ -47,7 +47,7 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='BottomUp',
+    type='AssociativeEmbedding',
     pretrained='https://download.openmmlab.com/mmpose/'
     'pretrain_models/hrnet_w48-8ef0771d.pth',
     backbone=dict(
@@ -80,7 +80,7 @@ model = dict(
                 num_channels=(48, 96, 192, 384))),
     ),
     keypoint_head=dict(
-        type='BottomUpSimpleHead',
+        type='AESimpleHead',
         in_channels=48,
         num_joints=16,
         num_deconv_layers=0,
@@ -169,7 +169,7 @@ test_pipeline = val_pipeline
 data_root = 'data/mhp'
 data = dict(
     samples_per_gpu=16,
-    workers_per_gpu=1,
+    workers_per_gpu=2,
     train=dict(
         type='BottomUpMhpDataset',
         ann_file=f'{data_root}/annotations/mhp_train.json',

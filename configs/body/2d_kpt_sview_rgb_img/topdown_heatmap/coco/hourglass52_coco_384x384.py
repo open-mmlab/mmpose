@@ -45,7 +45,7 @@ model = dict(
         num_stacks=1,
     ),
     keypoint_head=dict(
-        type='TopDownMultiStageHead',
+        type='TopdownHeatmapMultiStageHead',
         in_channels=256,
         out_channels=channel_cfg['num_output_channels'],
         num_stages=1,

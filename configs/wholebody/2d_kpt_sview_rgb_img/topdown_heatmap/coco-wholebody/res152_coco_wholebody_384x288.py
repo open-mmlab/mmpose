@@ -14,10 +14,9 @@ optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
-    warmup=None,
-    # warmup='linear',
-    # warmup_iters=500,
-    # warmup_ratio=0.001,
+    warmup='linear',
+    warmup_iters=500,
+    warmup_ratio=0.001,
     step=[170, 200])
 total_epochs = 210
 log_config = dict(
@@ -41,7 +40,7 @@ model = dict(
     pretrained='torchvision://resnet152',
     backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -117,6 +116,8 @@ data_root = 'data/coco'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',

@@ -76,7 +76,7 @@ model = dict(
                 multiscale_output=True),
             upsample=dict(mode='bilinear', align_corners=False))),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=[18, 36, 72, 144],
         in_index=(0, 1, 2, 3),
         input_transform='resize_concat',
@@ -141,6 +141,8 @@ data_root = 'data/panoptic'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='PanopticDataset',
         ann_file=f'{data_root}/annotations/panoptic_train.json',

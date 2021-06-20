@@ -48,11 +48,11 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='BottomUp',
+    type='AssociativeEmbedding',
     pretrained='mmcls://mobilenet_v2',
     backbone=dict(type='MobileNetV2', widen_factor=1., out_indices=(7, )),
     keypoint_head=dict(
-        type='BottomUpSimpleHead',
+        type='AESimpleHead',
         in_channels=1280,
         num_joints=14,
         tag_per_joint=True,

@@ -42,7 +42,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -120,6 +120,8 @@ data_root = 'data/posetrack18'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownPoseTrack18Dataset',
         ann_file=f'{data_root}/annotations/posetrack18_train.json',

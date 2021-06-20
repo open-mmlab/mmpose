@@ -42,7 +42,7 @@ model = dict(
     pretrained='mmcls://resnet152_v1d',
     backbone=dict(type='ResNetV1d', depth=152),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),

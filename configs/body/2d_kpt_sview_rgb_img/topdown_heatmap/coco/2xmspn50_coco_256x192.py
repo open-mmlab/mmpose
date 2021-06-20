@@ -47,7 +47,7 @@ model = dict(
         num_blocks=[3, 4, 6, 3],
         norm_cfg=dict(type='BN')),
     keypoint_head=dict(
-        type='TopDownMSMUHead',
+        type='TopdownHeatmapMSMUHead',
         out_shape=(64, 48),
         unit_channels=256,
         out_channels=channel_cfg['num_output_channels'],

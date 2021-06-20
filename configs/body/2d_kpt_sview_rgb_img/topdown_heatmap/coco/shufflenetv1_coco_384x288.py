@@ -42,7 +42,7 @@ model = dict(
     pretrained='mmcls://shufflenet_v1',
     backbone=dict(type='ShuffleNetV1', groups=3),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=960,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
