@@ -15,11 +15,25 @@ from .utils import channel_shuffle, load_checkpoint
 
 
 class SpatialWeighting(nn.Module):
+    """Spatial weighting module.
+
+    Args:
+        channels (int): The channels of the module.
+        ratio (int): channel reduction ration.
+        conv_cfg (dict): Config dict for convolution layer.
+            Default: None, which means using conv2d.
+        norm_cfg (dict): Config dict for normalization layer.
+            Default: None.
+        act_cfg (dict): Config dict for activation layer.
+            Default: dict(type='ReLU'), dict(type='Sigmoid'))).
+            The last ConvModule uses Sigmoid by default.
+    """
 
     def __init__(self,
                  channels,
                  ratio=16,
                  conv_cfg=None,
+                 norm_cfg=None,
                  act_cfg=(dict(type='ReLU'), dict(type='Sigmoid'))):
         super().__init__()
         if isinstance(act_cfg, dict):
@@ -33,6 +47,7 @@ class SpatialWeighting(nn.Module):
             kernel_size=1,
             stride=1,
             conv_cfg=conv_cfg,
+            norm_cfg=norm_cfg,
             act_cfg=act_cfg[0])
         self.conv2 = ConvModule(
             in_channels=int(channels / ratio),
@@ -40,6 +55,7 @@ class SpatialWeighting(nn.Module):
             kernel_size=1,
             stride=1,
             conv_cfg=conv_cfg,
+            norm_cfg=norm_cfg,
             act_cfg=act_cfg[1])
 
     def forward(self, x):
@@ -50,6 +66,19 @@ class SpatialWeighting(nn.Module):
 
 
 class CrossResolutionWeighting(nn.Module):
+    """Cross-resolution channel weighting module.
+
+    Args:
+        channels (int): The channels of the module.
+        ratio (int): channel reduction ration.
+        conv_cfg (dict): Config dict for convolution layer.
+            Default: None, which means using conv2d.
+        norm_cfg (dict): Config dict for normalization layer.
+            Default: None.
+        act_cfg (dict): Config dict for activation layer.
+            Default: dict(type='ReLU'), dict(type='Sigmoid'))).
+            The last ConvModule uses Sigmoid by default.
+    """
 
     def __init__(self,
                  channels,
@@ -96,6 +125,19 @@ class CrossResolutionWeighting(nn.Module):
 
 
 class ConditionalChannelWeighting(nn.Module):
+    """Conditional channel weighting block.
+
+    Args:
+        in_channels (int): The input channels of the block.
+        stride (int): Stride of the 3x3 convolution layer.
+        reduce_ratio (int): channel reduction ration.
+        conv_cfg (dict): Config dict for convolution layer.
+            Default: None, which means using conv2d.
+        norm_cfg (dict): Config dict for normalization layer.
+            Default: dict(type='BN').
+        with_cp (bool): Use checkpoint or not. Using checkpoint will save some
+            memory while slowing down the training speed. Default: False.
+    """
 
     def __init__(self,
                  in_channels,
@@ -160,6 +202,21 @@ class ConditionalChannelWeighting(nn.Module):
 
 
 class Stem(nn.Module):
+    """Stem network block.
+
+    Args:
+        in_channels (int): The input channels of the block.
+        stem_channels (int): Output channels of the stem layer.
+        out_channels (int): The output channels of the block.
+        expand_ratio (int): adjusts number of channels of the hidden layer
+            in InvertedResidual by this amount.
+        conv_cfg (dict): Config dict for convolution layer.
+            Default: None, which means using conv2d.
+        norm_cfg (dict): Config dict for normalization layer.
+            Default: dict(type='BN').
+        with_cp (bool): Use checkpoint or not. Using checkpoint will save some
+            memory while slowing down the training speed. Default: False.
+    """
 
     def __init__(self,
                  in_channels,
@@ -270,8 +327,15 @@ class Stem(nn.Module):
 
 
 class IterativeHead(nn.Module):
+    """Extra iterative head for feature learning.
 
-    def __init__(self, in_channels, conv_cfg=None, norm_cfg=dict(type='BN')):
+    Args:
+        in_channels (int): The input channels of the block.
+        norm_cfg (dict): Config dict for normalization layer.
+            Default: dict(type='BN').
+    """
+
+    def __init__(self, in_channels, norm_cfg=dict(type='BN')):
         super().__init__()
         projects = []
         num_branchs = len(in_channels)
@@ -440,6 +504,25 @@ class ShuffleUnit(nn.Module):
 
 
 class LiteHRModule(nn.Module):
+    """High-Resolution Module for LiteHRNet.
+
+    It contains conditional channel weighting blocks and
+    shuffle blocks.
+
+
+    Args:
+        num_branches (int): Number of branches in the module.
+        num_blocks (int): Number of blocks in the module.
+        in_channels (int): Number of input image channels.
+        reduce_ratio (int): Channel reduction ratio.
+        module_type (str): 'LITE' or 'NAIVE'
+        multiscale_output (bool): Whether to output multi-scale features.
+        with_fuse (bool): Whether to use fuse layers.
+        conv_cfg (dict): dictionary to construct and config conv layer.
+        norm_cfg (dict): dictionary to construct and config norm layer.
+        with_cp (bool): Use checkpoint or not. Using checkpoint will save some
+            memory while slowing down the training speed.
+    """
 
     def __init__(
             self,
@@ -483,6 +566,7 @@ class LiteHRModule(nn.Module):
             raise ValueError(error_msg)
 
     def _make_weighting_blocks(self, num_blocks, reduce_ratio, stride=1):
+        """Make channel weighting blocks."""
         layers = []
         for i in range(num_blocks):
             layers.append(
@@ -739,7 +823,6 @@ class LiteHRNet(nn.Module):
         if self.with_head:
             self.head_layer = IterativeHead(
                 in_channels=num_channels_last,
-                conv_cfg=self.conv_cfg,
                 norm_cfg=self.norm_cfg,
             )
 
