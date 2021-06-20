@@ -200,12 +200,13 @@ class BaseBottomUpParser(metaclass=ABCMeta):
 
         Note:
             batch size: N
+            number of person: M
             number of keypoints: K
             heatmap height: H
             heatmap width: W
 
         Args:
-            ans (list(np.ndarray)): Keypoint predictions.
+            ans (list(np.array([M,K,5]))): Keypoint predictions.
             heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
         """
 
@@ -471,7 +472,6 @@ class PAFParser(BaseBottomUpParser):
         # Neck->LShoulder, so joint_to_limb_heatmap_relationship[1]
         # represents the
         # indices of heatmaps to look for joints: neck=1, LShoulder=5
-        # TODO should be self.ann_info['skeleton']
         self.joint_to_limb_heatmap_relationship = [[15, 13], [13,
                                                               11], [16, 14],
                                                    [14, 12], [11, 12], [5, 11],
@@ -858,7 +858,7 @@ class PAFParser(BaseBottomUpParser):
                     # No person has claimed any of these joints, create
                     # a new person Initialize person info to all -1
                     # (no joint associations)
-                    row = -1 * np.ones(20)
+                    row = -1 * np.ones(self.params.num_joints + 2)
                     # Store the joint info of the new connection
                     row[joint_src_type] = limb_info[0]
                     row[joint_dst_type] = limb_info[1]
@@ -896,19 +896,18 @@ class PAFParser(BaseBottomUpParser):
         ans = []
 
         if len(person_to_joint_assoc) > 0:
-            num_kpt = person_to_joint_assoc.shape[1] - 2
-
             for person in person_to_joint_assoc:
-                ans_person = np.zeros((num_kpt, 5))
-                for j in range(num_kpt):
-                    joint_id = person[j]
+                ans_person = np.zeros((self.params.num_joints, 5))
+                for j in range(self.params.num_joints):
+                    joint_id = int(person[j])
                     if joint_id < 0:
                         continue
-                    assert j == joint_list[joint_id, 4]
                     ans_person[j] = joint_list[joint_id]
+                ans_person[:, :2] /= 4
                 ans.append(ans_person)
-
-        return ans
+            return [np.stack(ans)]
+        else:
+            return []
 
     def match(self, heatmaps, pafs):
         # Step 1: find all joints in the image (organized by joint type:
@@ -949,6 +948,7 @@ class PAFParser(BaseBottomUpParser):
 
         Note:
             batch size: N
+            number of people: M
             number of keypoints: K
             number of paf maps: P
             heatmap height: H
@@ -961,7 +961,7 @@ class PAFParser(BaseBottomUpParser):
         Returns:
             tuple: A tuple containing keypoint grouping results.
 
-            - ans (list(np.ndarray)): Pose results.
+            - ans (list(np.array([M,K,5]))): Keypoint predictions.
             - scores (list): Score of people.
         """
 

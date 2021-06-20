@@ -296,7 +296,7 @@ class PAFGenerator:
             dist = np.abs(delta_x * unit_limb_vec[1] -
                           delta_y * unit_limb_vec[0])
             mask_local = (dist < self.limb_width)
-            mask[xx, yy] = mask_local
+            mask[yy, xx] = mask_local
 
         pafs[0, mask] += unit_limb_vec[0]
         pafs[1, mask] += unit_limb_vec[1]
