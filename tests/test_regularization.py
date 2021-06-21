@@ -15,4 +15,4 @@ def test_weight_norm_clip():
     _ = module(x)
 
     weight_norm = module.weight.norm().item()
-    np.testing.assert_allclose(weight_norm, 1.0, rtol=1e-6)
+    np.testing.assert_almost_equal(weight_norm, 1.0, decimal=6)

@@ -117,7 +117,7 @@ def parse_args():
     parser.add_argument(
         '--buffer-size',
         type=int,
-        default=5,
+        default=30,
         help='Frame buffer size. Default is 1')
 
     parser.add_argument(
@@ -374,7 +374,7 @@ def display():
                     f'CPU: {psutil_proc.cpu_percent():.1f}%',
                     f'MEM: {psutil_proc.memory_percent():.1f}%'
                 ]
-            sys_info_str = '| '.join(sys_info)
+            sys_info_str = ' | '.join(sys_info)
             cv2.putText(img, sys_info_str, (20, 40), cv2.FONT_HERSHEY_DUPLEX,
                         0.3, text_color, 1)
 

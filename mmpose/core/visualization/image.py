@@ -37,6 +37,14 @@ def imshow_bboxes(img,
     Returns:
         ndarray: The image with bboxes drawn on it.
     """
+
+    # adapt to mmcv.imshow_bboxes input format
+    bboxes = np.split(bboxes, bboxes.shape[0], axis=0)
+    if not isinstance(colors, list):
+        colors = [colors for _ in range(len(bboxes))]
+    colors = [mmcv.color_val(c) for c in colors]
+    assert len(bboxes) == len(colors)
+
     img = mmcv.imshow_bboxes(
         img,
         bboxes,
@@ -51,13 +59,8 @@ def imshow_bboxes(img,
             labels = [labels for _ in range(len(bboxes))]
         assert len(labels) == len(bboxes)
 
-        if not isinstance(colors, list):
-            colors = [colors for _ in range(len(bboxes))]
-        colors = [mmcv.color_val(c) for c in colors]
-        assert len(bboxes) == len(colors)
-
         for bbox, label, color in zip(bboxes, labels, colors):
-            bbox_int = bbox.astype(np.int32)
+            bbox_int = bbox.reshape(4).astype(np.int32)
             # roughly estimate the proper font size
             text_size, text_baseline = cv2.getTextSize(label,
                                                        cv2.FONT_HERSHEY_DUPLEX,
