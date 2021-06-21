@@ -820,7 +820,8 @@ class PAFParser(BaseBottomUpParser):
                 if len(person_assoc_idx) == 1:
                     person_limbs = person_to_joint_assoc[person_assoc_idx[0]]
                     # If the other joint is not associated to anyone yet,
-                    if person_limbs[joint_dst_type] != limb_info[1]:
+                    if person_limbs[joint_src_type] == limb_info[0] and \
+                            person_limbs[joint_dst_type] != limb_info[1]:
                         # Associate it with the current person
                         person_limbs[joint_dst_type] = limb_info[1]
                         # Increase the number of limbs associated to
@@ -831,6 +832,21 @@ class PAFParser(BaseBottomUpParser):
                         # joint_dst)
                         person_limbs[-2] += joint_list[
                             limb_info[1].astype(int), 2] + limb_info[2]
+                    elif person_limbs[joint_src_type] != limb_info[0] and \
+                            person_limbs[joint_dst_type] == limb_info[1]:
+                        # Associate it with the current person
+                        person_limbs[joint_src_type] = limb_info[0]
+                        # Increase the number of limbs associated to
+                        # this person
+                        person_limbs[-1] += 1
+                        # And update the total score (+= heatmap score
+                        # of joint_dst + score of connecting joint_src with
+                        # joint_dst)
+                        person_limbs[-2] += joint_list[
+                            limb_info[0].astype(int), 2] + limb_info[2]
+                    else:
+                        NotImplementedError()
+
                 elif len(person_assoc_idx
                          ) == 2:  # if found 2 and disjoint, merge them
                     person1_limbs = person_to_joint_assoc[person_assoc_idx[0]]
