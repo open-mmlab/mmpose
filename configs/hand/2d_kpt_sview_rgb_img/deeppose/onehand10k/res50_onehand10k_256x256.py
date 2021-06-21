@@ -108,6 +108,8 @@ data_root = 'data/onehand10k'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='OneHand10KDataset',
         ann_file=f'{data_root}/annotations/onehand10k_train.json',

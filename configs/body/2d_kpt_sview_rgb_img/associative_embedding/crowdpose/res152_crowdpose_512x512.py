@@ -48,11 +48,11 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='BottomUp',
+    type='AssociativeEmbedding',
     pretrained='torchvision://resnet152',
     backbone=dict(type='ResNet', depth=152),
     keypoint_head=dict(
-        type='BottomUpSimpleHead',
+        type='AESimpleHead',
         in_channels=2048,
         num_joints=14,
         tag_per_joint=True,

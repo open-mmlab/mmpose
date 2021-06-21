@@ -36,7 +36,7 @@ model = dict(
     pretrained='mmcls://resnet152_v1d',
     backbone=dict(type='ResNetV1d', depth=152),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -99,6 +99,8 @@ data_root = 'data/mpii'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownMpiiDataset',
         ann_file=f'{data_root}/annotations/mpii_train.json',
