@@ -140,6 +140,8 @@ data_root = 'data/h36m'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownH36MDataset',
         ann_file=f'{data_root}/annotation_body2d/h36m_coco_train.json',
