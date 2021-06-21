@@ -188,6 +188,9 @@ def aggregate_stage_flip(feature_maps,
             Aggregated feature maps.
     """
 
+    if feature_maps_flip is None:
+        aggregate_flip = 'none'
+
     output_feature_maps = []
 
     if aggregate_stage == 'average':

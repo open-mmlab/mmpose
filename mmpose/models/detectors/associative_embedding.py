@@ -265,7 +265,8 @@ class AssociativeEmbedding(BasePose):
                         tags_flipped, flip_index=None, flip_output=True)
 
             else:
-                outputs_flipped = None
+                heatmaps_flipped = None
+                tags_flipped = None
 
             # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(

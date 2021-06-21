@@ -253,9 +253,13 @@ class PartAffinityField(BasePose):
                     pafs_flipped,
                     flip_index=img_metas['flip_index_paf'],
                     flip_output=True)
+                for _pafs in pafs_flipped:
+                    # flip the x-axis
+                    _pafs[:, ::2, :, :] *= -1
 
             else:
-                outputs_flipped = None
+                heatmaps_flipped = None
+                pafs_flipped = None
 
             # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(
