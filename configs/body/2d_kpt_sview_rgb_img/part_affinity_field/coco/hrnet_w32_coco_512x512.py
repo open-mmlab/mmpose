@@ -89,7 +89,10 @@ model = dict(
                 in_channels=32,
                 out_channels=17,
                 num_deconv_layers=0,
-                extra=dict(final_conv_kernel=1, ),
+                extra=dict(
+                    final_conv_kernel=1,
+                    num_conv_layers=1,
+                    num_conv_kernels=(1, )),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
         ],
         paf_heads_cfg=[
@@ -98,7 +101,10 @@ model = dict(
                 in_channels=32,
                 out_channels=38,
                 num_deconv_layers=0,
-                extra=dict(final_conv_kernel=1, ),
+                extra=dict(
+                    final_conv_kernel=1,
+                    num_conv_layers=1,
+                    num_conv_kernels=(1, )),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
         ],
         heatmap_index=[0],
