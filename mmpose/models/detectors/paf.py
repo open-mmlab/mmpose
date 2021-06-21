@@ -303,6 +303,23 @@ class PartAffinityField(BasePose):
             aggregate_scale='average',
             align_corners=self.use_udp)
 
+        import cv2
+        import numpy as np
+
+        def torch2img(tens, idx=0):
+            return np.transpose(tens[idx].detach().cpu().numpy(), [1, 2, 0])
+
+        for i in range(17):
+            heatmap_np = torch2img(aggregated_heatmaps, 0)
+            cv2.imwrite(
+                f'pred_heatmap_{i}.jpg',
+                np.repeat(np.abs(heatmap_np[:, :, i:i + 1]) * 255, 3, axis=2))
+        for i in range(38):
+            paf_np = torch2img(aggregated_pafs, 0)
+            cv2.imwrite(
+                f'pred_paf_{i}.jpg',
+                np.repeat(np.abs(paf_np[:, :, i:i + 1]) * 255, 3, axis=2))
+
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,
                                             aggregated_pafs,
