@@ -48,7 +48,7 @@ data_cfg = dict(
 
 # model settings
 model = dict(
-    type='BottomUp',
+    type='AssociativeEmbedding',
     pretrained='https://download.openmmlab.com/mmpose/'
     'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
@@ -81,7 +81,7 @@ model = dict(
                 num_channels=(32, 64, 128, 256))),
     ),
     keypoint_head=dict(
-        type='BottomUpHigherResolutionHead',
+        type='AEHigherResolutionHead',
         in_channels=32,
         num_joints=133,
         tag_per_joint=True,

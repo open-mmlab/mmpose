@@ -43,7 +43,7 @@ model = dict(
     'pretrain_models/scnet50-7ef0a199.pth',
     backbone=dict(type='SCNet', depth=50),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -119,6 +119,8 @@ data_root = 'data/coco'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',

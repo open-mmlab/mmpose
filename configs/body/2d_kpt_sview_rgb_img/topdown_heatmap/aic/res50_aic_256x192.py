@@ -40,7 +40,7 @@ model = dict(
     pretrained='torchvision://resnet50',
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -115,6 +115,8 @@ data_root = 'data/aic'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownAicDataset',
         ann_file=f'{data_root}/annotations/aic_train.json',
