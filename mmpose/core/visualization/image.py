@@ -60,7 +60,7 @@ def imshow_bboxes(img,
         assert len(labels) == len(bboxes)
 
         for bbox, label, color in zip(bboxes, labels, colors):
-            bbox_int = bbox.reshape(4).astype(np.int32)
+            bbox_int = bbox[0, :4].astype(np.int32)
             # roughly estimate the proper font size
             text_size, text_baseline = cv2.getTextSize(label,
                                                        cv2.FONT_HERSHEY_DUPLEX,
