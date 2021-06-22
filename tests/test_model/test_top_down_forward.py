@@ -3,6 +3,7 @@ import torch
 
 from mmpose.models.detectors import TopDown
 
+
 def test_vipnas_forward():
     # model settings
 
