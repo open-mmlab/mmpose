@@ -194,14 +194,10 @@ class Body3DBaseDataset(Dataset, metaclass=ABCMeta):
         if self.need_camera_param:
             _cam_param = self.get_camera_param(_imgnames[0])
             results['camera_param'] = _cam_param
-            # get image size
+            # get image size from camera parameters
             if 'w' in _cam_param and 'h' in _cam_param:
-                # get image size from camera parameters
                 results['image_width'] = _cam_param['w']
                 results['image_height'] = _cam_param['h']
-            else:
-                # get image size from images
-                raise NotImplementedError
 
         return results
 
