@@ -73,7 +73,7 @@ python demo/body3d_two_stage_video_demo.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
     configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w32_h36m_256x256.py \
-    https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-baf78e51_20210608.pth \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-d3206675_20210621.pth \
     configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py \
     https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth \
     --video-path demo/resources/body3d_demo.mp4 \

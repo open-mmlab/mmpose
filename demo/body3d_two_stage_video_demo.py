@@ -141,6 +141,13 @@ def main():
         action='store_true',
         help='Using One_Euro_Filter for smoothing')
     parser.add_argument(
+        '--trans-pose-2d',
+        action='store_true',
+        help='Scale the bbox (along with the 2D pose) to the average bbox '
+        'scale of the dataset, and move the bbox (along with the 2D pose) to '
+        'the average bbox center of the dataset. This is useful when bbox '
+        'is small, especially in multi-person scenarios.')
+    parser.add_argument(
         '--radius',
         type=int,
         default=8,
@@ -247,9 +254,13 @@ def main():
                                                  pose_lift_dataset)
 
     # prepare for temporal padding
-    seq_len = pose_lift_model.cfg.test_data_cfg.seq_len
-    causal = pose_lift_model.cfg.test_data_cfg.causal
-    seq_frame_interval = pose_lift_model.cfg.test_data_cfg.seq_frame_interval
+    if hasattr(pose_lift_model.cfg, 'test_data_cfg'):
+        data_cfg = pose_lift_model.cfg.test_data_cfg
+    else:
+        data_cfg = pose_lift_model.cfg.data_cfg
+    seq_len = data_cfg.seq_len
+    causal = data_cfg.causal
+    seq_frame_interval = data_cfg.seq_frame_interval
     _step = seq_frame_interval
     if causal:
         frames_left = seq_len - 1
@@ -277,13 +288,14 @@ def main():
             dataset=pose_lift_dataset,
             with_track_id=True,
             target_frame=target_frame_idx,
-            image_size=video.resolution)
+            image_size=video.resolution,
+            transform_pose_2d=args.trans_pose_2d)
 
         # Pose processing
         pose_lift_results_vis = []
         for idx, res in enumerate(pose_lift_results):
             keypoints_3d = res['keypoints_3d']
-            # exchange y-axis and z-axis, and then reverse the z-axis direction
+            # exchange y,z-axis, and then reverse the direction of x,z-axis
             keypoints_3d = keypoints_3d[..., [0, 2, 1]]
             keypoints_3d[..., 0] = -keypoints_3d[..., 0]
             keypoints_3d[..., 2] = -keypoints_3d[..., 2]
@@ -298,8 +310,7 @@ def main():
             res['title'] = f'Prediction ({instance_id})'
             pose_lift_results_vis.append(res)
             # only visualize the target frame
-            keypoints_2d = res['keypoints']
-            res['keypoints'] = keypoints_2d[target_frame_idx]
+            res['keypoints'] = det_res['keypoints']
             res['bbox'] = det_res['bbox']
 
         # Visualization
