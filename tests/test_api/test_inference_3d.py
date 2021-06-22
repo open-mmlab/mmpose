@@ -36,7 +36,7 @@ def test_pose_lifter_demo():
     vis_3d_pose_result(
         pose_model,
         pose_lift_results,
-        img=pose_lift_results[0]['image_name'],
+        img=pose_results_2d[0][0]['image_name'],
         dataset=dataset)
 
     # test special cases
@@ -51,3 +51,41 @@ def test_pose_lifter_demo():
     with pytest.raises(NotImplementedError):
         _ = inference_pose_lifter_model(
             pose_model, pose_results_2d, dataset='test')
+
+    # test videopose3d
+    pose_model = init_pose_model(
+        'configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/'
+        'videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py',
+        None,
+        device='cpu')
+
+    pose_det_result = {
+        'keypoints': np.ones((17, 3)),
+        'bbox': [50, 50, 100, 100],
+        'track_id': 0,
+        'image_name': 'tests/data/h36m/S1_Directions_1.54138969_000001.jpg',
+    }
+
+    pose_results_2d = [[pose_det_result]]
+
+    dataset = pose_model.cfg.data['test']['type']
+
+    seq_len = pose_model.cfg.test_data_cfg.seq_len
+    pose_results_2d_seq = [pose_results_2d[0]] * seq_len
+
+    pose_lift_results = inference_pose_lifter_model(
+        pose_model,
+        pose_results_2d_seq,
+        dataset,
+        with_track_id=True,
+        target_frame=seq_len // 2,
+        image_size=[1000, 1000],
+        transform_pose_2d=True)
+
+    for res in pose_lift_results:
+        res['title'] = 'title'
+    vis_3d_pose_result(
+        pose_model,
+        pose_lift_results,
+        img=pose_results_2d[0][0]['image_name'],
+        dataset=dataset)

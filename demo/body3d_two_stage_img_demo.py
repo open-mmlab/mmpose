@@ -264,7 +264,7 @@ def main():
         vis_3d_pose_result(
             pose_lift_model,
             result=pose_lift_results_vis,
-            img=pose_lift_results[0]['image_name'],
+            img=image_name,
             out_file=out_file)
 
 
