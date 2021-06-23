@@ -57,12 +57,16 @@ class SimpleCamera(SingleCameraBase):
             K = np.array(param['K'], dtype=np.float32)
             assert K.shape == (2, 3)
             self.param['K'] = K.T
+            self.param['f'] = np.array([K[0, 0], K[1, 1]])[:, np.newaxis]
+            self.param['c'] = np.array([K[0, 2], K[1, 2]])[:, np.newaxis]
         elif 'f' in param and 'c' in param:
             f = np.array(param['f'], dtype=np.float32)
             c = np.array(param['c'], dtype=np.float32)
             assert f.shape == (2, 1)
             assert c.shape == (2, 1)
             self.param['K'] = np.concatenate((np.diagflat(f), c), axis=-1).T
+            self.param['f'] = f
+            self.param['c'] = c
         else:
             raise ValueError('Camera intrinsic parameters are missing. '
                              'Either "K" or "f"&"c" should be provided.')
@@ -108,3 +112,11 @@ class SimpleCamera(SingleCameraBase):
             _X[..., :2] = _X_2d * (radial + tangential)[..., None] + np.outer(
                 r2, p[::-1]).reshape(_X_2d.shape)
         return _X @ self.param['K']
+
+    def pixel_to_camera(self, X):
+        assert isinstance(X, np.ndarray)
+        assert X.ndim >= 2 and X.shape[-1] == 3
+        _X = X.copy()
+        _X[:, :2] = (X[:, :2] - self.param['c'].T) / self.param['f'].T * X[:,
+                                                                           [2]]
+        return _X

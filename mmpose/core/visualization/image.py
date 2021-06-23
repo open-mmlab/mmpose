@@ -117,6 +117,7 @@ def imshow_keypoints_3d(
     pose_kpt_color=None,
     pose_limb_color=None,
     vis_height=400,
+    kpt_score_thr=0.3,
     *,
     axis_azimuth=70,
     axis_limit=1.7,
@@ -142,6 +143,8 @@ def imshow_keypoints_3d(
         vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+        kpt_score_thr (float): Minimum score of keypoints to be shown.
+            Default: 0.3.
         axis_azimuth (float): axis azimuth angle for 3D visualizations.
         axis_dist (float): axis distance for 3D visualizations.
         axis_elev (float): axis elevation view angle for 3D visualizations.
@@ -174,14 +177,16 @@ def imshow_keypoints_3d(
 
     for idx, res in enumerate(pose_result):
         kpts = res['keypoints_3d']
+        valid = kpts[:, 3] >= kpt_score_thr
+
         ax_idx = idx + 2 if show_img else idx + 1
         ax = fig.add_subplot(1, num_axis, ax_idx, projection='3d')
         ax.view_init(
             elev=axis_elev,
             azim=axis_azimuth,
         )
-        x_c = np.mean(kpts[..., 0])
-        y_c = np.mean(kpts[..., 1])
+        x_c = np.mean(kpts[valid, 0]) if sum(valid) > 0 else 0
+        y_c = np.mean(kpts[valid, 1]) if sum(valid) > 0 else 0
         ax.set_xlim3d([x_c - axis_limit / 2, x_c + axis_limit / 2])
         ax.set_ylim3d([y_c - axis_limit / 2, y_c + axis_limit / 2])
         ax.set_zlim3d([0, axis_limit])
@@ -200,7 +205,13 @@ def imshow_keypoints_3d(
             x_3d, y_3d, z_3d = np.split(kpts[:, :3], [1, 2], axis=1)
             # matplotlib uses RGB color in [0, 1] value range
             _color = pose_kpt_color[..., ::-1] / 255.
-            ax.scatter(x_3d, y_3d, z_3d, marker='o', color=_color)
+            ax.scatter(
+                x_3d[valid],
+                y_3d[valid],
+                z_3d[valid],
+                marker='o',
+                color=_color[valid],
+            )
 
         if skeleton is not None and pose_limb_color is not None:
             pose_limb_color = np.array(pose_limb_color)
@@ -210,9 +221,11 @@ def imshow_keypoints_3d(
                 xs_3d = kpts[limb_indices, 0]
                 ys_3d = kpts[limb_indices, 1]
                 zs_3d = kpts[limb_indices, 2]
-                # matplotlib uses RGB color in [0, 1] value range
-                _color = limb_color[::-1] / 255.
-                ax.plot(xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
+                kpt_score = kpts[limb_indices, 3]
+                if kpt_score.min() > kpt_score_thr:
+                    # matplotlib uses RGB color in [0, 1] value range
+                    _color = limb_color[::-1] / 255.
+                    ax.plot(xs_3d, ys_3d, zs_3d, color=_color, zdir='z')
 
         if 'title' in res:
             ax.set_title(res['title'])

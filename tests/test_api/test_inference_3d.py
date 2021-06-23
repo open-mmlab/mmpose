@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.apis import (inference_pose_lifter_model, init_pose_model,
+from mmpose.apis import (inference_interhand_3d_model,
+                         inference_pose_lifter_model, init_pose_model,
                          vis_3d_pose_result)
 
 
@@ -51,3 +52,48 @@ def test_pose_lifter_demo():
     with pytest.raises(NotImplementedError):
         _ = inference_pose_lifter_model(
             pose_model, pose_results_2d, dataset='test')
+
+
+def test_interhand3d_demo():
+    # H36M demo
+    pose_model = init_pose_model(
+        'configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/'
+        'res50_interhand3d_all_256x256.py',
+        None,
+        device='cpu')
+
+    image_name = 'tests/data/interhand2.6m/image2017.jpg'
+    det_result = {
+        'image_name': image_name,
+        'bbox': [50, 50, 50, 50],  # bbox format is 'xywh'
+        'camera_param': None,
+        'keypoints_3d_gt': None
+    }
+    det_results = [det_result]
+    dataset = pose_model.cfg.data['test']['type']
+
+    pose_results = inference_interhand_3d_model(
+        pose_model, image_name, det_results, dataset=dataset)
+
+    for res in pose_results:
+        res['title'] = 'title'
+
+    vis_3d_pose_result(
+        pose_model,
+        result=pose_results,
+        img=det_results[0]['image_name'],
+        dataset=dataset,
+    )
+
+    # test special cases
+    # Empty det results
+    _ = inference_interhand_3d_model(
+        pose_model, image_name, [], dataset=dataset)
+
+    if torch.cuda.is_available():
+        _ = inference_interhand_3d_model(
+            pose_model.cuda(), image_name, det_results, dataset=dataset)
+
+    with pytest.raises(NotImplementedError):
+        _ = inference_interhand_3d_model(
+            pose_model, image_name, det_results, dataset='test')
