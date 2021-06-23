@@ -84,7 +84,7 @@ class StopWatch:
         if '_FPS_' in result:
             fps = 1000. / result.pop('_FPS_')
             strings.append(f'FPS: {fps:>5.1f}')
-        strings += [f'{name}: {val:>5.0f}' for name, val in result.items()]
+        strings += [f'{name}: {val:>3.0f}' for name, val in result.items()]
         return strings
 
     def reset(self):

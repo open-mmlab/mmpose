@@ -27,7 +27,7 @@ except (ImportError, ModuleNotFoundError):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cam_id', type=int, default=0)
+    parser.add_argument('--cam_id', type=str, default='0')
     parser.add_argument(
         '--det_config',
         type=str,
@@ -137,6 +137,12 @@ def parse_args():
         'align the output video and inference results. The delay can be '
         'disabled by setting a non-positive delay time. Default: 0')
 
+    parser.add_argument(
+        '--synchronous-mode',
+        action='store_true',
+        help='Enable synchronous mode that video I/O and inference will be '
+        'temporally aligned. Note that this will reduce the display FPS.')
+
     return parser.parse_args()
 
 
@@ -180,9 +186,12 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
 def read_camera():
     # init video reader
     print('Thred "input" started')
-    vid_cap = cv2.VideoCapture(args.cam_id)
+    cam_id = args.cam_id
+    if cam_id.isdigit():
+        cam_id = int(cam_id)
+    vid_cap = cv2.VideoCapture(cam_id)
     if not vid_cap.isOpened():
-        print(f'Cannot open camera (ID={args.cam_id})')
+        print(f'Cannot open camera (ID={cam_id})')
         exit()
 
     while not event_exit.is_set():
@@ -191,9 +200,15 @@ def read_camera():
         if not ret_val:
             break
         ts_input = time.time()
-        frame_buffer.put((ts_input, frame))
+
+        event_inference_done.clear()
         with input_queue_mutex:
             input_queue.append((ts_input, frame))
+
+        if args.synchronous_mode:
+            event_inference_done.wait()
+
+        frame_buffer.put((ts_input, frame))
 
     vid_cap.release()
 
@@ -278,6 +293,8 @@ def inference_pose():
         t_info += stop_watch.report_strings()
         with pose_result_queue_mutex:
             pose_result_queue.append((ts_input, t_info, pose_results_list))
+
+        event_inference_done.set()
 
 
 def display():
@@ -376,9 +393,9 @@ def display():
             # show time information
             t_info_display = stop_watch.report_strings()  # display fps
             t_info_display.append(f'Inference FPS: {fps_inference:>5.1f}')
-            t_info_display.append(f'Delay: {t_delay:>5.0f}')
+            t_info_display.append(f'Delay: {t_delay:>3.0f}')
             t_info_display.append(
-                f'Inference Delay: {t_delay_inference:>5.0f}')
+                f'Inference Delay: {t_delay_inference:>3.0f}')
             t_info_str = ' | '.join(t_info_display + t_info)
             cv2.putText(img, t_info_str, (20, 20), cv2.FONT_HERSHEY_DUPLEX,
                         0.3, text_color, 1)
@@ -430,7 +447,7 @@ def main():
     global det_result_queue, det_result_queue_mutex
     global pose_result_queue, pose_result_queue_mutex
     global det_model, pose_model_list, pose_history_list
-    global event_exit
+    global event_exit, event_inference_done
 
     args = parse_args()
 
@@ -500,6 +517,7 @@ def main():
 
     try:
         event_exit = Event()
+        event_inference_done = Event()
         t_input = Thread(target=read_camera, args=())
         t_det = Thread(target=inference_detection, args=(), daemon=True)
         t_pose = Thread(target=inference_pose, args=(), daemon=True)
