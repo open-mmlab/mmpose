@@ -59,19 +59,27 @@ def test_pose_lifter_demo():
         None,
         device='cpu')
 
-    pose_det_result = {
+    pose_det_result_0 = {
         'keypoints': np.ones((17, 3)),
         'bbox': [50, 50, 100, 100],
         'track_id': 0,
         'image_name': 'tests/data/h36m/S1_Directions_1.54138969_000001.jpg',
     }
+    pose_det_result_1 = {
+        'keypoints': np.ones((17, 3)),
+        'bbox': [50, 50, 100, 100],
+        'track_id': 1,
+        'image_name': 'tests/data/h36m/S5_SittingDown.54138969_002061.jpg',
+    }
 
-    pose_results_2d = [[pose_det_result]]
+    pose_results_2d = [[pose_det_result_0], [pose_det_result_1]]
 
     dataset = pose_model.cfg.data['test']['type']
 
     seq_len = pose_model.cfg.test_data_cfg.seq_len
-    pose_results_2d_seq = [pose_results_2d[0]] * seq_len
+    pose_results_2d_seq = [pose_results_2d[0]
+                           ] * (seq_len // 2 + 1) + [pose_results_2d[0]] * (
+                               seq_len // 2)
 
     pose_lift_results = inference_pose_lifter_model(
         pose_model,
