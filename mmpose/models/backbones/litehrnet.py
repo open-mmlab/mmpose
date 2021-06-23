@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------------
+# Adapted from https://github.com/HRNet/Lite-HRNet
+# Original licence: Apache License 2.0.
+# ------------------------------------------------------------------------------
+
 import mmcv
 import torch
 import torch.nn as nn
