@@ -57,3 +57,11 @@ This page provides tutorials about running demos. Please click the caption for m
 
 [2D animal_pose demo](docs/2d_animal_demo.md)
 </div>
+
+<br>
+
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/28900607/121288285-b8fcbf00-c915-11eb-98e4-ba846de12987.gif" width="600px" alt><br>
+
+[3D hand_pose demo](docs/3d_hand_demo.md)
+</div>

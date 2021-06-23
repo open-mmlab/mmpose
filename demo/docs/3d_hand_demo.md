@@ -22,7 +22,7 @@ python demo/interhand3d_img_demo.py \
     [--show-ground-truth]
 ```
 
-Example:
+Example with gt keypoints and camera parameters:
 
 ```shell
 python demo/interhand3d_img_demo.py \
@@ -36,6 +36,8 @@ python demo/interhand3d_img_demo.py \
     --rebase-keypoint-height \
     --show-ground-truth
 ```
+
+Example without gt keypoints and camera parameters:
 
 ```shell
 python demo/interhand3d_img_demo.py \
