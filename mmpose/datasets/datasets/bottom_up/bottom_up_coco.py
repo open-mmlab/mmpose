@@ -68,12 +68,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                                      [0, 1], [0, 2], [1, 3], [2, 4], [3, 5],
                                      [4, 6]]
 
-        self.ann_info['flip_index_paf'] = [
-            4, 5, 6, 7, 0, 1, 2, 3, 8, 9, 12, 13, 10, 11, 14, 15, 18, 19, 16,
-            17, 22, 23, 20, 21, 24, 25, 28, 29, 26, 27, 32, 33, 30, 31, 36, 37,
-            34, 35
-        ]
-
         self.ann_info['use_different_joint_weights'] = False
         self.ann_info['joint_weights'] = np.array(
             [

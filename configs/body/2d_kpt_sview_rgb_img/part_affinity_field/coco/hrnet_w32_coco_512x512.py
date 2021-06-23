@@ -176,7 +176,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index', 'flip_index_paf'
+            'center', 'scale', 'flip_index', 'skeleton'
         ]),
 ]
 

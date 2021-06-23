@@ -252,14 +252,10 @@ class AssociativeEmbedding(BasePose):
                     self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'])
 
                 heatmaps_flipped = flip_feature_maps(
-                    heatmaps_flipped,
-                    flip_index=img_metas['flip_index'],
-                    flip_output=True)
+                    heatmaps_flipped, flip_index=img_metas['flip_index'])
                 if self.test_cfg['tag_per_joint']:
                     tags_flipped = flip_feature_maps(
-                        tags_flipped,
-                        flip_index=img_metas['flip_index'],
-                        flip_output=True)
+                        tags_flipped, flip_index=img_metas['flip_index'])
                 else:
                     tags_flipped = flip_feature_maps(
                         tags_flipped, flip_index=None, flip_output=True)

@@ -6,7 +6,8 @@ from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
-                                    flip_feature_maps, get_group_preds)
+                                    flip_feature_maps,
+                                    flip_part_affinity_fields, get_group_preds)
 from mmpose.core.post_processing.group import PAFParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
@@ -246,16 +247,11 @@ class PartAffinityField(BasePose):
                 pafs_flipped = outputs_flipped['pafs'][-1]
 
                 heatmaps_flipped = flip_feature_maps(
-                    heatmaps_flipped,
-                    flip_index=img_metas['flip_index'],
-                    flip_output=True)
-                pafs_flipped = flip_feature_maps(
+                    heatmaps_flipped, flip_index=img_metas['flip_index'])
+                pafs_flipped = flip_part_affinity_fields(
                     pafs_flipped,
-                    flip_index=img_metas['flip_index_paf'],
-                    flip_output=True)
-                for _pafs in pafs_flipped:
-                    # flip the x-axis
-                    _pafs[:, ::2, :, :] *= -1
+                    flip_index=img_metas['flip_index'],
+                    skeleton=img_metas['skeleton'])
 
             else:
                 heatmaps_flipped = None

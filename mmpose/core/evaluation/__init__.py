@@ -1,6 +1,6 @@
 from .bottom_up_eval import (aggregate_scale, aggregate_stage_flip,
-                             flip_feature_maps, get_group_preds,
-                             split_ae_outputs)
+                             flip_feature_maps, flip_part_affinity_fields,
+                             get_group_preds, split_ae_outputs)
 from .eval_hooks import DistEvalHook, EvalHook
 from .mesh_eval import compute_similarity_transform
 from .pose3d_eval import keypoint_mpjpe
@@ -16,5 +16,5 @@ __all__ = [
     'keypoint_epe', 'get_group_preds', 'split_ae_outputs', 'flip_feature_maps',
     'aggregate_stage_flip', 'aggregate_scale', 'compute_similarity_transform',
     'post_dark_udp', 'keypoint_mpjpe', 'keypoints_from_heatmaps3d',
-    'multilabel_classification_accuracy'
+    'multilabel_classification_accuracy', 'flip_part_affinity_fields'
 ]
