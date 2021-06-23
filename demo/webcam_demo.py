@@ -375,9 +375,10 @@ def display():
 
             # show time information
             t_info_display = stop_watch.report_strings()  # display fps
-            t_info_display.append(f'Inference FPS: {fps_inference:.1f}')
-            t_info_display.append(f'Delay: {t_delay:.0f}')
-            t_info_display.append(f'Inference Delay: {t_delay_inference:.0f}')
+            t_info_display.append(f'Inference FPS: {fps_inference:>5.1f}')
+            t_info_display.append(f'Delay: {t_delay:>5.0f}')
+            t_info_display.append(
+                f'Inference Delay: {t_delay_inference:>5.0f}')
             t_info_str = ' | '.join(t_info_display + t_info)
             cv2.putText(img, t_info_str, (20, 20), cv2.FONT_HERSHEY_DUPLEX,
                         0.3, text_color, 1)
@@ -408,8 +409,13 @@ def display():
 
             # display
             cv2.imshow('mmpose webcam demo', img)
-            if cv2.waitKey(1) in (27, ord('q'), ord('Q')):
+            keyboard_input = cv2.waitKey(1)
+            if keyboard_input in (27, ord('q'), ord('Q')):
                 break
+            elif keyboard_input == ord('s'):
+                args.sunglasses = not args.sunglasses
+            elif keyboard_input == ord('b'):
+                args.bugeye = not args.bugeye
 
     cv2.destroyAllWindows()
     if vid_out is not None:
