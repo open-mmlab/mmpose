@@ -257,14 +257,13 @@ class PartAffinityField(BasePose):
                 heatmaps_flipped = None
                 pafs_flipped = None
 
-            # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
                 heatmaps_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -274,7 +273,7 @@ class PartAffinityField(BasePose):
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -292,12 +291,12 @@ class PartAffinityField(BasePose):
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
             aggregate_scale='average',
-            align_corners=self.use_udp)
+            align_corners=self.test_cfg.get('align_corners', True))
 
         aggregated_pafs = aggregate_scale(
             scale_pafs_list,
             aggregate_scale='average',
-            align_corners=self.use_udp)
+            align_corners=self.test_cfg.get('align_corners', True))
 
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,

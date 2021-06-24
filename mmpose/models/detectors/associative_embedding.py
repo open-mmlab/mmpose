@@ -264,14 +264,13 @@ class AssociativeEmbedding(BasePose):
                 heatmaps_flipped = None
                 tags_flipped = None
 
-            # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
                 heatmaps_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -281,7 +280,7 @@ class AssociativeEmbedding(BasePose):
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='concat',
                 aggregate_flip='concat')
 
@@ -298,12 +297,12 @@ class AssociativeEmbedding(BasePose):
 
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
-            align_corners=self.use_udp,
+            align_corners=self.test_cfg.get('align_corners', True),
             aggregate_scale='average')
 
         aggregated_tags = aggregate_scale(
             scale_tags_list,
-            align_corners=self.use_udp,
+            align_corners=self.test_cfg.get('align_corners', True),
             aggregate_scale='unsqueeze_concat')
 
         # perform grouping
