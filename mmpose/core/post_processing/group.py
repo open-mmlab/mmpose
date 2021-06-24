@@ -429,6 +429,9 @@ class HeatmapParser(BaseBottomUpParser):
         """
         ans = self.match(**self.top_k(heatmaps, tags))
 
+        if len(ans) == 0:
+            return [], []
+
         if adjust:
             ans = self.adjust(ans, heatmaps, self.use_udp)
 
@@ -802,6 +805,9 @@ class PAFParser(BaseBottomUpParser):
         all_keypoints_by_type = self.get_keypoints(heatmaps)
         pafs_np = np.transpose(pafs.detach().cpu().numpy()[0], [1, 2, 0])
         ans, scores = self.group_keypoints(all_keypoints_by_type, pafs_np)
+
+        if len(ans) == 0:
+            return [], []
 
         if adjust:
             if self.use_udp:
