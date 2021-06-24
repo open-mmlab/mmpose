@@ -187,6 +187,85 @@ class BaseBottomUpParser(metaclass=ABCMeta):
         return val_k, ind_k
 
     @staticmethod
+    def refine(heatmap, tag, keypoints, use_udp=False):
+        """Given initial keypoint predictions, we identify missing joints.
+
+        Note:
+            number of keypoints: K
+            heatmap height: H
+            heatmap width: W
+            dim of tags: L
+                If use flip testing, L=2; else L=1.
+
+        Args:
+            heatmap: np.ndarray(K, H, W).
+            tag: np.ndarray(K, H, W) |  np.ndarray(K, H, W, L)
+            keypoints: np.ndarray of size (K, 3 + L)
+                        last dim is (x, y, score, tag).
+            use_udp: bool-unbiased data processing
+
+        Returns:
+            np.ndarray: The refined keypoints.
+        """
+
+        K, H, W = heatmap.shape
+        if len(tag.shape) == 3:
+            tag = tag[..., None]
+
+        tags = []
+        for i in range(K):
+            if keypoints[i, 2] > 0:
+                # save tag value of detected keypoint
+                x, y = keypoints[i][:2].astype(int)
+                x = np.clip(x, 0, W - 1)
+                y = np.clip(y, 0, H - 1)
+                tags.append(tag[i, y, x])
+
+        # mean tag of current detected people
+        prev_tag = np.mean(tags, axis=0)
+        ans = []
+
+        for _heatmap, _tag in zip(heatmap, tag):
+            # distance of all tag values with mean tag of
+            # current detected people
+            distance_tag = (((_tag -
+                              prev_tag[None, None, :])**2).sum(axis=2)**0.5)
+            norm_heatmap = _heatmap - np.round(distance_tag)
+
+            # find maximum position
+            y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
+            xx = x.copy()
+            yy = y.copy()
+            # detection score at maximum position
+            val = _heatmap[y, x]
+            if not use_udp:
+                # offset by 0.5
+                x += 0.5
+                y += 0.5
+
+            # add a quarter offset
+            if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
+                x += 0.25
+            else:
+                x -= 0.25
+
+            if _heatmap[min(H - 1, yy + 1), xx] > _heatmap[max(0, yy - 1), xx]:
+                y += 0.25
+            else:
+                y -= 0.25
+
+            ans.append((x, y, val))
+        ans = np.array(ans)
+
+        if ans is not None:
+            for i in range(K):
+                # add keypoint if it is not detected
+                if ans[i, 2] > 0 and keypoints[i, 2] == 0:
+                    keypoints[i, :3] = ans[i, :3]
+
+        return keypoints
+
+    @staticmethod
     def adjust(ans, heatmaps, use_udp=False):
         """Adjust the coordinates for better accuracy.
 
@@ -326,85 +405,6 @@ class HeatmapParser(BaseBottomUpParser):
         }
 
         return ans
-
-    @staticmethod
-    def refine(heatmap, tag, keypoints, use_udp=False):
-        """Given initial keypoint predictions, we identify missing joints.
-
-        Note:
-            number of keypoints: K
-            heatmap height: H
-            heatmap width: W
-            dim of tags: L
-                If use flip testing, L=2; else L=1.
-
-        Args:
-            heatmap: np.ndarray(K, H, W).
-            tag: np.ndarray(K, H, W) |  np.ndarray(K, H, W, L)
-            keypoints: np.ndarray of size (K, 3 + L)
-                        last dim is (x, y, score, tag).
-            use_udp: bool-unbiased data processing
-
-        Returns:
-            np.ndarray: The refined keypoints.
-        """
-
-        K, H, W = heatmap.shape
-        if len(tag.shape) == 3:
-            tag = tag[..., None]
-
-        tags = []
-        for i in range(K):
-            if keypoints[i, 2] > 0:
-                # save tag value of detected keypoint
-                x, y = keypoints[i][:2].astype(int)
-                x = np.clip(x, 0, W - 1)
-                y = np.clip(y, 0, H - 1)
-                tags.append(tag[i, y, x])
-
-        # mean tag of current detected people
-        prev_tag = np.mean(tags, axis=0)
-        ans = []
-
-        for _heatmap, _tag in zip(heatmap, tag):
-            # distance of all tag values with mean tag of
-            # current detected people
-            distance_tag = (((_tag -
-                              prev_tag[None, None, :])**2).sum(axis=2)**0.5)
-            norm_heatmap = _heatmap - np.round(distance_tag)
-
-            # find maximum position
-            y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
-            xx = x.copy()
-            yy = y.copy()
-            # detection score at maximum position
-            val = _heatmap[y, x]
-            if not use_udp:
-                # offset by 0.5
-                x += 0.5
-                y += 0.5
-
-            # add a quarter offset
-            if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
-                x += 0.25
-            else:
-                x -= 0.25
-
-            if _heatmap[min(H - 1, yy + 1), xx] > _heatmap[max(0, yy - 1), xx]:
-                y += 0.25
-            else:
-                y -= 0.25
-
-            ans.append((x, y, val))
-        ans = np.array(ans)
-
-        if ans is not None:
-            for i in range(K):
-                # add keypoint if it is not detected
-                if ans[i, 2] > 0 and keypoints[i, 2] == 0:
-                    keypoints[i, :3] = ans[i, :3]
-
-        return keypoints
 
     def parse(self, heatmaps, tags, adjust=True, refine=True):
         """Group keypoints into poses given heatmap and tag.
@@ -811,5 +811,24 @@ class PAFParser(BaseBottomUpParser):
                             ans[i][..., :2].copy(), heatmaps[i:i + 1, :])
             else:
                 ans = self.adjust(ans, heatmaps)
+
+        if refine:
+            ans = ans[0]
+            # for every detected person
+            for i in range(len(ans)):
+                heatmap_numpy = heatmaps[0].cpu().numpy()
+                _, image_width, image_height = heatmap_numpy.shape
+                y_coords = 2.0 * np.repeat(
+                    np.arange(image_height)[:, None], image_width,
+                    axis=1) / (image_height - 1.0) - 1.0
+                x_coords = 2.0 * np.repeat(
+                    np.arange(image_width)[None, :], image_height,
+                    axis=0) / (image_width - 1.0) - 1.0
+                coord_numpy = np.tile(
+                    np.stack([x_coords, y_coords], axis=-1),
+                    (self.params.num_joints, 1, 1, 1))
+                ans[i] = self.refine(
+                    heatmap_numpy, coord_numpy, ans[i], use_udp=self.use_udp)
+            ans = [ans]
 
         return ans, scores
