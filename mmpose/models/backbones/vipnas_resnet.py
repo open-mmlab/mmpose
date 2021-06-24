@@ -3,11 +3,11 @@ import copy
 import torch.nn as nn
 import torch.utils.checkpoint as cp
 from mmcv.cnn import ConvModule, build_conv_layer, build_norm_layer
+from mmcv.cnn.bricks import ContextBlock
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
-from .utils import ContextBlock
 
 
 class ViPNAS_Bottleneck(nn.Module):
@@ -111,8 +111,8 @@ class ViPNAS_Bottleneck(nn.Module):
         self.add_module(self.norm3_name, norm3)
 
         if attention:
-            self.attention = ContextBlock(out_channels, 1.0 / 16, 'att',
-                                          ['channel_add'])
+            self.attention = ContextBlock(out_channels,
+                                          max(1.0 / 16, 16.0 / out_channels))
         else:
             self.attention = None
 
