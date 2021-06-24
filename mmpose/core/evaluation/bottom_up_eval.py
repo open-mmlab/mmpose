@@ -57,16 +57,16 @@ def flip_feature_maps(feature_maps, flip_index=None):
 
 
 def flip_part_affinity_fields(pafs, flip_index, skeleton):
-    """Flip the feature maps and swap the channels.
+    """Flip the part affinity fields and swap the channels.
 
      Args:
-        feature_maps (list(torch.Tensor)): Feature maps.
+        pafs (list(torch.Tensor)): Part-affinity fields.
         flip_index (list(int) | None): Channel-flip indexes. If None,
             do not flip channels.
+        skeleton (list(list(int, int))): Pairs of linked keypoints.
     Returns:
-        flipped_feature_maps (list(torch.Tensor)): Flipped feature_maps.
+        flipped_pafs (list(torch.Tensor)): Flipped pafs.
     """
-
     flipped_skeleton = [[flip_index[a], flip_index[b]] for a, b in skeleton]
 
     flip_index_paf = []
