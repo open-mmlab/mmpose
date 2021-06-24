@@ -823,7 +823,7 @@ class PAFParser(BaseBottomUpParser):
             # for every detected person
             for i in range(len(ans)):
                 heatmap_numpy = heatmaps[0].cpu().numpy()
-                _, image_width, image_height = heatmap_numpy.shape
+                _, image_height, image_width = heatmap_numpy.shape
                 y_coords = 2.0 * np.repeat(
                     np.arange(image_height)[:, None], image_width,
                     axis=1) / (image_height - 1.0) - 1.0
