@@ -98,6 +98,13 @@ def parse_args():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='bbox score threshold')
     parser.add_argument(
+        '--show-pose',
+        type=lambda s: s != 'False',
+        default=True,
+        choices=['True', 'False'],
+        help='Show pose estimation results. Set False to disable the pose'
+        'visualization. Default: True')
+    parser.add_argument(
         '--sunglasses', action='store_true', help='Apply `sunglasses` effect.')
     parser.add_argument(
         '--bugeye', action='store_true', help='Apply `bug-eye` effect.')
@@ -197,18 +204,21 @@ def read_camera():
     while not event_exit.is_set():
         # capture a camera frame
         ret_val, frame = vid_cap.read()
-        if not ret_val:
+        if ret_val:
+            ts_input = time.time()
+
+            event_inference_done.clear()
+            with input_queue_mutex:
+                input_queue.append((ts_input, frame))
+
+            if args.synchronous_mode:
+                event_inference_done.wait()
+
+            frame_buffer.put((ts_input, frame))
+        else:
+            # input ending signal
+            frame_buffer.put((None, None))
             break
-        ts_input = time.time()
-
-        event_inference_done.clear()
-        with input_queue_mutex:
-            input_queue.append((ts_input, frame))
-
-        if args.synchronous_mode:
-            event_inference_done.wait()
-
-        frame_buffer.put((ts_input, frame))
 
     vid_cap.release()
 
@@ -317,6 +327,10 @@ def display():
         with stop_watch.timeit('_FPS_'):
             # acquire a frame from buffer
             ts_input, frame = frame_buffer.get()
+            # input ending signal
+            if ts_input is None:
+                break
+
             img = frame
 
             # get pose estimation results
@@ -340,6 +354,19 @@ def display():
 
                     dataset_name = pose_model.cfg.data['test']['type']
 
+                    # show pose results
+                    if args.show_pose:
+                        img = vis_pose_result(
+                            pose_model,
+                            img,
+                            pose_results,
+                            radius=4,
+                            thickness=2,
+                            dataset=dataset_name,
+                            kpt_score_thr=args.kpt_thr,
+                            bbox_color=bbox_color)
+
+                    # sunglasses effect
                     if args.sunglasses:
                         if dataset_name == 'TopDownCocoDataset':
                             leye_idx = 1
@@ -360,7 +387,8 @@ def display():
                         img = apply_sunglasses_effect(img, pose_results,
                                                       sunglasses_img, leye_idx,
                                                       reye_idx)
-                    elif args.bugeye:
+                    # bug-eye effect
+                    if args.bugeye:
                         if dataset_name == 'TopDownCocoDataset':
                             leye_idx = 1
                             reye_idx = 2
@@ -372,16 +400,6 @@ def display():
                                              f'{dataset_name}')
                         img = apply_bugeye_effect(img, pose_results, leye_idx,
                                                   reye_idx)
-                    else:
-                        img = vis_pose_result(
-                            pose_model,
-                            img,
-                            pose_results,
-                            radius=4,
-                            thickness=2,
-                            dataset=dataset_name,
-                            kpt_score_thr=args.kpt_thr,
-                            bbox_color=bbox_color)
 
             # delay control
             if args.display_delay > 0:
@@ -433,6 +451,8 @@ def display():
                 args.sunglasses = not args.sunglasses
             elif keyboard_input == ord('b'):
                 args.bugeye = not args.bugeye
+            elif keyboard_input == ord('v'):
+                args.show_pose = not args.show_pose
 
     cv2.destroyAllWindows()
     if vid_out is not None:
