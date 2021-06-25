@@ -971,7 +971,7 @@ class LiteHRNet(nn.Module):
         y_list = [x]
         for i in range(self.num_stages):
             x_list = []
-            transition = getattr(self, 'transition{}'.format(i))
+            transition = getattr(self, f'transition{i}')
             for j in range(self.stages_spec['num_branches'][i]):
                 if transition[j]:
                     if j >= len(y_list):
@@ -980,7 +980,7 @@ class LiteHRNet(nn.Module):
                         x_list.append(transition[j](y_list[j]))
                 else:
                     x_list.append(y_list[j])
-            y_list = getattr(self, 'stage{}'.format(i))(x_list)
+            y_list = getattr(self, f'stage{i}')(x_list)
 
         x = y_list
         if self.with_head:

@@ -51,4 +51,4 @@ def test_compose():
     assert compose_results is None
 
     assert repr(compose) == compose.__class__.__name__ + \
-        '(\n    {}\n)'.format(nonePipeline)
+        f'(\n    {nonePipeline}\n)'

@@ -27,7 +27,7 @@ class LoadImageFromFile:
         img = mmcv.imread(image_file, self.color_type, self.channel_order)
 
         if img is None:
-            raise ValueError('Fail to read {}'.format(image_file))
+            raise ValueError(f'Fail to read {image_file}')
 
         results['img'] = img
         return results
