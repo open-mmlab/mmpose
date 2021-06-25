@@ -59,21 +59,19 @@ def dataset_transform(keypoints, pose_det_dataset, pose_lift_dataset):
         return keypoints
     elif pose_det_dataset == 'TopDownCocoDataset' and \
             pose_lift_dataset == 'Body3DH36MDataset':
-        keypoints_new = np.zeros((17, 2))
+        keypoints_new = np.zeros((17, keypoints.shape[1]))
         # pelvis is in the middle of l_hip and r_hip
-        keypoints_new[0] = (keypoints[11, :2] + keypoints[12, :2]) / 2
+        keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
         # thorax is in the middle of l_shoulder and r_shoulder
-        keypoints_new[8] = (keypoints[5, :2] + keypoints[6, :2]) / 2
+        keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
         # head is in the middle of l_eye and r_eye
-        keypoints_new[10] = (keypoints[1, :2] + keypoints[2, :2]) / 2
+        keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
         # spine is in the middle of thorax and pelvis
-        keypoints_new[7] = (keypoints_new[0, :2] + keypoints_new[8, :2]) / 2
+        keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
         # rearrange other keypoints
         keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
-            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10], :2]
-        if keypoints.shape[-1] == 3:
-            keypoints_new = np.concatenate([keypoints_new, keypoints[:, 2:3]],
-                                           axis=1)
+            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
+
         return keypoints_new
     else:
         raise NotImplementedError
@@ -109,6 +107,20 @@ def main():
         'visualization when the model do not predict the global position '
         'of the 3D pose.')
     parser.add_argument(
+        '--norm-pose-2d',
+        action='store_true',
+        help='Scale the bbox (along with the 2D pose) to the average bbox '
+        'scale of the dataset, and move the bbox (along with the 2D pose) to '
+        'the average bbox center of the dataset. This is useful when bbox '
+        'is small, especially in multi-person scenarios.')
+    parser.add_argument(
+        '--num-poses-vis',
+        type=int,
+        default=0,
+        help='The number of 3D poses to be visualized in every frame. If not '
+        'larger than 0, it will be set to the number of pose results in the '
+        'first frame.')
+    parser.add_argument(
         '--show',
         action='store_true',
         default=False,
@@ -140,13 +152,7 @@ def main():
         '--euro',
         action='store_true',
         help='Using One_Euro_Filter for smoothing')
-    parser.add_argument(
-        '--trans-pose-2d',
-        action='store_true',
-        help='Scale the bbox (along with the 2D pose) to the average bbox '
-        'scale of the dataset, and move the bbox (along with the 2D pose) to '
-        'the average bbox center of the dataset. This is useful when bbox '
-        'is small, especially in multi-person scenarios.')
+
     parser.add_argument(
         '--radius',
         type=int,
@@ -270,6 +276,7 @@ def main():
         frames_right = frames_left
     target_frame_idx = -1 if causal else seq_len // 2
 
+    num_poses_vis = args.num_poses_vis
     for i in mmcv.track_iter_progress(range(num_frames)):
         # get the padded sequence
         pad_left = max(0, frames_left - i // _step)
@@ -289,11 +296,18 @@ def main():
             with_track_id=True,
             target_frame=target_frame_idx,
             image_size=video.resolution,
-            transform_pose_2d=args.trans_pose_2d)
+            norm_pose_2d=args.norm_pose_2d)
 
         # Pose processing
         pose_lift_results_vis = []
+        max_bbox = -1
         for idx, res in enumerate(pose_lift_results):
+            # ignore the result if there are more than 3 keypoints with scores
+            # lower than args.kpt_thr
+            keypoints = pose_det_results_list[i][idx]['keypoints']
+            if keypoints.shape[1] == 3 and np.sum(
+                    keypoints[:, 2] < args.kpt_thr) > 3:
+                continue
             keypoints_3d = res['keypoints_3d']
             # exchange y,z-axis, and then reverse the direction of x,z-axis
             keypoints_3d = keypoints_3d[..., [0, 2, 1]]
@@ -308,12 +322,30 @@ def main():
             det_res = pose_det_results_list[i][idx]
             instance_id = det_res['track_id']
             res['title'] = f'Prediction ({instance_id})'
-            pose_lift_results_vis.append(res)
             # only visualize the target frame
             res['keypoints'] = det_res['keypoints']
             res['bbox'] = det_res['bbox']
+            res['track_id'] = instance_id
+            pose_lift_results_vis.append(res)
+            bbox_area = (res['bbox'][2] - res['bbox'][0]) * (
+                res['bbox'][3] - res['bbox'][1])
+            max_bbox = max(bbox_area, max_bbox)
+        # ignore tiny bboxes
+        for idx in range(len(pose_lift_results_vis) - 1, -1, -1):
+            bbox = pose_lift_results_vis[idx]['bbox']
+            bbox_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
+            if bbox_area < max_bbox * 0.2:
+                pose_lift_results_vis.pop(idx)
 
         # Visualization
+        if num_poses_vis == 0:
+            num_poses_vis = len(pose_lift_results_vis)
+        else:
+            if len(pose_lift_results_vis) > num_poses_vis:
+                pose_lift_results_vis = pose_lift_results_vis[:num_poses_vis]
+            elif len(pose_lift_results_vis) < num_poses_vis:
+                pose_lift_results_vis += [dict()] * (
+                    num_poses_vis - len(pose_lift_results_vis))
         img_vis = vis_3d_pose_result(
             pose_lift_model,
             result=pose_lift_results_vis,

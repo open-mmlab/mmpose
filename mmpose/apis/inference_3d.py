@@ -8,7 +8,7 @@ from mmpose.datasets.pipelines import Compose
 def _gather_pose_lifter_inputs(pose_results,
                                bbox_center,
                                bbox_scale,
-                               transform_pose_2d=False):
+                               norm_pose_2d=False):
     """Gather input data (keypoints and track_id) for pose lifter model.
 
     Notes:
@@ -29,7 +29,7 @@ def _gather_pose_lifter_inputs(pose_results,
         bbox_center (ndarray[1, 2]): x, y. The average center coordinate of the
             bboxes in the dataset.
         bbox_scale (int|float): The average scale of the bboxes in the dataset.
-        transform_pose_2d (bool): If True, scale the bbox (along with the 2D
+        norm_pose_2d (bool): If True, scale the bbox (along with the 2D
             pose) to bbox_scale, and move the bbox (along with the 2D pose) to
             bbox_center. Default: False.
 
@@ -48,7 +48,7 @@ def _gather_pose_lifter_inputs(pose_results,
         for res in frame:
             inputs = dict()
 
-            if transform_pose_2d:
+            if norm_pose_2d:
                 bbox = res['bbox']
                 center = np.array([[(bbox[0] + bbox[2]) / 2,
                                     (bbox[1] + bbox[3]) / 2]])
@@ -160,7 +160,7 @@ def inference_pose_lifter_model(model,
                                 with_track_id=True,
                                 target_frame=-1,
                                 image_size=None,
-                                transform_pose_2d=False):
+                                norm_pose_2d=False):
     """Inference 3D pose from 2D pose sequences using a pose lifter model.
 
     Args:
@@ -180,7 +180,7 @@ def inference_pose_lifter_model(model,
         target_frame (int): The index of the target frame. Default: -1.
         image_size (Tuple|List): image width, image height. If None, image size
             will not be contained in dict ``data``.
-        transform_pose_2d (bool): If True, scale the bbox (along with the 2D
+        norm_pose_2d (bool): If True, scale the bbox (along with the 2D
             pose) to the average bbox scale of the dataset, and move the bbox
             (along with the 2D pose) to the average bbox center of the dataset.
 
@@ -205,7 +205,7 @@ def inference_pose_lifter_model(model,
         raise NotImplementedError()
     pose_lifter_inputs = _gather_pose_lifter_inputs(pose_results_2d,
                                                     bbox_center, bbox_scale,
-                                                    transform_pose_2d)
+                                                    norm_pose_2d)
     pose_sequences_2d = _collate_pose_sequence(pose_lifter_inputs,
                                                with_track_id, target_frame)
 

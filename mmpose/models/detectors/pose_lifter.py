@@ -327,7 +327,7 @@ class PoseLifter(BasePose):
 
         if not keep_undetected:
             assert len(result) > 0
-        result = sorted(result, key=lambda x: x.get('track_id', 0))
+        result = sorted(result, key=lambda x: x.get('track_id', 1e4))
 
         # draw image and input 2d poses
         if img is not None:

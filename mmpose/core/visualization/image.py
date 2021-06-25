@@ -173,7 +173,8 @@ def imshow_keypoints_3d(
         ax_img.imshow(img, aspect='equal')
 
     for idx, res in enumerate(pose_result):
-        kpts = res['keypoints_3d']
+        dummy = len(res) == 0
+        kpts = np.zeros((1, 3)) if dummy else res['keypoints_3d']
         ax_idx = idx + 2 if show_img else idx + 1
         ax = fig.add_subplot(1, num_axis, ax_idx, projection='3d')
         ax.view_init(
@@ -194,7 +195,7 @@ def imshow_keypoints_3d(
         ax.set_zticklabels([])
         ax.dist = axis_dist
 
-        if pose_kpt_color is not None:
+        if not dummy and pose_kpt_color is not None:
             pose_kpt_color = np.array(pose_kpt_color)
             assert len(pose_kpt_color) == len(kpts)
             x_3d, y_3d, z_3d = np.split(kpts[:, :3], [1, 2], axis=1)
@@ -202,7 +203,7 @@ def imshow_keypoints_3d(
             _color = pose_kpt_color[..., ::-1] / 255.
             ax.scatter(x_3d, y_3d, z_3d, marker='o', color=_color)
 
-        if skeleton is not None and pose_limb_color is not None:
+        if not dummy and skeleton is not None and pose_limb_color is not None:
             pose_limb_color = np.array(pose_limb_color)
             assert len(pose_limb_color) == len(skeleton)
             for limb, limb_color in zip(skeleton, pose_limb_color):
