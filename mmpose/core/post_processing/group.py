@@ -277,7 +277,7 @@ class BaseBottomUpParser(metaclass=ABCMeta):
             heatmap width: W
 
         Args:
-            ans (list(np.array([M,K,5]))): Keypoint predictions.
+            ans (list(np.array([M,K,3+]))): Keypoint predictions.
             heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
         """
 
@@ -309,6 +309,28 @@ class BaseBottomUpParser(metaclass=ABCMeta):
                             ans[batch_id][people_id, joint_id,
                                           0:2] = (x + 0.5, y + 0.5)
         return ans
+
+    def filter_pose(self, ans, kpt_num_thr=3, mean_score_thr=0.2):
+        """Filter out the poses with #keypoints < kpt_num_thr, and those with
+        keypoint score < mean_score_thr.
+
+        Note:
+            number of person: M
+            number of keypoints: K
+
+        Args:
+            filtered_ans (list(np.array([M,K,3+]))): Keypoint predictions.
+        """
+        filtered_ans = []
+        for i in range(len(ans[0])):
+            score = ans[0][i, :, 2]
+            if sum(score > 0) < kpt_num_thr or (score[score > 0].mean() <
+                                                mean_score_thr):
+                continue
+            filtered_ans.append(ans[0][i])
+        filtered_ans = np.asarray(filtered_ans)
+
+        return [filtered_ans]
 
     @abstractmethod
     def parse(self, *args, **kwargs):
@@ -406,7 +428,7 @@ class HeatmapParser(BaseBottomUpParser):
 
         return ans
 
-    def parse(self, heatmaps, tags, adjust=True, refine=True):
+    def parse(self, heatmaps, tags, adjust=True, refine=True, filter=False):
         """Group keypoints into poses given heatmap and tag.
 
         Note:
@@ -431,6 +453,9 @@ class HeatmapParser(BaseBottomUpParser):
 
         if len(ans) == 0:
             return [], []
+
+        if filter:
+            ans = self.filter_pose(ans)
 
         if adjust:
             ans = self.adjust(ans, heatmaps, self.use_udp)
@@ -564,7 +589,7 @@ class PAFParser(BaseBottomUpParser):
             pafs (np.ndarray[W, H, C]): part-affinity fields
 
         Returns:
-            - ans (list(np.array([M, K, 4]))): Keypoint predictions.
+            - ans (list(np.array([M, K, 3+]))): Keypoint predictions.
             - scores (list): Score of people.
         """
         pose_entries = []
@@ -721,14 +746,6 @@ class PAFParser(BaseBottomUpParser):
 
                         pose_entries.append(pose_entry)
 
-        filtered_entries = []
-        for i in range(len(pose_entries)):
-            if pose_entries[i][-1] < 3 or (
-                    pose_entries[i][-2] / pose_entries[i][-1] < 0.2):
-                continue
-            filtered_entries.append(pose_entries[i])
-        pose_entries = np.asarray(filtered_entries)
-
         ans = self.output_format(all_keypoints, pose_entries)
         scores = [person[-2] for person in pose_entries]
 
@@ -777,7 +794,7 @@ class PAFParser(BaseBottomUpParser):
 
         return all_keypoints_by_type
 
-    def parse(self, heatmaps, pafs, adjust=True, refine=True):
+    def parse(self, heatmaps, pafs, adjust=True, refine=True, filter=False):
         """Group keypoints into poses given heatmap and paf.
 
         Note:
@@ -808,6 +825,9 @@ class PAFParser(BaseBottomUpParser):
 
         if len(ans) == 0:
             return [], []
+
+        if filter:
+            ans = self.filter_pose(ans)
 
         if adjust:
             if self.use_udp:

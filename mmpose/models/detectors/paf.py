@@ -302,7 +302,8 @@ class PartAffinityField(BasePose):
         grouped, scores = self.parser.parse(aggregated_heatmaps,
                                             aggregated_pafs,
                                             self.test_cfg['adjust'],
-                                            self.test_cfg['refine'])
+                                            self.test_cfg['refine'],
+                                            self.test_cfg.get('filter', False))
 
         preds = get_group_preds(
             grouped,
