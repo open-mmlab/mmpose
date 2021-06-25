@@ -1,6 +1,7 @@
 import argparse
 import os
 import os.path as osp
+import re
 
 import yaml
 
@@ -30,10 +31,14 @@ def collate_metrics(keys):
                     if key[i] == '<':
                         while key[i] != '>':
                             i += 1
+                    # omit bold or italic
+                    elif key[i] == '*' or key[i] == '_':
+                        used_metric += ' '
                     else:
                         used_metric += key[i]
                     i += 1
-                used_metrics.append(used_metric)
+                re.sub(' +', ' ', used_metric)
+                used_metrics.append(used_metric.strip())
                 metric_idx.append(idx)
                 break
     return used_metrics, metric_idx
@@ -184,7 +189,7 @@ def update_model_zoo():
             for file in files:
                 if file[-3:] == 'yml':
                     yml_files.append(os.path.join(root, file))
-
+    yml_files.sort()
     model_zoo = {
         'Import':
         [yml_file.replace(repo_root, '', 1)[1:] for yml_file in yml_files]

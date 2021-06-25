@@ -19,11 +19,11 @@ Models:
   - Task: 2D Face Landmark Detection
     Dataset: WFLW
     Metrics:
-      NME*test*: 3.98
-      NME*pose*: 6.99
-      NME*illumination*: 3.96
-      NME*occlusion*: 4.78
-      NME*blur*: 4.57
-      NME*makeup*: 3.87
-      NME*expression*: 4.3
+      NME test: 3.98
+      NME pose: 6.99
+      NME illumination: 3.96
+      NME occlusion: 4.78
+      NME blur: 4.57
+      NME makeup: 3.87
+      NME expression: 4.3
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_wflw_256x256_dark-3f8e0c2c_20210125.pth

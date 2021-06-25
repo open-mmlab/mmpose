@@ -20,6 +20,6 @@ Models:
   - Task: 2D Face Landmark Detection
     Dataset: AFLW
     Metrics:
-      NME*full*: 1.41
-      NME*frontal*: 1.27
+      NME full: 1.41
+      NME frontal: 1.27
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth
