@@ -98,11 +98,11 @@ class AssociativeEmbedding(BasePose):
             heatmaps height: H
             max_num_people: M
         Args:
-            img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            img (torch.Tensor[NxCximgHximgW]): Input image.
+            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
             img_metas(dict):Information about val&test
                 By default this includes:
@@ -144,13 +144,13 @@ class AssociativeEmbedding(BasePose):
             max_num_people: M
 
         Args:
-            img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            img (torch.Tensor[NxCximgHximgW]): Input image.
+            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
                                               heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
                                                  heatmaps for ae loss
-            img_metas(dict):Information about val&test
+            img_metas (dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
                 - "aug_data": input
@@ -252,29 +252,25 @@ class AssociativeEmbedding(BasePose):
                     self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'])
 
                 heatmaps_flipped = flip_feature_maps(
-                    heatmaps_flipped,
-                    flip_index=img_metas['flip_index'],
-                    flip_output=True)
+                    heatmaps_flipped, flip_index=img_metas['flip_index'])
                 if self.test_cfg['tag_per_joint']:
                     tags_flipped = flip_feature_maps(
-                        tags_flipped,
-                        flip_index=img_metas['flip_index'],
-                        flip_output=True)
+                        tags_flipped, flip_index=img_metas['flip_index'])
                 else:
                     tags_flipped = flip_feature_maps(
                         tags_flipped, flip_index=None, flip_output=True)
 
             else:
-                outputs_flipped = None
+                heatmaps_flipped = None
+                tags_flipped = None
 
-            # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
                 heatmaps_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -284,7 +280,7 @@ class AssociativeEmbedding(BasePose):
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='concat',
                 aggregate_flip='concat')
 
@@ -301,12 +297,12 @@ class AssociativeEmbedding(BasePose):
 
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
-            align_corners=self.use_udp,
+            align_corners=self.test_cfg.get('align_corners', True),
             aggregate_scale='average')
 
         aggregated_tags = aggregate_scale(
             scale_tags_list,
-            align_corners=self.use_udp,
+            align_corners=self.test_cfg.get('align_corners', True),
             aggregate_scale='unsqueeze_concat')
 
         # perform grouping

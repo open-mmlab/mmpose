@@ -27,12 +27,12 @@ class PAFHead(nn.Module):
         assert len(paf_heads_cfg) == len(paf_index)
 
         # build heatmap heads
-        self.heatmap_heads_list = []
+        self.heatmap_heads_list = nn.ModuleList()
         for head_cfg in heatmap_heads_cfg:
             self.heatmap_heads_list.append(build_head(head_cfg))
 
         # build paf heads
-        self.paf_heads_list = []
+        self.paf_heads_list = nn.ModuleList()
         for head_cfg in paf_heads_cfg:
             self.paf_heads_list.append(build_head(head_cfg))
 
@@ -50,19 +50,21 @@ class PAFHead(nn.Module):
 
         Args:
             outputs (dict): Outputs of network, including heatmaps and pafs.
-            targets (list(list)): List of heatmaps and pafs, each of which
-                multi-scale targets.
-            masks (list(torch.Tensor[NxHxW])): Masks of multi-scale target
-                heatmaps and pafs.
+            targets (list(list)): List of heatmaps
+                and pafs, each of which multi-scale targets.
+            masks (list(list(torch.Tensor[NxHxW]))): Masks of multi-scale
+                target heatmaps.
         """
 
         losses = dict()
 
         heatmap_outputs = outputs['heatmaps']
         heatmap_targets = targets[:len(self.heatmap_heads_list)]
+        heatmap_masks = masks[:len(self.heatmap_heads_list)]
         for idx, head in enumerate(self.heatmap_heads_list):
             heatmap_losses = head.get_loss(heatmap_outputs[idx],
-                                           heatmap_targets[idx], masks)
+                                           heatmap_targets[idx],
+                                           heatmap_masks[idx])
             if 'heatmap_loss' not in losses:
                 losses['heatmap_loss'] = heatmap_losses['loss']
             else:
@@ -70,9 +72,10 @@ class PAFHead(nn.Module):
 
         paf_outputs = outputs['pafs']
         paf_targets = targets[len(self.heatmap_heads_list):]
+        paf_masks = masks[:len(self.heatmap_heads_list)]
         for idx, head in enumerate(self.paf_heads_list):
             paf_losses = head.get_loss(paf_outputs[idx], paf_targets[idx],
-                                       masks)
+                                       paf_masks[idx])
             if 'paf_loss' not in losses:
                 losses['paf_loss'] = paf_losses['loss']
             else:

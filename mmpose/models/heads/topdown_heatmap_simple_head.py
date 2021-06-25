@@ -28,7 +28,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
         num_deconv_filters (list|tuple): Number of filters.
             If num_deconv_layers > 0, the length of
         num_deconv_kernels (list|tuple): Kernel sizes.
-        in_index (int|Sequence[int]): Input feature index. Default: -1
+        in_index (int|Sequence[int]): Input feature index. Default: 0
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
             'resize_concat': Multiple feature maps will be resized to the

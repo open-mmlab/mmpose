@@ -36,20 +36,20 @@ channel_cfg = dict(
     ])
 
 data_cfg = dict(
-    image_size=640,
-    base_size=320,
+    image_size=512,
+    base_size=256,
     base_sigma=2,
-    heatmap_size=[160, 320],
+    heatmap_size=[128],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
-    num_scales=2,
+    num_scales=1,
     scale_aware_sigma=False,
 )
 
 # model settings
 model = dict(
-    type='BottomUp',
+    type='PartAffinityField',
     pretrained='https://download.openmmlab.com/mmpose/'
     'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
@@ -82,27 +82,34 @@ model = dict(
                 num_channels=(32, 64, 128, 256))),
     ),
     keypoint_head=dict(
-        type='BottomUpHigherResolutionHead',
-        in_channels=32,
-        num_joints=17,
-        tag_per_joint=True,
-        extra=dict(final_conv_kernel=1, ),
-        num_deconv_layers=1,
-        num_deconv_filters=[32],
-        num_deconv_kernels=[4],
-        num_basic_blocks=4,
-        cat_output=[True],
-        with_ae_loss=[True, False],
-        loss_keypoint=dict(
-            type='MultiLossFactory',
-            num_joints=17,
-            num_stages=2,
-            ae_loss_type='exp',
-            with_ae_loss=[True, False],
-            push_loss_factor=[0.001, 0.001],
-            pull_loss_factor=[0.001, 0.001],
-            with_heatmaps_loss=[True, True],
-            heatmaps_loss_factor=[1.0, 1.0])),
+        type='PAFHead',
+        heatmap_heads_cfg=[
+            dict(
+                type='DeconvHead',
+                in_channels=32,
+                out_channels=17,
+                num_deconv_layers=0,
+                extra=dict(
+                    final_conv_kernel=1,
+                    num_conv_layers=1,
+                    num_conv_kernels=(1, )),
+                loss_keypoint=dict(type='MaskedMSELoss', )),
+        ],
+        paf_heads_cfg=[
+            dict(
+                type='DeconvHead',
+                in_channels=32,
+                out_channels=38,
+                num_deconv_layers=0,
+                extra=dict(
+                    final_conv_kernel=1,
+                    num_conv_layers=1,
+                    num_conv_kernels=(1, )),
+                loss_keypoint=dict(type='MaskedMSELoss', )),
+        ],
+        heatmap_index=[0],
+        paf_index=[0],
+    ),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         img_size=data_cfg['image_size']),
@@ -110,10 +117,10 @@ model = dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
         scale_factor=[1],
-        with_heatmaps=[True, True],
-        with_ae=[True, False],
-        project2image=False,
-        align_corners=True,
+        with_heatmaps=[True],
+        with_pafs=[True],
+        project2image=True,
+        align_corners=False,
         nms_kernel=5,
         nms_padding=2,
         tag_per_joint=True,
@@ -123,8 +130,7 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True,
-        use_udp=True))
+        flip_test=True))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -133,8 +139,7 @@ train_pipeline = [
         rot_factor=30,
         scale_factor=[0.75, 1.5],
         scale_type='short',
-        trans_factor=40,
-        use_udp=True),
+        trans_factor=40),
     dict(type='BottomUpRandomFlip', flip_prob=0.5),
     dict(type='ToTensor'),
     dict(
@@ -142,20 +147,22 @@ train_pipeline = [
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
     dict(
-        type='BottomUpGenerateTarget',
-        sigma=2,
-        max_num_people=30,
-        use_udp=True,
-    ),
-    dict(
-        type='Collect',
-        keys=['img', 'joints', 'targets', 'masks'],
-        meta_keys=[]),
+        type='MultitaskGatherTarget',
+        pipeline_list=[
+            [dict(type='BottomUpGenerateHeatmapTarget', sigma=2)],
+            [dict(
+                type='BottomUpGeneratePAFTarget',
+                limb_width=1,
+            )],
+        ],
+        pipeline_indices=[0, 1],
+        keys=['targets', 'masks']),
+    dict(type='Collect', keys=['img', 'targets', 'masks'], meta_keys=[]),
 ]
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='BottomUpGetImgSize', test_scale_factor=[1], use_udp=True),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
@@ -163,15 +170,14 @@ val_pipeline = [
             dict(
                 type='NormalizeTensor',
                 mean=[0.485, 0.456, 0.406],
-                std=[0.229, 0.224, 0.225])
-        ],
-        use_udp=True),
+                std=[0.229, 0.224, 0.225]),
+        ]),
     dict(
         type='Collect',
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index'
+            'center', 'scale', 'flip_index', 'skeleton'
         ]),
 ]
 
@@ -179,7 +185,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=24,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',

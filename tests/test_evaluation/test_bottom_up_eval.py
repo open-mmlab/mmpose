@@ -1,8 +1,10 @@
 import numpy as np
+import pytest
 import torch
 
 from mmpose.core import (aggregate_scale, aggregate_stage_flip,
-                         flip_feature_maps, get_group_preds, split_ae_outputs)
+                         flip_feature_maps, flip_part_affinity_fields,
+                         get_group_preds, split_ae_outputs)
 
 
 def test_split_ae_outputs():
@@ -13,8 +15,20 @@ def test_split_ae_outputs():
 
 def test_flip_feature_maps():
     fake_outputs = [torch.zeros((1, 4, 2, 2))]
-    _ = flip_feature_maps(fake_outputs, None, False)
-    _ = flip_feature_maps(fake_outputs, flip_index=[1, 0], flip_output=True)
+    _ = flip_feature_maps(fake_outputs, None)
+    _ = flip_feature_maps(fake_outputs, flip_index=[1, 0])
+
+
+def test_flip_part_affinity_fields():
+    fake_outputs = [torch.zeros((1, 4, 2, 2))]
+
+    _ = flip_part_affinity_fields(fake_outputs, None, skeleton=[])
+    _ = flip_part_affinity_fields(
+        fake_outputs, flip_index=[1, 0], skeleton=[[0, 1]])
+
+    with pytest.raises(ValueError):
+        _ = flip_part_affinity_fields(
+            fake_outputs, flip_index=[1, 0], skeleton=[[0, 0]])
 
 
 def test_aggregate_stage_flip():

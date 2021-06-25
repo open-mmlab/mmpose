@@ -6,7 +6,8 @@ from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_scale, aggregate_stage_flip,
-                                    flip_feature_maps, get_group_preds)
+                                    flip_feature_maps,
+                                    flip_part_affinity_fields, get_group_preds)
 from mmpose.core.post_processing.group import PAFParser
 from mmpose.core.visualization import imshow_keypoints
 from .. import builder
@@ -100,10 +101,10 @@ class PartAffinityField(BasePose):
             max_num_people: M
         Args:
             img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets (list(list)): List of heatmaps and pafs, each of which
-                multi-scale targets.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                heatmaps.
+            targets (list(list)): List of heatmaps
+                and pafs, each of which multi-scale targets.
+            masks (list(list(torch.Tensor[NxHxW]))): Masks of multi-scale
+                target heatmaps.
             img_metas(dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
@@ -143,12 +144,12 @@ class PartAffinityField(BasePose):
             max_num_people: M
 
         Args:
-            img(torch.Tensor[NxCximgHximgW]): Input image.
-            targets (list(list)): List of heatmaps and pafs, each of which
-                multi-scale targets.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                heatmaps.
-            img_metas(dict):Information about val&test
+            img (torch.Tensor[NxCximgHximgW]): Input image.
+            targets (list(list)): List of heatmaps
+                and pafs, each of which multi-scale targets.
+            masks (list(list(torch.Tensor[NxHxW]))): Masks of multi-scale
+                target heatmaps.
+            img_metas (dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
                 - "aug_data": input
@@ -226,16 +227,14 @@ class PartAffinityField(BasePose):
         scale_heatmaps_list = []
         scale_pafs_list = []
 
-        aggregated_heatmaps = None
-        aggregated_pafs = None
         for idx, s in enumerate(sorted(test_scale_factor, reverse=True)):
             image_resized = aug_data[idx].to(img.device)
 
             features = self.backbone(image_resized)
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
-                heatmaps = outputs['heatmaps']
-                pafs = outputs['pafs']
+                heatmaps = outputs['heatmaps'][-1]
+                pafs = outputs['pafs'][-1]
 
             if self.test_cfg.get('flip_test', True):
                 # use flip test
@@ -244,29 +243,27 @@ class PartAffinityField(BasePose):
                 if self.with_keypoint:
                     outputs_flipped = self.keypoint_head(features_flipped)
 
-                heatmaps_flipped = outputs_flipped['heatmaps']
-                pafs_flipped = outputs_flipped['pafs']
+                heatmaps_flipped = outputs_flipped['heatmaps'][-1]
+                pafs_flipped = outputs_flipped['pafs'][-1]
 
                 heatmaps_flipped = flip_feature_maps(
-                    heatmaps_flipped,
-                    flip_index=img_metas['flip_index'],
-                    flip_output=True)
-                pafs_flipped = flip_feature_maps(
+                    heatmaps_flipped, flip_index=img_metas['flip_index'])
+                pafs_flipped = flip_part_affinity_fields(
                     pafs_flipped,
-                    img_metas['flip_index_paf'],
-                    flip_output=True)
+                    flip_index=img_metas['flip_index'],
+                    skeleton=img_metas['skeleton'])
 
             else:
-                outputs_flipped = None
+                heatmaps_flipped = None
+                pafs_flipped = None
 
-            # TODO: move `align_corners' to test_cfg
             aggregated_heatmaps = aggregate_stage_flip(
                 heatmaps,
                 heatmaps_flipped,
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -276,7 +273,7 @@ class PartAffinityField(BasePose):
                 index=-1,
                 project2image=self.test_cfg['project2image'],
                 size_projected=base_size,
-                align_corners=self.use_udp,
+                align_corners=self.test_cfg.get('align_corners', True),
                 aggregate_stage='average',
                 aggregate_flip='average')
 
@@ -294,12 +291,12 @@ class PartAffinityField(BasePose):
         aggregated_heatmaps = aggregate_scale(
             scale_heatmaps_list,
             aggregate_scale='average',
-            align_corners=self.use_udp)
+            align_corners=self.test_cfg.get('align_corners', True))
 
         aggregated_pafs = aggregate_scale(
             scale_pafs_list,
             aggregate_scale='average',
-            align_corners=self.use_udp)
+            align_corners=self.test_cfg.get('align_corners', True))
 
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,

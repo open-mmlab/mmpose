@@ -35,27 +35,69 @@ def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae):
     return heatmaps, tags
 
 
-def flip_feature_maps(feature_maps, flip_index=None, flip_output=False):
+def flip_feature_maps(feature_maps, flip_index=None):
     """Flip the feature maps and swap the channels.
 
      Args:
         feature_maps (list(torch.Tensor)): Feature maps.
         flip_index (list(int) | None): Channel-flip indexes. If None,
             do not flip channels.
-        flip_output (bool): Whether to perform horizontal-flip.
     Returns:
         flipped_feature_maps (list(torch.Tensor)): Flipped feature_maps.
     """
     flipped_feature_maps = []
     for feature_map in feature_maps:
-        if flip_output:
-            feature_map = torch.flip(feature_map, [3])
+        feature_map = torch.flip(feature_map, [3])
         if flip_index is not None:
             flipped_feature_maps.append(feature_map[:, flip_index, :, :])
         else:
             flipped_feature_maps.append(feature_map)
 
     return flipped_feature_maps
+
+
+def flip_part_affinity_fields(pafs, flip_index, skeleton):
+    """Flip the part affinity fields and swap the channels.
+
+     Args:
+        pafs (list(torch.Tensor)): Part-affinity fields.
+        flip_index (list(int) | None): Channel-flip indexes. If None,
+            do not flip channels.
+        skeleton (list(list(int, int))): Pairs of linked keypoints.
+    Returns:
+        flipped_pafs (list(torch.Tensor)): Flipped pafs.
+    """
+    flipped_skeleton = [[flip_index[a], flip_index[b]] for a, b in skeleton]
+
+    flip_index_paf = []
+    flip_x_index = []
+    for sk_id, sk in enumerate(flipped_skeleton):
+        try:
+            # found flip-pairs
+            ind = skeleton.index(sk)
+            flip_x_index.append(sk_id * 2)
+        except ValueError:
+            try:
+                # unidirectional edge
+                ind = skeleton.index([sk[1], sk[0]])
+            except ValueError:
+                raise ValueError('The skeleton should be symmetric.')
+
+        flip_index_paf.append(2 * ind)
+        flip_index_paf.append(2 * ind + 1)
+
+    flipped_pafs = []
+    for paf in pafs:
+        paf = torch.flip(paf, [3])
+        # flip the x-axis direction
+        paf[:, flip_x_index, :, :] *= -1
+        # flip channels
+        if flip_index is not None:
+            flipped_pafs.append(paf[:, flip_index_paf, :, :])
+        else:
+            flipped_pafs.append(paf)
+
+    return flipped_pafs
 
 
 def _resize_average(feature_maps, align_corners, index=-1, resize_size=None):
@@ -188,6 +230,9 @@ def aggregate_stage_flip(feature_maps,
             Aggregated feature maps.
     """
 
+    if feature_maps_flip is None:
+        aggregate_flip = 'none'
+
     output_feature_maps = []
 
     if aggregate_stage == 'average':
@@ -294,6 +339,9 @@ def get_group_preds(grouped_joints,
     Returns:
         list: List of the pose result for each person.
     """
+    if len(grouped_joints) == 0:
+        return []
+
     if use_udp:
         if grouped_joints[0].shape[0] > 0:
             heatmap_size_t = np.array(heatmap_size, dtype=np.float32) - 1.0

@@ -112,6 +112,7 @@ model = dict(
         with_heatmaps=[True, True],
         with_ae=[True, False],
         project2image=False,
+        align_corners=True,
         nms_kernel=5,
         nms_padding=2,
         tag_per_joint=True,
