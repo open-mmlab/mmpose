@@ -31,7 +31,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ResNet', depth=50),
     mesh_head=dict(
-        type='MeshHMRHead',
+        type='HMRMeshHead',
         in_channels=2048,
         smpl_mean_params='models/smpl/smpl_mean_params.npz',
     ),

@@ -45,7 +45,7 @@ model = dict(
         feat_channels=128,
         num_stages=6),
     keypoint_head=dict(
-        type='TopDownMultiStageHead',
+        type='TopdownHeatmapMultiStageHead',
         in_channels=channel_cfg['num_output_channels'],
         out_channels=channel_cfg['num_output_channels'],
         num_stages=6,
@@ -121,6 +121,8 @@ data_root = 'data/jhmdb'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownJhmdbDataset',
         ann_file=f'{data_root}/annotations/Sub1_train.json',

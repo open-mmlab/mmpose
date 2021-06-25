@@ -98,6 +98,8 @@ data_root = 'data/wflw'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='FaceWFLWDataset',
         ann_file=f'{data_root}/annotations/face_landmarks_wflw_train.json',

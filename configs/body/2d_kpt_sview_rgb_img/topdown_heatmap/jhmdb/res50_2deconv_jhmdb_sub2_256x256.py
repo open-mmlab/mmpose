@@ -40,7 +40,7 @@ model = dict(
     pretrained=None,
     backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=2,
@@ -116,6 +116,8 @@ data_root = 'data/jhmdb'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownJhmdbDataset',
         ann_file=f'{data_root}/annotations/Sub2_train.json',

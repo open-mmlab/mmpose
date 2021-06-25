@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 import argparse
 import time
 
