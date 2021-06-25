@@ -302,12 +302,6 @@ def main():
         pose_lift_results_vis = []
         max_bbox = -1
         for idx, res in enumerate(pose_lift_results):
-            # ignore the result if there are more than 3 keypoints with scores
-            # lower than args.kpt_thr
-            keypoints = pose_det_results_list[i][idx]['keypoints']
-            if keypoints.shape[1] == 3 and np.sum(
-                    keypoints[:, 2] < args.kpt_thr) > 3:
-                continue
             keypoints_3d = res['keypoints_3d']
             # exchange y,z-axis, and then reverse the direction of x,z-axis
             keypoints_3d = keypoints_3d[..., [0, 2, 1]]
@@ -330,12 +324,6 @@ def main():
             bbox_area = (res['bbox'][2] - res['bbox'][0]) * (
                 res['bbox'][3] - res['bbox'][1])
             max_bbox = max(bbox_area, max_bbox)
-        # ignore tiny bboxes
-        for idx in range(len(pose_lift_results_vis) - 1, -1, -1):
-            bbox = pose_lift_results_vis[idx]['bbox']
-            bbox_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
-            if bbox_area < max_bbox * 0.2:
-                pose_lift_results_vis.pop(idx)
 
         # Visualization
         if num_poses_vis == 0:
