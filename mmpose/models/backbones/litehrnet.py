@@ -1,8 +1,3 @@
-# ------------------------------------------------------------------------------
-# Adapted from https://github.com/HRNet/Lite-HRNet
-# Original licence: Apache License 2.0.
-# ------------------------------------------------------------------------------
-
 import mmcv
 import torch
 import torch.nn as nn
@@ -24,7 +19,7 @@ class SpatialWeighting(nn.Module):
 
     Args:
         channels (int): The channels of the module.
-        ratio (int): channel reduction ration.
+        ratio (int): channel reduction ratio.
         conv_cfg (dict): Config dict for convolution layer.
             Default: None, which means using conv2d.
         norm_cfg (dict): Config dict for normalization layer.
@@ -75,7 +70,7 @@ class CrossResolutionWeighting(nn.Module):
 
     Args:
         channels (int): The channels of the module.
-        ratio (int): channel reduction ration.
+        ratio (int): channel reduction ratio.
         conv_cfg (dict): Config dict for convolution layer.
             Default: None, which means using conv2d.
         norm_cfg (dict): Config dict for normalization layer.
@@ -135,7 +130,7 @@ class ConditionalChannelWeighting(nn.Module):
     Args:
         in_channels (int): The input channels of the block.
         stride (int): Stride of the 3x3 convolution layer.
-        reduce_ratio (int): channel reduction ration.
+        reduce_ratio (int): channel reduction ratio.
         conv_cfg (dict): Config dict for convolution layer.
             Default: None, which means using conv2d.
         norm_cfg (dict): Config dict for normalization layer.
@@ -555,9 +550,9 @@ class LiteHRModule(nn.Module):
         self.conv_cfg = conv_cfg
         self.with_cp = with_cp
 
-        if self.module_type == 'LITE':
+        if self.module_type.upper() == 'LITE':
             self.layers = self._make_weighting_blocks(num_blocks, reduce_ratio)
-        elif self.module_type == 'NAIVE':
+        elif self.module_type.upper() == 'NAIVE':
             self.layers = self._make_naive_branches(num_branches, num_blocks)
         if self.with_fuse:
             self.fuse_layers = self._make_fuse_layers()
@@ -709,9 +704,9 @@ class LiteHRModule(nn.Module):
         if self.num_branches == 1:
             return [self.layers[0](x[0])]
 
-        if self.module_type == 'LITE':
+        if self.module_type.upper() == 'LITE':
             out = self.layers(x)
-        elif self.module_type == 'NAIVE':
+        elif self.module_type.upper() == 'NAIVE':
             for i in range(self.num_branches):
                 x[i] = self.layers[i](x[i])
             out = x
@@ -738,6 +733,9 @@ class LiteHRNet(nn.Module):
 
     `Lite-HRNet: A Lightweight High-Resolution Network
     <https://arxiv.org/abs/2104.06403>`__
+
+    Code adapted from 'https://github.com/HRNet/Lite-HRNet/'
+    'blob/hrnet/models/backbones/litehrnet.py'
 
     Args:
         extra (dict): detailed configuration for each stage of HRNet.
