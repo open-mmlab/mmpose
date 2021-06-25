@@ -300,7 +300,7 @@ class PoseLifter(BasePose):
                 - "title" (str): title for the subplot
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
-                limbs, each is a pair of joint indices.
+                links, each is a pair of joint indices.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
             pose_link_color (np.array[Mx3]): Color of M links.

@@ -15,7 +15,7 @@ def imshow_keypoints(img,
                      radius=4,
                      thickness=1,
                      show_keypoint_weight=False):
-    """Draw keypoints and limbs on an image.
+    """Draw keypoints and links on an image.
 
     Args:
             img (str or Tensor): The image to draw poses on. If an image array
