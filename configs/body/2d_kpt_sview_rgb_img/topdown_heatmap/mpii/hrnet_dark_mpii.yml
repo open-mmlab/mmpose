@@ -1,0 +1,32 @@
+Collections:
+- Name: hrnet_dark_mpii
+  Metadata:
+    Architecture:
+    - HRNet
+    - DarkPose
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_dark_mpii.md
+  Paper:
+  - Deep high-resolution representation learning for human pose estimation
+  - Distribution-aware coordinate representation for human pose estimation
+  - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+Models:
+- Name: hrnet_w32_mpii_256x256_dark
+  In Collection: hrnet_dark_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256_dark.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth
+- Name: hrnet_w48_mpii_256x256_dark
+  In Collection: hrnet_dark_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w48_mpii_256x256_dark.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark-0decd39f_20200927.pth

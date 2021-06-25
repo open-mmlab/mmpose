@@ -1,0 +1,39 @@
+Collections:
+- Name: resnet_freihand2d
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/resnet_freihand2d.md
+  Paper:
+  - Simple baselines for human pose estimation and tracking
+  - Deep residual learning for image recognition
+  - 'Freihand: A dataset for markerless capture of hand pose and shape from single
+    rgb images'
+Models:
+- Name: res50_freihand_224x224
+  In Collection: resnet_freihand2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
+  Metadata:
+    Training Data: FreiHand
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: FreiHand
+    Metrics:
+      PCK@0.2: 0.993
+      AUC: 0.868
+      EPE: 3.25
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth
+- Name: res50_freihand_224x224
+  In Collection: resnet_freihand2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
+  Metadata:
+    Training Data: FreiHand
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: FreiHand
+    Metrics:
+      PCK@0.2: 0.992
+      AUC: 0.868
+      EPE: 3.27
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth

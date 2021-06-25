@@ -1,0 +1,102 @@
+Collections:
+- Name: resnet_ochuman
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/ochuman/resnet_ochuman.md
+  Paper:
+  - Simple baselines for human pose estimation and tracking
+  - Deep residual learning for image recognition
+  - 'Pose2seg: Detection free human instance segmentation'
+Models:
+- Name: res50_coco_256x192
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.546
+      AP50: 0.726
+      AP75: 0.593
+      AR: 0.592
+      AR50: 0.755
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
+- Name: res50_coco_384x288
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.539
+      AP50: 0.723
+      AP75: 0.574
+      AR: 0.588
+      AR50: 0.756
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
+- Name: res101_coco_256x192
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.559
+      AP50: 0.724
+      AP75: 0.606
+      AR: 0.605
+      AR50: 0.751
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
+- Name: res101_coco_384x288
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.571
+      AP50: 0.715
+      AP75: 0.615
+      AR: 0.615
+      AR50: 0.748
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
+- Name: res152_coco_256x192
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.57
+      AP50: 0.725
+      AP75: 0.617
+      AR: 0.616
+      AR50: 0.754
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
+- Name: res152_coco_384x288
+  In Collection: resnet_ochuman
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
+  Metadata:
+    Training Data: OCHuman
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: OCHuman
+    Metrics:
+      AP: 0.582
+      AP50: 0.723
+      AP75: 0.627
+      AR: 0.627
+      AR50: 0.752
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth

@@ -1,0 +1,20 @@
+Collections:
+- Name: mobilenetv2_mpii
+  Metadata:
+    Architecture:
+    - MobilenetV2
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/mobilenetv2_mpii.md
+  Paper:
+  - 'Mobilenetv2: Inverted residuals and linear bottlenecks'
+  - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+Models:
+- Name: mobilenet_v2_mpii_256x256
+  In Collection: mobilenetv2_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mobilenet_v2/mpii/mobilenet_v2_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_mpii_256x256-e068afa7_20200812.pth

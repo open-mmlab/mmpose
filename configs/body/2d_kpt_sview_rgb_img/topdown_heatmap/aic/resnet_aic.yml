@@ -1,0 +1,27 @@
+Collections:
+- Name: resnet_aic
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/resnet_aic.md
+  Paper:
+  - Simple baselines for human pose estimation and tracking
+  - Deep residual learning for image recognition
+  - 'Ai challenger: A large-scale dataset for going deeper in image understanding'
+Models:
+- Name: res101_aic_256x192
+  In Collection: resnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/res101_aic_256x192.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.294
+      AP50: 0.736
+      AP75: 0.174
+      AR: 0.337
+      AR50: 0.763
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth

@@ -1,0 +1,40 @@
+Collections:
+- Name: cpm_coco
+  Metadata:
+    Architecture:
+    - CPM
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco.md
+  Paper:
+  - Convolutional pose machines
+  - 'Microsoft coco: Common objects in context'
+Models:
+- Name: cpm_coco_256x192
+  In Collection: cpm_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.623
+      AP50: 0.859
+      AP75: 0.704
+      AR: 0.686
+      AR50: 0.903
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_coco_256x192-aa4ba095_20200817.pth
+- Name: cpm_coco_384x288
+  In Collection: cpm_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.65
+      AP50: 0.864
+      AP75: 0.725
+      AR: 0.708
+      AR50: 0.905
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_coco_384x288-80feb4bc_20200821.pth

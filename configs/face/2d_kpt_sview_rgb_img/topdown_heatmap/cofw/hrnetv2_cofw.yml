@@ -1,0 +1,10 @@
+Collections:
+- Name: hrnetv2_cofw
+  Metadata:
+    Architecture:
+    - HRNetv2
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.md
+  Paper:
+  - Deep High-Resolution Representation Learning for Visual Recognition
+  - Robust face landmark estimation under occlusion
+Models: []

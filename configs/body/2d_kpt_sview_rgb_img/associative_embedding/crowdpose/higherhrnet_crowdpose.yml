@@ -1,0 +1,44 @@
+Collections:
+- Name: higherhrnet_crowdpose
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
+  Paper:
+  - 'Associative embedding: End-to-end learning for joint detection and grouping'
+  - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
+  - 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
+Models:
+- Name: higherhrnet_w32_crowdpose_512x512
+  In Collection: higherhrnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.655
+      AP50: 0.859
+      AP75: 0.705
+      AP (E): 0.728
+      AP (M): 0.66
+      AP (H): 0.577
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth
+- Name: higherhrnet_w32_crowdpose_512x512
+  In Collection: higherhrnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.661
+      AP50: 0.864
+      AP75: 0.71
+      AP (E): 0.742
+      AP (M): 0.67
+      AP (H): 0.566
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth

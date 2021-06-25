@@ -1,0 +1,45 @@
+Collections:
+- Name: higherhrnet_udp_coco
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+    - UDP
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_udp_coco.md
+  Paper:
+  - 'Associative embedding: End-to-end learning for joint detection and grouping'
+  - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
+  - 'The Devil Is in the Details: Delving Into Unbiased Data Processing for Human
+    Pose Estimation'
+  - 'Microsoft coco: Common objects in context'
+Models:
+- Name: higherhrnet_w32_coco_512x512_udp
+  In Collection: higherhrnet_udp_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.678
+      AP50: 0.862
+      AP75: 0.736
+      AR: 0.724
+      AR50: 0.89
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
+- Name: higherhrnet_w48_coco_512x512_udp
+  In Collection: higherhrnet_udp_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.69
+      AP50: 0.872
+      AP75: 0.75
+      AR: 0.734
+      AR50: 0.891
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_udp-7cad61ef_20210222.pth

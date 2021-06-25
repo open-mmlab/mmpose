@@ -1,0 +1,42 @@
+Collections:
+- Name: higherhrnet_aic
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_aic.md
+  Paper:
+  - 'Associative embedding: End-to-end learning for joint detection and grouping'
+  - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
+  - 'Ai challenger: A large-scale dataset for going deeper in image understanding'
+Models:
+- Name: higherhrnet_w32_aic_512x512
+  In Collection: higherhrnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.315
+      AP50: 0.71
+      AP75: 0.243
+      AR: 0.379
+      AR50: 0.757
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth
+- Name: higherhrnet_w32_aic_512x512
+  In Collection: higherhrnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.323
+      AP50: 0.718
+      AP75: 0.254
+      AR: 0.379
+      AR50: 0.758
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth

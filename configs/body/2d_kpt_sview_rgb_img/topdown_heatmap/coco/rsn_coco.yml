@@ -1,0 +1,70 @@
+Collections:
+- Name: rsn_coco
+  Metadata:
+    Architecture:
+    - RSN
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn_coco.md
+  Paper:
+  - Learning Delicate Local Representations for Multi-Person Pose Estimation
+  - 'Microsoft coco: Common objects in context'
+Models:
+- Name: rsn18_coco_256x192
+  In Collection: rsn_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn18_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.704
+      AP50: 0.887
+      AP75: 0.779
+      AR: 0.771
+      AR50: 0.926
+  Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn18_coco_256x192-72f4b4a7_20201127.pth
+- Name: rsn50_coco_256x192
+  In Collection: rsn_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.723
+      AP50: 0.896
+      AP75: 0.8
+      AR: 0.788
+      AR50: 0.934
+  Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn50_coco_256x192-72ffe709_20201127.pth
+- Name: 2xrsn50_coco_256x192
+  In Collection: rsn_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/2xrsn50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.745
+      AP50: 0.899
+      AP75: 0.818
+      AR: 0.809
+      AR50: 0.939
+  Weights: https://download.openmmlab.com/mmpose/top_down/rsn/2xrsn50_coco_256x192-50648f0e_20201127.pth
+- Name: 3xrsn50_coco_256x192
+  In Collection: rsn_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/3xrsn50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.75
+      AP50: 0.9
+      AP75: 0.823
+      AR: 0.813
+      AR50: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/rsn/3xrsn50_coco_256x192-58f57a68_20201127.pth

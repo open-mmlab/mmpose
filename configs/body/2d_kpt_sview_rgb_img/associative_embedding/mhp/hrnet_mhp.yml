@@ -1,0 +1,43 @@
+Collections:
+- Name: hrnet_mhp
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/mhp/hrnet_mhp.md
+  Paper:
+  - 'Associative embedding: End-to-end learning for joint detection and grouping'
+  - Deep high-resolution representation learning for human pose estimation
+  - 'Understanding humans in crowded scenes: Deep nested adversarial learning and
+    a new benchmark for multi-human parsing'
+Models:
+- Name: hrnet_w48_mhp_512x512
+  In Collection: hrnet_mhp
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
+  Metadata:
+    Training Data: MHP
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MHP
+    Metrics:
+      AP: 0.583
+      AP50: 0.895
+      AP75: 0.666
+      AR: 0.656
+      AR50: 0.931
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth
+- Name: hrnet_w48_mhp_512x512
+  In Collection: hrnet_mhp
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
+  Metadata:
+    Training Data: MHP
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MHP
+    Metrics:
+      AP: 0.592
+      AP50: 0.898
+      AP75: 0.673
+      AR: 0.664
+      AR50: 0.932
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth

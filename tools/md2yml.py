@@ -1,0 +1,207 @@
+import argparse
+import os
+import os.path as osp
+
+import yaml
+
+
+def collate_metrics(keys):
+    """Collect metrics from the first row of the table.
+
+    Args:
+        keys (List): Elements in the first row of the table.
+
+    Returns:
+        List: A list of metrics.
+    """
+    all_metrics = [
+        'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc',
+        'p-3dauc', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe'
+    ]
+    used_metrics = []
+    metric_idx = []
+    for idx, key in enumerate(keys):
+        for metric in all_metrics:
+            if metric.upper() in key:
+                used_metric = ''
+                i = 0
+                while i < len(key):
+                    # skip ``<...>``
+                    if key[i] == '<':
+                        while key[i] != '>':
+                            i += 1
+                    else:
+                        used_metric += key[i]
+                    i += 1
+                used_metrics.append(used_metric)
+                metric_idx.append(idx)
+                break
+    return used_metrics, metric_idx
+
+
+def get_task_name(md_file):
+    """Get task name from README.md".
+
+    Args:
+        md_file: Path to .md file.
+
+    Returns:
+        Str: Task name.
+    """
+    cur_dir = osp.dirname(md_file)
+    while True:
+        dirname, basename = osp.split(cur_dir)
+        if basename[:2] == '2d' or basename[:2] == '3d':
+            break
+        cur_dir = dirname
+    readme_file = osp.join(cur_dir, 'README.md')
+    with open(readme_file, 'r', encoding='utf-8') as f:
+        task = f.readline()[2:].strip()
+    return task
+
+
+def parse_md(md_file):
+    """Parse .md file and convert it to a .yml file which can be used for MIM.
+
+    Args:
+        md_file: Path to .md file.
+    """
+    collection_name = osp.splitext(osp.basename(md_file))[0]
+    repo_root = osp.dirname(osp.dirname(__file__))
+    collection = dict(
+        Name=collection_name,
+        Metadata={'Architecture': []},
+        README=md_file.replace(repo_root, '', 1).strip('/'),
+        Paper=[])
+    models = []
+    task = get_task_name(md_file)
+    with open(md_file, 'r') as md:
+        lines = md.readlines()
+        i = 0
+        while i < len(lines):
+            # parse reference
+            if lines[i][:2] == '<!':
+                # get architecture
+                if 'ALGORITHM' in lines[i] or 'BACKBONE' in lines[i]:
+                    architecture = lines[i +
+                                         3].split('>',
+                                                  1)[1].split('(',
+                                                              1)[0].strip()
+                    collection['Metadata']['Architecture'].append(architecture)
+                # get dataset
+                if 'DATASET' in lines[i]:
+                    dataset = lines[i + 3].split('>',
+                                                 1)[1].split('(',
+                                                             1)[0].strip()
+                # get paper title
+                j = i + 7
+                while lines[j].strip()[:5] != 'title':
+                    j += 1
+                paper = lines[j][lines[j].index('{') + 1:lines[j].index('}')]
+                collection['Paper'].append(paper)
+                i = j + 1
+
+            # parse table
+            elif lines[i][0] == '|' and i + 1 < len(lines) and \
+                    lines[i + 1][:3] == '| :':
+                cols = [col.strip() for col in lines[i].split('|')][1:-1]
+                config_idx = cols.index('Arch')
+                ckpt_idx = cols.index('ckpt')
+                try:
+                    flops_idx = cols.index('FLOPs')
+                except ValueError:
+                    flops_idx = -1
+                try:
+                    params_idx = cols.index('Params')
+                except ValueError:
+                    params_idx = -1
+                metric_name_list, metric_idx_list = collate_metrics(cols)
+
+                j = i + 2
+                while j < len(lines) and lines[j][0] == '|':
+                    line = lines[j].split('|')[1:-1]
+
+                    if line[config_idx].find('](') == -1:
+                        j += 1
+                        continue
+                    left = line[config_idx].index('](') + 2
+                    right = line[config_idx].index(')', left)
+                    config = line[config_idx][left:right].strip('/')
+
+                    left = line[ckpt_idx].index('](') + 2
+                    right = line[ckpt_idx].index(')', left)
+                    ckpt = line[ckpt_idx][left:right]
+
+                    model_name = osp.splitext(osp.basename(config))[0]
+
+                    metadata = {'Training Data': dataset}
+                    if flops_idx != -1:
+                        metadata['FLOPs'] = float(line[flops_idx])
+                    if params_idx != -1:
+                        metadata['Parameters'] = float(line[params_idx])
+
+                    metrics = {}
+                    for metric_name, metric_idx in zip(metric_name_list,
+                                                       metric_idx_list):
+                        metrics[metric_name] = float(line[metric_idx])
+
+                    model = {
+                        'Name':
+                        model_name,
+                        'In Collection':
+                        collection_name,
+                        'Config':
+                        config,
+                        'Metadata':
+                        metadata,
+                        'Results': [{
+                            'Task': task,
+                            'Dataset': dataset,
+                            'Metrics': metrics
+                        }],
+                        'Weights':
+                        ckpt
+                    }
+                    models.append(model)
+                    j += 1
+                i = j
+
+            else:
+                i += 1
+
+    result = {'Collections': [collection], 'Models': models}
+    yml_file = md_file[:-2] + 'yml'
+    with open(yml_file, 'w') as f:
+        yaml.dump(result, f, sort_keys=False)
+
+
+def update_model_zoo():
+    repo_root = osp.dirname(osp.dirname(__file__))
+    configs_dir = osp.join(repo_root, 'configs')
+    yml_files = []
+    for root, dirs, files in os.walk(configs_dir):
+        if len(dirs) == 0:
+            for file in files:
+                if file[-3:] == 'yml':
+                    yml_files.append(os.path.join(root, file))
+
+    model_zoo = {
+        'Import':
+        [yml_file.replace(repo_root, '', 1)[1:] for yml_file in yml_files]
+    }
+    model_zoo_file = osp.join(repo_root, 'model_zoo.yml')
+    with open(model_zoo_file, 'w') as f:
+        yaml.dump(model_zoo, f)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Converting markdown file to '
+                                     'yml file to support mim.')
+    parser.add_argument('md_file', help='abspath to .md file')
+    args = parser.parse_args()
+    parse_md(args.md_file)
+    update_model_zoo()
+
+
+if __name__ == '__main__':
+    main()

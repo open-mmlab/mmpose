@@ -1,0 +1,42 @@
+Collections:
+- Name: resnet_mpii
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.md
+  Paper:
+  - Simple baselines for human pose estimation and tracking
+  - Deep residual learning for image recognition
+  - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+Models:
+- Name: res50_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res50_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth
+- Name: res101_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res101_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256-416f5d71_20200812.pth
+- Name: res152_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res152_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_256x256-3ecba29d_20200812.pth

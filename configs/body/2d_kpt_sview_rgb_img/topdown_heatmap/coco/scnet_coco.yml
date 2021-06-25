@@ -1,0 +1,70 @@
+Collections:
+- Name: scnet_coco
+  Metadata:
+    Architecture:
+    - SCNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
+  Paper:
+  - Improving Convolutional Networks with Self-Calibrated Convolutions
+  - 'Microsoft coco: Common objects in context'
+Models:
+- Name: scnet50_coco_256x192
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.728
+      AP50: 0.899
+      AP75: 0.807
+      AR: 0.784
+      AR50: 0.938
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
+- Name: scnet50_coco_384x288
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.751
+      AP50: 0.906
+      AP75: 0.818
+      AR: 0.802
+      AR50: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
+- Name: scnet101_coco_256x192
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.733
+      AP50: 0.903
+      AP75: 0.813
+      AR: 0.79
+      AR50: 0.941
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
+- Name: scnet101_coco_384x288
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.752
+      AP50: 0.906
+      AP75: 0.823
+      AR: 0.804
+      AR50: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288-0b6e631b_20200709.pth

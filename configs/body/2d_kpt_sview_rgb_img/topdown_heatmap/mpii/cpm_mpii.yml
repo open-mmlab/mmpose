@@ -1,0 +1,20 @@
+Collections:
+- Name: cpm_mpii
+  Metadata:
+    Architecture:
+    - CPM
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii.md
+  Paper:
+  - Convolutional pose machines
+  - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+Models:
+- Name: cpm_mpii_368x368
+  In Collection: cpm_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics: {}
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth

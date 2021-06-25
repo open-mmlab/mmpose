@@ -1,0 +1,42 @@
+Collections:
+- Name: mobilenetv2_coco
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - MobilenetV2
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco.md
+  Paper:
+  - 'Associative embedding: End-to-end learning for joint detection and grouping'
+  - 'Mobilenetv2: Inverted residuals and linear bottlenecks'
+  - 'Microsoft coco: Common objects in context'
+Models:
+- Name: mobilenetv2_coco_512x512
+  In Collection: mobilenetv2_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.38
+      AP50: 0.671
+      AP75: 0.368
+      AR: 0.473
+      AR50: 0.741
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth
+- Name: mobilenetv2_coco_512x512
+  In Collection: mobilenetv2_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.442
+      AP50: 0.696
+      AP75: 0.422
+      AR: 0.517
+      AR50: 0.766
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth

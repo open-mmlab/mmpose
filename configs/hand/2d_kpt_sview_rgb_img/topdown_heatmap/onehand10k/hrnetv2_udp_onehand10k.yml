@@ -1,0 +1,26 @@
+Collections:
+- Name: hrnetv2_udp_onehand10k
+  Metadata:
+    Architecture:
+    - HRNetv2
+    - UDP
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_udp_onehand10k.md
+  Paper:
+  - Deep High-Resolution Representation Learning for Visual Recognition
+  - 'The Devil Is in the Details: Delving Into Unbiased Data Processing for Human
+    Pose Estimation'
+  - Mask-pose cascaded cnn for 2d hand pose estimation from single color image
+Models:
+- Name: hrnetv2_w18_onehand10k_256x256_udp
+  In Collection: hrnetv2_udp_onehand10k
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_udp.py
+  Metadata:
+    Training Data: OneHand10K
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: OneHand10K
+    Metrics:
+      PCK@0.2: 0.99
+      AUC: 0.572
+      EPE: 23.87
+  Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_onehand10k_256x256_udp-0d1b515d_20210330.pth
