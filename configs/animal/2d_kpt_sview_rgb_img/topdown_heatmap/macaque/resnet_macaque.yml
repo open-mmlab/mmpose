@@ -9,7 +9,7 @@ Collections:
   - "MacaquePose: A novel \u2018in the wild\u2019macaque monkey pose dataset for markerless\
     \ motion capture"
 Models:
-- Name: res50_macaque_256x192
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--res50_macaque_256x192
   In Collection: resnet_macaque
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res50_macaque_256x192.py
   Metadata:
@@ -24,7 +24,7 @@ Models:
       AR: 0.837
       AR50: 0.964
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth
-- Name: res101_macaque_256x192
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--res101_macaque_256x192
   In Collection: resnet_macaque
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res101_macaque_256x192.py
   Metadata:
@@ -39,7 +39,7 @@ Models:
       AR: 0.828
       AR50: 0.967
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_macaque_256x192-e3b9c6bb_20210407.pth
-- Name: res152_macaque_256x192
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--res152_macaque_256x192
   In Collection: resnet_macaque
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res152_macaque_256x192.py
   Metadata:

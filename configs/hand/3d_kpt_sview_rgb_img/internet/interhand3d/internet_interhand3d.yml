@@ -12,7 +12,7 @@ Collections:
   - 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
     from a Single RGB Image'
 Models:
-- Name: res50_interhand3d_all_256x256
+- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   In Collection: internet_interhand3d
   Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   Metadata:
@@ -26,7 +26,7 @@ Models:
       MPJPE-all: 12.97
       APh: 0.99
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3d_all_256x256-b9c1cf4c_20210506.pth
-- Name: res50_interhand3d_all_256x256
+- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   In Collection: internet_interhand3d
   Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   Metadata:

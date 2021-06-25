@@ -8,7 +8,7 @@ Collections:
   - A simple yet effective baseline for 3d human pose estimation
   - Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision
 Models:
-- Name: simplebaseline3d_mpi-inf-3dhp
+- Name: body--3d_kpt_sview_rgb_img--pose_lift--mpi_inf_3dhp--simplebaseline3d_mpi-inf-3dhp
   In Collection: simplebaseline3d_mpi-inf-3dhp
   Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
   Metadata:

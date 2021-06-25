@@ -12,7 +12,7 @@ Collections:
   - Distribution-aware coordinate representation for human pose estimation
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: res50_coco_256x192_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_256x192_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_dark.py
   Metadata:
@@ -27,7 +27,7 @@ Models:
       AR: 0.777
       AR50: 0.936
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_dark-43379d20_20200709.pth
-- Name: res50_coco_384x288_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_384x288_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288_dark.py
   Metadata:
@@ -42,7 +42,7 @@ Models:
       AR: 0.785
       AR50: 0.937
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288_dark-33d3e5e5_20210203.pth
-- Name: res101_coco_256x192_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_256x192_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192_dark.py
   Metadata:
@@ -57,7 +57,7 @@ Models:
       AR: 0.786
       AR50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192_dark-64d433e6_20200812.pth
-- Name: res101_coco_384x288_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_384x288_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288_dark.py
   Metadata:
@@ -72,7 +72,7 @@ Models:
       AR: 0.799
       AR50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288_dark-cb45c88d_20210203.pth
-- Name: res152_coco_256x192_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_256x192_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192_dark.py
   Metadata:
@@ -87,7 +87,7 @@ Models:
       AR: 0.797
       AR50: 0.942
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192_dark-ab4840d5_20200812.pth
-- Name: res152_coco_384x288_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_384x288_dark
   In Collection: resnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288_dark.py
   Metadata:

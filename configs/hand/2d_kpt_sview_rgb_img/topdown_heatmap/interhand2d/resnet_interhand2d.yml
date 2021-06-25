@@ -11,7 +11,7 @@ Collections:
   - 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
     from a Single RGB Image'
 Models:
-- Name: res50_interhand2d_human_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   Metadata:
@@ -24,7 +24,7 @@ Models:
       AUC: 0.828
       EPE: 5.15
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
-- Name: res50_interhand2d_human_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   Metadata:
@@ -37,7 +37,7 @@ Models:
       AUC: 0.826
       EPE: 5.27
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
-- Name: res50_interhand2d_human_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   Metadata:
@@ -50,7 +50,7 @@ Models:
       AUC: 0.841
       EPE: 4.9
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
-- Name: res50_interhand2d_human_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   Metadata:
@@ -63,7 +63,7 @@ Models:
       AUC: 0.839
       EPE: 4.97
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
-- Name: res50_interhand2d_machine_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   Metadata:
@@ -76,7 +76,7 @@ Models:
       AUC: 0.824
       EPE: 5.39
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
-- Name: res50_interhand2d_machine_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   Metadata:
@@ -89,7 +89,7 @@ Models:
       AUC: 0.821
       EPE: 5.52
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
-- Name: res50_interhand2d_machine_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   Metadata:
@@ -102,7 +102,7 @@ Models:
       AUC: 0.838
       EPE: 5.03
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
-- Name: res50_interhand2d_machine_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   Metadata:
@@ -115,7 +115,7 @@ Models:
       AUC: 0.837
       EPE: 5.11
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
-- Name: res50_interhand2d_all_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   Metadata:
@@ -128,7 +128,7 @@ Models:
       AUC: 0.84
       EPE: 4.66
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
-- Name: res50_interhand2d_all_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   Metadata:
@@ -141,7 +141,7 @@ Models:
       AUC: 0.839
       EPE: 4.65
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
-- Name: res50_interhand2d_all_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   Metadata:
@@ -154,7 +154,7 @@ Models:
       AUC: 0.838
       EPE: 4.42
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
-- Name: res50_interhand2d_all_256x256
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
   In Collection: resnet_interhand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   Metadata:

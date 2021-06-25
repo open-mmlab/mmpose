@@ -8,7 +8,7 @@ Collections:
   - Convolutional pose machines
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: cpm_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--cpm_coco_256x192
   In Collection: cpm_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.686
       AR50: 0.903
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_coco_256x192-aa4ba095_20200817.pth
-- Name: cpm_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--cpm_coco_384x288
   In Collection: cpm_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_384x288.py
   Metadata:

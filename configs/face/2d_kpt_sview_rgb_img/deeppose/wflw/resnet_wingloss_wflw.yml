@@ -12,7 +12,7 @@ Collections:
   - Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural Networks
   - 'Look at boundary: A boundary-aware face alignment algorithm'
 Models:
-- Name: res50_wflw_256x256_wingloss
+- Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--res50_wflw_256x256_wingloss
   In Collection: resnet_wingloss_wflw
   Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
   Metadata:

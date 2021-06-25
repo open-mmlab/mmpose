@@ -10,7 +10,7 @@ Collections:
   - Deep residual learning for image recognition
   - 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
 Models:
-- Name: res50_crowdpose_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res50_crowdpose_256x192
   In Collection: resnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res50_crowdpose_256x192.py
   Metadata:
@@ -26,7 +26,7 @@ Models:
       AP (M): 0.65
       AP (H): 0.506
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192-c6a526b6_20201227.pth
-- Name: res101_crowdpose_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res101_crowdpose_256x192
   In Collection: resnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_256x192.py
   Metadata:
@@ -42,7 +42,7 @@ Models:
       AP (M): 0.658
       AP (H): 0.522
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192-8f5870f4_20201227.pth
-- Name: res101_crowdpose_320x256
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res101_crowdpose_320x256
   In Collection: resnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_320x256.py
   Metadata:
@@ -58,7 +58,7 @@ Models:
       AP (M): 0.671
       AP (H): 0.536
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-c88c512a_20201227.pth
-- Name: res152_crowdpose_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res152_crowdpose_256x192
   In Collection: resnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res152_crowdpose_256x192.py
   Metadata:

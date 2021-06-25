@@ -9,7 +9,7 @@ Collections:
   - 'Annotated facial landmarks in the wild: A large-scale, real-world database for
     facial landmark localization'
 Models:
-- Name: hrnetv2_w18_aflw_256x256
+- Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--aflw--hrnetv2_w18_aflw_256x256
   In Collection: hrnetv2_aflw
   Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py
   Metadata:

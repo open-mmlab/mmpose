@@ -8,7 +8,7 @@ Collections:
   - Improving Convolutional Networks with Self-Calibrated Convolutions
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: scnet50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_256x192
   In Collection: scnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.784
       AR50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
-- Name: scnet50_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_384x288
   In Collection: scnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.802
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
-- Name: scnet101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_256x192
   In Collection: scnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
   Metadata:
@@ -53,7 +53,7 @@ Models:
       AR: 0.79
       AR50: 0.941
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
-- Name: scnet101_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_384x288
   In Collection: scnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_384x288.py
   Metadata:

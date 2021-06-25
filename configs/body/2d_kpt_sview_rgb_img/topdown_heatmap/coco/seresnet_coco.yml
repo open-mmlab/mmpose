@@ -8,7 +8,7 @@ Collections:
   - Squeeze-and-excitation networks
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: seresnet50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet50_coco_256x192
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.784
       AR50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_256x192-25058b66_20200727.pth
-- Name: seresnet50_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet50_coco_384x288
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_384x288.py
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.799
       AR50: 0.941
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_384x288-bc0b7680_20200727.pth
-- Name: seresnet101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet101_coco_256x192
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_256x192.py
   Metadata:
@@ -53,7 +53,7 @@ Models:
       AR: 0.79
       AR50: 0.942
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_256x192-83f29c4d_20200727.pth
-- Name: seresnet101_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet101_coco_384x288
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_384x288.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       AR: 0.805
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_384x288-48de1709_20200727.pth
-- Name: seresnet152_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet152_coco_256x192
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_256x192.py
   Metadata:
@@ -83,7 +83,7 @@ Models:
       AR: 0.786
       AR50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_256x192-1c628d79_20200727.pth
-- Name: seresnet152_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet152_coco_384x288
   In Collection: seresnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_384x288.py
   Metadata:

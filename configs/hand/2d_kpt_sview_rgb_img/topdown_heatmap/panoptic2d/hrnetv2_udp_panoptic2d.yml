@@ -11,7 +11,7 @@ Collections:
     Pose Estimation'
   - Hand keypoint detection in single images using multiview bootstrapping
 Models:
-- Name: hrnetv2_w18_panoptic_256x256_udp
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_w18_panoptic_256x256_udp
   In Collection: hrnetv2_udp_panoptic2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
   Metadata:

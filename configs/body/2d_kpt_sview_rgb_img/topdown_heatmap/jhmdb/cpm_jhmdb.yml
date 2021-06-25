@@ -8,7 +8,7 @@ Collections:
   - Convolutional pose machines
   - Towards understanding action recognition
 Models:
-- Name: cpm_jhmdb_sub1_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
   Metadata:
@@ -18,7 +18,7 @@ Models:
     Dataset: JHMDB
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
-- Name: cpm_jhmdb_sub2_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
   Metadata:
@@ -28,7 +28,7 @@ Models:
     Dataset: JHMDB
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
-- Name: cpm_jhmdb_sub3_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
   Metadata:
@@ -38,7 +38,7 @@ Models:
     Dataset: JHMDB
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
-- Name: cpm_jhmdb_sub1_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
   Metadata:
@@ -48,7 +48,7 @@ Models:
     Dataset: JHMDB
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
-- Name: cpm_jhmdb_sub2_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
   Metadata:
@@ -58,7 +58,7 @@ Models:
     Dataset: JHMDB
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
-- Name: cpm_jhmdb_sub3_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
   In Collection: cpm_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
   Metadata:

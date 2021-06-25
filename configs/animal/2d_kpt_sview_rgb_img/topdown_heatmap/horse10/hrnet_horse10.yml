@@ -8,7 +8,7 @@ Collections:
   - Deep high-resolution representation learning for human pose estimation
   - Pretraining boosts out-of-domain robustness for pose estimation
 Models:
-- Name: hrnet_w32_horse10_256x256-split1
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split1
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split1.py
   Metadata:
@@ -20,7 +20,7 @@ Models:
       PCK@0.3: 0.951
       NME: 0.122
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split1-401d901a_20210405.pth
-- Name: hrnet_w32_horse10_256x256-split2
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split2
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split2.py
   Metadata:
@@ -32,7 +32,7 @@ Models:
       PCK@0.3: 0.949
       NME: 0.116
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split2-04840523_20210405.pth
-- Name: hrnet_w32_horse10_256x256-split3
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split3
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split3.py
   Metadata:
@@ -44,7 +44,7 @@ Models:
       PCK@0.3: 0.939
       NME: 0.153
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split3-4db47400_20210405.pth
-- Name: hrnet_w48_horse10_256x256-split1
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split1
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split1.py
   Metadata:
@@ -56,7 +56,7 @@ Models:
       PCK@0.3: 0.973
       NME: 0.095
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_horse10_256x256_split1-3c950d3b_20210405.pth
-- Name: hrnet_w48_horse10_256x256-split2
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split2
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split2.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       PCK@0.3: 0.969
       NME: 0.101
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_horse10_256x256_split2-8ef72b5d_20210405.pth
-- Name: hrnet_w48_horse10_256x256-split3
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split3
   In Collection: hrnet_horse10
   Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split3.py
   Metadata:

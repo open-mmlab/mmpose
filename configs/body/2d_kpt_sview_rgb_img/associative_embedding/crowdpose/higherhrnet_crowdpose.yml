@@ -10,7 +10,7 @@ Collections:
   - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
   - 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
 Models:
-- Name: higherhrnet_w32_crowdpose_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
   In Collection: higherhrnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
   Metadata:
@@ -26,7 +26,7 @@ Models:
       AP (M): 0.66
       AP (H): 0.577
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth
-- Name: higherhrnet_w32_crowdpose_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
   In Collection: higherhrnet_crowdpose
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
   Metadata:

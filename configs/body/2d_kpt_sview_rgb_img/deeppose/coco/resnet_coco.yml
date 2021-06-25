@@ -10,7 +10,7 @@ Collections:
   - Deep residual learning for image recognition
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: res50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res50_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.638
       AR50: 0.887
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192-f6de6c0e_20210205.pth
-- Name: res101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res101_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res101_coco_256x192.py
   Metadata:
@@ -40,7 +40,7 @@ Models:
       AR: 0.668
       AR50: 0.9
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth
-- Name: res152_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res152_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_256x192.py
   Metadata:

@@ -8,7 +8,7 @@ Collections:
   - 'ResNeSt: Split-Attention Networks'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: resnest50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest50_coco_256x192
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.776
       AR50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_256x192-6e65eece_20210320.pth
-- Name: resnest50_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest50_coco_384x288
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_384x288.py
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.789
       AR50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_384x288-dcd20436_20210320.pth
-- Name: resnest101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest101_coco_256x192
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_256x192.py
   Metadata:
@@ -53,7 +53,7 @@ Models:
       AR: 0.781
       AR50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_256x192-2ffcdc9d_20210320.pth
-- Name: resnest101_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest101_coco_384x288
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_384x288.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       AR: 0.798
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_384x288-80660658_20210320.pth
-- Name: resnest200_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest200_coco_256x192
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_256x192.py
   Metadata:
@@ -83,7 +83,7 @@ Models:
       AR: 0.787
       AR50: 0.942
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_256x192-db007a48_20210517.pth
-- Name: resnest200_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest200_coco_384x288
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_384x288.py
   Metadata:
@@ -98,7 +98,7 @@ Models:
       AR: 0.807
       AR50: 0.945
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_384x288-b5bb76cb_20210517.pth
-- Name: resnest269_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest269_coco_256x192
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_256x192.py
   Metadata:
@@ -113,7 +113,7 @@ Models:
       AR: 0.793
       AR50: 0.945
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest269_coco_256x192-2a7882ac_20210517.pth
-- Name: resnest269_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest269_coco_384x288
   In Collection: resnest_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_384x288.py
   Metadata:

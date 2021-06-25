@@ -10,7 +10,7 @@ Collections:
   - Deep residual learning for image recognition
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: res50_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.552
       AR50: 0.797
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
-- Name: res50_coco_640x640
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   Metadata:
@@ -40,7 +40,7 @@ Models:
       AR: 0.566
       AR50: 0.81
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
-- Name: res101_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   Metadata:
@@ -55,7 +55,7 @@ Models:
       AR: 0.622
       AR50: 0.841
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
-- Name: res152_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   Metadata:
@@ -70,7 +70,7 @@ Models:
       AR: 0.651
       AR50: 0.856
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth
-- Name: res50_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   Metadata:
@@ -85,7 +85,7 @@ Models:
       AR: 0.591
       AR50: 0.821
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
-- Name: res50_coco_640x640
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   Metadata:
@@ -100,7 +100,7 @@ Models:
       AR: 0.61
       AR50: 0.832
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
-- Name: res101_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   Metadata:
@@ -115,7 +115,7 @@ Models:
       AR: 0.668
       AR50: 0.87
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
-- Name: res152_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   Metadata:

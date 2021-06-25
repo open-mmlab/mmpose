@@ -8,7 +8,7 @@ Collections:
   - Bag of tricks for image classification with convolutional neural networks
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: resnetv1d50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d50_coco_256x192
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.777
       AR50: 0.933
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_256x192-a243b840_20200727.pth
-- Name: resnetv1d50_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d50_coco_384x288
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_384x288.py
   Metadata:
@@ -38,7 +38,7 @@ Models:
       AR: 0.78
       AR50: 0.934
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_384x288-01f3fbb9_20200727.pth
-- Name: resnetv1d101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_256x192
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_256x192.py
   Metadata:
@@ -53,7 +53,7 @@ Models:
       AR: 0.786
       AR50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_256x192-5bd08cab_20200727.pth
-- Name: resnetv1d101_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_384x288
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_384x288.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       AR: 0.799
       AR50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-5f9e421d_20200730.pth
-- Name: resnetv1d152_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_256x192
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_256x192.py
   Metadata:
@@ -83,7 +83,7 @@ Models:
       AR: 0.791
       AR50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192-c4df51dc_20200727.pth
-- Name: resnetv1d152_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_384x288
   In Collection: resnetv1d_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_384x288.py
   Metadata:

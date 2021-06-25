@@ -8,7 +8,7 @@ Collections:
   - Bag of tricks for image classification with convolutional neural networks
   - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
 Models:
-- Name: resnetv1d50_mpii_256x256
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d50_mpii_256x256
   In Collection: resnetv1d_mpii
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d50_mpii_256x256.py
   Metadata:
@@ -18,7 +18,7 @@ Models:
     Dataset: MPII
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256-2337a92e_20200812.pth
-- Name: resnetv1d101_mpii_256x256
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d101_mpii_256x256
   In Collection: resnetv1d_mpii
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d101_mpii_256x256.py
   Metadata:
@@ -28,7 +28,7 @@ Models:
     Dataset: MPII
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256-2851d710_20200812.pth
-- Name: resnetv1d152_mpii_256x256
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d152_mpii_256x256
   In Collection: resnetv1d_mpii
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d152_mpii_256x256.py
   Metadata:

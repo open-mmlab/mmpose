@@ -10,7 +10,7 @@ Collections:
   - Distribution-aware coordinate representation for human pose estimation
   - 'Look at boundary: A boundary-aware face alignment algorithm'
 Models:
-- Name: hrnetv2_w18_wflw_256x256_dark
+- Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--wflw--hrnetv2_w18_wflw_256x256_dark
   In Collection: hrnetv2_dark_wflw
   Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256_dark.py
   Metadata:

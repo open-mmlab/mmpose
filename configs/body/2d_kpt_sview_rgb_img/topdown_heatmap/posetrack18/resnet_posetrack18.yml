@@ -10,7 +10,7 @@ Collections:
   - Deep residual learning for image recognition
   - 'Posetrack: A benchmark for human pose estimation and tracking'
 Models:
-- Name: res50_posetrack18_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
   In Collection: resnet_posetrack18
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
   Metadata:
@@ -20,7 +20,7 @@ Models:
     Dataset: PoseTrack18
     Metrics: {}
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth
-- Name: res50_posetrack18_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
   In Collection: resnet_posetrack18
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
   Metadata:

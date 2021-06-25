@@ -13,7 +13,7 @@ Collections:
     Pose Estimation'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: higherhrnet_w32_coco_512x512_udp
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512_udp
   In Collection: higherhrnet_udp_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
   Metadata:
@@ -28,7 +28,7 @@ Models:
       AR: 0.724
       AR50: 0.89
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
-- Name: higherhrnet_w48_coco_512x512_udp
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512_udp
   In Collection: higherhrnet_udp_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
   Metadata:

@@ -10,7 +10,7 @@ Collections:
   - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: higherhrnet_w32_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.723
       AR50: 0.89
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
-- Name: higherhrnet_w32_coco_640x640
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_640x640
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
   Metadata:
@@ -40,7 +40,7 @@ Models:
       AR: 0.733
       AR50: 0.898
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
-- Name: higherhrnet_w48_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
   Metadata:
@@ -55,7 +55,7 @@ Models:
       AR: 0.731
       AR50: 0.892
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth
-- Name: higherhrnet_w32_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
   Metadata:
@@ -70,7 +70,7 @@ Models:
       AR: 0.747
       AR50: 0.901
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
-- Name: higherhrnet_w32_coco_640x640
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_640x640
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
   Metadata:
@@ -85,7 +85,7 @@ Models:
       AR: 0.749
       AR50: 0.902
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
-- Name: higherhrnet_w48_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512
   In Collection: higherhrnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
   Metadata:

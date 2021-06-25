@@ -11,7 +11,7 @@ Collections:
     Pose Estimation'
   - Learning to Estimate 3D Hand Pose from Single RGB Images
 Models:
-- Name: hrnetv2_w18_panoptic_256x256_udp
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_w18_panoptic_256x256_udp
   In Collection: hrnetv2_udp_rhd2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
   Metadata:

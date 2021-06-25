@@ -8,7 +8,7 @@ Collections:
   - Convolutional pose machines
   - '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
 Models:
-- Name: cpm_mpii_368x368
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--cpm_mpii_368x368
   In Collection: cpm_mpii
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py
   Metadata:

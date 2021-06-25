@@ -11,7 +11,7 @@ Collections:
   - 'Freihand: A dataset for markerless capture of hand pose and shape from single
     rgb images'
 Models:
-- Name: res50_freihand_224x224
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--freihand2d--res50_freihand_224x224
   In Collection: resnet_freihand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
   Metadata:
@@ -24,7 +24,7 @@ Models:
       AUC: 0.868
       EPE: 3.25
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth
-- Name: res50_freihand_224x224
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--freihand2d--res50_freihand_224x224
   In Collection: resnet_freihand2d
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
   Metadata:

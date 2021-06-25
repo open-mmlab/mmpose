@@ -11,7 +11,7 @@ Collections:
     Pose Estimation'
   - Mask-pose cascaded cnn for 2d hand pose estimation from single color image
 Models:
-- Name: hrnetv2_w18_onehand10k_256x256_udp
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_w18_onehand10k_256x256_udp
   In Collection: hrnetv2_udp_onehand10k
   Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_udp.py
   Metadata:

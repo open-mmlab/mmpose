@@ -137,7 +137,8 @@ def parse_md(md_file):
                     right = line[ckpt_idx].index(')', left)
                     ckpt = line[ckpt_idx][left:right]
 
-                    model_name = osp.splitext(osp.basename(config))[0]
+                    model_name = osp.splitext(config)[0].replace(
+                        'configs/', '', 1).replace('/', '--')
 
                     metadata = {'Training Data': dataset}
                     if flops_idx != -1:
@@ -204,6 +205,7 @@ def main():
                                      'yml file to support mim.')
     parser.add_argument('md_file', help='abspath to .md file')
     args = parser.parse_args()
+
     parse_md(args.md_file)
     update_model_zoo()
 

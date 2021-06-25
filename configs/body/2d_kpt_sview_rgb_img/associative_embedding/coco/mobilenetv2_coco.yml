@@ -10,7 +10,7 @@ Collections:
   - 'Mobilenetv2: Inverted residuals and linear bottlenecks'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: mobilenetv2_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco_512x512
   In Collection: mobilenetv2_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.473
       AR50: 0.741
   Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth
-- Name: mobilenetv2_coco_512x512
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco_512x512
   In Collection: mobilenetv2_coco
   Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
   Metadata:

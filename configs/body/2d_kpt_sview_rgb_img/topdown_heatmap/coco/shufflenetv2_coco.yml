@@ -8,7 +8,7 @@ Collections:
   - 'Shufflenet v2: Practical guidelines for efficient cnn architecture design'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: shufflenetv2_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco_256x192
   In Collection: shufflenetv2_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.664
       AR50: 0.899
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_256x192-0aba71c7_20200921.pth
-- Name: shufflenetv2_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco_384x288
   In Collection: shufflenetv2_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_384x288.py
   Metadata:

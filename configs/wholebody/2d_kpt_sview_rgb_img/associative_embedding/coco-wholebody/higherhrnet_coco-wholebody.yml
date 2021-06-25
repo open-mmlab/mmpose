@@ -10,7 +10,7 @@ Collections:
   - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
   - Whole-Body Human Pose Estimation in the Wild
 Models:
-- Name: higherhrnet_w32_coco_wholebody_512x512
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w32_coco_wholebody_512x512
   In Collection: higherhrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w32_coco_wholebody_512x512.py
   Metadata:
@@ -30,7 +30,7 @@ Models:
       Whole AP: 0.401
       Whole AR: 0.493
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_wholebody_512x512_plus-2fa137ab_20210517.pth
-- Name: higherhrnet_w48_coco_wholebody_512x512
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w48_coco_wholebody_512x512
   In Collection: higherhrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w48_coco_wholebody_512x512.py
   Metadata:

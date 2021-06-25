@@ -11,7 +11,7 @@ Collections:
   - 'Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in
     Natural Environments'
 Models:
-- Name: res50_mixed_224x224
+- Name: body--3d_mesh_sview_rgb_img--hmr--res50_mixed_224x224
   In Collection: resnet_mixed
   Config: configs/body/3d_mesh_sview_rgb_img/hmr/res50_mixed_224x224.py
   Metadata:

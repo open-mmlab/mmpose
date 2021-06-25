@@ -10,7 +10,7 @@ Collections:
   - Deep residual learning for image recognition
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: res50_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.773
       AR50: 0.937
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
-- Name: res50_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_384x288
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
   Metadata:
@@ -40,7 +40,7 @@ Models:
       AR: 0.783
       AR50: 0.931
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
-- Name: res101_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
   Metadata:
@@ -55,7 +55,7 @@ Models:
       AR: 0.781
       AR50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
-- Name: res101_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_384x288
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
   Metadata:
@@ -70,7 +70,7 @@ Models:
       AR: 0.798
       AR50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
-- Name: res152_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_256x192
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
   Metadata:
@@ -85,7 +85,7 @@ Models:
       AR: 0.79
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
-- Name: res152_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_384x288
   In Collection: resnet_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
   Metadata:

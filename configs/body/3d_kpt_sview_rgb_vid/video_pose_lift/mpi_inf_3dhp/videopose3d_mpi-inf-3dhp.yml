@@ -9,7 +9,7 @@ Collections:
     training
   - Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision
 Models:
-- Name: videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--mpi_inf_3dhp--videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
   In Collection: videopose3d_mpi-inf-3dhp
   Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
   Metadata:

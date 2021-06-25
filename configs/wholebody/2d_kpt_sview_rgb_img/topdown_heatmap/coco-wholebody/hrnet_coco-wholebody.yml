@@ -8,7 +8,7 @@ Collections:
   - Deep high-resolution representation learning for human pose estimation
   - Whole-Body Human Pose Estimation in the Wild
 Models:
-- Name: hrnet_w32_coco_wholebody_256x192
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_256x192
   In Collection: hrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192.py
   Metadata:
@@ -28,7 +28,7 @@ Models:
       Whole AP: 0.553
       Whole AR: 0.626
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192-853765cd_20200918.pth
-- Name: hrnet_w32_coco_wholebody_384x288
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_384x288
   In Collection: hrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_384x288.py
   Metadata:
@@ -48,7 +48,7 @@ Models:
       Whole AP: 0.586
       Whole AR: 0.674
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_384x288-78cacac3_20200922.pth
-- Name: hrnet_w48_coco_wholebody_256x192
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_256x192
   In Collection: hrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_256x192.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       Whole AP: 0.579
       Whole AR: 0.681
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_256x192-643e18cb_20200922.pth
-- Name: hrnet_w48_coco_wholebody_384x288
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_384x288
   In Collection: hrnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288.py
   Metadata:

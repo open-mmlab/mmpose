@@ -10,7 +10,7 @@ Collections:
   - Distribution-aware coordinate representation for human pose estimation
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: hrnet_w32_coco_256x192_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_dark
   In Collection: hrnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_dark.py
   Metadata:
@@ -25,7 +25,7 @@ Models:
       AR: 0.808
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_dark-07f147eb_20200812.pth
-- Name: hrnet_w32_coco_384x288_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_384x288_dark
   In Collection: hrnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_384x288_dark.py
   Metadata:
@@ -40,7 +40,7 @@ Models:
       AR: 0.815
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark-307dafc2_20210203.pth
-- Name: hrnet_w48_coco_256x192_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_256x192_dark
   In Collection: hrnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192_dark.py
   Metadata:
@@ -55,7 +55,7 @@ Models:
       AR: 0.814
       AR50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth
-- Name: hrnet_w48_coco_384x288_dark
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_384x288_dark
   In Collection: hrnet_dark_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_384x288_dark.py
   Metadata:

@@ -9,7 +9,7 @@ Collections:
   - 'Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in
     Natural Environments'
 Models:
-- Name: simplebaseline3d_h36m
+- Name: body--3d_kpt_sview_rgb_img--pose_lift--h36m--simplebaseline3d_h36m
   In Collection: simplebaseline3d_h36m
   Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
   Metadata:

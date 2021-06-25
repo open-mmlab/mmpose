@@ -8,7 +8,7 @@ Collections:
   - Simple baselines for human pose estimation and tracking
   - Whole-Body Human Pose Estimation in the Wild
 Models:
-- Name: res50_coco_wholebody_256x192
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res50_coco_wholebody_256x192
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_256x192.py
   Metadata:
@@ -28,7 +28,7 @@ Models:
       Whole AP: 0.457
       Whole AR: 0.578
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_256x192-9e37ed88_20201004.pth
-- Name: res50_coco_wholebody_384x288
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res50_coco_wholebody_384x288
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_384x288.py
   Metadata:
@@ -48,7 +48,7 @@ Models:
       Whole AP: 0.573
       Whole AR: 0.671
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_384x288-ce11e294_20201004.pth
-- Name: res101_coco_wholebody_256x192
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res101_coco_wholebody_256x192
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_256x192.py
   Metadata:
@@ -68,7 +68,7 @@ Models:
       Whole AP: 0.533
       Whole AR: 0.647
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_256x192-7325f982_20201004.pth
-- Name: res101_coco_wholebody_384x288
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res101_coco_wholebody_384x288
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_384x288.py
   Metadata:
@@ -88,7 +88,7 @@ Models:
       Whole AP: 0.597
       Whole AR: 0.692
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_384x288-6c137b9a_20201004.pth
-- Name: res152_coco_wholebody_256x192
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res152_coco_wholebody_256x192
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_256x192.py
   Metadata:
@@ -108,7 +108,7 @@ Models:
       Whole AP: 0.548
       Whole AR: 0.661
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_256x192-5de8ae23_20201004.pth
-- Name: res152_coco_wholebody_384x288
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res152_coco_wholebody_384x288
   In Collection: resnet_coco-wholebody
   Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_384x288.py
   Metadata:

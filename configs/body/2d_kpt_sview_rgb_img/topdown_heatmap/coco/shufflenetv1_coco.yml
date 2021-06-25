@@ -8,7 +8,7 @@ Collections:
   - 'Shufflenet: An extremely efficient convolutional neural network for mobile devices'
   - 'Microsoft coco: Common objects in context'
 Models:
-- Name: shufflenetv1_coco_256x192
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv1_coco_256x192
   In Collection: shufflenetv1_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_256x192.py
   Metadata:
@@ -23,7 +23,7 @@ Models:
       AR: 0.651
       AR50: 0.894
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv1/shufflenetv1_coco_256x192-353bc02c_20200727.pth
-- Name: shufflenetv1_coco_384x288
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv1_coco_384x288
   In Collection: shufflenetv1_coco
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_384x288.py
   Metadata:

@@ -11,7 +11,7 @@ Collections:
   - 'DeepFashion: Powering Robust Clothes Recognition and Retrieval with Rich Annotations'
   - Fashion Landmark Detection in the Wild
 Models:
-- Name: res50_deepfashion_upper_256x192
+- Name: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--res50_deepfashion_upper_256x192
   In Collection: resnet_deepfashion
   Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_upper_256x192.py
   Metadata:
@@ -24,7 +24,7 @@ Models:
       AUC: 0.578
       EPE: 16.8
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_upper_256x192-41794f03_20210124.pth
-- Name: res50_deepfashion_lower_256x192
+- Name: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--res50_deepfashion_lower_256x192
   In Collection: resnet_deepfashion
   Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_lower_256x192.py
   Metadata:
@@ -37,7 +37,7 @@ Models:
       AUC: 0.744
       EPE: 10.5
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_lower_256x192-1292a839_20210124.pth
-- Name: res50_deepfashion_full_256x192
+- Name: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--res50_deepfashion_full_256x192
   In Collection: resnet_deepfashion
   Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_full_256x192.py
   Metadata:
