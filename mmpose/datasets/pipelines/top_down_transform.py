@@ -1,5 +1,3 @@
-import warnings
-
 import cv2
 import numpy as np
 
@@ -262,12 +260,7 @@ class TopDownGenerateTarget:
         self.unbiased_encoding = unbiased_encoding
         self.kernel = kernel
         self.valid_radius_factor = valid_radius_factor
-        if target_type == 'GaussianHeatMap':
-            warnings.warn('"GaussianHeatMap" is deprecated. '
-                          'Please use "GaussianHeatmap".')
-            self.target_type = 'GaussianHeatmap'
-        else:
-            self.target_type = target_type
+        self.target_type = target_type
         self.encoding = encoding
 
     def _msra_generate_target(self, cfg, joints_3d, joints_3d_visible, sigma):
@@ -441,10 +434,6 @@ class TopDownGenerateTarget:
         target_weight = np.ones((num_joints, 1), dtype=np.float32)
         target_weight[:, 0] = joints_3d_visible[:, 0]
 
-        assert target_type.lower() in [
-            'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
-        ]
-
         if target_type.lower() == 'GaussianHeatmap'.lower():
             target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
                               dtype=np.float32)
@@ -518,6 +507,9 @@ class TopDownGenerateTarget:
                     target[joint_id, 2, keep_pos] = y_offset[keep_pos]
             target = target.reshape(num_joints * 3, heatmap_size[1],
                                     heatmap_size[0])
+        else:
+            raise ValueError('target_type should be either '
+                             "'GaussianHeatmap' or 'CombinedTarget'")
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
@@ -574,12 +566,15 @@ class TopDownGenerateTarget:
                     self.kernel)
 
         elif self.encoding == 'UDP':
-            if self.target_type == 'CombinedTarget':
+            if self.target_type.lower() == 'CombinedTarget'.lower():
                 factors = self.valid_radius_factor
                 channel_factor = 3
-            elif self.target_type == 'GaussianHeatmap':
+            elif self.target_type.lower() == 'GaussianHeatmap'.lower():
                 factors = self.sigma
                 channel_factor = 1
+            else:
+                raise ValueError('target_type should be either '
+                                 "'GaussianHeatmap' or 'CombinedTarget'")
             if isinstance(factors, list):
                 num_factors = len(factors)
                 cfg = results['ann_info']

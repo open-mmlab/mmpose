@@ -558,18 +558,10 @@ def keypoints_from_heatmaps(heatmaps,
 
     N, K, H, W = heatmaps.shape
     if use_udp:
-        assert target_type.lower() in [
-            'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
-        ]
-        if target_type == 'GaussianHeatMap':
-            warnings.warn('"GaussianHeatMap" is deprecated. '
-                          'Please use "GaussianHeatmap".')
-            target_type = 'GaussianHeatmap'
-        assert target_type in ['GaussianHeatmap', 'CombinedTarget']
-        if target_type == 'GaussianHeatmap':
+        if target_type.lower() == 'GaussianHeatMap'.lower():
             preds, maxvals = _get_max_preds(heatmaps)
             preds = post_dark_udp(preds, heatmaps, kernel=kernel)
-        elif target_type == 'CombinedTarget':
+        elif target_type.lower() == 'CombinedTarget'.lower():
             for person_heatmaps in heatmaps:
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
@@ -584,6 +576,9 @@ def keypoints_from_heatmaps(heatmaps,
             index += W * H * np.arange(0, N * K / 3)
             index = index.astype(np.int).reshape(N, K // 3, 1)
             preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
+        else:
+            raise ValueError('target_type should be either '
+                             "'GaussianHeatmap' or 'CombinedTarget'")
     else:
         preds, maxvals = _get_max_preds(heatmaps)
         if post_process == 'unbiased':  # alleviate biased coordinate
