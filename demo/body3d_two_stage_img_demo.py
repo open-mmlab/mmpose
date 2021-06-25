@@ -43,13 +43,13 @@ def _keypoint_camera_to_world(keypoints,
 def main():
     parser = ArgumentParser()
     parser.add_argument(
-        'pose-lifter-config',
+        'pose_lifter_config',
         help='Config file for the 2nd stage pose lifter model')
     parser.add_argument(
-        'pose-lifter-checkpoint',
+        'pose_lifter_checkpoint',
         help='Checkpoint file for the 2nd stage pose lifter model')
     parser.add_argument(
-        '--pose-detector-conifig',
+        '--pose-detector-config',
         type=str,
         default=None,
         help='Config file for the 1st stage 2D pose detector')
