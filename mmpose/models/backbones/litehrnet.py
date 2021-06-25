@@ -815,12 +815,12 @@ class LiteHRNet(nn.Module):
             num_channels = self.stages_spec['num_channels'][i]
             num_channels = [num_channels[i] for i in range(len(num_channels))]
             setattr(
-                self, 'transition{}'.format(i),
+                self, f'transition{i}',
                 self._make_transition_layer(num_channels_last, num_channels))
 
             stage, num_channels_last = self._make_stage(
                 self.stages_spec, i, num_channels, multiscale_output=True)
-            setattr(self, 'stage{}'.format(i), stage)
+            setattr(self, f'stage{i}', stage)
 
         self.with_head = self.extra['with_head']
         if self.with_head:
