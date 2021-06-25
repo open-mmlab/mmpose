@@ -52,9 +52,11 @@ python demo/body3d_two_stage_video_demo.py \
     ${MMPOSE_CONFIG_FILE_STAGE_2} \
     ${MMPOSE_CONFIG_FILE STAGE_2} \
     --video-path ${VIDEO_PATH} \
+    [--rebase-keypoint-height] \
+    [--norm-pose-2d] \
+    [--num-poses-vis NUM_POSES_VIS] \
     [--show] \
     [--out-video-root ${OUT_VIDEO_ROOT}] \
-    [--rebase-keypoint-height] \
     [--device DEVICE] \
     [--det-cat-id DET_CAT_ID] \
     [--bbox-thr BBOX_THR] \

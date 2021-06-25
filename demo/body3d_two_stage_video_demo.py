@@ -152,7 +152,6 @@ def main():
         '--euro',
         action='store_true',
         help='Using One_Euro_Filter for smoothing')
-
     parser.add_argument(
         '--radius',
         type=int,
