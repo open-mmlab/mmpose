@@ -1,4 +1,4 @@
-<!-- [BACKBONE] -->
+<!-- [ALGORITHM] -->
 
 <details>
 <summary align="right">ViPNAS (CVPR'2021)</summary>
