@@ -177,7 +177,9 @@ def imshow_keypoints_3d(
 
     for idx, res in enumerate(pose_result):
         dummy = len(res) == 0
-        kpts = np.zeros((1, 4)) if dummy else res['keypoints_3d']
+        kpts = np.zeros((1, 3)) if dummy else res['keypoints_3d']
+        if kpts.shape[1] == 3:
+            kpts = np.concatenate([kpts, np.ones((kpts.shape[0], 1))], axis=1)
         valid = kpts[:, 3] >= kpt_score_thr
 
         ax_idx = idx + 2 if show_img else idx + 1

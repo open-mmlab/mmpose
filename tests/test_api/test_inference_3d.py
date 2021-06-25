@@ -89,7 +89,7 @@ def test_pose_lifter_demo():
         with_track_id=True,
         target_frame=seq_len // 2,
         image_size=[1000, 1000],
-        transform_pose_2d=True)
+        norm_pose_2d=True)
 
     for res in pose_lift_results:
         res['title'] = 'title'
