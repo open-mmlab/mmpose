@@ -24,7 +24,7 @@ log_config = dict(
         dict(type='TextLoggerHook'),
     ])
 
-target_type = 'GaussianHeatMap'
+target_type = 'GaussianHeatmap'
 channel_cfg = dict(
     num_output_channels=16,
     dataset_joints=16,

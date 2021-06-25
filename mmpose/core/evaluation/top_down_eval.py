@@ -475,7 +475,7 @@ def keypoints_from_heatmaps(heatmaps,
                             kernel=11,
                             valid_radius_factor=0.0546875,
                             use_udp=False,
-                            target_type='GaussianHeatMap'):
+                            target_type='GaussianHeatmap'):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -505,8 +505,8 @@ def keypoints_from_heatmaps(heatmaps,
         valid_radius_factor (float): The radius factor of the positive area
             in classification heatmap for UDP.
         use_udp (bool): Use unbiased data processing.
-        target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
-            GaussianHeatMap: Classification target with gaussian distribution.
+        target_type (str): 'GaussianHeatmap' or 'CombinedTarget'.
+            GaussianHeatmap: Classification target with gaussian distribution.
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -562,6 +562,11 @@ def keypoints_from_heatmaps(heatmaps,
             'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
         ]
         if target_type == 'GaussianHeatMap':
+            warnings.warn('"GaussianHeatMap" is deprecated. '
+                          'Please use "GaussianHeatmap".')
+            target_type = 'GaussianHeatmap'
+        assert target_type in ['GaussianHeatmap', 'CombinedTarget']
+        if target_type == 'GaussianHeatmap':
             preds, maxvals = _get_max_preds(heatmaps)
             preds = post_dark_udp(preds, heatmaps, kernel=kernel)
         elif target_type == 'CombinedTarget':

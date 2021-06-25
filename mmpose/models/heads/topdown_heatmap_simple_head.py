@@ -63,7 +63,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
-        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatmap')
 
         self._init_inputs(in_channels, in_index, input_transform)
         self.in_index = in_index
@@ -180,7 +180,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
         accuracy = dict()
 
-        if self.target_type == 'GaussianHeatMap':
+        if self.target_type == 'GaussianHeatmap':
             _, avg_acc, _ = pose_pck_accuracy(
                 output.detach().cpu().numpy(),
                 target.detach().cpu().numpy(),

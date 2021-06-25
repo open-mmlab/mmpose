@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -321,7 +323,11 @@ class Interhand3DHead(nn.Module):
         self.hand_type_loss = build_loss(loss_hand_type)
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
-        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatmap')
+        if self.target_type == 'GaussianHeatMap':
+            warnings.warn('"GaussianHeatMap" is deprecated. '
+                          'Please use "GaussianHeatmap".')
+            self.target_type = 'GaussianHeatmap'
 
     def init_weights(self):
         self.left_hand_head.init_weights()
