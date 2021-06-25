@@ -30,7 +30,7 @@ class SpatialWeighting(nn.Module):
         norm_cfg (dict): Config dict for normalization layer.
             Default: None.
         act_cfg (dict): Config dict for activation layer.
-            Default: dict(type='ReLU'), dict(type='Sigmoid'))).
+            Default: (dict(type='ReLU'), dict(type='Sigmoid')).
             The last ConvModule uses Sigmoid by default.
     """
 
@@ -81,7 +81,7 @@ class CrossResolutionWeighting(nn.Module):
         norm_cfg (dict): Config dict for normalization layer.
             Default: None.
         act_cfg (dict): Config dict for activation layer.
-            Default: dict(type='ReLU'), dict(type='Sigmoid'))).
+            Default: (dict(type='ReLU'), dict(type='Sigmoid')).
             The last ConvModule uses Sigmoid by default.
     """
 
