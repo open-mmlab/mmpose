@@ -518,7 +518,7 @@ class LiteHRModule(nn.Module):
     Args:
         num_branches (int): Number of branches in the module.
         num_blocks (int): Number of blocks in the module.
-        in_channels (int): Number of input image channels.
+        in_channels (list(int)): Number of input image channels.
         reduce_ratio (int): Channel reduction ratio.
         module_type (str): 'LITE' or 'NAIVE'
         multiscale_output (bool): Whether to output multi-scale features.
@@ -559,6 +559,8 @@ class LiteHRModule(nn.Module):
             self.layers = self._make_weighting_blocks(num_blocks, reduce_ratio)
         elif self.module_type.upper() == 'NAIVE':
             self.layers = self._make_naive_branches(num_branches, num_blocks)
+        else:
+            raise ValueError("module_type should be either 'LITE' or 'NAIVE'.")
         if self.with_fuse:
             self.fuse_layers = self._make_fuse_layers()
             self.relu = nn.ReLU()
