@@ -1,4 +1,3 @@
-
 <!-- [ALGORITHM] -->
 
 <details>
