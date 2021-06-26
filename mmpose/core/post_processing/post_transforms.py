@@ -126,7 +126,8 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
     """
     assert output_flipped.ndim == 4, \
         'output_flipped should be [batch_size, num_keypoints, height, width]'
-    assert target_type in ('GaussianHeatMap', 'CombinedTarget')
+    assert target_type.lower() in ('GaussianHeatMap'.lower(),
+                                   'CombinedTarget'.lower())
     shape_ori = output_flipped.shape
     channels = 1
     if target_type == 'CombinedTarget':
