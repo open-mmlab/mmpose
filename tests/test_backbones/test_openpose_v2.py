@@ -33,3 +33,6 @@ def test_openpose_network_v2_backbone():
     assert len(feat) == 6
     assert feat[0].shape == torch.Size([1, 38, 46, 46])
     assert feat[-1].shape == torch.Size([1, 19, 46, 46])
+
+
+test_openpose_network_v2_backbone()

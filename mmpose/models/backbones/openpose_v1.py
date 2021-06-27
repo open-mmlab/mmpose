@@ -73,7 +73,7 @@ class OpenPoseNetworkV1(BaseBackbone):
         self.num_stages = num_stages
         assert self.num_stages >= 1
 
-        self.stem = nn.Sequential(
+        self.features = nn.Sequential(
             ConvModule(in_channels, 64, 3, padding=1, norm_cfg=norm_cfg),
             ConvModule(64, 64, 3, padding=1, norm_cfg=norm_cfg),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
@@ -154,7 +154,7 @@ class OpenPoseNetworkV1(BaseBackbone):
 
     def forward(self, x):
         """Model forward function."""
-        stem_feat = self.stem(x)
+        stem_feat = self.features(x)
         out_feats = []
         out_feats.append(stem_feat)
 
