@@ -13,7 +13,7 @@ from .utils import load_checkpoint
 
 
 @BACKBONES.register_module()
-class OpenPoseNetwork(BaseBackbone):
+class OpenPoseNetworkV1(BaseBackbone):
     """OpenPose backbone Network.
 
     Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields.
@@ -26,14 +26,16 @@ class OpenPoseNetwork(BaseBackbone):
 
     Args:
         in_channels (int): The input channels.
-        out_channels_heatmap (int): The output channels for heatmap.
-        out_channels_heatmap (int): The output channels for paf.
-        feat_channels (int): Feature channel of each stage.
+        out_channels_cm (int): The output channels for CM (
+            confidence map, or heatmap).
+        out_channels_paf (int): The output channels for PAF (
+            part-affinity field).
+        stem_feat_channels (int): Feature channel of the stem network.
         num_stages (int): Number of stages.
         norm_cfg (dict): Dictionary to construct and config norm layer.
 
     Example:
-        >>> from mmpose.models import OpenPoseNetwork
+        >>> from mmpose.models import OpenPoseNetworkV1
         >>> import torch
         >>> self = OpenPoseNetwork(3, 19, 38)
         >>> self.eval()
@@ -57,9 +59,9 @@ class OpenPoseNetwork(BaseBackbone):
 
     def __init__(self,
                  in_channels,
-                 out_channels_heatmap=19,
+                 out_channels_cm=19,
                  out_channels_paf=38,
-                 feat_channels=128,
+                 stem_feat_channels=128,
                  num_stages=6,
                  norm_cfg=dict(type='BN', requires_grad=True)):
         # Protect mutable default arguments
@@ -86,56 +88,58 @@ class OpenPoseNetwork(BaseBackbone):
             ConvModule(256, 512, 3, padding=1, norm_cfg=norm_cfg),
             ConvModule(512, 512, 3, padding=1, norm_cfg=norm_cfg),
             ConvModule(512, 256, 3, padding=1, norm_cfg=norm_cfg),
-            ConvModule(256, feat_channels, 3, padding=1, norm_cfg=norm_cfg))
+            ConvModule(
+                256, stem_feat_channels, 3, padding=1, norm_cfg=norm_cfg))
 
         # stage 0
-        self.heatmap_stages = nn.ModuleList([
-            CpmBlock(feat_channels,
-                     [feat_channels, feat_channels, feat_channels, 512],
-                     [3, 3, 3, 1], norm_cfg)
+        self.cm_stages = nn.ModuleList([
+            CpmBlock(stem_feat_channels, [
+                stem_feat_channels, stem_feat_channels, stem_feat_channels, 512
+            ], [3, 3, 3, 1], norm_cfg)
         ])
 
         # stage 1 to n-1
         for _ in range(1, self.num_stages):
-            self.heatmap_stages.append(
+            self.cm_stages.append(
                 CpmBlock(
-                    feat_channels + out_channels_heatmap + out_channels_paf, [
-                        feat_channels, feat_channels, feat_channels,
-                        feat_channels, feat_channels, feat_channels
+                    stem_feat_channels + out_channels_cm + out_channels_paf, [
+                        stem_feat_channels, stem_feat_channels,
+                        stem_feat_channels, stem_feat_channels,
+                        stem_feat_channels, stem_feat_channels
                     ], [7, 7, 7, 7, 7, 1], norm_cfg))
 
         # stage 0
         self.paf_stages = nn.ModuleList([
-            CpmBlock(feat_channels,
-                     [feat_channels, feat_channels, feat_channels, 512],
-                     [3, 3, 3, 1], norm_cfg)
+            CpmBlock(stem_feat_channels, [
+                stem_feat_channels, stem_feat_channels, stem_feat_channels, 512
+            ], [3, 3, 3, 1], norm_cfg)
         ])
 
         # stage 1 to n-1
         for _ in range(1, self.num_stages):
             self.paf_stages.append(
                 CpmBlock(
-                    feat_channels + out_channels_heatmap + out_channels_paf, [
-                        feat_channels, feat_channels, feat_channels,
-                        feat_channels, feat_channels, feat_channels
+                    stem_feat_channels + out_channels_cm + out_channels_paf, [
+                        stem_feat_channels, stem_feat_channels,
+                        stem_feat_channels, stem_feat_channels,
+                        stem_feat_channels, stem_feat_channels
                     ], [7, 7, 7, 7, 7, 1], norm_cfg))
 
-        # stage 0
-        self.heatmap_out_convs = nn.ModuleList(
-            [ConvModule(512, out_channels_heatmap, 1, act_cfg=None)])
-        # stage 1 to n-1
-        for _ in range(1, self.num_stages):
-            self.heatmap_out_convs.append(
-                ConvModule(
-                    feat_channels, out_channels_heatmap, 1, act_cfg=None))
+        for i in range(self.num_stages):
+            if i == 0:
+                input_channels = 512
+            else:
+                input_channels = stem_feat_channels
+            self.cm_out_convs.append(
+                ConvModule(input_channels, out_channels_cm, 1, act_cfg=None))
 
-        # stage 0
-        self.paf_out_convs = nn.ModuleList(
-            [ConvModule(512, out_channels_paf, 1, act_cfg=None)])
-        # stage 1 to n-1
-        for _ in range(1, self.num_stages):
+        for i in range(1, self.num_stages):
+            if i == 0:
+                input_channels = 512
+            else:
+                input_channels = stem_feat_channels
             self.paf_out_convs.append(
-                ConvModule(feat_channels, out_channels_paf, 1, act_cfg=None))
+                ConvModule(input_channels, out_channels_paf, 1, act_cfg=None))
 
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
@@ -162,23 +166,23 @@ class OpenPoseNetwork(BaseBackbone):
         out_feats = []
         out_feats.append(stem_feat)
 
-        heatmap_outputs = []
+        cm_outputs = []
         paf_outputs = []
 
         for ind in range(self.num_stages):
-            heatmap_stage = self.heatmap_stages[ind]
+            cm_stage = self.cm_stages[ind]
             paf_stage = self.paf_stages[ind]
 
-            heatmap_out_conv = self.heatmap_out_convs[ind]
+            cm_out_conv = self.cm_out_convs[ind]
             paf_out_conv = self.paf_out_convs[ind]
 
-            heatmap_output = heatmap_out_conv(heatmap_stage(out_feats[-1]))
-            heatmap_outputs.append(heatmap_output)
+            cm_output = cm_out_conv(cm_stage(out_feats[-1]))
+            cm_outputs.append(cm_output)
             paf_output = paf_out_conv(paf_stage(out_feats[-1]))
             paf_outputs.append(paf_output)
 
-            out_feat = torch.cat([stem_feat, heatmap_output, paf_output], 1)
+            out_feat = torch.cat([stem_feat, cm_output, paf_output], 1)
 
             out_feats.append(out_feat)
 
-        return [*heatmap_outputs, *paf_outputs]
+        return [*cm_outputs, *paf_outputs]

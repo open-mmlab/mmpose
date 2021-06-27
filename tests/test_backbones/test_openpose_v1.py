@@ -1,20 +1,20 @@
 import pytest
 import torch
 
-from mmpose.models import OpenPoseNetwork
+from mmpose.models import OpenPoseNetworkV1
 
 
-def test_openpose_network_backbone():
+def test_openpose_network_v1_backbone():
     with pytest.raises(AssertionError):
         # OpenPoseNetwork's num_stacks should larger than 0
-        OpenPoseNetwork(in_channels=3, num_stages=-1)
+        OpenPoseNetworkV1(in_channels=3, num_stages=-1)
 
     with pytest.raises(AssertionError):
         # OpenPoseNetwork's in_channels should be 3
-        OpenPoseNetwork(in_channels=2)
+        OpenPoseNetworkV1(in_channels=2)
 
     # Test OpenPoseNetwork
-    model = OpenPoseNetwork(in_channels=3)
+    model = OpenPoseNetworkV1(in_channels=3)
     model.init_weights()
     model.train()
 

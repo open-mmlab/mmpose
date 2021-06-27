@@ -5,7 +5,8 @@ from .hrnet import HRNet
 from .mobilenet_v2 import MobileNetV2
 from .mobilenet_v3 import MobileNetV3
 from .mspn import MSPN
-from .openpose import OpenPoseNetwork
+from .openpose_v1 import OpenPoseNetworkV1
+from .openpose_v2 import OpenPoseNetworkV2
 from .regnet import RegNet
 from .resnest import ResNeSt
 from .resnet import ResNet, ResNetV1d
@@ -23,5 +24,5 @@ __all__ = [
     'AlexNet', 'HourglassNet', 'HRNet', 'MobileNetV2', 'MobileNetV3', 'RegNet',
     'ResNet', 'ResNetV1d', 'ResNeXt', 'SCNet', 'SEResNet', 'SEResNeXt',
     'ShuffleNetV1', 'ShuffleNetV2', 'CPM', 'RSN', 'MSPN', 'ResNeSt', 'VGG',
-    'TCN', 'OpenPoseNetwork'
+    'TCN', 'OpenPoseNetworkV1', 'OpenPoseNetworkV2'
 ]

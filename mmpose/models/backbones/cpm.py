@@ -14,8 +14,6 @@ from .utils import load_checkpoint
 class CpmBlock(nn.Module):
     """CpmBlock for Convolutional Pose Machine.
 
-    Generate module recursively and use BasicBlock as the base unit.
-
     Args:
         in_channels (int): Input channels of this block.
         channels (list): Output channels of each conv module.
@@ -31,17 +29,14 @@ class CpmBlock(nn.Module):
 
         assert len(channels) == len(kernels)
         layers = []
-        layers.append(
-            ConvModule(
-                in_channels,
-                channels[0],
-                kernels[0],
-                padding=(kernels[0] - 1) // 2,
-                norm_cfg=norm_cfg))
-        for i in range(1, len(channels)):
+        for i in range(len(channels)):
+            if i == 0:
+                input_channels = in_channels
+            else:
+                input_channels = channels[i - 1]
             layers.append(
                 ConvModule(
-                    channels[i - 1],
+                    input_channels,
                     channels[i],
                     kernels[i],
                     padding=(kernels[i] - 1) // 2,
