@@ -97,6 +97,11 @@ class OpenPoseNetworkV1(BaseBackbone):
                 stem_feat_channels, stem_feat_channels, stem_feat_channels, 512
             ], [3, 3, 3, 1], norm_cfg)
         ])
+        self.paf_stages = nn.ModuleList([
+            CpmBlock(stem_feat_channels, [
+                stem_feat_channels, stem_feat_channels, stem_feat_channels, 512
+            ], [3, 3, 3, 1], norm_cfg)
+        ])
 
         # stage 1 to n-1
         for _ in range(1, self.num_stages):
@@ -107,16 +112,6 @@ class OpenPoseNetworkV1(BaseBackbone):
                         stem_feat_channels, stem_feat_channels,
                         stem_feat_channels, stem_feat_channels
                     ], [7, 7, 7, 7, 7, 1], norm_cfg))
-
-        # stage 0
-        self.paf_stages = nn.ModuleList([
-            CpmBlock(stem_feat_channels, [
-                stem_feat_channels, stem_feat_channels, stem_feat_channels, 512
-            ], [3, 3, 3, 1], norm_cfg)
-        ])
-
-        # stage 1 to n-1
-        for _ in range(1, self.num_stages):
             self.paf_stages.append(
                 CpmBlock(
                     stem_feat_channels + out_channels_cm + out_channels_paf, [
@@ -125,6 +120,9 @@ class OpenPoseNetworkV1(BaseBackbone):
                         stem_feat_channels, stem_feat_channels
                     ], [7, 7, 7, 7, 7, 1], norm_cfg))
 
+        self.cm_out_convs = nn.ModuleList()
+        self.paf_out_convs = nn.ModuleList()
+
         for i in range(self.num_stages):
             if i == 0:
                 input_channels = 512
@@ -132,12 +130,6 @@ class OpenPoseNetworkV1(BaseBackbone):
                 input_channels = stem_feat_channels
             self.cm_out_convs.append(
                 ConvModule(input_channels, out_channels_cm, 1, act_cfg=None))
-
-        for i in range(1, self.num_stages):
-            if i == 0:
-                input_channels = 512
-            else:
-                input_channels = stem_feat_channels
             self.paf_out_convs.append(
                 ConvModule(input_channels, out_channels_paf, 1, act_cfg=None))
 
