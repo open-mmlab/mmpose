@@ -72,7 +72,7 @@ class PAFHead(nn.Module):
 
         paf_outputs = outputs['pafs']
         paf_targets = targets[len(self.heatmap_heads_list):]
-        paf_masks = masks[:len(self.heatmap_heads_list)]
+        paf_masks = masks[len(self.heatmap_heads_list):]
         for idx, head in enumerate(self.paf_heads_list):
             paf_losses = head.get_loss(paf_outputs[idx], paf_targets[idx],
                                        paf_masks[idx])
