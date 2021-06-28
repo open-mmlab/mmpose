@@ -63,8 +63,6 @@ model = dict(
         heatmap_heads_cfg=[
             dict(
                 type='DeconvHead',
-                in_channels=32,
-                out_channels=17,
                 num_deconv_layers=0,
                 extra=dict(final_conv_kernel=0),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
@@ -72,8 +70,6 @@ model = dict(
         paf_heads_cfg=[
             dict(
                 type='DeconvHead',
-                in_channels=32,
-                out_channels=38,
                 num_deconv_layers=0,
                 extra=dict(final_conv_kernel=0),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
@@ -120,7 +116,12 @@ train_pipeline = [
     dict(
         type='MultitaskGatherTarget',
         pipeline_list=[
-            [dict(type='BottomUpGenerateHeatmapTarget', sigma=2)],
+            [
+                dict(
+                    type='BottomUpGenerateHeatmapTarget',
+                    sigma=2,
+                    with_bg=False)
+            ],
             [dict(
                 type='BottomUpGeneratePAFTarget',
                 limb_width=1,
@@ -148,7 +149,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index', 'skeleton'
+            'center', 'scale', 'flip_index', 'skeleton', 'num_joints'
         ]),
 ]
 

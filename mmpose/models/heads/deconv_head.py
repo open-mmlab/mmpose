@@ -36,8 +36,8 @@ class DeconvHead(nn.Module):
     """
 
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 in_channels=3,
+                 out_channels=17,
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),

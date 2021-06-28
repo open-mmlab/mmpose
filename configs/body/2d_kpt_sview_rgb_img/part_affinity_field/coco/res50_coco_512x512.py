@@ -118,7 +118,12 @@ train_pipeline = [
     dict(
         type='MultitaskGatherTarget',
         pipeline_list=[
-            [dict(type='BottomUpGenerateHeatmapTarget', sigma=2)],
+            [
+                dict(
+                    type='BottomUpGenerateHeatmapTarget',
+                    sigma=2,
+                    with_bg=True)
+            ],
             [dict(
                 type='BottomUpGeneratePAFTarget',
                 limb_width=1,
@@ -146,7 +151,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index', 'skeleton'
+            'center', 'scale', 'flip_index', 'skeleton', 'num_joints'
         ]),
 ]
 

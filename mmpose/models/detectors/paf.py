@@ -233,7 +233,11 @@ class PartAffinityField(BasePose):
             features = self.backbone(image_resized)
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
-                heatmaps = outputs['heatmaps'][-1]
+                # ignore back-ground confidence maps
+                heatmaps = [
+                    hm[:, :img_metas['num_joints']]
+                    for hm in outputs['heatmaps'][-1]
+                ]
                 pafs = outputs['pafs'][-1]
 
             if self.test_cfg.get('flip_test', True):
@@ -242,8 +246,11 @@ class PartAffinityField(BasePose):
                     torch.flip(image_resized, [3]))
                 if self.with_keypoint:
                     outputs_flipped = self.keypoint_head(features_flipped)
-
-                heatmaps_flipped = outputs_flipped['heatmaps'][-1]
+                # ignore back-ground confidence maps
+                heatmaps_flipped = [
+                    hm[:, :img_metas['num_joints']]
+                    for hm in outputs_flipped['heatmaps'][-1]
+                ]
                 pafs_flipped = outputs_flipped['pafs'][-1]
 
                 heatmaps_flipped = flip_feature_maps(

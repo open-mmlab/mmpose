@@ -138,13 +138,21 @@ class HeatmapGenerator:
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
+    def __init__(self,
+                 output_size,
+                 num_joints,
+                 sigma=-1,
+                 use_udp=False,
+                 with_bg=False):
         self.output_size = output_size
         self.num_joints = num_joints
+        self.with_bg = with_bg
+
         if sigma < 0:
             sigma = self.output_size / 64
         self.sigma = sigma
         size = 6 * sigma + 3
+
         self.use_udp = use_udp
         if use_udp:
             self.x = np.arange(0, size, 1, np.float32)
@@ -157,8 +165,15 @@ class HeatmapGenerator:
 
     def __call__(self, joints):
         """Generate heatmaps."""
-        hms = np.zeros((self.num_joints, self.output_size, self.output_size),
-                       dtype=np.float32)
+        if self.with_bg:
+            hms = np.zeros(
+                (self.num_joints + 1, self.output_size, self.output_size),
+                dtype=np.float32)
+        else:
+            hms = np.zeros(
+                (self.num_joints, self.output_size, self.output_size),
+                dtype=np.float32)
+
         sigma = self.sigma
         for p in joints:
             for idx, pt in enumerate(p):
@@ -189,6 +204,8 @@ class HeatmapGenerator:
                     hms[idx, aa:bb,
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
+        if self.with_bg:
+            hms[-1] = 1 - np.max(hms[:-1])
         return hms
 
 
@@ -520,15 +537,16 @@ class BottomUpGenerateHeatmapTarget:
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, sigma, use_udp=False):
+    def __init__(self, sigma, use_udp=False, with_bg=False):
         self.sigma = sigma
         self.use_udp = use_udp
+        self.with_bg = with_bg
 
     def _generate(self, num_joints, heatmap_size):
         """Get heatmap generator."""
         heatmap_generator = [
-            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp)
-            for output_size in heatmap_size
+            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp,
+                             self.with_bg) for output_size in heatmap_size
         ]
         return heatmap_generator
 

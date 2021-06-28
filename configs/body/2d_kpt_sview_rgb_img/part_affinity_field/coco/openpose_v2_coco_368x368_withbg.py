@@ -36,10 +36,10 @@ channel_cfg = dict(
     ])
 
 data_cfg = dict(
-    image_size=512,
+    image_size=368,
     base_size=256,
     base_sigma=2,
-    heatmap_size=[128],
+    heatmap_size=[46],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -50,65 +50,36 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='PartAffinityField',
-    pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w32-36af842e.pth',
+    pretrained='mmcls://vgg16_bn',
     backbone=dict(
-        type='HRNet',
+        type='OpenPoseNetworkV2',
         in_channels=3,
-        extra=dict(
-            stage1=dict(
-                num_modules=1,
-                num_branches=1,
-                block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
-            stage2=dict(
-                num_modules=1,
-                num_branches=2,
-                block='BASIC',
-                num_blocks=(4, 4),
-                num_channels=(32, 64)),
-            stage3=dict(
-                num_modules=4,
-                num_branches=3,
-                block='BASIC',
-                num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
-            stage4=dict(
-                num_modules=3,
-                num_branches=4,
-                block='BASIC',
-                num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256))),
-    ),
+        # additional channel for bg
+        out_channels_cm=17 + 1,
+        out_channels_paf=38,
+        stem_feat_channels=128,
+        num_stages=6,
+        stage_types=('PAF', 'PAF', 'PAF', 'PAF', 'PAF', 'CM'),
+        num_blocks=5,
+        block_channels=96),
     keypoint_head=dict(
         type='PAFHead',
         heatmap_heads_cfg=[
             dict(
                 type='DeconvHead',
-                in_channels=32,
-                out_channels=17,
                 num_deconv_layers=0,
-                extra=dict(
-                    final_conv_kernel=1,
-                    num_conv_layers=1,
-                    num_conv_kernels=(1, )),
+                extra=dict(final_conv_kernel=0),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
-        ],
+        ] * 1,
         paf_heads_cfg=[
             dict(
                 type='DeconvHead',
-                in_channels=32,
-                out_channels=38,
                 num_deconv_layers=0,
-                extra=dict(
-                    final_conv_kernel=1,
-                    num_conv_layers=1,
-                    num_conv_kernels=(1, )),
+                extra=dict(final_conv_kernel=0),
                 loss_keypoint=dict(type='MaskedMSELoss', )),
-        ],
-        heatmap_index=[0],
-        paf_index=[0],
+        ] * 5,
+        heatmap_index=[5],
+        paf_index=[0, 1, 2, 3, 4],
     ),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
@@ -153,14 +124,14 @@ train_pipeline = [
                 dict(
                     type='BottomUpGenerateHeatmapTarget',
                     sigma=2,
-                    with_bg=False)
+                    with_bg=True)
             ],
             [dict(
                 type='BottomUpGeneratePAFTarget',
                 limb_width=1,
             )],
         ],
-        pipeline_indices=[0, 1],
+        pipeline_indices=[0] + [1] * 5,
         keys=['targets', 'masks']),
     dict(type='Collect', keys=['img', 'targets', 'masks'], meta_keys=[]),
 ]
