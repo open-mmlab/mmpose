@@ -10,8 +10,8 @@ We provide a demo script to test on single images with a given ground-truth Json
 
 ```shell
 python demo/body3d_two_stage_img_demo.py \
-    ${MMPOSE_CONFIG_FILE_STAGE_2} \
-    ${MMPOSE_CHECKPOINT_FILE_STAGE_2} \
+    ${MMPOSE_CONFIG_FILE_3D} \
+    ${MMPOSE_CHECKPOINT_FILE_3D} \
     --json-file ${JSON_FILE} \
     --img-root ${IMG_ROOT} \
     --only-second-stage \
@@ -47,17 +47,17 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 python demo/body3d_two_stage_video_demo.py \
     ${MMDET_CONFIG_FILE} \
     ${MMDET_CHECKPOINT_FILE} \
-    ${MMPOSE_CONFIG_FILE_STAGE_1} \
-    ${MMPOSE_CONFIG_FILE STAGE_1} \
-    ${MMPOSE_CONFIG_FILE_STAGE_2} \
-    ${MMPOSE_CONFIG_FILE STAGE_2} \
+    ${MMPOSE_CONFIG_FILE_2D} \
+    ${MMPOSE_CHECKPOINT_FILE_2D} \
+    ${MMPOSE_CONFIG_FILE_3D} \
+    ${MMPOSE_CHECKPOINT_FILE_3D} \
     --video-path ${VIDEO_PATH} \
     [--rebase-keypoint-height] \
     [--norm-pose-2d] \
     [--num-poses-vis NUM_POSES_VIS] \
     [--show] \
     [--out-video-root ${OUT_VIDEO_ROOT}] \
-    [--device DEVICE] \
+    [--device ${GPU_ID or CPU}] \
     [--det-cat-id DET_CAT_ID] \
     [--bbox-thr BBOX_THR] \
     [--kpt-thr KPT_THR] \
