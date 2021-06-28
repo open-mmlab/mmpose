@@ -130,7 +130,15 @@ class OpenPoseNetworkV2(BaseBackbone):
             part-affinity field).
         stem_feat_channels (int): Feature channel of the stem network.
         num_stages (int): Number of stages.
+        stage_types (list): Types can be 'CM' or 'PAF'.
+        num_blocks (int|list): Number of blocks in each stage. If
+            `num_blocks' is int, the same `num_blocks' will be used
+            for all stages.
+        block_channels (int|list): Number of block channels in each
+            stage. If `block_channels' is int, the same `block_channels'
+            will be used for all stages.
         norm_cfg (dict): Dictionary to construct and config norm layer.
+        act_cfg (dict): Config dict for activation layer.
 
     Example:
         >>> from mmpose.models import OpenPoseNetworkV2
@@ -166,6 +174,11 @@ class OpenPoseNetworkV2(BaseBackbone):
 
         assert in_channels == 3
         assert num_stages == len(stage_types)
+
+        if isinstance(num_blocks, int):
+            num_blocks = [num_blocks] * num_stages
+        if isinstance(block_channels, int):
+            block_channels = [block_channels] * num_stages
 
         self.num_stages = num_stages
         assert self.num_stages >= 1
@@ -213,9 +226,9 @@ class OpenPoseNetworkV2(BaseBackbone):
                     MconvStage(
                         input_channels,
                         256,
-                        num_blocks=num_blocks,
-                        block_channels=[block_channels] * num_blocks,
-                        block_kernels=[3] * num_blocks,
+                        num_blocks=num_blocks[i],
+                        block_channels=[block_channels[i]] * num_blocks[i],
+                        block_kernels=[3] * num_blocks[i],
                         norm_cfg=dict(type='BN', requires_grad=True),
                         act_cfg=dict(type='PReLU')))
                 self.out_convs.append(
@@ -226,9 +239,9 @@ class OpenPoseNetworkV2(BaseBackbone):
                     MconvStage(
                         input_channels,
                         256,
-                        num_blocks=num_blocks,
-                        block_channels=[block_channels] * num_blocks,
-                        block_kernels=[3] * num_blocks,
+                        num_blocks=num_blocks[i],
+                        block_channels=[block_channels[i]] * num_blocks[i],
+                        block_kernels=[3] * num_blocks[i],
                         norm_cfg=dict(type='BN', requires_grad=True),
                         act_cfg=dict(type='PReLU')))
                 self.out_convs.append(
