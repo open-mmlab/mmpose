@@ -235,7 +235,7 @@ class PartAffinityField(BasePose):
                 outputs = self.keypoint_head(features)
                 # ignore back-ground confidence maps
                 heatmaps = [
-                    hm[:, :img_metas['num_joints']]
+                    hm[:, :self.test_cfg['num_joints']]
                     for hm in outputs['heatmaps'][-1]
                 ]
                 pafs = outputs['pafs'][-1]
@@ -248,7 +248,7 @@ class PartAffinityField(BasePose):
                     outputs_flipped = self.keypoint_head(features_flipped)
                 # ignore back-ground confidence maps
                 heatmaps_flipped = [
-                    hm[:, :img_metas['num_joints']]
+                    hm[:, :self.test_cfg['num_joints']]
                     for hm in outputs_flipped['heatmaps'][-1]
                 ]
                 pafs_flipped = outputs_flipped['pafs'][-1]

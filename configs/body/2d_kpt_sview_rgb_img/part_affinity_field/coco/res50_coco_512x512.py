@@ -79,9 +79,7 @@ model = dict(
         heatmap_index=[0],
         paf_index=[0],
     ),
-    train_cfg=dict(
-        num_joints=channel_cfg['dataset_joints'],
-        img_size=data_cfg['image_size']),
+    train_cfg=dict(),
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
@@ -151,7 +149,7 @@ val_pipeline = [
         keys=['img'],
         meta_keys=[
             'image_file', 'aug_data', 'test_scale_factor', 'base_size',
-            'center', 'scale', 'flip_index', 'skeleton', 'num_joints'
+            'center', 'scale', 'flip_index', 'skeleton'
         ]),
 ]
 
