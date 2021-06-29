@@ -1,7 +1,7 @@
 from abc import ABCMeta
 
 import numpy as np
-from torch.utils.data import Dataset
+from torch.utils.data import ConcatDataset, Dataset, WeightedRandomSampler
 
 from mmpose.datasets.builder import DATASETS
 from .mesh_base_dataset import MeshBaseDataset
@@ -18,18 +18,48 @@ class MeshMixDataset(Dataset, metaclass=ABCMeta):
 
     Args:
         configs (list): List of configs for multiple datasets.
-        partition (list): Sample proportion of multiple datasets.
-            The the elements of it should be non-negative and the
-            sum of it should be 1.
+        partition (list): Sample proportion of multiple datasets. The length
+            of partition should be same with that of configs. The elements
+            of it should be non-negative and is not necessary summing up to
+            one.
+
+    Example:
+        >>> from mmpose.datasets import MeshMixDataset
+        >>> data_cfg = dict(
+        >>>     image_size=[256, 256],
+        >>>     iuv_size=[64, 64],
+        >>>     num_joints=24,
+        >>>     use_IUV=True,
+        >>>     uv_type='BF')
+        >>>
+        >>> mix_dataset = MeshMixDataset(
+        >>>     configs=[
+        >>>         dict(
+        >>>             ann_file='tests/data/h36m/test_h36m.npz',
+        >>>             img_prefix='tests/data/h36m',
+        >>>             data_cfg=data_cfg,
+        >>>             pipeline=[]),
+        >>>         dict(
+        >>>             ann_file='tests/data/h36m/test_h36m.npz',
+        >>>             img_prefix='tests/data/h36m',
+        >>>             data_cfg=data_cfg,
+        >>>             pipeline=[]),
+        >>>     ],
+        >>>     partition=[0.6, 0.4])
     """
 
     def __init__(self, configs, partition):
         """Load data from multiple datasets."""
         assert min(partition) >= 0
-        assert sum(partition) == 1
-        self.partition = np.array(partition).cumsum()
-        self.datasets = [MeshBaseDataset(**cfg) for cfg in configs]
-        self.length = max(len(ds) for ds in self.datasets)
+        datasets = [MeshBaseDataset(**cfg) for cfg in configs]
+        self.dataset = ConcatDataset(datasets)
+        self.length = max(len(ds) for ds in datasets)
+        weights = [
+            np.ones(len(ds)) * p / len(ds)
+            for (p, ds) in zip(partition, datasets)
+        ]
+        weights = np.concatenate(weights, axis=0)
+        self.sampler = WeightedRandomSampler(weights, 1)
 
     def __len__(self):
         """Get the size of the dataset."""
@@ -38,11 +68,5 @@ class MeshMixDataset(Dataset, metaclass=ABCMeta):
     def __getitem__(self, idx):
         """Given index, sample the data from multiple datasets with the given
         proportion."""
-        p = np.random.rand()
-        for i in range(len(self.datasets)):
-            if p <= self.partition[i]:
-                index_new = (idx + np.random.rand()) * len(
-                    self.datasets[i]) / self.length
-                index_new = int(np.round(index_new)) % (len(self.datasets[i]))
-                return self.datasets[i][index_new]
-        return None
+        idx_new = list(self.sampler)[0]
+        return self.dataset[idx_new]
