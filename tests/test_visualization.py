@@ -1,3 +1,5 @@
+import tempfile
+
 import mmcv
 import numpy as np
 
@@ -39,7 +41,14 @@ def test_imshow_bbox():
     labels = ['label 1', 'label 2']
     colors = ['red', 'green']
 
-    _ = imshow_bboxes(img, bboxes, labels=labels, colors=colors, show=False)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _ = imshow_bboxes(
+            img,
+            bboxes,
+            labels=labels,
+            colors=colors,
+            show=False,
+            out_file=f'{tmpdir}/out.png')
 
 
 def test_effects():
@@ -53,19 +62,19 @@ def test_effects():
         img,
         pose_results,
         sunglasses_img,
-        leye_index=1,
-        reye_index=0,
+        left_eye_index=1,
+        right_eye_index=0,
         kpt_thr=0.5)
     _ = apply_sunglasses_effect(
         img,
         pose_results,
         sunglasses_img,
-        leye_index=1,
-        reye_index=0,
+        left_eye_index=1,
+        right_eye_index=0,
         kpt_thr=0.9)
 
     # bug-eye
     _ = apply_bugeye_effect(
-        img, pose_results, leye_index=1, reye_index=0, kpt_thr=0.5)
+        img, pose_results, left_eye_index=1, right_eye_index=0, kpt_thr=0.5)
     _ = apply_bugeye_effect(
-        img, pose_results, leye_index=1, reye_index=0, kpt_thr=0.9)
+        img, pose_results, left_eye_index=1, right_eye_index=0, kpt_thr=0.9)

@@ -132,7 +132,7 @@ def parse_args():
         '--inference_fps',
         type=int,
         default=10,
-        help='Maximum inference FPS. This is to limit the resource consumnig '
+        help='Maximum inference FPS. This is to limit the resource consuming '
         'especially when the detection and pose model are lightweight and '
         'very fast. Default: 10.')
 
@@ -192,7 +192,7 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
 
 def read_camera():
     # init video reader
-    print('Thred "input" started')
+    print('Thread "input" started')
     cam_id = args.cam_id
     if cam_id.isdigit():
         cam_id = int(cam_id)
@@ -308,11 +308,11 @@ def inference_pose():
 
 
 def display():
-    print('Thred "display" started')
+    print('Thread "display" started')
     stop_watch = StopWatch(window=10)
 
     # initialize result status
-    ts_inference = None  # timestamp of the lastet inference result
+    ts_inference = None  # timestamp of the latest inference result
     fps_inference = 0.  # infenrece FPS
     t_delay_inference = 0.  # inference result time delay
     pose_results_list = None  # latest inference result
@@ -369,11 +369,11 @@ def display():
                     # sunglasses effect
                     if args.sunglasses:
                         if dataset_name == 'TopDownCocoDataset':
-                            leye_idx = 1
-                            reye_idx = 2
+                            left_eye_idx = 1
+                            right_eye_idx = 2
                         elif dataset_name == 'AnimalPoseDataset':
-                            leye_idx = 0
-                            reye_idx = 1
+                            left_eye_idx = 0
+                            right_eye_idx = 1
                         else:
                             raise ValueError(
                                 'Sunglasses effect does not support'
@@ -385,21 +385,22 @@ def display():
                             sunglasses_img = cv2.imread(
                                 'demo/resources/sunglasses.jpg')
                         img = apply_sunglasses_effect(img, pose_results,
-                                                      sunglasses_img, leye_idx,
-                                                      reye_idx)
+                                                      sunglasses_img,
+                                                      left_eye_idx,
+                                                      right_eye_idx)
                     # bug-eye effect
                     if args.bugeye:
                         if dataset_name == 'TopDownCocoDataset':
-                            leye_idx = 1
-                            reye_idx = 2
+                            left_eye_idx = 1
+                            right_eye_idx = 2
                         elif dataset_name == 'AnimalPoseDataset':
-                            leye_idx = 0
-                            reye_idx = 1
+                            left_eye_idx = 0
+                            right_eye_idx = 1
                         else:
                             raise ValueError('Bug-eye effect does not support'
                                              f'{dataset_name}')
-                        img = apply_bugeye_effect(img, pose_results, leye_idx,
-                                                  reye_idx)
+                        img = apply_bugeye_effect(img, pose_results,
+                                                  left_eye_idx, right_eye_idx)
 
             # delay control
             if args.display_delay > 0:

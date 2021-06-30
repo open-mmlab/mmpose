@@ -4,8 +4,8 @@ import numpy as np
 
 def apply_bugeye_effect(img,
                         pose_results,
-                        leye_index,
-                        reye_index,
+                        left_eye_index,
+                        right_eye_index,
                         kpt_thr=0.5):
     """Apply bug-eye effect.
 
@@ -15,8 +15,8 @@ def apply_bugeye_effect(img,
             - "bbox" ([K, 4(or 5)]): detection bbox in
                 [x1, y1, x2, y2, (score)]
             - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
-        leye_index (int): Keypoint index of left eye
-        reye_index (int): Keypoint index of right eye
+        left_eye_index (int): Keypoint index of left eye
+        right_eye_index (int): Keypoint index of right eye
         kpt_thr (float): The score threshold of required keypoints.
     """
 
@@ -28,11 +28,12 @@ def apply_bugeye_effect(img,
         bbox = pose['bbox']
         kpts = pose['keypoints']
 
-        if kpts[leye_index, 2] < kpt_thr or kpts[reye_index, 2] < kpt_thr:
+        if kpts[left_eye_index, 2] < kpt_thr or kpts[right_eye_index,
+                                                     2] < kpt_thr:
             continue
 
-        kpt_leye = kpts[leye_index, :2]
-        kpt_reye = kpts[reye_index, :2]
+        kpt_leye = kpts[left_eye_index, :2]
+        kpt_reye = kpts[right_eye_index, :2]
         for xc, yc in [kpt_leye, kpt_reye]:
 
             # distortion parameters
@@ -58,8 +59,8 @@ def apply_bugeye_effect(img,
 def apply_sunglasses_effect(img,
                             pose_results,
                             sunglasses_img,
-                            leye_index,
-                            reye_index,
+                            left_eye_index,
+                            right_eye_index,
                             kpt_thr=0.5):
     """Apply sunglasses effect.
 
@@ -68,8 +69,8 @@ def apply_sunglasses_effect(img,
         pose_results (list[dict]): The pose estimation results containing:
             - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
         sunglasses_img (np.ndarray): Sunglasses image with white background.
-        dataset (str): Dataset name (e.g. 'TopDownCocoDataset') to determine
-            the keypoint order.
+        left_eye_index (int): Keypoint index of left eye
+        right_eye_index (int): Keypoint index of right eye
         kpt_thr (float): The score threshold of required keypoints.
     """
 
@@ -82,11 +83,12 @@ def apply_sunglasses_effect(img,
     for pose in pose_results:
         kpts = pose['keypoints']
 
-        if kpts[leye_index, 2] < kpt_thr or kpts[reye_index, 2] < kpt_thr:
+        if kpts[left_eye_index, 2] < kpt_thr or kpts[right_eye_index,
+                                                     2] < kpt_thr:
             continue
 
-        kpt_leye = kpts[leye_index, :2]
-        kpt_reye = kpts[reye_index, :2]
+        kpt_leye = kpts[left_eye_index, :2]
+        kpt_reye = kpts[right_eye_index, :2]
         # orthogonal vector to the left-to-right eyes
         vo = 0.5 * (kpt_reye - kpt_leye)[::-1] * [-1, 1]
 
