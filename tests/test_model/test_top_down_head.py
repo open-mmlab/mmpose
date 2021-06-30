@@ -4,7 +4,135 @@ import torch
 
 from mmpose.models import (DeepposeRegressionHead, TopdownHeatmapMSMUHead,
                            TopdownHeatmapMultiStageHead,
-                           TopdownHeatmapSimpleHead)
+                           TopdownHeatmapSimpleHead, ViPNASHeatmapSimpleHead)
+
+
+def test_vipnas_simple_head():
+    """Test simple head."""
+    with pytest.raises(TypeError):
+        # extra
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            extra=[],
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(TypeError):
+        head = ViPNASHeatmapSimpleHead(
+            out_channels=3, in_channels=512, extra={'final_conv_kernel': 1})
+
+    # test num deconv layers
+    with pytest.raises(ValueError):
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            num_deconv_layers=-1,
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    _ = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        num_deconv_layers=0,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(ValueError):
+        # the number of layers should match
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            num_deconv_layers=3,
+            num_deconv_filters=(256, 256),
+            num_deconv_kernels=(4, 4),
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(ValueError):
+        # the number of kernels should match
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            num_deconv_layers=3,
+            num_deconv_filters=(256, 256, 256),
+            num_deconv_kernels=(4, 4),
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(ValueError):
+        # the deconv kernels should be 4, 3, 2
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            num_deconv_layers=3,
+            num_deconv_filters=(256, 256, 256),
+            num_deconv_kernels=(3, 2, 0),
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    with pytest.raises(ValueError):
+        # the deconv kernels should be 4, 3, 2
+        _ = ViPNASHeatmapSimpleHead(
+            out_channels=3,
+            in_channels=512,
+            num_deconv_layers=3,
+            num_deconv_filters=(256, 256, 256),
+            num_deconv_kernels=(4, 4, -1),
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    # test final_conv_kernel
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        extra={'final_conv_kernel': 3},
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    head.init_weights()
+    assert head.final_layer.padding == (1, 1)
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        extra={'final_conv_kernel': 1},
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    assert head.final_layer.padding == (0, 0)
+    _ = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        extra={'final_conv_kernel': 0},
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True),
+        extra=dict(
+            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )))
+    assert len(head.final_layer) == 4
+
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    input_shape = (1, 512, 32, 32)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 3, 256, 256])
+
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        num_deconv_layers=0,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    input_shape = (1, 512, 32, 32)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 3, 32, 32])
+
+    head = ViPNASHeatmapSimpleHead(
+        out_channels=3,
+        in_channels=512,
+        num_deconv_layers=0,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+    input_shape = (1, 512, 32, 32)
+    inputs = _demo_inputs(input_shape)
+    out = head([inputs])
+    assert out.shape == torch.Size([1, 3, 32, 32])
+
+    head.init_weights()
 
 
 def test_top_down_simple_head():

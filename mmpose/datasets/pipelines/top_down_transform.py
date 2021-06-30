@@ -434,7 +434,9 @@ class TopDownGenerateTarget:
         target_weight = np.ones((num_joints, 1), dtype=np.float32)
         target_weight[:, 0] = joints_3d_visible[:, 0]
 
-        assert target_type in ['GaussianHeatMap', 'CombinedTarget']
+        assert target_type.lower() in [
+            'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
+        ]
 
         if target_type == 'GaussianHeatMap':
             target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
