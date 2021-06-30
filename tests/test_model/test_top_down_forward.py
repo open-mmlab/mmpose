@@ -4,6 +4,57 @@ import torch
 from mmpose.models.detectors import TopDown
 
 
+def test_vipnas_forward():
+    # model settings
+
+    channel_cfg = dict(
+        num_output_channels=17,
+        dataset_joints=17,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        ])
+
+    model_cfg = dict(
+        type='TopDown',
+        pretrained=None,
+        backbone=dict(type='ViPNAS_ResNet', depth=50),
+        keypoint_head=dict(
+            type='ViPNASHeatmapSimpleHead',
+            in_channels=608,
+            out_channels=channel_cfg['num_output_channels'],
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
+        train_cfg=dict(),
+        test_cfg=dict(
+            flip_test=True,
+            post_process='default',
+            shift_heatmap=True,
+            modulate_kernel=11))
+
+    detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
+                       model_cfg['train_cfg'], model_cfg['test_cfg'],
+                       model_cfg['pretrained'])
+
+    input_shape = (1, 3, 256, 256)
+    mm_inputs = _demo_mm_inputs(input_shape)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+
+
 def test_topdown_forward():
     model_cfg = dict(
         type='TopDown',
