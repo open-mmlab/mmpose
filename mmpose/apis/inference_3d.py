@@ -6,6 +6,57 @@ from mmpose.datasets.pipelines import Compose
 from .inference import LoadImage, _box2cs, _xywh2xyxy, _xyxy2xywh
 
 
+def _temporal_padding(pose_results, frame_idx, padding_cfg):
+    """Extract the target frame from 2D pose results, and pad the sequence to a
+    fixed length.
+
+    Args:
+        pose_results (List[List[Dict]]): Multi-frame pose detection results
+            stored in a nested list. Each element of the outer list is the
+            pose detection results of a single frame, and each element of the
+            inner list is the pose information of one person, which contains:
+                keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                track_id (int): unique id of each person, required when
+                    ``with_track_id==True```
+                bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+        frame_idx (int): The index of the frame in the original video.
+        padding_cfg (dict): Configurations of temporal padding, which contains:
+            - "causal" (bool): If True, the target frame is the last frame in
+                a sequence. Otherwise, the target frame is in the middle of a
+                sequence.
+            - "seq_len" (int): The number of frames in the input sequence.
+            - "seq_frame_interval" (int): Extract frames from the video at
+                certain intervals.
+
+    Returns:
+        List[List[Dict]]: Multi-frame pose detection results stored in a
+            nested list with a length of seq_len.
+        int: The target frame index in the padded sequence.
+    """
+    causal = padding_cfg.get('causal', False)
+    seq_len = padding_cfg.get('seq_len', 1)
+    step = padding_cfg.get('seq_frame_interval', 1)
+
+    if causal:
+        frames_left = seq_len - 1
+        frames_right = 0
+    else:
+        frames_left = (seq_len - 1) // 2
+        frames_right = frames_left
+    target_idx = -1 if causal else seq_len // 2
+    num_frames = len(pose_results)
+
+    # get the padded sequence
+    pad_left = max(0, frames_left - frame_idx // step)
+    pad_right = max(0, frames_right - (num_frames - 1 - frame_idx) // step)
+    start = max(frame_idx % step, frame_idx - frames_left * step)
+    end = min(num_frames - (num_frames - 1 - frame_idx) % step,
+              frame_idx + frames_right * step + 1)
+    pose_results_seq = [pose_results[0]] * pad_left + \
+        pose_results[start:end:step] + [pose_results[-1]] * pad_right
+    return pose_results_seq, target_idx
+
+
 def _gather_pose_lifter_inputs(pose_results,
                                bbox_center,
                                bbox_scale,
@@ -158,8 +209,9 @@ def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
 def inference_pose_lifter_model(model,
                                 pose_results_2d,
                                 dataset,
+                                frame_idx,
                                 with_track_id=True,
-                                target_frame=-1,
+                                padding_cfg=None,
                                 image_size=None,
                                 norm_pose_2d=False):
     """Inference 3D pose from 2D pose sequences using a pose lifter model.
@@ -173,12 +225,19 @@ def inference_pose_lifter_model(model,
                 - "keypoints" (ndarray[K, 2 or 3]): x, y, [score]
                 - "track_id" (int)
         dataset (str): Dataset name, e.g. 'Body3DH36MDataset'
+        frame_idx (int): The index of the frame in the original video.
         with_track_id: If True, the element in pose_results_2d is expected to
             contain "track_id", which will be used to gather the pose sequence
             of a person from multiple frames. Otherwise, the pose results in
             each frame are expected to have a consistent number and order of
             identities. Default is True.
-        target_frame (int): The index of the target frame. Default: -1.
+        padding_cfg (dict): Configurations of temporal padding, which contains:
+            - "causal" (bool): If True, the target frame is the last frame in
+                a sequence. Otherwise, the target frame is in the middle of a
+                sequence.
+            - "seq_len" (int): The number of frames in the input sequence.
+            - "seq_frame_interval" (int): Extract frames from the video at
+                certain intervals.
         image_size (Tuple|List): image width, image height. If None, image size
             will not be contained in dict ``data``.
         norm_pose_2d (bool): If True, scale the bbox (along with the 2D
@@ -204,11 +263,13 @@ def inference_pose_lifter_model(model,
         bbox_scale = 400
     else:
         raise NotImplementedError()
-    pose_lifter_inputs = _gather_pose_lifter_inputs(pose_results_2d,
+    pose_results_seq, target_idx = _temporal_padding(pose_results_2d,
+                                                     frame_idx, padding_cfg)
+    pose_lifter_inputs = _gather_pose_lifter_inputs(pose_results_seq,
                                                     bbox_center, bbox_scale,
                                                     norm_pose_2d)
     pose_sequences_2d = _collate_pose_sequence(pose_lifter_inputs,
-                                               with_track_id, target_frame)
+                                               with_track_id, target_idx)
 
     if not pose_sequences_2d:
         return []
@@ -293,6 +354,7 @@ def vis_3d_pose_result(model,
                        kpt_score_thr=0.3,
                        radius=8,
                        thickness=2,
+                       num_instances=-1,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.
@@ -372,6 +434,7 @@ def vis_3d_pose_result(model,
         thickness=thickness,
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
+        num_instances=num_instances,
         show=show,
         out_file=out_file)
 

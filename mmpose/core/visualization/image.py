@@ -118,6 +118,7 @@ def imshow_keypoints_3d(
     pose_limb_color=None,
     vis_height=400,
     kpt_score_thr=0.3,
+    num_instances=-1,
     *,
     axis_azimuth=70,
     axis_limit=1.7,
@@ -145,6 +146,10 @@ def imshow_keypoints_3d(
                 items.
         kpt_score_thr (float): Minimum score of keypoints to be shown.
             Default: 0.3.
+        num_instances (int): Number of instances to be shown in 3D. If smaller
+            than 0, all the instances in the pose_result will be shown.
+            Otherwise, pad or truncate the pose_result to a length of
+            num_instances.
         axis_azimuth (float): axis azimuth angle for 3D visualizations.
         axis_dist (float): axis distance for 3D visualizations.
         axis_elev (float): axis elevation view angle for 3D visualizations.
@@ -158,7 +163,14 @@ def imshow_keypoints_3d(
     """
 
     show_img = img is not None
-    num_axis = len(pose_result) + 1 if show_img else len(pose_result)
+    if num_instances < 0:
+        num_instances = len(pose_result)
+    else:
+        if len(pose_result) > num_instances:
+            pose_result = pose_result[:num_instances]
+        elif len(pose_result) < num_instances:
+            pose_result += [dict()] * (num_instances - len(pose_result))
+    num_axis = num_instances + 1 if show_img else num_instances
 
     plt.ioff()
     fig = plt.figure(figsize=(vis_height * num_axis * 0.01, vis_height * 0.01))

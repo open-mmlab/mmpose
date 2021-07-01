@@ -284,11 +284,11 @@ class PoseLifter(BasePose):
                     radius=8,
                     thickness=2,
                     vis_height=400,
+                    num_instances=-1,
                     win_name='',
                     show=False,
                     wait_time=0,
-                    out_file=None,
-                    keep_undetected=True):
+                    out_file=None):
         """Visualize 3D pose estimation results.
 
         Args:
@@ -311,21 +311,21 @@ class PoseLifter(BasePose):
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the pose_result will be
+                shown. Otherwise, pad or truncate the pose_result to a length
+                of num_instances.
             win_name (str): The window name.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.
                 Default: None.
-            keep_undetected (bool): When len(result) == 0, setting
-                keep_undetected to True will show the input image (if image is
-                not None), while setting keep_undetected to False will raise an
-                assertation error.
 
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
 
-        if not keep_undetected:
+        if num_instances < 0:
             assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 1e4))
 
@@ -370,8 +370,14 @@ class PoseLifter(BasePose):
                     thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
 
-        img_vis = imshow_keypoints_3d(result, img, skeleton, pose_kpt_color,
-                                      pose_limb_color, vis_height)
+        img_vis = imshow_keypoints_3d(
+            result,
+            img,
+            skeleton,
+            pose_kpt_color,
+            pose_limb_color,
+            vis_height,
+            num_instances=num_instances)
 
         if show:
             mmcv.visualization.imshow(img_vis, win_name, wait_time)

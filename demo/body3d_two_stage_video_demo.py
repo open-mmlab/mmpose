@@ -45,9 +45,9 @@ def process_mmdet_results(mmdet_results, cat_id=1):
     return person_results
 
 
-def dataset_transform(keypoints, pose_det_dataset, pose_lift_dataset):
-    """Transform pose det dataset keypoints convention to pose lifter dataset
-    keypoints convention.
+def covert_keypoint_definition(keypoints, pose_det_dataset, pose_lift_dataset):
+    """Convert pose det dataset keypoints definition to pose lifter dataset
+    keypoints definition.
 
     Args:
         keypoints (ndarray[K, 2 or 3]): 2D keypoints to be transformed.
@@ -71,7 +71,6 @@ def dataset_transform(keypoints, pose_det_dataset, pose_lift_dataset):
         # rearrange other keypoints
         keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
             keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
-
         return keypoints_new
     else:
         raise NotImplementedError
@@ -114,11 +113,11 @@ def main():
         'the average bbox center of the dataset. This is useful when bbox '
         'is small, especially in multi-person scenarios.')
     parser.add_argument(
-        '--num-poses-vis',
+        '--num-instances',
         type=int,
-        default=0,
-        help='The number of 3D poses to be visualized in every frame. If not '
-        'larger than 0, it will be set to the number of pose results in the '
+        default=-1,
+        help='The number of 3D poses to be visualized in every frame. If '
+        'less than 0, it will be set to the number of pose results in the '
         'first frame.')
     parser.add_argument(
         '--show',
@@ -250,56 +249,38 @@ def main():
         fps = video.fps
         writer = None
 
-    # transform the predicted 2D keypoints to the keypoints convention of pose
-    # lift dataset
+    # convert keypoint definition
     for pose_det_results in pose_det_results_list:
         for res in pose_det_results:
             keypoints = res['keypoints']
-            res['keypoints'] = dataset_transform(keypoints, pose_det_dataset,
-                                                 pose_lift_dataset)
+            res['keypoints'] = covert_keypoint_definition(
+                keypoints, pose_det_dataset, pose_lift_dataset)
 
-    # prepare for temporal padding
+    # load temporal padding config from model.data_cfg
     if hasattr(pose_lift_model.cfg, 'test_data_cfg'):
         data_cfg = pose_lift_model.cfg.test_data_cfg
     else:
         data_cfg = pose_lift_model.cfg.data_cfg
-    seq_len = data_cfg.seq_len
-    causal = data_cfg.causal
-    seq_frame_interval = data_cfg.seq_frame_interval
-    _step = seq_frame_interval
-    if causal:
-        frames_left = seq_len - 1
-        frames_right = 0
-    else:
-        frames_left = (seq_len - 1) // 2
-        frames_right = frames_left
-    target_frame_idx = -1 if causal else seq_len // 2
+    padding_cfg = dict(
+        causal=data_cfg.causal,
+        seq_len=data_cfg.seq_len,
+        seq_frame_interval=data_cfg.seq_frame_interval)
 
-    num_poses_vis = args.num_poses_vis
+    num_instances = args.num_instances
     for i in mmcv.track_iter_progress(range(num_frames)):
-        # get the padded sequence
-        pad_left = max(0, frames_left - i // _step)
-        pad_right = max(0, frames_right - (num_frames - 1 - i) // _step)
-        start = max(i % _step, i - frames_left * _step)
-        end = min(num_frames - (num_frames - 1 - i) % _step,
-                  i + frames_right * _step + 1)
-        pose_det_results_seq = [pose_det_results_list[0]] * pad_left + \
-            pose_det_results_list[start:end:_step] + \
-            [pose_det_results_list[-1]] * pad_right
-
         # 2D-to-3D pose lifting
         pose_lift_results = inference_pose_lifter_model(
             pose_lift_model,
-            pose_results_2d=pose_det_results_seq,
+            pose_results_2d=pose_det_results_list,
             dataset=pose_lift_dataset,
+            frame_idx=i,
             with_track_id=True,
-            target_frame=target_frame_idx,
+            padding_cfg=padding_cfg,
             image_size=video.resolution,
             norm_pose_2d=args.norm_pose_2d)
 
         # Pose processing
         pose_lift_results_vis = []
-        max_bbox = -1
         for idx, res in enumerate(pose_lift_results):
             keypoints_3d = res['keypoints_3d']
             # exchange y,z-axis, and then reverse the direction of x,z-axis
@@ -320,26 +301,18 @@ def main():
             res['bbox'] = det_res['bbox']
             res['track_id'] = instance_id
             pose_lift_results_vis.append(res)
-            bbox_area = (res['bbox'][2] - res['bbox'][0]) * (
-                res['bbox'][3] - res['bbox'][1])
-            max_bbox = max(bbox_area, max_bbox)
 
         # Visualization
-        if num_poses_vis == 0:
-            num_poses_vis = len(pose_lift_results_vis)
-        else:
-            if len(pose_lift_results_vis) > num_poses_vis:
-                pose_lift_results_vis = pose_lift_results_vis[:num_poses_vis]
-            elif len(pose_lift_results_vis) < num_poses_vis:
-                pose_lift_results_vis += [dict()] * (
-                    num_poses_vis - len(pose_lift_results_vis))
+        if num_instances < 0:
+            num_instances = len(pose_lift_results_vis)
         img_vis = vis_3d_pose_result(
             pose_lift_model,
             result=pose_lift_results_vis,
             img=video[i],
             out_file=None,
             radius=args.radius,
-            thickness=args.thickness)
+            thickness=args.thickness,
+            num_instances=num_instances)
 
         if save_out_video:
             if writer is None:
