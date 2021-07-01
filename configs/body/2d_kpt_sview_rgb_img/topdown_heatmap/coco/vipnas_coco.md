@@ -36,4 +36,4 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [S-VipNAS-Res50](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/s_vipnas_res50_coco_256x192.py)  | 256x192 | 0.711 | 0.893 | 0.789 | 0.769 | 0.769 | [ckpt](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192-cc43b466_20210624.pth) | [log](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192_20210624.log.json) |
+| [S-ViPNAS-Res50](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/s_vipnas_res50_coco_256x192.py)  | 256x192 | 0.711 | 0.893 | 0.789 | 0.769 | 0.769 | [ckpt](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192-cc43b466_20210624.pth) | [log](https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192_20210624.log.json) |

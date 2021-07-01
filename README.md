@@ -83,6 +83,7 @@ Supported algorithms:
 - [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-simplebaseline3d-iccv-2017-div) (ICCV'2017)
 - [x] [InterNet](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-internet-eccv-2020-div) (ECCV'2020)
 - [x] [VideoPose3D](https://mmpose.readthedocs.io/en/latest/papers/algorithms.html#div-align-center-videopose3d-cvpr-2019-div) (CVPR'2019)
+- [x] [ViPNAS](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#div-align-center-vipnas-cvpr-2021-div) (CVPR'2021)
 
 </details>
 
