@@ -112,6 +112,15 @@ class PoseLifter(BasePose):
         """Check if has trajectory_head."""
         return hasattr(self, 'traj_head')
 
+    @property
+    def causal(self):
+        if hasattr(self.backbone, 'causal'):
+            return self.backbone.causal
+        else:
+            raise AttributeError('A PoseLifter\'s backbone should have '
+                                 'the bool attribute "causal" to indicate if'
+                                 'it performs causal inference.')
+
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)

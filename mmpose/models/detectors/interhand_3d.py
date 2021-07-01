@@ -110,6 +110,7 @@ class Interhand3D(TopDown):
                     pose_kpt_color=None,
                     pose_limb_color=None,
                     vis_height=400,
+                    num_instances=-1,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -139,6 +140,10 @@ class Interhand3D(TopDown):
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the pose_result will be
+                shown. Otherwise, pad or truncate the pose_result to a length
+                of num_instances.
             win_name (str): The window name.
             show (bool): Whether to show the image. Default: False.
             wait_time (int): Value of waitKey param.
@@ -150,7 +155,8 @@ class Interhand3D(TopDown):
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
 
-        assert len(result) > 0
+        if num_instances < 0:
+            assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 0))
 
         # draw image and 2d poses
@@ -204,7 +210,8 @@ class Interhand3D(TopDown):
             axis_limit=300,
             axis_azimuth=-115,
             axis_elev=15,
-            kpt_score_thr=kpt_score_thr)
+            kpt_score_thr=kpt_score_thr,
+            num_instances=num_instances)
 
         if show:
             mmcv.visualization.imshow(img_vis, win_name, wait_time)

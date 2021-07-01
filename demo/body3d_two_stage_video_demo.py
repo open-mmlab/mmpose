@@ -7,7 +7,8 @@ import cv2
 import mmcv
 import numpy as np
 
-from mmpose.apis import (get_track_id, inference_pose_lifter_model,
+from mmpose.apis import (extract_pose_sequence, get_track_id,
+                         inference_pose_lifter_model,
                          inference_top_down_pose_model, vis_3d_pose_result)
 from mmpose.apis.inference import init_pose_model
 
@@ -261,21 +262,23 @@ def main():
         data_cfg = pose_lift_model.cfg.test_data_cfg
     else:
         data_cfg = pose_lift_model.cfg.data_cfg
-    padding_cfg = dict(
-        causal=data_cfg.causal,
-        seq_len=data_cfg.seq_len,
-        seq_frame_interval=data_cfg.seq_frame_interval)
 
     num_instances = args.num_instances
     for i in mmcv.track_iter_progress(range(num_frames)):
+        # extract and pad input pose2d sequence
+        pose_results_2d = extract_pose_sequence(
+            pose_det_results_list,
+            frame_idx=i,
+            causal=pose_lift_model.causal,
+            seq_len=data_cfg.seq_len,
+            step=data_cfg.seq_frame_interval)
         # 2D-to-3D pose lifting
         pose_lift_results = inference_pose_lifter_model(
             pose_lift_model,
-            pose_results_2d=pose_det_results_list,
+            pose_results_2d=pose_results_2d,
             dataset=pose_lift_dataset,
             frame_idx=i,
             with_track_id=True,
-            padding_cfg=padding_cfg,
             image_size=video.resolution,
             norm_pose_2d=args.norm_pose_2d)
 

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from mmpose.apis import (inference_interhand_3d_model,
+from mmpose.apis import (extract_pose_sequence, inference_interhand_3d_model,
                          inference_pose_lifter_model, init_pose_model,
                          vis_3d_pose_result)
 
@@ -25,6 +25,9 @@ def test_pose_lifter_demo():
     pose_results_2d = [[pose_det_result]]
 
     dataset = pose_model.cfg.data['test']['type']
+
+    pose_results_2d = extract_pose_sequence(
+        pose_results_2d, frame_idx=0, causal=False, seq_len=1, step=1)
 
     _ = inference_pose_lifter_model(
         pose_model, pose_results_2d, dataset, with_track_id=False)
@@ -95,7 +98,6 @@ def test_pose_lifter_demo():
         pose_results_2d_seq,
         dataset,
         with_track_id=True,
-        target_frame=seq_len // 2,
         image_size=[1000, 1000],
         norm_pose_2d=True)
 
