@@ -14,7 +14,8 @@ It will launch a window to display the webcam video steam with detection and pos
 
 ### Usage Tips
 
-**Which model is used in the demo tool?**
+- **Which model is used in the demo tool?**
+
 Please check the following default arguments in the script. You can also choose other models from the [MMDetection Model Zoo](https://github.com/open-mmlab/mmdetection/blob/master/docs/model_zoo.md) and [MMPose Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html#) or use your own models.
 
 | Model | Arguments |
@@ -23,21 +24,26 @@ Please check the following default arguments in the script. You can also choose 
 | Human Pose | `--human-pose-config`, `--human-pose-checkpoint` |
 | Animal Pose | `--animal-pose-config`, `--animal-pose-checkpoint` |
 
-**Can this tool run without GPU?**
+- **Can this tool run without GPU?**
+
 Yes, you can set `--device=cpu` and the model inference will be performed on CPU. Of course, this may cause a low inference FPS compared to using GPU devices.
 
-**Why there is time delay between the pose visualization and the video?**
+- **Why there is time delay between the pose visualization and the video?**
+
 The video I/O and model inference are running asynchronously and the latter usually takes more time for a single frame. To allevidate the time delay, you can:
 
 1. set `--display-delay=MILLISECONDS` to defer the video stream, according to the inference delay shown at the top left corner. Or,
 
 2. set `--synchronous-mode` to force video stream being aligned with inference results. This may reduce the video display FPS.
 
-**Can this tool process video files?**
+- **Can this tool process video files?**
+
 Yes. You can set `--cam_id=VIDEO_FILE_PATH` to run the demo tool in offline mode on a video file. Note that `--synchronous-mode` should be set in this case.
 
-**How to enable/disable the special effects?**
+- **How to enable/disable the special effects?**
+
 The special effects can be enabled/disabled at launch time by setting arguments like `--bugeye`, `--sunglasses`, *etc*. You can also toggle the effects by keyboard shorcuts like `b`, `s` when the tool starts.
 
- **What if my computer doesn't have a camera?**
+- **What if my computer doesn't have a camera?**
+
 You can use your smart phone as a webcam with apps like [Camo](https://reincubate.com/camo/) or [DroidCam](https://www.dev47apps.com/).
