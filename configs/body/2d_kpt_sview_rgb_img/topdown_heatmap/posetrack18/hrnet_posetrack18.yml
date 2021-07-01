@@ -16,7 +16,14 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: PoseTrack18
-    Metrics: {}
+    Metrics:
+      Head: 87.4
+      Shou: 88.6
+      Elb: 84.3
+      Wri: 78.5
+      Hip: 79.7
+      Knee: 81.8
+      Ankl: 78.8
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--hrnet_w32_posetrack18_256x192
   In Collection: hrnet_posetrack18
@@ -26,5 +33,12 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: PoseTrack18
-    Metrics: {}
+    Metrics:
+      Head: 78.0
+      Shou: 82.9
+      Elb: 79.5
+      Wri: 73.8
+      Hip: 76.9
+      Knee: 76.6
+      Ankl: 70.2
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth

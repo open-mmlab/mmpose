@@ -20,10 +20,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.526
-      AP@50: 0.816
-      AP@75: 0.586
+      AP@0.5: 0.816
+      AP@0.75: 0.586
       AR: 0.638
-      AR@50: 0.887
+      AR@0.5: 0.887
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192-f6de6c0e_20210205.pth
 - Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res101_coco_256x192
   In Collection: resnet_coco
@@ -35,10 +35,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.56
-      AP@50: 0.832
-      AP@75: 0.628
+      AP@0.5: 0.832
+      AP@0.75: 0.628
       AR: 0.668
-      AR@50: 0.9
+      AR@0.5: 0.9
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth
 - Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res152_coco_256x192
   In Collection: resnet_coco
@@ -50,8 +50,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.583
-      AP@50: 0.843
-      AP@75: 0.659
+      AP@0.5: 0.843
+      AP@0.75: 0.659
       AR: 0.686
-      AR@50: 0.907
+      AR@0.5: 0.907
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192-7df89a88_20210205.pth

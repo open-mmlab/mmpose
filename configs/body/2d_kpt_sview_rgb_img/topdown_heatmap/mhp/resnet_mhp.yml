@@ -21,8 +21,8 @@ Models:
     Dataset: MHP
     Metrics:
       AP: 0.583
-      AP@50: 0.897
-      AP@75: 0.669
+      AP@0.5: 0.897
+      AP@0.75: 0.669
       AR: 0.636
-      AR@50: 0.918
+      AR@0.5: 0.918
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mhp_256x192-28c5b818_20201229.pth

@@ -20,10 +20,10 @@ Models:
     Dataset: AI Challenger
     Metrics:
       AP: 0.303
-      AP@50: 0.697
-      AP@75: 0.225
+      AP@0.5: 0.697
+      AP@0.75: 0.225
       AR: 0.373
-      AR@50: 0.755
+      AR@0.5: 0.755
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_aic_512x512-77e2a98a_20210131.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--hrnet_w32_aic_512x512
   In Collection: hrnet_aic
@@ -35,8 +35,8 @@ Models:
     Dataset: AI Challenger
     Metrics:
       AP: 0.318
-      AP@50: 0.717
-      AP@75: 0.246
+      AP@0.5: 0.717
+      AP@0.75: 0.246
       AR: 0.379
-      AR@50: 0.764
+      AR@0.5: 0.764
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_aic_512x512-77e2a98a_20210131.pth

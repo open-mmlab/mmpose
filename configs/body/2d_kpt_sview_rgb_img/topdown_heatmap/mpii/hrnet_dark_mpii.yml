@@ -18,7 +18,9 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.904
+      Mean@0.1: 0.354
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_w48_mpii_256x256_dark
   In Collection: hrnet_dark_mpii
@@ -28,5 +30,7 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.905
+      Mean@0.1: 0.36
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark-0decd39f_20200927.pth

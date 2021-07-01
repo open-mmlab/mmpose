@@ -17,13 +17,16 @@ def collate_metrics(keys):
     """
     all_metrics = [
         'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc',
-        'p-3dauc', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe'
+        'p-3dauc', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe', 'mean', 'head',
+        'sho', 'elb', 'wri', 'hip', 'knee', 'ank'
     ]
     used_metrics = []
     metric_idx = []
     for idx, key in enumerate(keys):
+        if key in ['Arch', 'Input Size', 'ckpt', 'log']:
+            continue
         for metric in all_metrics:
-            if metric.upper() in key:
+            if metric.upper() in key or metric.capitalize() in key:
                 used_metric = ''
                 i = 0
                 while i < len(key):
@@ -39,17 +42,15 @@ def collate_metrics(keys):
                     i += 1
                 re.sub(' +', ' ', used_metric)
                 used_metric = used_metric.strip()
-                if metric == 'ap':
-                    _index = key.index('AP') + 2
-                    if _index < len(key):
-                        used_metric = used_metric[:_index] + \
-                                      '@' + used_metric[_index:]
-                if metric == 'ar':
-                    _index = key.index('AR') + 2
-                    if _index < len(key):
-                        used_metric = used_metric[:_index] + \
-                                      '@' + used_metric[_index:]
-                used_metrics.append(used_metric.strip())
+                if metric in ['ap', 'ar']:
+                    _index = used_metric.index('AP') if metric == 'ap' \
+                        else used_metric.index('AR')
+                    _index += 2
+                    if _index + 1 < len(used_metric) and \
+                            used_metric[_index:_index+2].isdigit():
+                        used_metric = used_metric[:_index] + '@' + \
+                                      str(int(used_metric[_index:]) * 0.01)
+                used_metrics.append(used_metric)
                 metric_idx.append(idx)
                 break
     return used_metrics, metric_idx

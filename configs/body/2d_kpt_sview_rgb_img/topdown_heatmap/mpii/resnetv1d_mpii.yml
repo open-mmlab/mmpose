@@ -16,7 +16,9 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.881
+      Mean@0.1: 0.29
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256-2337a92e_20200812.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d101_mpii_256x256
   In Collection: resnetv1d_mpii
@@ -26,7 +28,9 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.883
+      Mean@0.1: 0.295
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256-2851d710_20200812.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d152_mpii_256x256
   In Collection: resnetv1d_mpii
@@ -36,5 +40,7 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.888
+      Mean@0.1: 0.3
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_mpii_256x256-8b10a87c_20200812.pth

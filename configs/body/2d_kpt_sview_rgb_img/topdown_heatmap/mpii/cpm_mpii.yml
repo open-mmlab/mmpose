@@ -16,5 +16,7 @@ Models:
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
     Dataset: MPII
-    Metrics: {}
+    Metrics:
+      Mean: 0.876
+      Mean@0.1: 0.285
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth

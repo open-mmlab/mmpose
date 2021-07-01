@@ -20,11 +20,11 @@ Models:
     Dataset: CrowdPose
     Metrics:
       AP: 0.655
-      AP@50: 0.859
-      AP@75: 0.705
-      AP@ (E): 0.728
-      AP@ (M): 0.66
-      AP@ (H): 0.577
+      AP@0.5: 0.859
+      AP@0.75: 0.705
+      AP (E): 0.728
+      AP (M): 0.66
+      AP (H): 0.577
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
   In Collection: higherhrnet_crowdpose
@@ -36,9 +36,9 @@ Models:
     Dataset: CrowdPose
     Metrics:
       AP: 0.661
-      AP@50: 0.864
-      AP@75: 0.71
-      AP@ (E): 0.742
-      AP@ (M): 0.67
-      AP@ (H): 0.566
+      AP@0.5: 0.864
+      AP@0.75: 0.71
+      AP (E): 0.742
+      AP (M): 0.67
+      AP (H): 0.566
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth

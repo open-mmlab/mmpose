@@ -20,10 +20,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.654
-      AP@50: 0.863
-      AP@75: 0.72
+      AP@0.5: 0.863
+      AP@0.75: 0.72
       AR: 0.71
-      AR@50: 0.892
+      AR@0.5: 0.892
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_coco_512x512
   In Collection: hrnet_coco
@@ -35,10 +35,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.665
-      AP@50: 0.86
-      AP@75: 0.727
+      AP@0.5: 0.86
+      AP@0.75: 0.727
       AR: 0.716
-      AR@50: 0.889
+      AR@0.5: 0.889
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512-cf72fcdf_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w32_coco_512x512
   In Collection: hrnet_coco
@@ -50,10 +50,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.698
-      AP@50: 0.877
-      AP@75: 0.76
+      AP@0.5: 0.877
+      AP@0.75: 0.76
       AR: 0.748
-      AR@50: 0.907
+      AR@0.5: 0.907
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_coco_512x512
   In Collection: hrnet_coco
@@ -65,8 +65,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.712
-      AP@50: 0.88
-      AP@75: 0.771
+      AP@0.5: 0.88
+      AP@0.75: 0.771
       AR: 0.757
-      AR@50: 0.909
+      AR@0.5: 0.909
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512-cf72fcdf_20200816.pth

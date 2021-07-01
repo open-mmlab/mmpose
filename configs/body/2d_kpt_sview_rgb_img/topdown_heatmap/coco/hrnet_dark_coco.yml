@@ -20,10 +20,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.757
-      AP@50: 0.907
-      AP@75: 0.823
+      AP@0.5: 0.907
+      AP@0.75: 0.823
       AR: 0.808
-      AR@50: 0.943
+      AR@0.5: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_dark-07f147eb_20200812.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_384x288_dark
   In Collection: hrnet_dark_coco
@@ -35,10 +35,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.766
-      AP@50: 0.907
-      AP@75: 0.831
+      AP@0.5: 0.907
+      AP@0.75: 0.831
       AR: 0.815
-      AR@50: 0.943
+      AR@0.5: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark-307dafc2_20210203.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_256x192_dark
   In Collection: hrnet_dark_coco
@@ -50,10 +50,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.764
-      AP@50: 0.907
-      AP@75: 0.83
+      AP@0.5: 0.907
+      AP@0.75: 0.83
       AR: 0.814
-      AR@50: 0.943
+      AR@0.5: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_384x288_dark
   In Collection: hrnet_dark_coco
@@ -65,8 +65,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.772
-      AP@50: 0.91
-      AP@75: 0.836
+      AP@0.5: 0.91
+      AP@0.75: 0.836
       AR: 0.82
-      AR@50: 0.946
+      AR@0.5: 0.946
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark-e881a4b6_20210203.pth

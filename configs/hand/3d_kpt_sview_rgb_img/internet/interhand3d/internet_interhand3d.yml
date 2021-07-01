@@ -24,7 +24,7 @@ Models:
       MPJPE-single: 10.16
       MPJPE-interacting: 15.27
       MPJPE-all: 12.97
-      AP@h: 0.99
+      APh: 0.99
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3d_all_256x256-b9c1cf4c_20210506.pth
 - Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   In Collection: internet_interhand3d
@@ -38,5 +38,5 @@ Models:
       MPJPE-single: 12.03
       MPJPE-interacting: 17.88
       MPJPE-all: 14.84
-      AP@h: 0.99
+      APh: 0.99
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3d_all_256x256-b9c1cf4c_20210506.pth

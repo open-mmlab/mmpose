@@ -18,8 +18,8 @@ Models:
     Dataset: AI Challenger
     Metrics:
       AP: 0.323
-      AP@50: 0.762
-      AP@75: 0.219
+      AP@0.5: 0.762
+      AP@0.75: 0.219
       AR: 0.366
-      AR@50: 0.789
+      AR@0.5: 0.789
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth
