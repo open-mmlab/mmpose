@@ -323,6 +323,13 @@ def display():
     text_color = (228, 183, 61)  # text color to show time/system information
     vid_out = None  # video writer
 
+    # show instructions
+    print('Keyboard shortcuts: ')
+    print('"v": Toggle the visualization of bounding boxes and poses.')
+    print('"s": Toggle the sunglasses effect.')
+    print('"b": Toggle the bug-eye effect.')
+    print('"Q", "q" or Esc: Exit.')
+
     while True:
         with stop_watch.timeit('_FPS_'):
             # acquire a frame from buffer
