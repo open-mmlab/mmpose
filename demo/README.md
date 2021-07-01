@@ -73,4 +73,3 @@ This page provides tutorials about running demos. Please click the caption for m
 
 [Webcam demo](docs/webcam_demo.md)
 </div>
-
