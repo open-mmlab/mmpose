@@ -19,6 +19,12 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
+<!-- https://youtu.be/BhGPbhZXTZ8 -->
+
+<!-- <iframe width="560" height="315" src="https://youtu.be/BhGPbhZXTZ8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+
+<iframe width="500" height="300" src="https://www.youtube.com/embed/BhGPbhZXTZ8" frameborder="0" allowfullscreen></iframe>
+
 <div align="center">
     <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
     COCO 17-keypoint pose estimation
