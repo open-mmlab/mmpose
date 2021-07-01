@@ -18,10 +18,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.726
-      AP50: 0.896
-      AP75: 0.799
+      AP@50: 0.896
+      AP@75: 0.799
       AR: 0.78
-      AR50: 0.934
+      AR@50: 0.934
   Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_coco_256x256-4ec713ba_20200709.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hourglass52_coco_384x384
   In Collection: hourglass_coco
@@ -33,8 +33,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.746
-      AP50: 0.9
-      AP75: 0.813
+      AP@50: 0.9
+      AP@75: 0.813
       AR: 0.797
-      AR50: 0.939
+      AR@50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_coco_384x384-be91ba2b_20200812.pth

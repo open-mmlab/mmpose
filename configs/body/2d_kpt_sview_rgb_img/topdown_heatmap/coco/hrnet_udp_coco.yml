@@ -21,10 +21,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.76
-      AP50: 0.907
-      AP75: 0.827
+      AP@50: 0.907
+      AP@75: 0.827
       AR: 0.811
-      AR50: 0.945
+      AR@50: 0.945
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_256x192_udp-aba0be42_20210220.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_384x288_udp
   In Collection: hrnet_udp_coco
@@ -36,10 +36,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.769
-      AP50: 0.908
-      AP75: 0.833
+      AP@50: 0.908
+      AP@75: 0.833
       AR: 0.817
-      AR50: 0.944
+      AR@50: 0.944
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_384x288_udp-e97c1a0f_20210223.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_256x192_udp
   In Collection: hrnet_udp_coco
@@ -51,10 +51,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.767
-      AP50: 0.906
-      AP75: 0.834
+      AP@50: 0.906
+      AP@75: 0.834
       AR: 0.817
-      AR50: 0.945
+      AR@50: 0.945
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_256x192_udp-2554c524_20210223.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_384x288_udp
   In Collection: hrnet_udp_coco
@@ -66,10 +66,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.772
-      AP50: 0.91
-      AP75: 0.835
+      AP@50: 0.91
+      AP@75: 0.835
       AR: 0.82
-      AR50: 0.945
+      AR@50: 0.945
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_384x288_udp-0f89c63e_20210223.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_udp_regress
   In Collection: hrnet_udp_coco
@@ -81,8 +81,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.758
-      AP50: 0.908
-      AP75: 0.823
+      AP@50: 0.908
+      AP@75: 0.823
       AR: 0.812
-      AR50: 0.943
+      AR@50: 0.943
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_256x192_udp_regress-be2dbba4_20210222.pth

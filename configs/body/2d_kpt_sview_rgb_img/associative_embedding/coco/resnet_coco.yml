@@ -20,10 +20,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.466
-      AP50: 0.742
-      AP75: 0.479
+      AP@50: 0.742
+      AP@75: 0.479
       AR: 0.552
-      AR50: 0.797
+      AR@50: 0.797
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
   In Collection: resnet_coco
@@ -35,10 +35,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.479
-      AP50: 0.757
-      AP75: 0.487
+      AP@50: 0.757
+      AP@75: 0.487
       AR: 0.566
-      AR50: 0.81
+      AR@50: 0.81
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
   In Collection: resnet_coco
@@ -50,10 +50,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.554
-      AP50: 0.807
-      AP75: 0.599
+      AP@50: 0.807
+      AP@75: 0.599
       AR: 0.622
-      AR50: 0.841
+      AR@50: 0.841
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
   In Collection: resnet_coco
@@ -65,10 +65,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.595
-      AP50: 0.829
-      AP75: 0.648
+      AP@50: 0.829
+      AP@75: 0.648
       AR: 0.651
-      AR50: 0.856
+      AR@50: 0.856
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_512x512
   In Collection: resnet_coco
@@ -80,10 +80,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.503
-      AP50: 0.765
-      AP75: 0.521
+      AP@50: 0.765
+      AP@75: 0.521
       AR: 0.591
-      AR50: 0.821
+      AR@50: 0.821
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
   In Collection: resnet_coco
@@ -95,10 +95,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.525
-      AP50: 0.784
-      AP75: 0.542
+      AP@50: 0.784
+      AP@75: 0.542
       AR: 0.61
-      AR50: 0.832
+      AR@50: 0.832
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
   In Collection: resnet_coco
@@ -110,10 +110,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.603
-      AP50: 0.831
-      AP75: 0.641
+      AP@50: 0.831
+      AP@75: 0.641
       AR: 0.668
-      AR50: 0.87
+      AR@50: 0.87
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
   In Collection: resnet_coco
@@ -125,8 +125,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.66
-      AP50: 0.86
-      AP75: 0.713
+      AP@50: 0.86
+      AP@75: 0.713
       AR: 0.709
-      AR50: 0.889
+      AR@50: 0.889
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth

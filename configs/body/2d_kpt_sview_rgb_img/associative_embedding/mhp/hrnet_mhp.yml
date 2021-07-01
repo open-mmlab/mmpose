@@ -21,10 +21,10 @@ Models:
     Dataset: MHP
     Metrics:
       AP: 0.583
-      AP50: 0.895
-      AP75: 0.666
+      AP@50: 0.895
+      AP@75: 0.666
       AR: 0.656
-      AR50: 0.931
+      AR@50: 0.931
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_mhp_512x512
   In Collection: hrnet_mhp
@@ -36,8 +36,8 @@ Models:
     Dataset: MHP
     Metrics:
       AP: 0.592
-      AP50: 0.898
-      AP75: 0.673
+      AP@50: 0.898
+      AP@75: 0.673
       AR: 0.664
-      AR50: 0.932
+      AR@50: 0.932
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth

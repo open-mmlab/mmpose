@@ -23,10 +23,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.671
-      AP50: 0.863
-      AP75: 0.729
+      AP@50: 0.863
+      AP@75: 0.729
       AR: 0.717
-      AR50: 0.889
+      AR@50: 0.889
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512_udp-91663bf9_20210220.pth
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_coco_512x512_udp
   In Collection: hrnet_udp_coco
@@ -38,8 +38,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.681
-      AP50: 0.872
-      AP75: 0.741
+      AP@50: 0.872
+      AP@75: 0.741
       AR: 0.725
-      AR50: 0.892
+      AR@50: 0.892
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_512x512_udp-de08fd8c_20210222.pth

@@ -19,8 +19,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.746
-      AP50: 0.905
-      AP75: 0.88
+      AP@50: 0.905
+      AP@75: 0.88
       AR: 0.8
-      AR50: 0.943
+      AR@50: 0.943
   Weights: hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth

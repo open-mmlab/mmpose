@@ -18,10 +18,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.704
-      AP50: 0.887
-      AP75: 0.779
+      AP@50: 0.887
+      AP@75: 0.779
       AR: 0.771
-      AR50: 0.926
+      AR@50: 0.926
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn18_coco_256x192-72f4b4a7_20201127.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn50_coco_256x192
   In Collection: rsn_coco
@@ -33,10 +33,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.723
-      AP50: 0.896
-      AP75: 0.8
+      AP@50: 0.896
+      AP@75: 0.8
       AR: 0.788
-      AR50: 0.934
+      AR@50: 0.934
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn50_coco_256x192-72ffe709_20201127.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--2xrsn50_coco_256x192
   In Collection: rsn_coco
@@ -48,10 +48,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.745
-      AP50: 0.899
-      AP75: 0.818
+      AP@50: 0.899
+      AP@75: 0.818
       AR: 0.809
-      AR50: 0.939
+      AR@50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/2xrsn50_coco_256x192-50648f0e_20201127.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--3xrsn50_coco_256x192
   In Collection: rsn_coco
@@ -63,8 +63,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.75
-      AP50: 0.9
-      AP75: 0.823
+      AP@50: 0.9
+      AP@75: 0.823
       AR: 0.813
-      AR50: 0.94
+      AR@50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/3xrsn50_coco_256x192-58f57a68_20201127.pth

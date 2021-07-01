@@ -3,7 +3,7 @@ import os
 import os.path as osp
 import re
 
-import yaml
+import mmcv
 
 
 def collate_metrics(keys):
@@ -38,6 +38,17 @@ def collate_metrics(keys):
                         used_metric += key[i]
                     i += 1
                 re.sub(' +', ' ', used_metric)
+                used_metric = used_metric.strip()
+                if metric == 'ap':
+                    _index = key.index('AP') + 2
+                    if _index < len(key):
+                        used_metric = used_metric[:_index] + \
+                                      '@' + used_metric[_index:]
+                if metric == 'ar':
+                    _index = key.index('AR') + 2
+                    if _index < len(key):
+                        used_metric = used_metric[:_index] + \
+                                      '@' + used_metric[_index:]
                 used_metrics.append(used_metric.strip())
                 metric_idx.append(idx)
                 break
@@ -76,7 +87,7 @@ def parse_md(md_file):
     collection = dict(
         Name=collection_name,
         Metadata={'Architecture': []},
-        README=md_file.replace(repo_root, '', 1).strip('/'),
+        README=md_file.replace(repo_root, '', 1).strip('./'),
         Paper=[])
     models = []
     task = get_task_name(md_file)
@@ -131,7 +142,7 @@ def parse_md(md_file):
                         continue
                     left = line[config_idx].index('](') + 2
                     right = line[config_idx].index(')', left)
-                    config = line[config_idx][left:right].strip('/')
+                    config = line[config_idx][left:right].strip('./')
 
                     left = line[ckpt_idx].index('](') + 2
                     right = line[ckpt_idx].index(')', left)
@@ -178,10 +189,10 @@ def parse_md(md_file):
     result = {'Collections': [collection], 'Models': models}
     yml_file = md_file[:-2] + 'yml'
     with open(yml_file, 'w') as f:
-        yaml.dump(result, f, sort_keys=False)
+        mmcv.dump(result, f, file_format='yaml', sort_keys=False)
 
 
-def update_model_zoo():
+def update_model_index():
     repo_root = osp.dirname(osp.dirname(__file__))
     configs_dir = osp.join(repo_root, 'configs')
     yml_files = []
@@ -195,9 +206,9 @@ def update_model_zoo():
         'Import':
         [yml_file.replace(repo_root, '', 1)[1:] for yml_file in yml_files]
     }
-    model_zoo_file = osp.join(repo_root, 'model_zoo.yml')
+    model_zoo_file = osp.join(repo_root, 'model-index.yml')
     with open(model_zoo_file, 'w') as f:
-        yaml.dump(model_zoo, f)
+        mmcv.dump(model_zoo, f, file_format='yaml')
 
 
 def main():
@@ -207,7 +218,7 @@ def main():
     args = parser.parse_args()
 
     parse_md(args.md_file)
-    update_model_zoo()
+    update_model_index()
 
 
 if __name__ == '__main__':

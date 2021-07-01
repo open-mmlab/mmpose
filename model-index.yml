@@ -36,7 +36,6 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.yml
-- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco_metafile.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_fp16_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d_coco.yml

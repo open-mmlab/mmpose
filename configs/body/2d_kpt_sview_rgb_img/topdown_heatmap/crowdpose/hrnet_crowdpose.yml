@@ -18,9 +18,9 @@ Models:
     Dataset: CrowdPose
     Metrics:
       AP: 0.675
-      AP50: 0.825
-      AP75: 0.729
-      AP (E): 0.77
-      AP (M): 0.687
-      AP (H): 0.553
+      AP@50: 0.825
+      AP@75: 0.729
+      AP@ (E): 0.77
+      AP@ (M): 0.687
+      AP@ (H): 0.553
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-960be101_20201227.pth

@@ -18,10 +18,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.722
-      AP50: 0.897
-      AP75: 0.799
+      AP@50: 0.897
+      AP@75: 0.799
       AR: 0.777
-      AR50: 0.933
+      AR@50: 0.933
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_256x192-a243b840_20200727.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d50_coco_384x288
   In Collection: resnetv1d_coco
@@ -33,10 +33,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.73
-      AP50: 0.9
-      AP75: 0.799
+      AP@50: 0.9
+      AP@75: 0.799
       AR: 0.78
-      AR50: 0.934
+      AR@50: 0.934
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_384x288-01f3fbb9_20200727.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_256x192
   In Collection: resnetv1d_coco
@@ -48,10 +48,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.731
-      AP50: 0.899
-      AP75: 0.809
+      AP@50: 0.899
+      AP@75: 0.809
       AR: 0.786
-      AR50: 0.938
+      AR@50: 0.938
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_256x192-5bd08cab_20200727.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_384x288
   In Collection: resnetv1d_coco
@@ -63,10 +63,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.748
-      AP50: 0.902
-      AP75: 0.816
+      AP@50: 0.902
+      AP@75: 0.816
       AR: 0.799
-      AR50: 0.939
+      AR@50: 0.939
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-5f9e421d_20200730.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_256x192
   In Collection: resnetv1d_coco
@@ -78,10 +78,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.737
-      AP50: 0.902
-      AP75: 0.812
+      AP@50: 0.902
+      AP@75: 0.812
       AR: 0.791
-      AR50: 0.94
+      AR@50: 0.94
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192-c4df51dc_20200727.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_384x288
   In Collection: resnetv1d_coco
@@ -93,8 +93,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.752
-      AP50: 0.909
-      AP75: 0.821
+      AP@50: 0.909
+      AP@75: 0.821
       AR: 0.802
-      AR50: 0.944
+      AR@50: 0.944
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-626c622d_20200730.pth

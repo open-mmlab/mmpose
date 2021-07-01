@@ -6,8 +6,8 @@ Collections:
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/hrnet_macaque.md
   Paper:
   - Deep high-resolution representation learning for human pose estimation
-  - "MacaquePose: A novel \u2018in the wild\u2019macaque monkey pose dataset for markerless\
-    \ motion capture"
+  - "MacaquePose: A novel \u2018in the wild\u2019macaque monkey pose dataset for markerless
+    motion capture"
 Models:
 - Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--hrnet_w32_macaque_256x192
   In Collection: hrnet_macaque
@@ -19,10 +19,10 @@ Models:
     Dataset: MacaquePose
     Metrics:
       AP: 0.814
-      AP50: 0.953
-      AP75: 0.918
+      AP@50: 0.953
+      AP@75: 0.918
       AR: 0.851
-      AR50: 0.969
+      AR@50: 0.969
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_macaque_256x192-f7e9e04f_20210407.pth
 - Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--hrnet_w48_macaque_256x192
   In Collection: hrnet_macaque
@@ -34,8 +34,8 @@ Models:
     Dataset: MacaquePose
     Metrics:
       AP: 0.818
-      AP50: 0.963
-      AP75: 0.917
+      AP@50: 0.963
+      AP@75: 0.917
       AR: 0.855
-      AR50: 0.971
+      AR@50: 0.971
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_macaque_256x192-9b34b02a_20210407.pth

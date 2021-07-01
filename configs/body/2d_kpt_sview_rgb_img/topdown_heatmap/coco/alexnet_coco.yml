@@ -18,8 +18,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.397
-      AP50: 0.758
-      AP75: 0.381
+      AP@50: 0.758
+      AP@75: 0.381
       AR: 0.478
-      AR50: 0.822
+      AR@50: 0.822
   Weights: https://download.openmmlab.com/mmpose/top_down/alexnet/alexnet_coco_256x192-a7b1fd15_20200727.pth

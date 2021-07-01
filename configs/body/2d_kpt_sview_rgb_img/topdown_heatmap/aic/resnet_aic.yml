@@ -20,8 +20,8 @@ Models:
     Dataset: AI Challenger
     Metrics:
       AP: 0.294
-      AP50: 0.736
-      AP75: 0.174
+      AP@50: 0.736
+      AP@75: 0.174
       AR: 0.337
-      AR50: 0.763
+      AR@50: 0.763
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth

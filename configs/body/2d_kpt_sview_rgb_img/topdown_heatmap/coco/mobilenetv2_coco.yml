@@ -18,10 +18,10 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.646
-      AP50: 0.874
-      AP75: 0.723
+      AP@50: 0.874
+      AP@75: 0.723
       AR: 0.707
-      AR50: 0.917
+      AR@50: 0.917
   Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_256x192-d1e58e7b_20200727.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco_384x288
   In Collection: mobilenetv2_coco
@@ -33,8 +33,8 @@ Models:
     Dataset: COCO
     Metrics:
       AP: 0.673
-      AP50: 0.879
-      AP75: 0.743
+      AP@50: 0.879
+      AP@75: 0.743
       AR: 0.729
-      AR50: 0.916
+      AR@50: 0.916
   Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_384x288-26be4816_20200727.pth

@@ -18,10 +18,10 @@ Models:
     Dataset: ATRW
     Metrics:
       AP: 0.912
-      AP50: 0.973
-      AP75: 0.959
+      AP@50: 0.973
+      AP@75: 0.959
       AR: 0.938
-      AR50: 0.985
+      AR@50: 0.985
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_atrw_256x256-f027f09a_20210414.pth
 - Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--atrw--hrnet_w48_atrw_256x256
   In Collection: hrnet_atrw
@@ -33,8 +33,8 @@ Models:
     Dataset: ATRW
     Metrics:
       AP: 0.911
-      AP50: 0.972
-      AP75: 0.946
+      AP@50: 0.972
+      AP@75: 0.946
       AR: 0.937
-      AR50: 0.985
+      AR@50: 0.985
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_atrw_256x256-ac088892_20210414.pth
