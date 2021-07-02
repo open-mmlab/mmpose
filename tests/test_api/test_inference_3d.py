@@ -88,10 +88,8 @@ def test_pose_lifter_demo():
     dataset = pose_model.cfg.data['test']['type']
 
     seq_len = pose_model.cfg.test_data_cfg.seq_len
-    pose_results_2d_seq = [pose_results_2d[0]] * (seq_len // 2) + [
-        pose_results_2d[1]
-    ] + [pose_results_2d[2]] * (
-        seq_len // 2)
+    pose_results_2d_seq = extract_pose_sequence(
+        pose_results_2d, 1, causal=False, seq_len=seq_len, step=1)
 
     pose_lift_results = inference_pose_lifter_model(
         pose_model,

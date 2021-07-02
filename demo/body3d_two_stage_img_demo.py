@@ -208,29 +208,18 @@ def main():
     if args.camera_param_file is not None:
         camera_params = mmcv.load(args.camera_param_file)
 
-    # load temporal padding config from model.data_cfg
-    if hasattr(pose_lift_model.cfg, 'test_data_cfg'):
-        data_cfg = pose_lift_model.cfg.test_data_cfg
-    else:
-        data_cfg = pose_lift_model.cfg.data_cfg
-    padding_cfg = dict(
-        causal=data_cfg.causal,
-        seq_len=data_cfg.seq_len,
-        seq_frame_interval=data_cfg.seq_frame_interval)
-
-    for i in mmcv.track_iter_progress(len(pose_det_results_list)):
+    for i, pose_det_results in enumerate(
+            mmcv.track_iter_progress(pose_det_results_list)):
         # 2D-to-3D pose lifting
         # Note that the pose_det_results are regarded as a single-frame pose
         # sequence
         pose_lift_results = inference_pose_lifter_model(
             pose_lift_model,
-            pose_results_2d=pose_det_results_list,
+            pose_results_2d=[pose_det_results],
             dataset=dataset,
-            with_track_id=False,
-            frame_idx=i,
-            padding_cfg=padding_cfg)
+            with_track_id=False)
 
-        image_name = pose_det_results_list[i][0]['image_name']
+        image_name = pose_det_results[0]['image_name']
 
         # Pose processing
         pose_lift_results_vis = []
@@ -249,7 +238,7 @@ def main():
                     keypoints_3d[..., 2], axis=-1, keepdims=True)
             res['keypoints_3d'] = keypoints_3d
             # Add title
-            det_res = pose_det_results_list[i][idx]
+            det_res = pose_det_results[idx]
             instance_id = det_res.get('track_id', idx)
             res['title'] = f'Prediction ({instance_id})'
             pose_lift_results_vis.append(res)

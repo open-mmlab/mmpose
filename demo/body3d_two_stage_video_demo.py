@@ -172,7 +172,6 @@ def main():
 
     video = mmcv.VideoReader(args.video_path)
     assert video.opened, f'Failed to load video file {args.video_path}'
-    num_frames = video.frame_cnt
 
     # First stage: 2D pose detection
     print('Stage 1: 2D pose detection.')
@@ -264,12 +263,13 @@ def main():
         data_cfg = pose_lift_model.cfg.data_cfg
 
     num_instances = args.num_instances
-    for i in mmcv.track_iter_progress(range(num_frames)):
+    for i, pose_det_results in enumerate(
+            mmcv.track_iter_progress(pose_det_results_list)):
         # extract and pad input pose2d sequence
         pose_results_2d = extract_pose_sequence(
             pose_det_results_list,
             frame_idx=i,
-            causal=pose_lift_model.causal,
+            causal=data_cfg.causal,
             seq_len=data_cfg.seq_len,
             step=data_cfg.seq_frame_interval)
         # 2D-to-3D pose lifting
@@ -277,7 +277,6 @@ def main():
             pose_lift_model,
             pose_results_2d=pose_results_2d,
             dataset=pose_lift_dataset,
-            frame_idx=i,
             with_track_id=True,
             image_size=video.resolution,
             norm_pose_2d=args.norm_pose_2d)
@@ -296,7 +295,7 @@ def main():
                     keypoints_3d[..., 2], axis=-1, keepdims=True)
             res['keypoints_3d'] = keypoints_3d
             # add title
-            det_res = pose_det_results_list[i][idx]
+            det_res = pose_det_results[idx]
             instance_id = det_res['track_id']
             res['title'] = f'Prediction ({instance_id})'
             # only visualize the target frame
