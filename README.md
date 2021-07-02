@@ -19,17 +19,7 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
-<div align="center">
-    <img src="https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/demo/mmpose_full_demo_v2.1s.gif" width="600px" alt><br>
-
-[Watch full demo video on GitHub](https://youtu.be/nFcZ2H1Ix3w)
-</div>
-
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/28900607/121288285-b8fcbf00-c915-11eb-98e4-ba846de12987.gif" width="600px" alt><br>
-
-[Watch full demo video on GitHub](https://youtu.be/nFcZ2H1Ix3w)
-</div>
+https://user-images.githubusercontent.com/15977946/124259238-e0cff300-db60-11eb-902e-6038c164b58e.mp4
 
 ### Major Features
 
