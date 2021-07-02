@@ -475,7 +475,7 @@ def keypoints_from_heatmaps(heatmaps,
                             kernel=11,
                             valid_radius_factor=0.0546875,
                             use_udp=False,
-                            target_type='GaussianHeatMap'):
+                            target_type='GaussianHeatmap'):
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -505,8 +505,8 @@ def keypoints_from_heatmaps(heatmaps,
         valid_radius_factor (float): The radius factor of the positive area
             in classification heatmap for UDP.
         use_udp (bool): Use unbiased data processing.
-        target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
-            GaussianHeatMap: Classification target with gaussian distribution.
+        target_type (str): 'GaussianHeatmap' or 'CombinedTarget'.
+            GaussianHeatmap: Classification target with gaussian distribution.
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -518,6 +518,9 @@ def keypoints_from_heatmaps(heatmaps,
         - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
+    # Avoid being affected
+    heatmaps = heatmaps.copy()
+
     # detect conflicts
     if unbiased:
         assert post_process not in [False, None, 'megvii']
@@ -558,13 +561,10 @@ def keypoints_from_heatmaps(heatmaps,
 
     N, K, H, W = heatmaps.shape
     if use_udp:
-        assert target_type.lower() in [
-            'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
-        ]
-        if target_type == 'GaussianHeatMap':
+        if target_type.lower() == 'GaussianHeatMap'.lower():
             preds, maxvals = _get_max_preds(heatmaps)
             preds = post_dark_udp(preds, heatmaps, kernel=kernel)
-        elif target_type == 'CombinedTarget':
+        elif target_type.lower() == 'CombinedTarget'.lower():
             for person_heatmaps in heatmaps:
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
@@ -579,6 +579,9 @@ def keypoints_from_heatmaps(heatmaps,
             index += W * H * np.arange(0, N * K / 3)
             index = index.astype(np.int).reshape(N, K // 3, 1)
             preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
+        else:
+            raise ValueError('target_type should be either '
+                             "'GaussianHeatmap' or 'CombinedTarget'")
     else:
         preds, maxvals = _get_max_preds(heatmaps)
         if post_process == 'unbiased':  # alleviate biased coordinate

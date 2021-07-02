@@ -241,8 +241,8 @@ class TopDownGenerateTarget:
         keypoint_pose_distance: Keypoint pose distance for UDP.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
-        target_type (str): supported targets: 'GaussianHeatMap',
-            'CombinedTarget'. Default:'GaussianHeatMap'
+        target_type (str): supported targets: 'GaussianHeatmap',
+            'CombinedTarget'. Default:'GaussianHeatmap'
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -253,7 +253,7 @@ class TopDownGenerateTarget:
                  sigma=2,
                  kernel=(11, 11),
                  valid_radius_factor=0.0546875,
-                 target_type='GaussianHeatMap',
+                 target_type='GaussianHeatmap',
                  encoding='MSRA',
                  unbiased_encoding=False):
         self.sigma = sigma
@@ -405,17 +405,17 @@ class TopDownGenerateTarget:
             heatmap height: H
             heatmap width: W
             num target channels: C
-            C = K if target_type=='GaussianHeatMap'
+            C = K if target_type=='GaussianHeatmap'
             C = 3*K if target_type=='CombinedTarget'
 
         Args:
             cfg (dict): data config
             joints_3d (np.ndarray[K, 3]): Annotated keypoints.
             joints_3d_visible (np.ndarray[K, 3]): Visibility of keypoints.
-            factor (float): kernel factor for GaussianHeatMap target or
+            factor (float): kernel factor for GaussianHeatmap target or
                 valid radius factor for CombinedTarget.
-            target_type (str): 'GaussianHeatMap' or 'CombinedTarget'.
-                GaussianHeatMap: Heatmap target with gaussian distribution.
+            target_type (str): 'GaussianHeatmap' or 'CombinedTarget'.
+                GaussianHeatmap: Heatmap target with gaussian distribution.
                 CombinedTarget: The combination of classification target
                 (response map) and regression target (offset map).
 
@@ -434,11 +434,7 @@ class TopDownGenerateTarget:
         target_weight = np.ones((num_joints, 1), dtype=np.float32)
         target_weight[:, 0] = joints_3d_visible[:, 0]
 
-        assert target_type.lower() in [
-            'GaussianHeatMap'.lower(), 'CombinedTarget'.lower()
-        ]
-
-        if target_type == 'GaussianHeatMap':
+        if target_type.lower() == 'GaussianHeatmap'.lower():
             target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
                               dtype=np.float32)
 
@@ -481,7 +477,8 @@ class TopDownGenerateTarget:
                 if v > 0.5:
                     target[joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
                         g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
-        elif target_type == 'CombinedTarget':
+
+        elif target_type.lower() == 'CombinedTarget'.lower():
             target = np.zeros(
                 (num_joints, 3, heatmap_size[1] * heatmap_size[0]),
                 dtype=np.float32)
@@ -510,6 +507,9 @@ class TopDownGenerateTarget:
                     target[joint_id, 2, keep_pos] = y_offset[keep_pos]
             target = target.reshape(num_joints * 3, heatmap_size[1],
                                     heatmap_size[0])
+        else:
+            raise ValueError('target_type should be either '
+                             "'GaussianHeatmap' or 'CombinedTarget'")
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
@@ -544,6 +544,7 @@ class TopDownGenerateTarget:
                 target, target_weight = self._msra_generate_target(
                     results['ann_info'], joints_3d, joints_3d_visible,
                     self.sigma)
+
         elif self.encoding == 'Megvii':
             if isinstance(self.kernel, list):
                 num_kernels = len(self.kernel)
@@ -563,13 +564,17 @@ class TopDownGenerateTarget:
                 target, target_weight = self._megvii_generate_target(
                     results['ann_info'], joints_3d, joints_3d_visible,
                     self.kernel)
+
         elif self.encoding == 'UDP':
-            if self.target_type == 'CombinedTarget':
+            if self.target_type.lower() == 'CombinedTarget'.lower():
                 factors = self.valid_radius_factor
                 channel_factor = 3
-            elif self.target_type == 'GaussianHeatMap':
+            elif self.target_type.lower() == 'GaussianHeatmap'.lower():
                 factors = self.sigma
                 channel_factor = 1
+            else:
+                raise ValueError('target_type should be either '
+                                 "'GaussianHeatmap' or 'CombinedTarget'")
             if isinstance(factors, list):
                 num_factors = len(factors)
                 cfg = results['ann_info']

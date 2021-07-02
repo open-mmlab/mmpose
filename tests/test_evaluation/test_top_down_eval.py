@@ -45,11 +45,36 @@ def test_keypoints_from_heatmaps():
 
     preds, maxvals = keypoints_from_heatmaps(
         heatmaps, center, scale, unbiased=True)
-
     assert_array_almost_equal(preds, np.array([[[126, 126]]]), decimal=4)
     assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
     assert isinstance(preds, np.ndarray)
     assert isinstance(maxvals, np.ndarray)
+
+    preds, maxvals = keypoints_from_heatmaps(
+        heatmaps, center, scale, post_process='unbiased')
+    assert_array_almost_equal(preds, np.array([[[126, 126]]]), decimal=4)
+    assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
+    assert isinstance(preds, np.ndarray)
+    assert isinstance(maxvals, np.ndarray)
+
+    preds1, maxvals1 = keypoints_from_heatmaps(
+        heatmaps,
+        center,
+        scale,
+        post_process='default',
+        target_type='GaussianHeatMap',
+        use_udp=True)
+    preds2, maxvals2 = keypoints_from_heatmaps(
+        heatmaps,
+        center,
+        scale,
+        post_process='default',
+        target_type='GaussianHeatmap',
+        use_udp=True)
+    assert_array_almost_equal(preds1, preds2, decimal=4)
+    assert_array_almost_equal(maxvals1, maxvals2, decimal=4)
+    assert isinstance(preds2, np.ndarray)
+    assert isinstance(maxvals2, np.ndarray)
 
 
 def test_keypoint_pck_accuracy():
