@@ -5,7 +5,7 @@ import numpy as np
 from mmcv.image import imwrite
 from mmcv.visualization.image import imshow
 
-from mmpose.core import imshow_keypoints
+from mmpose.core import imshow_bboxes, imshow_keypoints
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
@@ -222,10 +222,11 @@ class TopDown(BasePose):
                     bbox_color='green',
                     pose_kpt_color=None,
                     pose_limb_color=None,
-                    text_color=(255, 0, 0),
+                    text_color='white',
                     radius=4,
                     thickness=1,
                     font_scale=0.5,
+                    bbox_thickness=1,
                     win_name='',
                     show=False,
                     show_keypoint_weight=False,
@@ -264,7 +265,6 @@ class TopDown(BasePose):
 
         img = mmcv.imread(img)
         img = img.copy()
-        img_h, img_w, _ = img.shape
 
         bbox_result = []
         pose_result = []
@@ -274,13 +274,18 @@ class TopDown(BasePose):
 
         if len(bbox_result) > 0:
             bboxes = np.vstack(bbox_result)
+            labels = None
+            if 'label' in result[0]:
+                labels = [res['label'] for res in result]
             # draw bounding boxes
-            mmcv.imshow_bboxes(
+            imshow_bboxes(
                 img,
                 bboxes,
+                labels=labels,
                 colors=bbox_color,
-                top_k=-1,
-                thickness=thickness,
+                text_color=text_color,
+                thickness=bbox_thickness,
+                font_scale=font_scale,
                 show=False)
 
             imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,

@@ -1,6 +1,10 @@
+import tempfile
+
+import mmcv
 import numpy as np
 
-from mmpose.core import imshow_keypoints, imshow_keypoints_3d
+from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
+                         imshow_bboxes, imshow_keypoints, imshow_keypoints_3d)
 
 
 def test_imshow_keypoints():
@@ -29,3 +33,48 @@ def test_imshow_keypoints():
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
         vis_height=400)
+
+
+def test_imshow_bbox():
+    img = np.zeros((100, 100, 3), dtype=np.uint8)
+    bboxes = np.array([[10, 10, 30, 30], [10, 50, 30, 80]], dtype=np.float32)
+    labels = ['label 1', 'label 2']
+    colors = ['red', 'green']
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _ = imshow_bboxes(
+            img,
+            bboxes,
+            labels=labels,
+            colors=colors,
+            show=False,
+            out_file=f'{tmpdir}/out.png')
+
+
+def test_effects():
+    img = np.zeros((100, 100, 3), dtype=np.uint8)
+    kpts = np.array([[10., 10., 0.8], [20., 10., 0.8]], dtype=np.float32)
+    bbox = np.array([0, 0, 50, 50], dtype=np.float32)
+    pose_results = [dict(bbox=bbox, keypoints=kpts)]
+    # sunglasses
+    sunglasses_img = mmcv.imread('demo/resources/sunglasses.jpg')
+    _ = apply_sunglasses_effect(
+        img,
+        pose_results,
+        sunglasses_img,
+        left_eye_index=1,
+        right_eye_index=0,
+        kpt_thr=0.5)
+    _ = apply_sunglasses_effect(
+        img,
+        pose_results,
+        sunglasses_img,
+        left_eye_index=1,
+        right_eye_index=0,
+        kpt_thr=0.9)
+
+    # bug-eye
+    _ = apply_bugeye_effect(
+        img, pose_results, left_eye_index=1, right_eye_index=0, kpt_thr=0.5)
+    _ = apply_bugeye_effect(
+        img, pose_results, left_eye_index=1, right_eye_index=0, kpt_thr=0.9)

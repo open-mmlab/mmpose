@@ -65,3 +65,11 @@ This page provides tutorials about running demos. Please click the caption for m
 
 [3D hand_pose demo](docs/3d_hand_demo.md)
 </div>
+
+<br>
+
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
+
+[Webcam demo](docs/webcam_demo.md)
+</div>
