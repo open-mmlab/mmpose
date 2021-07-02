@@ -162,6 +162,26 @@ def test_top_down_pipeline():
     _check_normalize(results_tensor['img'].data.numpy(),
                      results_normalize['img'].data.numpy(), norm_cfg)
 
+    generate_target = TopDownGenerateTarget(
+        sigma=2, target_type='GaussianHeatMap', unbiased_encoding=True)
+    results_target = generate_target(copy.deepcopy(results_tensor))
+    assert 'target' in results_target
+    assert results_target['target'].shape == (
+        num_joints, results['ann_info']['heatmap_size'][1],
+        results['ann_info']['heatmap_size'][0])
+    assert 'target_weight' in results_target
+    assert results_target['target_weight'].shape == (num_joints, 1)
+
+    generate_target = TopDownGenerateTarget(
+        sigma=2, target_type='GaussianHeatmap', unbiased_encoding=True)
+    results_target = generate_target(copy.deepcopy(results_tensor))
+    assert 'target' in results_target
+    assert results_target['target'].shape == (
+        num_joints, results['ann_info']['heatmap_size'][1],
+        results['ann_info']['heatmap_size'][0])
+    assert 'target_weight' in results_target
+    assert results_target['target_weight'].shape == (num_joints, 1)
+
     generate_target = TopDownGenerateTarget(sigma=2, unbiased_encoding=False)
     results_target = generate_target(copy.deepcopy(results_tensor))
     assert 'target' in results_target
