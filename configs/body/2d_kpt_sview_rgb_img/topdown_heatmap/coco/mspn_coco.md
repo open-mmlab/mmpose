@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">MSPN (ArXiv'2019)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1901.00148">MSPN (ArXiv'2019)</a></summary>
 
 ```bibtex
 @article{li2019rethinking,
@@ -17,7 +17,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">COCO (ECCV'2014)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

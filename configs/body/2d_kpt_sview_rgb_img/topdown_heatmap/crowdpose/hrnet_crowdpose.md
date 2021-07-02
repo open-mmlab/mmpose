@@ -2,7 +2,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">HRNet (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html">HRNet (CVPR'2019)</a></summary>
 
 ```bibtex
 @inproceedings{sun2019deep,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">CrowdPose (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html">CrowdPose (CVPR'2019)</a></summary>
 
 ```bibtex
 @article{li2018crowdpose,

@@ -1,0 +1,23 @@
+Collections:
+- Name: hrnetv2_rhd2d
+  Metadata:
+    Architecture:
+    - HRNetv2
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_rhd2d.md
+  Paper:
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_w18_rhd2d_256x256
+  In Collection: hrnetv2_rhd2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256.py
+  Metadata:
+    Training Data: RHD
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: RHD
+    Metrics:
+      PCK@0.2: 0.992
+      AUC: 0.902
+      EPE: 2.21
+  Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_rhd2d_256x256-95b20dd8_20210330.pth

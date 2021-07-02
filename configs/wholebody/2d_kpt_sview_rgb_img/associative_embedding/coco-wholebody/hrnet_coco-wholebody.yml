@@ -1,0 +1,52 @@
+Collections:
+- Name: hrnet_coco-wholebody
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HRNet
+  README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_coco-wholebody.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+Models:
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--hrnet_w32_coco_wholebody_512x512
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_w32_coco_wholebody_512x512.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.551
+      Body AR: 0.65
+      Foot AP: 0.271
+      Foot AR: 0.451
+      Face AP: 0.564
+      Face AR: 0.618
+      Hand AP: 0.159
+      Hand AR: 0.238
+      Whole AP: 0.342
+      Whole AR: 0.453
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_wholebody_512x512_plus-f1f1185c_20210517.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--hrnet_w48_coco_wholebody_512x512
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_w48_coco_wholebody_512x512.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.592
+      Body AR: 0.686
+      Foot AP: 0.443
+      Foot AR: 0.595
+      Face AP: 0.619
+      Face AR: 0.674
+      Hand AP: 0.347
+      Hand AR: 0.438
+      Whole AP: 0.422
+      Whole AR: 0.532
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_coco_wholebody_512x512_plus-4de8a695_20210517.pth

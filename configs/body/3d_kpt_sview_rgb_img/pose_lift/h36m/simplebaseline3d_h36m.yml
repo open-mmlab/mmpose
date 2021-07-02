@@ -1,0 +1,22 @@
+Collections:
+- Name: simplebaseline3d_h36m
+  Metadata:
+    Architecture:
+    - SimpleBaseline3D
+  README: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.md
+  Paper:
+  - http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
+Models:
+- Name: body--3d_kpt_sview_rgb_img--pose_lift--h36m--simplebaseline3d_h36m
+  In Collection: simplebaseline3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 43.4
+      P-MPJPE: 34.3
+  Weights: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth

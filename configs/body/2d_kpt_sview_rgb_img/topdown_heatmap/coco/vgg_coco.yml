@@ -1,0 +1,25 @@
+Collections:
+- Name: vgg_coco
+  Metadata:
+    Architecture:
+    - VGG
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.md
+  Paper:
+  - https://arxiv.org/abs/1409.1556
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--vgg16_bn_coco_256x192
+  In Collection: vgg_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg16_bn_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.698
+      AP@0.5: 0.89
+      AP@0.75: 0.768
+      AR: 0.754
+      AR@0.5: 0.929
+  Weights: https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192-7e7c58d6_20210517.pth

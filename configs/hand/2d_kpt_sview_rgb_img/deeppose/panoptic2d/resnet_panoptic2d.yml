@@ -1,0 +1,25 @@
+Collections:
+- Name: resnet_panoptic2d
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+  README: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/resnet_panoptic2d.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--deeppose--panoptic2d--res50_panoptic2d_256x256
+  In Collection: resnet_panoptic2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/res50_panoptic2d_256x256.py
+  Metadata:
+    Training Data: CMU Panoptic HandDB
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: CMU Panoptic HandDB
+    Metrics:
+      PCKh@0.7: 0.999
+      AUC: 0.686
+      EPE: 9.36
+  Weights: https://download.openmmlab.com/mmpose/hand/deeppose/deeppose_res50_panoptic_256x256-8a745183_20210330.pth

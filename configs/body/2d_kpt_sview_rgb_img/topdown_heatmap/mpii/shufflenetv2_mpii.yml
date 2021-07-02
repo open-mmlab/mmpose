@@ -1,0 +1,22 @@
+Collections:
+- Name: shufflenetv2_mpii
+  Metadata:
+    Architecture:
+    - ShufflenetV2
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv2_mpii.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv2_mpii_256x256
+  In Collection: shufflenetv2_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv2_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.828
+      Mean@0.1: 0.205
+  Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth

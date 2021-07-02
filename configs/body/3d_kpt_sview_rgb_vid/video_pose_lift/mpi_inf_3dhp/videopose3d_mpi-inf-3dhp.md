@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">VideoPose3D (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html">VideoPose3D (CVPR'2019)</a></summary>
 
 ```bibtex
 @inproceedings{pavllo20193d,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPI-INF-3DHP (3DV'2017)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/8374605/">MPI-INF-3DHP (3DV'2017)</a></summary>
 
 ```bibtex
 @inproceedings{mono-3dhp2017,

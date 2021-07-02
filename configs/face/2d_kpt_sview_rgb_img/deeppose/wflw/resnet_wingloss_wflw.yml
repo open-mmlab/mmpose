@@ -1,0 +1,31 @@
+Collections:
+- Name: resnet_wingloss_wflw
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    - Wingloss
+  README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
+Models:
+- Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--res50_wflw_256x256_wingloss
+  In Collection: resnet_wingloss_wflw
+  Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
+  Metadata:
+    Training Data: WFLW
+  Results:
+  - Task: 2D Face Landmark Detection
+    Dataset: WFLW
+    Metrics:
+      NME test: 4.64
+      NME pose: 8.25
+      NME illumination: 4.59
+      NME occlusion: 5.56
+      NME blur: 5.26
+      NME makeup: 4.59
+      NME expression: 5.07
+  Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth

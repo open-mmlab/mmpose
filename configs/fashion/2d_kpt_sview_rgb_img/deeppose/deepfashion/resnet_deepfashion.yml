@@ -1,0 +1,52 @@
+Collections:
+- Name: resnet_deepfashion
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+  README: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/resnet_deepfashion.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/Liu_DeepFashion_Powering_Robust_CVPR_2016_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-46475-6_15
+Models:
+- Name: fashion--2d_kpt_sview_rgb_img--deeppose--deepfashion--res50_deepfashion_upper_256x192
+  In Collection: resnet_deepfashion
+  Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_upper_256x192.py
+  Metadata:
+    Training Data: DeepFashion
+  Results:
+  - Task: 2D Fashion Landmark Detection
+    Dataset: DeepFashion
+    Metrics:
+      PCK@0.2: 0.965
+      AUC: 0.535
+      EPE: 17.2
+  Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_upper_256x192-497799fb_20210309.pth
+- Name: fashion--2d_kpt_sview_rgb_img--deeppose--deepfashion--res50_deepfashion_lower_256x192
+  In Collection: resnet_deepfashion
+  Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_lower_256x192.py
+  Metadata:
+    Training Data: DeepFashion
+  Results:
+  - Task: 2D Fashion Landmark Detection
+    Dataset: DeepFashion
+    Metrics:
+      PCK@0.2: 0.971
+      AUC: 0.678
+      EPE: 11.8
+  Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_lower_256x192-94e0e653_20210309.pth
+- Name: fashion--2d_kpt_sview_rgb_img--deeppose--deepfashion--res50_deepfashion_full_256x192
+  In Collection: resnet_deepfashion
+  Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_full_256x192.py
+  Metadata:
+    Training Data: DeepFashion
+  Results:
+  - Task: 2D Fashion Landmark Detection
+    Dataset: DeepFashion
+    Metrics:
+      PCK@0.2: 0.983
+      AUC: 0.602
+      EPE: 14.0
+  Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_full_256x192-4e0273e2_20210309.pth

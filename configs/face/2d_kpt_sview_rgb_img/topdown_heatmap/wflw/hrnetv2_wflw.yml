@@ -1,0 +1,27 @@
+Collections:
+- Name: hrnetv2_wflw
+  Metadata:
+    Architecture:
+    - HRNetv2
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.md
+  Paper:
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
+Models:
+- Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--wflw--hrnetv2_w18_wflw_256x256
+  In Collection: hrnetv2_wflw
+  Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256.py
+  Metadata:
+    Training Data: WFLW
+  Results:
+  - Task: 2D Face Landmark Detection
+    Dataset: WFLW
+    Metrics:
+      NME test: 4.06
+      NME pose: 6.98
+      NME illumination: 3.99
+      NME occlusion: 4.83
+      NME blur: 4.59
+      NME makeup: 3.92
+      NME expression: 4.33
+  Weights: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_wflw_256x256-2bf032a6_20210125.pth

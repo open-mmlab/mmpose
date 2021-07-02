@@ -1,0 +1,25 @@
+Collections:
+- Name: resnet_panoptic2d
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/resnet_panoptic2d.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--res50_panoptic_256x256
+  In Collection: resnet_panoptic2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/res50_panoptic_256x256.py
+  Metadata:
+    Training Data: CMU Panoptic HandDB
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: CMU Panoptic HandDB
+    Metrics:
+      PCKh@0.7: 0.999
+      AUC: 0.713
+      EPE: 9.0
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-4eafc561_20210330.pth

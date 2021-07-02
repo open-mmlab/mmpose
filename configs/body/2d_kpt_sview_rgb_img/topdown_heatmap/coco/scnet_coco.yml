@@ -1,0 +1,70 @@
+Collections:
+- Name: scnet_coco
+  Metadata:
+    Architecture:
+    - SCNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_256x192
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.728
+      AP@0.5: 0.899
+      AP@0.75: 0.807
+      AR: 0.784
+      AR@0.5: 0.938
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_384x288
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.751
+      AP@0.5: 0.906
+      AP@0.75: 0.818
+      AR: 0.802
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_256x192
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.733
+      AP@0.5: 0.903
+      AP@0.75: 0.813
+      AR: 0.79
+      AR@0.5: 0.941
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_384x288
+  In Collection: scnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.752
+      AP@0.5: 0.906
+      AP@0.75: 0.823
+      AR: 0.804
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288-0b6e631b_20200709.pth

@@ -1,0 +1,48 @@
+Collections:
+- Name: resnet_posetrack18
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/resnet_posetrack18.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
+  In Collection: resnet_posetrack18
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
+  Metadata:
+    Training Data: PoseTrack18
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: PoseTrack18
+    Metrics:
+      Head: 86.5
+      Shou: 87.5
+      Elb: 82.3
+      Wri: 75.6
+      Hip: 79.9
+      Knee: 78.6
+      Ankl: 74.0
+      Total: 81.0
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
+  In Collection: resnet_posetrack18
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
+  Metadata:
+    Training Data: PoseTrack18
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: PoseTrack18
+    Metrics:
+      Head: 78.9
+      Shou: 81.9
+      Elb: 77.8
+      Wri: 70.8
+      Hip: 75.3
+      Knee: 73.2
+      Ankl: 66.4
+      Total: 75.2
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth

@@ -1,0 +1,25 @@
+Collections:
+- Name: resnet_onehand10k
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/resnet_onehand10k.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/8529221/
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--res50_onehand10k_256x256
+  In Collection: resnet_onehand10k
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/res50_onehand10k_256x256.py
+  Metadata:
+    Training Data: OneHand10K
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: OneHand10K
+    Metrics:
+      PCK@0.2: 0.989
+      AUC: 0.555
+      EPE: 25.19
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-739c8639_20210330.pth

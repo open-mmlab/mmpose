@@ -1,0 +1,44 @@
+Collections:
+- Name: higherhrnet_udp_coco
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+    - UDP
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_udp_coco.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512_udp
+  In Collection: higherhrnet_udp_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.678
+      AP@0.5: 0.862
+      AP@0.75: 0.736
+      AR: 0.724
+      AR@0.5: 0.89
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512_udp
+  In Collection: higherhrnet_udp_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.69
+      AP@0.5: 0.872
+      AP@0.75: 0.75
+      AR: 0.734
+      AR@0.5: 0.891
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_udp-7cad61ef_20210222.pth

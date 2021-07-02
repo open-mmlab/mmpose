@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">SEResNet (CVPR'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper">SEResNet (CVPR'2018)</a></summary>
 
 ```bibtex
 @inproceedings{hu2018squeeze,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

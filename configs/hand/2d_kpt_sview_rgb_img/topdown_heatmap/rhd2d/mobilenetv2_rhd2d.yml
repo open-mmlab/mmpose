@@ -1,0 +1,23 @@
+Collections:
+- Name: mobilenetv2_rhd2d
+  Metadata:
+    Architecture:
+    - MobilenetV2
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/mobilenetv2_rhd2d.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+  - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--mobilenetv2_rhd2d_256x256
+  In Collection: mobilenetv2_rhd2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/mobilenetv2_rhd2d_256x256.py
+  Metadata:
+    Training Data: RHD
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: RHD
+    Metrics:
+      PCK@0.2: 0.985
+      AUC: 0.883
+      EPE: 2.8
+  Weights: https://download.openmmlab.com/mmpose/hand/mobilenetv2/mobilenetv2_rhd2d_256x256-85fa02db_20210330.pth

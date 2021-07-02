@@ -1,0 +1,10 @@
+Collections:
+- Name: hrnetv2_cofw
+  Metadata:
+    Architecture:
+    - HRNetv2
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.md
+  Paper:
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html
+Models: []

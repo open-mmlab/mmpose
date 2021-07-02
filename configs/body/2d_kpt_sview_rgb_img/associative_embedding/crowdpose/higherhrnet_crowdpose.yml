@@ -1,0 +1,44 @@
+Collections:
+- Name: higherhrnet_crowdpose
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
+  In Collection: higherhrnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.655
+      AP@0.5: 0.859
+      AP@0.75: 0.705
+      AP (E): 0.728
+      AP (M): 0.66
+      AP (H): 0.577
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
+  In Collection: higherhrnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.661
+      AP@0.5: 0.864
+      AP@0.75: 0.71
+      AP (E): 0.742
+      AP (M): 0.67
+      AP (H): 0.566
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth

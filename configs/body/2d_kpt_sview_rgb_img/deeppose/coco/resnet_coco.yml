@@ -1,0 +1,57 @@
+Collections:
+- Name: resnet_coco
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res50_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.526
+      AP@0.5: 0.816
+      AP@0.75: 0.586
+      AR: 0.638
+      AR@0.5: 0.887
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192-f6de6c0e_20210205.pth
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res101_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.56
+      AP@0.5: 0.832
+      AP@0.75: 0.628
+      AR: 0.668
+      AR@0.5: 0.9
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth
+- Name: body--2d_kpt_sview_rgb_img--deeppose--coco--res152_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.583
+      AP@0.5: 0.843
+      AP@0.75: 0.659
+      AR: 0.686
+      AR@0.5: 0.907
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192-7df89a88_20210205.pth

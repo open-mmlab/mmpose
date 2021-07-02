@@ -1,0 +1,102 @@
+Collections:
+- Name: resnet_coco
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.718
+      AP@0.5: 0.898
+      AP@0.75: 0.795
+      AR: 0.773
+      AR@0.5: 0.937
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res50_coco_384x288
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.731
+      AP@0.5: 0.9
+      AP@0.75: 0.799
+      AR: 0.783
+      AR@0.5: 0.931
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.726
+      AP@0.5: 0.899
+      AP@0.75: 0.806
+      AR: 0.781
+      AR@0.5: 0.939
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res101_coco_384x288
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.905
+      AP@0.75: 0.817
+      AR: 0.798
+      AR@0.5: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_256x192
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.735
+      AP@0.5: 0.905
+      AP@0.75: 0.812
+      AR: 0.79
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--res152_coco_384x288
+  In Collection: resnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.75
+      AP@0.5: 0.908
+      AP@0.75: 0.821
+      AR: 0.8
+      AR@0.5: 0.942
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth

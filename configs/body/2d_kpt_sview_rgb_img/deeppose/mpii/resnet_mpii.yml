@@ -1,0 +1,48 @@
+Collections:
+- Name: resnet_mpii
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/resnet_mpii.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--deeppose--mpii--res50_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.825
+      Mean@0.1: 0.174
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256-c63cd0b6_20210203.pth
+- Name: body--2d_kpt_sview_rgb_img--deeppose--mpii--res101_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res101_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.841
+      Mean@0.1: 0.193
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256-87516a90_20210205.pth
+- Name: body--2d_kpt_sview_rgb_img--deeppose--mpii--res152_mpii_256x256
+  In Collection: resnet_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res152_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.85
+      Mean@0.1: 0.198
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256-15f5e6f9_20210205.pth
