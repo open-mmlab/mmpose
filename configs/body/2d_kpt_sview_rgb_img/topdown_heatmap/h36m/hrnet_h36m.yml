@@ -5,9 +5,8 @@ Collections:
     - HRNet
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_h36m.md
   Paper:
-  - Deep high-resolution representation learning for human pose estimation
-  - 'Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in
-    Natural Environments'
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
 Models:
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--h36m--hrnet_w32_h36m_256x256
   In Collection: hrnet_h36m

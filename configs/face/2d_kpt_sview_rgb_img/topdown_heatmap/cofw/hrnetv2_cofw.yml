@@ -5,6 +5,6 @@ Collections:
     - HRNetv2
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.md
   Paper:
-  - Deep High-Resolution Representation Learning for Visual Recognition
-  - Robust face landmark estimation under occlusion
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html
 Models: []

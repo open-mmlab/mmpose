@@ -5,8 +5,8 @@ Collections:
     - HRNet
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_posetrack18.md
   Paper:
-  - Deep high-resolution representation learning for human pose estimation
-  - 'Posetrack: A benchmark for human pose estimation and tracking'
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html
 Models:
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--hrnet_w32_posetrack18_256x192
   In Collection: hrnet_posetrack18
@@ -24,6 +24,7 @@ Models:
       Hip: 79.7
       Knee: 81.8
       Ankl: 78.8
+      Total: 83.0
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--hrnet_w32_posetrack18_256x192
   In Collection: hrnet_posetrack18
@@ -41,4 +42,5 @@ Models:
       Hip: 76.9
       Knee: 76.6
       Ankl: 70.2
+      Total: 76.9
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth

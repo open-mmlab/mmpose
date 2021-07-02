@@ -18,7 +18,7 @@ def collate_metrics(keys):
     all_metrics = [
         'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc',
         'p-3dauc', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe', 'mean', 'head',
-        'sho', 'elb', 'wri', 'hip', 'knee', 'ank'
+        'sho', 'elb', 'wri', 'hip', 'knee', 'ank', 'total'
     ]
     used_metrics = []
     metric_idx = []
@@ -43,13 +43,12 @@ def collate_metrics(keys):
                 re.sub(' +', ' ', used_metric)
                 used_metric = used_metric.strip()
                 if metric in ['ap', 'ar']:
-                    _index = used_metric.index('AP') if metric == 'ap' \
-                        else used_metric.index('AR')
-                    _index += 2
-                    if _index + 1 < len(used_metric) and \
-                            used_metric[_index:_index+2].isdigit():
-                        used_metric = used_metric[:_index] + '@' + \
-                                      str(int(used_metric[_index:]) * 0.01)
+                    match = re.search(r'\d+', used_metric)
+                    if match is not None:
+                        l, r = match.span(0)
+                        digits = match.group(0)
+                        used_metric = used_metric[:l] + '@' + \
+                            str(int(digits) * 0.01) + used_metric[r:]
                 used_metrics.append(used_metric)
                 metric_idx.append(idx)
                 break
@@ -98,25 +97,18 @@ def parse_md(md_file):
         while i < len(lines):
             # parse reference
             if lines[i][:2] == '<!':
+                url, name = re.findall(r'<a href="(.*)">(.*)</a>',
+                                       lines[i + 3])[0]
+                name = name.split('(', 1)[0].strip()
                 # get architecture
                 if 'ALGORITHM' in lines[i] or 'BACKBONE' in lines[i]:
-                    architecture = lines[i +
-                                         3].split('>',
-                                                  1)[1].split('(',
-                                                              1)[0].strip()
-                    collection['Metadata']['Architecture'].append(architecture)
+                    collection['Metadata']['Architecture'].append(name)
                 # get dataset
-                if 'DATASET' in lines[i]:
-                    dataset = lines[i + 3].split('>',
-                                                 1)[1].split('(',
-                                                             1)[0].strip()
-                # get paper title
-                j = i + 7
-                while lines[j].strip()[:5] != 'title':
-                    j += 1
-                paper = lines[j][lines[j].index('{') + 1:lines[j].index('}')]
-                collection['Paper'].append(paper)
-                i = j + 1
+                elif 'DATASET' in lines[i]:
+                    dataset = name
+                # get paper url
+                collection['Paper'].append(url)
+                i += 4
 
             # parse table
             elif lines[i][0] == '|' and i + 1 < len(lines) and \

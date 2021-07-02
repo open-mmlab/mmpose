@@ -5,9 +5,8 @@ Collections:
     - VideoPose3D
   README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.md
   Paper:
-  - 3d human pose estimation in video with temporal convolutions and semi-supervised
-    training
-  - Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/8374605/
 Models:
 - Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--mpi_inf_3dhp--videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
   In Collection: videopose3d_mpi-inf-3dhp

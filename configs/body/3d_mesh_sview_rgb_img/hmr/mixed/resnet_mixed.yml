@@ -6,10 +6,9 @@ Collections:
     - ResNet
   README: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.md
   Paper:
-  - End-to-end Recovery of Human Shape and Pose
-  - Deep residual learning for image recognition
-  - 'Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing in
-    Natural Environments'
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
 Models:
 - Name: body--3d_mesh_sview_rgb_img--hmr--res50_mixed_224x224
   In Collection: resnet_mixed

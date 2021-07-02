@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">VGG (ICLR'2015)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1409.1556">VGG (ICLR'2015)</a></summary>
 
 ```bibtex
 @article{simonyan2014very,
@@ -17,7 +17,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">COCO (ECCV'2014)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

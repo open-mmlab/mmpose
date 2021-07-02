@@ -5,8 +5,8 @@ Collections:
     - HRNet
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_horse10.md
   Paper:
-  - Deep high-resolution representation learning for human pose estimation
-  - Pretraining boosts out-of-domain robustness for pose estimation
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://openaccess.thecvf.com/content/WACV2021/html/Mathis_Pretraining_Boosts_Out-of-Domain_Robustness_for_Pose_Estimation_WACV_2021_paper.html
 Models:
 - Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split1
   In Collection: hrnet_horse10

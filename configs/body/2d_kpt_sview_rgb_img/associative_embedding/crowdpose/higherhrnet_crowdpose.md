@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">Associative Embedding (NIPS'2017)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1611.05424">Associative Embedding (NIPS'2017)</a></summary>
 
 ```bibtex
 @inproceedings{newell2017associative,
@@ -18,7 +18,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">HigherHRNet (CVPR'2020)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html">HigherHRNet (CVPR'2020)</a></summary>
 
 ```bibtex
 @inproceedings{cheng2020higherhrnet,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">CrowdPose (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html">CrowdPose (CVPR'2019)</a></summary>
 
 ```bibtex
 @article{li2018crowdpose,

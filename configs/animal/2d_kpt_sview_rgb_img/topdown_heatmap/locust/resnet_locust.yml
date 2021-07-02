@@ -5,9 +5,8 @@ Collections:
     - SimpleBaseline2D
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/locust/resnet_locust.md
   Paper:
-  - Simple baselines for human pose estimation and tracking
-  - DeepPoseKit, a software toolkit for fast and robust animal pose estimation using
-    deep learning
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - https://elifesciences.org/articles/47994
 Models:
 - Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--locust--res50_locust_160x160
   In Collection: resnet_locust

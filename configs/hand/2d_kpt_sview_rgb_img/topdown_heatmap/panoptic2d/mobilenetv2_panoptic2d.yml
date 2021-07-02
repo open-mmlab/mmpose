@@ -5,8 +5,8 @@ Collections:
     - MobilenetV2
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/mobilenetv2_panoptic2d.md
   Paper:
-  - 'Mobilenetv2: Inverted residuals and linear bottlenecks'
-  - Hand keypoint detection in single images using multiview bootstrapping
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
 Models:
 - Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--mobilenetv2_panoptic_256x256
   In Collection: mobilenetv2_panoptic2d

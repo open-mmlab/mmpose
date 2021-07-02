@@ -5,8 +5,8 @@ Collections:
     - MobilenetV2
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco.md
   Paper:
-  - 'Mobilenetv2: Inverted residuals and linear bottlenecks'
-  - 'Microsoft coco: Common objects in context'
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
 Models:
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco_256x192
   In Collection: mobilenetv2_coco

@@ -6,11 +6,9 @@ Collections:
     - ResNet
   README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
   Paper:
-  - 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
-    from a Single RGB Image'
-  - Deep residual learning for image recognition
-  - 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
-    from a Single RGB Image'
+  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
 Models:
 - Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   In Collection: internet_interhand3d

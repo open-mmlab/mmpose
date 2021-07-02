@@ -5,6 +5,6 @@ Collections:
     - HRNetv2
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/300w/hrnetv2_300w.md
   Paper:
-  - Deep High-Resolution Representation Learning for Visual Recognition
-  - '300 faces in-the-wild challenge: Database and results'
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - https://www.sciencedirect.com/science/article/pii/S0262885616000147
 Models: []

@@ -6,9 +6,9 @@ Collections:
     - ResNet
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/resnet_panoptic2d.md
   Paper:
-  - Simple baselines for human pose estimation and tracking
-  - Deep residual learning for image recognition
-  - Hand keypoint detection in single images using multiview bootstrapping
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
 Models:
 - Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--res50_panoptic_256x256
   In Collection: resnet_panoptic2d

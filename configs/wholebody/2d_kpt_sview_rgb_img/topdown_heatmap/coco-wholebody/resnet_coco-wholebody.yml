@@ -5,8 +5,8 @@ Collections:
     - SimpleBaseline2D
   README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Paper:
-  - Simple baselines for human pose estimation and tracking
-  - Whole-Body Human Pose Estimation in the Wild
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
 Models:
 - Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res50_coco_wholebody_256x192
   In Collection: resnet_coco-wholebody

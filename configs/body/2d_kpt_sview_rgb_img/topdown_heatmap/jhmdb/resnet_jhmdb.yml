@@ -6,18 +6,18 @@ Collections:
     - ResNet
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Paper:
-  - Simple baselines for human pose estimation and tracking
-  - Deep residual learning for image recognition
-  - Learning Delicate Local Representations for Multi-Person Pose Estimation
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
 Models:
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub1_256x256
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 99.1
       Sho: 98.0
@@ -32,10 +32,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 99.3
       Sho: 97.1
@@ -50,10 +50,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 99.0
       Sho: 97.9
@@ -68,10 +68,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 99.1
       Sho: 98.5
@@ -86,10 +86,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 99.3
       Sho: 97.8
@@ -104,10 +104,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 98.8
       Sho: 98.4
@@ -122,10 +122,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 93.3
       Sho: 83.2
@@ -140,10 +140,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 94.1
       Sho: 74.9
@@ -158,10 +158,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 97.0
       Sho: 82.2
@@ -176,10 +176,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 92.4
       Sho: 80.6
@@ -194,10 +194,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 93.4
       Sho: 73.6
@@ -212,10 +212,10 @@ Models:
   In Collection: resnet_jhmdb
   Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
   Metadata:
-    Training Data: RSN
+    Training Data: JHMDB
   Results:
   - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: RSN
+    Dataset: JHMDB
     Metrics:
       Head: 96.1
       Sho: 81.2

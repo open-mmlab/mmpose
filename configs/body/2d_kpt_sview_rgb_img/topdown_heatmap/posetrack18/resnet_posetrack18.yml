@@ -6,9 +6,9 @@ Collections:
     - ResNet
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/resnet_posetrack18.md
   Paper:
-  - Simple baselines for human pose estimation and tracking
-  - Deep residual learning for image recognition
-  - 'Posetrack: A benchmark for human pose estimation and tracking'
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html
 Models:
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
   In Collection: resnet_posetrack18
@@ -26,6 +26,7 @@ Models:
       Hip: 79.9
       Knee: 78.6
       Ankl: 74.0
+      Total: 81.0
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth
 - Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--res50_posetrack18_256x192
   In Collection: resnet_posetrack18
@@ -43,4 +44,5 @@ Models:
       Hip: 75.3
       Knee: 73.2
       Ankl: 66.4
+      Total: 75.2
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_posetrack18_256x192-a62807c7_20201028.pth

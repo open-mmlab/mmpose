@@ -7,10 +7,10 @@ Collections:
     - Wingloss
   README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
   Paper:
-  - 'Deeppose: Human pose estimation via deep neural networks'
-  - Deep residual learning for image recognition
-  - Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural Networks
-  - 'Look at boundary: A boundary-aware face alignment algorithm'
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
 Models:
 - Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--res50_wflw_256x256_wingloss
   In Collection: resnet_wingloss_wflw

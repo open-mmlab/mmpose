@@ -6,9 +6,9 @@ Collections:
     - HigherHRNet
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
   Paper:
-  - 'Associative embedding: End-to-end learning for joint detection and grouping'
-  - 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation'
-  - 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html
 Models:
 - Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_w32_crowdpose_512x512
   In Collection: higherhrnet_crowdpose
