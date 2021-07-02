@@ -19,29 +19,16 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
-<!-- https://youtu.be/BhGPbhZXTZ8 -->
-
-<!-- <iframe width="560" height="315" src="https://youtu.be/BhGPbhZXTZ8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-
-<iframe width="500" height="300" src="https://www.youtube.com/embed/BhGPbhZXTZ8" frameborder="0" allowfullscreen></iframe>
-
 <div align="center">
-    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
-    COCO 17-keypoint pose estimation
+    <img src="https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/demo/mmpose_full_demo_v2.1s.gif" width="600px" alt><br>
+
+[Watch full demo video on GitHub](https://youtu.be/nFcZ2H1Ix3w)
 </div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
 
-133-keypoint whole-body pose estimation ([full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/28900607/121288285-b8fcbf00-c915-11eb-98e4-ba846de12987.gif" width="600px" alt><br>
 
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
-    2D animal_pose estimation
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/118820606-02df2000-b8e9-11eb-9984-b9228101e780.gif" width="600px" alt><br>
-    3D human pose estimation
+[Watch full demo video on GitHub](https://youtu.be/nFcZ2H1Ix3w)
 </div>
 
 ### Major Features
