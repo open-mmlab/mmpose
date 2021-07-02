@@ -1,0 +1,55 @@
+Collections:
+- Name: resnet_animalpose
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_ICCV_2019/html/Cao_Cross-Domain_Adaptation_for_Animal_Pose_Estimation_ICCV_2019_paper.html
+Models:
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--res50_animalpose_256x256
+  In Collection: resnet_animalpose
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res50_animalpose_256x256.py
+  Metadata:
+    Training Data: Animal-Pose
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Animal-Pose
+    Metrics:
+      AP: 0.688
+      AP@0.5: 0.945
+      AP@0.75: 0.772
+      AR: 0.733
+      AR@0.5: 0.952
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_animalpose_256x256-e1f30bff_20210426.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--res101_animalpose_256x256
+  In Collection: resnet_animalpose
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res101_animalpose_256x256.py
+  Metadata:
+    Training Data: Animal-Pose
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Animal-Pose
+    Metrics:
+      AP: 0.696
+      AP@0.5: 0.948
+      AP@0.75: 0.785
+      AR: 0.737
+      AR@0.5: 0.954
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_animalpose_256x256-85563f4a_20210426.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--res152_animalpose_256x256
+  In Collection: resnet_animalpose
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res152_animalpose_256x256.py
+  Metadata:
+    Training Data: Animal-Pose
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Animal-Pose
+    Metrics:
+      AP: 0.709
+      AP@0.5: 0.948
+      AP@0.75: 0.797
+      AR: 0.749
+      AR@0.5: 0.951
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_animalpose_256x256-a0a7506c_20210426.pth

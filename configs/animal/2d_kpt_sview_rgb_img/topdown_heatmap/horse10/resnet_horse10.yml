@@ -1,0 +1,118 @@
+Collections:
+- Name: resnet_horse10
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/resnet_horse10.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+Models:
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res50_horse10_256x256-split1
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split1.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.956
+      NME: 0.113
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split1-3a3dc37e_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res50_horse10_256x256-split2
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split2.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.954
+      NME: 0.111
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split2-65e2a508_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res50_horse10_256x256-split3
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split3.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.946
+      NME: 0.129
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split3-9637d4eb_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res101_horse10_256x256-split1
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split1.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.958
+      NME: 0.115
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split1-1b7c259c_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res101_horse10_256x256-split2
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split2.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.955
+      NME: 0.115
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split2-30e2fa87_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res101_horse10_256x256-split3
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split3.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.946
+      NME: 0.126
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split3-2eea5bb1_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res152_horse10_256x256-split1
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split1.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.969
+      NME: 0.105
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_horse10_256x256_split1-7e81fe2d_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res152_horse10_256x256-split2
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split2.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.97
+      NME: 0.103
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_horse10_256x256_split2-3b3404a3_20210405.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--res152_horse10_256x256-split3
+  In Collection: resnet_horse10
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split3.py
+  Metadata:
+    Training Data: HRNet
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: HRNet
+    Metrics:
+      PCK@0.3: 0.957
+      NME: 0.131
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_horse10_256x256_split3-c957dac5_20210405.pth

@@ -1,0 +1,118 @@
+Collections:
+- Name: cpm_jhmdb
+  Metadata:
+    Architecture:
+    - CPM
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
+  - https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 96.1
+      Sho: 91.9
+      Elb: 81.0
+      Wri: 78.9
+      Hip: 96.6
+      Knee: 90.8
+      Ank: 87.3
+      Mean: 89.5
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 98.1
+      Sho: 93.6
+      Elb: 77.1
+      Wri: 70.9
+      Hip: 94.0
+      Knee: 89.1
+      Ank: 84.7
+      Mean: 87.4
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 97.9
+      Sho: 94.9
+      Elb: 87.3
+      Wri: 84.0
+      Hip: 98.6
+      Knee: 94.4
+      Ank: 86.2
+      Mean: 92.4
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 89.0
+      Sho: 63.0
+      Elb: 54.0
+      Wri: 54.9
+      Hip: 68.2
+      Knee: 63.1
+      Ank: 61.2
+      Mean: 66.0
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 90.3
+      Sho: 57.9
+      Elb: 46.8
+      Wri: 44.3
+      Hip: 60.8
+      Knee: 58.2
+      Ank: 62.4
+      Mean: 61.1
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
+  In Collection: cpm_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 91.0
+      Sho: 72.6
+      Elb: 59.9
+      Wri: 54.0
+      Hip: 73.2
+      Knee: 68.5
+      Ank: 65.8
+      Mean: 70.3
+  Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth

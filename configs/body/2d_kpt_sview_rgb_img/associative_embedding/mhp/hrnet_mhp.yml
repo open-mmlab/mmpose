@@ -1,0 +1,42 @@
+Collections:
+- Name: hrnet_mhp
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/mhp/hrnet_mhp.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://dl.acm.org/doi/abs/10.1145/3240508.3240509
+Models:
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_mhp_512x512
+  In Collection: hrnet_mhp
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
+  Metadata:
+    Training Data: MHP
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MHP
+    Metrics:
+      AP: 0.583
+      AP@0.5: 0.895
+      AP@0.75: 0.666
+      AR: 0.656
+      AR@0.5: 0.931
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_mhp_512x512
+  In Collection: hrnet_mhp
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
+  Metadata:
+    Training Data: MHP
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MHP
+    Metrics:
+      AP: 0.592
+      AP@0.5: 0.898
+      AP@0.75: 0.673
+      AR: 0.664
+      AR@0.5: 0.932
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth

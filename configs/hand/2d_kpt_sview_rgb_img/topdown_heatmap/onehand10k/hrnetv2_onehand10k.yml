@@ -1,0 +1,23 @@
+Collections:
+- Name: hrnetv2_onehand10k
+  Metadata:
+    Architecture:
+    - HRNetv2
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_onehand10k.md
+  Paper:
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - https://ieeexplore.ieee.org/abstract/document/8529221/
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_w18_onehand10k_256x256
+  In Collection: hrnetv2_onehand10k
+  Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256.py
+  Metadata:
+    Training Data: OneHand10K
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: OneHand10K
+    Metrics:
+      PCK@0.2: 0.99
+      AUC: 0.568
+      EPE: 24.16
+  Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth

@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">DeepPose (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html">DeepPose (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{toshev2014deeppose,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNet (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html">ResNet (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">DeepFashion (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/Liu_DeepFashion_Powering_Robust_CVPR_2016_paper.html">DeepFashion (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -52,7 +52,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">DeepFashion (ECCV'2016)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-46475-6_15">DeepFashion (ECCV'2016)</a></summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,

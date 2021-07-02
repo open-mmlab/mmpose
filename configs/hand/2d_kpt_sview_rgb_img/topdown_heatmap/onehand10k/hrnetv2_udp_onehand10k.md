@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">HRNetv2 (TPAMI'2019)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/9052469/">HRNetv2 (TPAMI'2019)</a></summary>
 
 ```bibtex
 @article{WangSCJDZLMTWLX19,
@@ -19,7 +19,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">UDP (CVPR'2020)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html">UDP (CVPR'2020)</a></summary>
 
 ```bibtex
 @InProceedings{Huang_2020_CVPR,
@@ -36,7 +36,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">OneHand10K (TCSVT'2019)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/8529221/">OneHand10K (TCSVT'2019)</a></summary>
 
 ```bibtex
 @article{wang2018mask,

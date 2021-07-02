@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">SimpleBaseline2D (ECCV'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html">SimpleBaseline2D (ECCV'2018)</a></summary>
 
 ```bibtex
 @inproceedings{xiao2018simple,
@@ -18,7 +18,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNet (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html">ResNet (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -35,7 +35,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

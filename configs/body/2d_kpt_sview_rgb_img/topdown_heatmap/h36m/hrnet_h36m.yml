@@ -1,0 +1,34 @@
+Collections:
+- Name: hrnet_h36m
+  Metadata:
+    Architecture:
+    - HRNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_h36m.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--h36m--hrnet_w32_h36m_256x256
+  In Collection: hrnet_h36m
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w32_h36m_256x256.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      EPE: 9.43
+      PCK: 0.911
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-d3206675_20210621.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--h36m--hrnet_w48_h36m_256x256
+  In Collection: hrnet_h36m
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w48_h36m_256x256.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      EPE: 7.36
+      PCK: 0.932
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_h36m_256x256-78e88d08_20210621.pth

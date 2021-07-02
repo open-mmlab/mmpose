@@ -1,0 +1,26 @@
+Collections:
+- Name: resnet_mixed
+  Metadata:
+    Architecture:
+    - HMR
+    - ResNet
+  README: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
+Models:
+- Name: body--3d_mesh_sview_rgb_img--hmr--res50_mixed_224x224
+  In Collection: resnet_mixed
+  Config: configs/body/3d_mesh_sview_rgb_img/hmr/res50_mixed_224x224.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Human Body 3D Mesh Recovery
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE (P1): 80.75
+      MPJPE-PA (P1): 55.08
+      MPJPE (P2): 80.35
+      MPJPE-PA (P2): 52.6
+  Weights: https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth

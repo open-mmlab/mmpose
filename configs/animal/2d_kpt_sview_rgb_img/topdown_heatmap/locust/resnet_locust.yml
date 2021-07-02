@@ -1,0 +1,49 @@
+Collections:
+- Name: resnet_locust
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/locust/resnet_locust.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - https://elifesciences.org/articles/47994
+Models:
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--locust--res50_locust_160x160
+  In Collection: resnet_locust
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/locust/res50_locust_160x160.py
+  Metadata:
+    Training Data: Desert Locust
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Desert Locust
+    Metrics:
+      PCK@0.2: 0.999
+      AUC: 0.899
+      EPE: 2.27
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_locust_160x160-9efca22b_20210407.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--locust--res101_locust_160x160
+  In Collection: resnet_locust
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/locust/res101_locust_160x160.py
+  Metadata:
+    Training Data: Desert Locust
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Desert Locust
+    Metrics:
+      PCK@0.2: 0.999
+      AUC: 0.907
+      EPE: 2.03
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_locust_160x160-d77986b3_20210407.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--locust--res152_locust_160x160
+  In Collection: resnet_locust
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/locust/res152_locust_160x160.py
+  Metadata:
+    Training Data: Desert Locust
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: Desert Locust
+    Metrics:
+      PCK@0.2: 1.0
+      AUC: 0.926
+      EPE: 1.48
+  Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_locust_160x160-4ea9b372_20210407.pth

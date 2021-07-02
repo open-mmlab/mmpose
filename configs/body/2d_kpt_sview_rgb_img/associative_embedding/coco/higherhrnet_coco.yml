@@ -1,0 +1,102 @@
+Collections:
+- Name: higherhrnet_coco
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_coco.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.677
+      AP@0.5: 0.87
+      AP@0.75: 0.738
+      AR: 0.723
+      AR@0.5: 0.89
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_640x640
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.686
+      AP@0.5: 0.871
+      AP@0.75: 0.747
+      AR: 0.733
+      AR@0.5: 0.898
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.686
+      AP@0.5: 0.873
+      AP@0.75: 0.741
+      AR: 0.731
+      AR@0.5: 0.892
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_512x512
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.706
+      AP@0.5: 0.881
+      AP@0.75: 0.771
+      AR: 0.747
+      AR@0.5: 0.901
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w32_coco_640x640
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.706
+      AP@0.5: 0.88
+      AP@0.75: 0.77
+      AR: 0.749
+      AR@0.5: 0.902
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_w48_coco_512x512
+  In Collection: higherhrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.716
+      AP@0.5: 0.884
+      AP@0.75: 0.775
+      AR: 0.755
+      AR@0.5: 0.901
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth

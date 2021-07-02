@@ -1,0 +1,228 @@
+Collections:
+- Name: resnet_jhmdb
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub1_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 99.1
+      Sho: 98.0
+      Elb: 93.8
+      Wri: 91.3
+      Hip: 99.4
+      Knee: 96.5
+      Ank: 92.8
+      Mean: 96.1
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub2_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 99.3
+      Sho: 97.1
+      Elb: 90.6
+      Wri: 87.0
+      Hip: 98.9
+      Knee: 96.3
+      Ank: 94.1
+      Mean: 95.0
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub3_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 99.0
+      Sho: 97.9
+      Elb: 94.0
+      Wri: 91.6
+      Hip: 99.7
+      Knee: 98.0
+      Ank: 94.7
+      Mean: 96.7
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub1_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 99.1
+      Sho: 98.5
+      Elb: 94.6
+      Wri: 92.0
+      Hip: 99.4
+      Knee: 94.6
+      Ank: 92.5
+      Mean: 96.1
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub2_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 99.3
+      Sho: 97.8
+      Elb: 91.0
+      Wri: 87.0
+      Hip: 99.1
+      Knee: 96.5
+      Ank: 93.8
+      Mean: 95.2
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub3_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 98.8
+      Sho: 98.4
+      Elb: 94.3
+      Wri: 92.1
+      Hip: 99.8
+      Knee: 97.5
+      Ank: 93.8
+      Mean: 96.7
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub1_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 93.3
+      Sho: 83.2
+      Elb: 74.4
+      Wri: 72.7
+      Hip: 85.0
+      Knee: 81.2
+      Ank: 78.9
+      Mean: 81.9
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub2_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 94.1
+      Sho: 74.9
+      Elb: 64.5
+      Wri: 62.5
+      Hip: 77.9
+      Knee: 71.9
+      Ank: 78.6
+      Mean: 75.5
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub3_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 97.0
+      Sho: 82.2
+      Elb: 74.9
+      Wri: 70.7
+      Hip: 84.7
+      Knee: 83.7
+      Ank: 84.2
+      Mean: 82.9
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub1_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 92.4
+      Sho: 80.6
+      Elb: 73.2
+      Wri: 70.5
+      Hip: 82.3
+      Knee: 75.4
+      Ank: 75.0
+      Mean: 79.2
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub2_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 93.4
+      Sho: 73.6
+      Elb: 63.8
+      Wri: 60.5
+      Hip: 75.1
+      Knee: 68.4
+      Ank: 75.5
+      Mean: 73.7
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub3_256x256
+  In Collection: resnet_jhmdb
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
+  Metadata:
+    Training Data: JHMDB
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: JHMDB
+    Metrics:
+      Head: 96.1
+      Sho: 81.2
+      Elb: 72.6
+      Wri: 67.9
+      Hip: 83.6
+      Knee: 80.9
+      Ank: 81.5
+      Mean: 81.2
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth

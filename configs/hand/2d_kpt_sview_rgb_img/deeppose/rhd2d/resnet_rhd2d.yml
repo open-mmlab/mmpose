@@ -1,0 +1,25 @@
+Collections:
+- Name: resnet_rhd2d
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+  README: configs/hand/2d_kpt_sview_rgb_img/deeppose/rhd2d/resnet_rhd2d.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
+Models:
+- Name: hand--2d_kpt_sview_rgb_img--deeppose--rhd2d--res50_rhd2d_256x256
+  In Collection: resnet_rhd2d
+  Config: configs/hand/2d_kpt_sview_rgb_img/deeppose/rhd2d/res50_rhd2d_256x256.py
+  Metadata:
+    Training Data: RHD
+  Results:
+  - Task: 2D Hand Pose Estimation
+    Dataset: RHD
+    Metrics:
+      PCK@0.2: 0.988
+      AUC: 0.865
+      EPE: 3.29
+  Weights: https://download.openmmlab.com/mmpose/hand/deeppose/deeppose_res50_rhd2d_256x256-37f1c4d3_20210330.pth

@@ -1,0 +1,100 @@
+Collections:
+- Name: resnext_coco
+  Metadata:
+    Architecture:
+    - ResNext
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2017/html/Xie_Aggregated_Residual_Transformations_CVPR_2017_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext50_coco_256x192
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.714
+      AP@0.5: 0.898
+      AP@0.75: 0.789
+      AR: 0.771
+      AR@0.5: 0.937
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_256x192-dcff15f6_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext50_coco_384x288
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.724
+      AP@0.5: 0.899
+      AP@0.75: 0.794
+      AR: 0.777
+      AR@0.5: 0.935
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_384x288-412c848f_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext101_coco_256x192
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.726
+      AP@0.5: 0.9
+      AP@0.75: 0.801
+      AR: 0.782
+      AR@0.5: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_256x192-c7eba365_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext101_coco_384x288
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.743
+      AP@0.5: 0.903
+      AP@0.75: 0.815
+      AR: 0.795
+      AR@0.5: 0.939
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_384x288-f5eabcd6_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext152_coco_256x192
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.73
+      AP@0.5: 0.904
+      AP@0.75: 0.808
+      AR: 0.786
+      AR@0.5: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_256x192-102449aa_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnext152_coco_384x288
+  In Collection: resnext_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.742
+      AP@0.5: 0.902
+      AP@0.75: 0.81
+      AR: 0.794
+      AR@0.5: 0.939
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_384x288-806176df_20200727.pth

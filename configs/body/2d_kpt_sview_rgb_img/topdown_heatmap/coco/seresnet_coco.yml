@@ -1,0 +1,100 @@
+Collections:
+- Name: seresnet_coco
+  Metadata:
+    Architecture:
+    - SEResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet50_coco_256x192
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.728
+      AP@0.5: 0.9
+      AP@0.75: 0.809
+      AR: 0.784
+      AR@0.5: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_256x192-25058b66_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet50_coco_384x288
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.748
+      AP@0.5: 0.905
+      AP@0.75: 0.819
+      AR: 0.799
+      AR@0.5: 0.941
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_384x288-bc0b7680_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet101_coco_256x192
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.734
+      AP@0.5: 0.904
+      AP@0.75: 0.815
+      AR: 0.79
+      AR@0.5: 0.942
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_256x192-83f29c4d_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet101_coco_384x288
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.907
+      AP@0.75: 0.823
+      AR: 0.805
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_384x288-48de1709_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet152_coco_256x192
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.73
+      AP@0.5: 0.899
+      AP@0.75: 0.81
+      AR: 0.786
+      AR@0.5: 0.94
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_256x192-1c628d79_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet152_coco_384x288
+  In Collection: seresnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.906
+      AP@0.75: 0.823
+      AR: 0.806
+      AR@0.5: 0.945
+  Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_384x288-58b23ee8_20200727.pth

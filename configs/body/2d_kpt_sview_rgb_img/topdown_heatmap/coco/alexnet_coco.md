@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">AlexNet (NeurIPS'2012)</summary>
+<summary align="right"><a href="https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf">AlexNet (NeurIPS'2012)</a></summary>
 
 ```bibtex
 @inproceedings{krizhevsky2012imagenet,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">COCO (ECCV'2014)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

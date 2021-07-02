@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">Hourglass (ECCV'2016)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29">Hourglass (ECCV'2016)</a></summary>
 
 ```bibtex
 @inproceedings{newell2016stacked,
@@ -19,7 +19,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

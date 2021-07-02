@@ -1,0 +1,90 @@
+Collections:
+- Name: hrnet_coco-wholebody
+  Metadata:
+    Architecture:
+    - HRNet
+  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+Models:
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_256x192
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.7
+      Body AR: 0.746
+      Foot AP: 0.567
+      Foot AR: 0.645
+      Face AP: 0.637
+      Face AR: 0.688
+      Hand AP: 0.473
+      Hand AR: 0.546
+      Whole AP: 0.553
+      Whole AR: 0.626
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192-853765cd_20200918.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_384x288
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_384x288.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.701
+      Body AR: 0.773
+      Foot AP: 0.586
+      Foot AR: 0.692
+      Face AP: 0.727
+      Face AR: 0.783
+      Hand AP: 0.516
+      Hand AR: 0.604
+      Whole AP: 0.586
+      Whole AR: 0.674
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_384x288-78cacac3_20200922.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_256x192
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_256x192.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.7
+      Body AR: 0.776
+      Foot AP: 0.672
+      Foot AR: 0.785
+      Face AP: 0.656
+      Face AR: 0.743
+      Hand AP: 0.534
+      Hand AR: 0.639
+      Whole AP: 0.579
+      Whole AR: 0.681
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_256x192-643e18cb_20200922.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_384x288
+  In Collection: hrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.722
+      Body AR: 0.79
+      Foot AP: 0.694
+      Foot AR: 0.799
+      Face AP: 0.777
+      Face AR: 0.834
+      Hand AP: 0.587
+      Hand AR: 0.679
+      Whole AP: 0.631
+      Whole AR: 0.716
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288-6e061c6a_20200922.pth

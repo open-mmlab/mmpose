@@ -1,0 +1,52 @@
+Collections:
+- Name: higherhrnet_coco-wholebody
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+Models:
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w32_coco_wholebody_512x512
+  In Collection: higherhrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w32_coco_wholebody_512x512.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.59
+      Body AR: 0.672
+      Foot AP: 0.185
+      Foot AR: 0.335
+      Face AP: 0.676
+      Face AR: 0.721
+      Hand AP: 0.212
+      Hand AR: 0.298
+      Whole AP: 0.401
+      Whole AR: 0.493
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_wholebody_512x512_plus-2fa137ab_20210517.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w48_coco_wholebody_512x512
+  In Collection: higherhrnet_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w48_coco_wholebody_512x512.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.63
+      Body AR: 0.706
+      Foot AP: 0.44
+      Foot AR: 0.573
+      Face AP: 0.73
+      Face AR: 0.777
+      Hand AP: 0.389
+      Hand AR: 0.477
+      Whole AP: 0.487
+      Whole AR: 0.574
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_wholebody_512x512_plus-934f08aa_20210517.pth

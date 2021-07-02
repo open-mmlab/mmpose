@@ -1,0 +1,46 @@
+Collections:
+- Name: resnetv1d_mpii
+  Metadata:
+    Architecture:
+    - ResNetV1D
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d_mpii.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d50_mpii_256x256
+  In Collection: resnetv1d_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d50_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.881
+      Mean@0.1: 0.29
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_mpii_256x256-2337a92e_20200812.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d101_mpii_256x256
+  In Collection: resnetv1d_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d101_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.883
+      Mean@0.1: 0.295
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_mpii_256x256-2851d710_20200812.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnetv1d152_mpii_256x256
+  In Collection: resnetv1d_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d152_mpii_256x256.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.888
+      Mean@0.1: 0.3
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_mpii_256x256-8b10a87c_20200812.pth

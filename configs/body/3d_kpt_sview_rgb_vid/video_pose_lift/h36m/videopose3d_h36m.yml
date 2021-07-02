@@ -1,0 +1,96 @@
+Collections:
+- Name: videopose3d_h36m
+  Metadata:
+    Architecture:
+    - VideoPose3D
+  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/6682899/
+Models:
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_27frames_fullconv_supervised
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 40.0
+      P-MPJPE: 30.1
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_81frames_fullconv_supervised
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_81frames_fullconv_supervised.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 38.9
+      P-MPJPE: 29.2
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_243frames_fullconv_supervised
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 37.6
+      P-MPJPE: 28.3
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_1frame_fullconv_supervised_cpn_ft
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_1frame_fullconv_supervised_cpn_ft.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 52.9
+      P-MPJPE: 41.3
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
+- Name: cbody3d--videopose--h36m--videopose3d_h36m_243frames_fullconv_supervised_cpn_ft
+  In Collection: videopose3d_h36m
+  Config: cconfigs/body3d/videopose/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 47.9
+      P-MPJPE: 38.0
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_27frames_fullconv_semi-supervised
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 58.1
+      P-MPJPE: 42.8
+      N-MPJPE: 54.7
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
+- Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft
+  In Collection: videopose3d_h36m
+  Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft.py
+  Metadata:
+    Training Data: Human3.6M
+  Results:
+  - Task: Video-based Single-view 3D Human Body Pose Estimation
+    Dataset: Human3.6M
+    Metrics:
+      MPJPE: 67.4
+      P-MPJPE: 50.1
+      N-MPJPE: 63.2
+  Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised_cpn_ft-71be9cde_20210527.pth

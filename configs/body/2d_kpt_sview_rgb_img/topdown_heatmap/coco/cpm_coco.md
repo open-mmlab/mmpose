@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">CPM (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html">CPM (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{wei2016convolutional,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">COCO (ECCV'2014)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,

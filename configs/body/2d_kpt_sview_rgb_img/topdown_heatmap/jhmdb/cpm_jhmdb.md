@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">CPM (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html">CPM (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{wei2016convolutional,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">JHMDB (ICCV'2013)</summary>
+<summary align="right"><a href="https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html">JHMDB (ICCV'2013)</a></summary>
 
 ```bibtex
 @inproceedings{Jhuang:ICCV:2013,

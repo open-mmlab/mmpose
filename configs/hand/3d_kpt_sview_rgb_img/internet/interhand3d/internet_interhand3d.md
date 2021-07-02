@@ -1,7 +1,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">InterNet (ECCV'2020)</summary>
+<summary align="right"><a href="https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf">InterNet (ECCV'2020)</a></summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,
@@ -17,7 +17,7 @@ year = {2020}
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNet (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html">ResNet (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{he2016deep,
@@ -34,7 +34,7 @@ year = {2020}
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">InterHand2.6M (ECCV'2020)</summary>
+<summary align="right"><a href="https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf">InterHand2.6M (ECCV'2020)</a></summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,

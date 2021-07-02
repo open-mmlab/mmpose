@@ -1,0 +1,52 @@
+Collections:
+- Name: hrnet_dark_coco-wholebody
+  Metadata:
+    Architecture:
+    - HRNet
+    - DarkPose
+  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_dark_coco-wholebody.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+Models:
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_256x192_dark
+  In Collection: hrnet_dark_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192_dark.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.694
+      Body AR: 0.764
+      Foot AP: 0.565
+      Foot AR: 0.674
+      Face AP: 0.736
+      Face AR: 0.808
+      Hand AP: 0.503
+      Hand AR: 0.602
+      Whole AP: 0.582
+      Whole AR: 0.671
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192_dark-469327ef_20200922.pth
+- Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_384x288_dark_plus
+  In Collection: hrnet_dark_coco-wholebody
+  Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py
+  Metadata:
+    Training Data: COCO-WholeBody
+  Results:
+  - Task: 2D Human Whole-Body Pose Estimation
+    Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.742
+      Body AR: 0.807
+      Foot AP: 0.705
+      Foot AR: 0.804
+      Face AP: 0.84
+      Face AR: 0.892
+      Hand AP: 0.602
+      Hand AR: 0.694
+      Whole AP: 0.661
+      Whole AR: 0.743
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth

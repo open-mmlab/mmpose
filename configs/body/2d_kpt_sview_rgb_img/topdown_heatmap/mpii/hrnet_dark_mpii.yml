@@ -1,0 +1,36 @@
+Collections:
+- Name: hrnet_dark_mpii
+  Metadata:
+    Architecture:
+    - HRNet
+    - DarkPose
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_dark_mpii.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_w32_mpii_256x256_dark
+  In Collection: hrnet_dark_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256_dark.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.904
+      Mean@0.1: 0.354
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_w48_mpii_256x256_dark
+  In Collection: hrnet_dark_mpii
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w48_mpii_256x256_dark.py
+  Metadata:
+    Training Data: MPII
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: MPII
+    Metrics:
+      Mean: 0.905
+      Mean@0.1: 0.36
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark-0decd39f_20200927.pth

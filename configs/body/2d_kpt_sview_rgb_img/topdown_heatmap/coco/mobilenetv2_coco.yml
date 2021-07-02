@@ -1,0 +1,40 @@
+Collections:
+- Name: mobilenetv2_coco
+  Metadata:
+    Architecture:
+    - MobilenetV2
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco_256x192
+  In Collection: mobilenetv2_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.646
+      AP@0.5: 0.874
+      AP@0.75: 0.723
+      AR: 0.707
+      AR@0.5: 0.917
+  Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_256x192-d1e58e7b_20200727.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco_384x288
+  In Collection: mobilenetv2_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.673
+      AP@0.5: 0.879
+      AP@0.75: 0.743
+      AR: 0.729
+      AR@0.5: 0.916
+  Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_384x288-26be4816_20200727.pth

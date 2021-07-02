@@ -1,7 +1,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ShufflenetV2 (ECCV'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html">ShufflenetV2 (ECCV'2018)</a></summary>
 
 ```bibtex
 @inproceedings{ma2018shufflenet,
@@ -18,7 +18,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,

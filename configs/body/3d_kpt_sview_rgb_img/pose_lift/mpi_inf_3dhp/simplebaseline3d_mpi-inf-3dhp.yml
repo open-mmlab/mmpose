@@ -1,0 +1,24 @@
+Collections:
+- Name: simplebaseline3d_mpi-inf-3dhp
+  Metadata:
+    Architecture:
+    - SimpleBaseline3D
+  README: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.md
+  Paper:
+  - http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
+  - https://ieeexplore.ieee.org/abstract/document/8374605/
+Models:
+- Name: body--3d_kpt_sview_rgb_img--pose_lift--mpi_inf_3dhp--simplebaseline3d_mpi-inf-3dhp
+  In Collection: simplebaseline3d_mpi-inf-3dhp
+  Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
+  Metadata:
+    Training Data: MPI-INF-3DHP
+  Results:
+  - Task: Single-view 3D Human Body Pose Estimation
+    Dataset: MPI-INF-3DHP
+    Metrics:
+      MPJPE: 84.3
+      P-MPJPE: 53.2
+      3DPCK: 85.0
+      3DAUC: 52.0
+  Weights: https://download.openmmlab.com/mmpose/body3d/simplebaseline3d/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth

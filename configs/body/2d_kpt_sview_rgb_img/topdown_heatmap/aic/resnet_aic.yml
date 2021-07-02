@@ -1,0 +1,27 @@
+Collections:
+- Name: resnet_aic
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/resnet_aic.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://arxiv.org/abs/1711.06475
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--aic--res101_aic_256x192
+  In Collection: resnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/res101_aic_256x192.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.294
+      AP@0.5: 0.736
+      AP@0.75: 0.174
+      AR: 0.337
+      AR@0.5: 0.763
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth

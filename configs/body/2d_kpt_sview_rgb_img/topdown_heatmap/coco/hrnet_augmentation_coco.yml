@@ -1,0 +1,57 @@
+Collections:
+- Name: hrnet_augmentation_coco
+  Metadata:
+    Architecture:
+    - HRNet
+    - Albumentations
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_augmentation_coco.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://www.mdpi.com/649002
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_coarsedropout
+  In Collection: hrnet_augmentation_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_coarsedropout.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.908
+      AP@0.75: 0.822
+      AR: 0.806
+      AR@0.5: 0.946
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_coarsedropout-0f16a0ce_20210320.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_gridmask
+  In Collection: hrnet_augmentation_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_gridmask.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.752
+      AP@0.5: 0.906
+      AP@0.75: 0.825
+      AR: 0.804
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_gridmask-868180df_20210320.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_photometric
+  In Collection: hrnet_augmentation_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_photometric.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.909
+      AP@0.75: 0.825
+      AR: 0.805
+      AR@0.5: 0.943
+  Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_photometric-308cf591_20210320.pth

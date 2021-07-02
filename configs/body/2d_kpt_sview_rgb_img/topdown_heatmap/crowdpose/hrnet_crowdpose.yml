@@ -1,0 +1,26 @@
+Collections:
+- Name: hrnet_crowdpose
+  Metadata:
+    Architecture:
+    - HRNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_crowdpose.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--hrnet_w32_crowdpose_256x192
+  In Collection: hrnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_w32_crowdpose_256x192.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.675
+      AP@0.5: 0.825
+      AP@0.75: 0.729
+      AP (E): 0.77
+      AP (M): 0.687
+      AP (H): 0.553
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-960be101_20201227.pth

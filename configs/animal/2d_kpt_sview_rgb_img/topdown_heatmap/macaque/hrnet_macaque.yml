@@ -1,0 +1,40 @@
+Collections:
+- Name: hrnet_macaque
+  Metadata:
+    Architecture:
+    - HRNet
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/hrnet_macaque.md
+  Paper:
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/
+Models:
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--hrnet_w32_macaque_256x192
+  In Collection: hrnet_macaque
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/hrnet_w32_macaque_256x192.py
+  Metadata:
+    Training Data: MacaquePose
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: MacaquePose
+    Metrics:
+      AP: 0.814
+      AP@0.5: 0.953
+      AP@0.75: 0.918
+      AR: 0.851
+      AR@0.5: 0.969
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_macaque_256x192-f7e9e04f_20210407.pth
+- Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--hrnet_w48_macaque_256x192
+  In Collection: hrnet_macaque
+  Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/hrnet_w48_macaque_256x192.py
+  Metadata:
+    Training Data: MacaquePose
+  Results:
+  - Task: 2D Animal Keypoint Detection
+    Dataset: MacaquePose
+    Metrics:
+      AP: 0.818
+      AP@0.5: 0.963
+      AP@0.75: 0.917
+      AR: 0.855
+      AR@0.5: 0.971
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_macaque_256x192-9b34b02a_20210407.pth

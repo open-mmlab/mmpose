@@ -1,0 +1,42 @@
+Collections:
+- Name: higherhrnet_aic
+  Metadata:
+    Architecture:
+    - Associative Embedding
+    - HigherHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_aic.md
+  Paper:
+  - https://arxiv.org/abs/1611.05424
+  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - https://arxiv.org/abs/1711.06475
+Models:
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_w32_aic_512x512
+  In Collection: higherhrnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.315
+      AP@0.5: 0.71
+      AP@0.75: 0.243
+      AR: 0.379
+      AR@0.5: 0.757
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth
+- Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_w32_aic_512x512
+  In Collection: higherhrnet_aic
+  Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
+  Metadata:
+    Training Data: AI Challenger
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: AI Challenger
+    Metrics:
+      AP: 0.323
+      AP@0.5: 0.718
+      AP@0.75: 0.254
+      AR: 0.379
+      AR@0.5: 0.758
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth

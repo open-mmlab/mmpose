@@ -1,0 +1,40 @@
+Collections:
+- Name: internet_interhand3d
+  Metadata:
+    Architecture:
+    - InterNet
+    - ResNet
+  README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
+  Paper:
+  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+Models:
+- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+  In Collection: internet_interhand3d
+  Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
+  Metadata:
+    Training Data: InterHand2.6M
+  Results:
+  - Task: 3D Hand Pose Estimation
+    Dataset: InterHand2.6M
+    Metrics:
+      MPJPE-single: 10.16
+      MPJPE-interacting: 15.27
+      MPJPE-all: 12.97
+      APh: 0.99
+  Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3d_all_256x256-b9c1cf4c_20210506.pth
+- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+  In Collection: internet_interhand3d
+  Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
+  Metadata:
+    Training Data: InterHand2.6M
+  Results:
+  - Task: 3D Hand Pose Estimation
+    Dataset: InterHand2.6M
+    Metrics:
+      MPJPE-single: 12.03
+      MPJPE-interacting: 17.88
+      MPJPE-all: 14.84
+      APh: 0.99
+  Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3d_all_256x256-b9c1cf4c_20210506.pth

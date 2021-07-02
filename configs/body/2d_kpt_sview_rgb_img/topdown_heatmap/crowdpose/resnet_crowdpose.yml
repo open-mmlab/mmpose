@@ -1,0 +1,76 @@
+Collections:
+- Name: resnet_crowdpose
+  Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
+  Paper:
+  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res50_crowdpose_256x192
+  In Collection: resnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res50_crowdpose_256x192.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.637
+      AP@0.5: 0.808
+      AP@0.75: 0.692
+      AP (E): 0.739
+      AP (M): 0.65
+      AP (H): 0.506
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192-c6a526b6_20201227.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res101_crowdpose_256x192
+  In Collection: resnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_256x192.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.647
+      AP@0.5: 0.81
+      AP@0.75: 0.703
+      AP (E): 0.744
+      AP (M): 0.658
+      AP (H): 0.522
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192-8f5870f4_20201227.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res101_crowdpose_320x256
+  In Collection: resnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_320x256.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.661
+      AP@0.5: 0.821
+      AP@0.75: 0.714
+      AP (E): 0.759
+      AP (M): 0.671
+      AP (H): 0.536
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-c88c512a_20201227.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--crowdpose--res152_crowdpose_256x192
+  In Collection: resnet_crowdpose
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res152_crowdpose_256x192.py
+  Metadata:
+    Training Data: CrowdPose
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: CrowdPose
+    Metrics:
+      AP: 0.656
+      AP@0.5: 0.818
+      AP@0.75: 0.712
+      AP (E): 0.754
+      AP (M): 0.666
+      AP (H): 0.532
+  Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192-dbd49aba_20201227.pth
