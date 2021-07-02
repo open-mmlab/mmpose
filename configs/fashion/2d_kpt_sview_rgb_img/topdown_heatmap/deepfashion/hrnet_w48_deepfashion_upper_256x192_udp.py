@@ -26,7 +26,7 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-target_type = 'GaussianHeatMap'
+target_type = 'GaussianHeatmap'
 channel_cfg = dict(
     num_output_channels=6,
     dataset_joints=6,

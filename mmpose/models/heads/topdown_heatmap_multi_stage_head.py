@@ -53,7 +53,7 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
 
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
-        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatmap')
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -164,7 +164,7 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
 
         accuracy = dict()
 
-        if self.target_type == 'GaussianHeatMap':
+        if self.target_type == 'GaussianHeatmap':
             _, avg_acc, _ = pose_pck_accuracy(
                 output[-1].detach().cpu().numpy(),
                 target.detach().cpu().numpy(),
@@ -420,7 +420,7 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
 
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
-        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatMap')
+        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatmap')
 
         self.out_shape = out_shape
         self.unit_channels = unit_channels
@@ -501,7 +501,7 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
 
         accuracy = dict()
 
-        if self.target_type == 'GaussianHeatMap':
+        if self.target_type == 'GaussianHeatmap':
             assert isinstance(output, list)
             assert target.dim() == 5 and target_weight.dim() == 4
             _, avg_acc, _ = pose_pck_accuracy(

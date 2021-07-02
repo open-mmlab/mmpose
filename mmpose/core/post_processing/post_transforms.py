@@ -105,7 +105,7 @@ def fliplr_regression(regression,
     return regression_flipped
 
 
-def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
+def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatmap'):
     """Flip the flipped heatmaps back to the original form.
 
     Note:
@@ -119,18 +119,16 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatMap'):
             from the flipped images.
         flip_pairs (list[tuple()): Pairs of keypoints which are mirrored
             (for example, left ear -- right ear).
-        target_type (str): GaussianHeatMap or CombinedTarget
+        target_type (str): GaussianHeatmap or CombinedTarget
 
     Returns:
         np.ndarray: heatmaps that flipped back to the original image
     """
     assert output_flipped.ndim == 4, \
         'output_flipped should be [batch_size, num_keypoints, height, width]'
-    assert target_type.lower() in ('GaussianHeatMap'.lower(),
-                                   'CombinedTarget'.lower())
     shape_ori = output_flipped.shape
     channels = 1
-    if target_type == 'CombinedTarget':
+    if target_type.lower() == 'CombinedTarget'.lower():
         channels = 3
         output_flipped[:, 1::3, ...] = -output_flipped[:, 1::3, ...]
     output_flipped = output_flipped.reshape(shape_ori[0], -1, channels,
