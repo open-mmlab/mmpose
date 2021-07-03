@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.16.0 (02/07/2021)
+
+**Highlights**
+
+1. Support ["ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search"](https://arxiv.org/abs/2105.10154) CVPR'2021 ([\#742](https://github.com/open-mmlab/mmpose/pull/742),[\#755](https://github.com/open-mmlab/mmpose/pull/755)).
+1. Support MPI-INF-3DHP dataset ([\#683](https://github.com/open-mmlab/mmpose/pull/683),[\#746](https://github.com/open-mmlab/mmpose/pull/746),[\#751](https://github.com/open-mmlab/mmpose/pull/751)).
+1. Add webcam demo tool ([\#729](https://github.com/open-mmlab/mmpose/pull/729))
+1. Add 3d body and hand pose estimation demo ([\#704](https://github.com/open-mmlab/mmpose/pull/704), [\#727](https://github.com/open-mmlab/mmpose/pull/727)).
+
+**New Features**
+
+- Support ["ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search"](https://arxiv.org/abs/2105.10154) CVPR'2021 ([\#742](https://github.com/open-mmlab/mmpose/pull/742),[\#755](https://github.com/open-mmlab/mmpose/pull/755))
+- Support MPI-INF-3DHP dataset ([\#683](https://github.com/open-mmlab/mmpose/pull/683),[\#746](https://github.com/open-mmlab/mmpose/pull/746),[\#751](https://github.com/open-mmlab/mmpose/pull/751))
+- Support Webcam demo ([\#729](https://github.com/open-mmlab/mmpose/pull/729))
+- Support Interhand 3d demo ([\#704](https://github.com/open-mmlab/mmpose/pull/704))
+- Support 3d pose video demo ([\#727](https://github.com/open-mmlab/mmpose/pull/727))
+- Support H36m dataset for 2d pose estimation ([\#709](https://github.com/open-mmlab/mmpose/pull/709),[\#735](https://github.com/open-mmlab/mmpose/pull/735))
+- Add scripts to generate mim metafile ([\#749](https://github.com/open-mmlab/mmpose/pull/749))
+
+**Bug Fixes**
+
+- Fix typos ([\#692](https://github.com/open-mmlab/mmpose/pull/692),[\#696](https://github.com/open-mmlab/mmpose/pull/696),[\#697](https://github.com/open-mmlab/mmpose/pull/697),[\#698](https://github.com/open-mmlab/mmpose/pull/698),[\#712](https://github.com/open-mmlab/mmpose/pull/712),[\#718](https://github.com/open-mmlab/mmpose/pull/718),[\#728](https://github.com/open-mmlab/mmpose/pull/728))
+- Change model download links from `http` to `https` ([\#716](https://github.com/open-mmlab/mmpose/pull/716))
+
+**Breaking Changes**
+
+- Switch to MMCV MODEL_REGISTRY ([\#669](https://github.com/open-mmlab/mmpose/pull/669))
+
+**Improvements**
+
+- Refactor MeshMixDataset ([\#752](https://github.com/open-mmlab/mmpose/pull/752))
+- Rename 'GaussianHeatMap' to 'GaussianHeatmap' ([\#745](https://github.com/open-mmlab/mmpose/pull/745))
+- Update out-of-date configs ([\#734](https://github.com/open-mmlab/mmpose/pull/734))
+- Improve compatibility for breaking changes ([\#731](https://github.com/open-mmlab/mmpose/pull/731))
+- Enable to control radius and thickness in visualization ([\#722](https://github.com/open-mmlab/mmpose/pull/722))
+- Add regex dependency ([\#720](https://github.com/open-mmlab/mmpose/pull/720))
+
 ## v0.15.0 (02/06/2021)
 
 **Highlights**
