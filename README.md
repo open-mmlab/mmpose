@@ -19,7 +19,7 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
-https://user-images.githubusercontent.com/15977946/124265709-aec28f00-db68-11eb-9081-1745c5e972f6.mp4
+https://user-images.githubusercontent.com/15977946/124354501-e3a11580-dc3e-11eb-92dd-9434887cc3c0.mp4
 
 ### Major Features
 
