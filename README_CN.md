@@ -18,21 +18,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 
 主分支代码目前支持 **PyTorch 1.3 以上**的版本
 
-<div align="center">
-    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
-    COCO 17关键点 多人姿态估计
-</div>
-<div align="center">
-<img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
-
-133关键点-多人全身姿态估计 ([高清完整版](https://www.youtube.com/watch?v=pIJpQg8mXUU))
-
-</div>
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
-    2D 动物姿态估计
-</div>
+https://user-images.githubusercontent.com/15977946/124265709-aec28f00-db68-11eb-9081-1745c5e972f6.mp4
 
 ### 主要特性
 
