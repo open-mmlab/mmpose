@@ -10,8 +10,8 @@ We provide a demo script to test on single images with a given ground-truth Json
 
 ```shell
 python demo/body3d_two_stage_img_demo.py \
-    ${MMPOSE_CONFIG_FILE_STAGE_2} \
-    ${MMPOSE_CHECKPOINT_FILE_STAGE_2} \
+    ${MMPOSE_CONFIG_FILE_3D} \
+    ${MMPOSE_CHECKPOINT_FILE_3D} \
     --json-file ${JSON_FILE} \
     --img-root ${IMG_ROOT} \
     --only-second-stage \
@@ -35,4 +35,50 @@ python demo/body3d_two_stage_img_demo.py \
     --out-img-root vis_results \
     --rebase-keypoint-height \
     --show-ground-truth
+```
+
+### 3D Human Pose Two-stage Estimation Image Demo
+
+#### Using mmdet for human bounding box detection and top-down model for the 1st stage (2D pose detection), and inference the 2nd stage (2D-to-3D lifting)
+
+Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
+
+```shell
+python demo/body3d_two_stage_video_demo.py \
+    ${MMDET_CONFIG_FILE} \
+    ${MMDET_CHECKPOINT_FILE} \
+    ${MMPOSE_CONFIG_FILE_2D} \
+    ${MMPOSE_CHECKPOINT_FILE_2D} \
+    ${MMPOSE_CONFIG_FILE_3D} \
+    ${MMPOSE_CHECKPOINT_FILE_3D} \
+    --video-path ${VIDEO_PATH} \
+    [--rebase-keypoint-height] \
+    [--norm-pose-2d] \
+    [--num-poses-vis NUM_POSES_VIS] \
+    [--show] \
+    [--out-video-root ${OUT_VIDEO_ROOT}] \
+    [--device ${GPU_ID or CPU}] \
+    [--det-cat-id DET_CAT_ID] \
+    [--bbox-thr BBOX_THR] \
+    [--kpt-thr KPT_THR] \
+    [--use-oks-tracking] \
+    [--tracking-thr TRACKING_THR] \
+    [--euro] \
+    [--radius RADIUS] \
+    [--thickness THICKNESS]
+```
+
+Example:
+
+```shell
+python demo/body3d_two_stage_video_demo.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
+    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w32_h36m_256x256.py \
+    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-d3206675_20210621.pth \
+    configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py \
+    https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth \
+    --video-path demo/resources/body3d_demo.mp4 \
+    --out-video-root vis_results \
+    --rebase-keypoint-height
 ```

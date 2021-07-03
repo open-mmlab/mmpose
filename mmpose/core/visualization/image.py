@@ -194,6 +194,7 @@ def imshow_keypoints_3d(
     pose_limb_color=None,
     vis_height=400,
     kpt_score_thr=0.3,
+    num_instances=-1,
     *,
     axis_azimuth=70,
     axis_limit=1.7,
@@ -221,6 +222,10 @@ def imshow_keypoints_3d(
                 items.
         kpt_score_thr (float): Minimum score of keypoints to be shown.
             Default: 0.3.
+        num_instances (int): Number of instances to be shown in 3D. If smaller
+            than 0, all the instances in the pose_result will be shown.
+            Otherwise, pad or truncate the pose_result to a length of
+            num_instances.
         axis_azimuth (float): axis azimuth angle for 3D visualizations.
         axis_dist (float): axis distance for 3D visualizations.
         axis_elev (float): axis elevation view angle for 3D visualizations.
@@ -234,7 +239,14 @@ def imshow_keypoints_3d(
     """
 
     show_img = img is not None
-    num_axis = len(pose_result) + 1 if show_img else len(pose_result)
+    if num_instances < 0:
+        num_instances = len(pose_result)
+    else:
+        if len(pose_result) > num_instances:
+            pose_result = pose_result[:num_instances]
+        elif len(pose_result) < num_instances:
+            pose_result += [dict()] * (num_instances - len(pose_result))
+    num_axis = num_instances + 1 if show_img else num_instances
 
     plt.ioff()
     fig = plt.figure(figsize=(vis_height * num_axis * 0.01, vis_height * 0.01))
@@ -252,7 +264,10 @@ def imshow_keypoints_3d(
         ax_img.imshow(img, aspect='equal')
 
     for idx, res in enumerate(pose_result):
-        kpts = res['keypoints_3d']
+        dummy = len(res) == 0
+        kpts = np.zeros((1, 3)) if dummy else res['keypoints_3d']
+        if kpts.shape[1] == 3:
+            kpts = np.concatenate([kpts, np.ones((kpts.shape[0], 1))], axis=1)
         valid = kpts[:, 3] >= kpt_score_thr
 
         ax_idx = idx + 2 if show_img else idx + 1
@@ -275,7 +290,7 @@ def imshow_keypoints_3d(
         ax.set_zticklabels([])
         ax.dist = axis_dist
 
-        if pose_kpt_color is not None:
+        if not dummy and pose_kpt_color is not None:
             pose_kpt_color = np.array(pose_kpt_color)
             assert len(pose_kpt_color) == len(kpts)
             x_3d, y_3d, z_3d = np.split(kpts[:, :3], [1, 2], axis=1)
@@ -289,7 +304,7 @@ def imshow_keypoints_3d(
                 color=_color[valid],
             )
 
-        if skeleton is not None and pose_limb_color is not None:
+        if not dummy and skeleton is not None and pose_limb_color is not None:
             pose_limb_color = np.array(pose_limb_color)
             assert len(pose_limb_color) == len(skeleton)
             for limb, limb_color in zip(skeleton, pose_limb_color):
