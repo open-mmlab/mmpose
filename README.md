@@ -19,24 +19,7 @@ It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
 
 The master branch works with **PyTorch 1.3+**.
 
-<div align="center">
-    <img src="demo/resources/demo_coco.gif" width="600px" alt><br>
-    COCO 17-keypoint pose estimation
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/9464825/95552839-00a61080-0a40-11eb-818c-b8dad7307217.gif" width="600px" alt><br>
-
-133-keypoint whole-body pose estimation ([full HD version](https://www.youtube.com/watch?v=pIJpQg8mXUU))
-
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" width="600px" alt><br>
-    2D animal_pose estimation
-</div>
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/118820606-02df2000-b8e9-11eb-9984-b9228101e780.gif" width="600px" alt><br>
-    3D human pose estimation
-</div>
+https://user-images.githubusercontent.com/15977946/124265709-aec28f00-db68-11eb-9081-1745c5e972f6.mp4
 
 ### Major Features
 
