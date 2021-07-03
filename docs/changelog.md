@@ -6,7 +6,8 @@
 
 1. Support ["ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search"](https://arxiv.org/abs/2105.10154) CVPR'2021 ([\#742](https://github.com/open-mmlab/mmpose/pull/742),[\#755](https://github.com/open-mmlab/mmpose/pull/755)).
 1. Support MPI-INF-3DHP dataset ([\#683](https://github.com/open-mmlab/mmpose/pull/683),[\#746](https://github.com/open-mmlab/mmpose/pull/746),[\#751](https://github.com/open-mmlab/mmpose/pull/751)).
-1. Fancy demos ([\#729](https://github.com/open-mmlab/mmpose/pull/729),[\#704](https://github.com/open-mmlab/mmpose/pull/704)).
+1. Add webcam demo tool ([\#729](https://github.com/open-mmlab/mmpose/pull/729))
+1. Add 3d body and hand pose estimation demo ([\#704](https://github.com/open-mmlab/mmpose/pull/704), [\#727](https://github.com/open-mmlab/mmpose/pull/727)).
 
 **New Features**
 
@@ -14,6 +15,7 @@
 - Support MPI-INF-3DHP dataset ([\#683](https://github.com/open-mmlab/mmpose/pull/683),[\#746](https://github.com/open-mmlab/mmpose/pull/746),[\#751](https://github.com/open-mmlab/mmpose/pull/751))
 - Support Webcam demo ([\#729](https://github.com/open-mmlab/mmpose/pull/729))
 - Support Interhand 3d demo ([\#704](https://github.com/open-mmlab/mmpose/pull/704))
+- Support 3d pose video demo ([\#727](https://github.com/open-mmlab/mmpose/pull/727))
 - Support H36m dataset for 2d pose estimation ([\#709](https://github.com/open-mmlab/mmpose/pull/709),[\#735](https://github.com/open-mmlab/mmpose/pull/735))
 - Add scripts to generate mim metafile ([\#749](https://github.com/open-mmlab/mmpose/pull/749))
 
