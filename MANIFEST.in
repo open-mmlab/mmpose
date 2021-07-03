@@ -1,5 +1,5 @@
 include requirements/*.txt
-include mmpose/model_zoo.yml
+include mmpose/model-index.yml
 recursive-include mmpose/configs *.py *.yml
 recursive-include mmpose/tools *.py *.sh
 recursive-include mmpose/demo *.py
