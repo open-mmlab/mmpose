@@ -6,7 +6,116 @@ from mmpose.datasets.pipelines import Compose
 from .inference import LoadImage, _box2cs, _xywh2xyxy, _xyxy2xywh
 
 
-def _collate_pose_sequence(pose_results, with_track_id=True):
+def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
+    """Extract the target frame from 2D pose results, and pad the sequence to a
+    fixed length.
+
+    Args:
+        pose_results (List[List[Dict]]): Multi-frame pose detection results
+            stored in a nested list. Each element of the outer list is the
+            pose detection results of a single frame, and each element of the
+            inner list is the pose information of one person, which contains:
+                keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                track_id (int): unique id of each person, required when
+                    ``with_track_id==True```
+                bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+        frame_idx (int): The index of the frame in the original video.
+        causal (bool): If True, the target frame is the last frame in
+            a sequence. Otherwise, the target frame is in the middle of a
+            sequence.
+        seq_len (int): The number of frames in the input sequence.
+        step (int): Step size to extract frames from the video.
+
+    Returns:
+        List[List[Dict]]: Multi-frame pose detection results stored in a
+            nested list with a length of seq_len.
+        int: The target frame index in the padded sequence.
+    """
+
+    if causal:
+        frames_left = seq_len - 1
+        frames_right = 0
+    else:
+        frames_left = (seq_len - 1) // 2
+        frames_right = frames_left
+    num_frames = len(pose_results)
+
+    # get the padded sequence
+    pad_left = max(0, frames_left - frame_idx // step)
+    pad_right = max(0, frames_right - (num_frames - 1 - frame_idx) // step)
+    start = max(frame_idx % step, frame_idx - frames_left * step)
+    end = min(num_frames - (num_frames - 1 - frame_idx) % step,
+              frame_idx + frames_right * step + 1)
+    pose_results_seq = [pose_results[0]] * pad_left + \
+        pose_results[start:end:step] + [pose_results[-1]] * pad_right
+    return pose_results_seq
+
+
+def _gather_pose_lifter_inputs(pose_results,
+                               bbox_center,
+                               bbox_scale,
+                               norm_pose_2d=False):
+    """Gather input data (keypoints and track_id) for pose lifter model.
+
+    Notes:
+        T: The temporal length of the pose detection results
+        N: The number of the person instances
+        K: The number of the keypoints
+        C: The channel number of each keypoint
+
+    Args:
+        pose_results (List[List[Dict]]): Multi-frame pose detection results
+            stored in a nested list. Each element of the outer list is the
+            pose detection results of a single frame, and each element of the
+            inner list is the pose information of one person, which contains:
+                keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                track_id (int): unique id of each person, required when
+                    ``with_track_id==True```
+                bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+        bbox_center (ndarray[1, 2]): x, y. The average center coordinate of the
+            bboxes in the dataset.
+        bbox_scale (int|float): The average scale of the bboxes in the dataset.
+        norm_pose_2d (bool): If True, scale the bbox (along with the 2D
+            pose) to bbox_scale, and move the bbox (along with the 2D pose) to
+            bbox_center. Default: False.
+
+    Returns:
+        List[List[dict]]: Multi-frame pose detection results
+            stored in a nested list. Each element of the outer list is the
+            pose detection results of a single frame, and each element of the
+            inner list is the pose information of one person, which contains:
+                keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                track_id (int): unique id of each person, required when
+                    ``with_track_id==True```
+    """
+    sequence_inputs = []
+    for frame in pose_results:
+        frame_inputs = []
+        for res in frame:
+            inputs = dict()
+
+            if norm_pose_2d:
+                bbox = res['bbox']
+                center = np.array([[(bbox[0] + bbox[2]) / 2,
+                                    (bbox[1] + bbox[3]) / 2]])
+                scale = max(bbox[2] - bbox[0], bbox[3] - bbox[1])
+                inputs['keypoints'] = (res['keypoints'][:, :2] - center) \
+                    / scale * bbox_scale + bbox_center
+            else:
+                inputs['keypoints'] = res['keypoints'][:, :2]
+
+            if res['keypoints'].shape[1] == 3:
+                inputs['keypoints'] = np.concatenate(
+                    [inputs['keypoints'], res['keypoints'][:, 2:]], axis=1)
+
+            if 'track_id' in res:
+                inputs['track_id'] = res['track_id']
+            frame_inputs.append(inputs)
+        sequence_inputs.append(frame_inputs)
+    return sequence_inputs
+
+
+def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
     """Reorganize multi-frame pose detection results into individual pose
     sequences.
 
@@ -23,48 +132,70 @@ def _collate_pose_sequence(pose_results, with_track_id=True):
             inner list is the pose information of one person, which contains:
                 keypoints (ndarray[K, 2 or 3]): x, y, [score]
                 track_id (int): unique id of each person, required when
-                    ``with_track_id==True``
-                bbox ((4, ) or (5, )): left, top, right, bottom, [score],
-                    required when ``with_bbox==True``
+                    ``with_track_id==True```
         with_track_id (bool): If True, the element in pose_results is expected
             to contain "track_id", which will be used to gather the pose
             sequence of a person from multiple frames. Otherwise, the pose
             results in each frame are expected to have a consistent number and
             order of identities. Default is True.
+        target_frame (int): The index of the target frame. Default: -1.
     """
     T = len(pose_results)
     assert T > 0
 
-    N = len(pose_results[-1])  # use identities in the last frame
+    target_frame = (T + target_frame) % T  # convert negative index to positive
+
+    N = len(pose_results[target_frame])  # use identities in the target frame
     if N == 0:
         return []
 
-    K, C = pose_results[-1][0]['keypoints'].shape
+    K, C = pose_results[target_frame][0]['keypoints'].shape
 
     track_ids = None
     if with_track_id:
-        track_ids = [res['track_id'] for res in pose_results[-1]]
+        track_ids = [res['track_id'] for res in pose_results[target_frame]]
 
     pose_sequences = []
     for idx in range(N):
-        pose_seq = dict(keypoints=np.zeros((T, K, C), dtype=np.float32))
+        pose_seq = dict()
         # gather static information
-        for k, v in pose_results[-1][idx].items():
+        for k, v in pose_results[target_frame][idx].items():
             if k != 'keypoints':
                 pose_seq[k] = v
-        pose_sequences.append(pose_seq)
-
-    for t, frame in enumerate(pose_results):
-        if with_track_id:
-            id2idx = {res['track_id']: idx for idx, res in enumerate(frame)}
-            indices = (id2idx.get(tid, None) for tid in track_ids)
+        # gather keypoints
+        if not with_track_id:
+            pose_seq['keypoints'] = np.stack(
+                [frame[idx]['keypoints'] for frame in pose_results])
         else:
-            indices = range(N)
-
-        for idx, idx_frame in enumerate(indices):
-            if idx_frame is None:
-                continue
-            pose_sequences[idx]['keypoints'][t] = frame[idx_frame]['keypoints']
+            keypoints = np.zeros((T, K, C), dtype=np.float32)
+            keypoints[target_frame] = pose_results[target_frame][idx][
+                'keypoints']
+            # find the left most frame containing track_ids[idx]
+            for frame_idx in range(target_frame - 1, -1, -1):
+                contains_idx = False
+                for res in pose_results[frame_idx]:
+                    if res['track_id'] == track_ids[idx]:
+                        keypoints[frame_idx] = res['keypoints']
+                        contains_idx = True
+                        break
+                if not contains_idx:
+                    # replicate the left most frame
+                    keypoints[:frame_idx + 1] = keypoints[frame_idx + 1]
+                    break
+            # find the right most frame containing track_idx[idx]
+            for frame_idx in range(target_frame + 1, T):
+                contains_idx = False
+                for res in pose_results[frame_idx]:
+                    if res['track_id'] == track_ids[idx]:
+                        keypoints[frame_idx] = res['keypoints']
+                        contains_idx = True
+                        break
+                if not contains_idx:
+                    # replicate the right most frame
+                    keypoints[frame_idx + 1:] = keypoints[frame_idx]
+                    break
+            pose_seq['keypoints'] = keypoints
+        pose_sequences.append(pose_seq)
 
     return pose_sequences
 
@@ -72,7 +203,9 @@ def _collate_pose_sequence(pose_results, with_track_id=True):
 def inference_pose_lifter_model(model,
                                 pose_results_2d,
                                 dataset,
-                                with_track_id=True):
+                                with_track_id=True,
+                                image_size=None,
+                                norm_pose_2d=False):
     """Inference 3D pose from 2D pose sequences using a pose lifter model.
 
     Args:
@@ -89,6 +222,12 @@ def inference_pose_lifter_model(model,
             of a person from multiple frames. Otherwise, the pose results in
             each frame are expected to have a consistent number and order of
             identities. Default is True.
+        image_size (Tuple|List): image width, image height. If None, image size
+            will not be contained in dict ``data``.
+        norm_pose_2d (bool): If True, scale the bbox (along with the 2D
+            pose) to the average bbox scale of the dataset, and move the bbox
+            (along with the 2D pose) to the average bbox center of the dataset.
+
     Returns:
         List[dict]: 3D pose inference results. Each element is the result of
             an instance, which contains:
@@ -104,10 +243,17 @@ def inference_pose_lifter_model(model,
     flip_pairs = None
     if dataset == 'Body3DH36MDataset':
         flip_pairs = [[1, 4], [2, 5], [3, 6], [11, 14], [12, 15], [13, 16]]
+        bbox_center = np.array([[528, 427]], dtype=np.float32)
+        bbox_scale = 400
     else:
         raise NotImplementedError()
 
-    pose_sequences_2d = _collate_pose_sequence(pose_results_2d, with_track_id)
+    target_idx = -1 if model.causal else len(pose_results_2d) // 2
+    pose_lifter_inputs = _gather_pose_lifter_inputs(pose_results_2d,
+                                                    bbox_center, bbox_scale,
+                                                    norm_pose_2d)
+    pose_sequences_2d = _collate_pose_sequence(pose_lifter_inputs,
+                                               with_track_id, target_idx)
 
     if not pose_sequences_2d:
         return []
@@ -149,6 +295,11 @@ def inference_pose_lifter_model(model,
             }
         }
 
+        if image_size is not None:
+            assert len(image_size) == 2
+            data['image_width'] = image_size[0]
+            data['image_height'] = image_size[1]
+
         data = test_pipeline(data)
         batch_data.append(data)
 
@@ -187,6 +338,7 @@ def vis_3d_pose_result(model,
                        kpt_score_thr=0.3,
                        radius=8,
                        thickness=2,
+                       num_instances=-1,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.
@@ -266,6 +418,7 @@ def vis_3d_pose_result(model,
         thickness=thickness,
         pose_kpt_color=pose_kpt_color,
         pose_limb_color=pose_limb_color,
+        num_instances=num_instances,
         show=show,
         out_file=out_file)
 

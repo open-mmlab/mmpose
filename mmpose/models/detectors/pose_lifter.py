@@ -112,6 +112,15 @@ class PoseLifter(BasePose):
         """Check if has trajectory_head."""
         return hasattr(self, 'traj_head')
 
+    @property
+    def causal(self):
+        if hasattr(self.backbone, 'causal'):
+            return self.backbone.causal
+        else:
+            raise AttributeError('A PoseLifter\'s backbone should have '
+                                 'the bool attribute "causal" to indicate if'
+                                 'it performs causal inference.')
+
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
         self.backbone.init_weights(pretrained)
@@ -284,6 +293,7 @@ class PoseLifter(BasePose):
                     radius=8,
                     thickness=2,
                     vis_height=400,
+                    num_instances=-1,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -310,6 +320,10 @@ class PoseLifter(BasePose):
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the pose_result will be
+                shown. Otherwise, pad or truncate the pose_result to a length
+                of num_instances.
             win_name (str): The window name.
             wait_time (int): Value of waitKey param.
                 Default: 0.
@@ -320,8 +334,9 @@ class PoseLifter(BasePose):
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
 
-        assert len(result) > 0
-        result = sorted(result, key=lambda x: x.get('track_id', 0))
+        if num_instances < 0:
+            assert len(result) > 0
+        result = sorted(result, key=lambda x: x.get('track_id', 1e4))
 
         # draw image and input 2d poses
         if img is not None:
@@ -363,8 +378,14 @@ class PoseLifter(BasePose):
                     thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
 
-        img_vis = imshow_keypoints_3d(result, img, skeleton, pose_kpt_color,
-                                      pose_limb_color, vis_height)
+        img_vis = imshow_keypoints_3d(
+            result,
+            img,
+            skeleton,
+            pose_kpt_color,
+            pose_limb_color,
+            vis_height,
+            num_instances=num_instances)
 
         if show:
             mmcv.visualization.imshow(img_vis, win_name, wait_time)
