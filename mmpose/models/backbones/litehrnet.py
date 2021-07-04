@@ -15,7 +15,6 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.utils import get_root_logger
 from ..builder import BACKBONES
-from .resnet import BasicBlock, Bottleneck
 from .utils import channel_shuffle, load_checkpoint
 
 
@@ -721,7 +720,7 @@ class LiteHRModule(nn.Module):
         if self.with_fuse:
             out_fuse = []
             for i in range(len(self.fuse_layers)):
-                y = out[0] if i == 0 else self.fuse_layers[i][0](out[0])
+                y = 0
                 for j in range(self.num_branches):
                     if i == j:
                         y += out[j]
@@ -729,7 +728,7 @@ class LiteHRModule(nn.Module):
                         y += self.fuse_layers[i][j](out[j])
                 out_fuse.append(self.relu(y))
             out = out_fuse
-        elif not self.multiscale_output:
+        if not self.multiscale_output:
             out = [out[0]]
         return out
 
@@ -754,8 +753,6 @@ class LiteHRNet(nn.Module):
             and its variants only. Default: False
         with_cp (bool): Use checkpoint or not. Using checkpoint will save some
             memory while slowing down the training speed.
-        zero_init_residual (bool): whether to use zero init for last norm layer
-            in resblocks to let them behave as identity.
 
     Example:
         >>> from mmpose.models import LiteHRNet
@@ -956,13 +953,6 @@ class LiteHRNet(nn.Module):
                     normal_init(m, std=0.001)
                 elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
                     constant_init(m, 1)
-
-            if self.zero_init_residual:
-                for m in self.modules():
-                    if isinstance(m, Bottleneck):
-                        constant_init(m.norm3, 0)
-                    elif isinstance(m, BasicBlock):
-                        constant_init(m.norm2, 0)
         else:
             raise TypeError('pretrained must be a str or None')
 
