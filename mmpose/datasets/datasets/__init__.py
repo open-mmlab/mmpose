@@ -7,6 +7,7 @@ from .body3d import Body3DH36MDataset
 from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
                         BottomUpCocoWholeBodyDataset, BottomUpCrowdPoseDataset,
                         BottomUpMhpDataset)
+from .dummy import DummyTopDownDataset
 from .face import (Face300WDataset, FaceAFLWDataset, FaceCOFWDataset,
                    FaceWFLWDataset)
 from .fashion import DeepFashionDataset
@@ -36,5 +37,5 @@ __all__ = [
     'FaceWFLWDataset', 'FaceCOFWDataset', 'Body3DH36MDataset',
     'AnimalHorse10Dataset', 'AnimalMacaqueDataset', 'AnimalFlyDataset',
     'AnimalLocustDataset', 'AnimalZebraDataset', 'AnimalATRWDataset',
-    'AnimalPoseDataset', 'TopDownH36MDataset'
+    'AnimalPoseDataset', 'TopDownH36MDataset', 'DummyTopDownDataset'
 ]
