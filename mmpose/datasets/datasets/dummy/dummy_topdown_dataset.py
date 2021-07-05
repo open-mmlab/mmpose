@@ -41,9 +41,9 @@ class DummyTopDownDataset(TopDownBaseDataset):
         # dummy bbox and keypoints
         bbox = [int(w / 4), int(h / 4), int(w / 2), int(h / 2)]
         center, scale = self._xywh2cs(*bbox)
-        num_kpts = self.ann_info['num_output_channels']
-        kpts = np.random.rand(num_kpts, 2).astype(np.float32) * [w, h]
-        kpts_visible = np.ones((num_kpts, 1), dtype=np.float32)
+        num_joints = self.ann_info['num_output_channels']
+        joints = np.random.rand(num_joints, 2).astype(np.float32) * [w, h]
+        joints_visible = np.ones((num_joints, 1), dtype=np.float32)
 
         dummy = {
             'img': np.random.randint(0, 256, size=(h, w, 3), dtype=np.uint8),
@@ -51,8 +51,8 @@ class DummyTopDownDataset(TopDownBaseDataset):
             'scale': scale,
             'bbox': bbox,
             'rotation': 0,
-            'joints_3d': kpts,
-            'joints_3d_visible': kpts_visible,
+            'joints_3d': joints,
+            'joints_3d_visible': joints_visible,
             'bbox_score': 1
         }
         for i in range(self.size):
