@@ -94,7 +94,7 @@ class DummyTopDownDataset(TopDownBaseDataset):
 
         return center, scale
 
-    def evaluate(self, cfg, preds, output_dir, *args, **kwargs):
+    def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         return dict(AP=1.)
 
     def __len__(self):

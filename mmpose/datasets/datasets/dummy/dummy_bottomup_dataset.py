@@ -66,3 +66,6 @@ class DummyBottomUpDataset(BottomUpBaseDataset):
 
     def _get_single(self, idx):
         return self.db[idx % self.inner_size]
+
+    def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
+        pass
