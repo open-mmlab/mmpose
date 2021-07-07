@@ -18,7 +18,7 @@ MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLa
 
 主分支代码目前支持 **PyTorch 1.3 以上**的版本
 
-https://user-images.githubusercontent.com/15977946/124354501-e3a11580-dc3e-11eb-92dd-9434887cc3c0.mp4
+https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
 ### 主要特性
 
