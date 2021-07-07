@@ -27,6 +27,8 @@ Optional:
 
 - [mmdet](https://github.com/open-mmlab/mmdetection) (to run pose demos)
 - [mmtrack](https://github.com/open-mmlab/mmtracking) (to run pose tracking demos)
+- [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (to run 3d mesh demos)
+- [smplx](https://github.com/vchoutas/smplx) (to run 3d mesh demos)
 
 ### Install MMPose
 

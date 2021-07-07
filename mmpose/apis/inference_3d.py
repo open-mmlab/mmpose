@@ -580,3 +580,180 @@ def inference_interhand_3d_model(model,
         pose_results.append(pose_res)
 
     return pose_results
+
+
+def inference_mesh_model(model,
+                         img_or_path,
+                         det_results,
+                         bbox_thr=None,
+                         format='xywh',
+                         dataset='MeshH36MDataset'):
+    """Inference a single image with a list of bounding boxes.
+
+    num_bboxes: N
+    num_keypoints: K
+    num_vertices: V
+    num_faces: F
+
+    Args:
+        model (nn.Module): The loaded pose model.
+        img_or_path (str | np.ndarray): Image filename or loaded image.
+        det_results (List[dict]): The 2D bbox sequences stored in a list.
+            Each each element of the list is the bbox of one person, which
+            contains:
+                - "bbox" (ndarray[4 or 5]): The person bounding box,
+                which contains 4 box coordinates (and score).
+        bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
+            will be fed into the pose detector. If bbox_thr is None, ignore it.
+        format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
+            'xyxy' means (left, top, right, bottom),
+            'xywh' means (left, top, width, height).
+        dataset (str): Dataset name.
+
+    Returns:
+        List[dict]: 3D pose inference results. Each element is the result of
+            an instance, which contains:
+            - "bbox" (ndarray[4]): instance bounding bbox
+            - "center" (ndarray[2]): bbox center
+            - "scale" (ndarray[2]): bbox scale
+            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
+            - "camera" (ndarray[3]): camera parameters
+            - "vertices" (ndarray[V, 3]): predicted 3D vertices
+            - "faces" (ndarray[F, 3]): mesh faces
+
+            If there is no valid instance, an empty list will be returned.
+    """
+
+    assert format in ['xyxy', 'xywh']
+
+    pose_results = []
+
+    if len(det_results) == 0:
+        return pose_results
+
+    # Change for-loop preprocess each bbox to preprocess all bboxes at once.
+    bboxes = np.array([box['bbox'] for box in det_results])
+
+    # Select bboxes by score threshold
+    if bbox_thr is not None:
+        assert bboxes.shape[1] == 5
+        valid_idx = np.where(bboxes[:, 4] > bbox_thr)[0]
+        bboxes = bboxes[valid_idx]
+        det_results = [det_results[i] for i in valid_idx]
+
+    if format == 'xyxy':
+        bboxes_xyxy = bboxes
+        bboxes_xywh = _xyxy2xywh(bboxes)
+    else:
+        # format is already 'xywh'
+        bboxes_xywh = bboxes
+        bboxes_xyxy = _xywh2xyxy(bboxes)
+
+    # if bbox_thr remove all bounding box
+    if len(bboxes_xywh) == 0:
+        return []
+
+    cfg = model.cfg
+    device = next(model.parameters()).device
+
+    # build the data pipeline
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
+    test_pipeline = Compose(test_pipeline)
+
+    assert len(bboxes[0]) in [4, 5]
+
+    if dataset == 'MeshH36MDataset':
+        flip_pairs = [[0, 5], [1, 4], [2, 3], [6, 11], [7, 10], [8, 9],
+                      [20, 21], [22, 23]]
+    else:
+        raise NotImplementedError()
+
+    batch_data = []
+    for bbox in bboxes:
+        center, scale = _box2cs(cfg, bbox)
+
+        # prepare data
+        data = {
+            'img_or_path':
+            img_or_path,
+            'center':
+            center,
+            'scale':
+            scale,
+            'rotation':
+            0,
+            'bbox_score':
+            bbox[4] if len(bbox) == 5 else 1,
+            'dataset':
+            dataset,
+            'joints_2d':
+            np.zeros((cfg.data_cfg.num_joints, 2), dtype=np.float32),
+            'joints_2d_visible':
+            np.zeros((cfg.data_cfg.num_joints, 1), dtype=np.float32),
+            'joints_3d':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'joints_3d_visible':
+            np.zeros((cfg.data_cfg.num_joints, 3), dtype=np.float32),
+            'pose':
+            np.zeros(72, dtype=np.float32),
+            'beta':
+            np.zeros(10, dtype=np.float32),
+            'has_smpl':
+            0,
+            'ann_info': {
+                'image_size': np.array(cfg.data_cfg['image_size']),
+                'num_joints': cfg.data_cfg['num_joints'],
+                'flip_pairs': flip_pairs,
+            }
+        }
+
+        data = test_pipeline(data)
+        batch_data.append(data)
+
+    batch_data = collate(batch_data, samples_per_gpu=1)
+
+    if next(model.parameters()).is_cuda:
+        # scatter not work so just move image to cuda device
+        batch_data['img'] = batch_data['img'].to(device)
+    # get all img_metas of each bounding box
+    batch_data['img_metas'] = [
+        img_metas[0] for img_metas in batch_data['img_metas'].data
+    ]
+
+    # forward the model
+    with torch.no_grad():
+        preds = model(
+            img=batch_data['img'],
+            img_metas=batch_data['img_metas'],
+            return_loss=False,
+            return_vertices=True,
+            return_faces=True)
+
+    for idx in range(len(det_results)):
+        pose_res = det_results[idx].copy()
+        pose_res['bbox'] = bboxes_xyxy[idx]
+        pose_res['center'] = batch_data['img_metas'][idx]['center']
+        pose_res['scale'] = batch_data['img_metas'][idx]['scale']
+        pose_res['keypoints_3d'] = preds['keypoints_3d'][idx]
+        pose_res['camera'] = preds['camera'][idx]
+        pose_res['vertices'] = preds['vertices'][idx]
+        pose_res['faces'] = preds['faces']
+        pose_results.append(pose_res)
+    return pose_results
+
+
+def vis_3d_mesh_result(model, result, img=None, show=False, out_file=None):
+    """Visualize the 3D mesh estimation results.
+
+    Args:
+        model (nn.Module): The loaded model.
+        result (list[dict])
+    """
+    if hasattr(model, 'module'):
+        model = model.module
+
+    img = model.show_result(result, img, show=show, out_file=out_file)
+
+    return img

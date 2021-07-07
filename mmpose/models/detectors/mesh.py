@@ -1,6 +1,9 @@
+import cv2
+import mmcv
 import numpy as np
 import torch
 
+from mmpose.core.visualization.image import imshow_mesh_3d
 from mmpose.models.misc.discriminator import SMPLDiscriminator
 from .. import builder
 from ..builder import POSENETS
@@ -241,10 +244,13 @@ class ParametricMesh(BasePose):
         output = self.generator(img)
         return output
 
-    def forward_test(self, img, img_metas, **kwargs):
+    def forward_test(self,
+                     img,
+                     img_metas,
+                     return_vertices=False,
+                     return_faces=False,
+                     **kwargs):
         """Defines the computation performed at every call when testing."""
-        assert img.size(0) == 1
-        assert len(img_metas) == 1
 
         pred_smpl = self.generator(img)
         pred_pose, pred_beta, pred_camera = pred_smpl
@@ -256,29 +262,37 @@ class ParametricMesh(BasePose):
         pred_vertices = pred_out.vertices
         pred_joints_3d = self.get_3d_joints_from_mesh(pred_vertices)
 
-        all_preds = (pred_joints_3d.detach().cpu().numpy(),
-                     (pred_pose.detach().cpu().numpy(),
-                      pred_beta.detach().cpu().numpy()),
-                     pred_camera.detach().cpu().numpy())
+        all_preds = {}
+        all_preds['keypoints_3d'] = pred_joints_3d.detach().cpu().numpy()
+        all_preds['smpl_pose'] = pred_pose.detach().cpu().numpy()
+        all_preds['smpl_beta'] = pred_beta.detach().cpu().numpy()
+        all_preds['camera'] = pred_camera.detach().cpu().numpy()
 
-        all_boxes = np.zeros((1, 6), dtype=np.float32)
+        if return_vertices:
+            all_preds['vertices'] = pred_vertices.detach().cpu().numpy()
+        if return_faces:
+            all_preds['faces'] = self.smpl.faces
+
+        all_boxes = []
         image_path = []
+        for img_meta in img_metas:
+            box = np.zeros(6, dtype=np.float32)
+            c = img_meta['center']
+            s = img_meta['scale']
+            if 'bbox_score' in img_metas:
+                score = np.array(img_metas['bbox_score']).reshape(-1)
+            else:
+                score = 1.0
+            box[0:2] = c
+            box[2:4] = s
+            box[4] = np.prod(s * 200.0, axis=0)
+            box[5] = score
+            all_boxes.append(box)
+            image_path.append(img_meta['image_file'])
 
-        img_metas = img_metas[0]
-        c = img_metas['center'].reshape(1, -1)
-        s = img_metas['scale'].reshape(1, -1)
-
-        score = 1.0
-        if 'bbox_score' in img_metas:
-            score = np.array(img_metas['bbox_score']).reshape(-1)
-
-        all_boxes[0, 0:2] = c[:, 0:2]
-        all_boxes[0, 2:4] = s[:, 0:2]
-        all_boxes[0, 4] = np.prod(s * 200.0, axis=1)
-        all_boxes[0, 5] = score
-        image_path.extend(img_metas['image_file'])
-
-        return all_preds, all_boxes, image_path
+        all_preds['bboxes'] = np.stack(all_boxes, axis=0)
+        all_preds['image_path'] = image_path
+        return all_preds
 
     def get_3d_joints_from_mesh(self, vertices):
         """Get 3D joints from 3D mesh using predefined joints regressor."""
@@ -317,5 +331,122 @@ class ParametricMesh(BasePose):
             return self.forward_train(img, img_metas, **kwargs)
         return self.forward_test(img, img_metas, **kwargs)
 
-    def show_result(self, **kwargs):
-        pass
+    def show_result(self,
+                    result,
+                    img,
+                    show=False,
+                    out_file=None,
+                    win_name='',
+                    wait_time=0,
+                    bbox_color='green',
+                    mesh_color=(76, 76, 204),
+                    **kwargs):
+        """Visualize 3D mesh estimation results.
+
+        Args:
+            result (list[dict]): The mesh estimation results containing:
+               - "bbox" (ndarray[4]): instance bounding bbox
+               - "center" (ndarray[2]): bbox center
+               - "scale" (ndarray[2]): bbox scale
+               - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
+               - "camera" (ndarray[3]): camera parameters
+               - "vertices" (ndarray[V, 3]): predicted 3D vertices
+               - "faces" (ndarray[F, 3]): mesh faces
+            img (str or Tensor): Optional. The image to visualize 2D inputs on.
+            win_name (str): The window name.
+            show (bool): Whether to show the image. Default: False.
+            wait_time (int): Value of waitKey param.
+                Default: 0.
+            out_file (str or None): The filename to write the image.
+                Default: None.
+            bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
+            mesh_color (str or tuple or :obj:`Color`): Color of mesh surface.
+
+        Returns:
+            ndarray: Visualized img, only if not `show` or `out_file`.
+        """
+
+        if img is not None:
+            img = mmcv.imread(img)
+
+        focal_length = self.loss_mesh.focal_length
+        H, W, C = img.shape
+        img_center = np.array([[0.5 * W], [0.5 * H]])
+
+        # show bounding boxes
+        bboxes = [res['bbox'] for res in result]
+        bboxes = np.vstack(bboxes)
+        mmcv.imshow_bboxes(
+            img, bboxes, colors=bbox_color, top_k=-1, thickness=2, show=False)
+
+        vertex_list = []
+        face_list = []
+        for res in result:
+            vertices = res['vertices']
+            faces = res['faces']
+            camera = res['camera']
+            camera_center = res['center']
+            scale = res['scale']
+
+            # predicted vertices are in root-relative space,
+            # we need to translate them to camera space.
+            translation = np.array([
+                camera[1], camera[2],
+                2 * focal_length / (scale[0] * 200.0 * camera[0] + 1e-9)
+            ])
+            mean_depth = vertices[:, -1].mean() + translation[-1]
+            translation[:2] += (camera_center -
+                                img_center[:, 0]) / focal_length * mean_depth
+            vertices += translation[None, :]
+
+            vertex_list.append(vertices)
+            face_list.append(faces)
+
+        # render from front view
+        img_vis = imshow_mesh_3d(
+            img,
+            vertex_list,
+            face_list,
+            img_center, [focal_length, focal_length],
+            colors=mesh_color)
+
+        # render from side view
+        # rotate mesh vertices
+        R = cv2.Rodrigues(np.array([0, np.radians(90.), 0]))[0]
+        rot_vertex_list = [np.dot(vert, R) for vert in vertex_list]
+
+        # get the 3D bbox containing all meshes
+        rot_vertices = np.concatenate(rot_vertex_list, axis=0)
+        min_corner = rot_vertices.min(0)
+        max_corner = rot_vertices.max(0)
+
+        center_3d = 0.5 * (min_corner + max_corner)
+        ratio = 0.8
+        bbox3d_size = max_corner - min_corner
+
+        # set appropriate translation to make all meshes appear in the image
+        z_x = bbox3d_size[0] * focal_length / (ratio * W) - min_corner[2]
+        z_y = bbox3d_size[1] * focal_length / (ratio * H) - min_corner[2]
+        z = max(z_x, z_y)
+        translation = -center_3d
+        translation[2] = z
+        translation = translation[None, :]
+        rot_vertex_list = [
+            rot_vert + translation for rot_vert in rot_vertex_list
+        ]
+
+        # render from side view
+        img_side = imshow_mesh_3d(
+            np.ones_like(img) * 255, rot_vertex_list, face_list, img_center,
+            [focal_length, focal_length])
+
+        # merger images from front view and side view
+        img_vis = np.concatenate([img_vis, img_side], axis=1)
+
+        if show:
+            mmcv.visualization.imshow(img_vis, win_name, wait_time)
+
+        if out_file is not None:
+            mmcv.imwrite(img_vis, out_file)
+
+        return img_vis

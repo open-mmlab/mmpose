@@ -1,9 +1,20 @@
 import math
+import os
+import warnings
 
 import cv2
 import mmcv
 import numpy as np
+import trimesh
 from matplotlib import pyplot as plt
+from mmcv.visualization.color import color_val
+
+try:
+    os.environ['PYOPENGL_PLATFORM'] = 'osmesa'
+    import pyrender
+    has_pyrender = True
+except (ImportError, ModuleNotFoundError):
+    has_pyrender = False
 
 
 def imshow_bboxes(img,
@@ -332,3 +343,87 @@ def imshow_keypoints_3d(
     plt.close(fig)
 
     return img_vis
+
+
+def imshow_mesh_3d(img,
+                   vertices,
+                   faces,
+                   camera_center,
+                   focal_length,
+                   colors=(76, 76, 204)):
+    """Render 3D meshes on background image.
+
+    Args:
+        img(np.ndarray): Background image.
+        vertices (list of np.ndarray): Vetrex coordinates in camera space.
+        faces (list of np.ndarray): Faces of meshes.
+        camera_center ([2]): Center pixel.
+        focal_length ([2]): Focal length of camera.
+        colors (list[str or tuple or Color]): A list of mesh colors.
+    """
+
+    H, W, C = img.shape
+
+    try:
+        renderer = pyrender.OffscreenRenderer(
+            viewport_width=W, viewport_height=H)
+    except RuntimeError:
+        warnings.warn('pyrender package is not installed correctly.')
+        return img
+
+    if not isinstance(colors, list):
+        colors = [colors for _ in range(len(vertices))]
+    colors = [color_val(c) for c in colors]
+
+    depth_map = np.ones([H, W]) * np.inf
+    output_img = img
+    for idx in range(len(vertices)):
+        color = colors[idx]
+        color = [c / 255.0 for c in color]
+        color.append(1.0)
+        vert = vertices[idx]
+        face = faces[idx]
+
+        material = pyrender.MetallicRoughnessMaterial(
+            metallicFactor=0.2, alphaMode='OPAQUE', baseColorFactor=color)
+
+        mesh = trimesh.Trimesh(vert, face)
+        rot = trimesh.transformations.rotation_matrix(
+            np.radians(180), [1, 0, 0])
+        mesh.apply_transform(rot)
+        mesh = pyrender.Mesh.from_trimesh(mesh, material=material)
+
+        scene = pyrender.Scene(ambient_light=(0.5, 0.5, 0.5))
+        scene.add(mesh, 'mesh')
+
+        camera_pose = np.eye(4)
+        camera = pyrender.IntrinsicsCamera(
+            fx=focal_length[0],
+            fy=focal_length[1],
+            cx=camera_center[0],
+            cy=camera_center[1],
+            zfar=1e5)
+        scene.add(camera, pose=camera_pose)
+
+        light = pyrender.DirectionalLight(color=[1.0, 1.0, 1.0], intensity=1)
+        light_pose = np.eye(4)
+
+        light_pose[:3, 3] = np.array([0, -1, 1])
+        scene.add(light, pose=light_pose)
+
+        light_pose[:3, 3] = np.array([0, 1, 1])
+        scene.add(light, pose=light_pose)
+
+        light_pose[:3, 3] = np.array([1, 1, 2])
+        scene.add(light, pose=light_pose)
+
+        color, rend_depth = renderer.render(
+            scene, flags=pyrender.RenderFlags.RGBA)
+
+        valid_mask = (rend_depth < depth_map) * (rend_depth > 0)
+        depth_map[valid_mask] = rend_depth[valid_mask]
+        valid_mask = valid_mask[:, :, None]
+        output_img = (
+            valid_mask * color[:, :, :3] + (1 - valid_mask) * output_img)
+
+    return output_img
