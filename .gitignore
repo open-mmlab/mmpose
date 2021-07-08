@@ -66,6 +66,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs_zh_CN/_build/
 
 # PyBuilder
 target/
@@ -119,6 +120,10 @@ docs/topics/
 docs/papers/*.md
 docs/datasets.md
 docs/modelzoo.md
+docs_zh_CN/topics/
+docs_zh_CN/papers/*.md
+docs_zh_CN/datasets.md
+docs_zh_CN/modelzoo.md
 
 # Pytorch
 *.pth

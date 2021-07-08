@@ -1,8 +1,8 @@
-Welcome to MMPose's documentation!
+欢迎来到 MMPose 中文文档!
 ==================================
 
-You can change the documentation language at the lower-left corner of the page.
 您可以在页面左下角切换文档语言。
+You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
@@ -81,10 +81,9 @@ You can change the documentation language at the lower-left corner of the page.
    api.rst
 
 .. toctree::
-   :caption: Languages
+   :caption: 语言
 
-   language.md
-
+   Language.md
 
 Indices and tables
 ==================
