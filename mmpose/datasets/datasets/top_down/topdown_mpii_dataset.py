@@ -252,7 +252,7 @@ class TopDownMpiiDataset(TopDownBaseDataset):
                       ('Knee', 0.5 * (PCKh[lkne] + PCKh[rkne])),
                       ('Ankle', 0.5 * (PCKh[lank] + PCKh[rank])),
                       ('PCKh', np.sum(PCKh * jnt_ratio)),
-                      ('PCKh@0.1', np.sum(pckAll[11, :] * jnt_ratio))]
+                      ('PCKh@0.1', np.sum(pckAll[10, :] * jnt_ratio))]
         name_value = OrderedDict(name_value)
 
         return name_value
