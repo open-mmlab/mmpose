@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'MMPose'
-copyright = '2020, MMPose Authors'
+copyright = '2020-2021, OpenMMLab'
 author = 'MMPose Authors'
 
 # The full version, including alpha/beta/rc tags
