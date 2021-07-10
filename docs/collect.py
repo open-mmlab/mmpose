@@ -79,7 +79,6 @@ for section in sections:
         for subtopic, datasets in contents.items():
             for dataset, keywords in datasets.items():
                 keywords = {k: v for k, v in keywords.items() if keyline in v}
-                print(len(keywords))
                 if len(keywords) == 0:
                     continue
                 for keyword, info in keywords.items():
