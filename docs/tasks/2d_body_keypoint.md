@@ -22,7 +22,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">COCO (ECCV'2014)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
 
 ```bibtex
 @inproceedings{lin2014microsoft,
@@ -77,7 +77,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII (CVPR'2014)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html">MPII (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka14cvpr,
@@ -133,7 +133,7 @@ python tools/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotation
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII-TRB (ICCV'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Duan_TRB_A_Novel_Triplet_Representation_for_Understanding_2D_Human_Body_ICCV_2019_paper.html">MPII-TRB (ICCV'2019)</a></summary>
 
 ```bibtex
 @inproceedings{duan2019trb,
@@ -174,7 +174,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">AI Challenger (ArXiv'2017)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1711.06475">AI Challenger (ArXiv'2017)</a></summary>
 
 ```bibtex
 @article{wu2017ai,
@@ -220,7 +220,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">CrowdPose (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html">CrowdPose (CVPR'2019)</a></summary>
 
 ```bibtex
 @article{li2018crowdpose,
@@ -266,7 +266,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">OCHuman (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Zhang_Pose2Seg_Detection_Free_Human_Instance_Segmentation_CVPR_2019_paper.html">OCHuman (CVPR'2019)</a></summary>
 
 ```bibtex
 @inproceedings{zhang2019pose2seg,
@@ -308,7 +308,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MHP (ACM MM'2018)</summary>
+<summary align="right"><a href="https://dl.acm.org/doi/abs/10.1145/3240508.3240509">MHP (ACM MM'2018)</a></summary>
 
 ```bibtex
 @inproceedings{zhao2018understanding,
@@ -363,7 +363,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">PoseTrack18 (CVPR'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html">PoseTrack18 (CVPR'2018)</a></summary>
 
 ```bibtex
 @inproceedings{andriluka2018posetrack,
@@ -454,7 +454,7 @@ pip install git+https://github.com/svenkreiss/poseval.git
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">RSN (ECCV'2020)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-030-58580-8_27">RSN (ECCV'2020)</a></summary>
 
 ```bibtex
 @misc{cai2020learning,

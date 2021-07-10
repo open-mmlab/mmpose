@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ShufflenetV1 (CVPR'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html">ShufflenetV1 (CVPR'2018)</a></summary>
 
 ```bibtex
 @inproceedings{zhang2018shufflenet,

@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">DeepFashion (CVPR'2016)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2016/html/Liu_DeepFashion_Powering_Robust_CVPR_2016_paper.html">DeepFashion (CVPR'2016)</a></summary>
 
 ```bibtex
 @inproceedings{liuLQWTcvpr16DeepFashion,
@@ -22,7 +22,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">DeepFashion (ECCV'2016)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-46475-6_15">DeepFashion (ECCV'2016)</a></summary>
 
 ```bibtex
 @inproceedings{liuYLWTeccv16FashionLandmark,

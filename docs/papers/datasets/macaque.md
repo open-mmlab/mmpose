@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MacaquePose (bioRxiv'2020)</summary>
+<summary align="right"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/">MacaquePose (bioRxiv'2020)</a></summary>
 
 ```bibtex
 @article{labuguen2020macaquepose,

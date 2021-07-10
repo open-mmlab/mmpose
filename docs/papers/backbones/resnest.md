@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNeSt (ArXiv'2020)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/2004.08955">ResNeSt (ArXiv'2020)</a></summary>
 
 ```bibtex
 @article{zhang2020resnest,

@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">Hourglass (ECCV'2016)</summary>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29">Hourglass (ECCV'2016)</a></summary>
 
 ```bibtex
 @inproceedings{newell2016stacked,

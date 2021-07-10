@@ -78,10 +78,7 @@ for section in sections:
         paperlines = []
         for subtopic, datasets in contents.items():
             for dataset, keywords in datasets.items():
-                keywords = {
-                    k: v
-                    for k, v in keywords.items() if papername in v
-                }
+                keywords = {k: v for k, v in keywords.items() if keyline in v}
                 print(len(keywords))
                 if len(keywords) == 0:
                     continue
