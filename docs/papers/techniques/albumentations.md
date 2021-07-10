@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">Albumentations (Information'2020)</summary>
+<summary align="right"><a href="https://www.mdpi.com/649002">Albumentations (Information'2020)</a></summary>
 
 ```bibtex
 @article{buslaev2020albumentations,

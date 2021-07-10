@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Vinegar Fly (Nature Methods'2019)</summary>
+<summary align="right"><a href="https://www.nature.com/articles/s41592-018-0234-5">Vinegar Fly (Nature Methods'2019)</a></summary>
 
 ```bibtex
 @article{pereira2019fast,

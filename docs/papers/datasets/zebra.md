@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Grévy’s Zebra (Elife'2019)</summary>
+<summary align="right"><a href="https://elifesciences.org/articles/47994">Grévy’s Zebra (Elife'2019)</a></summary>
 
 ```bibtex
 @article{graving2019deepposekit,
