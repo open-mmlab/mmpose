@@ -88,7 +88,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">WFLW (CVPR'2018)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html">WFLW (CVPR'2018)</a></summary>
 
 ```bibtex
 @inproceedings{wu2018look,
@@ -144,7 +144,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">AFLW (ICCVW'2011)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6130513/">AFLW (ICCVW'2011)</a></summary>
 
 ```bibtex
 @inproceedings{koestinger2011annotated,

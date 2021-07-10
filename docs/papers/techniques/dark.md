@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">DarkPose (CVPR'2020)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html">DarkPose (CVPR'2020)</a></summary>
 
 ```bibtex
 @inproceedings{zhang2020distribution,

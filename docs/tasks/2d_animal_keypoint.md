@@ -18,7 +18,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Animal-Pose (ICCV'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Cao_Cross-Domain_Adaptation_for_Animal_Pose_Estimation_ICCV_2019_paper.html">Animal-Pose (ICCV'2019)</a></summary>
 
 ```bibtex
 @InProceedings{Cao_2019_ICCV,
@@ -102,7 +102,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Horse-10 (WACV'2021)</summary>
+<summary align="right"><a href="https://openaccess.thecvf.com/content/WACV2021/html/Mathis_Pretraining_Boosts_Out-of-Domain_Robustness_for_Pose_Estimation_WACV_2021_paper.html">Horse-10 (WACV'2021)</a></summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,
@@ -148,7 +148,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MacaquePose (bioRxiv'2020)</summary>
+<summary align="right"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/">MacaquePose (bioRxiv'2020)</a></summary>
 
 ```bibtex
 @article{labuguen2020macaquepose,
@@ -195,7 +195,7 @@ Since the official dataset does not provide the test set, we randomly select 125
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Vinegar Fly (Nature Methods'2019)</summary>
+<summary align="right"><a href="https://www.nature.com/articles/s41592-018-0234-5">Vinegar Fly (Nature Methods'2019)</a></summary>
 
 ```bibtex
 @article{pereira2019fast,
@@ -244,7 +244,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Desert Locust (Elife'2019)</summary>
+<summary align="right"><a href="https://elifesciences.org/articles/47994">Desert Locust (Elife'2019)</a></summary>
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -292,7 +292,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Desert Locust (Elife'2019)</summary>
+<summary align="right"><a href="https://elifesciences.org/articles/47994">Grévy’s Zebra (Elife'2019)</a></summary>
 
 ```bibtex
 @article{graving2019deepposekit,
@@ -340,7 +340,7 @@ Since the official dataset does not provide the test set, we randomly select 90\
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">ATRW (ACM MM'2020)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1906.05586">ATRW (ACM MM'2020)</a></summary>
 
 ```bibtex
 @inproceedings{li2020atrw,

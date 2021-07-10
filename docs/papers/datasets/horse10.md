@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Horse-10 (WACV'2021)</summary>
+<summary align="right"><a href="https://openaccess.thecvf.com/content/WACV2021/html/Mathis_Pretraining_Boosts_Out-of-Domain_Robustness_for_Pose_Estimation_WACV_2021_paper.html">Horse-10 (WACV'2021)</a></summary>
 
 ```bibtex
 @inproceedings{mathis2021pretraining,

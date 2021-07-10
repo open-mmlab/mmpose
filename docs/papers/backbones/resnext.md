@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNext (CVPR'2017)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2017/html/Xie_Aggregated_Residual_Transformations_CVPR_2017_paper.html">ResNext (CVPR'2017)</a></summary>
 
 ```bibtex
 @inproceedings{xie2017aggregated,

@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">HigherHRNet (CVPR'2020)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html">HigherHRNet (CVPR'2020)</a></summary>
 
 ```bibtex
 @inproceedings{cheng2020higherhrnet,

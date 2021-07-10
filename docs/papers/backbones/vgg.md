@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">VGG (ICLR'2015)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/1409.1556">VGG (ICLR'2015)</a></summary>
 
 ```bibtex
 @article{simonyan2014very,

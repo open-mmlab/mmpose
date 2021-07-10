@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">AlexNet (NeurIPS'2012)</summary>
+<summary align="right"><a href="https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf">AlexNet (NeurIPS'2012)</a></summary>
 
 ```bibtex
 @inproceedings{krizhevsky2012imagenet,

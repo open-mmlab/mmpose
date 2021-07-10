@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">MPII-TRB (ICCV'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Duan_TRB_A_Novel_Triplet_Representation_for_Understanding_2D_Human_Body_ICCV_2019_paper.html">MPII-TRB (ICCV'2019)</a></summary>
 
 ```bibtex
 @inproceedings{duan2019trb,

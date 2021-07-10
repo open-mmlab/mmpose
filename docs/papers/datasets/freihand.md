@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">FreiHand (ICCV'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Zimmermann_FreiHAND_A_Dataset_for_Markerless_Capture_of_Hand_Pose_and_ICCV_2019_paper.html">FreiHand (ICCV'2019)</a></summary>
 
 ```bibtex
 @inproceedings{zimmermann2019freihand,

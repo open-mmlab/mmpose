@@ -12,7 +12,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">Human3.6M (TPAMI'2014)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6682899/">Human3.6M (TPAMI'2014)</a></summary>
 
 ```bibtex
 @article{h36m_pami,

@@ -16,7 +16,7 @@ MMPose supported datasets:
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">OneHand10K (TCSVT'2019)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/8529221/">OneHand10K (TCSVT'2019)</a></summary>
 
 ```bibtex
 @article{wang2018mask,
@@ -66,7 +66,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">FreiHand (ICCV'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_ICCV_2019/html/Zimmermann_FreiHAND_A_Dataset_for_Markerless_Capture_of_Hand_Pose_and_ICCV_2019_paper.html">FreiHand (ICCV'2019)</a></summary>
 
 ```bibtex
 @inproceedings{zimmermann2019freihand,
@@ -114,7 +114,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">CMU Panoptic HandDB (CVPR'2017)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html">CMU Panoptic HandDB (CVPR'2017)</a></summary>
 
 ```bibtex
 @inproceedings{simon2017hand,
@@ -169,7 +169,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">InterHand2.6M (ECCV'2020)</summary>
+<summary align="right"><a href="https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf">InterHand2.6M (ECCV'2020)</a></summary>
 
 ```bibtex
 @InProceedings{Moon_2020_ECCV_InterHand2.6M,
@@ -216,7 +216,7 @@ mmpose
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">RHD (ICCV'2017)</summary>
+<summary align="right"><a href="https://lmb.informatik.uni-freiburg.de/projects/hand3d/">RHD (ICCV'2017)</a></summary>
 
 ```bibtex
 @TechReport{zb2017hand,

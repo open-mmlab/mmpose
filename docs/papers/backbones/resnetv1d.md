@@ -5,7 +5,7 @@
 <!-- [BACKBONE] -->
 
 <details>
-<summary align="right">ResNetV1D (CVPR'2019)</summary>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html">ResNetV1D (CVPR'2019)</a></summary>
 
 ```bibtex
 @inproceedings{he2019bag,

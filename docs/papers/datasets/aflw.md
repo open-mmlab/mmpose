@@ -5,7 +5,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right">AFLW (ICCVW'2011)</summary>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/6130513/">AFLW (ICCVW'2011)</a></summary>
 
 ```bibtex
 @inproceedings{koestinger2011annotated,
