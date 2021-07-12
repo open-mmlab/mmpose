@@ -114,7 +114,7 @@ mmpose
 ├── tools
 ├── configs
 `── data
-    │── 300w
+    │── wflw
         |── annotations
         |   |── face_landmarks_wflw_train.json
         |   |── face_landmarks_wflw_test.json
