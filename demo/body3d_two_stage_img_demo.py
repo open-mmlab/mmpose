@@ -64,7 +64,7 @@ def main():
         type=str,
         default=None,
         help='Json file containing image and bbox inforamtion. Optionally,'
-        'The Jons file can also contain 2D pose information. See'
+        'The Json file can also contain 2D pose information. See'
         '"only-second-stage"')
     parser.add_argument(
         '--camera-param-file',
