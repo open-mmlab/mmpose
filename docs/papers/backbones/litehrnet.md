@@ -5,7 +5,7 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right">LiteHRNet (CVPR'2021)</summary>
+<summary align="right"><a href="https://arxiv.org/abs/2104.06403">LiteHRNet (CVPR'2021)</a></summary>
 
 ```bibtex
 @inproceedings{Yulitehrnet21,
