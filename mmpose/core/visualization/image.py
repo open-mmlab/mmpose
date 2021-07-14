@@ -364,6 +364,10 @@ def imshow_mesh_3d(img,
 
     H, W, C = img.shape
 
+    if not has_pyrender:
+        warnings.warn('pyrender package is not installed.')
+        return img
+
     try:
         renderer = pyrender.OffscreenRenderer(
             viewport_width=W, viewport_height=H)
