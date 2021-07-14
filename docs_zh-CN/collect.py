@@ -6,6 +6,7 @@ from glob import glob
 from titlecase import titlecase
 
 os.makedirs('topics', exist_ok=True)
+os.makedirs('papers', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
 minisections = [x.split('/')[-2:] for x in glob('../configs/*/*')]
@@ -64,13 +65,13 @@ for subtopic, datasets in contents.items():
         f.write('\n'.join(lines))
 
 # Step 5: write files by paper
-allfiles = [x.split('/')[-2:] for x in glob('../docs_zh-CN/papers/*/*.md')]
+allfiles = [x.split('/')[-2:] for x in glob('../docs/papers/*/*.md')]
 sections = sorted(list(set(x[0] for x in allfiles)))
 for section in sections:
     lines = [f'# {titlecase(section)}', '']
     files = [f for s, f in allfiles if s == section]
     for file in files:
-        with open(f'../docs_zh-CN/papers/{section}/{file}', 'r') as f:
+        with open(f'../docs/papers/{section}/{file}', 'r') as f:
             keyline = [
                 line for line in f.readlines() if line.startswith('<summary')
             ][0]
