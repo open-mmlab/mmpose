@@ -437,7 +437,7 @@ class BottomUpRandomAffine:
         elif self.scale_type == 'short':
             scale = min(height, width) / 1.0
         else:
-            raise ValueError('Unknown scale type: {}'.format(self.scale_type))
+            raise ValueError(f'Unknown scale type: {self.scale_type}')
         aug_scale = np.random.random() * (self.max_scale - self.min_scale) \
             + self.min_scale
         scale *= aug_scale
