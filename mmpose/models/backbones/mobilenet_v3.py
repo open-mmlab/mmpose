@@ -136,7 +136,7 @@ class MobileNetV3(BaseBackbone):
                 act_cfg=dict(type=act),
                 with_cp=self.with_cp)
             self.in_channels = out_channels
-            layer_name = 'layer{}'.format(i + 1)
+            layer_name = f'layer{i + 1}'
             self.add_module(layer_name, layer)
             layers.append(layer_name)
         return layers
