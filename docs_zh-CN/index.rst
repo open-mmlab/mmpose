@@ -15,7 +15,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Datasets
+   :caption: 数据集
 
    datasets.md
    tasks/2d_body_keypoint.md
@@ -28,7 +28,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo
+   :caption: 模型池
 
    modelzoo.md
    topics/animal.md
@@ -44,7 +44,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo (by paper)
+   :caption: 模型池（按论文整理）
 
    papers/algorithms.md
    papers/backbones.md
@@ -53,7 +53,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials
+   :caption: 教程
 
    tutorials/0_config.md
    tutorials/1_finetune.md
@@ -65,7 +65,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Useful Tools and Scripts
+   :caption: 常用工具
 
    useful_tools.md
 
@@ -77,7 +77,7 @@ You can change the documentation language at the lower-left corner of the page.
    faq.md
 
 .. toctree::
-   :caption: API Reference
+   :caption: API文档
 
    api.rst
 
