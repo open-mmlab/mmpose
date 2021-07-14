@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 sed -i '$a\\n' ../demo/docs/*_demo.md
-cat ../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Demo' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md
+cat ../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# 示例' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md
 
  # remove /docs_zh-CN/ for link used in doc site
 sed -i 's/](\/docs_zh-CN\//](/g' ./tutorials/*.md
