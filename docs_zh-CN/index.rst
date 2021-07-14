@@ -24,7 +24,9 @@ You can change the documentation language at the lower-left corner of the page.
    tasks/2d_hand_keypoint.md
    tasks/2d_fashion_landmark.md
    tasks/2d_animal_keypoint.md
+   tasks/3d_body_keypoint.md
    tasks/3d_body_mesh.md
+   tasks/3d_hand_keypoint.md
 
 .. toctree::
    :maxdepth: 2
