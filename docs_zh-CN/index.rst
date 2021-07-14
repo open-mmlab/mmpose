@@ -73,7 +73,6 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 2
    :caption: Notes
 
-   changelog.md
    faq.md
 
 .. toctree::
