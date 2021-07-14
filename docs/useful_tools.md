@@ -1,6 +1,6 @@
-Apart from training/testing scripts, We provide lots of useful tools under the `tools/` directory.
+# Useful Tools Link
 
-## Useful Tools Link
+Apart from training/testing scripts, We provide lots of useful tools under the `tools/` directory.
 
 <!-- TOC -->
 
