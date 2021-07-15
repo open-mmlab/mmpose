@@ -1,10 +1,14 @@
+import mmcv
 import numpy as np
 import pytest
 import torch
+from tests.test_model.test_mesh_forward import generate_smpl_weight_file
 
 from mmpose.apis import (extract_pose_sequence, inference_interhand_3d_model,
-                         inference_pose_lifter_model, init_pose_model,
+                         inference_mesh_model, inference_pose_lifter_model,
+                         init_pose_model, vis_3d_mesh_result,
                          vis_3d_pose_result)
+from mmpose.models import build_posenet
 
 
 def test_pose_lifter_demo():
@@ -151,3 +155,47 @@ def test_interhand3d_demo():
     with pytest.raises(NotImplementedError):
         _ = inference_interhand_3d_model(
             pose_model, image_name, det_results, dataset='test')
+
+
+def test_body_mesh_demo():
+    # H36M demo
+    device = 'cpu'
+    config = 'configs/body/3d_mesh_sview_rgb_img/hmr' \
+             '/mixed/res50_mixed_224x224.py'
+    config = mmcv.Config.fromfile(config)
+    config.model.mesh_head.smpl_mean_params = \
+        'tests/data/smpl/smpl_mean_params.npz'
+
+    config.model.smpl.smpl_path = 'tests/data/smpl'
+    config.model.smpl.joints_regressor = \
+        'tests/data/smpl/test_joint_regressor.npy'
+
+    # generate weight file for SMPL model.
+    generate_smpl_weight_file('tests/data/smpl')
+
+    pose_model = build_posenet(config.model)
+    pose_model.cfg = config
+    pose_model.to(device)
+    pose_model.eval()
+
+    image_name = 'tests/data/h36m/S1_Directions_1.54138969_000001.jpg'
+    det_result = {
+        'keypoints': np.zeros((17, 3)),
+        'bbox': [50, 50, 50, 50],
+        'image_name': image_name,
+    }
+
+    # make person bounding boxes
+    person_results = [det_result]
+    dataset = pose_model.cfg.data['test']['type']
+
+    # test a single image, with a list of bboxes
+    pose_results = inference_mesh_model(
+        pose_model,
+        image_name,
+        person_results,
+        bbox_thr=None,
+        format='xywh',
+        dataset=dataset)
+
+    vis_3d_mesh_result(pose_model, pose_results, image_name)
