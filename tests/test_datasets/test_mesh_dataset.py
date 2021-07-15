@@ -40,6 +40,17 @@ def test_mesh_H36M_dataset():
     assert custom_dataset.test_mode is True
     _ = custom_dataset[0]
 
+    # test evaluation
+    outputs = []
+    for item in custom_dataset:
+        pred = dict(
+            keypoints_3d=item['joints_3d'][None, ...],
+            image_path=item['image_file'])
+        outputs.append(pred)
+    eval_result = custom_dataset.evaluate(outputs, 'tests/data/h36m')
+    assert 'MPJPE' in eval_result
+    assert 'MPJPE-PA' in eval_result
+
 
 def test_mesh_Mix_dataset():
     # test mesh Mix dataset

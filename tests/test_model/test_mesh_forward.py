@@ -9,7 +9,7 @@ from mmpose.core.optimizer import build_optimizers
 from mmpose.models.detectors.mesh import ParametricMesh
 
 
-def _generate_smpl_weight_file(output_dir):
+def generate_smpl_weight_file(output_dir):
     """Generate a SMPL model weight file to initialize SMPL model, and generate
     a 3D joints regressor file."""
 
@@ -38,14 +38,14 @@ def test_parametric_mesh_forward():
     """Test parametric mesh forward."""
 
     # generate weight file for SMPL model.
-    _generate_smpl_weight_file('tests/data/smpl')
+    generate_smpl_weight_file('tests/data/smpl')
 
     # Test ParametricMesh without discriminator
     model_cfg = dict(
         pretrained=None,
         backbone=dict(type='ResNet', depth=50),
         mesh_head=dict(
-            type='MeshHMRHead',
+            type='HMRMeshHead',
             in_channels=2048,
             smpl_mean_params='tests/data/smpl/smpl_mean_params.npz',
         ),
@@ -84,12 +84,12 @@ def test_parametric_mesh_forward():
     # Test forward test
     with torch.no_grad():
         output = detector.val_step(data_batch=mm_inputs)
-        assert isinstance(output, tuple)
+        assert isinstance(output, dict)
 
         imgs = mm_inputs.pop('img')
         img_metas = mm_inputs.pop('img_metas')
         output = detector.forward(imgs, img_metas=img_metas, return_loss=False)
-        assert isinstance(output, tuple)
+        assert isinstance(output, dict)
 
     # Test ParametricMesh with discriminator
     model_cfg['disc'] = dict()
@@ -115,12 +115,12 @@ def test_parametric_mesh_forward():
     # Test forward test
     with torch.no_grad():
         output = detector.val_step(data_batch=mm_inputs)
-        assert isinstance(output, tuple)
+        assert isinstance(output, dict)
 
         imgs = mm_inputs.pop('img')
         img_metas = mm_inputs.pop('img_metas')
         output = detector.forward(imgs, img_metas=img_metas, return_loss=False)
-        assert isinstance(output, tuple)
+        assert isinstance(output, dict)
 
         _ = detector.forward_dummy(imgs)
 
