@@ -1,5 +1,7 @@
 # Associative embedding: End-to-end learning for joint detection and grouping (AE)
 
+## Introduction
+
 <!-- [ALGORITHM] -->
 
 <details>
