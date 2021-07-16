@@ -105,11 +105,12 @@ def parse_requirements(fname='requirements.txt', with_version=True):
 def link_file_to_package():
     """Create symlinks to package dependencies to support MIM."""
     item_list = ['tools', 'configs', 'demo', 'model_zoo.yml']
+    os.makedirs('mmpose/.mim', exist_ok=True)
 
     for item in item_list:
         if osp.exists(item):
             src_path = osp.join('..', item)
-            tar_path = osp.join('mmpose', item)
+            tar_path = osp.join('mmpose/.mim', item)
 
             if osp.isfile(tar_path) or osp.islink(tar_path):
                 os.remove(tar_path)
