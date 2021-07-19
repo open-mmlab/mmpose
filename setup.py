@@ -124,7 +124,6 @@ def add_mim_extention():
 
     for item in item_list:
         if osp.exists(item):
-            src_path = osp.join('../..', item)
             tar_path = osp.join('mmpose/.mim', item)
 
             if osp.isfile(tar_path) or osp.islink(tar_path):
@@ -133,8 +132,10 @@ def add_mim_extention():
                 shutil.rmtree(tar_path)
 
             if mode == 'symlink':
+                src_path = osp.join('../..', item)
                 os.symlink(src_path, tar_path)
             elif mode == 'copy':
+                src_path = item
                 if osp.isfile(src_path):
                     shutil.copyfile(src_path, tar_path)
                 elif osp.isdir(tar_path):
