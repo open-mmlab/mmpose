@@ -44,6 +44,6 @@ repos:
       - id: update-model-index
         name: update-model-index
         description: Collect model information and update model-index.yml
-        entry: ./tools/misc/update_model_index.py
-        language: python
+        entry: tools/misc/update_model_index.py
+        language: system
         files: ^configs/.*\.md$

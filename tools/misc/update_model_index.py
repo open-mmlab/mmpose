@@ -17,6 +17,34 @@ import mmpose
 MMPOSE_ROOT = osp.dirname(osp.dirname(mmpose.__file__))
 
 
+def dump_yaml_and_check_difference(obj, file):
+    """Dump object to a yaml file, and check if the file content is different
+    from the original.
+
+    Args:
+        obj (any): The python object to be dumped.
+        file (str): YAML filename to dump the object to.
+    Returns:
+        Bool: If the target YAML file is different from the original.
+    """
+
+    original = None
+    if osp.isfile(file):
+        with open(file, 'r') as f:
+            original = f.read()
+
+    with open(file, 'w') as f:
+        mmcv.dump(obj, f, file_format='yaml', sort_keys=False)
+
+    is_different = True
+    if original is not None:
+        with open(file, 'r') as f:
+            new = f.read()
+        is_different = (original != new)
+
+    return is_different
+
+
 def collate_metrics(keys):
     """Collect metrics from the first row of the table.
 
@@ -87,6 +115,8 @@ def parse_md(md_file):
 
     Args:
         md_file: Path to .md file.
+    Returns:
+        Bool: If the target YAML file is different from the original.
     """
     collection_name = osp.splitext(osp.basename(md_file))[0]
     collection = dict(
@@ -186,11 +216,17 @@ def parse_md(md_file):
 
     result = {'Collections': [collection], 'Models': models}
     yml_file = md_file[:-2] + 'yml'
-    with open(yml_file, 'w') as f:
-        mmcv.dump(result, f, file_format='yaml', sort_keys=False)
+
+    is_different = dump_yaml_and_check_difference(result, yml_file)
+    return is_different
 
 
 def update_model_index():
+    """Update model-index.yml according to model .md files.
+
+    Returns:
+        Bool: If the updated model-index.yml is different from the original.
+    """
     configs_dir = osp.join(MMPOSE_ROOT, 'configs')
     yml_files = []
     for root, dirs, files in os.walk(configs_dir):
@@ -199,28 +235,28 @@ def update_model_index():
                 if file[-3:] == 'yml':
                     yml_files.append(os.path.join(root, file))
     yml_files.sort()
-    model_zoo = {
+    model_index = {
         'Import':
         [osp.relpath(yml_file, MMPOSE_ROOT) for yml_file in yml_files]
     }
-    model_zoo_file = osp.join(MMPOSE_ROOT, 'model-index.yml')
-    with open(model_zoo_file, 'w') as f:
-        mmcv.dump(model_zoo, f, file_format='yaml')
+    model_index_file = osp.join(MMPOSE_ROOT, 'model-index.yml')
+    is_different = dump_yaml_and_check_difference(model_index,
+                                                  model_index_file)
+
+    return is_different
 
 
 if __name__ == '__main__':
-
-    file_list = sys.argv[1:]
 
     file_list = [fn for fn in sys.argv[1:] if osp.basename(fn) != 'README.md']
 
     if not file_list:
         exit(0)
 
+    file_modified = False
     for fn in file_list:
-        print(f'[update_model_index] update .md file according to {fn}')
-        parse_md(fn)
+        file_modified |= parse_md(fn)
 
-    print('[update_model_index] update model-index.yml')
-    update_model_index()
-    exit(1)
+    file_modified |= update_model_index()
+
+    exit(1 if file_modified else 0)
