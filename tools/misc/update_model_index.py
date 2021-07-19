@@ -12,9 +12,7 @@ import sys
 
 import mmcv
 
-import mmpose
-
-MMPOSE_ROOT = osp.dirname(osp.dirname(mmpose.__file__))
+MMPOSE_ROOT = osp.dirname(osp.dirname(osp.dirname(__file__)))
 
 
 def dump_yaml_and_check_difference(obj, file):

@@ -45,5 +45,6 @@ repos:
         name: update-model-index
         description: Collect model information and update model-index.yml
         entry: tools/misc/update_model_index.py
-        language: system
+        additional_dependencies: [mmcv]
+        language: python
         files: ^configs/.*\.md$
