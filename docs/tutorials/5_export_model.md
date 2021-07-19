@@ -32,7 +32,7 @@ pip install onnx onnxruntime
 We provide a python script to export the pytorch model trained by MMPose to ONNX.
 
 ```shell
-python tools/pytorch2onnx.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--shape ${SHAPE}] \
+python tools/deployment/pytorch2onnx.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--shape ${SHAPE}] \
     [--verify] [--show] [--output-file ${OUTPUT_FILE}] [--opset-version ${VERSION}]
 ```
 

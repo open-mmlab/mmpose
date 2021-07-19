@@ -235,7 +235,7 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} con
 You can get average inference speed using the following script. Note that it does not include the IO time and the pre-processing time.
 
 ```shell
-python tools/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
+python tools/analysis/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 ```
 
 ## Tutorials

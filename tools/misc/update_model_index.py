@@ -1,9 +1,20 @@
-import argparse
+#!/usr/bin/env python
+
+# This tool is used to update model-index.yml which is required by MIM, and
+# will be automatically called as a pre-commit hook. The updating will be
+# triggered if any change of model information (.md files in configs/) has been
+# detected before a commit.
+
 import os
 import os.path as osp
 import re
+import sys
 
 import mmcv
+
+import mmpose
+
+MMPOSE_ROOT = osp.dirname(osp.dirname(mmpose.__file__))
 
 
 def collate_metrics(keys):
@@ -64,13 +75,8 @@ def get_task_name(md_file):
     Returns:
         Str: Task name.
     """
-    cur_dir = osp.dirname(md_file)
-    while True:
-        dirname, basename = osp.split(cur_dir)
-        if basename[:2] == '2d' or basename[:2] == '3d':
-            break
-        cur_dir = dirname
-    readme_file = osp.join(cur_dir, 'README.md')
+    task_dir = osp.relpath(md_file, MMPOSE_ROOT).rsplit(osp.sep, 3)[0]
+    readme_file = osp.join(task_dir, 'README.md')
     with open(readme_file, 'r', encoding='utf-8') as f:
         task = f.readline()[2:].strip()
     return task
@@ -83,11 +89,10 @@ def parse_md(md_file):
         md_file: Path to .md file.
     """
     collection_name = osp.splitext(osp.basename(md_file))[0]
-    repo_root = osp.dirname(osp.dirname(__file__))
     collection = dict(
         Name=collection_name,
         Metadata={'Architecture': []},
-        README=md_file.replace(repo_root, '', 1).strip('./'),
+        README=osp.relpath(md_file, MMPOSE_ROOT),
         Paper=[])
     models = []
     task = get_task_name(md_file)
@@ -186,8 +191,7 @@ def parse_md(md_file):
 
 
 def update_model_index():
-    repo_root = osp.dirname(osp.dirname(__file__))
-    configs_dir = osp.join(repo_root, 'configs')
+    configs_dir = osp.join(MMPOSE_ROOT, 'configs')
     yml_files = []
     for root, dirs, files in os.walk(configs_dir):
         if len(dirs) == 0:
@@ -197,22 +201,26 @@ def update_model_index():
     yml_files.sort()
     model_zoo = {
         'Import':
-        [yml_file.replace(repo_root, '', 1)[1:] for yml_file in yml_files]
+        [osp.relpath(yml_file, MMPOSE_ROOT) for yml_file in yml_files]
     }
-    model_zoo_file = osp.join(repo_root, 'model-index.yml')
+    model_zoo_file = osp.join(MMPOSE_ROOT, 'model-index.yml')
     with open(model_zoo_file, 'w') as f:
         mmcv.dump(model_zoo, f, file_format='yaml')
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Converting markdown file to '
-                                     'yml file to support mim.')
-    parser.add_argument('md_file', help='abspath to .md file')
-    args = parser.parse_args()
-
-    parse_md(args.md_file)
-    update_model_index()
-
-
 if __name__ == '__main__':
-    main()
+
+    file_list = sys.argv[1:]
+
+    file_list = [fn for fn in sys.argv[1:] if osp.basename(fn) != 'README.md']
+
+    if not file_list:
+        exit(0)
+
+    for fn in file_list:
+        print(f'[update_model_index] update .md file according to {fn}')
+        parse_md(fn)
+
+    print('[update_model_index] update model-index.yml')
+    update_model_index()
+    exit(1)

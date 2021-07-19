@@ -96,12 +96,12 @@ You may use the result for simple comparisons, but double check it before you ad
 
 ### MMPose model to ONNX (experimental)
 
-`/tools/pytorch2onnx.py` is a script to convert model to [ONNX](https://github.com/onnx/onnx) format.
+`/tools/deployment/pytorch2onnx.py` is a script to convert model to [ONNX](https://github.com/onnx/onnx) format.
 It also supports comparing the output results between Pytorch and ONNX model for verification.
 Run `pip install onnx onnxruntime` first to install the dependency.
 
 ```shell
-python tools/pytorch2onnx.py $CONFIG_PATH $CHECKPOINT_PATH --shape $SHAPE --verify
+python tools/deployment/pytorch2onnx.py $CONFIG_PATH $CHECKPOINT_PATH --shape $SHAPE --verify
 ```
 
 ### Prepare a model for publishing

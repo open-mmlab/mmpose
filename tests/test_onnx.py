@@ -2,7 +2,7 @@ import os.path as osp
 import tempfile
 
 import torch.nn as nn
-from tools.pytorch2onnx import _convert_batchnorm, pytorch2onnx
+from tools.deployment.pytorch2onnx import _convert_batchnorm, pytorch2onnx
 
 
 class TestModel(nn.Module):
