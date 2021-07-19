@@ -107,9 +107,9 @@ def parse_requirements(fname='requirements.txt', with_version=True):
 def add_mim_extention():
     """Add extra files that are required to support MIM into the package.
 
-    These files will be added by creating a symlink to the origins if the
+    These files will be added by creating a symlink to the originals if the
     package is installed in `editable` mode (e.g. pip install -e .), or by
-    copying from the origins otherwise.
+    copying from the originals otherwise.
     """
 
     if 'develop' in sys.argv:
