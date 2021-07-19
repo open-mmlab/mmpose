@@ -112,12 +112,15 @@ def add_mim_extention():
     copying from the originals otherwise.
     """
 
-    if 'develop' in sys.argv:
+    # parse installment mode
+    if sys.argv[1] == 'develop':
+        # installed by `pip install -e .`
         mode = 'symlink'
-    elif 'install' in sys.argv:
+    elif sys.argv[1].startswith('bdist'):
+        # installed by `pip install .`
         mode = 'copy'
     else:
-        return
+        return None
 
     item_list = ['tools', 'configs', 'demo', 'model-index.yml']
     os.makedirs('mmpose/.mim', exist_ok=True)
@@ -132,20 +135,22 @@ def add_mim_extention():
                 shutil.rmtree(tar_path)
 
             if mode == 'symlink':
-                src_path = osp.join('../..', item)
+                src_path = osp.abspath(item)
                 os.symlink(src_path, tar_path)
             elif mode == 'copy':
                 src_path = item
                 if osp.isfile(src_path):
                     shutil.copyfile(src_path, tar_path)
-                elif osp.isdir(tar_path):
+                elif osp.isdir(src_path):
                     shutil.copytree(src_path, tar_path)
                 else:
                     warnings.warn(f'Cannot copy file {src_path}.')
 
+    return osp.abspath('mmpose/mim')
+
 
 if __name__ == '__main__':
-    add_mim_extention()
+    mim_path = add_mim_extention()
     setup(
         name='mmpose',
         version=get_version(),
