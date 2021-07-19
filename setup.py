@@ -1,6 +1,8 @@
 import os
 import os.path as osp
 import shutil
+import sys
+import warnings
 from setuptools import find_packages, setup
 
 
@@ -102,8 +104,21 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     return packages
 
 
-def link_file_to_package():
-    """Create symlinks to package dependencies to support MIM."""
+def add_mim_extention():
+    """Add extra files that are required to support MIM into the package.
+
+    These files will be added by creating a symlink to the origins if the
+    package is installed in `editable` mode (e.g. pip install -e .), or by
+    copying from the origins otherwise.
+    """
+
+    if 'develop' in sys.argv:
+        mode = 'symlink'
+    elif 'install' in sys.argv:
+        mode = 'copy'
+    else:
+        return
+
     item_list = ['tools', 'configs', 'demo', 'model-index.yml']
     os.makedirs('mmpose/.mim', exist_ok=True)
 
@@ -117,11 +132,19 @@ def link_file_to_package():
             elif osp.isdir(tar_path):
                 shutil.rmtree(tar_path)
 
-            os.symlink(src_path, tar_path)
+            if mode == 'symlink':
+                os.symlink(src_path, tar_path)
+            elif mode == 'copy':
+                if osp.isfile(src_path):
+                    shutil.copyfile(src_path, tar_path)
+                elif osp.isdir(tar_path):
+                    shutil.copytree(src_path, tar_path)
+                else:
+                    warnings.warn(f'Cannot copy file {src_path}.')
 
 
 if __name__ == '__main__':
-    link_file_to_package()
+    add_mim_extention()
     setup(
         name='mmpose',
         version=get_version(),
