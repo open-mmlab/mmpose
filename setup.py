@@ -104,7 +104,7 @@ def parse_requirements(fname='requirements.txt', with_version=True):
 
 def link_file_to_package():
     """Create symlinks to package dependencies to support MIM."""
-    item_list = ['tools', 'configs', 'demo', 'model_zoo.yml']
+    item_list = ['tools', 'configs', 'demo', 'model-index.yml']
     os.makedirs('mmpose/.mim', exist_ok=True)
 
     for item in item_list:
