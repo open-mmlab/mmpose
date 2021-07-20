@@ -50,6 +50,14 @@ def test_imshow_bbox():
             show=False,
             out_file=f'{tmpdir}/out.png')
 
+        # test case of empty bboxes
+        _ = imshow_bboxes(
+            img,
+            np.zeros((0, 4), dtype=np.float32),
+            labels=None,
+            colors='red',
+            show=False)
+
 
 def test_effects():
     img = np.zeros((100, 100, 3), dtype=np.uint8)
