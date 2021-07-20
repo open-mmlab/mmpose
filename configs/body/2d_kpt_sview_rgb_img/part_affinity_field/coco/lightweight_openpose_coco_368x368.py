@@ -153,10 +153,10 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = '/data/mscoco2017/'
+data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=0,
+    samples_per_gpu=24,
+    workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
