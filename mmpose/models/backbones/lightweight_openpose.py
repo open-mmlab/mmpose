@@ -384,8 +384,9 @@ class LightweightOpenPoseNetwork(BaseBackbone):
                 groups=512,
                 bias=False,
                 norm_cfg=norm_cfg),
-            ConvModule(512, 512, 1, padding=0, bias=False, norm_cfg=norm_cfg),
-            CpmLayer(512, stem_feat_channels))
+            ConvModule(512, 512, 1, padding=0, bias=False, norm_cfg=norm_cfg))
+
+        self.cpm = CpmLayer(512, stem_feat_channels)
 
         self.initial_stage = InitialStage(stem_feat_channels, 512,
                                           out_channels_cm, out_channels_paf)
@@ -403,21 +404,20 @@ class LightweightOpenPoseNetwork(BaseBackbone):
             pretrained (str, optional): Path to pre-trained weights.
                 Defaults to None.
         """
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                normal_init(m, std=0.001)
+            elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
+                constant_init(m, 1)
         if isinstance(pretrained, str):
             logger = get_root_logger()
             load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    normal_init(m, std=0.001)
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m, 1)
-        else:
+        elif pretrained is not None:
             raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         """Model forward function."""
-        stem_feat = self.features(x)
+        stem_feat = self.cpm(self.features(x))
 
         cm_outputs = []
         paf_outputs = []

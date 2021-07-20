@@ -50,7 +50,7 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='PartAffinityField',
-    pretrained=None,
+    pretrained='models/mobilenetv1_sgd_68.848.pth',
     backbone=dict(
         type='LightweightOpenPoseNetwork',
         in_channels=3,
@@ -153,10 +153,10 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/data/mscoco2017/'
 data = dict(
-    samples_per_gpu=24,
-    workers_per_gpu=2,
+    samples_per_gpu=2,
+    workers_per_gpu=0,
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
