@@ -124,7 +124,7 @@ def add_mim_extention():
         return
 
     filenames = ['tools', 'configs', 'demo', 'model-index.yml']
-    mim_path = 'mmpose/.mim'
+    mim_path = osp.join('mmpose', '.mim')
     os.makedirs(mim_path, exist_ok=True)
 
     for filename in filenames:
