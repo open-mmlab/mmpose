@@ -50,7 +50,8 @@ def imshow_bboxes(img,
     """
 
     # adapt to mmcv.imshow_bboxes input format
-    bboxes = np.split(bboxes, bboxes.shape[0], axis=0)
+    bboxes = np.split(
+        bboxes, bboxes.shape[0], axis=0) if bboxes.shape[0] > 0 else []
     if not isinstance(colors, list):
         colors = [colors for _ in range(len(bboxes))]
     colors = [mmcv.color_val(c) for c in colors]
