@@ -113,11 +113,12 @@ def add_mim_extention():
     """
 
     # parse installment mode
-    if sys.argv[1] == 'develop':
+    if 'develop' in sys.argv:
         # installed by `pip install -e .`
         mode = 'symlink'
-    elif sys.argv[1].startswith('bdist'):
+    elif 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
         # installed by `pip install .`
+        # or create source distribution by `python setup.py sdist`
         mode = 'copy'
     else:
         return None
