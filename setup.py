@@ -121,14 +121,15 @@ def add_mim_extention():
         # or create source distribution by `python setup.py sdist`
         mode = 'copy'
     else:
-        return None
+        return
 
-    item_list = ['tools', 'configs', 'demo', 'model-index.yml']
-    os.makedirs('mmpose/.mim', exist_ok=True)
+    filenames = ['tools', 'configs', 'demo', 'model-index.yml']
+    mim_path = 'mmpose/.mim'
+    os.makedirs(mim_path, exist_ok=True)
 
-    for item in item_list:
-        if osp.exists(item):
-            tar_path = osp.join('mmpose/.mim', item)
+    for filename in filenames:
+        if osp.exists(filename):
+            tar_path = osp.join(mim_path, filename)
 
             if osp.isfile(tar_path) or osp.islink(tar_path):
                 os.remove(tar_path)
@@ -136,22 +137,22 @@ def add_mim_extention():
                 shutil.rmtree(tar_path)
 
             if mode == 'symlink':
-                src_path = osp.abspath(item)
+                src_path = osp.abspath(filename)
                 os.symlink(src_path, tar_path)
             elif mode == 'copy':
-                src_path = item
+                src_path = filename
                 if osp.isfile(src_path):
                     shutil.copyfile(src_path, tar_path)
                 elif osp.isdir(src_path):
                     shutil.copytree(src_path, tar_path)
                 else:
                     warnings.warn(f'Cannot copy file {src_path}.')
-
-    return osp.abspath('mmpose/mim')
+            else:
+                raise ValueError(f'Invalid mode {mode}')
 
 
 if __name__ == '__main__':
-    mim_path = add_mim_extention()
+    add_mim_extention()
     setup(
         name='mmpose',
         version=get_version(),
