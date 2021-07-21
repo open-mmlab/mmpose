@@ -50,8 +50,7 @@ for subtopic, datasets in contents.items():
         if len(keywords) == 0:
             continue
         lines += [
-            '<hr/>', '<br/><br/>', '',
-            f'## <div align="center">{titlecase(dataset)} Dataset</div>', ''
+            '<hr/>', '<br/><br/>', '', f'## {titlecase(dataset)} Dataset', ''
         ]
         for keyword, info in keywords.items():
             keyword_strs = [titlecase(x.replace('_', ' ')) for x in keyword]
@@ -92,10 +91,7 @@ for section in sections:
                          f' on {titlecase(dataset)}'), '', info, ''
                     ]
         if len(paperlines) > 0:
-            lines += [
-                '<hr/>', '<br/><br/>', '',
-                f'## <div align="center">{papername}</div>', ''
-            ]
+            lines += ['<hr/>', '<br/><br/>', '', f'## {papername}', '']
             lines += paperlines
 
     with open(f'papers/{section}.md', 'w') as f:
