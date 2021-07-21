@@ -6,6 +6,7 @@ from glob import glob
 from titlecase import titlecase
 
 os.makedirs('topics', exist_ok=True)
+os.makedirs('papers', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
 minisections = [x.split('/')[-2:] for x in glob('../configs/*/*')]
@@ -49,7 +50,7 @@ for subtopic, datasets in contents.items():
         if len(keywords) == 0:
             continue
         lines += [
-            '<hr/>', '<br/><br/>', '', f'## {titlecase(dataset)} Dataset>', ''
+            '<hr/>', '<br/><br/>', '', f'## {titlecase(dataset)} Dataset', ''
         ]
         for keyword, info in keywords.items():
             keyword_strs = [titlecase(x.replace('_', ' ')) for x in keyword]
