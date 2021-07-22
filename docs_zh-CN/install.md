@@ -19,7 +19,7 @@
 - Linux (Windows 系统暂未有官方支持)
 - Python 3.6+
 - PyTorch 1.3+
-- CUDA 9.2+ (如果要从源码对 PyTorch 进行编译, CUDA 9.0 版本同样可以兼容)
+- CUDA 9.2+ (如果从源码编译 PyTorch,则可以兼容 CUDA 9.0 版本)
 - GCC 5+
 - [mmcv](https://github.com/open-mmlab/mmcv) 请安装最新版本的 mmcv-full
 - Numpy
@@ -34,9 +34,6 @@
 - [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (用于“三维人体形状恢复”)
 - [smplx](https://github.com/vchoutas/smplx) (用于“三维人体形状恢复”)
 
-**注意**：用户需要首先运行 `pip uninstall mmcv` 命令，以确保 mmcv 被成功安装。
-如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
-
 ## 准备环境
 
 a. 创建并激活 conda 虚拟环境，如：
@@ -46,7 +43,7 @@ conda create -n open-mmlab python=3.7 -y
 conda activate open-mmlab
 ```
 
-b. 根据 [官方文档](https://pytorch.org/) 进行 PyTorch 和 torchvision 的安装，如：
+b. 参考 [官方文档](https://pytorch.org/) 安装 PyTorch 和 torchvision ，如：
 
 ```shell
 conda install pytorch torchvision -c pytorch
@@ -115,7 +112,7 @@ cd ..
 pip install mmcv-full
 ```
 
-**注意**：如果 mmcv 已经被安装，用户需要使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
+**注意**：如果之前安装过 mmcv，那么需要先使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
 
 b. 克隆 MMPose 库。
 
@@ -131,7 +128,7 @@ pip install -r requirements.txt
 pip install -v -e .  # or "python setup.py develop"
 ```
 
-如果是在 macOS 环境安装 MMAction2，则需使用如下命令：
+如果是在 macOS 环境安装 MMPose，则需使用如下命令：
 
 ```shell
 CC=clang CXX=clang++ CFLAGS='-stdlib=libc++' pip install -e .
@@ -171,7 +168,7 @@ MMPose 可以在只有 CPU 的环境下安装（即无法使用 GPU 的环境）
 
 ## 源码安装 MMPose
 
-这里提供了 conda 下安装 MMAction2 并链接数据集路径的完整脚本（假设 Kinetics-400 数据的路径在 $KINETICS400_ROOT）。
+这里提供了 conda 下安装 MMPose 并链接 COCO 数据集路径的完整脚本（假设 COCO 数据的路径在 $COCO_ROOT）。
 
 ```shell
 conda create -n open-mmlab python=3.7 -y
