@@ -38,7 +38,7 @@ It will launch a window to display the webcam video steam with detection and pos
 
 - **Can this tool process video files?**
 
-  Yes. You can set `--cam_id=VIDEO_FILE_PATH` to run the demo tool in offline mode on a video file. Note that `--synchronous-mode` should be set in this case.
+  Yes. You can set `--cam-id=VIDEO_FILE_PATH` to run the demo tool in offline mode on a video file. Note that `--synchronous-mode` should be set in this case.
 
 - **How to enable/disable the special effects?**
 

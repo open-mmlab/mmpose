@@ -27,61 +27,61 @@ except (ImportError, ModuleNotFoundError):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cam_id', type=str, default='0')
+    parser.add_argument('--cam-id', type=str, default='0')
     parser.add_argument(
-        '--det_config',
+        '--det-config',
         type=str,
         default='demo/mmdetection_cfg/yolov3_d53_320_273e_coco.py',
         help='Config file for detection')
     parser.add_argument(
-        '--det_checkpoint',
+        '--det-checkpoint',
         type=str,
         default='https://download.openmmlab.com/mmdetection/v2.0/yolo/'
         'yolov3_d53_320_273e_coco/yolov3_d53_320_273e_coco-421362b6.pth',
         help='Checkpoint file for detection')
     parser.add_argument(
-        '--enable_human_pose',
+        '--enable-human-pose',
         type=int,
         default=1,
         help='Enable human pose estimation')
     parser.add_argument(
-        '--enable_animal_pose',
+        '--enable-animal-pose',
         type=int,
         default=1,
         help='Enable animal pose estimation')
     parser.add_argument(
-        '--human_pose_config',
+        '--human-pose-config',
         type=str,
         default='configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/'
         'hrnet_w48_coco_256x192.py',
         help='Config file for human pose')
     parser.add_argument(
-        '--human_pose_checkpoint',
+        '--human-pose-checkpoint',
         type=str,
         default='https://download.openmmlab.com/mmpose/top_down/hrnet/'
         'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth',
         help='Checkpoint file for human pose')
     parser.add_argument(
-        '--human_det_ids',
+        '--human-det-ids',
         type=int,
         default=[1],
         nargs='+',
         help='Object category label of human in detection results.'
         'Default is [1(person)], following COCO definition.')
     parser.add_argument(
-        '--animal_pose_config',
+        '--animal-pose-config',
         type=str,
         default='configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/'
         'animalpose/hrnet_w32_animalpose_256x256.py',
         help='Config file for animal pose')
     parser.add_argument(
-        '--animal_pose_checkpoint',
+        '--animal-pose-checkpoint',
         type=str,
         default='https://download.openmmlab.com/mmpose/animal/hrnet/'
         'hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth',
         help='Checkpoint file for animal pose')
     parser.add_argument(
-        '--animal_det_ids',
+        '--animal-det-ids',
         type=int,
         default=[16, 17, 18, 19, 20],
         nargs='+',
@@ -129,7 +129,7 @@ def parse_args():
         'automatically inferred from the display delay time. Deafult: -1')
 
     parser.add_argument(
-        '--inference_fps',
+        '--inference-fps',
         type=int,
         default=10,
         help='Maximum inference FPS. This is to limit the resource consuming '
