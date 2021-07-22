@@ -5,7 +5,7 @@
 # triggered if any change of model information (.md files in configs/) has been
 # detected before a commit.
 
-import os
+import glob
 import os.path as osp
 import re
 import sys
@@ -28,10 +28,10 @@ def dump_yaml_and_check_difference(obj, file):
 
     original = None
     if osp.isfile(file):
-        with open(file, 'r') as f:
+        with open(file, 'r', encoding='utf-8') as f:
             original = f.read()
 
-    with open(file, 'w') as f:
+    with open(file, 'w', encoding='utf-8') as f:
         mmcv.dump(obj, f, file_format='yaml', sort_keys=False)
 
     is_different = True
@@ -226,13 +226,9 @@ def update_model_index():
         Bool: If the updated model-index.yml is different from the original.
     """
     configs_dir = osp.join(MMPOSE_ROOT, 'configs')
-    yml_files = []
-    for root, dirs, files in os.walk(configs_dir):
-        if len(dirs) == 0:
-            for file in files:
-                if file[-3:] == 'yml':
-                    yml_files.append(os.path.join(root, file))
+    yml_files = glob.glob(osp.join(configs_dir, '**', '*.yml'), recursive=True)
     yml_files.sort()
+
     model_index = {
         'Import':
         [osp.relpath(yml_file, MMPOSE_ROOT) for yml_file in yml_files]
