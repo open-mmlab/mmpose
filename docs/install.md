@@ -1,16 +1,18 @@
-## Installation
+# Installation
 
 <!-- TOC -->
 
 - [Requirements](#requirements)
+- [Prepare Environment](#prepare-environment)
 - [Install MMPose](#install-mmpose)
+- [Install with CPU only](#install-with-cpu-only)
 - [A from-scratch setup script](#a-from-scratch-setup-script)
 - [Another option: Docker Image](#another-option-docker-image)
 - [Developing with multiple MMPose versions](#developing-with-multiple-mmpose-versions)
 
 <!-- TOC -->
 
-### Requirements
+## Requirements
 
 - Linux (Windows is not officially supported)
 - Python 3.6+
@@ -30,7 +32,7 @@ Optional:
 - [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (to run 3d mesh demos)
 - [smplx](https://github.com/vchoutas/smplx) (to run 3d mesh demos)
 
-### Install MMPose
+## Prepare environment
 
 a. Create a conda virtual environment and activate it.
 
@@ -64,7 +66,20 @@ conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
 
 If you build PyTorch from source instead of installing the prebuilt package, you can use more CUDA versions such as 9.0.
 
-c. Install mmcv, we recommend you to install the pre-build mmcv as below.
+## Install MMPose
+
+We recommend you to install MMPose with [MIM](https://github.com/open-mmlab/mim).
+
+```shell
+pip install git+https://github.com/open-mmlab/mim.git
+mim install mmpose
+```
+
+MIM can automatically install OpenMMLab projects and their requirements.
+
+Or, you can install MMPose manually:
+
+a. Install mmcv, we recommend you to install the pre-build mmcv as below.
 
 ```shell
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
@@ -76,7 +91,6 @@ Please replace ``{cu_version}`` and ``{torch_version}`` in the url to your desir
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu110/torch1.7.0/index.html
 ```
 
-If it compiles during installation, then please check that the cuda version and pytorch version **exactly"" matches the version in the mmcv-full installation command. For example, pytorch 1.7.0 and 1.7.1 are treated differently.
 See [here](https://github.com/open-mmlab/mmcv#installation) for different versions of MMCV compatible to different PyTorch and CUDA versions.
 
 Optionally you can choose to compile mmcv from source by the following command
@@ -98,19 +112,32 @@ pip install mmcv-full
 
 **Important:** You need to run `pip uninstall mmcv` first if you have mmcv installed. If mmcv and mmcv-full are both installed, there will be `ModuleNotFoundError`.
 
-d. Clone the mmpose repository
+b. Clone the mmpose repository
 
 ```shell
 git clone git@github.com:open-mmlab/mmpose.git
 cd mmpose
 ```
 
-e. Install build requirements and then install mmpose
+c. Install build requirements and then install mmpose
 
 ```shell
 pip install -r requirements.txt
-python setup.py develop
+pip install -v -e .  # or "python setup.py develop"
 ```
+
+If you build MMPose on macOS, replace the last command with
+
+```shell
+CC=clang CXX=clang++ CFLAGS='-stdlib=libc++' pip install -e .
+```
+
+d. Install optional modules
+
+- [mmdet](https://github.com/open-mmlab/mmdetection) (to run pose demos)
+- [mmtrack](https://github.com/open-mmlab/mmtracking) (to run pose tracking demos)
+- [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (to run 3d mesh demos)
+- [smplx](https://github.com/vchoutas/smplx) (to run 3d mesh demos)
 
 Note:
 
@@ -124,7 +151,18 @@ Note:
 
 1. If you have `mmcv` installed, you need to firstly uninstall `mmcv`, and then install `mmcv-full`.
 
-### A from-scratch setup script
+1. Some dependencies are optional. Running `python setup.py develop` will only install the minimum runtime requirements.
+   To use optional dependencies like `smplx`, either install them with `pip install -r requirements/optional.txt`
+   or specify desired extras when calling `pip` (e.g. `pip install -v -e .[optional]`,
+   valid keys for the `[optional]` field are `all`, `tests`, `build`, and `optional`) like `pip install -v -e .[tests,build]`.
+
+## Install with CPU only
+
+The code can be built for CPU only environment (where CUDA isn't available).
+
+In CPU mode you can run the demo/demo.py for example.
+
+## A from-scratch setup script
 
 Here is a full script for setting up mmpose with conda and link the dataset path (supposing that your COCO dataset path is $COCO_ROOT).
 
@@ -135,7 +173,7 @@ conda activate open-mmlab
 # install latest pytorch prebuilt with the default prebuilt CUDA version (usually the latest)
 conda install -c pytorch pytorch torchvision -y
 
-# install the latest mmcv-full or mmcv, here we take mmcv-full as example
+# install the latest mmcv-full
 pip install mmcv-full
 
 # install mmpose
@@ -144,9 +182,11 @@ cd mmpose
 pip install -r requirements.txt
 python setup.py develop
 
+mkdir data
+ln -s $COCO_ROOT data/coco
 ```
 
-### Another option: Docker Image
+## Another option: Docker Image
 
 We provide a [Dockerfile](/docker/Dockerfile) to build an image.
 
@@ -165,7 +205,7 @@ docker run --gpus all\
  -it -v {DATA_DIR}:/mmpose/data mmpose
 ```
 
-### Developing with multiple MMPose versions
+## Developing with multiple MMPose versions
 
 The train and test scripts already modify the `PYTHONPATH` to ensure the script use the MMPose in the current directory.
 
