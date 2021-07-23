@@ -3,8 +3,8 @@
 ## 自定义优化器
 
 在本教程中，我们将介绍如何为项目定制优化器.
-假设用户想要添加一个名为 `MyOptimizer` 的优化器，它有 `a`，`b` 和 `c` 三个参数。
-那么用户首先需要在一个文件中实现该优化器，例如 `mmpose/core/optimizer/my_optimizer.py`：
+假设想要添加一个名为 `MyOptimizer` 的优化器，它有 `a`，`b` 和 `c` 三个参数。
+那么首先需要在一个文件中实现该优化器，例如 `mmpose/core/optimizer/my_optimizer.py`：
 
 ```python
 from mmcv.runner import OPTIMIZERS
@@ -18,13 +18,13 @@ class MyOptimizer(Optimizer):
 
 ```
 
-然后用户需要将其添加到 `mmpose/core/optimizer/__init__.py` 中，从而让注册器可以找到这个新的优化器并添加它：
+然后需要将其添加到 `mmpose/core/optimizer/__init__.py` 中，从而让注册器可以找到这个新的优化器并添加它：
 
 ```python
 from .my_optimizer import MyOptimizer
 ```
 
-之后，用户便可以在配置文件的 `optimizer` 字段中使用 `MyOptimizer`。
+之后，可以在配置文件的 `optimizer` 字段中使用 `MyOptimizer`。
 在配置中，优化器由 `optimizer` 字段所定义，如下所示：
 
 ```python
@@ -53,7 +53,7 @@ optimizer = dict(type='Adam', lr=0.0003, weight_decay=0.0001)
 某些模型可能对不同层的参数有特定的优化设置，例如 BatchNorm 层的权值衰减。
 用户可以通过自定义优化器构造函数来进行这些细粒度的参数调整。
 
-```
+```python
 from mmcv.utils import build_from_cfg
 
 from mmcv.runner import OPTIMIZER_BUILDERS, OPTIMIZERS
