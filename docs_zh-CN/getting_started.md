@@ -43,12 +43,12 @@ MMPose 提供了一些测试脚本用于测试数据集上的指标（如 COCO, 
 - [x] 支持单节点，多 GPU
 - [x] 支持多节点
 
-用户可使用以下命令进行数据集测试
+用户可使用以下命令测试数据集
 
 ```shell
 # 单 GPU 测试
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
-    [--eval ${EVAL_METRIC}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
+    [--eval ${EVAL_METRICS}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
 
 # 多 GPU 测试
@@ -63,7 +63,7 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [-
 
 - `RESULT_FILE`：输出结果文件名。如果没有被指定，则不会保存测试结果。
 - `--fuse-conv-bn`: 是否融合BN和Conv层。该操作会略微提升模型推理速度。
-- `EVAL_METRICS`：测试指标。其可选值与对应数据集相关，如 `top_k_accuracy`，`mean_class_accuracy` 适用于所有动作识别数据集，`mmit_mean_average_precision` 适用于 Multi-Moments in Time 数据集，`mean_average_precision` 适用于 Multi-Moments in Time 和单类 HVU 数据集，`AR@AN` 适用于 ActivityNet 数据集等。
+- `EVAL_METRICS`：测试指标。其可选值与对应数据集相关，如 `mAP`，适用于 COCO 等数据集，`PCK` `AUC` `EPE` 适用于 OneHand10K 等数据集等。
 - `--gpu-collect`：如果被指定，动作识别结果将会通过 GPU 通信进行收集。否则，它将被存储到不同 GPU 上的 `TMPDIR` 文件夹中，并在 rank 0 的进程中被收集。
 - `TMPDIR`：用于存储不同进程收集的结果文件的临时文件夹。该变量仅当 `--gpu-collect` 没有被指定时有效。
 - `CFG_OPTIONS`：覆盖配置文件中的一些实验设置。比如，可以设置'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'，在线修改配置文件内容。

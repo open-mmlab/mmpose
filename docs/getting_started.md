@@ -49,7 +49,7 @@ You can use the following commands to test a dataset.
 ```shell
 # single-gpu testing
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
-    [--eval ${EVAL_METRIC}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
+    [--eval ${EVAL_METRICS}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
 
 # multi-gpu testing
@@ -64,7 +64,7 @@ Optional arguments:
 
 - `RESULT_FILE`: Filename of the output results. If not specified, the results will not be saved to a file.
 - `--fuse-conv-bn`: Whether to fuse conv and bn, this will slightly increase the inference speed.
-- `EVAL_METRIC`: Items to be evaluated on the results. Allowed values depend on the dataset.
+- `EVAL_METRICS`: Items to be evaluated on the results. Allowed values depend on the dataset.
 - `--gpu_collect`: If specified, recognition results will be collected using gpu communication. Otherwise, it will save the results on different gpus to `TMPDIR` and collect them by the rank 0 worker.
 - `TMPDIR`: Temporary directory used for collecting results from multiple workers, available when `--gpu_collect` is not specified.
 - `CFG_OPTIONS`: Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into config file. For example, '--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'.
