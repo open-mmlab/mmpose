@@ -57,24 +57,48 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  test_mode=False):
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
-        self.ann_info['flip_index'] = [
-            0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
-        ]
-
-        # joint index starts from 0
-        self.ann_info['skeleton'] = [[15, 13], [13, 11], [16, 14], [14, 12],
-                                     [11, 12], [5, 11], [6, 12], [5, 6],
-                                     [5, 7], [6, 8], [7, 9], [8, 10], [1, 2],
-                                     [0, 1], [0, 2], [1, 3], [2, 4], [3, 5],
-                                     [4, 6]]
-
+        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
         self.ann_info['use_different_joint_weights'] = False
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
+
+        if self.ann_info['add_neck']:
+            self.ann_info['flip_index'] = [
+                0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16
+            ]
+
+            # joint index starts from 0
+            self.ann_info['skeleton'] = [[1, 8], [8, 9], [9, 10], [1, 11],
+                                         [11, 12], [12, 13], [1, 2], [2, 3],
+                                         [3, 4], [2, 16], [1, 5], [5, 6],
+                                         [6, 7], [5, 17], [1, 0], [0, 14],
+                                         [0, 15], [14, 16], [15, 17]]
+
+            self.ann_info['joint_weights'] = np.array(
+                [
+                    1., 1., 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2, 1.5, 1., 1.2,
+                    1.5, 1., 1., 1., 1.
+                ],
+                dtype=np.float32).reshape((self.ann_info['num_joints'] + 1, 1))
+
+        else:
+            self.ann_info['flip_index'] = [
+                0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15
+            ]
+
+            # joint index starts from 0
+            self.ann_info['skeleton'] = [[15, 13], [13, 11], [16,
+                                                              14], [14, 12],
+                                         [11, 12], [5, 11], [6, 12], [5, 6],
+                                         [5, 7], [6, 8], [7, 9], [8,
+                                                                  10], [1, 2],
+                                         [0, 1], [0, 2], [1, 3], [2, 4],
+                                         [3, 5], [4, 6]]
+
+            self.ann_info['joint_weights'] = np.array(
+                [
+                    1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1.,
+                    1.2, 1.2, 1.5, 1.5
+                ],
+                dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
 
         # 'https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/'
         # 'pycocotools/cocoeval.py#L523'
@@ -148,6 +172,36 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
             if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
         ]
 
+        if self.ann_info['add_neck']:
+            reorder_map = [
+                0, 6, 8, 10, 5, 7, 9, 12, 14, 16, 11, 13, 15, 2, 1, 4, 3
+            ]
+            for obj in anno:
+                keypoints = np.array(obj['keypoints']).reshape(
+                    self.ann_info['num_joints'], 3)
+                converted_keypoints = np.zeros(
+                    (self.ann_info['num_joints'] + 1, 3))
+                for i, idx in enumerate(reorder_map):
+                    if i == 0:
+                        converted_keypoints[i] = keypoints[idx]
+                    else:
+                        converted_keypoints[i + 1] = keypoints[idx]
+
+                # Add neck as a mean of shoulders
+                converted_keypoints[1, 0] = (keypoints[5, 0] +
+                                             keypoints[6, 0]) / 2
+                converted_keypoints[1, 1] = (keypoints[5, 1] +
+                                             keypoints[6, 1]) / 2
+                if keypoints[5][2] == 2 and keypoints[6][2] == 2:
+                    converted_keypoints[1][2] = 2
+                elif keypoints[5][2] == 0 or keypoints[6][2] == 0:
+                    converted_keypoints[1][2] = 0
+                else:
+                    converted_keypoints[1][2] = 1
+
+                keypoints = list(converted_keypoints.reshape(-1))
+                obj['keypoints'] = keypoints
+
         joints = self._get_joints(anno)
         mask_list = [mask.copy() for _ in range(self.ann_info['num_scales'])]
         joints_list = [
@@ -168,14 +222,24 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
         num_people = len(anno)
 
         if self.ann_info['scale_aware_sigma']:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 4),
-                              dtype=np.float32)
+            if self.ann_info['add_neck']:
+                joints = np.zeros(
+                    (num_people, self.ann_info['num_joints'] + 1, 4),
+                    dtype=np.float32)
+            else:
+                joints = np.zeros((num_people, self.ann_info['num_joints'], 4),
+                                  dtype=np.float32)
         else:
-            joints = np.zeros((num_people, self.ann_info['num_joints'], 3),
-                              dtype=np.float32)
+            if self.ann_info['add_neck']:
+                joints = np.zeros(
+                    (num_people, self.ann_info['num_joints'] + 1, 3),
+                    dtype=np.float32)
+            else:
+                joints = np.zeros((num_people, self.ann_info['num_joints'], 3),
+                                  dtype=np.float32)
 
         for i, obj in enumerate(anno):
-            joints[i, :self.ann_info['num_joints'], :3] = \
+            joints[i, :, :3] = \
                 np.array(obj['keypoints']).reshape([-1, 3])
             if self.ann_info['scale_aware_sigma']:
                 # get person box
@@ -255,11 +319,14 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
 
         kpts = defaultdict(list)
         # iterate over images
+        order_map = [0, 15, 14, 17, 16, 5, 2, 6, 3, 7, 4, 11, 8, 12, 9, 13, 10]
         for idx, _preds in enumerate(preds):
             str_image_path = image_paths[idx]
             image_id = self.name2id[os.path.basename(str_image_path)]
             # iterate over people
             for idx_person, kpt in enumerate(_preds):
+                if self.ann_info['add_neck']:
+                    kpt = kpt[order_map]
                 # use bbox area
                 area = (np.max(kpt[:, 0]) - np.min(kpt[:, 0])) * (
                     np.max(kpt[:, 1]) - np.min(kpt[:, 1]))

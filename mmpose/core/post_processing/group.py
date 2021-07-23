@@ -494,18 +494,35 @@ class PAFParser(BaseBottomUpParser):
         super().__init__(cfg)
 
         self.paf_thr = 0.05
-        # Heatmap indices to find each limb (joint connection).
-        self.limb2joint = [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
-                           [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
-                           [8, 10], [1, 2], [0, 1], [0, 2], [1, 3], [2, 4],
-                           [3, 5], [4, 6]]
+        self.add_neck = cfg.get('add_neck', False)
 
-        # PAF indices containing the x and y coordinates of the PAF for a
-        # given limb.
-        self.limb2paf = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11],
-                         [12, 13], [14, 15], [16, 17], [18, 19], [20, 21],
-                         [22, 23], [24, 25], [26, 27], [28, 29], [30, 31],
-                         [32, 33], [34, 35], [36, 37]]
+        if self.add_neck:
+            # Heatmap indices to find each limb (joint connection).
+            self.limb2joint = [[1, 2], [1, 5], [2, 3], [3, 4], [5, 6], [6, 7],
+                               [1, 8], [8, 9], [9, 10], [1, 11], [11, 12],
+                               [12, 13], [1, 0], [0, 14], [14, 16], [0, 15],
+                               [15, 17], [2, 16], [5, 17]]
+
+            # PAF indices containing the x and y coordinates of the PAF for a
+            # given limb.
+            self.limb2paf = [[12, 13], [20, 21], [14, 15], [16, 17], [22, 23],
+                             [24, 25], [0, 1], [2, 3], [4, 5], [6, 7], [8, 9],
+                             [10, 11], [28, 29], [30, 31], [34, 35], [32, 33],
+                             [36, 37], [18, 19], [26, 27]]
+
+        else:
+            # Heatmap indices to find each limb (joint connection).
+            self.limb2joint = [[15, 13], [13, 11], [16, 14], [14, 12],
+                               [11, 12], [5, 11], [6, 12], [5, 6], [5, 7],
+                               [6, 8], [7, 9], [8, 10], [1, 2], [0, 1], [0, 2],
+                               [1, 3], [2, 4], [3, 5], [4, 6]]
+
+            # PAF indices containing the x and y coordinates of the PAF for a
+            # given limb.
+            self.limb2paf = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11],
+                             [12, 13], [14, 15], [16, 17], [18, 19], [20, 21],
+                             [22, 23], [24, 25], [26, 27], [28, 29], [30, 31],
+                             [32, 33], [34, 35], [36, 37]]
 
         self.NUM_LIMBS = len(self.limb2joint)
 
