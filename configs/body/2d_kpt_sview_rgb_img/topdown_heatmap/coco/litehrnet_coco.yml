@@ -1,0 +1,40 @@
+Collections:
+- Name: litehrnet_coco
+  Metadata:
+    Architecture:
+    - LiteHRNet
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_coco.md
+  Paper:
+  - https://arxiv.org/abs/2104.06403
+  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+Models:
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_30_coco_256x192
+  In Collection: litehrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_256x192.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.675
+      AP@0.5: 0.881
+      AP@0.75: 0.754
+      AR: 0.736
+      AR@0.5: 0.924
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_256x192-4176555b_20210626.pth
+- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_30_coco_384x288
+  In Collection: litehrnet_coco
+  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_384x288.py
+  Metadata:
+    Training Data: COCO
+  Results:
+  - Task: Image-based Human Body 2D Pose Estimation
+    Dataset: COCO
+    Metrics:
+      AP: 0.7
+      AP@0.5: 0.884
+      AP@0.75: 0.776
+      AR: 0.758
+      AR@0.5: 0.928
+  Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_384x288-a3aef5c4_20210626.pth
