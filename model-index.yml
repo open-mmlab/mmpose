@@ -32,6 +32,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_fp16_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_udp_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.yml
@@ -46,6 +47,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_h36m.yml
@@ -56,6 +58,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_dark_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_mpii.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/mobilenetv2_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d_mpii.yml

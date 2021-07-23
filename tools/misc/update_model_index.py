@@ -1,9 +1,46 @@
-import argparse
-import os
+#!/usr/bin/env python
+
+# This tool is used to update model-index.yml which is required by MIM, and
+# will be automatically called as a pre-commit hook. The updating will be
+# triggered if any change of model information (.md files in configs/) has been
+# detected before a commit.
+
+import glob
 import os.path as osp
 import re
+import sys
 
 import mmcv
+
+MMPOSE_ROOT = osp.dirname(osp.dirname(osp.dirname(__file__)))
+
+
+def dump_yaml_and_check_difference(obj, file):
+    """Dump object to a yaml file, and check if the file content is different
+    from the original.
+
+    Args:
+        obj (any): The python object to be dumped.
+        file (str): YAML filename to dump the object to.
+    Returns:
+        Bool: If the target YAML file is different from the original.
+    """
+
+    original = None
+    if osp.isfile(file):
+        with open(file, 'r', encoding='utf-8') as f:
+            original = f.read()
+
+    with open(file, 'w', encoding='utf-8') as f:
+        mmcv.dump(obj, f, file_format='yaml', sort_keys=False)
+
+    is_different = True
+    if original is not None:
+        with open(file, 'r') as f:
+            new = f.read()
+        is_different = (original != new)
+
+    return is_different
 
 
 def collate_metrics(keys):
@@ -64,13 +101,8 @@ def get_task_name(md_file):
     Returns:
         Str: Task name.
     """
-    cur_dir = osp.dirname(md_file)
-    while True:
-        dirname, basename = osp.split(cur_dir)
-        if basename[:2] == '2d' or basename[:2] == '3d':
-            break
-        cur_dir = dirname
-    readme_file = osp.join(cur_dir, 'README.md')
+    task_dir = osp.relpath(md_file, MMPOSE_ROOT).rsplit(osp.sep, 3)[0]
+    readme_file = osp.join(task_dir, 'README.md')
     with open(readme_file, 'r', encoding='utf-8') as f:
         task = f.readline()[2:].strip()
     return task
@@ -81,13 +113,14 @@ def parse_md(md_file):
 
     Args:
         md_file: Path to .md file.
+    Returns:
+        Bool: If the target YAML file is different from the original.
     """
     collection_name = osp.splitext(osp.basename(md_file))[0]
-    repo_root = osp.dirname(osp.dirname(__file__))
     collection = dict(
         Name=collection_name,
         Metadata={'Architecture': []},
-        README=md_file.replace(repo_root, '', 1).strip('./'),
+        README=osp.relpath(md_file, MMPOSE_ROOT),
         Paper=[])
     models = []
     task = get_task_name(md_file)
@@ -181,38 +214,43 @@ def parse_md(md_file):
 
     result = {'Collections': [collection], 'Models': models}
     yml_file = md_file[:-2] + 'yml'
-    with open(yml_file, 'w') as f:
-        mmcv.dump(result, f, file_format='yaml', sort_keys=False)
+
+    is_different = dump_yaml_and_check_difference(result, yml_file)
+    return is_different
 
 
 def update_model_index():
-    repo_root = osp.dirname(osp.dirname(__file__))
-    configs_dir = osp.join(repo_root, 'configs')
-    yml_files = []
-    for root, dirs, files in os.walk(configs_dir):
-        if len(dirs) == 0:
-            for file in files:
-                if file[-3:] == 'yml':
-                    yml_files.append(os.path.join(root, file))
+    """Update model-index.yml according to model .md files.
+
+    Returns:
+        Bool: If the updated model-index.yml is different from the original.
+    """
+    configs_dir = osp.join(MMPOSE_ROOT, 'configs')
+    yml_files = glob.glob(osp.join(configs_dir, '**', '*.yml'), recursive=True)
     yml_files.sort()
-    model_zoo = {
+
+    model_index = {
         'Import':
-        [yml_file.replace(repo_root, '', 1)[1:] for yml_file in yml_files]
+        [osp.relpath(yml_file, MMPOSE_ROOT) for yml_file in yml_files]
     }
-    model_zoo_file = osp.join(repo_root, 'model-index.yml')
-    with open(model_zoo_file, 'w') as f:
-        mmcv.dump(model_zoo, f, file_format='yaml')
+    model_index_file = osp.join(MMPOSE_ROOT, 'model-index.yml')
+    is_different = dump_yaml_and_check_difference(model_index,
+                                                  model_index_file)
 
-
-def main():
-    parser = argparse.ArgumentParser(description='Converting markdown file to '
-                                     'yml file to support mim.')
-    parser.add_argument('md_file', help='abspath to .md file')
-    args = parser.parse_args()
-
-    parse_md(args.md_file)
-    update_model_index()
+    return is_different
 
 
 if __name__ == '__main__':
-    main()
+
+    file_list = [fn for fn in sys.argv[1:] if osp.basename(fn) != 'README.md']
+
+    if not file_list:
+        exit(0)
+
+    file_modified = False
+    for fn in file_list:
+        file_modified |= parse_md(fn)
+
+    file_modified |= update_model_index()
+
+    exit(1 if file_modified else 0)
