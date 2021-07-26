@@ -34,7 +34,7 @@ def _calc_distances(preds, targets, mask, normalize):
     # handle invalid values
     normalize[np.where(normalize <= 0)] = 1e6
     distances[mask] = np.linalg.norm(
-        ((preds - targets) / (normalize[:, None, :] + 1e-7))[mask], axis=-1)
+        ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
     return distances.T
 
 
