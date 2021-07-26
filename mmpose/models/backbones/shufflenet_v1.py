@@ -25,7 +25,7 @@ class ShuffleUnit(nn.Module):
         groups (int, optional): The number of groups to be used in grouped 1x1
             convolutions in each ShuffleUnit. Default: 3
         first_block (bool, optional): Whether it is the first ShuffleUnit of a
-            sequential ShuffleUnits. Default: False, which means not using the
+            sequential ShuffleUnits. Default: True, which means not using the
             grouped 1x1 convolution.
         combine (str, optional): The ways to combine the input and output
             branches. Default: 'add'.
@@ -268,7 +268,7 @@ class ShuffleNetV1(BaseBackbone):
                     else:
                         normal_init(m, mean=0, std=1.0 / m.weight.shape[1])
                 elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m.weight, val=1, bias=0.0001)
+                    constant_init(m, val=1, bias=0.0001)
                     if isinstance(m, _BatchNorm):
                         if m.running_mean is not None:
                             nn.init.constant_(m.running_mean, 0)
@@ -283,7 +283,7 @@ class ShuffleNetV1(BaseBackbone):
             out_channels (int): out_channels of the block.
             num_blocks (int): Number of blocks.
             first_block (bool, optional): Whether is the first ShuffleUnit of a
-                sequential ShuffleUnits. Default: False, which means not using
+                sequential ShuffleUnits. Default: False, which means using
                 the grouped 1x1 convolution.
         """
         layers = []
