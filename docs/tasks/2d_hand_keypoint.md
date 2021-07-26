@@ -270,7 +270,6 @@ mmpose
         |   |   |── 00001.jpg
 ```
 
-
 ## COCO-WholeBody (Hand)
 
 [DATASET]

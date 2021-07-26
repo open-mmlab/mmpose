@@ -3,13 +3,12 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
-evaluation = dict(
-    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='PCK')
+checkpoint_config = dict(interval=1)
+evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=2e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -18,28 +17,22 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[170, 200])
-total_epochs = 210
+    step=[40, 55])
+total_epochs = 60
 log_config = dict(
-    interval=20,
+    interval=5,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=21,
-    dataset_joints=21,
+    num_output_channels=68,
+    dataset_joints=68,
     dataset_channel=[
-        [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-            19, 20
-        ],
+        list(range(68)),
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-        20
-    ])
+    inference_channel=list(range(68)))
 
 # model settings
 model = dict(
@@ -76,7 +69,7 @@ model = dict(
                 multiscale_output=True),
             upsample=dict(mode='bilinear', align_corners=False))),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
+        type='TopdownHeatmapSimpleHead',
         in_channels=[18, 36, 72, 144],
         in_index=(0, 1, 2, 3),
         input_transform='resize_concat',
@@ -104,7 +97,8 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=20, scale_factor=0.3),
+        type='TopDownGetRandomScaleRotation', rot_factor=30,
+        scale_factor=0.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -141,20 +135,22 @@ data_root = 'data/coco'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='HandCocoWholeBodyDataset',
+        type='FaceCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='HandCocoWholeBodyDataset',
+        type='FaceCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='HandCocoWholeBodyDataset',
+        type='FaceCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,

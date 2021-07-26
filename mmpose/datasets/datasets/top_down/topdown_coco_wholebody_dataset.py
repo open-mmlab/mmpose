@@ -9,6 +9,7 @@ from xtcocotools.cocoeval import COCOeval
 from mmpose.datasets.builder import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
 
+
 @DATASETS.register_module()
 class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
     """CocoWholeBodyDataset dataset for top-down pose estimation.
