@@ -53,7 +53,8 @@ class RegNet(ResNet):
                     wm=2.25,
                     group_w=48,
                     depth=25,
-                    bot_mul=1.0))
+                    bot_mul=1.0),
+                 out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 32, 32)
         >>> level_outputs = self.forward(inputs)

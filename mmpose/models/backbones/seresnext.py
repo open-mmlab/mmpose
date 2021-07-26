@@ -132,6 +132,20 @@ class SEResNeXt(SEResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+
+    Example:
+        >>> from mmpose.models import SEResNeXt
+        >>> import torch
+        >>> self = SEResNet(depth=50, out_indices=(0, 1, 2, 3))
+        >>> self.eval()
+        >>> inputs = torch.rand(1, 3, 224, 224)
+        >>> level_outputs = self.forward(inputs)
+        >>> for level_out in level_outputs:
+        ...     print(tuple(level_out.shape))
+        (1, 256, 56, 56)
+        (1, 512, 28, 28)
+        (1, 1024, 14, 14)
+        (1, 2048, 7, 7)
     """
 
     arch_settings = {
