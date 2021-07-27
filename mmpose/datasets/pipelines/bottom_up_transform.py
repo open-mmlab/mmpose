@@ -147,7 +147,7 @@ class HeatmapGenerator:
                  with_bg=False):
         self.output_size = output_size
         self.num_joints = num_joints
-        self.add_neck = add_neck,
+        self.add_neck = add_neck
         self.with_bg = with_bg
 
         if self.add_neck:
