@@ -168,7 +168,7 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
 
         mask = self._get_mask(anno, idx)
         anno = [
-            obj for obj in anno
+            obj.copy() for obj in anno
             if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
         ]
 
