@@ -656,9 +656,6 @@ class BottomUpGeneratePAFTarget:
         if self.skeleton is None:
             assert results['ann_info']['skeleton'] is not None
             self.skeleton = results['ann_info']['skeleton']
-        else:
-            assert np.array(
-                self.skeleton).max() < results['ann_info']['num_joints']
 
         paf_generator = \
             self._generate(results['ann_info']['heatmap_size'],
