@@ -120,7 +120,8 @@ train_pipeline = [
                 dict(
                     type='BottomUpGenerateHeatmapTarget',
                     sigma=2,
-                    with_bg=False)
+                    add_neck=data_cfg['add_neck'],
+                    with_bg=True)
             ],
             [dict(
                 type='BottomUpGeneratePAFTarget',

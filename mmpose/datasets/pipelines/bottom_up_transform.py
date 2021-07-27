@@ -143,10 +143,15 @@ class HeatmapGenerator:
                  num_joints,
                  sigma=-1,
                  use_udp=False,
+                 add_neck=False,
                  with_bg=False):
         self.output_size = output_size
         self.num_joints = num_joints
+        self.add_neck = add_neck,
         self.with_bg = with_bg
+
+        if self.add_neck:
+            self.num_joints += 1
 
         if sigma < 0:
             sigma = self.output_size / 64
@@ -537,16 +542,18 @@ class BottomUpGenerateHeatmapTarget:
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, sigma, use_udp=False, with_bg=False):
+    def __init__(self, sigma, use_udp=False, add_neck=False, with_bg=False):
         self.sigma = sigma
         self.use_udp = use_udp
+        self.add_neck = add_neck
         self.with_bg = with_bg
 
     def _generate(self, num_joints, heatmap_size):
         """Get heatmap generator."""
         heatmap_generator = [
             HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp,
-                             self.with_bg) for output_size in heatmap_size
+                             self.add_neck, self.with_bg)
+            for output_size in heatmap_size
         ]
         return heatmap_generator
 
