@@ -155,7 +155,7 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
         dict(
             type='TopDownHalfBodyTransform',  # Config of TopDownHalfBodyTransform data-augmentation
             num_joints_half_body=8,  # Threshold of performing half-body transform.
-            prob_half_body=0.3),  # Probability of implementing flip
+            prob_half_body=0.3),  # Probability of implementing half-body transform
         dict(
             type='TopDownGetRandomScaleRotation',   # Config of TopDownGetRandomScaleRotation
             rot_factor=40,  # Rotating to ``[-2*rot_factor, 2*rot_factor]``.
@@ -197,8 +197,8 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
 
     test_pipeline = val_pipeline
 
-    data_root = 'data/coco'  # Config of data
-    data = dict(
+    data_root = 'data/coco' # Root of the dataset
+    data = dict( # Config of data
         samples_per_gpu=64,  # Batch size of each single GPU during training
         workers_per_gpu=2,  # Workers to pre-fetch data for each single GPU
         val_dataloader=dict(samples_per_gpu=32),  # Batch size of each single GPU during validation
