@@ -265,9 +265,6 @@ class HRNet(nn.Module):
         >>> for level_out in level_outputs:
         ...     print(tuple(level_out.shape))
         (1, 32, 8, 8)
-        (1, 64, 4, 4)
-        (1, 128, 2, 2)
-        (1, 256, 1, 1)
     """
 
     blocks_dict = {'BASIC': BasicBlock, 'BOTTLENECK': Bottleneck}

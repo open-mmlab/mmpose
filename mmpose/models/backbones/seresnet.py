@@ -96,16 +96,16 @@ class SEResNet(ResNet):
     Example:
         >>> from mmpose.models import SEResNet
         >>> import torch
-        >>> self = SEResNet(depth=50)
+        >>> self = SEResNet(depth=50, out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 224, 224)
         >>> level_outputs = self.forward(inputs)
         >>> for level_out in level_outputs:
         ...     print(tuple(level_out.shape))
-        (1, 64, 56, 56)
-        (1, 128, 28, 28)
-        (1, 256, 14, 14)
-        (1, 512, 7, 7)
+        (1, 256, 56, 56)
+        (1, 512, 28, 28)
+        (1, 1024, 14, 14)
+        (1, 2048, 7, 7)
     """
 
     arch_settings = {
