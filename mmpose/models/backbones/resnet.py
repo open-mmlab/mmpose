@@ -462,7 +462,7 @@ class ResNet(BaseBackbone):
     Example:
         >>> from mmpose.models import ResNet
         >>> import torch
-        >>> self = ResNet(depth=18)
+        >>> self = ResNet(depth=18, out_indices=(0, 1, 2, 3))
         >>> self.eval()
         >>> inputs = torch.rand(1, 3, 32, 32)
         >>> level_outputs = self.forward(inputs)
