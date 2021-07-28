@@ -182,17 +182,22 @@ class RefinementStage(nn.Module):
             confidence map, or heatmap).
         out_channels_paf (int): The output channels for PAF (
             part-affinity field).
+        norm_cfg (dict): Dictionary to construct and config norm layer.
     """
 
-    def __init__(self, in_channels, mid_channels, out_channels_cm,
-                 out_channels_paf):
+    def __init__(self,
+                 in_channels,
+                 mid_channels,
+                 out_channels_cm,
+                 out_channels_paf,
+                 norm_cfg=dict(type='BN', requires_grad=True)):
         super().__init__()
         self.feat = nn.Sequential(
-            RefinementStageBlock(in_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels))
+            RefinementStageBlock(in_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg))
         self.cm_out_conv = nn.Sequential(
             ConvModule(
                 mid_channels, mid_channels, 1, padding=0, norm_cfg=None),
