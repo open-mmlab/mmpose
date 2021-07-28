@@ -52,6 +52,7 @@ class BottomUpBaseDataset(Dataset):
 
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
+        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
 
         self.use_nms = data_cfg.get('use_nms', False)
         self.soft_nms = data_cfg.get('soft_nms', True)

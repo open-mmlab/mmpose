@@ -45,7 +45,6 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
               self).__init__(ann_file, img_prefix, data_cfg, pipeline,
                              test_mode)
 
-        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
         self.ann_info['flip_pairs'] = self._make_flip_pairs()
         self.ann_info['flip_index'] = self.get_flip_index_from_flip_pairs(
             self.ann_info['flip_pairs'])
