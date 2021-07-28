@@ -308,6 +308,7 @@ class PartAffinityField(BasePose):
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,
                                             aggregated_pafs,
+                                            img_metas['skeleton'],
                                             self.test_cfg['adjust'],
                                             self.test_cfg['refine'],
                                             self.test_cfg.get('filter', False))
