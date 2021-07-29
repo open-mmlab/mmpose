@@ -45,7 +45,7 @@ data_cfg = dict(
     inference_channel=channel_cfg['inference_channel'],
     num_scales=1,
     scale_aware_sigma=False,
-)
+    with_bg=True)
 
 # model settings
 model = dict(
@@ -96,7 +96,8 @@ model = dict(
         ignore_too_much=False,
         adjust=True,
         refine=True,
-        flip_test=True))
+        flip_test=True,
+        with_bg=data_cfg['with_bg']))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -119,7 +120,7 @@ train_pipeline = [
                 dict(
                     type='BottomUpGenerateHeatmapTarget',
                     sigma=2,
-                    with_bg=True)
+                    with_bg=data_cfg['with_bg'])
             ],
             [dict(
                 type='BottomUpGeneratePAFTarget',

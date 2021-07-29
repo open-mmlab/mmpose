@@ -756,7 +756,7 @@ class PAFParser(BaseBottomUpParser):
         """
 
         keypoint_num = 0
-        all_keypoints_by_type = [[] for _ in range(self.params.num_joints)]
+        all_keypoints_by_type = [[] for _ in range(heatmaps.size(1))]
 
         heatmaps = self.nms(heatmaps)
         N, K, H, W = heatmaps.size()
