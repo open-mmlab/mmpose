@@ -145,22 +145,26 @@ class RefinementStageBlock(nn.Module):
     Args:
         in_channels (int): The input channels.
         out_channels (int): The output channels.
+        norm_cfg (dict): Dictionary to construct and config norm layer.
     """
 
-    def __init__(self, in_channels, out_channels):
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 norm_cfg=dict(type='BN', requires_grad=True)):
         super().__init__()
         self.pre_conv = ConvModule(
             in_channels, out_channels, 1, padding=0, norm_cfg=None)
         self.feat = nn.Sequential(
             ConvModule(
-                out_channels, out_channels, 3, padding=1, norm_cfg=None),
+                out_channels, out_channels, 3, padding=1, norm_cfg=norm_cfg),
             ConvModule(
                 out_channels,
                 out_channels,
                 3,
                 dilation=2,
                 padding=2,
-                norm_cfg=None))
+                norm_cfg=norm_cfg))
 
     def forward(self, x):
         pre_features = self.pre_conv(x)
@@ -178,17 +182,22 @@ class RefinementStage(nn.Module):
             confidence map, or heatmap).
         out_channels_paf (int): The output channels for PAF (
             part-affinity field).
+        norm_cfg (dict): Dictionary to construct and config norm layer.
     """
 
-    def __init__(self, in_channels, mid_channels, out_channels_cm,
-                 out_channels_paf):
+    def __init__(self,
+                 in_channels,
+                 mid_channels,
+                 out_channels_cm,
+                 out_channels_paf,
+                 norm_cfg=dict(type='BN', requires_grad=True)):
         super().__init__()
         self.feat = nn.Sequential(
-            RefinementStageBlock(in_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels),
-            RefinementStageBlock(mid_channels, mid_channels))
+            RefinementStageBlock(in_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg),
+            RefinementStageBlock(mid_channels, mid_channels, norm_cfg))
         self.cm_out_conv = nn.Sequential(
             ConvModule(
                 mid_channels, mid_channels, 1, padding=0, norm_cfg=None),
@@ -395,7 +404,10 @@ class LightweightOpenPoseNetwork(BaseBackbone):
             self.refinement_stages.append(
                 RefinementStage(
                     stem_feat_channels + out_channels_cm + out_channels_paf,
-                    stem_feat_channels, out_channels_cm, out_channels_paf))
+                    stem_feat_channels,
+                    out_channels_cm,
+                    out_channels_paf,
+                    norm_cfg=norm_cfg))
 
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
