@@ -9,12 +9,6 @@ from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
 
-try:
-    from smplx import SMPL
-    has_smpl = True
-except (ImportError, ModuleNotFoundError):
-    has_smpl = False
-
 
 def set_requires_grad(nets, requires_grad=False):
     """Set requies_grad for all the networks.
@@ -61,22 +55,11 @@ class ParametricMesh(BasePose):
                  pretrained=None):
         super().__init__()
 
-        assert has_smpl, 'Please install smplx to use SMPL.'
-
         self.backbone = builder.build_backbone(backbone)
         self.mesh_head = builder.build_head(mesh_head)
         self.generator = torch.nn.Sequential(self.backbone, self.mesh_head)
 
-        self.smpl = SMPL(
-            model_path=smpl['smpl_path'],
-            create_betas=False,
-            create_global_orient=False,
-            create_body_pose=False,
-            create_transl=False)
-
-        joints_regressor = torch.tensor(
-            np.load(smpl['joints_regressor']), dtype=torch.float).unsqueeze(0)
-        self.register_buffer('joints_regressor', joints_regressor)
+        self.smpl = builder.build_external_model(smpl)
 
         self.with_gan = disc is not None and loss_gan is not None
         if self.with_gan:
@@ -161,16 +144,17 @@ class ParametricMesh(BasePose):
         pred_out = self.smpl(
             betas=pred_beta,
             body_pose=pred_pose[:, 1:],
-            global_orient=pred_pose[:, :1],
-            pose2rot=False)
-        pred_vertices = pred_out.vertices
-        pred_joints_3d = self.get_3d_joints_from_mesh(pred_vertices)
+            global_orient=pred_pose[:, :1])
+        pred_vertices, pred_joints_3d = pred_out['vertices'], pred_out[
+            'joints']
+
         gt_beta = data_batch['beta']
         gt_pose = data_batch['pose']
         gt_vertices = self.smpl(
             betas=gt_beta,
             body_pose=gt_pose[:, 3:],
-            global_orient=gt_pose[:, :3]).vertices
+            global_orient=gt_pose[:, :3])['vertices']
+
         pred = dict(
             pose=pred_pose,
             beta=pred_beta,
@@ -257,10 +241,9 @@ class ParametricMesh(BasePose):
         pred_out = self.smpl(
             betas=pred_beta,
             body_pose=pred_pose[:, 1:],
-            global_orient=pred_pose[:, :1],
-            pose2rot=False)
-        pred_vertices = pred_out.vertices
-        pred_joints_3d = self.get_3d_joints_from_mesh(pred_vertices)
+            global_orient=pred_pose[:, :1])
+        pred_vertices, pred_joints_3d = pred_out['vertices'], pred_out[
+            'joints']
 
         all_preds = {}
         all_preds['keypoints_3d'] = pred_joints_3d.detach().cpu().numpy()

@@ -8,6 +8,7 @@ NECKS = MODELS
 HEADS = MODELS
 LOSSES = MODELS
 POSENETS = MODELS
+EXTERNAL_MODELS = MODELS
 
 
 def build_backbone(cfg):
@@ -33,3 +34,8 @@ def build_loss(cfg):
 def build_posenet(cfg):
     """Build posenet."""
     return POSENETS.build(cfg)
+
+
+def build_external_model(cfg):
+    """Build external model."""
+    return EXTERNAL_MODELS.build(cfg)

@@ -37,6 +37,7 @@ model = dict(
     ),
     disc=dict(),
     smpl=dict(
+        type='SMPL',
         smpl_path='models/smpl',
         joints_regressor='models/smpl/joints_regressor_cmr.npy'),
     train_cfg=dict(disc_step=1),
