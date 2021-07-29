@@ -57,7 +57,6 @@ class BottomUpCocoDataset(BottomUpBaseDataset):
                  test_mode=False):
         super().__init__(ann_file, img_prefix, data_cfg, pipeline, test_mode)
 
-        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
         self.ann_info['use_different_joint_weights'] = False
 
         if self.ann_info['add_neck']:
