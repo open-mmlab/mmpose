@@ -70,18 +70,7 @@ conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
 
 ## MMPose 的安装步骤
 
-这里推荐用户使用 [MIM](https://github.com/open-mmlab/mim) 安装 MMPose。
-
-```shell
-pip install git+https://github.com/open-mmlab/mim.git
-mim install mmpose
-```
-
-MIM 可以自动安装 OpenMMLab 项目及其依赖。
-
-或者，用户也可以通过以下步骤手动安装 MMPose。
-
-a. 安装 mmcv。MMPose 推荐用户使用如下的命令安装预编译好的 mmcv。
+a. 安装最新版本的 mmcv-full。MMPose 推荐用户使用如下的命令安装预编译好的 mmcv。
 
 ```shell
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html

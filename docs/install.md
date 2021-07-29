@@ -68,17 +68,6 @@ If you build PyTorch from source instead of installing the prebuilt package, you
 
 ## Install MMPose
 
-We recommend you to install MMPose with [MIM](https://github.com/open-mmlab/mim).
-
-```shell
-pip install git+https://github.com/open-mmlab/mim.git
-mim install mmpose
-```
-
-MIM can automatically install OpenMMLab projects and their requirements.
-
-Or, you can install MMPose manually:
-
 a. Install mmcv, we recommend you to install the pre-build mmcv as below.
 
 ```shell
