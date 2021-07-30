@@ -45,7 +45,7 @@ data_cfg = dict(
     inference_channel=channel_cfg['inference_channel'],
     num_scales=1,
     scale_aware_sigma=False,
-    with_bg=True)
+    with_bg=False)
 
 # model settings
 model = dict(
