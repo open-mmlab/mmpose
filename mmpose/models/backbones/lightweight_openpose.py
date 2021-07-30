@@ -22,7 +22,7 @@ class CpmLayer(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.pre_conv = ConvModule(
-            in_channels, out_channels, 1, padding=0, norm_cfg=None)
+            in_channels, out_channels, 1, padding=0, norm_cfg=None, bias=True)
         self.feat = nn.Sequential(
             ConvModule(
                 out_channels,
@@ -76,7 +76,7 @@ class CpmLayer(nn.Module):
                 act_cfg=dict(type='ELU'),
                 norm_cfg=None))
         self.out_conv = ConvModule(
-            out_channels, out_channels, 3, padding=1, norm_cfg=None)
+            out_channels, out_channels, 3, padding=1, norm_cfg=None, bias=True)
 
     def forward(self, x):
         x = self.pre_conv(x)
@@ -100,37 +100,59 @@ class InitialStage(nn.Module):
                  out_channels_paf):
         super().__init__()
         self.feat = nn.Sequential(
-            ConvModule(in_channels, in_channels, 3, padding=1, norm_cfg=None),
-            ConvModule(in_channels, in_channels, 3, padding=1, norm_cfg=None),
-            ConvModule(in_channels, in_channels, 3, padding=1, norm_cfg=None))
+            ConvModule(
+                in_channels,
+                in_channels,
+                3,
+                padding=1,
+                norm_cfg=None,
+                bias=True),
+            ConvModule(
+                in_channels,
+                in_channels,
+                3,
+                padding=1,
+                norm_cfg=None,
+                bias=True),
+            ConvModule(
+                in_channels,
+                in_channels,
+                3,
+                padding=1,
+                norm_cfg=None,
+                bias=True))
         self.cm_out_conv = nn.Sequential(
             ConvModule(
                 in_channels,
                 mid_channels,
                 kernel_size=1,
                 padding=0,
-                norm_cfg=None),
+                norm_cfg=None,
+                bias=True),
             ConvModule(
                 mid_channels,
                 out_channels_cm,
                 kernel_size=1,
                 padding=0,
                 norm_cfg=None,
-                act_cfg=None))
+                act_cfg=None,
+                bias=True))
         self.paf_out_conv = nn.Sequential(
             ConvModule(
                 in_channels,
                 mid_channels,
                 kernel_size=1,
                 padding=0,
-                norm_cfg=None),
+                norm_cfg=None,
+                bias=True),
             ConvModule(
                 mid_channels,
                 out_channels_paf,
                 kernel_size=1,
                 padding=0,
                 norm_cfg=None,
-                act_cfg=None))
+                act_cfg=None,
+                bias=True))
 
     def forward(self, x):
         features = self.feat(x)
@@ -154,17 +176,23 @@ class RefinementStageBlock(nn.Module):
                  norm_cfg=dict(type='BN', requires_grad=True)):
         super().__init__()
         self.pre_conv = ConvModule(
-            in_channels, out_channels, 1, padding=0, norm_cfg=None)
+            in_channels, out_channels, 1, padding=0, norm_cfg=None, bias=True)
         self.feat = nn.Sequential(
             ConvModule(
-                out_channels, out_channels, 3, padding=1, norm_cfg=norm_cfg),
+                out_channels,
+                out_channels,
+                3,
+                padding=1,
+                norm_cfg=norm_cfg,
+                bias=True),
             ConvModule(
                 out_channels,
                 out_channels,
                 3,
                 dilation=2,
                 padding=2,
-                norm_cfg=norm_cfg))
+                norm_cfg=norm_cfg,
+                bias=True))
 
     def forward(self, x):
         pre_features = self.pre_conv(x)
@@ -200,24 +228,36 @@ class RefinementStage(nn.Module):
             RefinementStageBlock(mid_channels, mid_channels, norm_cfg))
         self.cm_out_conv = nn.Sequential(
             ConvModule(
-                mid_channels, mid_channels, 1, padding=0, norm_cfg=None),
+                mid_channels,
+                mid_channels,
+                1,
+                padding=0,
+                norm_cfg=None,
+                bias=True),
             ConvModule(
                 mid_channels,
                 out_channels_cm,
                 1,
                 padding=0,
                 norm_cfg=None,
-                act_cfg=None))
+                act_cfg=None,
+                bias=True))
         self.paf_out_conv = nn.Sequential(
             ConvModule(
-                mid_channels, mid_channels, 1, padding=0, norm_cfg=None),
+                mid_channels,
+                mid_channels,
+                1,
+                padding=0,
+                norm_cfg=None,
+                bias=True),
             ConvModule(
                 mid_channels,
                 out_channels_paf,
                 1,
                 padding=0,
                 norm_cfg=None,
-                act_cfg=None))
+                act_cfg=None,
+                bias=True))
 
     def forward(self, x):
         features = self.feat(x)

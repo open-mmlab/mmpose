@@ -50,7 +50,7 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='PartAffinityField',
-    pretrained='mmcls://vgg16_bn',
+    pretrained='mmcls://vgg19_bn',
     backbone=dict(
         type='OpenPoseNetworkV2',
         in_channels=3,
