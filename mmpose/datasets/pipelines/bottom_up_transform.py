@@ -210,7 +210,7 @@ class HeatmapGenerator:
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
         if self.with_bg:
-            hms[-1] = 1 - np.max(hms[:-1])
+            hms[-1] = 1 - np.max(hms[:-1], axis=0)
         return hms
 
 
