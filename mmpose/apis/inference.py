@@ -460,22 +460,40 @@ def inference_bottom_up_pose_model(model,
     test_pipeline = Compose(test_pipeline)
 
     # prepare data
-    data = {
-        'img_or_path': img_or_path,
-        'dataset': 'coco',
-        'ann_info': {
-            'image_size':
-            cfg.data_cfg['image_size'],
-            'num_joints':
-            cfg.data_cfg['num_joints'],
-            'flip_index':
-            [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15],
-            'skeleton': [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
-                         [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
-                         [8, 10], [1, 2], [0, 1], [0, 2], [1, 3], [2, 4],
-                         [3, 5], [4, 6]]
+    if 1:
+        data = {
+            'img_or_path': img_or_path,
+            'dataset': 'coco',
+            'ann_info': {
+                'image_size':
+                cfg.data_cfg['image_size'],
+                'num_joints':
+                cfg.data_cfg['num_joints'],
+                'flip_index':
+                [0, 1, 5, 6, 7, 2, 3, 4, 11, 12, 13, 8, 9, 10, 15, 14, 17, 16],
+                'skeleton': [[1, 8], [8, 9], [9, 10], [1, 11], [11, 12],
+                             [12, 13], [1, 2], [2, 3], [3, 4], [2, 16], [1, 5],
+                             [5, 6], [6, 7], [5, 17], [1, 0], [0, 14], [0, 15],
+                             [14, 16], [15, 17]]
+            }
         }
-    }
+    else:
+        data = {
+            'img_or_path': img_or_path,
+            'dataset': 'coco',
+            'ann_info': {
+                'image_size':
+                cfg.data_cfg['image_size'],
+                'num_joints':
+                cfg.data_cfg['num_joints'],
+                'flip_index':
+                [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15],
+                'skeleton': [[15, 13], [13, 11], [16, 14], [14, 12], [11, 12],
+                             [5, 11], [6, 12], [5, 6], [5, 7], [6, 8], [7, 9],
+                             [8, 10], [1, 2], [0, 1], [0, 2], [1, 3], [2, 4],
+                             [3, 5], [4, 6]]
+            }
+        }
 
     data = test_pipeline(data)
     data = collate([data], samples_per_gpu=1)
@@ -500,7 +518,10 @@ def inference_bottom_up_pose_model(model,
 
         returned_outputs.append(h.layer_outputs)
 
+        order_map = [0, 15, 14, 17, 16, 5, 2, 6, 3, 7, 4, 11, 8, 12, 9, 13, 10]
         for idx, pred in enumerate(result['preds']):
+            if cfg.data_cfg['add_neck']:
+                pred = pred[order_map]
             area = (np.max(pred[:, 0]) - np.min(pred[:, 0])) * (
                 np.max(pred[:, 1]) - np.min(pred[:, 1]))
             pose_results.append({

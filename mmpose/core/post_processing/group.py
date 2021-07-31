@@ -121,7 +121,10 @@ class _Params:
     """
 
     def __init__(self, cfg):
-        self.num_joints = cfg['num_joints']
+        if cfg['add_neck']:
+            self.num_joints = cfg['num_joints'] + 1
+        else:
+            self.num_joints = cfg['num_joints']
         self.max_num_people = cfg['max_num_people']
         self.detection_threshold = cfg['detection_threshold']
         self.ignore_too_much = cfg['ignore_too_much']
