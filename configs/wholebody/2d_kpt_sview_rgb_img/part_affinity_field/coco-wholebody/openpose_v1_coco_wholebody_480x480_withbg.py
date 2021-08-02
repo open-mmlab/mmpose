@@ -14,6 +14,7 @@ optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
+    gamma=0.333,
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
@@ -52,7 +53,7 @@ model = dict(
     backbone=dict(
         type='OpenPoseNetworkV1',
         in_channels=3,
-        out_channels_cm=133,
+        out_channels_cm=134,
         out_channels_paf=270,
         stem_feat_channels=128,
         num_stages=6),
@@ -156,7 +157,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=24,
+    samples_per_gpu=8,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoWholeBodyDataset',
