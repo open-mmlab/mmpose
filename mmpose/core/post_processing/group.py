@@ -121,7 +121,8 @@ class _Params:
     """
 
     def __init__(self, cfg):
-        if cfg['add_neck']:
+        self.add_neck = cfg.get('add_neck', False)
+        if self.add_neck:
             self.num_joints = cfg['num_joints'] + 1
         else:
             self.num_joints = cfg['num_joints']
