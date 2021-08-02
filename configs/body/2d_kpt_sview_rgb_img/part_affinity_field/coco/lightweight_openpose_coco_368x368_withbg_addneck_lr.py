@@ -14,6 +14,7 @@ optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
+    gamma=0.333,
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
