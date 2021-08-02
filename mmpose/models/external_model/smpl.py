@@ -88,6 +88,17 @@ class SMPL(nn.Module):
                 self.joints_regressor.to(device), output['vertices'])
         return output
 
+    def get_faces(self):
+        """Return mesh faces.
+
+        Note:
+            F: number of faces
+
+        Returns:
+            faces: np.ndarray([F, 3]), mesh faces
+        """
+        return self.smpl_neutral.faces
+
     def forward(self,
                 betas,
                 body_pose,

@@ -254,7 +254,7 @@ class ParametricMesh(BasePose):
         if return_vertices:
             all_preds['vertices'] = pred_vertices.detach().cpu().numpy()
         if return_faces:
-            all_preds['faces'] = self.smpl.faces
+            all_preds['faces'] = self.smpl.get_faces()
 
         all_boxes = []
         image_path = []

@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from tests.test_model.test_mesh_forward import generate_smpl_weight_file
 
@@ -15,6 +16,10 @@ def test_smpl():
         smpl_path='tests/data/smpl',
         joints_regressor='tests/data/smpl/test_joint_regressor.npy')
     smpl = SMPL(**smpl_cfg)
+
+    # test get face function
+    faces = smpl.get_faces()
+    assert isinstance(faces, np.ndarray)
 
     betas = torch.zeros(3, 10)
     body_pose = torch.zeros(3, 23 * 3)
