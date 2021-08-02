@@ -12,7 +12,7 @@ def test_multitask_forward():
         backbone=dict(type='ResNet', depth=50),
         heads=[
             dict(
-                type='FcHead',
+                type='DeepposeRegressionHead',
                 in_channels=2048,
                 num_joints=17,
                 loss_keypoint=dict(
