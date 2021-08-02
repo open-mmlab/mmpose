@@ -195,7 +195,7 @@ class MSELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -209,6 +209,7 @@ class MSELoss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            assert target_weight is not None
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
