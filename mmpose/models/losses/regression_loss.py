@@ -23,7 +23,7 @@ class SmoothL1Loss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -38,6 +38,7 @@ class SmoothL1Loss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            assert target_weight is not None
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
@@ -91,7 +92,7 @@ class WingLoss(nn.Module):
             self.omega * torch.log(1.0 + delta / self.epsilon), delta - self.C)
         return torch.mean(torch.sum(losses, dim=[1, 2]), dim=0)
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -106,6 +107,7 @@ class WingLoss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            assert target_weight is not None
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
@@ -129,7 +131,7 @@ class MPJPELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -145,6 +147,7 @@ class MPJPELoss(nn.Module):
         """
 
         if self.use_target_weight:
+            assert target_weight is not None
             loss = torch.mean(
                 torch.norm((output - target) * target_weight, dim=-1))
         else:
@@ -163,7 +166,7 @@ class L1Loss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -177,6 +180,7 @@ class L1Loss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
+            assert target_weight is not None
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:
@@ -240,7 +244,7 @@ class BoneLoss(nn.Module):
             if i != self.joint_parents[i]:
                 self.non_root_indices.append(i)
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -261,6 +265,7 @@ class BoneLoss(nn.Module):
             target - target[:, self.joint_parents, :],
             dim=-1)[:, self.non_root_indices]
         if self.use_target_weight:
+            assert target_weight is not None
             loss = torch.mean(
                 torch.abs((output_bone * target_weight).mean(dim=0) -
                           (target_bone * target_weight).mean(dim=0)))

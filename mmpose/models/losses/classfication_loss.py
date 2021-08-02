@@ -14,7 +14,7 @@ class BCELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -29,6 +29,7 @@ class BCELoss(nn.Module):
         """
 
         if self.use_target_weight:
+            assert target_weight is not None
             loss = self.criterion(output, target, reduction='none')
             if target_weight.dim() == 1:
                 target_weight = target_weight[:, None]
