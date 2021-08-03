@@ -1,8 +1,9 @@
+import numpy as np
 import pytest
 
 from mmpose.apis import (inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
-                         vis_pose_result)
+                         process_mmdet_results, vis_pose_result)
 
 
 def test_top_down_demo():
@@ -161,3 +162,13 @@ def test_bottom_up_demo():
     # show the results
     vis_pose_result(
         pose_model, image_name, pose_results, dataset='BottomUpCocoDataset')
+
+
+def test_process_mmdet_results():
+    det_results = [np.array([0, 0, 100, 100])]
+    det_mask_results = None
+
+    _ = process_mmdet_results(
+        mmdet_results=(det_results, det_mask_results), cat_id=1)
+
+    _ = process_mmdet_results(mmdet_results=det_results, cat_id=1)
