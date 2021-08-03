@@ -460,7 +460,7 @@ def inference_bottom_up_pose_model(model,
     test_pipeline = Compose(test_pipeline)
 
     # prepare data
-    if 1:
+    if cfg.data_cfg.get('add_neck', False):
         data = {
             'img_or_path': img_or_path,
             'dataset': 'coco',
