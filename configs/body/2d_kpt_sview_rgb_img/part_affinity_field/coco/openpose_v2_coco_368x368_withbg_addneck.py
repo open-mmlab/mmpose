@@ -45,7 +45,9 @@ data_cfg = dict(
     inference_channel=channel_cfg['inference_channel'],
     num_scales=1,
     scale_aware_sigma=False,
-    with_bg=True)
+    with_bg=True,
+    add_neck=True
+)
 
 # model settings
 model = dict(
@@ -55,7 +57,7 @@ model = dict(
         type='OpenPoseNetworkV2',
         in_channels=3,
         # additional channel for bg
-        out_channels_cm=17 + 1,
+        out_channels_cm=19,
         out_channels_paf=38,
         stem_feat_channels=128,
         num_stages=6,
@@ -100,7 +102,8 @@ model = dict(
         adjust=True,
         refine=True,
         flip_test=True,
-        with_bg=data_cfg['with_bg']))
+        with_bg=data_cfg['with_bg'],
+        add_neck=data_cfg['add_neck']))
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -123,6 +126,7 @@ train_pipeline = [
                 dict(
                     type='BottomUpGenerateHeatmapTarget',
                     sigma=2,
+                    add_neck=data_cfg['add_neck'],
                     with_bg=data_cfg['with_bg'])
             ],
             [dict(
