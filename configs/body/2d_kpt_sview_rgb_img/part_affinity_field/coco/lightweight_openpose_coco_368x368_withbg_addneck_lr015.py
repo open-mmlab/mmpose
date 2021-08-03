@@ -8,13 +8,12 @@ evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.00015,
+    lr=0.015,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
     policy='step',
-    gamma=0.333,
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
@@ -22,10 +21,8 @@ lr_config = dict(
 total_epochs = 300
 log_config = dict(
     interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')
-    ])
+    hooks=[dict(type='TextLoggerHook'),
+           dict(type='TensorboardLoggerHook')])
 
 channel_cfg = dict(
     dataset_joints=17,
