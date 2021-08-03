@@ -100,7 +100,7 @@ model = dict(
         add_neck=data_cfg['add_neck']))
 
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile', channel_order='bgr'),
     dict(
         type='BottomUpRandomAffine',
         rot_factor=30,
@@ -109,10 +109,7 @@ train_pipeline = [
         trans_factor=40),
     dict(type='BottomUpRandomFlip', flip_prob=0.5),
     dict(type='ToTensor'),
-    dict(
-        type='NormalizeTensor',
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]),
+    dict(type='NormalizeTensor', mean=[0.5, 0.5, 0.5], std=[1., 1., 1.]),
     dict(
         type='MultitaskGatherTarget',
         pipeline_list=[
@@ -134,7 +131,7 @@ train_pipeline = [
 ]
 
 val_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile', channel_order='bgr'),
     dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
     dict(
         type='BottomUpResizeAlign',
