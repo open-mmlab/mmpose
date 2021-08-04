@@ -20,18 +20,17 @@
 当使用 "tools/train.py" 或 "tools/test.py" 提交作业时，您可以指定 `--cfg-options` 来就地修改配置。
 
 - 更新配置字典链的键值。
-  
+
   可以按照原始配置文件中字典的键的顺序指定配置选项。
   例如，`--cfg-options model.backbone.norm_eval=False` 将主干网络中的所有 BN 模块更改为 `train` 模式。
 
 - 更新配置列表内部的键值。
-  
+
   一些配置字典在配置文件中会形成一个列表。例如，训练流水线 `data.train.pipeline` 通常是一个列表。
   例如，`[dict(type='LoadImageFromFile'), dict(type='TopDownRandomFlip', flip_prob=0.5), ...]` 。如果要将流水线中的 `'flip_prob=0.5'` 更改为 `'flip_prob=0.0'`，您可以这样指定 `--cfg-options data.train.pipeline.1.flip_prob=0.0` 。
 
-
 - 更新列表 / 元组的值。
-  
+
   如果要更新的值是列表或元组，例如，配置文件通常设置为`workflow=[('train', 1)]` 。
   如果您想更改这个键，您可以这样指定　`--cfg-options workflow="[(train,1),(val,1)]"` 。
   请注意，引号 \" 是必要的，以支持列表 / 元组数据类型，并且指定值的引号内 **不允许** 有空格。
@@ -48,12 +47,12 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
 
 - `{topic}`: 主题类型，如 `body`, `face`, `hand`, `animal` 等。
 - `{task}`: 任务类型, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]` 。任务分为5类：（1）二维或三维姿态估计；（2）表示类型：关键点 (kpt)、网格 (mesh) 或密集姿态 (dense)；(3） 单视图 (sview) 或多视图 (mview)；（4）RGB 或 RGBD；以及（5）图像 (img) 或视频 (vid) 。例如， `2d_kpt_sview_rgb_img`，　`3d_kpt_sview_rgb_vid`,　等等。
-- `{algorithm}`:　算法类型，例如，　`associative_embedding`, `deeppose`, 等等。
+- `{algorithm}`:　算法类型，例如，`associative_embedding`, `deeppose`,  等等。
 - `{dataset}`: 数据集名称，例如， `coco`, 等等。
 - `{backbone}`: 主干网络类型，例如，`res50` (ResNet-50), 等等。
 - `[model setting]`: 对某些模型的特定设置。
 - `[input_size]`: 模型的输入大小。
-- `[technique]`: 一些特定的技术，包括损失函数，数据增强，训练技巧等，例如， `wingloss`, `udp`, `fp16`.
+- `[technique]`: 一些特定的技术，包括损失函数，数据增强，训练技巧等，例如， `wingloss`, `udp`, `fp16` 等.
 
 ### 配置系统
 
@@ -80,7 +79,7 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
     optimizer = dict(
         # 用于构建优化器的配置，支持(1). PyTorch 中的所有优化器，
         # 其参数也与 PyTorch 中的相同. (2). 自定义的优化器
-        # 它们通过 `constructor` 构建，参阅 "tutorials/4_new_modules.md" 
+        # 它们通过 `constructor` 构建，参阅 "tutorials/4_new_modules.md"
         # 的实现。
         type='Adam',  # 优化器的类型, 参阅 https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/optimizer/default_constructor.py#L13 获取更多细节
         lr=5e-4,  # 学习率, 参数的详细用法见 PyTorch 文档
