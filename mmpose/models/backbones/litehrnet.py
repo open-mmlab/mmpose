@@ -773,7 +773,7 @@ class LiteHRNet(nn.Module):
         >>>            (40, 80, 160),
         >>>            (40, 80, 160, 320),
         >>>        )),
-        >>>    with_head=True)
+        >>>    with_head=False)
         >>> self = LiteHRNet(extra, in_channels=1)
         >>> self.eval()
         >>> inputs = torch.rand(1, 1, 32, 32)
@@ -781,9 +781,6 @@ class LiteHRNet(nn.Module):
         >>> for level_out in level_outputs:
         ...     print(tuple(level_out.shape))
         (1, 40, 8, 8)
-        (1, 80, 4, 4)
-        (1, 160, 2, 2)
-        (1, 320, 1, 1)
     """
 
     def __init__(self,
@@ -792,15 +789,13 @@ class LiteHRNet(nn.Module):
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
                  norm_eval=False,
-                 with_cp=False,
-                 zero_init_residual=False):
+                 with_cp=False):
         super().__init__()
         self.extra = extra
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
         self.norm_eval = norm_eval
         self.with_cp = with_cp
-        self.zero_init_residual = zero_init_residual
 
         self.stem = Stem(
             in_channels,

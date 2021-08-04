@@ -13,19 +13,18 @@ class StopWatch:
             of the time consuming.
 
     Example::
+        >>> from mmpose.utils import StopWatch
+        >>> import time
         >>> stop_watch = StopWatch(window=10)
-        >>> while True:
-        ...     with stop_watch.timeit('total'):
-        ...         sleep(1)
-        ...         # 'timeit' support nested use
-        ...         with stop_watch.timeit('phase1'):
-        ...             sleep(1)
-        ...         with stop_watch.timeit('phase2'):
-        ...             sleep(2)
-        ...         sleep(2)
-        ...     report = stop_watch.report()
-        report = {'total': 6., 'phase1': 1., 'phase2': 2.}
-
+        >>> with stop_watch.timeit('total'):
+        >>>     time.sleep(0.1)
+        >>>     # 'timeit' support nested use
+        >>>     with stop_watch.timeit('phase1'):
+        >>>         time.sleep(0.1)
+        >>>     with stop_watch.timeit('phase2'):
+        >>>         time.sleep(0.2)
+        >>>     time.sleep(0.2)
+        >>> report = stop_watch.report()
     """
 
     def __init__(self, window=1):

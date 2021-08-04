@@ -1,116 +1,58 @@
-import os.path as osp
-from math import inf
+import tempfile
+import warnings
 
-import mmcv
-from mmcv.runner import Hook, save_checkpoint
-from torch.utils.data import DataLoader
+from mmcv.runner import DistEvalHook as _DistEvalHook
+from mmcv.runner import EvalHook as _EvalHook
 
-from mmpose.utils import get_root_logger
+MMPOSE_GREATER_KEYS = [
+    'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc'
+]
+MMPOSE_LESS_KEYS = ['loss', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe']
 
 
-class EvalHook(Hook):
-    """Non-Distributed evaluation hook.
-
-    This hook will regularly perform evaluation in a given interval when
-    performing in non-distributed environment.
-
-    Args:
-        dataloader (DataLoader): A PyTorch dataloader.
-        interval (int): Evaluation interval (by epochs).
-            Default: 1.
-        gpu_collect (bool): Whether to use gpu or cpu to collect results.
-            Default: False.
-        save_best (bool): Whether to save best checkpoint during evaluation.
-            Default: True.
-        key_indicator (str | None): Key indicator to measure the best
-            checkpoint during evaluation when ``save_best`` is set to True.
-            Options are the evaluation metrics to the test dataset. e.g.,
-            ``acc``, ``AP``, ``PCK``. Default: `AP`.
-        rule (str | None): Comparison rule for best score. If set to None,
-            it will infer a reasonable rule. Default: 'None'.
-        eval_kwargs (dict, optional): Arguments for evaluation.
-    """
-
-    rule_map = {'greater': lambda x, y: x > y, 'less': lambda x, y: x < y}
-    init_value_map = {'greater': -inf, 'less': inf}
-    greater_keys = [
-        'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc'
-    ]
-    less_keys = ['loss', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe']
+class EvalHook(_EvalHook):
 
     def __init__(self,
                  dataloader,
+                 start=None,
                  interval=1,
-                 gpu_collect=False,
-                 save_best=True,
-                 key_indicator='AP',
+                 by_epoch=True,
+                 save_best=None,
                  rule=None,
+                 test_fn=None,
+                 greater_keys=MMPOSE_GREATER_KEYS,
+                 less_keys=MMPOSE_LESS_KEYS,
                  **eval_kwargs):
-        if not isinstance(dataloader, DataLoader):
-            raise TypeError(f'dataloader must be a pytorch DataLoader, '
-                            f'but got {type(dataloader)}')
-        if save_best and not key_indicator:
-            raise ValueError('key_indicator should not be None, when '
-                             'save_best is set to True.')
-        if rule not in self.rule_map and rule is not None:
-            raise KeyError(f'rule must be greater, less or None, '
-                           f'but got {rule}.')
 
-        if rule is None and save_best:
-            if any(key in key_indicator.lower() for key in self.greater_keys):
-                rule = 'greater'
-            elif any(key in key_indicator.lower() for key in self.less_keys):
-                rule = 'less'
-            else:
-                raise ValueError(
-                    f'key_indicator must be in {self.greater_keys} '
-                    f'or in {self.less_keys} when rule is None, '
-                    f'but got {key_indicator}')
+        if test_fn is None:
+            from mmpose.apis import single_gpu_test
+            test_fn = single_gpu_test
 
-        self.dataloader = dataloader
-        self.interval = interval
-        self.gpu_collect = gpu_collect
-        self.eval_kwargs = eval_kwargs
-        self.save_best = save_best
-        self.key_indicator = key_indicator
-        self.rule = rule
+        # to bo compatible with the config before v0.16.0
 
-        self.logger = get_root_logger()
+        # remove "gpu_collect" from eval_kwargs
+        if 'gpu_collect' in eval_kwargs:
+            warnings.warn(
+                '"gpu_collect" will be deprecated in EvalHook.'
+                'Please remove it from the config.', DeprecationWarning)
+            _ = eval_kwargs.pop('gpu_collect')
 
-        if self.save_best:
-            self.compare_func = self.rule_map[self.rule]
-            self.best_score = self.init_value_map[self.rule]
+        # update "save_best" according to "key_indicator" and remove the
+        # latter from eval_kwargs
+        if 'key_indicator' in eval_kwargs or isinstance(save_best, bool):
+            warnings.warn(
+                '"key_indicator" will be deprecated in EvalHook.'
+                'Please use "save_best" to specify the metric key,'
+                'e.g., save_best="AP".', DeprecationWarning)
 
-        self.best_json = dict()
+            key_indicator = eval_kwargs.pop('key_indicator', 'AP')
+            if save_best is True and key_indicator is None:
+                raise ValueError('key_indicator should not be None, when '
+                                 'save_best is set to True.')
+            save_best = key_indicator
 
-    def after_train_epoch(self, runner):
-        """Called after every training epoch to evaluate the results."""
-        if not self.every_n_epochs(runner, self.interval):
-            return
-
-        current_ckpt_path = osp.join(runner.work_dir,
-                                     f'epoch_{runner.epoch + 1}.pth')
-        json_path = osp.join(runner.work_dir, 'best.json')
-
-        if osp.exists(json_path) and len(self.best_json) == 0:
-            self.best_json = mmcv.load(json_path)
-            self.best_score = self.best_json['best_score']
-            self.best_ckpt = self.best_json['best_ckpt']
-            self.key_indicator = self.best_json['key_indicator']
-
-        from mmpose.apis import single_gpu_test
-        results = single_gpu_test(runner.model, self.dataloader)
-        key_score = self.evaluate(runner, results)
-        if (self.save_best and self.compare_func(key_score, self.best_score)):
-            self.best_score = key_score
-            self.logger.info(
-                f'Now best checkpoint is epoch_{runner.epoch + 1}.pth')
-            self.best_json['best_score'] = self.best_score
-            self.best_json['best_ckpt'] = current_ckpt_path
-            self.best_json['key_indicator'] = self.key_indicator
-            save_checkpoint(runner.model, osp.join(runner.work_dir,
-                                                   'best.pth'))
-            mmcv.dump(self.best_json, json_path)
+        super().__init__(dataloader, start, interval, by_epoch, save_best,
+                         rule, test_fn, greater_keys, less_keys, **eval_kwargs)
 
     def evaluate(self, runner, results):
         """Evaluate the results.
@@ -119,74 +61,90 @@ class EvalHook(Hook):
             runner (:obj:`mmcv.Runner`): The underlined training runner.
             results (list): Output results.
         """
-        eval_res = self.dataloader.dataset.evaluate(
-            results, runner.work_dir, logger=runner.logger, **self.eval_kwargs)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            eval_res = self.dataloader.dataset.evaluate(
+                results,
+                res_folder=tmp_dir,
+                logger=runner.logger,
+                **self.eval_kwargs)
+
         for name, val in eval_res.items():
             runner.log_buffer.output[name] = val
         runner.log_buffer.ready = True
-        if self.key_indicator is not None:
+
+        if self.save_best is not None:
+            if self.key_indicator == 'auto':
+                # infer from eval_results
+                self._init_rule(self.rule, list(eval_res.keys())[0])
             return eval_res[self.key_indicator]
 
         return None
 
 
-class DistEvalHook(EvalHook):
-    """Distributed evaluation hook.
+class DistEvalHook(_DistEvalHook):
 
-    This hook will regularly perform evaluation in a given interval when
-    performing in distributed environment.
+    def __init__(self,
+                 dataloader,
+                 start=None,
+                 interval=1,
+                 by_epoch=True,
+                 save_best=None,
+                 rule=None,
+                 test_fn=None,
+                 greater_keys=MMPOSE_GREATER_KEYS,
+                 less_keys=MMPOSE_LESS_KEYS,
+                 broadcast_bn_buffer=True,
+                 tmpdir=None,
+                 gpu_collect=False,
+                 **eval_kwargs):
 
-    Args:
-        dataloader (DataLoader): A PyTorch dataloader.
-        interval (int): Evaluation interval (by epochs). Default: 1.
-        gpu_collect (bool): Whether to use gpu or cpu to collect results.
-            Default: False.
-        save_best (bool): Whether to save best checkpoint during evaluation.
-            Default: True.
-        key_indicator (str | None): Key indicator to measure the best
-            checkpoint during evaluation when ``save_best`` is set to True.
-            Options are the evaluation metrics to the test dataset. e.g.,
-            ``top1_acc``, ``top5_acc``, ``mean_class_accuracy``,
-            ``mean_average_precision`` for action recognition dataset
-            (RawframeDataset and VideoDataset). ``AR@AN``, ``auc`` for action
-            localization dataset (ActivityNetDataset). Default: `top1_acc`.
-        rule (str | None): Comparison rule for best score. If set to None,
-            it will infer a reasonable rule. Default: 'None'.
-        eval_kwargs (dict, optional): Arguments for evaluation.
-    """
+        if test_fn is None:
+            from mmpose.apis import multi_gpu_test
+            test_fn = multi_gpu_test
 
-    def after_train_epoch(self, runner):
-        """Called after each training epoch to evaluate the model."""
-        if not self.every_n_epochs(runner, self.interval):
-            return
+        # to bo compatible with the config before v0.16.0
 
-        current_ckpt_path = osp.join(runner.work_dir,
-                                     f'epoch_{runner.epoch + 1}.pth')
-        json_path = osp.join(runner.work_dir, 'best.json')
+        # update "save_best" according to "key_indicator" and remove the
+        # latter from eval_kwargs
+        if 'key_indicator' in eval_kwargs or isinstance(save_best, bool):
+            warnings.warn(
+                '"key_indicator" will be deprecated in EvalHook.'
+                'Please use "save_best" to specify the metric key,'
+                'e.g., save_best="AP".', DeprecationWarning)
 
-        if osp.exists(json_path) and len(self.best_json) == 0:
-            self.best_json = mmcv.load(json_path)
-            self.best_score = self.best_json['best_score']
-            self.best_ckpt = self.best_json['best_ckpt']
-            self.key_indicator = self.best_json['key_indicator']
+            key_indicator = eval_kwargs.pop('key_indicator', 'AP')
+            if save_best is True and key_indicator is None:
+                raise ValueError('key_indicator should not be None, when '
+                                 'save_best is set to True.')
+            save_best = key_indicator
 
-        from mmpose.apis import multi_gpu_test
-        results = multi_gpu_test(
-            runner.model,
-            self.dataloader,
-            tmpdir=osp.join(runner.work_dir, '.eval_hook'),
-            gpu_collect=self.gpu_collect)
-        if runner.rank == 0:
-            print('\n')
-            key_score = self.evaluate(runner, results)
-            if (self.save_best
-                    and self.compare_func(key_score, self.best_score)):
-                self.best_score = key_score
-                self.logger.info(
-                    f'Now best checkpoint is epoch_{runner.epoch + 1}.pth')
-                self.best_json['best_score'] = self.best_score
-                self.best_json['best_ckpt'] = current_ckpt_path
-                self.best_json['key_indicator'] = self.key_indicator
-                save_checkpoint(runner.model,
-                                osp.join(runner.work_dir, 'best.pth'))
-                mmcv.dump(self.best_json, json_path)
+        super().__init__(dataloader, start, interval, by_epoch, save_best,
+                         rule, test_fn, greater_keys, less_keys,
+                         broadcast_bn_buffer, tmpdir, gpu_collect,
+                         **eval_kwargs)
+
+    def evaluate(self, runner, results):
+        """Evaluate the results.
+
+        Args:
+            runner (:obj:`mmcv.Runner`): The underlined training runner.
+            results (list): Output results.
+        """
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            eval_res = self.dataloader.dataset.evaluate(
+                results,
+                res_folder=tmp_dir,
+                logger=runner.logger,
+                **self.eval_kwargs)
+
+        for name, val in eval_res.items():
+            runner.log_buffer.output[name] = val
+        runner.log_buffer.ready = True
+
+        if self.save_best is not None:
+            if self.key_indicator == 'auto':
+                # infer from eval_results
+                self._init_rule(self.rule, list(eval_res.keys())[0])
+            return eval_res[self.key_indicator]
+
+        return None

@@ -2,36 +2,13 @@ import os
 from argparse import ArgumentParser
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
-                         vis_pose_result)
+                         process_mmdet_results, vis_pose_result)
 
 try:
     from mmdet.apis import inference_detector, init_detector
     has_mmdet = True
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
-
-
-def process_mmdet_results(mmdet_results, cat_id=1):
-    """Process mmdet results, and return a list of bboxes.
-
-    :param mmdet_results:
-    :param cat_id: category id (default: 1 for human)
-    :return: a list of detected bounding boxes
-    """
-    if isinstance(mmdet_results, tuple):
-        det_results = mmdet_results[0]
-    else:
-        det_results = mmdet_results
-
-    bboxes = det_results[cat_id - 1]
-
-    person_results = []
-    for bbox in bboxes:
-        person = {}
-        person['bbox'] = bbox
-        person_results.append(person)
-
-    return person_results
 
 
 def main():

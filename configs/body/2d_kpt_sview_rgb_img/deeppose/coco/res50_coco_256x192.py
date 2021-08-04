@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+evaluation = dict(interval=10, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
@@ -43,7 +43,7 @@ model = dict(
     backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
-        type='FcHead',
+        type='DeepposeRegressionHead',
         in_channels=2048,
         num_joints=channel_cfg['num_output_channels'],
         loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True)),

@@ -92,7 +92,7 @@ def test_litehrnet_backbone():
     assert feat[0].shape == torch.Size([2, 40, 56, 56])
 
     # Test HRNet zero initialization of residual
-    model = LiteHRNet(extra, in_channels=3, zero_init_residual=True)
+    model = LiteHRNet(extra, in_channels=3)
     model.init_weights()
     for m in model.modules():
         if isinstance(m, Bottleneck):
@@ -129,7 +129,7 @@ def test_litehrnet_backbone():
     assert feat[0].shape == torch.Size([2, 40, 56, 56])
 
     # Test HRNet zero initialization of residual
-    model = LiteHRNet(extra, in_channels=3, zero_init_residual=True)
+    model = LiteHRNet(extra, in_channels=3)
     model.init_weights()
     for m in model.modules():
         if isinstance(m, Bottleneck):
