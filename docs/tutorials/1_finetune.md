@@ -29,12 +29,12 @@ For example, we have 133 keypoints for COCO-WholeBody, and we have 17 keypoints 
 
 ```python
 channel_cfg = dict(
-    num_output_channels=133,  # from 17 to 133
-    dataset_joints=133,  # from 17 to 133
+    num_output_channels=133,  # changing from 17 to 133
+    dataset_joints=133,  # changing from 17 to 133
     dataset_channel=[
-        list(range(133)),  # from 17 to 133
+        list(range(133)),  # changing from 17 to 133
     ],
-    inference_channel=list(range(133)))  # from 17 to 133
+    inference_channel=list(range(133)))  # changing from 17 to 133
 
 # model settings
 model = dict(
@@ -92,7 +92,7 @@ However, this setting is not related to our task at hand. What we need is load_f
 ## Modify dataset
 
 The users may also need to prepare the dataset and write the configs about dataset.
-MMPose already support multiple (10+) dataset, including COCO, COCO-WholeBody and MPII-TRB datasets.
+MMPose supports multiple (10+) dataset, including COCO, COCO-WholeBody and MPII-TRB.
 
 ```python
 data_root = 'data/coco'
@@ -102,20 +102,20 @@ data = dict(
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='TopDownCocoWholeBodyDataset', # 对应修改数据集名称
-        ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json', # 修改数据集标签路径
+        type='TopDownCocoWholeBodyDataset', # modify the name of the dataset
+        ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json', # modify the path to the annotation file
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='TopDownCocoWholeBodyDataset', # 对应修改数据集名称
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json', # 修改数据集标签路径
+        type='TopDownCocoWholeBodyDataset', # modify the name of the dataset
+        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json', # modify the path to the annotation file
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='TopDownCocoWholeBodyDataset', # 对应修改数据集名称
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json', # 修改数据集标签路径
+        type='TopDownCocoWholeBodyDataset', # modify the name of the dataset
+        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json', # modify the path to the annotation file
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline)
@@ -144,7 +144,8 @@ total_epochs = 210 # reduce it
 
 ## Use pre-trained model
 
-To use the pre-trained model, the new config add the link of pre-trained models in the `load_from`. The users might need to download the model weights before training to avoid the download time during training.
+Users can load a pre-trained model by setting the `load_from` field of the config to the model's path or link.
+The users might need to download the model weights before training to avoid the download time during training.
 
 ```python
 # use the pre-trained model for the whole HRNet

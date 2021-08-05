@@ -15,17 +15,17 @@
 
 ## 概要
 
-对新数据集上的模型进行微调需要进行两个步骤：
+对新数据集上的模型微调需要两个步骤：
 
-1. 增加对新数据集的支持。详情请见 [教程 2：如何增加新数据集](2_new_dataset.md)
+1. 支持新数据集。详情参见 [教程 2：如何增加新数据集](2_new_dataset.md)
 2. 修改配置文件。这部分将在本教程中做具体讨论。
 
-例如，如果想要在自定义数据集上，微调 COCO 预训练的模型，则需要修改 [配置文件](0_config.md) 中 Head、数据集、训练策略、预训练模型四个部分。
+例如，如果想要在自定义数据集上，微调 COCO 预训练的模型，则需要修改 [配置文件](0_config.md) 中 网络头、数据集、训练策略、预训练模型四个部分。
 
 ## 修改网络头
 
 如果自定义数据集的关键点个数，与 COCO 不同，则需要相应修改 `keypoint_head` 中的 `out_channels` 参数。
-网络头 (head) 模型的最后一层的预训练参数不会被载入，而其他层的参数都会被正常载入。
+网络头（head）的最后一层的预训练参数不会被载入，而其他层的参数都会被正常载入。
 例如，COCO-WholeBody 拥有 133 个关键点，因此需要把 17 （COCO 数据集的关键点数目） 改为 133。
 
 ```python
@@ -87,9 +87,9 @@ model = dict(
 ```
 
 其中， `pretrained='https://download.openmmlab.com/mmpose/pretrain_models/hrnet_w48-8ef0771d.pth'` 表示采用 ImageNet 预训练的权重，初始化主干网络（backbone）。
-不过，`pretrained` 只会初始化主干网络(backbone)，而不会初始化网络头(head)。因此，我们模型微调时的预训练权重一般通过 `load_from` 指定，而不是使用 `pretrained` 指定。
+不过，`pretrained` 只会初始化主干网络（backbone），而不会初始化网络头（head）。因此，我们模型微调时的预训练权重一般通过 `load_from` 指定，而不是使用 `pretrained` 指定。
 
-## 修改数据集
+## 支持自己的数据集
 
 MMPose 支持十余种不同的数据集，包括 COCO, COCO-WholeBody, MPII, MPII-TRB 等数据集。
 用户可将自定义数据集转换为已有数据集格式，并修改如下字段。
