@@ -12,10 +12,11 @@ Open Neural Network Exchange [(ONNX)](https://onnx.ai/) is an open ecosystem tha
 
 ## Supported Models
 
-So far, our codebase supports onnx exporting from pytorch models trained with MMPose. The supported models are:
+So far, our codebase supports onnx exporting from pytorch models trained with MMPose. The supported models include:
 
 - ResNet
 - HRNet
+- HigherHRNet
 
 ## Usage
 
