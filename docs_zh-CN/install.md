@@ -52,18 +52,18 @@ conda install pytorch torchvision -c pytorch
 **注**：确保 CUDA 的编译版本和 CUDA 的运行版本相匹配。
 用户可以参照 [PyTorch 官网](https://pytorch.org/) 对预编译包所支持的 CUDA 版本进行核对。
 
-`例 1`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 10.1 版本，并且想要安装 PyTorch 1.5 版本，
-则需要安装 CUDA 10.1 下预编译的 PyTorch。
+`例 1`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 10.2 版本，并且想要安装 PyTorch 1.8.0 版本，
+则需要安装 CUDA 10.2 下预编译的 PyTorch。
 
 ```shell
-conda install pytorch cudatoolkit=10.1 torchvision -c pytorch
+conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch
 ```
 
-`例 2`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 9.2 版本，并且想要安装 PyTorch 1.3.1 版本，
+`例 2`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 9.2 版本，并且想要安装 PyTorch 1.7.0 版本，
 则需要安装 CUDA 9.2 下预编译的 PyTorch。
 
 ```shell
-conda install pytorch=1.3.1 cudatoolkit=9.2 torchvision=0.4.2 -c pytorch
+conda install pytorch==1.7.0 torchvision==0.8.0 cudatoolkit=9.2 -c pytorch
 ```
 
 如果 PyTorch 是由源码进行编译安装（而非直接下载预编译好的安装包），则可以使用更多的 CUDA 版本（如 9.0 版本）。
@@ -77,10 +77,10 @@ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{
 ```
 
 其中，命令里 url 的 ``{cu_version}`` 和 ``{torch_version}`` 变量需由用户进行指定。
-例如，如果想要安装 ``CUDA 11`` 和 ``PyTorch 1.7.0`` 下的最新版 ``mmcv-full``，可使用以下命令：
+例如，如果想要安装 ``CUDA 10.2`` 和 ``PyTorch 1.8.0`` 下的最新版 ``mmcv-full``，可使用以下命令：
 
 ```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu110/torch1.7.0/index.html
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/index.html
 ```
 
 可查阅 [这里](https://github.com/open-mmlab/mmcv#installation) 以参考不同版本的 MMCV 所兼容的 PyTorch 和 CUDA 版本。
@@ -93,12 +93,6 @@ cd mmcv
 MMCV_WITH_OPS=1 pip install -e .  # mmcv-full 包含一些 cuda 算子，执行该步骤会安装 mmcv-full（而非 mmcv）
 # 或者使用 pip install -e .  # 这个命令安装的 mmcv 将不包含 cuda ops，通常适配 CPU（无 GPU）环境
 cd ..
-```
-
-或者直接运行脚本：
-
-```shell
-pip install mmcv-full
 ```
 
 **注意**：如果之前安装过 mmcv，那么需要先使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
@@ -123,7 +117,7 @@ pip install -v -e .  # or "python setup.py develop"
 CC=clang CXX=clang++ CFLAGS='-stdlib=libc++' pip install -e .
 ```
 
-d. 安装 其他可选依赖。
+d. 安装其他可选依赖。
 
 如果用户不需要做相关任务，这部分步骤可以选择跳过。
 
@@ -136,7 +130,7 @@ d. 安装 其他可选依赖。
 
 注意：
 
-1. 在步骤 b 中，git commit 的 id 将会被写到版本号中，如 0.6.0+2e7045c。这个版本号也会被保存到训练好的模型中。
+1. 在步骤 c 中，git commit 的 id 将会被写到版本号中，如 0.6.0+2e7045c。这个版本号也会被保存到训练好的模型中。
    这里推荐用户每次在步骤 b 中对本地代码和 github 上的源码进行同步。如果 C++/CUDA 代码被修改，就必须进行这一步骤。
 
 1. 根据上述步骤，MMPose 就会以 `dev` 模式被安装，任何本地的代码修改都会立刻生效，不需要再重新安装一遍（除非用户提交了 commits，并且想更新版本号）。
@@ -166,8 +160,9 @@ conda activate open-mmlab
 # 安装最新的，使用默认版本的 CUDA 版本（一般为最新版本）预编译的 PyTorch 包
 conda install -c pytorch pytorch torchvision -y
 
-# 安装最新版本的 mmcv-full
-pip install mmcv-full
+# 安装 mmcv-full。其中，命令里 url 的 ``{cu_version}`` 和 ``{torch_version}`` 变量需由用户进行指定。
+# 可查阅 [这里](https://github.com/open-mmlab/mmcv#installation) 以参考不同版本的 MMCV 所兼容的 PyTorch 和 CUDA 版本。
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
 
 # 安装 mmpose
 git clone git@github.com:open-mmlab/mmpose.git
