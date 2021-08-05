@@ -1,6 +1,6 @@
 # 教程 0: 模型配置文件
 
-我们使用python文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
+我们使用 python 文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
 您可以在 `$MMPose/configs` 下找到所有提供的配置。如果要检查配置文件，您可以运行
 `python tools/analysis/print_config.py /PATH/TO/CONFIG` 来查看完整的配置。
 
@@ -17,7 +17,7 @@
 
 ## 通过脚本参数修改配置
 
-当使用 "tools/train.py" 或 "tools/test.py" 提交作业时，您可以指定 `--cfg-options` 来就地修改配置。
+当使用 "tools/train.py" 或 "tools/test.py" 提交作业时，您可以指定 `--cfg-options` 来修改配置。
 
 - 更新配置字典链的键值。
 
@@ -31,7 +31,7 @@
 
 - 更新列表 / 元组的值。
 
-  如果要更新的值是列表或元组，例如，配置文件通常设置为`workflow=[('train', 1)]` 。
+  如果要更新的值是列表或元组，例如，配置文件通常设置为 `workflow=[('train', 1)]` 。
   如果您想更改这个键，您可以这样指定　`--cfg-options workflow="[(train,1),(val,1)]"` 。
   请注意，引号 \" 是必要的，以支持列表 / 元组数据类型，并且指定值的引号内 **不允许** 有空格。
 
@@ -46,8 +46,8 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
 `{xxx}` 是必填字段，`[yyy]` 是可选字段.
 
 - `{topic}`: 主题类型，如 `body`, `face`, `hand`, `animal` 等。
-- `{task}`: 任务类型, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]` 。任务分为5类：（1）二维或三维姿态估计；（2）表示类型：关键点 (kpt)、网格 (mesh) 或密集姿态 (dense)；(3） 单视图 (sview) 或多视图 (mview)；（4）RGB 或 RGBD；以及（5）图像 (img) 或视频 (vid) 。例如， `2d_kpt_sview_rgb_img`，　`3d_kpt_sview_rgb_vid`,　等等。
-- `{algorithm}`:　算法类型，例如，`associative_embedding`, `deeppose`,  等等。
+- `{task}`: 任务类型, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]` 。任务分为5类:（1）二维或三维姿态估计;（2）表示类型:关键点 (kpt)、网格 (mesh) 或密集姿态 (dense); (3）单视图 (sview) 或多视图 (mview);（4）RGB 或 RGBD; 以及（5）图像 (img) 或视频 (vid)。例如， `2d_kpt_sview_rgb_img`，　`3d_kpt_sview_rgb_vid`,　等等。
+- `{algorithm}`: 算法类型，例如，`associative_embedding`, `deeppose`,  等等。
 - `{dataset}`: 数据集名称，例如， `coco`, 等等。
 - `{backbone}`: 主干网络类型，例如，`res50` (ResNet-50), 等等。
 - `[model setting]`: 对某些模型的特定设置。
@@ -65,10 +65,10 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
     ```python
     # 运行设置
     log_level = 'INFO'  # 日志记录级别
-    load_from = None  # 从给定路径将模型作为预训练的模型加载。这将不会重新开始训练
+    load_from = None  # 从给定路径加载预训练模型
     resume_from = None  # 从给定路径恢复模型权重文件，将从保存模型权重文件时的轮次开始继续训练
     dist_params = dict(backend='nccl')  # 设置分布式训练的参数，也可以设置端口
-    workflow = [('train', 1)]  # 运行程序的工作流。('train', 1)] 表示只有一个工作流，名为 'train' 的工作流执行一次
+    workflow = [('train', 1)]  # 运行程序的工作流。[('train', 1)] 表示只有一个工作流，名为 'train' 的工作流执行一次
     checkpoint_config = dict(  # 设置模型权重文件钩子的配置，请参阅 https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/checkpoint.py 的实现
         interval=10)  # 保存模型权重文件的间隔
     evaluation = dict(  # 训练期间评估的配置
@@ -77,18 +77,18 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
         key_indicator='AP')  # 将 `AP` 设置为关键指标以保存最佳模型权重文件
     # 优化器
     optimizer = dict(
-        # 用于构建优化器的配置，支持(1). PyTorch 中的所有优化器，
+        # 用于构建优化器的配置，支持 (1). PyTorch 中的所有优化器，
         # 其参数也与 PyTorch 中的相同. (2). 自定义的优化器
-        # 它们通过 `constructor` 构建，参阅 "tutorials/4_new_modules.md"
+        # 它们通过 `constructor` 构建，可参阅 "tutorials/4_new_modules.md"
         # 的实现。
-        type='Adam',  # 优化器的类型, 参阅 https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/optimizer/default_constructor.py#L13 获取更多细节
+        type='Adam',  # 优化器的类型, 可参阅 https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/optimizer/default_constructor.py#L13 获取更多细节
         lr=5e-4,  # 学习率, 参数的详细用法见 PyTorch 文档
     )
     optimizer_config = dict(grad_clip=None)  # 不限制梯度的范围
     # 学习率调整策略
     lr_config = dict(  # 用于注册 LrUpdater 钩子的学习率调度器的配置
         policy='step',  # 调整策略, 还支持 CosineAnnealing, Cyclic, 等等，请参阅 https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py#L9 获取支持的 LrUpdater 细节
-        warmup='linear', # 使用的预热类型，它可以是None (不使用预热), 'constant', 'linear' 或者 'exp'.
+        warmup='linear', # 使用的预热类型，它可以是 None (不使用预热), 'constant', 'linear' 或者 'exp'.
         warmup_iters=500,  # 预热的迭代次数或者轮数
         warmup_ratio=0.001,  # 预热开始时使用的学习率，等于预热比 (warmup_ratio) * 初始学习率
         step=[170, 200])  # 降低学习率的步数　
