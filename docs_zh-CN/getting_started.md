@@ -35,7 +35,7 @@ MMPose 支持各种不同的任务。请根据需要，查阅对应的数据集�
 ## 使用预训练模型进行推理
 
 MMPose 提供了一些测试脚本用于测试数据集上的指标（如 COCO, MPII 等），
-并提供了一些高级 API，以便更好地兼容其他 OpenMMLab 项目。
+并提供了一些高级 API，使您可以轻松使用 MMPose。
 
 ### 测试某个数据集
 
@@ -62,9 +62,9 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [-
 可选参数:
 
 - `RESULT_FILE`：输出结果文件名。如果没有被指定，则不会保存测试结果。
-- `--fuse-conv-bn`: 是否融合BN和Conv层。该操作会略微提升模型推理速度。
+- `--fuse-conv-bn`: 是否融合 BN 和 Conv 层。该操作会略微提升模型推理速度。
 - `EVAL_METRICS`：测试指标。其可选值与对应数据集相关，如 `mAP`，适用于 COCO 等数据集，`PCK` `AUC` `EPE` 适用于 OneHand10K 等数据集等。
-- `--gpu-collect`：如果被指定，动作识别结果将会通过 GPU 通信进行收集。否则，它将被存储到不同 GPU 上的 `TMPDIR` 文件夹中，并在 rank 0 的进程中被收集。
+- `--gpu-collect`：如果被指定，姿态估计结果将会通过 GPU 通信进行收集。否则，它将被存储到不同 GPU 上的 `TMPDIR` 文件夹中，并在 rank 0 的进程中被收集。
 - `TMPDIR`：用于存储不同进程收集的结果文件的临时文件夹。该变量仅当 `--gpu-collect` 没有被指定时有效。
 - `CFG_OPTIONS`：覆盖配置文件中的一些实验设置。比如，可以设置'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'，在线修改配置文件内容。
 - `JOB_LAUNCHER`：分布式任务初始化启动器选项。可选值有 `none`，`pytorch`，`slurm`，`mpi`。特别地，如果被设置为 `none`, 则会以非分布式模式进行测试。
@@ -139,10 +139,10 @@ MMPose 使用 `MMDistributedDataParallel` 进行分布式训练，使用 `MMData
 
 所有的输出（日志文件和模型权重文件）会被将保存到工作目录下。工作目录通过配置文件中的参数 `work_dir` 指定。
 
-默认情况下，MMPose 在每个训练周期后会在验证集上评估模型，可以通过在训练配置中修改 `interval` 参数来更改评估间隔
+默认情况下，MMPose 在每轮训练轮后会在验证集上评估模型，可以通过在训练配置中修改 `interval` 参数来更改评估间隔
 
 ```python
-evaluation = dict(interval=5)  # 每 5 个训练周期进行一次模型评估
+evaluation = dict(interval=5)  # 每 5 轮训练进行一次模型评估
 ```
 
 根据 [Linear Scaling Rule](https://arxiv.org/abs/1706.02677)，当 GPU 数量或每个 GPU 上的视频批大小改变时，用户可根据批大小按比例地调整学习率，如，当 4 GPUs x 2 video/gpu 时，lr=0.01；当 16 GPUs x 4 video/gpu 时，lr=0.08。
@@ -176,8 +176,8 @@ python tools/train.py ${CONFIG_FILE} [optional arguments]
 - `LOCAL_RANK`：本地 rank 的 ID。如果没有被指定，则会被设置为 0。
 
 `resume-from` 和 `load-from` 的区别：
-`resume-from` 加载模型参数和优化器状态，并且保留检查点所在的周期数，常被用于恢复意外被中断的训练。
-`load-from` 只加载模型参数，但周期数从 0 开始计数，常被用于微调模型。
+`resume-from` 加载模型参数和优化器状态，并且保留检查点所在的训练轮数，常被用于恢复意外被中断的训练。
+`load-from` 只加载模型参数，但训练轮数从 0 开始计数，常被用于微调模型。
 
 这里提供一个使用 8 块 GPU 加载 ResNet50 模型权重文件的例子。
 
