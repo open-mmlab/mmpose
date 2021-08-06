@@ -1,5 +1,6 @@
 import torch
 
+
 def test_bce_loss():
     from mmpose.models import build_loss
 
@@ -16,7 +17,7 @@ def test_bce_loss():
     assert torch.allclose(
         loss(fake_pred, fake_label, None), -torch.log(torch.tensor(0.5)))
 
-    #test BCE loss with default target weight None
+    # test BCE loss with default target weight None
     loss_cfg = dict(type='BCELoss')
     loss = build_loss(loss_cfg)
 
@@ -45,8 +46,3 @@ def test_bce_loss():
     assert torch.allclose(
         loss(fake_pred, fake_label, fake_weight),
         -torch.log(torch.tensor(0.5)))
-
-
-if __name__ == '__main__':
-   test_bce_loss()
-   print('success')

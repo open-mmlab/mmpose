@@ -206,5 +206,3 @@ def test_semi_supervision_loss():
     losses = loss(fake_pred, fake_label)
     assert torch.allclose(losses['proj_loss'], torch.tensor(0.))
     assert torch.allclose(losses['bone_loss'], torch.tensor(0.))
-
-
