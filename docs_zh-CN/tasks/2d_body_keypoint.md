@@ -187,8 +187,8 @@ mmpose
 
 </details>
 
-对于 [AIC](https://github.com/AIChallenger/AI_Challenger_2017) 数据集， 请从此链接 [AI Challenger 2017 ](https://github.com/AIChallenger/AI_Challenger_2017)下载，2017 Train/Val 对于关键点的训练和评估是必要的。
-请从此链接 [aic_annotations ](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar)下载标注文件。
+对于 [AIC](https://github.com/AIChallenger/AI_Challenger_2017) 数据集， 请从此链接 [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017)下载，2017 Train/Val 对于关键点的训练和评估是必要的。
+请从此链接 [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar)下载标注文件。
 在 {MMPose}/data 目录下下载并提取它们，使得文件呈如下的格式：
 
 ```text
