@@ -1,5 +1,5 @@
 log_level = 'INFO'
-load_from = None
+load_from = 'https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark-741844ba_20200812.pth'  # noqa: E501
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
@@ -37,8 +37,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='https://download.openmmlab.com/mmpose/top_down/'
-    'hrnet/hrnet_w48_coco_384x288_dark-741844ba_20200812.pth',
+    pretrained=None,
     backbone=dict(
         type='HRNet',
         in_channels=3,
