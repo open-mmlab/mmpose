@@ -238,7 +238,7 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 GPUS=4 ./tools/slurm_train.sh ${PARTITION} ${JOB_NA
 
 ## 进阶教程
 
-目前, MMPose 提供以下几种更详细的教程：
+目前, MMPose 提供了以下更详细的教程：
 
 - [如何编写配置文件](tutorials/0_config.md)
 - [如何微调模型](tutorials/1_finetune.md)
