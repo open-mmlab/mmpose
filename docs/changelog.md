@@ -1,5 +1,48 @@
 # Changelog
 
+## v0.17.0 (06/08/2021)
+
+**Highlights**
+
+1. Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
+2. Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
+3. Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787), [\#798](https://github.com/open-mmlab/mmpose/pull/798), [\#799](https://github.com/open-mmlab/mmpose/pull/799), [\#802](https://github.com/open-mmlab/mmpose/pull/802), [\#804](https://github.com/open-mmlab/mmpose/pull/804), [\#805](https://github.com/open-mmlab/mmpose/pull/805), [\#815](https://github.com/open-mmlab/mmpose/pull/815), [\#816](https://github.com/open-mmlab/mmpose/pull/816), [\#817](https://github.com/open-mmlab/mmpose/pull/817), [\#819](https://github.com/open-mmlab/mmpose/pull/819), [\#839](https://github.com/open-mmlab/mmpose/pull/839)) @ly015, @luminxu, @jin-s13, @liqikai9, @zengwang430521
+4. Add Colab Tutorial ([\#834](https://github.com/open-mmlab/mmpose/pull/834)) @ly015
+
+**New Features**
+
+- Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
+- Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
+- Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787), [\#798](https://github.com/open-mmlab/mmpose/pull/798), [\#799](https://github.com/open-mmlab/mmpose/pull/799), [\#802](https://github.com/open-mmlab/mmpose/pull/802), [\#804](https://github.com/open-mmlab/mmpose/pull/804), [\#805](https://github.com/open-mmlab/mmpose/pull/805), [\#815](https://github.com/open-mmlab/mmpose/pull/815), [\#816](https://github.com/open-mmlab/mmpose/pull/816), [\#817](https://github.com/open-mmlab/mmpose/pull/817), [\#819](https://github.com/open-mmlab/mmpose/pull/819), [\#839](https://github.com/open-mmlab/mmpose/pull/839)) @ly015, @luminxu, @jin-s13, @liqikai9, @zengwang430521
+- Add Colab Tutorial ([\#834](https://github.com/open-mmlab/mmpose/pull/834)) @ly015
+- Support training for InterHand v1.0 dataset ([\#761](https://github.com/open-mmlab/mmpose/pull/761)) @zengwang430521
+
+**Bug Fixes**
+
+- Fix mpii pckh@0.1 index ([\#773](https://github.com/open-mmlab/mmpose/pull/773)) @jin-s13
+- Fix multi-node distributed test ([\#818](https://github.com/open-mmlab/mmpose/pull/818)) @ly015
+- Fix docstring and init_weights error of ShuffleNetV1 ([\#814](https://github.com/open-mmlab/mmpose/pull/814)) @Junjun2016
+- Fix imshow_bbox error when input bboxes is empty ([\#796](https://github.com/open-mmlab/mmpose/pull/796)) @ly015
+- Fix model zoo doc generation ([\#778](https://github.com/open-mmlab/mmpose/pull/778)) @ly015
+- Fix typo ([\#767](https://github.com/open-mmlab/mmpose/pull/767)), ([\#780](https://github.com/open-mmlab/mmpose/pull/780), [\#782](https://github.com/open-mmlab/mmpose/pull/782)) @ly015, @jin-s13
+
+**Breaking Changes**
+
+- Use MMCV EvalHook ([\#686](https://github.com/open-mmlab/mmpose/pull/686)) @ly015
+
+**Improvements**
+
+- Add pytest.ini and fix docstring ([\#812](https://github.com/open-mmlab/mmpose/pull/812)) @jin-s13
+- Update MSELoss ([\#829](https://github.com/open-mmlab/mmpose/pull/829)) @Ezra-Yu
+- Move process_mmdet_results into inference.py ([\#831](https://github.com/open-mmlab/mmpose/pull/831)) @ly015
+- Update resource limit ([\#783](https://github.com/open-mmlab/mmpose/pull/783)) @jin-s13
+- Use COCO 2D pose model in 3D demo examples ([\#785](https://github.com/open-mmlab/mmpose/pull/785)) @ly015
+- Change model zoo titles in the doc from center-aligned to left-aligned ([\#792](https://github.com/open-mmlab/mmpose/pull/792), [\#797](https://github.com/open-mmlab/mmpose/pull/797)) @ly015
+- Support MIM ([\#706](https://github.com/open-mmlab/mmpose/pull/706), [\#794](https://github.com/open-mmlab/mmpose/pull/794)) @ly015
+- Update out-of-date configs ([\#827](https://github.com/open-mmlab/mmpose/pull/827)) @jin-s13
+- Remove opencv-python-headless dependency by albumentations ([\#833](https://github.com/open-mmlab/mmpose/pull/833)) @ly015
+- Update QQ QR code in README_CN.md ([\#832](https://github.com/open-mmlab/mmpose/pull/832)) @ly015
+
 ## v0.16.0 (02/07/2021)
 
 **Highlights**
@@ -16,7 +59,7 @@
 - Support Webcam demo ([\#729](https://github.com/open-mmlab/mmpose/pull/729))
 - Support Interhand 3d demo ([\#704](https://github.com/open-mmlab/mmpose/pull/704))
 - Support 3d pose video demo ([\#727](https://github.com/open-mmlab/mmpose/pull/727))
-- Support H36m dataset for 2d pose estimation ([\#709](https://github.com/open-mmlab/mmpose/pull/709),[\#735](https://github.com/open-mmlab/mmpose/pull/735))
+- Support H36m dataset for 2d pose estimation ([\#709](https://github.com/open-mmlab/mmpose/pull/709), [\#735](https://github.com/open-mmlab/mmpose/pull/735))
 - Add scripts to generate mim metafile ([\#749](https://github.com/open-mmlab/mmpose/pull/749))
 
 **Bug Fixes**
@@ -48,8 +91,8 @@
 **New Features**
 
 - Support "InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation from a Single RGB Image" (ECCV‘20) ([\#624](https://github.com/open-mmlab/mmpose/pull/624))
-- Support "3D human pose estimation in video with temporal convolutions and semi-supervised training" (CVPR'19)  ([\#602](https://github.com/open-mmlab/mmpose/pull/602),[\#681](https://github.com/open-mmlab/mmpose/pull/681))
-- Support 3d pose estimation demo ([\#653](https://github.com/open-mmlab/mmpose/pull/653),[\#670](https://github.com/open-mmlab/mmpose/pull/670))
+- Support "3D human pose estimation in video with temporal convolutions and semi-supervised training" (CVPR'19)  ([\#602](https://github.com/open-mmlab/mmpose/pull/602), [\#681](https://github.com/open-mmlab/mmpose/pull/681))
+- Support 3d pose estimation demo ([\#653](https://github.com/open-mmlab/mmpose/pull/653), [\#670](https://github.com/open-mmlab/mmpose/pull/670))
 - Support bottom-up whole-body pose estimation ([\#689](https://github.com/open-mmlab/mmpose/pull/689))
 - Support mmcli ([\#634](https://github.com/open-mmlab/mmpose/pull/634))
 
@@ -59,7 +102,7 @@
 - Fix demo with UDP ([\#637](https://github.com/open-mmlab/mmpose/pull/637))
 - Fix bottom-up model onnx convertion ([\#680](https://github.com/open-mmlab/mmpose/pull/680))
 - Fix `GPU_IDS` in distributed training ([\#668](https://github.com/open-mmlab/mmpose/pull/668))
-- Fix MANIFEST.in ([\#641](https://github.com/open-mmlab/mmpose/pull/641),[\#657](https://github.com/open-mmlab/mmpose/pull/657))
+- Fix MANIFEST.in ([\#641](https://github.com/open-mmlab/mmpose/pull/641), [\#657](https://github.com/open-mmlab/mmpose/pull/657))
 - Fix docs ([\#643](https://github.com/open-mmlab/mmpose/pull/643),[\#684](https://github.com/open-mmlab/mmpose/pull/684),[\#688](https://github.com/open-mmlab/mmpose/pull/688),[\#690](https://github.com/open-mmlab/mmpose/pull/690),[\#692](https://github.com/open-mmlab/mmpose/pull/692))
 
 **Breaking Changes**
@@ -72,7 +115,7 @@
 - Add `radius` and `thickness` parameters in visualization ([\#638](https://github.com/open-mmlab/mmpose/pull/638))
 - Add `trans_prob` parameter in `TopDownRandomTranslation` ([\#650](https://github.com/open-mmlab/mmpose/pull/650))
 - Switch to `MMCV MODEL_REGISTRY` ([\#669](https://github.com/open-mmlab/mmpose/pull/669))
-- Update dependencies ([\#674](https://github.com/open-mmlab/mmpose/pull/674),[\#676](https://github.com/open-mmlab/mmpose/pull/676))
+- Update dependencies ([\#674](https://github.com/open-mmlab/mmpose/pull/674), [\#676](https://github.com/open-mmlab/mmpose/pull/676))
 
 ## v0.14.0 (06/05/2021)
 
@@ -98,9 +141,9 @@
 **Improvements**
 
 - Speed up top-down inference ([\#560](https://github.com/open-mmlab/mmpose/pull/560))
-- Update github CI ([\#562](https://github.com/open-mmlab/mmpose/pull/562),[\#564](https://github.com/open-mmlab/mmpose/pull/564))
+- Update github CI ([\#562](https://github.com/open-mmlab/mmpose/pull/562), [\#564](https://github.com/open-mmlab/mmpose/pull/564))
 - Update Readme ([\#578](https://github.com/open-mmlab/mmpose/pull/578),[\#579](https://github.com/open-mmlab/mmpose/pull/579),[\#580](https://github.com/open-mmlab/mmpose/pull/580),[\#592](https://github.com/open-mmlab/mmpose/pull/592),[\#599](https://github.com/open-mmlab/mmpose/pull/599),[\#600](https://github.com/open-mmlab/mmpose/pull/600),[\#607](https://github.com/open-mmlab/mmpose/pull/607))
-- Update Faq ([\#587](https://github.com/open-mmlab/mmpose/pull/587),[\#610](https://github.com/open-mmlab/mmpose/pull/610))
+- Update Faq ([\#587](https://github.com/open-mmlab/mmpose/pull/587), [\#610](https://github.com/open-mmlab/mmpose/pull/610))
 
 ## v0.13.0 (31/03/2021)
 
