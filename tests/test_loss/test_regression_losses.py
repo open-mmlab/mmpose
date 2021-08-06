@@ -22,13 +22,11 @@ def test_smooth_l1_loss():
 
     fake_pred = torch.zeros((1, 3, 2))
     fake_label = torch.zeros((1, 3, 2))
-    assert torch.allclose(
-        loss(fake_pred, fake_label), torch.tensor(0.))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
 
     fake_pred = torch.ones((1, 3, 2))
     fake_label = torch.zeros((1, 3, 2))
-    assert torch.allclose(
-        loss(fake_pred, fake_label), torch.tensor(.5))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(.5))
 
     # test SmoothL1Loss with target weight
     loss_cfg = dict(type='SmoothL1Loss', use_target_weight=True)
@@ -66,13 +64,11 @@ def test_wing_loss():
 
     fake_pred = torch.zeros((1, 3, 2))
     fake_label = torch.zeros((1, 3, 2))
-    assert torch.allclose(
-        loss(fake_pred, fake_label), torch.tensor(0.))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
 
     fake_pred = torch.ones((1, 3, 2))
     fake_label = torch.zeros((1, 3, 2))
-    assert torch.gt(
-        loss(fake_pred, fake_label), torch.tensor(.5))
+    assert torch.gt(loss(fake_pred, fake_label), torch.tensor(.5))
 
     # test WingLoss with target weight
     loss_cfg = dict(type='WingLoss', use_target_weight=True)
@@ -155,8 +151,7 @@ def test_bone_loss():
     fake_pred = torch.tensor([[[0, 0, 0], [1, 1, 1], [2, 2, 2]]],
                              dtype=torch.float32)
     fake_label = fake_pred * 2
-    assert torch.allclose(
-        loss(fake_pred, fake_label), torch.tensor(3**0.5))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(3**0.5))
 
     # w/ target weight
     loss_cfg = dict(
