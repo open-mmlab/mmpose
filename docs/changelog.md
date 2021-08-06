@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.17.0 (06/08/2021)
+
+**Highlights**
+
+1. Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
+2. Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
+3. Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787),[\#798](https://github.com/open-mmlab/mmpose/pull/798),[\#816](https://github.com/open-mmlab/mmpose/pull/816)) @ly015, jin-s13,
+
+**New Features**
+
+- Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
+- Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
+- Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787),[\#798](https://github.com/open-mmlab/mmpose/pull/798),[\#816](https://github.com/open-mmlab/mmpose/pull/816)) @ly015, jin-s13,
+- Support training for InterHand v1.0 dataset ([\#761](https://github.com/open-mmlab/mmpose/pull/761)) @zengwang430521
+
+**Bug Fixes**
+
+- Fix mpii pckh@0.1 index ([\#773](https://github.com/open-mmlab/mmpose/pull/773)) @jin-s13
+- Fix multi-node distributed test ([\#818](https://github.com/open-mmlab/mmpose/pull/818)) @ly015
+- Fix docstring and init_weights error of ShuffleNetV1 ([\#814](https://github.com/open-mmlab/mmpose/pull/814)) @Junjun2016
+- Fix imshow_bbox error when input bboxes is empty ([\#796](https://github.com/open-mmlab/mmpose/pull/796)) @ly015
+- Fix model zoo doc generation ([\#778](https://github.com/open-mmlab/mmpose/pull/778)) @ly015
+- Change OpenMMLab's to OpenMMLab in repo descriptions in README.md ([\#767](https://github.com/open-mmlab/mmpose/pull/767)) @ly015
+- Fix typo ([\#780](https://github.com/open-mmlab/mmpose/pull/780),[\#782](https://github.com/open-mmlab/mmpose/pull/782)) @ly015, jin-s13
+
+**Breaking Changes**
+
+- Use MMCV EvalHook ([\#686](https://github.com/open-mmlab/mmpose/pull/686)) @ly015
+
+**Improvements**
+
+- Add pytest.ini and fix docstring ([\#812](https://github.com/open-mmlab/mmpose/pull/812)) @jin-s13
+- Update MSELoss ([\#829](https://github.com/open-mmlab/mmpose/pull/829)) @Ezra-Yu
+- Move process_mmdet_results into inference.py ([\#831](https://github.com/open-mmlab/mmpose/pull/831)) @ly015
+- Update resource limit ([\#783](https://github.com/open-mmlab/mmpose/pull/783)) @jin-s13
+- Use COCO 2D pose model in 3D demo examples ([\#785](https://github.com/open-mmlab/mmpose/pull/785)) @ly015
+- Change model zoo titles in the doc from center-aligned to left-aligned ([\#792](https://github.com/open-mmlab/mmpose/pull/792),[\#797](https://github.com/open-mmlab/mmpose/pull/797)) @ly015
+- Support MIM ([\#706](https://github.com/open-mmlab/mmpose/pull/706),[\#794](https://github.com/open-mmlab/mmpose/pull/794)) @ly015
+- Update out-of-date configs ([\#827](https://github.com/open-mmlab/mmpose/pull/827)) @jin-s13
+- Remove opencv-python-headless dependency by albumentations ([\#833](https://github.com/open-mmlab/mmpose/pull/833)) @ly015
+- Update QQ QR code in README_CN.md ([\#832](https://github.com/open-mmlab/mmpose/pull/832)) @ly015
+
 ## v0.16.0 (02/07/2021)
 
 **Highlights**
