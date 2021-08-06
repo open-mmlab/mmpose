@@ -7,12 +7,14 @@
 1. Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
 2. Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
 3. Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787), [\#798](https://github.com/open-mmlab/mmpose/pull/798), [\#799](https://github.com/open-mmlab/mmpose/pull/799), [\#802](https://github.com/open-mmlab/mmpose/pull/802), [\#804](https://github.com/open-mmlab/mmpose/pull/804), [\#805](https://github.com/open-mmlab/mmpose/pull/805), [\#815](https://github.com/open-mmlab/mmpose/pull/815), [\#816](https://github.com/open-mmlab/mmpose/pull/816), [\#817](https://github.com/open-mmlab/mmpose/pull/817), [\#819](https://github.com/open-mmlab/mmpose/pull/819), [\#839](https://github.com/open-mmlab/mmpose/pull/839)) @ly015, @luminxu, @jin-s13, @liqikai9, @zengwang430521
+4. Add Colab Tutorial ([\#834](https://github.com/open-mmlab/mmpose/pull/834)) @ly015
 
 **New Features**
 
 - Support ["Lite-HRNet: A Lightweight High-Resolution Network"](https://arxiv.org/abs/2104.06403) CVPR'2021 ([\#733](https://github.com/open-mmlab/mmpose/pull/733),[\#800](https://github.com/open-mmlab/mmpose/pull/800)) @jin-s13
 - Add 3d body mesh demo ([\#771](https://github.com/open-mmlab/mmpose/pull/771)) @zengwang430521
 - Add Chinese documentation ([\#787](https://github.com/open-mmlab/mmpose/pull/787), [\#798](https://github.com/open-mmlab/mmpose/pull/798), [\#799](https://github.com/open-mmlab/mmpose/pull/799), [\#802](https://github.com/open-mmlab/mmpose/pull/802), [\#804](https://github.com/open-mmlab/mmpose/pull/804), [\#805](https://github.com/open-mmlab/mmpose/pull/805), [\#815](https://github.com/open-mmlab/mmpose/pull/815), [\#816](https://github.com/open-mmlab/mmpose/pull/816), [\#817](https://github.com/open-mmlab/mmpose/pull/817), [\#819](https://github.com/open-mmlab/mmpose/pull/819), [\#839](https://github.com/open-mmlab/mmpose/pull/839)) @ly015, @luminxu, @jin-s13, @liqikai9, @zengwang430521
+- Add Colab Tutorial ([\#834](https://github.com/open-mmlab/mmpose/pull/834)) @ly015
 - Support training for InterHand v1.0 dataset ([\#761](https://github.com/open-mmlab/mmpose/pull/761)) @zengwang430521
 
 **Bug Fixes**
