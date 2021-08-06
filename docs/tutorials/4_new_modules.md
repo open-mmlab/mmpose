@@ -77,7 +77,7 @@ We basically categorize model components into 3 types.
 
 - detectors: the whole pose detector model pipeline, usually contains a backbone and keypoint_head.
 - backbone: usually an FCN network to extract feature maps, e.g., ResNet, HRNet.
-- keypoint_head: the component for pose estimation task, usually contains an deconv layers.
+- keypoint_head: the component for pose estimation task, usually contains some deconv layers.
 
 1. Create a new file `mmpose/models/backbones/my_model.py`.
 
@@ -107,7 +107,7 @@ from .my_model import MyModel
 
 3. Create a new file `mmpose/models/keypoint_heads/my_head.py`.
 
-You can write a new classification head inherit from `nn.Module`,
+You can write a new keypoint head inherit from `nn.Module`,
 and overwrite `init_weights(self)` and `forward(self, x)` method.
 
 ```python
@@ -152,7 +152,7 @@ model = dict(
 
 ### Add new loss
 
-Assume you want to add a new loss as `MyLoss`, for bounding box regression.
+Assume you want to add a new loss as `MyLoss`, for keypoints estimation.
 To add a new loss function, the users need implement it in `mmpose/models/losses/my_loss.py`.
 The decorator `weighted_loss` enable the loss to be weighted for each element.
 
