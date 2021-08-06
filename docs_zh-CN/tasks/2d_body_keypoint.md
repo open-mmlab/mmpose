@@ -37,11 +37,11 @@ MMPose 支持的数据集如下所示:
 
 </details>
 
-对 [COCO](http://cocodataset.org/) 数据集来说， 请从此链接 [COCO download](http://cocodataset.org/#download) 下载， 2017 Train/Val 对于 COCO 关键点的训练和评估是非常必要的。
+对 [COCO](http://cocodataset.org/) 数据集来说，请从此链接 [COCO download](http://cocodataset.org/#download) 下载， 2017 Train/Val 对于 COCO 关键点的训练和评估是非常必要的。
 [HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) 提供了 COCO val2017 的检测结果，来帮助重现我们的多人姿态估计的结果。
 请从 [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) 或 [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing)下载。
 在 $MMPOSE/data 目录下下载并提取， 使得文件呈如下的格式：
-可选地, 为了在 COCO'2017 上评估， 请下载 [image-info](https://download.openmmlab.com/mmpose/datasets/person_keypoints_test-dev-2017.json)。
+可选地, 为了在 COCO'2017 test-dev 上评估， 请下载 [image-info](https://download.openmmlab.com/mmpose/datasets/person_keypoints_test-dev-2017.json)。
 
 ```text
 mmpose
