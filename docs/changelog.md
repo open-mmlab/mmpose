@@ -24,8 +24,7 @@
 - Fix docstring and init_weights error of ShuffleNetV1 ([\#814](https://github.com/open-mmlab/mmpose/pull/814)) @Junjun2016
 - Fix imshow_bbox error when input bboxes is empty ([\#796](https://github.com/open-mmlab/mmpose/pull/796)) @ly015
 - Fix model zoo doc generation ([\#778](https://github.com/open-mmlab/mmpose/pull/778)) @ly015
-- Change OpenMMLab's to OpenMMLab in repo descriptions in README.md ([\#767](https://github.com/open-mmlab/mmpose/pull/767)) @ly015
-- Fix typo ([\#780](https://github.com/open-mmlab/mmpose/pull/780), [\#782](https://github.com/open-mmlab/mmpose/pull/782)) @ly015, @jin-s13
+- Fix typo ([\#767](https://github.com/open-mmlab/mmpose/pull/767)), ([\#780](https://github.com/open-mmlab/mmpose/pull/780), [\#782](https://github.com/open-mmlab/mmpose/pull/782)) @ly015, @jin-s13
 
 **Breaking Changes**
 
