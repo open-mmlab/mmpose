@@ -23,20 +23,20 @@ For installation instructions, please see [install.md](install.md).
 
 MMPose supports multiple tasks. Please follow the corresponding guidelines for data preparation.
 
-- [2D Body Keypoint](/docs/tasks/2d_body_keypoint.md)
-- [3D Body Keypoint](/docs/tasks/3d_body_keypoint.md)
+- [2D Body Keypoint Detection](/docs/tasks/2d_body_keypoint.md)
+- [3D Body Keypoint Detection](/docs/tasks/3d_body_keypoint.md)
 - [3D Body Mesh Recovery](/docs/tasks/3d_body_mesh.md)
-- [2D Hand Keypoint](/docs/tasks/2d_hand_keypoint.md)
-- [3D Hand Keypoint](/docs/tasks/3d_hand_keypoint.md)
-- [2D Face Keypoint](/docs/tasks/2d_face_keypoint.md)
-- [2D WholeBody Keypoint](/docs/tasks/2d_wholebody_keypoint.md)
+- [2D Hand Keypoint Detection](/docs/tasks/2d_hand_keypoint.md)
+- [3D Hand Keypoint Detection](/docs/tasks/3d_hand_keypoint.md)
+- [2D Face Keypoint Detection](/docs/tasks/2d_face_keypoint.md)
+- [2D WholeBody Keypoint Detection](/docs/tasks/2d_wholebody_keypoint.md)
 - [2D Fashion Landmark Detection](/docs/tasks/2d_fashion_landmark.md)
 - [2D Animal Keypoint Detection](/docs/tasks/2d_animal_keypoint.md)
 
 ## Inference with Pre-trained Models
 
-We provide testing scripts to evaluate a whole dataset (COCO, etc.),
-and provide some high-level apis for easier integration to other projects.
+We provide testing scripts to evaluate a whole dataset (COCO, MPII etc.),
+and provide some high-level apis for easier integration to other OpenMMLab projects.
 
 ### Test a dataset
 
@@ -48,23 +48,26 @@ You can use the following commands to test a dataset.
 
 ```shell
 # single-gpu testing
-python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--eval ${EVAL_METRIC}] \
-    [--proc_per_gpu ${NUM_PROC_PER_GPU}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--average_clips ${AVG_TYPE}] \
+python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
+    [--eval ${EVAL_METRICS}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
 
-python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESULT_FILE}] [--eval ${EVAL_METRIC}] \
-    [--proc_per_gpu ${NUM_PROC_PER_GPU}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--average_clips ${AVG_TYPE}] \
+# multi-gpu testing
+./tools/dist_test.sh ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
+    [--eval ${EVAL_METRIC}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
 ```
+
+Note that the provided `CHECKPOINT_FILE` is either the path to the model checkpoint file downloaded in advance, or the url link to the model checkpoint.
 
 Optional arguments:
 
 - `RESULT_FILE`: Filename of the output results. If not specified, the results will not be saved to a file.
-- `EVAL_METRIC`: Items to be evaluated on the results. Allowed values depend on the dataset.
-- `NUM_PROC_PER_GPU`: Number of processes per GPU. If not specified, only one process will be assigned for a single gpu.
+- `--fuse-conv-bn`: Whether to fuse conv and bn, this will slightly increase the inference speed.
+- `EVAL_METRICS`: Items to be evaluated on the results. Allowed values depend on the dataset.
 - `--gpu_collect`: If specified, recognition results will be collected using gpu communication. Otherwise, it will save the results on different gpus to `TMPDIR` and collect them by the rank 0 worker.
 - `TMPDIR`: Temporary directory used for collecting results from multiple workers, available when `--gpu_collect` is not specified.
-- `AVG_TYPE`: Items to average the test clips. If set to `prob`, it will apply softmax before averaging the clip scores. Otherwise, it will directly average the clip scores.
+- `CFG_OPTIONS`: Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into config file. For example, '--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'.
 - `JOB_LAUNCHER`: Items for distributed job initialization launcher. Allowed choices are `none`, `pytorch`, `slurm`, `mpi`. Especially, if set to none, it will test in a non-distributed mode.
 - `LOCAL_RANK`: ID for local rank. If not specified, it will be set to 0.
 
@@ -75,16 +78,16 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 1. Test ResNet50 on COCO (without saving the test results) and evaluate the mAP.
 
    ```shell
-   ./tools/dist_test.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
+   ./tools/dist_test.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
        checkpoints/SOME_CHECKPOINT.pth 1 \
        --eval mAP
    ```
 
-1. Test ResNet50 on COCO  with 8 GPUS, and evaluate the mAP.
+1. Test ResNet50 on COCO with 8 GPUS. Download the checkpoint via url, and evaluate the mAP.
 
    ```shell
-   ./tools/dist_test.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
-       checkpoints/SOME_CHECKPOINT.pth 8 \
+   ./tools/dist_test.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
+       https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth 8 \
        --eval mAP
    ```
 
@@ -92,7 +95,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
 
    ```shell
    ./tools/slurm_test.sh slurm_partition test_job \
-       configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py \
+       configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
        checkpoints/SOME_CHECKPOINT.pth \
        --eval mAP
    ```
@@ -128,6 +131,12 @@ More examples and details can be found in the [demo folder](/demo) and the [demo
 MMPose implements distributed training and non-distributed training,
 which uses `MMDistributedDataParallel` and `MMDataParallel` respectively.
 
+We adopt distributed training for both single machine and multiple machines. Supposing that the server has 8 GPUs, 8 processes will be started and each process runs on a single GPU.
+
+Each process keeps an isolated model, data loader, and optimizer. Model parameters are only synchronized once at the beginning. After a forward and backward pass, gradients will be allreduced among all GPUs, and the optimizer will update model parameters. Since the gradients are allreduced, the model parameter stays the same for all processes after the iteration.
+
+### Training setting
+
 All outputs (log files and checkpoints) will be saved to the working directory,
 which is specified by `work_dir` in the config file.
 
@@ -155,15 +164,17 @@ If you want to specify the working directory in the command, you can add an argu
 
 Optional arguments are:
 
-- `--validate` (**strongly recommended**): Perform evaluation at every k (default value is 5 epochs during the training.
 - `--work-dir ${WORK_DIR}`: Override the working directory specified in the config file.
 - `--resume-from ${CHECKPOINT_FILE}`: Resume from a previous checkpoint file.
+- `--no-validate`: Whether not to evaluate the checkpoint during training.
 - `--gpus ${GPU_NUM}`: Number of gpus to use, which is only applicable to non-distributed training.
+- `--gpu-ids ${GPU_IDS}`: IDs of gpus to use, which is only applicable to non-distributed training.
 - `--seed ${SEED}`: Seed id for random state in python, numpy and pytorch to generate random numbers.
 - `--deterministic`: If specified, it will set deterministic options for CUDNN backend.
-- `JOB_LAUNCHER`: Items for distributed job initialization launcher. Allowed choices are `none`, `pytorch`, `slurm`, `mpi`. Especially, if set to none, it will test in a non-distributed mode.
-- `LOCAL_RANK`: ID for local rank. If not specified, it will be set to 0.
+- `--cfg-options CFG_OPTIONS`: Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into config file. For example, '--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'.
+- `--launcher ${JOB_LAUNCHER}`: Items for distributed job initialization launcher. Allowed choices are `none`, `pytorch`, `slurm`, `mpi`. Especially, if set to none, it will test in a non-distributed mode.
 - `--autoscale-lr`: If specified, it will automatically scale lr with the number of gpus by [Linear Scaling Rule](https://arxiv.org/abs/1706.02677).
+- `LOCAL_RANK`: ID for local rank. If not specified, it will be set to 0.
 
 Difference between `resume-from` and `load-from`:
 `resume-from` loads both the model weights and optimizer status, and the epoch is also inherited from the specified checkpoint. It is usually used for resuming the training process that is interrupted accidentally.
@@ -172,7 +183,7 @@ Difference between `resume-from` and `load-from`:
 Here is an example of using 8 GPUs to load ResNet50 checkpoint.
 
 ```shell
-./tools/dist_train.sh configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py 8 --resume_from work_dirs/res50_coco_256x192/latest.pth
+./tools/dist_train.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py 8 --resume_from work_dirs/res50_coco_256x192/latest.pth
 ```
 
 ### Train with multiple machines
@@ -188,7 +199,7 @@ Here is an example of using 16 GPUs to train ResNet50 on the dev partition in a 
 Assume that `Test` is a valid ${PARTITION} name.)
 
 ```shell
-GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/body/2D_Kpt_SV_RGB_Img/topdown_hm/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
+GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py work_dirs/res50_coco_256x192
 ```
 
 You can check [slurm_train.sh](/tools/slurm_train.sh) for full arguments and environment variables.
@@ -209,7 +220,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29500 ./tools/dist_train.sh ${CONFIG_FILE} 4
 CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29501 ./tools/dist_train.sh ${CONFIG_FILE} 4
 ```
 
-If you use launch training jobs with slurm, you need to modify the config files (usually the 6th line from the bottom in config files) to set different communication ports.
+If you use launch training jobs with slurm, you need to modify the config files (usually the 4th line in config files) to set different communication ports.
 
 In `config1.py`,
 
@@ -240,6 +251,11 @@ python tools/analysis/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 
 ## Tutorials
 
-Currently, we provide some tutorials for users to [learn about configs](tutorials/0_config.md), [finetune model](tutorials/1_finetune.md),
-[add new dataset](tutorials/2_new_dataset.md), [customize data pipelines](tutorials/3_data_pipeline.md),
-[add new modules](tutorials/4_new_modules.md), [export a model to ONNX](tutorials/5_export_model.md) and [customize runtime settings](tutorials/6_customize_runtime.md).
+We provide some tutorials for users:
+- [learn about configs](tutorials/0_config.md)
+- [finetune model](tutorials/1_finetune.md)
+- [add new dataset](tutorials/2_new_dataset.md)
+- [customize data pipelines](tutorials/3_data_pipeline.md)
+- [add new modules](tutorials/4_new_modules.md)
+- [export a model to ONNX](tutorials/5_export_model.md)
+- [customize runtime settings](tutorials/6_customize_runtime.md).
