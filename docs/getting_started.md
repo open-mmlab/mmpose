@@ -252,6 +252,7 @@ python tools/analysis/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 ## Tutorials
 
 We provide some tutorials for users:
+
 - [learn about configs](tutorials/0_config.md)
 - [finetune model](tutorials/1_finetune.md)
 - [add new dataset](tutorials/2_new_dataset.md)
