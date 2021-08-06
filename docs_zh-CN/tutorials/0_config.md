@@ -6,12 +6,12 @@
 
 <!-- TOC -->
 
-- [教程 0: 模型配置文件](#教程-0-模型配置文件)
-  - [通过脚本参数修改配置](#通过脚本参数修改配置)
-  - [配置文件命名约定](#配置文件命名约定)
-    - [配置系统](#配置系统)
-  - [常见问题](#常见问题)
-    - [在配置中使用中间变量](#在配置中使用中间变量)
+
+- [通过脚本参数修改配置](#通过脚本参数修改配置)
+- [配置文件命名约定](#配置文件命名约定)
+  - [配置系统](#配置系统)
+- [常见问题](#常见问题)
+  - [在配置中使用中间变量](#在配置中使用中间变量)
 
 <!-- TOC -->
 
@@ -46,10 +46,10 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
 `{xxx}` 是必填字段，`[yyy]` 是可选字段.
 
 - `{topic}`: 主题类型，如 `body`, `face`, `hand`, `animal` 等。
-- `{task}`: 任务类型, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]` 。任务分为5类:（1）二维或三维姿态估计;（2）表示类型:关键点 (kpt)、网格 (mesh) 或密集姿态 (dense); (3）单视图 (sview) 或多视图 (mview);（4）RGB 或 RGBD; 以及（5）图像 (img) 或视频 (vid)。例如， `2d_kpt_sview_rgb_img`，　`3d_kpt_sview_rgb_vid`,　等等。
-- `{algorithm}`: 算法类型，例如，`associative_embedding`, `deeppose`,  等等。
-- `{dataset}`: 数据集名称，例如， `coco`, 等等。
-- `{backbone}`: 主干网络类型，例如，`res50` (ResNet-50), 等等。
+- `{task}`: 任务类型, `[2d | 3d]_[kpt | mesh]_[sview | mview]_[rgb | rgbd]_[img | vid]` 。任务类型从5个维度定义:（1）二维或三维姿态估计;（2）姿态表示形式:关键点 (kpt)、网格 (mesh) 或密集姿态 (dense); (3）单视图 (sview) 或多视图 (mview);（4）RGB 或 RGBD; 以及（5）图像 (img) 或视频 (vid)。例如， `2d_kpt_sview_rgb_img`，　`3d_kpt_sview_rgb_vid`,　等等。
+- `{algorithm}`: 算法类型，例如，`associative_embedding`, `deeppose` 等。
+- `{dataset}`: 数据集名称，例如， `coco` 等。
+- `{backbone}`: 主干网络类型，例如，`res50` (ResNet-50) 等。
 - `[model setting]`: 对某些模型的特定设置。
 - `[input_size]`: 模型的输入大小。
 - `[technique]`: 一些特定的技术，包括损失函数，数据增强，训练技巧等，例如， `wingloss`, `udp`, `fp16` 等.
