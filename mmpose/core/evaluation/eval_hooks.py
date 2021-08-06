@@ -28,7 +28,7 @@ class EvalHook(_EvalHook):
             from mmpose.apis import single_gpu_test
             test_fn = single_gpu_test
 
-        # to bo compatible with the config before v0.16.0
+        # to be compatible with the config before v0.16.0
 
         # remove "gpu_collect" from eval_kwargs
         if 'gpu_collect' in eval_kwargs:
@@ -102,7 +102,7 @@ class DistEvalHook(_DistEvalHook):
             from mmpose.apis import multi_gpu_test
             test_fn = multi_gpu_test
 
-        # to bo compatible with the config before v0.16.0
+        # to be compatible with the config before v0.16.0
 
         # update "save_best" according to "key_indicator" and remove the
         # latter from eval_kwargs
