@@ -17,6 +17,8 @@ def test_bce_loss():
     assert torch.allclose(
         loss(fake_pred, fake_label, None), -torch.log(torch.tensor(0.5)))
 
+    # 123
+
     # test BCE loss with target weight
     loss_cfg = dict(type='BCELoss', use_target_weight=True)
     loss = build_loss(loss_cfg)
