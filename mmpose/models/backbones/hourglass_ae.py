@@ -104,6 +104,7 @@ class HourglassAENet(BaseBackbone):
                  num_stacks=2,
                  stage_channels=(256, 384, 512, 640, 768),
                  feat_channel=256,
+                 out_channel=34,
                  norm_cfg=dict(type='BN', requires_grad=True)):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -144,7 +145,7 @@ class HourglassAENet(BaseBackbone):
         self.out_convs = nn.ModuleList([
             ConvModule(
                 cur_channel,
-                feat_channel,
+                out_channel,
                 1,
                 padding=0,
                 norm_cfg=None,
@@ -153,13 +154,13 @@ class HourglassAENet(BaseBackbone):
 
         self.remap_out_convs = nn.ModuleList([
             ConvModule(
-                feat_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
+                out_channel, feat_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
             for _ in range(num_stacks - 1)
         ])
 
         self.remap_feature_convs = nn.ModuleList([
             ConvModule(
-                feat_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
+                feat_channel, feat_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
             for _ in range(num_stacks - 1)
         ])
 
