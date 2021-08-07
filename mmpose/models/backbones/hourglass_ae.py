@@ -83,7 +83,7 @@ class HourglassAENet(BaseBackbone):
             HourglassModule.
         stage_blocks (list[int]): Number of sub-modules stacked in a
             HourglassModule.
-        feat_channel (int): Feature channel of conv after a HourglassModule.
+        feat_channels (int): Feature channel of conv after a HourglassModule.
         norm_cfg (dict): Dictionary to construct and config norm layer.
 
     Example:
@@ -91,7 +91,7 @@ class HourglassAENet(BaseBackbone):
         >>> import torch
         >>> self = HourglassAENet()
         >>> self.eval()
-        >>> inputs = torch.rand(1, 3, 511, 511)
+        >>> inputs = torch.rand(1, 3, 512, 512)
         >>> level_outputs = self.forward(inputs)
         >>> for level_output in level_outputs:
         ...     print(tuple(level_output.shape))
@@ -101,10 +101,10 @@ class HourglassAENet(BaseBackbone):
 
     def __init__(self,
                  downsample_times=4,
-                 num_stacks=2,
+                 num_stacks=1,
+                 out_channels=34,
                  stage_channels=(256, 384, 512, 640, 768),
-                 feat_channel=256,
-                 out_channel=34,
+                 feat_channels=256,
                  norm_cfg=dict(type='BN', requires_grad=True)):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -114,14 +114,14 @@ class HourglassAENet(BaseBackbone):
         assert self.num_stacks >= 1
         assert len(stage_channels) > downsample_times
 
-        cur_channel = stage_channels[0]
+        cur_channels = stage_channels[0]
 
         self.stem = nn.Sequential(
             ConvModule(3, 64, 7, padding=3, stride=2, norm_cfg=norm_cfg),
             ConvModule(64, 128, 3, padding=1, norm_cfg=norm_cfg),
             MaxPool2d(2, 2),
             ConvModule(128, 128, 3, padding=1, norm_cfg=norm_cfg),
-            ConvModule(128, feat_channel, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(128, feat_channels, 3, padding=1, norm_cfg=norm_cfg),
         )
 
         self.hourglass_modules = nn.ModuleList([
@@ -129,14 +129,14 @@ class HourglassAENet(BaseBackbone):
                 HourglassAEModule(
                     downsample_times, stage_channels, norm_cfg=norm_cfg),
                 ConvModule(
-                    feat_channel,
-                    feat_channel,
+                    feat_channels,
+                    feat_channels,
                     3,
                     padding=1,
                     norm_cfg=norm_cfg),
                 ConvModule(
-                    feat_channel,
-                    feat_channel,
+                    feat_channels,
+                    feat_channels,
                     3,
                     padding=1,
                     norm_cfg=norm_cfg)) for _ in range(num_stacks)
@@ -144,8 +144,8 @@ class HourglassAENet(BaseBackbone):
 
         self.out_convs = nn.ModuleList([
             ConvModule(
-                cur_channel,
-                out_channel,
+                cur_channels,
+                out_channels,
                 1,
                 padding=0,
                 norm_cfg=None,
@@ -154,14 +154,20 @@ class HourglassAENet(BaseBackbone):
 
         self.remap_out_convs = nn.ModuleList([
             ConvModule(
-                out_channel, feat_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
+                out_channels,
+                feat_channels,
+                1,
+                norm_cfg=norm_cfg,
+                act_cfg=None) for _ in range(num_stacks - 1)
         ])
 
         self.remap_feature_convs = nn.ModuleList([
             ConvModule(
-                feat_channel, feat_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
+                feat_channels,
+                feat_channels,
+                1,
+                norm_cfg=norm_cfg,
+                act_cfg=None) for _ in range(num_stacks - 1)
         ])
 
         self.relu = nn.ReLU(inplace=True)

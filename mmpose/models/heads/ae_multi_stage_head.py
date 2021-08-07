@@ -97,20 +97,28 @@ class AEMultiStageHead(nn.Module):
         Note:
             batch_size: N
             num_keypoints: K
-            num_outputs: O
             heatmaps height: H
             heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
+            output (List(torch.Tensor[NxKxHxW])): Output heatmaps.
+            targets(List(List(torch.Tensor[NxKxHxW]))):
+                Multi-stage and multi-scale target heatmaps.
+            masks(List(List(torch.Tensor[NxHxW]))):
+                Masks of multi-stage and multi-scale target heatmaps
+            joints(List(List(torch.Tensor[NxMxKx2]))):
+                Joints of multi-stage multi-scale target heatmaps for ae loss
         """
 
         losses = dict()
+
+        # Flatten list:
+        # [stage_1_scale_1, stage_1_scale_2, ... , stage_1_scale_m,
+        # ...
+        # stage_n_scale_1, stage_n_scale_2, ... , stage_n_scale_m]
+        targets = [target for _targets in targets for target in _targets]
+        masks = [mask for _masks in masks for mask in _masks]
+        joints = [joint for _joints in joints for joint in _joints]
 
         heatmaps_losses, push_losses, pull_losses = self.loss(
             output, targets, masks, joints)

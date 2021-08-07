@@ -21,10 +21,8 @@ lr_config = dict(
 total_epochs = 300
 log_config = dict(
     interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')
-    ])
+    hooks=[dict(type='TextLoggerHook'),
+           dict(type='TensorboardLoggerHook')])
 
 channel_cfg = dict(
     dataset_joints=17,
@@ -46,8 +44,7 @@ data_cfg = dict(
     num_scales=1,
     scale_aware_sigma=False,
     with_bg=True,
-    add_neck=True
-)
+    add_neck=True)
 
 # model settings
 model = dict(
