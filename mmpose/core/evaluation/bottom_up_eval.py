@@ -5,7 +5,8 @@ from mmpose.core.post_processing import (get_warp_matrix, transform_preds,
                                          warp_affine_joints)
 
 
-def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae):
+def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae,
+                     select_output_index):
     """Split multi-stage outputs into heatmaps & tags.
 
     Args:
@@ -15,6 +16,7 @@ def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae):
             heatmaps for different stages.
         with_ae (list[bool]): Option to output
             ae tags for different stages.
+        select_output_index (list[int]): Output keep the selected index
     Returns:
         tuple: A tuple containing multi-stage outputs.
         - heatmaps (list(torch.Tensor)): multi-stage heatmaps.
@@ -26,12 +28,15 @@ def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae):
 
     # aggregate heatmaps from different stages
     for i, output in enumerate(outputs):
+        if i not in select_output_index:
+            continue
         # staring index of the associative embeddings
         offset_feat = num_joints if with_heatmaps[i] else 0
         if with_heatmaps[i]:
             heatmaps.append(output[:, :num_joints])
         if with_ae[i]:
             tags.append(output[:, offset_feat:])
+
     return heatmaps, tags
 
 
@@ -106,7 +111,8 @@ def _resize_average(feature_maps, align_corners, index=-1, resize_size=None):
      Args:
         feature_maps (list(torch.Tensor)): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
-        index (int): If `resize_size' is None, the target size is the size
+        index (int): Only used when `resize_size' is None.
+            If `resize_size' is None, the target size is the size
             of the indexed feature maps.
         resize_size ([w, h]): The target size.
     Returns:
@@ -135,7 +141,8 @@ def _resize_unsqueeze_concat(feature_maps,
      Args:
         feature_maps (list(torch.Tensor)): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
-        index (int): If `resize_size' is None, the target size is the size
+        index (int): Only used when `resize_size' is None.
+            If `resize_size' is None, the target size is the size
             of the indexed feature maps.
         resize_size ([w, h]): The target size.
     Returns:
@@ -159,7 +166,8 @@ def _resize_concate(feature_maps, align_corners, index=-1, resize_size=None):
      Args:
         feature_maps (list(torch.Tensor)): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
-        index (int): If `resize_size' is None, the target size is the size
+        index (int): Only used when `resize_size' is None.
+            If `resize_size' is None, the target size is the size
             of the indexed feature maps.
         resize_size ([w, h]): The target size.
     Returns:

@@ -235,10 +235,10 @@ class AssociativeEmbedding(BasePose):
             if self.with_keypoint:
                 outputs = self.keypoint_head(features)
 
-            heatmaps, tags = split_ae_outputs(outputs,
-                                              self.test_cfg['num_joints'],
-                                              self.test_cfg['with_heatmaps'],
-                                              self.test_cfg['with_ae'])
+            heatmaps, tags = split_ae_outputs(
+                outputs, self.test_cfg['num_joints'],
+                self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
+                self.test_cfg.get('select_output_index', range(len(outputs))))
 
             if self.test_cfg.get('flip_test', True):
                 # use flip test
@@ -249,7 +249,9 @@ class AssociativeEmbedding(BasePose):
 
                 heatmaps_flipped, tags_flipped = split_ae_outputs(
                     outputs_flipped, self.test_cfg['num_joints'],
-                    self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'])
+                    self.test_cfg['with_heatmaps'], self.test_cfg['with_ae'],
+                    self.test_cfg.get('select_output_index',
+                                      range(len(outputs))))
 
                 heatmaps_flipped = flip_feature_maps(
                     heatmaps_flipped, flip_index=img_metas['flip_index'])
