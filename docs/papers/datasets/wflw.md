@@ -1,7 +1,5 @@
 # Look at boundary: A boundary-aware face alignment algorithm
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

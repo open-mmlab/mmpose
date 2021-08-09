@@ -1,7 +1,5 @@
 # Simple baselines for human pose estimation and tracking
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

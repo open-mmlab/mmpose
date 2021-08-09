@@ -1,7 +1,5 @@
 # Learning to Estimate 3D Hand Pose from Single RGB Images
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

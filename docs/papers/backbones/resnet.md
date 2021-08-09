@@ -1,7 +1,5 @@
 # Deep residual learning for image recognition
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

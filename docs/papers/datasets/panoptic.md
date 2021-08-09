@@ -1,7 +1,5 @@
 # Hand keypoint detection in single images using multiview bootstrapping
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

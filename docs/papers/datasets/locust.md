@@ -1,7 +1,5 @@
 # DeepPoseKit, a software toolkit for fast and robust animal pose estimation using deep learning
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

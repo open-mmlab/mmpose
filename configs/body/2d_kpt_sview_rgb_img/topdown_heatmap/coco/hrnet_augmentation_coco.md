@@ -15,7 +15,7 @@
 
 </details>
 
-<!-- [ALGORITHM] -->
+<!-- [OTHERS] -->
 
 <details>
 <summary align="right"><a href="https://www.mdpi.com/649002">Albumentations (Information'2020)</a></summary>

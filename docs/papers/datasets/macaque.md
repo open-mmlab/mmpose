@@ -1,7 +1,5 @@
 # MacaquePose: A novel ‘in the wild’macaque monkey pose dataset for markerless motion capture
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Imagenet classification with deep convolutional neural networks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

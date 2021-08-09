@@ -1,7 +1,5 @@
 # Aggregated residual transformations for deep neural networks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

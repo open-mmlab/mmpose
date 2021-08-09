@@ -1,7 +1,5 @@
 # DeepPose: Human pose estimation via deep neural networks
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>
