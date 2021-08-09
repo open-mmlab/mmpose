@@ -1,7 +1,5 @@
 # Improving Convolutional Networks with Self-Calibrated Convolutions
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

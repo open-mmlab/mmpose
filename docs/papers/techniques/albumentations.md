@@ -1,7 +1,5 @@
 # Albumentations: fast and flexible image augmentations
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Cross-Domain Adaptation for Animal Pose Estimation
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Deep high-resolution representation learning for visual recognition
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Bag of tricks for image classification with convolutional neural networks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

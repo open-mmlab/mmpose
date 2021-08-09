@@ -1,7 +1,5 @@
 # End-to-end Recovery of Human Shape and Pose
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

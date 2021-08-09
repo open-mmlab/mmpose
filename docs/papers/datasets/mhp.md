@@ -1,7 +1,5 @@
 # Understanding humans in crowded scenes: Deep nested adversarial learning and a new benchmark for multi-human parsing
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

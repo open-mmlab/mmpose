@@ -1,7 +1,5 @@
 # Robust face landmark estimation under occlusion
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

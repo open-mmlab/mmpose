@@ -1,7 +1,5 @@
 # Shufflenet v2: Practical guidelines for efficient cnn architecture design
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

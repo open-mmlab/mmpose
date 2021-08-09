@@ -1,7 +1,5 @@
 # ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

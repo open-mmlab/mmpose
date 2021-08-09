@@ -1,7 +1,5 @@
 # Learning delicate local representations for multi-person pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

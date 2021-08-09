@@ -1,7 +1,5 @@
 # InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation from a Single RGB Image
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

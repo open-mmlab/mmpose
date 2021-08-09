@@ -1,7 +1,5 @@
 # Convolutional pose machines
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

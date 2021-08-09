@@ -1,7 +1,5 @@
 # Squeeze-and-excitation networks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

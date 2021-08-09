@@ -1,7 +1,5 @@
 # Towards understanding action recognition
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

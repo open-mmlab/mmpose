@@ -1,7 +1,5 @@
 # Posetrack: A benchmark for human pose estimation and tracking
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Rethinking on multi-stage networks for human pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

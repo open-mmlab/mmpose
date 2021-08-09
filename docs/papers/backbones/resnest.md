@@ -1,7 +1,5 @@
 # ResNeSt: Split-Attention Networks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

@@ -1,7 +1,5 @@
 # Lite-HRNet: A Lightweight High-Resolution Network
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

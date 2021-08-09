@@ -1,7 +1,5 @@
 # A simple yet effective baseline for 3d human pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

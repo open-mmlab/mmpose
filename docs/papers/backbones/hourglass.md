@@ -1,7 +1,5 @@
 # Stacked hourglass networks for human pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

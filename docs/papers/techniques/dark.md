@@ -1,7 +1,5 @@
 # Distribution-aware coordinate representation for human pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

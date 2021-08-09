@@ -1,7 +1,5 @@
 # HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose Estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

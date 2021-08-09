@@ -1,7 +1,5 @@
 # Fast animal pose estimation using deep neural networks
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

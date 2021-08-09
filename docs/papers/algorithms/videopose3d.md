@@ -1,7 +1,5 @@
 # 3D human pose estimation in video with temporal convolutions and semi-supervised training
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

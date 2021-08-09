@@ -1,7 +1,5 @@
 # Deep high-resolution representation learning for human pose estimation
 
-## Introduction
-
 <!-- [ALGORITHM] -->
 
 <details>

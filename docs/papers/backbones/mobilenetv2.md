@@ -1,7 +1,5 @@
 # Mobilenetv2: Inverted residuals and linear bottlenecks
 
-## Introduction
-
 <!-- [BACKBONE] -->
 
 <details>

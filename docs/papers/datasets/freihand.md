@@ -1,7 +1,5 @@
 # Freihand: A dataset for markerless capture of hand pose and shape from single rgb images
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>
