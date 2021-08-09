@@ -81,7 +81,7 @@ model = dict(
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='default',
+        post_process='unbiased',
         shift_heatmap=True,
         modulate_kernel=11))
 
@@ -105,7 +105,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(type='TopDownGenerateTarget', sigma=2, unbiased_encoding=True),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],

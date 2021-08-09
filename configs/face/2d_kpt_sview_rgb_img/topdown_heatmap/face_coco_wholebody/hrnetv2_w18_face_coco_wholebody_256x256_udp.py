@@ -26,6 +26,7 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
+target_type = 'GaussianHeatmap'
 channel_cfg = dict(
     num_output_channels=68,
     dataset_joints=68,
@@ -82,8 +83,10 @@ model = dict(
     test_cfg=dict(
         flip_test=True,
         post_process='default',
-        shift_heatmap=True,
-        modulate_kernel=11))
+        shift_heatmap=False,
+        target_type=target_type,
+        modulate_kernel=11,
+        use_udp=True))
 
 data_cfg = dict(
     image_size=[256, 256],
@@ -99,13 +102,17 @@ train_pipeline = [
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=30,
         scale_factor=0.25),
-    dict(type='TopDownAffine'),
+    dict(type='TopDownAffine', use_udp=True),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(
+        type='TopDownGenerateTarget',
+        sigma=2,
+        encoding='UDP',
+        target_type=target_type),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -117,7 +124,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownAffine'),
+    dict(type='TopDownAffine', use_udp=True),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',

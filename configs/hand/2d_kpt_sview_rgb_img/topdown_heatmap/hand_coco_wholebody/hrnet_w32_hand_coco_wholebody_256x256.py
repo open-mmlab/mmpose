@@ -3,12 +3,13 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=1)
-evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
+checkpoint_config = dict(interval=10)
+evaluation = dict(
+    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
-    lr=2e-3,
+    lr=5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -17,27 +18,34 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[40, 55])
-total_epochs = 60
+    step=[170, 200])
+total_epochs = 210
 log_config = dict(
-    interval=5,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=68,
-    dataset_joints=68,
+    num_output_channels=21,
+    dataset_joints=21,
     dataset_channel=[
-        list(range(68)),
+        [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ],
     ],
-    inference_channel=list(range(68)))
+    inference_channel=[
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20
+    ])
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='open-mmlab://msra/hrnetv2_w18',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -53,30 +61,26 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(18, 36)),
+                num_channels=(32, 64)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(18, 36, 72)),
+                num_channels=(32, 64, 128)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(18, 36, 72, 144),
-                multiscale_output=True),
-            upsample=dict(mode='bilinear', align_corners=False))),
+                num_channels=(32, 64, 128, 256))),
+    ),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=[18, 36, 72, 144],
-        in_index=(0, 1, 2, 3),
-        input_transform='resize_concat',
+        in_channels=32,
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
-        extra=dict(
-            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )),
+        extra=dict(final_conv_kernel=1, ),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
@@ -97,8 +101,7 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=30,
-        scale_factor=0.25),
+        type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -138,19 +141,19 @@ data = dict(
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='FaceCocoWholeBodyDataset',
+        type='HandCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='FaceCocoWholeBodyDataset',
+        type='HandCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='FaceCocoWholeBodyDataset',
+        type='HandCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,

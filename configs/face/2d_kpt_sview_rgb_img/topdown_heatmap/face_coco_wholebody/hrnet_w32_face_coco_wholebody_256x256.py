@@ -37,7 +37,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='open-mmlab://msra/hrnetv2_w18',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -53,30 +54,26 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(18, 36)),
+                num_channels=(32, 64)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(18, 36, 72)),
+                num_channels=(32, 64, 128)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(18, 36, 72, 144),
-                multiscale_output=True),
-            upsample=dict(mode='bilinear', align_corners=False))),
+                num_channels=(32, 64, 128, 256))),
+    ),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=[18, 36, 72, 144],
-        in_index=(0, 1, 2, 3),
-        input_transform='resize_concat',
+        in_channels=32,
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
-        extra=dict(
-            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )),
+        extra=dict(final_conv_kernel=1, ),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
