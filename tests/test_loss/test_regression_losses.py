@@ -16,6 +16,18 @@ def test_smooth_l1_loss():
     fake_label = torch.zeros((1, 3, 2))
     assert torch.allclose(loss(fake_pred, fake_label, None), torch.tensor(.5))
 
+    # test SmoothL1Loss with default target weight None
+    loss_cfg = dict(type='SmoothL1Loss')
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
+
+    fake_pred = torch.ones((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(.5))
+
     # test SmoothL1Loss with target weight
     loss_cfg = dict(type='SmoothL1Loss', use_target_weight=True)
     loss = build_loss(loss_cfg)
@@ -45,6 +57,18 @@ def test_wing_loss():
     fake_pred = torch.ones((1, 3, 2))
     fake_label = torch.zeros((1, 3, 2))
     assert torch.gt(loss(fake_pred, fake_label, None), torch.tensor(.5))
+
+    # test WingLoss with default target weight None
+    loss_cfg = dict(type='WingLoss')
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
+
+    fake_pred = torch.ones((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.gt(loss(fake_pred, fake_label), torch.tensor(.5))
 
     # test WingLoss with target weight
     loss_cfg = dict(type='WingLoss', use_target_weight=True)
@@ -76,6 +100,17 @@ def test_mse_regression_loss():
     fake_label = torch.zeros((1, 3, 3))
     assert torch.allclose(loss(fake_pred, fake_label, None), torch.tensor(1.))
 
+    # w/o with default target weight None
+    loss_cfg = dict(type='MSELoss')
+    loss = build_loss(loss_cfg)
+    fake_pred = torch.zeros((1, 3, 3))
+    fake_label = torch.zeros((1, 3, 3))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
+
+    fake_pred = torch.ones((1, 3, 3))
+    fake_label = torch.zeros((1, 3, 3))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(1.))
+
     # w/ target weight
     loss_cfg = dict(type='MSELoss', use_target_weight=True)
     loss = build_loss(loss_cfg)
@@ -105,6 +140,18 @@ def test_bone_loss():
     fake_label = fake_pred * 2
     assert torch.allclose(
         loss(fake_pred, fake_label, None), torch.tensor(3**0.5))
+
+    # w/o with default target weight None
+    loss_cfg = dict(type='BoneLoss', joint_parents=[0, 0, 1])
+    loss = build_loss(loss_cfg)
+    fake_pred = torch.zeros((1, 3, 3))
+    fake_label = torch.zeros((1, 3, 3))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
+
+    fake_pred = torch.tensor([[[0, 0, 0], [1, 1, 1], [2, 2, 2]]],
+                             dtype=torch.float32)
+    fake_label = fake_pred * 2
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(3**0.5))
 
     # w/ target weight
     loss_cfg = dict(
