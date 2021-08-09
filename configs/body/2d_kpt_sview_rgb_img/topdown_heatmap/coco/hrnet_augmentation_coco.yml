@@ -3,7 +3,6 @@ Collections:
   Metadata:
     Architecture:
     - HRNet
-    - Albumentations
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_augmentation_coco.md
   Paper:
   - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
