@@ -1,7 +1,5 @@
 # TRB: A Novel Triplet Representation for Understanding 2D Human Body
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

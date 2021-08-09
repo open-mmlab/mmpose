@@ -1,7 +1,5 @@
 # Mask-pose cascaded cnn for 2d hand pose estimation from single color image
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

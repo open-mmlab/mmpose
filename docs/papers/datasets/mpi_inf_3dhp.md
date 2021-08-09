@@ -1,7 +1,5 @@
 # Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

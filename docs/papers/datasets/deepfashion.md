@@ -1,7 +1,5 @@
 # DeepFashion: Powering Robust Clothes Recognition and Retrieval with Rich Annotations
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

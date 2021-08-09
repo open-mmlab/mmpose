@@ -1,7 +1,5 @@
 # 2D Human Pose Estimation: New Benchmark and State of the Art Analysis
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

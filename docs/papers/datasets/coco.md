@@ -1,7 +1,5 @@
 # Microsoft coco: Common objects in context
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

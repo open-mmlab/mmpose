@@ -1,7 +1,5 @@
 # Whole-Body Human Pose Estimation in the Wild
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

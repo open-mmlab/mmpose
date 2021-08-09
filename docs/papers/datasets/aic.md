@@ -1,7 +1,5 @@
 # Ai challenger: A large-scale dataset for going deeper in image understanding
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

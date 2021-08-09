@@ -1,7 +1,5 @@
 # Pose2seg: Detection free human instance segmentation
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

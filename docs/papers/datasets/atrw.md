@@ -1,7 +1,5 @@
 # ATRW: A Benchmark for Amur Tiger Re-identification in the Wild
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

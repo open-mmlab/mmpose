@@ -1,7 +1,5 @@
 # Pretraining boosts out-of-domain robustness for pose estimation
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>

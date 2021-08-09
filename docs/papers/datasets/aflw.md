@@ -1,7 +1,5 @@
 # Annotated facial landmarks in the wild: A large-scale, real-world database for facial landmark localization
 
-## Introduction
-
 <!-- [DATASET] -->
 
 <details>
