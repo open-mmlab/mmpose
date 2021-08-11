@@ -1,11 +1,9 @@
 import argparse
 
-import mmcv
 import numpy as np
 import torch
-from mmcv.runner import load_checkpoint
 
-from mmpose.models import build_posenet
+from mmpose.apis import init_pose_model
 
 try:
     import onnx
@@ -133,9 +131,7 @@ if __name__ == '__main__':
 
     assert args.opset_version == 11, 'MMPose only supports opset 11 now'
 
-    cfg = mmcv.Config.fromfile(args.config)
-    # build the model
-    model = build_posenet(cfg.model)
+    model = init_pose_model(args.config, args.checkpoint, device='cpu')
     model = _convert_batchnorm(model)
 
     # onnx.export does not support kwargs
@@ -145,9 +141,7 @@ if __name__ == '__main__':
         raise NotImplementedError(
             'Please implement the forward method for exporting.')
 
-    checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
-
-    # conver model to onnx file
+    # convert model to onnx file
     pytorch2onnx(
         model,
         args.shape,
