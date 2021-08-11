@@ -5,6 +5,7 @@ matplotlib
 munkres
 numpy
 opencv-python
+packaging
 pillow
 scipy
 torchvision
