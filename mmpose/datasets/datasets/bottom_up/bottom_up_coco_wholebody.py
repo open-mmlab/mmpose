@@ -210,7 +210,7 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
         num_joints = int(len(keypoints) / 3)
         for n_jt in range(0, num_joints):
             t_s = keypoints[n_jt * 3 + 2]
-            if t_s > 0:
+            if t_s > 0.2:
                 kpt_score = kpt_score + t_s
                 valid_num = valid_num + 1
         if valid_num != 0:
@@ -273,7 +273,7 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
                     'righthand_score':
                     self._get_part_score(key_point[cuts[4]:cuts[5]]),
                     'wholebody_score':
-                    self._get_part_score(key_point),
+                    img_kpt['score'],
                     'bbox': [left_top[0], left_top[1], w, h]
                 })
 

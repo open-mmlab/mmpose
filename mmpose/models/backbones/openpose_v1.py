@@ -75,27 +75,26 @@ class OpenPoseNetworkV1(BaseBackbone):
 
         self.features = nn.Sequential(
             ConvModule(
-                in_channels, 64, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(64, 64, 3, padding=1, norm_cfg=norm_cfg, bias=True),
+                in_channels, 64, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(64, 64, 3, padding=1, norm_cfg=norm_cfg),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            ConvModule(64, 128, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(128, 128, 3, padding=1, norm_cfg=norm_cfg, bias=True),
+            ConvModule(64, 128, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(128, 128, 3, padding=1, norm_cfg=norm_cfg),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            ConvModule(128, 256, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg, bias=True),
+            ConvModule(128, 256, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(256, 256, 3, padding=1, norm_cfg=norm_cfg),
             nn.MaxPool2d(kernel_size=2, stride=2, padding=0),
-            ConvModule(256, 512, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(512, 512, 3, padding=1, norm_cfg=norm_cfg, bias=True),
-            ConvModule(512, 256, 3, padding=1, norm_cfg=norm_cfg, bias=True),
+            ConvModule(256, 512, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(512, 512, 3, padding=1, norm_cfg=norm_cfg),
+            ConvModule(512, 256, 3, padding=1, norm_cfg=norm_cfg),
             ConvModule(
                 256,
                 stem_feat_channels,
                 3,
                 padding=1,
-                norm_cfg=norm_cfg,
-                bias=True))
+                norm_cfg=norm_cfg))
 
         # stage 0
         self.cm_stages = nn.ModuleList([
