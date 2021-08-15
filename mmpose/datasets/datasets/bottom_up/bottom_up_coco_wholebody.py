@@ -203,6 +203,22 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
 
         return joints
 
+    def _get_part_score(self, keypoints):
+        """Get part score for new evaluation tools."""
+        kpt_score = 0
+        valid_num = 0
+        num_joints = int(len(keypoints) / 3)
+        for n_jt in range(0, num_joints):
+            t_s = keypoints[n_jt * 3 + 2]
+            if t_s > 0:
+                kpt_score = kpt_score + t_s
+                valid_num = valid_num + 1
+        if valid_num != 0:
+            kpt_score = kpt_score / valid_num
+        part_score = kpt_score
+
+        return float(part_score)
+
     def _coco_keypoint_results_one_category_kernel(self, data_pack):
         """Get coco keypoint results."""
         cat_id = data_pack['cat_id']
@@ -247,7 +263,17 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
                     'righthand_kpts':
                     key_point[cuts[4]:cuts[5]].tolist(),
                     'score':
-                    img_kpt['score'],
+                    self._get_part_score(key_point[cuts[0]:cuts[1]]),
+                    'foot_score':
+                    self._get_part_score(key_point[cuts[1]:cuts[2]]),
+                    'face_score':
+                    self._get_part_score(key_point[cuts[2]:cuts[3]]),
+                    'lefthand_score':
+                    self._get_part_score(key_point[cuts[3]:cuts[4]]),
+                    'righthand_score':
+                    self._get_part_score(key_point[cuts[4]:cuts[5]]),
+                    'wholebody_score':
+                    self._get_part_score(key_point),
                     'bbox': [left_top[0], left_top[1], w, h]
                 })
 
