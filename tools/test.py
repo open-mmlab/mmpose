@@ -28,6 +28,8 @@ def parse_args():
     parser.add_argument('checkpoint', help='checkpoint file')
     parser.add_argument('--out', help='output result file')
     parser.add_argument(
+        '--work-dir', help='the dir to save evaluation results')
+    parser.add_argument(
         '--fuse-conv-bn',
         action='store_true',
         help='Whether to fuse conv and bn, this will slightly increase'
@@ -88,9 +90,16 @@ def main():
     cfg.model.pretrained = None
     cfg.data.test.test_mode = True
 
-    args.work_dir = osp.join('./work_dirs',
-                             osp.splitext(osp.basename(args.config))[0])
-    mmcv.mkdir_or_exist(osp.abspath(args.work_dir))
+    # work_dir is determined in this priority: CLI > segment in file > filename
+    if args.work_dir is not None:
+        # update configs according to CLI args if args.work_dir is not None
+        cfg.work_dir = args.work_dir
+    elif cfg.get('work_dir', None) is None:
+        # use config filename as default work_dir if cfg.work_dir is None
+        cfg.work_dir = osp.join('./work_dirs',
+                                osp.splitext(osp.basename(args.config))[0])
+
+    mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
 
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
@@ -141,7 +150,7 @@ def main():
             print(f'\nwriting results to {args.out}')
             mmcv.dump(outputs, args.out)
 
-        results = dataset.evaluate(outputs, args.work_dir, **eval_config)
+        results = dataset.evaluate(outputs, cfg.work_dir, **eval_config)
         for k, v in sorted(results.items()):
             print(f'{k}: {v}')
 
