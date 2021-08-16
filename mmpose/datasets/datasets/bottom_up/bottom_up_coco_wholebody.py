@@ -263,17 +263,19 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
                     'righthand_kpts':
                     key_point[cuts[4]:cuts[5]].tolist(),
                     'score':
-                    self._get_part_score(key_point[cuts[0]:cuts[1]]),
-                    'foot_score':
-                    self._get_part_score(key_point[cuts[1]:cuts[2]]),
-                    'face_score':
-                    self._get_part_score(key_point[cuts[2]:cuts[3]]),
-                    'lefthand_score':
-                    self._get_part_score(key_point[cuts[3]:cuts[4]]),
-                    'righthand_score':
-                    self._get_part_score(key_point[cuts[4]:cuts[5]]),
-                    'wholebody_score':
                     img_kpt['score'],
+                    # 'score':
+                    # self._get_part_score(key_point[cuts[0]:cuts[1]]),
+                    # 'foot_score':
+                    # self._get_part_score(key_point[cuts[1]:cuts[2]]),
+                    # 'face_score':
+                    # self._get_part_score(key_point[cuts[2]:cuts[3]]),
+                    # 'lefthand_score':
+                    # self._get_part_score(key_point[cuts[3]:cuts[4]]),
+                    # 'righthand_score':
+                    # self._get_part_score(key_point[cuts[4]:cuts[5]]),
+                    # 'wholebody_score':
+                    # img_kpt['score'],
                     'bbox': [left_top[0], left_top[1], w, h]
                 })
 
