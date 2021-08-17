@@ -84,7 +84,7 @@ model = dict(
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
-        scale_factor=[1],
+        scale_factor=[0.5, 1, 1.5, 2, 2.5],
         with_heatmaps=[True],
         with_pafs=[True],
         project2image=True,
@@ -136,7 +136,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='BottomUpGetImgSize', test_scale_factor=[1]),
+    dict(type='BottomUpGetImgSize', test_scale_factor=[0.5, 1, 1.5, 2, 2.5]),
     dict(
         type='BottomUpResizeAlign',
         transforms=[
