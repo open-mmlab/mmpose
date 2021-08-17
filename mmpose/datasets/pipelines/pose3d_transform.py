@@ -539,3 +539,98 @@ class Generate3DHeatmapTarget:
         results['target'] = target
         results['target_weight'] = target_weight
         return results
+
+
+@PIPELINES.register_module()
+class Generate3DHeatmapTarget_h36m:
+    """Generate the target 3d heatmap.
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+        sigma: Sigma of heatmap gaussian.
+        joint_indices (list): Indices of joints used for heatmap generation.
+        If None (default) is given, all joints will be used.
+        max_bound (float): The maximal value of heatmap.
+    """
+
+    def __init__(self, sigma=2, joint_indices=None, max_bound=1.0):
+        self.sigma = sigma
+        self.joint_indices = joint_indices
+        self.max_bound = max_bound
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = np.concatenate(
+            (results['joints_3d'][1:, :2], results['target'][:, 2].reshape(
+                16, 1)),
+            axis=1)
+        joints_3d_visible = results['target_visible']
+        cfg = results['ann_info']
+        image_size = cfg['image_size']
+        W, H, D = cfg['heatmap_size']
+        heatmap3d_depth_bound = cfg['heatmap3d_depth_bound']
+        joint_weights = cfg['joint_weights']
+        use_different_joint_weights = cfg['use_different_joint_weights']
+
+        # select the joints used for target generation
+        if self.joint_indices is not None:
+            joints_3d = joints_3d[self.joint_indices, ...]
+            joints_3d_visible = joints_3d_visible[self.joint_indices, ...]
+            joint_weights = joint_weights[self.joint_indices, ...]
+        num_joints = joints_3d.shape[0]
+
+        results['target'] = []
+        for i in range(len(D)):
+            # get the joint location in heatmap coordinates
+            mu_x = joints_3d[:, 0] * W / image_size[0]
+            mu_y = joints_3d[:, 1] * H / image_size[1]
+            mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D[i]
+
+            target = np.zeros([num_joints, D[i], H, W], dtype=np.float32)
+
+            target_weight = joints_3d_visible[:, 0].astype(np.float32)
+            target_weight = target_weight * (mu_z >= 0) * (mu_z < D[i])
+            if use_different_joint_weights:
+                target_weight = target_weight * joint_weights
+            target_weight = target_weight[:, None]
+
+            # only compute the voxel value near the joints location
+            tmp_size = 3 * self.sigma
+
+            # get neighboring voxels coordinates
+            x = y = z = np.arange(
+                2 * tmp_size + 1, dtype=np.float32) - tmp_size
+            zz, yy, xx = np.meshgrid(z, y, x)
+            xx = xx[None, ...].astype(np.float32)
+            yy = yy[None, ...].astype(np.float32)
+            zz = zz[None, ...].astype(np.float32)
+            mu_x = mu_x[..., None, None, None]
+            mu_y = mu_y[..., None, None, None]
+            mu_z = mu_z[..., None, None, None]
+            xx, yy, zz = xx + mu_x, yy + mu_y, zz + mu_z
+
+            # round the coordinates
+            xx = xx.round().clip(0, W - 1)
+            yy = yy.round().clip(0, H - 1)
+            zz = zz.round().clip(0, D[i] - 1)
+
+            # compute the target value near joints
+            local_target = \
+                np.exp(-((xx - mu_x)**2 + (yy - mu_y)**2 + (zz - mu_z)**2) /
+                        (2 * self.sigma**2))
+
+            # put the local target value to the full target heatmap
+            local_size = xx.shape[1]
+            idx_joints = np.tile(
+                np.arange(num_joints)[:, None, None, None],
+                [1, local_size, local_size, local_size])
+            idx = np.stack([idx_joints, zz, yy, xx],
+                           axis=-1).astype(np.long).reshape(-1, 4)
+            target[idx[:, 0], idx[:, 1], idx[:, 2],
+                   idx[:, 3]] = local_target.reshape(-1)
+            target = target * self.max_bound
+            results['target'].append(target)
+            results['target_weight'] = target_weight
+        return results
