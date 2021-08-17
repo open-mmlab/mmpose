@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=50)
-evaluation = dict(interval=50, metric='mAP', save_best='AP')
+evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
     type='Adam',
@@ -71,7 +71,8 @@ model = dict(
             with_ae_loss=[True, True, True, True],
             push_loss_factor=[0.001, 0.001, 0.001, 0.001],
             pull_loss_factor=[0.001, 0.001, 0.001, 0.001],
-            heatmaps_loss_factor=[1.0, 1.0, 1.0, 1.0])),
+            heatmaps_loss_factor=[1.0, 1.0, 1.0, 1.0],
+            supervise_empty=False)),
     train_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         img_size=data_cfg['image_size']),
@@ -147,7 +148,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=24,
+    samples_per_gpu=12,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoWholeBodyDataset',
