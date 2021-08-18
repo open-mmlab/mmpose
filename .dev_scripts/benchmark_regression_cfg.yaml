@@ -98,7 +98,7 @@ model_list:
                 # override some settings in the used config, the key-value pair
                 # in xxx=yyy format, will be merged into config file. For example,
                 # '--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'
-                cfg_options:
+                cfg-options:
                     model.backbone.depth=18
                     model.backbone.with_cp=True
                     lr_config.warmup_ratio=0.01
@@ -116,7 +116,7 @@ model_list:
             task_name: train_hrnet_w32_coco_256x192
             py_args:
                 resume-from:
-                cfg_options:
+                cfg-options:
 
         -   config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco_256x192.py
             priority: 2
@@ -128,7 +128,7 @@ model_list:
             task_name: train_mobilenetv2_coco_256x192
             py_args:
                 resume-from:
-                cfg_options:
+                cfg-options:
 
         -   config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256.py
             priority: 3
@@ -140,4 +140,4 @@ model_list:
             task_name: train_rnet_w32_mpii_256x256
             py_args:
                 resume-from:
-                cfg_options:
+                cfg-options:

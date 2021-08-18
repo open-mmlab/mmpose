@@ -223,7 +223,7 @@ def main():
         for i in range(num_train_win):
             os.system('tmux select-window -t 0')
             # tmux select-window -t infer_j
-            os.system(f'tmux select-window -t train_{i + 1}')
+            os.system(f'tmux select-window -t train_{i+1}')
 
             if num_train_task_tmp >= args.panes_per_window:
                 num_cur_task = args.panes_per_window
@@ -237,7 +237,7 @@ def main():
                 cmd = f'conda activate {args.env}'
                 os.system(f'tmux send-keys "{cmd}" "C-m"')
                 cmd = 'echo executing train task: ' + \
-                      f'{i * args.panes_per_window + j + 1}'
+                      f'{i*args.panes_per_window+j+1}'
                 os.system(f'tmux send-keys "{cmd}" "C-m"')
 
                 cur_cfg = model_cfg_train[i * args.panes_per_window + j]
