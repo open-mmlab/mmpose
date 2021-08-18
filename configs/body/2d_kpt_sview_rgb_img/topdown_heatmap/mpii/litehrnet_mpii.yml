@@ -1,34 +1,34 @@
 Collections:
-- Name: litehrnet_mpii
-  Metadata:
+- Metadata:
     Architecture:
     - LiteHRNet
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_mpii.md
+  Name: litehrnet_mpii
   Paper:
   - https://arxiv.org/abs/2104.06403
   - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_mpii.md
 Models:
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--litehrnet_18_mpii_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py
   In Collection: litehrnet_mpii
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py
   Metadata:
     Training Data: MPII
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--litehrnet_18_mpii_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII
+  - Dataset: MPII
     Metrics:
       Mean: 0.859
       Mean@0.1: 0.26
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_mpii_256x256-cabd7984_20210623.pth
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--litehrnet_30_mpii_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_30_mpii_256x256.py
   In Collection: litehrnet_mpii
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_30_mpii_256x256.py
   Metadata:
     Training Data: MPII
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--litehrnet_30_mpii_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII
+  - Dataset: MPII
     Metrics:
       Mean: 0.869
       Mean@0.1: 0.271
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_mpii_256x256-faae8bd8_20210622.pth

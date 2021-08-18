@@ -26,19 +26,22 @@ def dump_yaml_and_check_difference(obj, file):
         Bool: If the target YAML file is different from the original.
     """
 
-    original = None
+    str_dump = mmcv.dump(obj, None, file_format='yaml', sort_keys=True)
+
     if osp.isfile(file):
+        file_exists = True
         with open(file, 'r', encoding='utf-8') as f:
-            original = f.read()
+            str_orig = f.read()
+    else:
+        file_exists = False
+        str_orig = None
 
-    with open(file, 'w', encoding='utf-8') as f:
-        mmcv.dump(obj, f, file_format='yaml', sort_keys=False)
-
-    is_different = True
-    if original is not None:
-        with open(file, 'r') as f:
-            new = f.read()
-        is_different = (original != new)
+    if file_exists and str_orig == str_dump:
+        is_different = False
+    else:
+        is_different = True
+        with open(file, 'w', encoding='utf-8') as f:
+            f.write(str_dump)
 
     return is_different
 
@@ -245,7 +248,7 @@ if __name__ == '__main__':
     file_list = [fn for fn in sys.argv[1:] if osp.basename(fn) != 'README.md']
 
     if not file_list:
-        exit(0)
+        sys.exit(0)
 
     file_modified = False
     for fn in file_list:
@@ -253,4 +256,4 @@ if __name__ == '__main__':
 
     file_modified |= update_model_index()
 
-    exit(1 if file_modified else 0)
+    sys.exit(1 if file_modified else 0)

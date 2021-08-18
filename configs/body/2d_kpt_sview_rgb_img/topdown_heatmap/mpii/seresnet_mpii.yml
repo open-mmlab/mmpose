@@ -1,46 +1,46 @@
 Collections:
-- Name: seresnet_mpii
-  Metadata:
+- Metadata:
     Architecture:
     - SEResNet
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet_mpii.md
+  Name: seresnet_mpii
   Paper:
   - http://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper
   - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet_mpii.md
 Models:
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet50_mpii_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet50_mpii_256x256.py
   In Collection: seresnet_mpii
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet50_mpii_256x256.py
   Metadata:
     Training Data: MPII
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet50_mpii_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII
+  - Dataset: MPII
     Metrics:
       Mean: 0.884
       Mean@0.1: 0.292
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256-1bb21f79_20200927.pth
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet101_mpii_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet101_mpii_256x256.py
   In Collection: seresnet_mpii
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet101_mpii_256x256.py
   Metadata:
     Training Data: MPII
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet101_mpii_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII
+  - Dataset: MPII
     Metrics:
       Mean: 0.884
       Mean@0.1: 0.295
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256-0ba14ff5_20200927.pth
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet152_mpii_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet152_mpii_256x256.py
   In Collection: seresnet_mpii
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet152_mpii_256x256.py
   Metadata:
     Training Data: MPII
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--seresnet152_mpii_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII
+  - Dataset: MPII
     Metrics:
       Mean: 0.884
       Mean@0.1: 0.287
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256-6ea1e774_20200927.pth
