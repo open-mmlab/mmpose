@@ -174,13 +174,15 @@ class MaskedMSELoss(nn.Module):
         assert output.size() == target.size()
 
         if self.use_mask:
-            if not self.supervise_empty:
-                empty_mask = (target.sum(dim=[2, 3], keepdim=True) > 0).float()
-                mask = empty_mask.expand_as(
-                    output) * mask[:, None, :, :].expand_as(output)
-            else:
-                mask = mask[:, None, :, :].expand_as(output)
-            loss = self.criterion(output * mask, target * mask)
+            loss = self.criterion(
+                output, target) * mask[:, None, :, :].expand_as(output)
+            # if not self.supervise_empty:
+            #     empty_mask = (target.sum(dim=[2, 3], keepdim=True) > 0).float()
+            #     mask = empty_mask.expand_as(
+            #         output) * mask[:, None, :, :].expand_as(output)
+            # else:
+            #     mask = mask[:, None, :, :].expand_as(output)
+            # loss = self.criterion(output * mask, target * mask)
         else:
             loss = self.criterion(output, target)
 
