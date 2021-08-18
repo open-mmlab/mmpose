@@ -59,7 +59,7 @@ class ParametricMesh(BasePose):
         self.mesh_head = builder.build_head(mesh_head)
         self.generator = torch.nn.Sequential(self.backbone, self.mesh_head)
 
-        self.smpl = builder.build_external_model(smpl)
+        self.smpl = builder.build_mesh_model(smpl)
 
         self.with_gan = disc is not None and loss_gan is not None
         if self.with_gan:

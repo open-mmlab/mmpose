@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from tests.test_model.test_mesh_forward import generate_smpl_weight_file
 
-from mmpose.models.external_model import SMPL
+from mmpose.models.utils import SMPL
 
 
 def test_smpl():

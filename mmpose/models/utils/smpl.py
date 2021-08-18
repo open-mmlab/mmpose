@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from ..builder import EXTERNAL_MODELS
+from ..builder import MESH_MODELS
 
 try:
     from smplx import SMPL as SMPL_
@@ -11,7 +11,7 @@ except (ImportError, ModuleNotFoundError):
     has_smpl = False
 
 
-@EXTERNAL_MODELS.register_module()
+@MESH_MODELS.register_module()
 class SMPL(nn.Module):
     """SMPL 3d human mesh model of paper ref: Matthew Loper. ``SMPL: A skinned
     multi-person linear model''. This module is based on the smplx project
