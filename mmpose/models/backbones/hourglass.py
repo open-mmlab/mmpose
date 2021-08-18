@@ -90,7 +90,7 @@ class HourglassNet(BaseBackbone):
 
     Stacked Hourglass Networks for Human Pose Estimation.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1603.06937>`__ .
+    <https://arxiv.orgabs/1603.06937>`__ .
 
     Args:
         downsample_times (int): Downsample times in a HourglassModule.
@@ -156,17 +156,40 @@ class HourglassNet(BaseBackbone):
             for _ in range(num_stacks - 1)
         ])
 
-        self.out_convs = nn.ModuleList([
-            ConvModule(
-                cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
-            for _ in range(num_stacks)
-        ])
+        if isinstance(feat_channel, list):
+            self.out_convs = nn.ModuleList([
+                ConvModule(
+                    cur_channel,
+                    feat_channel[i],
+                    3,
+                    padding=1,
+                    norm_cfg=norm_cfg) for i in range(num_stacks)
+            ])
 
-        self.remap_convs = nn.ModuleList([
-            ConvModule(
-                feat_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
-        ])
+            self.remap_convs = nn.ModuleList([
+                ConvModule(
+                    feat_channel[i],
+                    cur_channel,
+                    1,
+                    norm_cfg=norm_cfg,
+                    act_cfg=None) for i in range(num_stacks - 1)
+            ])
+
+        else:
+            self.out_convs = nn.ModuleList([
+                ConvModule(
+                    cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
+                for _ in range(num_stacks)
+            ])
+
+            self.remap_convs = nn.ModuleList([
+                ConvModule(
+                    feat_channel,
+                    cur_channel,
+                    1,
+                    norm_cfg=norm_cfg,
+                    act_cfg=None) for _ in range(num_stacks - 1)
+            ])
 
         self.relu = nn.ReLU(inplace=True)
 

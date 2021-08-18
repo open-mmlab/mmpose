@@ -127,12 +127,16 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
         losses = dict()
 
         assert isinstance(output, list)
-        assert target.dim() == 4 and target_weight.dim() == 3
+        if isinstance(target, list):
+            target[0].dim == 4 and target_weight.dim() == 3
+        else:
+            target.dim() == 4 and target_weight.dim() == 3
 
         if isinstance(self.loss, nn.Sequential):
             assert len(self.loss) == len(output)
+
         for i in range(len(output)):
-            target_i = target
+            target_i = target[i]
             target_weight_i = target_weight
             if isinstance(self.loss, nn.Sequential):
                 loss_func = self.loss[i]
@@ -161,15 +165,29 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             target_weight (torch.Tensor[NxKx1]):
                 Weights across different joint types.
         """
-
+        # import pdb
+        # pdb.set_trace()
         accuracy = dict()
 
         if self.target_type == 'GaussianHeatmap':
-            _, avg_acc, _ = pose_pck_accuracy(
-                output[-1].detach().cpu().numpy(),
-                target.detach().cpu().numpy(),
-                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            accuracy['acc_pose'] = float(avg_acc)
+            if isinstance(target, list):
+                # avg_acc = []
+                # for i in range(len(target)):
+                #     _, temp, _ = pose_pck_accuracy(
+                #         output[i].detach().cpu().numpy(),
+                #         target[i].detach().cpu().numpy())
+                #     avg_acc.append(temp)
+                # accuracy['acc_pose'] = float(sum(avg_acc)) / len(target)
+                _, avg_acc, _ = pose_pck_accuracy(
+                    output[-1].detach().cpu().numpy(),
+                    target[-1].detach().cpu().numpy())
+                accuracy['acc_pose'] = float(avg_acc)
+            else:
+                _, avg_acc, _ = pose_pck_accuracy(
+                    output[-1].detach().cpu().numpy(),
+                    target.detach().cpu().numpy(),
+                    target_weight.detach().cpu().numpy().squeeze(-1) > 0)
+                accuracy['acc_pose'] = float(avg_acc)
 
         return accuracy
 

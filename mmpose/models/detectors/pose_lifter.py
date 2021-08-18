@@ -194,7 +194,7 @@ class PoseLifter(BasePose):
             keypoint_losses = self.keypoint_head.get_loss(
                 output, target, target_weight)
             keypoint_accuracy = self.keypoint_head.get_accuracy(
-                output, target, target_weight, metas)
+                output, target, target_weight)
             losses.update(keypoint_losses)
             losses.update(keypoint_accuracy)
 

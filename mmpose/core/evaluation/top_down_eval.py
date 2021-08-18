@@ -128,7 +128,7 @@ def _get_max_preds_3d(heatmaps):
     return preds, maxvals
 
 
-def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
+def pose_pck_accuracy(output, target, mask=None, thr=0.05, normalize=None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
@@ -161,6 +161,8 @@ def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
         - int: Number of valid keypoints.
     """
     N, K, H, W = output.shape
+    if mask is None:
+        mask = np.ones((N, K), dtype=np.bool8)
     if K == 0:
         return None, 0, 0
     if normalize is None:

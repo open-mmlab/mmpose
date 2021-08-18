@@ -631,6 +631,8 @@ class Generate3DHeatmapTarget_h36m:
             target[idx[:, 0], idx[:, 1], idx[:, 2],
                    idx[:, 3]] = local_target.reshape(-1)
             target = target * self.max_bound
+            num, lenZ, lenY, lenX = target.shape
+            target = target.reshape(num * lenZ, lenY, lenX)
             results['target'].append(target)
             results['target_weight'] = target_weight
         return results

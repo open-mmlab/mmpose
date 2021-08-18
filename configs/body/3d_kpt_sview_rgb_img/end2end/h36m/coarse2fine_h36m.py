@@ -39,6 +39,12 @@ channel_cfg = dict(
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
     ])
 
+channel_cfg = dict(
+    num_output_channels=16,
+    dataset_joints=16,
+    dataset_channel=list(range(16)),
+    inference_channel=list(range(16)))
+
 # model settings
 model = dict(
     type='PoseLifter',
@@ -47,12 +53,15 @@ model = dict(
         type='HourglassNet',
         downsample_times=2,
         num_stacks=5,
-        feat_channel=[1, 2, 4, 8, 64]),
+        feat_channel=[1 * 16, 2 * 16, 4 * 16, 8 * 16, 64 * 16]),
     keypoint_head=dict(
-        type='TemporalRegressionHead',
-        in_channels=1024,
-        num_joints=16,  # do not predict root joint
-        loss_keypoint=dict(type='MSELoss')),
+        type='TopdownHeatmapMultiStageHead',
+        in_channels=channel_cfg['num_output_channels'],
+        out_channels=channel_cfg['num_output_channels'],
+        num_stages=5,
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=0, ),
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=False)),
     train_cfg=dict(),
     test_cfg=dict(restore_global_position=True))
 
@@ -108,27 +117,8 @@ joint_3d_normalize_param = dict(
          [0.24400695, 0.23975028, 0.25520584]])
 
 train_pipeline = [
-    # dict(
-    #     type='GetRootCenteredPose',
-    #     item='target',
-    #     visible_item='target_visible',
-    #     root_index=0,
-    #     root_name='root_position',
-    #     remove_root=True),
-    # dict(type='LoadImageFromFile'),
-    # dict(type='ToTensor'),
-    # dict(
-    #     type='NormalizeTensor',
-    #     mean=[0.485, 0.456, 0.406],
-    #     std=[0.229, 0.224, 0.225]),
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
-    dict(
-        type='TopDownHalfBodyTransform',
-        num_joints_half_body=8,
-        prob_half_body=0.3),
-    dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -142,12 +132,6 @@ train_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=True),
-    # dict(
-    #     type='CameraProjection',
-    #     item='target',
-    #     mode='camera_to_pixel',
-    #     output_name='joint_2d_pixel',
-    # ),
     dict(
         type='Generate3DHeatmapTarget_h36m',
         sigma=2.5,
@@ -170,8 +154,8 @@ test_pipeline = val_pipeline
 
 data = dict(
     samples_per_gpu=3,
-    workers_per_gpu=0,
-    val_dataloader=dict(samples_per_gpu=64),
+    workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=3),
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset_E2E',
