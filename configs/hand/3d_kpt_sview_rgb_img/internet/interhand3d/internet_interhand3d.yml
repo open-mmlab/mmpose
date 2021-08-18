@@ -1,40 +1,40 @@
 Collections:
-- Name: internet_interhand3d
-  Metadata:
+- Metadata:
     Architecture:
     - InterNet
     - ResNet
-  README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
+  Name: internet_interhand3d
   Paper:
   - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
   - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
   - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
 Models:
-- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+- Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   In Collection: internet_interhand3d
-  Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   Metadata:
     Training Data: InterHand2.6M
+  Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   Results:
-  - Task: 3D Hand Pose Estimation
-    Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M
     Metrics:
-      MPJPE-single: 9.47
-      MPJPE-interacting: 13.4
-      MPJPE-all: 11.59
       APh: 0.99
+      MPJPE-all: 11.59
+      MPJPE-interacting: 13.4
+      MPJPE-single: 9.47
+    Task: 3D Hand Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
-- Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+- Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   In Collection: internet_interhand3d
-  Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   Metadata:
     Training Data: InterHand2.6M
+  Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
   Results:
-  - Task: 3D Hand Pose Estimation
-    Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M
     Metrics:
-      MPJPE-single: 11.22
-      MPJPE-interacting: 15.23
-      MPJPE-all: 13.16
       APh: 0.98
+      MPJPE-all: 13.16
+      MPJPE-interacting: 15.23
+      MPJPE-single: 11.22
+    Task: 3D Hand Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth

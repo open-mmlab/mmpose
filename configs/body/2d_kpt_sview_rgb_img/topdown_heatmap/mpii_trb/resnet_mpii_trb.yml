@@ -1,51 +1,51 @@
 Collections:
-- Name: resnet_mpii_trb
-  Metadata:
+- Metadata:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
+  Name: resnet_mpii_trb
   Paper:
   - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
   - http://openaccess.thecvf.com/content_ICCV_2019/html/Duan_TRB_A_Novel_Triplet_Representation_for_Understanding_2D_Human_Body_ICCV_2019_paper.html
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
 Models:
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res50_mpii_trb_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
   In Collection: resnet_mpii_trb
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
   Metadata:
     Training Data: MPII-TRB
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res50_mpii_trb_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII-TRB
+  - Dataset: MPII-TRB
     Metrics:
-      Skeleton Acc: 0.887
       Contour Acc: 0.858
       Mean Acc: 0.868
+      Skeleton Acc: 0.887
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res101_mpii_trb_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
   In Collection: resnet_mpii_trb
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
   Metadata:
     Training Data: MPII-TRB
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res101_mpii_trb_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII-TRB
+  - Dataset: MPII-TRB
     Metrics:
-      Skeleton Acc: 0.89
       Contour Acc: 0.863
       Mean Acc: 0.873
+      Skeleton Acc: 0.89
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth
-- Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res152_mpii_trb_256x256
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
   In Collection: resnet_mpii_trb
-  Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
   Metadata:
     Training Data: MPII-TRB
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res152_mpii_trb_256x256
   Results:
-  - Task: Image-based Human Body 2D Pose Estimation
-    Dataset: MPII-TRB
+  - Dataset: MPII-TRB
     Metrics:
-      Skeleton Acc: 0.897
       Contour Acc: 0.868
       Mean Acc: 0.879
+      Skeleton Acc: 0.897
+    Task: Image-based Human Body 2D Pose Estimation
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth
