@@ -4,7 +4,7 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
+evaluation = dict(interval=1, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
 
 # optimizer settings
 optimizer = dict(
@@ -146,16 +146,54 @@ train_pipeline = [
             'flip_pairs',
             'root_position',
             'root_position_index',
+            'center',
+            'scale',
+            'rotation',
+            'image_file',
+            'target_image_path',
+            'target_image_paths',
         ])
 ]
 
-val_pipeline = train_pipeline
+val_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='TopDownAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
+    dict(
+        type='GetRootCenteredPose',
+        item='target',
+        visible_item='target_visible',
+        root_index=0,
+        root_name='root_position',
+        remove_root=True),
+    dict(
+        type='Collect',
+        keys=[('img', 'input'), 'target'],
+        meta_name='metas',
+        meta_keys=[
+            'target_image_path',
+            'flip_pairs',
+            'root_position',
+            'root_position_index',
+            'center',
+            'scale',
+            'rotation',
+            'image_file',
+            'target_image_path',
+            'target_image_paths',
+        ])
+]
+
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=3,
-    workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=3),
+    samples_per_gpu=2,
+    workers_per_gpu=0,
+    val_dataloader=dict(samples_per_gpu=2),
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset_E2E',
@@ -164,8 +202,8 @@ data = dict(
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='Body3DH36MDataset',
-        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
+        type='Body3DH36MDataset_E2E',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

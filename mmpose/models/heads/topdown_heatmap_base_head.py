@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import torch.nn as nn
 
-from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps
+from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps3d
 
 
 class TopdownHeatmapBaseHead(nn.Module):
@@ -59,28 +59,21 @@ class TopdownHeatmapBaseHead(nn.Module):
         c = np.zeros((batch_size, 2), dtype=np.float32)
         s = np.zeros((batch_size, 2), dtype=np.float32)
         image_paths = []
+        imgae_relative_paths = []
         score = np.ones(batch_size)
         for i in range(batch_size):
             c[i, :] = img_metas[i]['center']
             s[i, :] = img_metas[i]['scale']
             image_paths.append(img_metas[i]['image_file'])
+            imgae_relative_paths.append(img_metas[i]['target_image_path'])
 
             if 'bbox_score' in img_metas[i]:
                 score[i] = np.array(img_metas[i]['bbox_score']).reshape(-1)
             if bbox_ids is not None:
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
-        preds, maxvals = keypoints_from_heatmaps(
-            output,
-            c,
-            s,
-            unbiased=self.test_cfg.get('unbiased_decoding', False),
-            post_process=self.test_cfg.get('post_process', 'default'),
-            kernel=self.test_cfg.get('modulate_kernel', 11),
-            valid_radius_factor=self.test_cfg.get('valid_radius_factor',
-                                                  0.0546875),
-            use_udp=self.test_cfg.get('use_udp', False),
-            target_type=self.test_cfg.get('target_type', 'GaussianHeatmap'))
+        preds, maxvals = keypoints_from_heatmaps3d(
+            output.reshape(batch_size, 16, 64, 64, 64), c, s)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
@@ -96,8 +89,9 @@ class TopdownHeatmapBaseHead(nn.Module):
         result['preds'] = all_preds
         result['boxes'] = all_boxes
         result['image_paths'] = image_paths
+        result['target_image_paths'] = image_paths
+        result['relative_paths'] = imgae_relative_paths
         result['bbox_ids'] = bbox_ids
-
         return result
 
     @staticmethod

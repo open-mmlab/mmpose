@@ -119,6 +119,13 @@ class Body3DH36MDataset(Body3DBaseDataset):
             raise NotImplementedError(
                 f'Unhandled joint_2d_src option {self.joint_2d_src}')
 
+        # get a part set
+        data_info['imgnames'] = data_info['imgnames'][0:20]
+        data_info['joints_3d'] = data_info['joints_3d'][0:20]
+        data_info['joints_2d'] = data_info['joints_2d'][0:20]
+        data_info['scales'] = data_info['scales'][0:20]
+        data_info['centers'] = data_info['centers'][0:20]
+
         return data_info
 
     @staticmethod

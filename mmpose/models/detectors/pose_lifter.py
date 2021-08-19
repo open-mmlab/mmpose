@@ -238,7 +238,6 @@ class PoseLifter(BasePose):
     def forward_test(self, input, metas, **kwargs):
         """Defines the computation performed at every call when training."""
         assert input.size(0) == len(metas)
-
         results = {}
 
         features = self.backbone(input)

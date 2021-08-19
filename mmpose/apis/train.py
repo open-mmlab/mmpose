@@ -39,7 +39,7 @@ def train_model(model,
     """
     logger = get_root_logger(cfg.log_level)
 
-    # prepare data loaders
+    # prepare data
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
     dataloader_setting = dict(
         samples_per_gpu=cfg.data.get('samples_per_gpu', {}),

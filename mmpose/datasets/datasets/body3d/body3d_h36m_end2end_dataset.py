@@ -123,17 +123,18 @@ class Body3DH36MDataset_E2E(Body3DBaseDataset):
                 f'Unhandled joint_2d_src option {self.joint_2d_src}')
 
         # get a part set
-        data_info['imgnames'] = data_info['imgnames'][0:5000]
-        data_info['joints_3d'] = data_info['joints_3d'][0:5000]
-        data_info['joints_2d'] = data_info['joints_2d'][0:5000]
-        data_info['scales'] = data_info['scales'][0:5000]
-        data_info['centers'] = data_info['centers'][0:5000]
+        data_info['imgnames'] = data_info['imgnames'][0:20]
+        data_info['joints_3d'] = data_info['joints_3d'][0:20]
+        data_info['joints_2d'] = data_info['joints_2d'][0:20]
+        data_info['scales'] = data_info['scales'][0:20]
+        data_info['centers'] = data_info['centers'][0:20]
 
         return data_info
 
     def prepare_data(self, idx):
         results = super().prepare_data(idx)
         results['image_file'] = self.img_prefix + results['target_image_path']
+        results['target_image_paths'] = results['target_image_path']
         results['scale'] = np.squeeze(results['scales'])
         results['center'] = np.squeeze(results['centers'])
         results['rotation'] = 0
@@ -229,6 +230,7 @@ class Body3DH36MDataset_E2E(Body3DBaseDataset):
                  metric='mpjpe',
                  logger=None,
                  **kwargs):
+
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
@@ -240,7 +242,7 @@ class Body3DH36MDataset_E2E(Body3DBaseDataset):
         kpts = []
         for output in outputs:
             preds = output['preds']
-            image_paths = output['target_image_paths']
+            image_paths = output['relative_paths']
             batch_size = len(image_paths)
             for i in range(batch_size):
                 target_id = self.name2id[image_paths[i]]
@@ -285,6 +287,7 @@ class Body3DH36MDataset_E2E(Body3DBaseDataset):
         gts = []
         masks = []
         action_category_indices = defaultdict(list)
+
         for idx, result in enumerate(keypoint_results):
             pred = result['keypoints']
             target_id = result['target_id']
@@ -312,7 +315,8 @@ class Body3DH36MDataset_E2E(Body3DBaseDataset):
             alignment = 'scale'
         else:
             raise ValueError(f'Invalid mode: {mode}')
-
+        import pdb
+        pdb.set_trace()
         error = keypoint_mpjpe(preds, gts, masks, alignment)
         name_value_tuples = [(err_name, error)]
 
