@@ -19,7 +19,6 @@ def generate_smpl_weight_file(output_dir):
     joint_regressor_file = os.path.join(output_dir, 'test_joint_regressor.npy')
     np.save(joint_regressor_file, np.zeros([24, 6890]))
 
-    test_model_file = os.path.join(output_dir, 'SMPL_NEUTRAL.pkl')
     test_data = {}
     test_data['f'] = np.zeros([1, 3], dtype=np.int32)
     test_data['J_regressor'] = csc_matrix(np.zeros([24, 6890]))
@@ -29,7 +28,12 @@ def generate_smpl_weight_file(output_dir):
     test_data['posedirs'] = np.zeros([6890, 3, 207])
     test_data['v_template'] = np.zeros([6890, 3])
     test_data['shapedirs'] = np.zeros([6890, 3, 10])
-    with open(test_model_file, 'wb') as out_file:
+
+    with open(os.path.join(output_dir, 'SMPL_NEUTRAL.pkl'), 'wb') as out_file:
+        pickle.dump(test_data, out_file)
+    with open(os.path.join(output_dir, 'SMPL_MALE.pkl'), 'wb') as out_file:
+        pickle.dump(test_data, out_file)
+    with open(os.path.join(output_dir, 'SMPL_FEMALE.pkl'), 'wb') as out_file:
         pickle.dump(test_data, out_file)
     return
 
@@ -51,6 +55,7 @@ def test_parametric_mesh_forward():
         ),
         disc=None,
         smpl=dict(
+            type='SMPL',
             smpl_path='tests/data/smpl',
             joints_regressor='tests/data/smpl/test_joint_regressor.npy'),
         train_cfg=dict(disc_step=1),
