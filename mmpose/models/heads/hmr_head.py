@@ -14,8 +14,7 @@ class HMRMeshHead(nn.Module):
 
     Args:
         in_channels (int): Number of input channels
-        in_res (int): The resolution of input feature map.
-        smpl_mean_parameters (str): The file name of the mean SMPL parameters
+        smpl_mean_params (str): The file name of the mean SMPL parameters
         n_iter (int): The iterations of estimating delta parameters
     """
 

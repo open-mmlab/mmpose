@@ -8,6 +8,7 @@ NECKS = MODELS
 HEADS = MODELS
 LOSSES = MODELS
 POSENETS = MODELS
+MESH_MODELS = MODELS
 
 
 def build_backbone(cfg):
@@ -33,3 +34,8 @@ def build_loss(cfg):
 def build_posenet(cfg):
     """Build posenet."""
     return POSENETS.build(cfg)
+
+
+def build_mesh_model(cfg):
+    """Build mesh model."""
+    return MESH_MODELS.build(cfg)
