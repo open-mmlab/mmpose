@@ -1,6 +1,6 @@
 log_level = 'INFO'
 load_from = None
-resume_from = None
+resume_from = 'work_dirs/hrnet_w32_coco_wholebody_480x480/epoch_150.pth'
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=50)
