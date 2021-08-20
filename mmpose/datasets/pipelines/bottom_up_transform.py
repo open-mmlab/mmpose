@@ -681,16 +681,19 @@ class BottomUpGetImgSize:
     `results['ann_info']['image_size']×current_scale`.
 
     Args:
-        test_scale_factor (List[float]): Multi scale
+        test_scale_factor (List[float]): Multi scale.
+        max_input_size (int): Constraint of the max input size.
         current_scale (int): default 1
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, test_scale_factor, current_scale=1, use_udp=False):
+    def __init__(self, test_scale_factor, max_input_size=None,
+                 current_scale=1, use_udp=False):
         self.test_scale_factor = test_scale_factor
         self.min_scale = min(test_scale_factor)
+        self.max_input_size = max_input_size
         self.current_scale = current_scale
         self.use_udp = use_udp
 
@@ -731,7 +734,18 @@ class BottomUpGetImgSize:
             center = (scale_w / 2.0, scale_h / 2.0)
         else:
             center = np.array([round(w / 2.0), round(h / 2.0)])
-        results['ann_info']['test_scale_factor'] = self.test_scale_factor
+
+        # calculate the test scale factor
+        if self.max_input_size is not None:
+            test_scale_factor = np.array(self.test_scale_factor)
+            accept_scale_w = (test_scale_factor * w_resized) < self.max_input_size
+            accept_scale_h = (test_scale_factor * h_resized) < self.max_input_size
+            keep = (accept_scale_w * accept_scale_h) > 0
+            test_scale_factor = test_scale_factor[keep].tolist()
+        else:
+            test_scale_factor = self.test_scale_factor
+
+        results['ann_info']['test_scale_factor'] = test_scale_factor
         results['ann_info']['base_size'] = (w_resized, h_resized)
         results['ann_info']['center'] = center
         results['ann_info']['scale'] = np.array([scale_w, scale_h])
