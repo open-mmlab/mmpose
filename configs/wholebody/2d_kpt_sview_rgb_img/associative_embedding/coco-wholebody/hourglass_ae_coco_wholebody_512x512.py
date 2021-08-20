@@ -1,6 +1,6 @@
 log_level = 'INFO'
 load_from = None
-resume_from = None
+resume_from = 'work_dirs/hourglass_ae_coco_wholebody_512x512/epoch_50.pth'
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=50)
