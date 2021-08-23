@@ -1,6 +1,6 @@
 log_level = 'INFO'
 load_from = None
-resume_from = 'work_dirs/hourglass_ae_coco_wholebody_512x512/epoch_50.pth'
+resume_from = 'work_dirs/hourglass_ae_coco_wholebody_512x512/epoch_100.pth'
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=50)
@@ -148,7 +148,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=18,
+    samples_per_gpu=12,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoWholeBodyDataset',
