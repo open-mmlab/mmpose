@@ -4,7 +4,7 @@ import warnings
 import mmcv
 import numpy as np
 
-from mmpose.core import imshow_keypoints, imshow_keypoints_3d
+from mmpose.core import imshow_bboxes, imshow_keypoints, imshow_keypoints_3d
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
@@ -260,9 +260,7 @@ class PoseLifter(BasePose):
         return results
 
     def forward_dummy(self, input):
-        """Used for computing network FLOPs.
-
-        See ``tools/get_flops.py``.
+        """Used for computing network FLOPs. See ``tools/get_flops.py``.
 
         Args:
             input (torch.Tensor): Input pose
@@ -294,6 +292,7 @@ class PoseLifter(BasePose):
                     radius=8,
                     thickness=2,
                     vis_height=400,
+                    num_instances=-1,
                     win_name='',
                     show=False,
                     wait_time=0,
