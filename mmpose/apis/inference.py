@@ -161,7 +161,7 @@ def _inference_single_pose_model(model,
         bboxes (list | np.ndarray): All bounding boxes (with scores),
             shaped (N, 4) or (N, 5). (left, top, width, height, [score])
             where N is number of bounding boxes.
-	dataset (str): Dataset name. Deprecated.
+        dataset (str): Dataset name. Deprecated.
         dataset_info (DatasetInfo): A class containing all dataset info.
         outputs (list[str] | tuple[str]): Names of layers whose output is
             to be returned, default: None
