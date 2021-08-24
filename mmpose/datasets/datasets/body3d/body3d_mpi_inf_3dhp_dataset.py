@@ -278,7 +278,7 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
+        masks = np.ones_like(gts[:, :, 0], dtype=bool)
 
         err_name = mode.upper()
         if mode == 'mpjpe':
@@ -319,7 +319,7 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
+        masks = np.ones_like(gts[:, :, 0], dtype=bool)
 
         err_name = mode.upper()
         if mode == '3dpck':
@@ -360,7 +360,7 @@ class Body3DMpiInf3dhpDataset(Body3DBaseDataset):
 
         preds = np.stack(preds)
         gts = np.stack(gts)
-        masks = np.ones_like(gts[:, :, 0], dtype=np.bool)
+        masks = np.ones_like(gts[:, :, 0], dtype=bool)
 
         err_name = mode.upper()
         if mode == '3dauc':
