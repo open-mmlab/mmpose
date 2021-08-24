@@ -188,7 +188,6 @@ class PoseLifter(BasePose):
             features = self.neck(features)
         if self.with_keypoint:
             output = self.keypoint_head(features)
-
         losses = dict()
         if self.with_keypoint:
             keypoint_losses = self.keypoint_head.get_loss(

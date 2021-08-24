@@ -118,13 +118,6 @@ joint_3d_normalize_param = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownRandomFlip', flip_prob=0.5),
-    dict(type='TopDownAffine'),
-    dict(type='ToTensor'),
-    dict(
-        type='NormalizeTensor',
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]),
     dict(
         type='GetRootCenteredPose',
         item='target',
@@ -132,6 +125,18 @@ train_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=True),
+    dict(
+        type='CameraProjection',
+        item='target',
+        mode='camera_to_pixel',
+        output_name='joints_3d'),
+    # dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(type='TopDownAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
     dict(
         type='Generate3DHeatmapTarget_h36m',
         sigma=2.5,
@@ -152,6 +157,7 @@ train_pipeline = [
             'image_file',
             'target_image_path',
             'target_image_paths',
+            'camera_param',
         ])
 ]
 
@@ -185,15 +191,16 @@ val_pipeline = [
             'image_file',
             'target_image_path',
             'target_image_paths',
+            'camera_param',
         ])
 ]
 
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=0,
-    val_dataloader=dict(samples_per_gpu=2),
+    samples_per_gpu=64,
+    workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=64),
     test_dataloader=dict(samples_per_gpu=64),
     train=dict(
         type='Body3DH36MDataset_E2E',
@@ -203,7 +210,7 @@ data = dict(
         pipeline=train_pipeline),
     val=dict(
         type='Body3DH36MDataset_E2E',
-        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',
+        ann_file=f'{data_root}/annotation_body3d/fps50/h36m_test.npz',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),

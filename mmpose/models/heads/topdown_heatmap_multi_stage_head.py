@@ -1,12 +1,15 @@
 import copy as cp
 
+import numpy as np
 import torch.nn as nn
 from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule, Linear,
                       build_activation_layer, build_conv_layer,
                       build_norm_layer, build_upsample_layer, constant_init,
                       kaiming_init, normal_init)
 
+from mmpose.core.camera import SimpleCamera
 from mmpose.core.evaluation import pose_pck_accuracy
+from mmpose.core.evaluation.top_down_eval import keypoints_from_heatmaps3d
 from mmpose.core.post_processing import flip_back
 from mmpose.models.builder import build_loss
 from ..builder import HEADS
@@ -144,9 +147,9 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
                 loss_func = self.loss
             loss_i = loss_func(output[i], target_i, target_weight_i)
             if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i
+                losses['mse_loss'] = loss_i * (float(i) / 4 + 0.5)
             else:
-                losses['mse_loss'] += loss_i
+                losses['mse_loss'] += loss_i * (float(i) / 4 + 0.5)
 
         return losses
 
@@ -233,6 +236,93 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             output_heatmap = output.detach().cpu().numpy()
 
         return output_heatmap
+
+    @staticmethod
+    def _restore_global_position(x, root_pos, root_idx=None):
+        """Restore global position of the root-centered joints.
+
+        Args:
+            x (np.ndarray[N, K, 3]): root-centered joint coordinates
+            root_pos (np.ndarray[N,1,3]): The global position of the
+                root joint.
+            root_idx (int|None): If not none, the root joint will be inserted
+                back to the pose at the given index.
+        """
+        x = x + root_pos
+        if root_idx is not None:
+            x = np.insert(x, root_idx, root_pos.squeeze(1), axis=1)
+        return x
+
+    def decode(self, img_metas, output, **kwargs):
+        """Decode keypoints from heatmaps.
+
+        Args:
+            img_metas (list(dict)): Information about data augmentation
+                By default this includes:
+                - "image_file: path to the image file
+                - "center": center of the bbox
+                - "scale": scale of the bbox
+                - "rotation": rotation of the bbox
+                - "bbox_score": score of bbox
+            output (np.ndarray[N, K, H, W]): model predicted heatmaps.
+        """
+        batch_size = len(img_metas)
+
+        if 'bbox_id' in img_metas[0]:
+            bbox_ids = []
+        else:
+            bbox_ids = None
+
+        c = np.zeros((batch_size, 2), dtype=np.float32)
+        s = np.zeros((batch_size, 2), dtype=np.float32)
+        image_paths = []
+        imgae_relative_paths = []
+        score = np.ones(batch_size)
+        for i in range(batch_size):
+            c[i, :] = img_metas[i]['center']
+            s[i, :] = img_metas[i]['scale']
+            image_paths.append(img_metas[i]['image_file'])
+            imgae_relative_paths.append(img_metas[i]['target_image_path'])
+
+            if 'bbox_score' in img_metas[i]:
+                score[i] = np.array(img_metas[i]['bbox_score']).reshape(-1)
+            if bbox_ids is not None:
+                bbox_ids.append(img_metas[i]['bbox_id'])
+
+        preds, maxvals = keypoints_from_heatmaps3d(
+            output.reshape(batch_size, 16, 64, 64, 64), c, s)
+
+        for i in range(batch_size):
+            cam = SimpleCamera(img_metas[i]['camera_param'])
+            # import pdb
+            # pdb.set_trace()
+            preds[i][:, 2] = ((preds[i][:, 2] / 64) - 0.5) / 2 + 5
+            preds[i] = cam.pixel_to_camera(preds[i])
+
+        preds -= np.array([0, 0, 5])
+
+        root_pos = np.stack([m['root_position'] for m in img_metas])
+        root_idx = img_metas[0].get('root_position_index', None)
+        preds = self._restore_global_position(preds, root_pos, root_idx)
+
+        all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
+        all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
+        all_preds = preds
+        # all_preds[:, :, 2:3] = maxvals
+        all_boxes[:, 0:2] = c[:, 0:2]
+        all_boxes[:, 2:4] = s[:, 0:2]
+        all_boxes[:, 4] = np.prod(s * 200.0, axis=1)
+        all_boxes[:, 5] = score
+
+        result = {}
+
+        result['preds'] = all_preds
+        result['boxes'] = all_boxes
+        result['image_paths'] = image_paths
+        result['target_image_paths'] = image_paths
+        result['relative_paths'] = imgae_relative_paths
+        result['bbox_ids'] = bbox_ids
+        return result
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""

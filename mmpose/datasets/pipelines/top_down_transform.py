@@ -208,7 +208,7 @@ class TopDownAffine:
                 img,
                 trans, (int(image_size[0]), int(image_size[1])),
                 flags=cv2.INTER_LINEAR)
-            for i in range(results['ann_info']['num_joints']):
+            for i in range(results['ann_info']['num_joints'] - 1):
                 if joints_3d_visible[i, 0] > 0.0:
                     joints_3d[i,
                               0:2] = affine_transform(joints_3d[i, 0:2], trans)

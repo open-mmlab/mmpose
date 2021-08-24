@@ -54,7 +54,7 @@ class GetRootCenteredPose:
             f'Got invalid joint shape {joints.shape}'
 
         root = joints[..., root_idx:root_idx + 1, :]
-        joints = joints - root
+        joints = joints - root + np.array([0, 0, 5])
 
         results[self.item] = joints
         if self.root_name is not None:
@@ -563,7 +563,7 @@ class Generate3DHeatmapTarget_h36m:
     def __call__(self, results):
         """Generate the target heatmap."""
         joints_3d = np.concatenate(
-            (results['joints_3d'][1:, :2], results['target'][:, 2].reshape(
+            (results['joints_3d'][0:, :2], results['target'][:, 2].reshape(
                 16, 1)),
             axis=1)
         joints_3d_visible = results['target_visible']
@@ -586,7 +586,7 @@ class Generate3DHeatmapTarget_h36m:
             # get the joint location in heatmap coordinates
             mu_x = joints_3d[:, 0] * W / image_size[0]
             mu_y = joints_3d[:, 1] * H / image_size[1]
-            mu_z = (joints_3d[:, 2] / heatmap3d_depth_bound + 0.5) * D[i]
+            mu_z = ((joints_3d[:, 2] - 5) / heatmap3d_depth_bound + 0.5) * D[i]
 
             target = np.zeros([num_joints, D[i], H, W], dtype=np.float32)
 
@@ -635,4 +635,5 @@ class Generate3DHeatmapTarget_h36m:
             target = target.reshape(num * lenZ, lenY, lenX)
             results['target'].append(target)
             results['target_weight'] = target_weight
+
         return results
