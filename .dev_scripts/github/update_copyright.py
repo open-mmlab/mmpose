@@ -11,8 +11,8 @@ HEADER = 'Copyright (c) OpenMMLab. All rights reserved.\n'
 HEADER_KEYWORDS = {'Copyright', 'License'}
 
 
-def contains_header(lines, comment_symbol):
-    for line in lines:
+def contains_header(lines, comment_symbol, max_header_lines):
+    for line in lines[:max_header_lines]:
         if line.startswith('#!'):
             # skip shebang line
             continue
@@ -42,6 +42,12 @@ def parse_args():
         nargs='+',
         default=['.py', '.c', '.cpp', '.cu', '.sh'],
         help='Only files with one of the given suffixes will be searched.')
+    parser.add_argument(
+        '--max-header-lines',
+        type=int,
+        default=2,
+        help='Only checkout copyright information in the first several lines '
+        'of a file.')
 
     args = parser.parse_args()
     return args
@@ -77,7 +83,7 @@ def main():
 
         with open(file, 'r') as f:
             lines = f.readlines()
-        if not contains_header(lines, comment_symbol):
+        if not contains_header(lines, comment_symbol, args.max_header_lines):
             if lines and lines[0].startswith('#!'):
                 lines.insert(1, comment_symbol + HEADER)
             else:

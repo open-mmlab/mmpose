@@ -55,3 +55,4 @@ repos:
         entry: .dev_scripts/github/update_copyright.py
         language: python
         files: ^(demo|docs|docs_zh-CN|mmpose|tests|tools|\.dev_scripts)/.*\.(py|c|cpp|cu|sh)$
+        exclude: ^demo/mm(detection|tracking)_cfg/.*$
