@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .classfication_loss import BCELoss
 from .mesh_loss import GANLoss, MeshLoss
 from .mse_loss import JointsMSELoss, JointsOHKMMSELoss

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 # model settings
 model = dict(
     type='YOLOV3',

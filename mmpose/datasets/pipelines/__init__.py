@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .bottom_up_transform import *  # noqa
 from .hand_transform import *  # noqa
 from .loading import LoadImageFromFile  # noqa

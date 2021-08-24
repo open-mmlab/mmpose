@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 
 from mmpose.core.post_processing.one_euro_filter import OneEuroFilter

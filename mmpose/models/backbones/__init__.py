@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .alexnet import AlexNet
 from .cpm import CPM
 from .hourglass import HourglassNet

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch.utils.checkpoint as cp
 
 from ..builder import BACKBONES

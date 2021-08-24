@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import json_tricks as json
 import numpy as np
 from xtcocotools.coco import COCO

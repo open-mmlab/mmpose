@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import platform
 import random
 from functools import partial
