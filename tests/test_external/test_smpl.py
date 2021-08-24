@@ -1,53 +1,28 @@
-import os
-import pickle
+import os.path as osp
+import tempfile
 
 import numpy as np
 import torch
-from scipy.sparse import csc_matrix
+from tests.utils.mesh_utils import generate_smpl_weight_file
 
 from mmpose.models.utils import SMPL
-
-
-def generate_smpl_weight_file(output_dir):
-    """Generate a SMPL model weight file to initialize SMPL model, and generate
-    a 3D joints regressor file."""
-
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    joint_regressor_file = os.path.join(output_dir, 'test_joint_regressor.npy')
-    np.save(joint_regressor_file, np.zeros([24, 6890]))
-
-    test_data = {}
-    test_data['f'] = np.zeros([1, 3], dtype=np.int32)
-    test_data['J_regressor'] = csc_matrix(np.zeros([24, 6890]))
-    test_data['kintree_table'] = np.zeros([2, 24], dtype=np.uint32)
-    test_data['J'] = np.zeros([24, 3])
-    test_data['weights'] = np.zeros([6890, 24])
-    test_data['posedirs'] = np.zeros([6890, 3, 207])
-    test_data['v_template'] = np.zeros([6890, 3])
-    test_data['shapedirs'] = np.zeros([6890, 3, 10])
-
-    with open(os.path.join(output_dir, 'SMPL_NEUTRAL.pkl'), 'wb') as out_file:
-        pickle.dump(test_data, out_file)
-    with open(os.path.join(output_dir, 'SMPL_MALE.pkl'), 'wb') as out_file:
-        pickle.dump(test_data, out_file)
-    with open(os.path.join(output_dir, 'SMPL_FEMALE.pkl'), 'wb') as out_file:
-        pickle.dump(test_data, out_file)
-    return
 
 
 def test_smpl():
     """Test smpl model."""
 
-    # generate weight file for SMPL model.
-    generate_smpl_weight_file('tests/data/smpl')
-
     # build smpl model
-    smpl_cfg = dict(
-        smpl_path='tests/data/smpl',
-        joints_regressor='tests/data/smpl/test_joint_regressor.npy')
-    smpl = SMPL(**smpl_cfg)
+    smpl = None
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # generate weight file for SMPL model.
+        generate_smpl_weight_file(tmpdir)
+
+        smpl_cfg = dict(
+            smpl_path=tmpdir,
+            joints_regressor=osp.join(tmpdir, 'test_joint_regressor.npy'))
+        smpl = SMPL(**smpl_cfg)
+
+    assert smpl is not None, 'Fail to build SMPL model'
 
     # test get face function
     faces = smpl.get_faces()

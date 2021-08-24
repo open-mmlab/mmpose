@@ -1,8 +1,11 @@
+import os.path as osp
+import tempfile
+
 import mmcv
 import numpy as np
 import pytest
 import torch
-from tests.test_model.test_mesh_forward import generate_smpl_weight_file
+from tests.utils.mesh_utils import generate_smpl_weight_file
 
 from mmpose.apis import (extract_pose_sequence, inference_interhand_3d_model,
                          inference_mesh_model, inference_pose_lifter_model,
@@ -166,14 +169,16 @@ def test_body_mesh_demo():
     config.model.mesh_head.smpl_mean_params = \
         'tests/data/smpl/smpl_mean_params.npz'
 
-    config.model.smpl.smpl_path = 'tests/data/smpl'
-    config.model.smpl.joints_regressor = \
-        'tests/data/smpl/test_joint_regressor.npy'
+    pose_model = None
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config.model.smpl.smpl_path = tmpdir
+        config.model.smpl.joints_regressor = osp.join(
+            tmpdir, 'test_joint_regressor.npy')
+        # generate weight file for SMPL model.
+        generate_smpl_weight_file(tmpdir)
+        pose_model = build_posenet(config.model)
 
-    # generate weight file for SMPL model.
-    generate_smpl_weight_file('tests/data/smpl')
-
-    pose_model = build_posenet(config.model)
+    assert pose_model is not None, 'Fail to build pose model'
     pose_model.cfg = config
     pose_model.to(device)
     pose_model.eval()
