@@ -372,7 +372,7 @@ def imshow_mesh_3d(img,
     try:
         renderer = pyrender.OffscreenRenderer(
             viewport_width=W, viewport_height=H)
-    except RuntimeError:
+    except (ImportError, RuntimeError):
         warnings.warn('pyrender package is not installed correctly.')
         return img
 

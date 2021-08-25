@@ -1,6 +1,9 @@
+import os.path as osp
+import tempfile
+
 import numpy as np
 import torch
-from tests.test_model.test_mesh_forward import generate_smpl_weight_file
+from tests.utils.mesh_utils import generate_smpl_weight_file
 
 from mmpose.models.utils import SMPL
 
@@ -8,14 +11,18 @@ from mmpose.models.utils import SMPL
 def test_smpl():
     """Test smpl model."""
 
-    # generate weight file for SMPL model.
-    generate_smpl_weight_file('tests/data/smpl')
-
     # build smpl model
-    smpl_cfg = dict(
-        smpl_path='tests/data/smpl',
-        joints_regressor='tests/data/smpl/test_joint_regressor.npy')
-    smpl = SMPL(**smpl_cfg)
+    smpl = None
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # generate weight file for SMPL model.
+        generate_smpl_weight_file(tmpdir)
+
+        smpl_cfg = dict(
+            smpl_path=tmpdir,
+            joints_regressor=osp.join(tmpdir, 'test_joint_regressor.npy'))
+        smpl = SMPL(**smpl_cfg)
+
+    assert smpl is not None, 'Fail to build SMPL model'
 
     # test get face function
     faces = smpl.get_faces()

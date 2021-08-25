@@ -28,14 +28,15 @@ def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack(
+        box = np.stack([
             np.array([
                 db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1], db[j]['scale'][0] * db[j]['scale'][1] *
-                200 * 200, 1.0
+                db[j]['scale'][1],
+                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
             ],
                      dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db)))
+            for j in range(i, min(i + batch_size, len_db))
+        ])
 
         output = {}
         output['preds'] = keypoints

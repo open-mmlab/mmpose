@@ -532,7 +532,7 @@ class Generate3DHeatmapTarget:
             np.arange(num_joints)[:, None, None, None],
             [1, local_size, local_size, local_size])
         idx = np.stack([idx_joints, zz, yy, xx],
-                       axis=-1).astype(np.long).reshape(-1, 4)
+                       axis=-1).astype(int).reshape(-1, 4)
         target[idx[:, 0], idx[:, 1], idx[:, 2],
                idx[:, 3]] = local_target.reshape(-1)
         target = target * self.max_bound

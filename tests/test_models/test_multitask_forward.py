@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from mmpose.models.detectors.multi_task import MultiTask
+from mmpose.models.detectors import MultiTask
 
 
 def test_multitask_forward():
@@ -48,7 +48,7 @@ def test_multitask_forward():
         backbone=dict(type='ResNet', depth=50),
         heads=[
             dict(
-                type='TopDownSimpleHead',
+                type='TopdownHeatmapSimpleHead',
                 in_channels=2048,
                 out_channels=17,
                 num_deconv_layers=3,

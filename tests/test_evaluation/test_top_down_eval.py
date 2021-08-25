@@ -41,10 +41,10 @@ def test_keypoints_from_heatmaps():
     with pytest.raises(AssertionError):
         # kernel should > 0
         _ = keypoints_from_heatmaps(
-            heatmaps, center, scale, unbiased=True, kernel=0)
+            heatmaps, center, scale, post_process='unbiased', kernel=0)
 
     preds, maxvals = keypoints_from_heatmaps(
-        heatmaps, center, scale, unbiased=True)
+        heatmaps, center, scale, post_process='unbiased')
     assert_array_almost_equal(preds, np.array([[[126, 126]]]), decimal=4)
     assert_array_almost_equal(maxvals, np.array([[[2]]]), decimal=4)
     assert isinstance(preds, np.ndarray)

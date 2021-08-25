@@ -29,14 +29,15 @@ def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack(
+        box = np.stack([
             np.array([
                 db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1], db[j]['scale'][0] * db[j]['scale'][1] *
-                200 * 200, 1.0
+                db[j]['scale'][1],
+                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
             ],
                      dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db)))
+            for j in range(i, min(i + batch_size, len_db))
+        ])
 
         output = {}
         output['preds'] = keypoints
@@ -161,7 +162,7 @@ def test_top_down_MHP_dataset():
         vis_thr=0.2,
         bbox_thr=1.0,
         use_gt_bbox=True,
-        image_thr=0.0,
+        det_bbox_thr=0.0,
         bbox_file='',
     )
 
@@ -595,7 +596,6 @@ def test_top_down_AIC_dataset():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.0,
-        image_thr=0.0,
         bbox_file='')
 
     with pytest.raises(AssertionError):
@@ -669,7 +669,6 @@ def test_top_down_JHMDB_dataset():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.0,
-        image_thr=0.0,
         bbox_file='')
 
     with pytest.raises(AssertionError):
