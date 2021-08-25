@@ -121,9 +121,7 @@ mmpose
         |   |── face_landmarks_wflw_test_blur.json
         |   |── face_landmarks_wflw_test_occlusion.json
         |   |── face_landmarks_wflw_test_expression.json
-        |   |── face_landmarks_wflw_test_occlusion.json
         |   |── face_landmarks_wflw_test_largepose.json
-        |   |── face_landmarks_wflw_test_occlusion.json
         |   |── face_landmarks_wflw_test_illumination.json
         |   |── face_landmarks_wflw_test_makeup.json
         |
