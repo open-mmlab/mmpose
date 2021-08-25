@@ -8,7 +8,7 @@ import numpy as np
 from mmcv import Config
 
 from mmpose.core.evaluation import keypoint_mpjpe
-from mmpose.datasets.datasets._base_ import Kpt3dSviewKpt2dDataset
+from mmpose.datasets.datasets.base import Kpt3dSviewKpt2dDataset
 from ...builder import DATASETS
 
 

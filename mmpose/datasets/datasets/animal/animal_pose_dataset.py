@@ -10,7 +10,7 @@ from xtcocotools.cocoeval import COCOeval
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
-from .._base_ import Kpt2dSviewRgbImgTopDownDataset
+from ..base import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()

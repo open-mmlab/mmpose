@@ -9,7 +9,7 @@ from mmcv import Config
 
 from mmpose.core.evaluation.top_down_eval import keypoint_epe
 from mmpose.datasets.builder import DATASETS
-from .._base_ import Kpt3dSviewRgbImgTopDownDataset
+from ..base import Kpt3dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()

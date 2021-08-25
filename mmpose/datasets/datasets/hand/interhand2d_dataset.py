@@ -8,7 +8,7 @@ import numpy as np
 from mmcv import Config
 
 from mmpose.datasets.builder import DATASETS
-from .._base_ import Kpt2dSviewRgbImgTopDownDataset
+from ..base import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()

@@ -2,7 +2,7 @@
 import warnings
 
 from .datasets.builder import DATASETS
-from .datasets.datasets._base_ import Kpt2dSviewRgbImgTopDownDataset
+from .datasets.datasets.base import Kpt2dSviewRgbImgTopDownDataset
 from .models.builder import HEADS, POSENETS
 from .models.detectors import AssociativeEmbedding
 from .models.heads import (AEHigherResolutionHead, AESimpleHead,

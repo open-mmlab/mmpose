@@ -9,7 +9,7 @@ from mmcv import Config
 from scipy.io import loadmat, savemat
 
 from ...builder import DATASETS
-from .._base_ import Kpt2dSviewRgbImgTopDownDataset
+from ..base import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()

@@ -10,7 +10,7 @@ from xtcocotools.cocoeval import COCOeval
 
 from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.datasets.builder import DATASETS
-from mmpose.datasets.datasets._base_ import Kpt2dSviewRgbImgBottomUpDataset
+from mmpose.datasets.datasets.base import Kpt2dSviewRgbImgBottomUpDataset
 
 
 @DATASETS.register_module()

@@ -9,7 +9,7 @@ from mmcv import Config
 
 from mmpose.core.evaluation import (keypoint_3d_auc, keypoint_3d_pck,
                                     keypoint_mpjpe)
-from mmpose.datasets.datasets._base_ import Kpt3dSviewKpt2dDataset
+from mmpose.datasets.datasets.base import Kpt3dSviewKpt2dDataset
 from ...builder import DATASETS
 
 
