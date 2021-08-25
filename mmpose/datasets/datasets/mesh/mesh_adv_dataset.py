@@ -36,7 +36,7 @@ class MeshAdversarialDataset(Dataset):
         """
         data = self.train_dataset[i]
         ind_adv = np.random.randint(
-            low=0, high=len(self.adversarial_dataset), dtype=np.int)
+            low=0, high=len(self.adversarial_dataset), dtype=int)
         data.update(self.adversarial_dataset[ind_adv %
                                              len(self.adversarial_dataset)])
         return data

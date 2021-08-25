@@ -5,7 +5,7 @@ import torch.nn as nn
 from tools.deployment.pytorch2onnx import _convert_batchnorm, pytorch2onnx
 
 
-class TestModel(nn.Module):
+class DummyModel(nn.Module):
 
     def __init__(self):
         super().__init__()
@@ -22,7 +22,7 @@ class TestModel(nn.Module):
 def test_onnx_exporting():
     with tempfile.TemporaryDirectory() as tmpdir:
         out_file = osp.join(tmpdir, 'tmp.onnx')
-        model = TestModel()
+        model = DummyModel()
         model = _convert_batchnorm(model)
         # test exporting
         pytorch2onnx(model, (1, 1, 1, 1, 1), output_file=out_file)

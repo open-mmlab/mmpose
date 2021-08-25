@@ -89,8 +89,8 @@ class TopDownMpiiDataset(TopDownBaseDataset):
         for a in anno:
             image_name = a['image']
 
-            center = np.array(a['center'], dtype=np.float)
-            scale = np.array([a['scale'], a['scale']], dtype=np.float)
+            center = np.array(a['center'], dtype=float)
+            scale = np.array([a['scale'], a['scale']], dtype=float)
 
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:
