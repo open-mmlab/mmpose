@@ -45,7 +45,7 @@ def parse_args():
     parser.add_argument(
         '--max-header-lines',
         type=int,
-        default=2,
+        default=5,
         help='Only checkout copyright information in the first several lines '
         'of a file.')
 
