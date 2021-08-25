@@ -148,4 +148,5 @@ dataset_info = dict(
         dict(link=('right_elbow', 'right_wrist'), id=15, color=[255, 128, 0])
     },
     joint_weights=[1.] * 17,
-    sigmas=[])
+    sigmas=[],
+    stats_info=dict(bbox_center=(528., 427.), bbox_scale=400.))

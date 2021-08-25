@@ -4,6 +4,7 @@ import tempfile
 
 import numpy as np
 import pytest
+from mmcv import Config
 from numpy.testing import assert_almost_equal
 
 from mmpose.datasets import DATASETS
@@ -61,6 +62,8 @@ def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
 def test_animal_horse10_dataset():
     dataset = 'AnimalHorse10Dataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/horse10.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=22,
@@ -89,6 +92,7 @@ def test_animal_horse10_dataset():
         ann_file='tests/data/horse10/test_horse10.json',
         img_prefix='tests/data/horse10/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -96,6 +100,7 @@ def test_animal_horse10_dataset():
         ann_file='tests/data/horse10/test_horse10.json',
         img_prefix='tests/data/horse10/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -116,6 +121,8 @@ def test_animal_horse10_dataset():
 def test_animal_fly_dataset():
     dataset = 'AnimalFlyDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/fly.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=32,
@@ -145,6 +152,7 @@ def test_animal_fly_dataset():
         ann_file='tests/data/fly/test_fly.json',
         img_prefix='tests/data/fly/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -152,6 +160,7 @@ def test_animal_fly_dataset():
         ann_file='tests/data/fly/test_fly.json',
         img_prefix='tests/data/fly/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -172,6 +181,8 @@ def test_animal_fly_dataset():
 def test_animal_locust_dataset():
     dataset = 'AnimalLocustDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/locust.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=35,
@@ -202,6 +213,7 @@ def test_animal_locust_dataset():
         ann_file='tests/data/locust/test_locust.json',
         img_prefix='tests/data/locust/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -209,6 +221,7 @@ def test_animal_locust_dataset():
         ann_file='tests/data/locust/test_locust.json',
         img_prefix='tests/data/locust/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -229,6 +242,8 @@ def test_animal_locust_dataset():
 def test_animal_zebra_dataset():
     dataset = 'AnimalZebraDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/zebra.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=9,
@@ -252,6 +267,7 @@ def test_animal_zebra_dataset():
         ann_file='tests/data/zebra/test_zebra.json',
         img_prefix='tests/data/zebra/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -259,6 +275,7 @@ def test_animal_zebra_dataset():
         ann_file='tests/data/zebra/test_zebra.json',
         img_prefix='tests/data/zebra/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -279,6 +296,8 @@ def test_animal_zebra_dataset():
 def test_animal_ATRW_dataset():
     dataset = 'AnimalATRWDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/atrw.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=15,
@@ -310,6 +329,7 @@ def test_animal_ATRW_dataset():
         ann_file='tests/data/atrw/test_atrw.json',
         img_prefix='tests/data/atrw/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -317,6 +337,7 @@ def test_animal_ATRW_dataset():
         ann_file='tests/data/atrw/test_atrw.json',
         img_prefix='tests/data/atrw/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -337,6 +358,8 @@ def test_animal_ATRW_dataset():
 def test_animal_Macaque_dataset():
     dataset = 'AnimalMacaqueDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/macaque.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=17,
@@ -370,6 +393,7 @@ def test_animal_Macaque_dataset():
         ann_file='tests/data/macaque/test_macaque.json',
         img_prefix='tests/data/macaque/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -377,6 +401,7 @@ def test_animal_Macaque_dataset():
         ann_file='tests/data/macaque/test_macaque.json',
         img_prefix='tests/data/macaque/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -397,6 +422,8 @@ def test_animal_Macaque_dataset():
 def test_animalpose_dataset():
     dataset = 'AnimalPoseDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/animalpose.py').dataset_info
 
     channel_cfg = dict(
         num_output_channels=20,
@@ -434,6 +461,7 @@ def test_animalpose_dataset():
         ann_file='tests/data/animalpose/test_animalpose.json',
         img_prefix='tests/data/animalpose/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -441,6 +469,7 @@ def test_animalpose_dataset():
         ann_file='tests/data/animalpose/test_animalpose.json',
         img_prefix='tests/data/animalpose/',
         data_cfg=data_cfg_copy,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 

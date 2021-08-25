@@ -203,7 +203,7 @@ def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
 
 def inference_pose_lifter_model(model,
                                 pose_results_2d,
-                                dataset,
+                                dataset=None,
                                 dataset_info=None,
                                 with_track_id=True,
                                 image_size=None,
@@ -244,8 +244,9 @@ def inference_pose_lifter_model(model,
 
     if dataset_info is not None:
         flip_pairs = dataset_info.flip_pairs
-        bbox_center = dataset_info.bbox_center
-        bbox_scale = dataset_info.bbox_scale
+        assert 'stats_info' in dataset_info._dataset_info
+        bbox_center = dataset_info._dataset_info['stats_info']['bbox_center']
+        bbox_scale = dataset_info._dataset_info['stats_info']['bbox_scale']
     else:
         warnings.warn(
             'dataset is deprecated.'
@@ -282,6 +283,7 @@ def inference_pose_lifter_model(model,
         else:
             input_2d_visible = np.ones((T, K, 1), dtype=np.float32)
 
+        # TODO: Will be removed in the later versions
         # Dummy 3D input
         # This is for compatibility with configs in mmpose<=v0.14.0, where a
         # 3D input is required to generate denormalization parameters. This
@@ -347,11 +349,11 @@ def vis_3d_pose_result(model,
                        result,
                        img=None,
                        dataset='Body3DH36MDataset',
+                       dataset_info=None,
                        kpt_score_thr=0.3,
                        radius=8,
                        thickness=2,
                        num_instances=-1,
-                       dataset_info=None,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.

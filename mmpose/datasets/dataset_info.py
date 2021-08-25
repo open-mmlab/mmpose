@@ -4,21 +4,21 @@ import numpy as np
 class DatasetInfo:
 
     def __init__(self, dataset_info):
-        self.dataset_info = dataset_info
-        self.dataset_name = self.dataset_info['dataset_name']
-        self.paper_info = self.dataset_info['paper_info']
-        self.keypoint_info = self.dataset_info['keypoint_info']
-        self.skeleton_info = self.dataset_info['skeleton_info']
+        self._dataset_info = dataset_info
+        self.dataset_name = self._dataset_info['dataset_name']
+        self.paper_info = self._dataset_info['paper_info']
+        self.keypoint_info = self._dataset_info['keypoint_info']
+        self.skeleton_info = self._dataset_info['skeleton_info']
         self.joint_weights = np.array(
-            self.dataset_info['joint_weights'], dtype=np.float32)[:, None]
+            self._dataset_info['joint_weights'], dtype=np.float32)[:, None]
 
-        self.sigmas = np.array(self.dataset_info['sigmas'])
+        self.sigmas = np.array(self._dataset_info['sigmas'])
 
         self._parse_keypoint_info()
         self._parse_skeleton_info()
 
     def _parse_skeleton_info(self):
-        """Parse skeleton info.
+        """Parse skeleton information.
 
         - link_num (int): number of links.
         - skeleton (list((2,))): list of links (id).
@@ -42,7 +42,7 @@ class DatasetInfo:
         self.pose_link_color = np.array(self.pose_link_color)
 
     def _parse_keypoint_info(self):
-        """Parse keypoint info.
+        """Parse keypoint information.
 
         - keypoint_num (int): number of keypoints.
         - keypoint_id2name (dict): mapping keypoint id to keypoint name.
