@@ -232,7 +232,8 @@ class TopDown(BasePose):
                     show=False,
                     show_keypoint_weight=False,
                     wait_time=0,
-                    out_file=None):
+                    out_file=None,
+                    pose_limb_color=None):
         """Draw `result` over `img`.
 
         Args:
@@ -246,6 +247,7 @@ class TopDown(BasePose):
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
+            pose_limb_color (np.array[Mx3]): Deprecated (see `pose_link_color).
             pose_link_color (np.array[Mx3]): Color of M links.
                 If None, do not draw links.
             text_color (str or tuple or :obj:`Color`): Color of texts.
@@ -264,6 +266,16 @@ class TopDown(BasePose):
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
+
+        # TODO: These will be removed in the later versions.
+        if pose_limb_color is not None:
+            warnings.warn(
+                'pose_limb_color is deprecated.'
+                'Please use pose_link_color instead.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 for '
+                'details.', DeprecationWarning)
+            if pose_link_color is None:
+                pose_link_color = pose_limb_color
 
         img = mmcv.imread(img)
         img = img.copy()

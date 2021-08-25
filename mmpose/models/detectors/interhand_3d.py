@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
+
 import mmcv
 import numpy as np
 
@@ -115,7 +117,8 @@ class Interhand3D(TopDown):
                     win_name='',
                     show=False,
                     wait_time=0,
-                    out_file=None):
+                    out_file=None,
+                    pose_limb_color=None):
         """Visualize 3D pose estimation results.
 
         Args:
@@ -136,6 +139,7 @@ class Interhand3D(TopDown):
             thickness (int): Thickness of lines.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
+            pose_limb_color (np.array[Mx3]): Deprecated (see `pose_link_color).
             pose_link_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
             vis_height (int): The image hight of the visualization. The width
@@ -155,6 +159,16 @@ class Interhand3D(TopDown):
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
+
+        # TODO: These will be removed in the later versions.
+        if pose_limb_color is not None:
+            warnings.warn(
+                'pose_limb_color is deprecated.'
+                'Please use pose_link_color instead.'
+                'Check https://github.com/open-mmlab/mmpose/pull/663 for '
+                'details.', DeprecationWarning)
+            if pose_link_color is None:
+                pose_link_color = pose_limb_color
 
         if num_instances < 0:
             assert len(result) > 0

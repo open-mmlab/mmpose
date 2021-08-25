@@ -103,7 +103,8 @@ def imshow_keypoints(img,
                      pose_link_color=None,
                      radius=4,
                      thickness=1,
-                     show_keypoint_weight=False):
+                     show_keypoint_weight=False,
+                     pose_limb_color=None):
     """Draw keypoints and links on an image.
 
     Args:
@@ -116,10 +117,22 @@ def imshow_keypoints(img,
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints. If None,
                 the keypoint will not be drawn.
+            pose_limb_color (np.array[Mx3]): Deprecated (see `pose_link_color).
+                Color of M links. If None, the links will not be drawn.
             pose_link_color (np.array[Mx3]): Color of M links. If None, the
                 links will not be drawn.
             thickness (int): Thickness of lines.
     """
+
+    # TODO: These will be removed in the later versions.
+    if pose_limb_color is not None:
+        warnings.warn(
+            'pose_limb_color is deprecated.'
+            'Please use pose_link_color instead.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+        if pose_link_color is None:
+            pose_link_color = pose_limb_color
 
     img = mmcv.imread(img)
     img_h, img_w, _ = img.shape
