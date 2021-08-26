@@ -2,60 +2,19 @@
 import copy
 import tempfile
 
-import numpy as np
 import pytest
+from mmcv import Config
 from numpy.testing import assert_almost_equal
+from tests.utils.data_utils import convert_db_to_output
 
 from mmpose.datasets import DATASETS
 
 
-def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
-    outputs = []
-    len_db = len(db)
-    for i in range(0, len_db, batch_size):
-        keypoints_dim = 3 if is_3d else 2
-        keypoints = np.stack([
-            np.hstack([
-                db[j]['joints_3d'].reshape((-1, 3))[:, :keypoints_dim],
-                db[j]['joints_3d_visible'].reshape((-1, 3))[:, :1]
-            ]) for j in range(i, min(i + batch_size, len_db))
-        ])
-
-        image_paths = [
-            db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
-        ]
-        bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack([
-            np.array([
-                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1],
-                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
-            ],
-                     dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db))
-        ])
-
-        output = {}
-        output['preds'] = keypoints
-        output['boxes'] = box
-        output['image_paths'] = image_paths
-        output['output_heatmap'] = None
-        output['bbox_ids'] = bbox_ids
-
-        if keys is not None:
-            keys = keys if isinstance(keys, list) else [keys]
-            for key in keys:
-                output[key] = [
-                    db[j][key] for j in range(i, min(i + batch_size, len_db))
-                ]
-
-        outputs.append(output)
-
-    return outputs
-
-
 def test_top_down_OneHand10K_dataset():
     dataset = 'OneHand10KDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/onehand10k.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -86,6 +45,7 @@ def test_top_down_OneHand10K_dataset():
         img_prefix='tests/data/onehand10k/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -93,6 +53,7 @@ def test_top_down_OneHand10K_dataset():
         img_prefix='tests/data/onehand10k/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'onehand10k'
@@ -113,6 +74,9 @@ def test_top_down_OneHand10K_dataset():
 
 def test_top_down_FreiHand_dataset():
     dataset = 'FreiHandDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/freihand2d.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -143,6 +107,7 @@ def test_top_down_FreiHand_dataset():
         img_prefix='tests/data/freihand/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -150,6 +115,7 @@ def test_top_down_FreiHand_dataset():
         img_prefix='tests/data/freihand/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'freihand'
@@ -170,6 +136,9 @@ def test_top_down_FreiHand_dataset():
 
 def test_top_down_RHD_dataset():
     dataset = 'Rhd2DDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/rhd2d.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -200,6 +169,7 @@ def test_top_down_RHD_dataset():
         img_prefix='tests/data/rhd/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -207,6 +177,7 @@ def test_top_down_RHD_dataset():
         img_prefix='tests/data/rhd/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'rhd2d'
@@ -227,6 +198,9 @@ def test_top_down_RHD_dataset():
 
 def test_top_down_Panoptic_dataset():
     dataset = 'PanopticDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/panoptic_hand2d.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -257,6 +231,7 @@ def test_top_down_Panoptic_dataset():
         img_prefix='tests/data/panoptic/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -264,6 +239,7 @@ def test_top_down_Panoptic_dataset():
         img_prefix='tests/data/panoptic/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'panoptic_hand2d'
@@ -285,6 +261,9 @@ def test_top_down_Panoptic_dataset():
 
 def test_top_down_InterHand2D_dataset():
     dataset = 'InterHand2DDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/interhand2d.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -317,6 +296,7 @@ def test_top_down_InterHand2D_dataset():
         img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -326,6 +306,7 @@ def test_top_down_InterHand2D_dataset():
         img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'interhand2d'
@@ -349,6 +330,9 @@ def test_top_down_InterHand2D_dataset():
 
 def test_top_down_InterHand3D_dataset():
     dataset = 'InterHand3DDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/interhand3d.py').dataset_info
+
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -386,6 +370,7 @@ def test_top_down_InterHand3D_dataset():
         img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -395,6 +380,7 @@ def test_top_down_InterHand3D_dataset():
         img_prefix='tests/data/interhand2.6m/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.dataset_name == 'interhand3d'

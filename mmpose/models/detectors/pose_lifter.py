@@ -3,6 +3,7 @@ import warnings
 
 import mmcv
 import numpy as np
+from mmcv.utils.misc import deprecated_api_warning
 
 from mmpose.core import imshow_bboxes, imshow_keypoints, imshow_keypoints_3d
 from .. import builder
@@ -283,6 +284,8 @@ class PoseLifter(BasePose):
 
         return output
 
+    @deprecated_api_warning({'pose_limb_color': 'pose_link_color'},
+                            cls_name='PoseLifter')
     def show_result(self,
                     result,
                     img=None,
@@ -296,8 +299,7 @@ class PoseLifter(BasePose):
                     win_name='',
                     show=False,
                     wait_time=0,
-                    out_file=None,
-                    pose_limb_color=None):
+                    out_file=None):
         """Visualize 3D pose estimation results.
 
         Args:
@@ -313,7 +315,6 @@ class PoseLifter(BasePose):
                 links, each is a pair of joint indices.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Deprecated (see `pose_link_color).
             pose_link_color (np.array[Mx3]): Color of M links.
                 If None, do not draw links.
             radius (int): Radius of circles.
@@ -330,17 +331,6 @@ class PoseLifter(BasePose):
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
-
-        # TODO: These will be removed in the later versions.
-        if pose_limb_color is not None:
-            warnings.warn(
-                'pose_limb_color is deprecated.'
-                'Please use pose_link_color instead.'
-                'Check https://github.com/open-mmlab/mmpose/pull/663 for '
-                'details.', DeprecationWarning)
-            if pose_link_color is None:
-                pose_link_color = pose_limb_color
-
         if num_instances < 0:
             assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 1e4))

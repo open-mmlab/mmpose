@@ -2,6 +2,7 @@
 import tempfile
 
 import numpy as np
+from mmcv import Config
 
 from mmpose.datasets import DATASETS
 from mmpose.datasets.builder import build_dataset
@@ -11,6 +12,8 @@ def test_body3d_h36m_dataset():
     # Test Human3.6M dataset
     dataset = 'Body3DH36MDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/h36m.py').dataset_info
 
     # test single-frame input
     data_cfg = dict(
@@ -27,6 +30,7 @@ def test_body3d_h36m_dataset():
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -34,6 +38,7 @@ def test_body3d_h36m_dataset():
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -72,6 +77,7 @@ def test_body3d_h36m_dataset():
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=False)
 
@@ -79,6 +85,7 @@ def test_body3d_h36m_dataset():
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=data_cfg,
+        dataset_info=dataset_info,
         pipeline=[],
         test_mode=True)
 
@@ -103,6 +110,8 @@ def test_body3d_h36m_dataset():
 
 def test_body3d_semi_supervision_dataset():
     # Test Body3d Semi-supervision Dataset
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/h36m.py').dataset_info
 
     # load labeled dataset
     labeled_data_cfg = dict(
@@ -116,11 +125,12 @@ def test_body3d_semi_supervision_dataset():
         subjects=['S1'],
         need_camera_param=True,
         camera_param_file='tests/data/h36m/cameras.pkl')
-    labeled_dataset = dict(
+    labeled_dataset_cfg = dict(
         type='Body3DH36MDataset',
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=labeled_data_cfg,
+        dataset_info=dataset_info,
         pipeline=[])
 
     # load unlabled data
@@ -135,11 +145,12 @@ def test_body3d_semi_supervision_dataset():
         need_camera_param=True,
         camera_param_file='tests/data/h36m/cameras.pkl',
         need_2d_label=True)
-    unlabeled_dataset = dict(
+    unlabeled_dataset_cfg = dict(
         type='Body3DH36MDataset',
         ann_file='tests/data/h36m/test_h36m_body3d.npz',
         img_prefix='tests/data/h36m',
         data_cfg=unlabeled_data_cfg,
+        dataset_info=dataset_info,
         pipeline=[
             dict(
                 type='Collect',
@@ -151,12 +162,12 @@ def test_body3d_semi_supervision_dataset():
     # combine labeled and unlabeled dataset to form a new dataset
     dataset = 'Body3DSemiSupervisionDataset'
     dataset_class = DATASETS.get(dataset)
-    custom_dataset = dataset_class(labeled_dataset, unlabeled_dataset)
+    custom_dataset = dataset_class(labeled_dataset_cfg, unlabeled_dataset_cfg)
     item = custom_dataset[0]
     assert custom_dataset.labeled_dataset.dataset_name == 'h36m'
     assert 'unlabeled_input' in item.keys()
 
-    unlabeled_dataset = build_dataset(unlabeled_dataset)
+    unlabeled_dataset = build_dataset(unlabeled_dataset_cfg)
     assert len(unlabeled_dataset) == len(custom_dataset)
 
 
@@ -164,6 +175,8 @@ def test_body3d_mpi_inf_3dhp_dataset():
     # Test MPI-INF-3DHP dataset
     dataset = 'Body3DMpiInf3dhpDataset'
     dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/mpi_inf_3dhp.py').dataset_info
 
     # Test single-frame input on trainset
     single_frame_train_data_cfg = dict(
@@ -226,6 +239,7 @@ def test_body3d_mpi_inf_3dhp_dataset():
             img_prefix='tests/data/mpi_inf_3dhp',
             data_cfg=data_cfg,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=False)
 
         custom_dataset = dataset_class(
@@ -233,6 +247,7 @@ def test_body3d_mpi_inf_3dhp_dataset():
             img_prefix='tests/data/mpi_inf_3dhp',
             data_cfg=data_cfg,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=True)
 
         assert custom_dataset.test_mode is True
