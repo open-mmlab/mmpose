@@ -10,7 +10,7 @@ from tests.utils.data_utils import convert_db_to_output
 from mmpose.datasets import DATASETS
 
 
-def test_face_300W_dataset():
+def test_face_300W_dataset_compatibility():
     dataset = 'Face300WDataset'
     # test Face 300W datasets
     dataset_class = DATASETS.get(dataset)
@@ -63,7 +63,7 @@ def test_face_300W_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
-def test_face_AFLW_dataset():
+def test_face_AFLW_dataset_compatibility():
     dataset = 'FaceAFLWDataset'
     # test Face AFLW datasets
     dataset_class = DATASETS.get(dataset)
@@ -116,7 +116,7 @@ def test_face_AFLW_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
-def test_face_WFLW_dataset():
+def test_face_WFLW_dataset_compatibility():
     dataset = 'FaceWFLWDataset'
     # test Face WFLW datasets
     dataset_class = DATASETS.get(dataset)

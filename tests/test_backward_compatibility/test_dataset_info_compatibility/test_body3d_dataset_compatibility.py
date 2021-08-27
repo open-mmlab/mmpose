@@ -8,7 +8,7 @@ from mmpose.datasets import DATASETS
 from mmpose.datasets.builder import build_dataset
 
 
-def test_body3d_h36m_dataset():
+def test_body3d_h36m_dataset_compatibility():
     # Test Human3.6M dataset
     dataset = 'Body3DH36MDataset'
     dataset_class = DATASETS.get(dataset)
@@ -105,7 +105,7 @@ def test_body3d_h36m_dataset():
         np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
 
 
-def test_body3d_semi_supervision_dataset():
+def test_body3d_semi_supervision_dataset_compatibility():
     # Test Body3d Semi-supervision Dataset
 
     # load labeled dataset
@@ -164,7 +164,7 @@ def test_body3d_semi_supervision_dataset():
     assert len(unlabeled_dataset) == len(custom_dataset)
 
 
-def test_body3d_mpi_inf_3dhp_dataset():
+def test_body3d_mpi_inf_3dhp_dataset_compatibility():
     # Test MPI-INF-3DHP dataset
     dataset = 'Body3DMpiInf3dhpDataset'
     dataset_class = DATASETS.get(dataset)

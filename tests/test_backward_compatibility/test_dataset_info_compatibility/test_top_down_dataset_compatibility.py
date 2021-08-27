@@ -10,7 +10,7 @@ from tests.utils.data_utils import convert_db_to_output
 from mmpose.datasets import DATASETS
 
 
-def test_top_down_COCO_dataset():
+def test_top_down_COCO_dataset_compatibility():
     dataset = 'TopDownCocoDataset'
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
@@ -87,7 +87,7 @@ def test_top_down_COCO_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_MHP_dataset():
+def test_top_down_MHP_dataset_compatibility():
     dataset = 'TopDownMhpDataset'
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
@@ -168,7 +168,7 @@ def test_top_down_MHP_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_PoseTrack18_dataset():
+def test_top_down_PoseTrack18_dataset_compatibility():
     dataset = 'TopDownPoseTrack18Dataset'
     # test PoseTrack datasets
     dataset_class = DATASETS.get(dataset)
@@ -238,7 +238,7 @@ def test_top_down_PoseTrack18_dataset():
     _ = custom_dataset[0]
 
 
-def test_top_down_CrowdPose_dataset():
+def test_top_down_CrowdPose_dataset_compatibility():
     dataset = 'TopDownCrowdPoseDataset'
     # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
@@ -313,7 +313,7 @@ def test_top_down_CrowdPose_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_COCO_wholebody_dataset():
+def test_top_down_COCO_wholebody_dataset_compatibility():
     dataset = 'TopDownCocoWholeBodyDataset'
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
@@ -388,7 +388,7 @@ def test_top_down_COCO_wholebody_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_OCHuman_dataset():
+def test_top_down_OCHuman_dataset_compatibility():
     dataset = 'TopDownOCHumanDataset'
     # test OCHuman datasets
     dataset_class = DATASETS.get(dataset)
@@ -459,7 +459,7 @@ def test_top_down_OCHuman_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_MPII_dataset():
+def test_top_down_MPII_dataset_compatibility():
     dataset = 'TopDownMpiiDataset'
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
@@ -499,7 +499,7 @@ def test_top_down_MPII_dataset():
     _ = custom_dataset[0]
 
 
-def test_top_down_MPII_TRB_dataset():
+def test_top_down_MPII_TRB_dataset_compatibility():
     dataset = 'TopDownMpiiTrbDataset'
     # test MPII TRB datasets
     dataset_class = DATASETS.get(dataset)
@@ -540,7 +540,7 @@ def test_top_down_MPII_TRB_dataset():
     _ = custom_dataset[0]
 
 
-def test_top_down_AIC_dataset():
+def test_top_down_AIC_dataset_compatibility():
     dataset = 'TopDownAicDataset'
     # test AIC datasets
     dataset_class = DATASETS.get(dataset)
@@ -616,7 +616,7 @@ def test_top_down_AIC_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_top_down_JHMDB_dataset():
+def test_top_down_JHMDB_dataset_compatibility():
     dataset = 'TopDownJhmdbDataset'
     # test JHMDB datasets
     dataset_class = DATASETS.get(dataset)
@@ -695,7 +695,7 @@ def test_top_down_JHMDB_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
 
 
-def test_top_down_h36m_dataset():
+def test_top_down_h36m_dataset_compatibility():
     dataset = 'TopDownH36MDataset'
     # test AIC datasets
     dataset_class = DATASETS.get(dataset)

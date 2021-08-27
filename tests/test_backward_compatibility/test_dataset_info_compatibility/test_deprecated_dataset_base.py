@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import pytest
 
 from mmpose.datasets.datasets.animal.animal_base_dataset import \

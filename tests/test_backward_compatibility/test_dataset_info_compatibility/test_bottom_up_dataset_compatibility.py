@@ -45,7 +45,7 @@ def convert_coco_to_output(coco, is_wholebody=False):
     return outputs
 
 
-def test_bottom_up_COCO_dataset():
+def test_bottom_up_COCO_dataset_compatibility():
     dataset = 'BottomUpCocoDataset'
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
@@ -100,7 +100,7 @@ def test_bottom_up_COCO_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_bottom_up_CrowdPose_dataset():
+def test_bottom_up_CrowdPose_dataset_compatibility():
     dataset = 'BottomUpCrowdPoseDataset'
     # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
@@ -155,7 +155,7 @@ def test_bottom_up_CrowdPose_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_bottom_up_MHP_dataset():
+def test_bottom_up_MHP_dataset_compatibility():
     dataset = 'BottomUpMhpDataset'
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
@@ -212,7 +212,7 @@ def test_bottom_up_MHP_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_bottom_up_AIC_dataset():
+def test_bottom_up_AIC_dataset_compatibility():
     dataset = 'BottomUpAicDataset'
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
@@ -267,7 +267,7 @@ def test_bottom_up_AIC_dataset():
             _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
-def test_bottom_up_COCO_wholebody_dataset():
+def test_bottom_up_COCO_wholebody_dataset_compatibility():
     dataset = 'BottomUpCocoWholeBodyDataset'
     # test COCO-wholebody datasets
     dataset_class = DATASETS.get(dataset)

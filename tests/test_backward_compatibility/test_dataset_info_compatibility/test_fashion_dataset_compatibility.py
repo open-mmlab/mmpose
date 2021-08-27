@@ -9,7 +9,7 @@ from tests.utils.data_utils import convert_db_to_output
 from mmpose.datasets import DATASETS
 
 
-def test_deepfashion_dataset():
+def test_deepfashion_dataset_compatibility():
     dataset = 'DeepFashionDataset'
     # test JHMDB datasets
     dataset_class = DATASETS.get(dataset)

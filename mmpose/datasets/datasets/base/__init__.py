@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .kpt_2d_sview_rgb_img_bottom_up_dataset import \
     Kpt2dSviewRgbImgBottomUpDataset
 from .kpt_2d_sview_rgb_img_top_down_dataset import \
