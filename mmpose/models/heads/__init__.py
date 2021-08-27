@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .ae_higher_resolution_head import AEHigherResolutionHead
 from .ae_simple_head import AESimpleHead
 from .deeppose_regression_head import DeepposeRegressionHead

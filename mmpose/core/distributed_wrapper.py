@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
 from mmcv.parallel import MODULE_WRAPPERS, MMDistributedDataParallel

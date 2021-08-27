@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .bottom_up_aic import BottomUpAicDataset
 from .bottom_up_coco import BottomUpCocoDataset
 from .bottom_up_coco_wholebody import BottomUpCocoWholeBodyDataset

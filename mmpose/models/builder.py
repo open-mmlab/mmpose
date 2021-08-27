@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_model_from_cfg
 from mmcv.utils import Registry
 

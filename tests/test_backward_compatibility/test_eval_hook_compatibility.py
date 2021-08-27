@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import unittest.mock as mock
 
 import pytest

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .associative_embedding import AssociativeEmbedding
 from .interhand_3d import Interhand3D
 from .mesh import ParametricMesh

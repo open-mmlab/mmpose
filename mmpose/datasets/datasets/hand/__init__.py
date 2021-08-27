@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .freihand_dataset import FreiHandDataset
 from .interhand2d_dataset import InterHand2DDataset
 from .interhand3d_dataset import InterHand3DDataset

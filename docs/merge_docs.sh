@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright (c) OpenMMLab. All rights reserved.
 
 sed -i '$a\\n' ../demo/docs/*_demo.md
 cat ../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Demo' | sed 's/](\/docs\//](/g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md

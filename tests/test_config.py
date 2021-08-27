@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from os.path import dirname, exists, join, relpath
 
 import torch
