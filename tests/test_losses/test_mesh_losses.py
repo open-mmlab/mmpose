@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import pytest
 import torch
 from numpy.testing import assert_almost_equal

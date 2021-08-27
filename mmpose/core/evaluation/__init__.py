@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .bottom_up_eval import (aggregate_results, get_group_preds,
                              get_multi_stage_outputs)
 from .eval_hooks import DistEvalHook, EvalHook

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 

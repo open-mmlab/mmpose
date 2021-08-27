@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.runner import build_optimizer
 from mmcv.utils import Registry
 

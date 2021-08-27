@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval

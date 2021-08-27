@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .nms import oks_iou, oks_nms, soft_oks_nms
 from .one_euro_filter import OneEuroFilter
 from .post_transforms import (affine_transform, flip_back, fliplr_joints,

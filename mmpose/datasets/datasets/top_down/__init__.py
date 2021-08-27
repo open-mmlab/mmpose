@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from .topdown_aic_dataset import TopDownAicDataset
 from .topdown_coco_dataset import TopDownCocoDataset
 from .topdown_coco_wholebody_dataset import TopDownCocoWholeBodyDataset

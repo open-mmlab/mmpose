@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Copyright (c) OpenMMLab. All rights reserved.
 
 # This tool is used to update model-index.yml which is required by MIM, and
 # will be automatically called as a pre-commit hook. The updating will be

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import math
 import os
@@ -31,7 +32,7 @@ def parse_args():
     parser.add_argument(
         '--config',
         help='test config file path',
-        default='./.dev_scripts/benchmark_regression_cfg_tmpl.yaml')
+        default='./.dev_scripts/benchmark/benchmark_regression_cfg.yaml')
     parser.add_argument(
         '--priority',
         nargs=2,

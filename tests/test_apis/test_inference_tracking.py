@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import pytest
 
 from mmpose.apis import (get_track_id, inference_bottom_up_pose_model,

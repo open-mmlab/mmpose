@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch
 from torch.utils.data import DistributedSampler as _DistributedSampler
 
