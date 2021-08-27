@@ -158,7 +158,7 @@ if __name__ == '__main__':
         name='mmpose',
         version=get_version(),
         description='OpenMMLab Pose Estimation Toolbox and Benchmark.',
-        maintainer='MMPose Authors',
+        maintainer='MMPose Contributors',
         maintainer_email='openmmlab@gmail.com',
         long_description=readme(),
         long_description_content_type='text/markdown',
