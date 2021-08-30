@@ -4,7 +4,8 @@ resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=1)
-evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
+evaluation = dict(
+    interval=1, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 
 optimizer = dict(
     type='Adam',
@@ -20,56 +21,76 @@ lr_config = dict(
     step=[40, 55])
 total_epochs = 60
 log_config = dict(
-    interval=5,
+    interval=10,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
     ])
 
 channel_cfg = dict(
-    num_output_channels=68,
-    dataset_joints=68,
+    num_output_channels=21,
+    dataset_joints=21,
     dataset_channel=[
-        list(range(68)),
+        [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+            19, 20
+        ],
     ],
-    inference_channel=list(range(68)))
+    inference_channel=[
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20
+    ])
 
 # model settings
 model = dict(
     type='TopDown',
-    pretrained=None,
+    pretrained='open-mmlab://msra/hrnetv2_w18',
     backbone=dict(
-        type='RSN',
-        unit_channels=256,
-        num_stages=1,
-        num_units=4,
-        num_blocks=[2, 2, 2, 2],
-        num_steps=4,
-        norm_cfg=dict(type='BN')),
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(18, 36)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(18, 36, 72)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(18, 36, 72, 144),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False))),
     keypoint_head=dict(
-        type='TopdownHeatmapMSMUHead',
-        out_shape=(64, 48),
-        unit_channels=256,
+        type='TopdownHeatmapSimpleHead',
+        in_channels=[18, 36, 72, 144],
+        in_index=(0, 1, 2, 3),
+        input_transform='resize_concat',
         out_channels=channel_cfg['num_output_channels'],
-        num_stages=1,
-        num_units=4,
-        use_prm=False,
-        norm_cfg=dict(type='BN'),
-        loss_keypoint=[
-            dict(
-                type='JointsMSELoss', use_target_weight=True, loss_weight=0.25)
-        ] * 3 + [
-            dict(
-                type='JointsOHKMMSELoss',
-                use_target_weight=True,
-                loss_weight=1.)
-        ]),
+        num_deconv_layers=0,
+        extra=dict(
+            final_conv_kernel=1, num_conv_layers=1, num_conv_kernels=(1, )),
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process='megvii',
-        shift_heatmap=False,
-        modulate_kernel=5))
+        post_process='default',
+        shift_heatmap=True,
+        modulate_kernel=11))
 
 data_cfg = dict(
     image_size=[256, 256],
@@ -83,8 +104,7 @@ train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=30,
-        scale_factor=0.25),
+        type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -117,28 +137,28 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/freihand'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='FaceCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_train.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='FaceCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_val.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='FaceCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )

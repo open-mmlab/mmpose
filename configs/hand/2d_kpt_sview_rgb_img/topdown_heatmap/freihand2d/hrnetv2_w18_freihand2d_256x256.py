@@ -27,7 +27,6 @@ log_config = dict(
         # dict(type='TensorboardLoggerHook')
     ])
 
-target_type = 'GaussianHeatmap'
 channel_cfg = dict(
     num_output_channels=21,
     dataset_joints=21,
@@ -90,10 +89,8 @@ model = dict(
     test_cfg=dict(
         flip_test=True,
         post_process='default',
-        shift_heatmap=False,
-        target_type=target_type,
-        modulate_kernel=11,
-        use_udp=True))
+        shift_heatmap=True,
+        modulate_kernel=11))
 
 data_cfg = dict(
     image_size=[256, 256],
@@ -108,17 +105,13 @@ train_pipeline = [
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
-    dict(type='TopDownAffine', use_udp=True),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(
-        type='TopDownGenerateTarget',
-        sigma=2,
-        encoding='UDP',
-        target_type=target_type),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -130,7 +123,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownAffine', use_udp=True),
+    dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
         type='NormalizeTensor',
@@ -144,28 +137,28 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = 'data/freihand'
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
-        type='HandCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
-        img_prefix=f'{data_root}/train2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_train.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline),
     val=dict(
-        type='HandCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_val.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
     test=dict(
-        type='HandCocoWholeBodyDataset',
-        ann_file=f'{data_root}/annotations/coco_wholebody_val_v1.0.json',
-        img_prefix=f'{data_root}/val2017/',
+        type='FreiHandDataset',
+        ann_file=f'{data_root}/annotations/freihand_test.json',
+        img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline),
 )
