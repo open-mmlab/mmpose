@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
-import pytest
 
 from mmpose.apis import (inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_pose_result)
+from mmpose.datasets import DatasetInfo
 
 
 def test_top_down_demo():
@@ -16,14 +16,21 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/coco/000000000785.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
 
     person_result = []
     person_result.append({'bbox': [50, 50, 50, 100]})
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
-        pose_model, image_name, person_result, format='xywh')
+        pose_model,
+        image_name,
+        person_result,
+        format='xywh',
+        dataset_info=dataset_info)
     # show the results
-    vis_pose_result(pose_model, image_name, pose_results)
+    vis_pose_result(
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # AIC demo
     pose_model = init_pose_model(
@@ -32,16 +39,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/aic/054d9ce9201beffc76e5ff2169d2af2f027002ca.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='TopDownAicDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='TopDownAicDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # OneHand10K demo
     # build the pose model from a config file and a checkpoint file
@@ -51,16 +60,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/onehand10k/9.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='OneHand10KDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='OneHand10KDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # InterHand2DDataset demo
     # build the pose model from a config file and a checkpoint file
@@ -70,16 +81,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/interhand2.6m/image2017.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='InterHand2DDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='InterHand2DDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # Face300WDataset demo
     # build the pose model from a config file and a checkpoint file
@@ -89,16 +102,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/300w/indoor_020.png'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='Face300WDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='Face300WDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # FaceAFLWDataset demo
     # build the pose model from a config file and a checkpoint file
@@ -108,16 +123,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/aflw/image04476.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='FaceAFLWDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='FaceAFLWDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
     # FaceCOFWDataset demo
     # build the pose model from a config file and a checkpoint file
@@ -127,24 +144,18 @@ def test_top_down_demo():
         None,
         device='cpu')
     image_name = 'tests/data/cofw/001766.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
     # test a single image, with a list of bboxes.
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         image_name,
         person_result,
         format='xywh',
-        dataset='FaceCOFWDataset')
+        dataset_info=dataset_info)
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='FaceCOFWDataset')
-
-    with pytest.raises(NotImplementedError):
-        pose_results, _ = inference_top_down_pose_model(
-            pose_model,
-            image_name,
-            person_result,
-            format='xywh',
-            dataset='test')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
 
 def test_bottom_up_demo():
@@ -157,12 +168,15 @@ def test_bottom_up_demo():
         device='cpu')
 
     image_name = 'tests/data/coco/000000000785.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
 
-    pose_results, _ = inference_bottom_up_pose_model(pose_model, image_name)
+    pose_results, _ = inference_bottom_up_pose_model(
+        pose_model, image_name, dataset_info=dataset_info)
 
     # show the results
     vis_pose_result(
-        pose_model, image_name, pose_results, dataset='BottomUpCocoDataset')
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
 
 
 def test_process_mmdet_results():

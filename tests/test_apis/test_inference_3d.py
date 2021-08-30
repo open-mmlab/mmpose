@@ -12,7 +12,7 @@ from mmpose.apis import (extract_pose_sequence, inference_interhand_3d_model,
                          inference_mesh_model, inference_pose_lifter_model,
                          init_pose_model, vis_3d_mesh_result,
                          vis_3d_pose_result)
-from mmpose.models import build_posenet
+from mmpose.datasets.dataset_info import DatasetInfo
 
 
 def test_pose_lifter_demo():
@@ -32,16 +32,22 @@ def test_pose_lifter_demo():
 
     pose_results_2d = [[pose_det_result]]
 
-    dataset = pose_model.cfg.data['test']['type']
+    dataset_info = DatasetInfo(pose_model.cfg.data['test']['dataset_info'])
 
     pose_results_2d = extract_pose_sequence(
         pose_results_2d, frame_idx=0, causal=False, seq_len=1, step=1)
 
     _ = inference_pose_lifter_model(
-        pose_model, pose_results_2d, dataset, with_track_id=False)
+        pose_model,
+        pose_results_2d,
+        dataset_info=dataset_info,
+        with_track_id=False)
 
     pose_lift_results = inference_pose_lifter_model(
-        pose_model, pose_results_2d, dataset, with_track_id=True)
+        pose_model,
+        pose_results_2d,
+        dataset_info=dataset_info,
+        with_track_id=True)
 
     for res in pose_lift_results:
         res['title'] = 'title'
@@ -49,20 +55,19 @@ def test_pose_lifter_demo():
         pose_model,
         pose_lift_results,
         img=pose_results_2d[0][0]['image_name'],
-        dataset=dataset)
+        dataset_info=dataset_info)
 
     # test special cases
     # Empty 2D results
     _ = inference_pose_lifter_model(
-        pose_model, [[]], dataset, with_track_id=False)
+        pose_model, [[]], dataset_info=dataset_info, with_track_id=False)
 
     if torch.cuda.is_available():
         _ = inference_pose_lifter_model(
-            pose_model.cuda(), pose_results_2d, dataset, with_track_id=False)
-
-    with pytest.raises(NotImplementedError):
-        _ = inference_pose_lifter_model(
-            pose_model, pose_results_2d, dataset='test')
+            pose_model.cuda(),
+            pose_results_2d,
+            dataset_info=dataset_info,
+            with_track_id=False)
 
     # test videopose3d
     pose_model = init_pose_model(
@@ -93,7 +98,7 @@ def test_pose_lifter_demo():
     pose_results_2d = [[pose_det_result_0], [pose_det_result_1],
                        [pose_det_result_2]]
 
-    dataset = pose_model.cfg.data['test']['type']
+    dataset_info = DatasetInfo(pose_model.cfg.data['test']['dataset_info'])
 
     seq_len = pose_model.cfg.test_data_cfg.seq_len
     pose_results_2d_seq = extract_pose_sequence(
@@ -102,7 +107,7 @@ def test_pose_lifter_demo():
     pose_lift_results = inference_pose_lifter_model(
         pose_model,
         pose_results_2d_seq,
-        dataset,
+        dataset_info=dataset_info,
         with_track_id=True,
         image_size=[1000, 1000],
         norm_pose_2d=True)
@@ -113,7 +118,8 @@ def test_pose_lifter_demo():
         pose_model,
         pose_lift_results,
         img=pose_results_2d[0][0]['image_name'],
-        dataset=dataset)
+        dataset_info=dataset_info,
+    )
 
 
 def test_interhand3d_demo():
@@ -133,6 +139,7 @@ def test_interhand3d_demo():
     }
     det_results = [det_result]
     dataset = pose_model.cfg.data['test']['type']
+    dataset_info = DatasetInfo(pose_model.cfg.data['test']['dataset_info'])
 
     pose_results = inference_interhand_3d_model(
         pose_model, image_name, det_results, dataset=dataset)
@@ -144,7 +151,7 @@ def test_interhand3d_demo():
         pose_model,
         result=pose_results,
         img=det_results[0]['image_name'],
-        dataset=dataset,
+        dataset_info=dataset_info,
     )
 
     # test special cases
@@ -163,7 +170,6 @@ def test_interhand3d_demo():
 
 def test_body_mesh_demo():
     # H36M demo
-    device = 'cpu'
     config = 'configs/body/3d_mesh_sview_rgb_img/hmr' \
              '/mixed/res50_mixed_224x224.py'
     config = mmcv.Config.fromfile(config)
@@ -177,12 +183,9 @@ def test_body_mesh_demo():
             tmpdir, 'test_joint_regressor.npy')
         # generate weight file for SMPL model.
         generate_smpl_weight_file(tmpdir)
-        pose_model = build_posenet(config.model)
+        pose_model = init_pose_model(config, device='cpu')
 
     assert pose_model is not None, 'Fail to build pose model'
-    pose_model.cfg = config
-    pose_model.to(device)
-    pose_model.eval()
 
     image_name = 'tests/data/h36m/S1_Directions_1.54138969_000001.jpg'
     det_result = {

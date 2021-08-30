@@ -118,9 +118,9 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
 
     trans = get_warp_matrix(
         theta=0,
-        size_input=np.array(scale, dtype=float),
-        size_dst=np.array(size_resized, dtype=float) - 1.0,
-        size_target=np.array(scale, dtype=float))
+        size_input=np.array(scale, dtype=np.float32),
+        size_dst=np.array(size_resized, dtype=np.float32) - 1.0,
+        size_target=np.array(scale, dtype=np.float32))
     image_resized = cv2.warpAffine(
         image.copy(), trans, size_resized, flags=cv2.INTER_LINEAR)
 
@@ -458,8 +458,8 @@ class BottomUpRandomAffine:
                     theta=aug_rot,
                     size_input=center * 2.0,
                     size_dst=np.array(
-                        (_output_size, _output_size), dtype=float) - 1.0,
-                    size_target=np.array((scale, scale), dtype=float))
+                        (_output_size, _output_size), dtype=np.float32) - 1.0,
+                    size_target=np.array((scale, scale), dtype=np.float32))
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8),
                     trans, (int(_output_size), int(_output_size)),
@@ -473,8 +473,9 @@ class BottomUpRandomAffine:
                 theta=aug_rot,
                 size_input=center * 2.0,
                 size_dst=np.array(
-                    (self.input_size, self.input_size), dtype=float) - 1.0,
-                size_target=np.array((scale, scale), dtype=float))
+                    (self.input_size, self.input_size), dtype=np.float32) -
+                1.0,
+                size_target=np.array((scale, scale), dtype=np.float32))
             image = cv2.warpAffine(
                 image,
                 mat_input, (int(self.input_size), int(self.input_size)),

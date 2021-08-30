@@ -1,8 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
-import numpy as np
-from xtcocotools.coco import COCO
+from mmcv import Config
 from xtcocotools.cocoeval import COCOeval
 
 from ...builder import DATASETS
@@ -52,6 +51,7 @@ class TopDownMhpDataset(TopDownCocoDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -61,9 +61,24 @@ class TopDownMhpDataset(TopDownCocoDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/mhp.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super(TopDownCocoDataset, self).__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
@@ -78,45 +93,8 @@ class TopDownMhpDataset(TopDownCocoDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.bbox_thr = data_cfg['bbox_thr']
-
-        self.ann_info['flip_pairs'] = [[0, 5], [1, 4], [2, 3], [10, 15],
-                                       [11, 14], [12, 13]]
-
-        self.ann_info['upper_body_ids'] = (7, 8, 9, 10, 11, 12, 13, 14, 15)
-        self.ann_info['lower_body_ids'] = (0, 1, 2, 3, 4, 5, 6)
 
         self.ann_info['use_different_joint_weights'] = False
-        self.ann_info['joint_weights'] = np.array(
-            [
-                1.5, 1.2, 1., 1., 1.2, 1.5, 1., 1., 1., 1., 1.5, 1.2, 1., 1.,
-                1.2, 1.5
-            ],
-            dtype=np.float32).reshape((self.ann_info['num_joints'], 1))
-
-        # Adapted from COCO dataset.
-        self.sigmas = np.array([
-            .89, .83, 1.07, 1.07, .83, .89, .26, .26, .26, .26, .62, .72, 1.79,
-            1.79, .72, .62
-        ]) / 10.0
-
-        self.coco = COCO(ann_file)
-
-        cats = [
-            cat['name'] for cat in self.coco.loadCats(self.coco.getCatIds())
-        ]
-        self.classes = ['__background__'] + cats
-        self.num_classes = len(self.classes)
-        self._class_to_ind = dict(zip(self.classes, range(self.num_classes)))
-        self._class_to_coco_ind = dict(zip(cats, self.coco.getCatIds()))
-        self._coco_ind_to_class_ind = dict(
-            (self._class_to_coco_ind[cls], self._class_to_ind[cls])
-            for cls in self.classes[1:])
-        self.img_ids = self.coco.getImgIds()
-        self.num_images = len(self.img_ids)
-        self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
-        self.dataset_name = 'mhp'
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

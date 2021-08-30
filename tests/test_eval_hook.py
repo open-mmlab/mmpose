@@ -143,10 +143,11 @@ def test_eval_hook(EvalHookCls):
             batch_processor=None,
             optimizer=optimizer,
             work_dir=tmpdir,
-            logger=logger)
+            logger=logger,
+            max_epochs=8)
         runner.register_checkpoint_hook(dict(interval=1))
         runner.register_hook(eval_hook)
-        runner.run([loader], [('train', 1)], 8)
+        runner.run([loader], [('train', 1)])
 
         real_path = osp.join(tmpdir, 'best_acc_epoch_4.pth')
 

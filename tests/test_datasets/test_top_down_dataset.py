@@ -3,64 +3,18 @@ import copy
 import tempfile
 from unittest.mock import MagicMock
 
-import numpy as np
 import pytest
+from mmcv import Config
 from numpy.testing import assert_almost_equal
+from tests.utils.data_utils import convert_db_to_output
 
 from mmpose.datasets import DATASETS
 
 
-def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
-    outputs = []
-    len_db = len(db)
-    for i in range(0, len_db, batch_size):
-        if is_3d:
-            keypoints = np.stack([
-                db[j]['joints_3d'].reshape((-1, 3))
-                for j in range(i, min(i + batch_size, len_db))
-            ])
-        else:
-            keypoints = np.stack([
-                np.hstack([
-                    db[j]['joints_3d'].reshape((-1, 3))[:, :2],
-                    db[j]['joints_3d_visible'].reshape((-1, 3))[:, :1]
-                ]) for j in range(i, min(i + batch_size, len_db))
-            ])
-        image_paths = [
-            db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
-        ]
-        bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack([
-            np.array([
-                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1],
-                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
-            ],
-                     dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db))
-        ])
-
-        output = {}
-        output['preds'] = keypoints
-        output['boxes'] = box
-        output['image_paths'] = image_paths
-        output['output_heatmap'] = None
-        output['bbox_ids'] = bbox_ids
-
-        if keys is not None:
-            keys = keys if isinstance(keys, list) else [keys]
-            for key in keys:
-                output[key] = [
-                    db[j][key] for j in range(i, min(i + batch_size, len_db))
-                ]
-
-        outputs.append(output)
-
-    return outputs
-
-
 def test_top_down_COCO_dataset():
     dataset = 'TopDownCocoDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -99,6 +53,7 @@ def test_top_down_COCO_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     _ = dataset_class(
@@ -106,6 +61,7 @@ def test_top_down_COCO_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     # Test gt bbox
@@ -114,6 +70,7 @@ def test_top_down_COCO_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -135,6 +92,8 @@ def test_top_down_COCO_dataset():
 
 def test_top_down_MHP_dataset():
     dataset = 'TopDownMhpDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/mhp.py').dataset_info
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -177,6 +136,7 @@ def test_top_down_MHP_dataset():
             img_prefix='tests/data/mhp/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=True)
 
     # Test gt bbox
@@ -185,6 +145,7 @@ def test_top_down_MHP_dataset():
         img_prefix='tests/data/mhp/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -192,6 +153,7 @@ def test_top_down_MHP_dataset():
         img_prefix='tests/data/mhp/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -213,6 +175,8 @@ def test_top_down_MHP_dataset():
 
 def test_top_down_PoseTrack18_dataset():
     dataset = 'TopDownPoseTrack18Dataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/posetrack18.py').dataset_info
     # test PoseTrack datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -252,6 +216,7 @@ def test_top_down_PoseTrack18_dataset():
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     _ = dataset_class(
@@ -259,6 +224,7 @@ def test_top_down_PoseTrack18_dataset():
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     # Test gt bbox
@@ -267,6 +233,7 @@ def test_top_down_PoseTrack18_dataset():
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -280,6 +247,8 @@ def test_top_down_PoseTrack18_dataset():
 
 def test_top_down_CrowdPose_dataset():
     dataset = 'TopDownCrowdPoseDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/crowdpose.py').dataset_info
     # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -316,6 +285,7 @@ def test_top_down_CrowdPose_dataset():
         img_prefix='tests/data/crowdpose/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     _ = dataset_class(
@@ -323,6 +293,7 @@ def test_top_down_CrowdPose_dataset():
         img_prefix='tests/data/crowdpose/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     # Test gt bbox
@@ -331,6 +302,7 @@ def test_top_down_CrowdPose_dataset():
         img_prefix='tests/data/crowdpose/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -352,6 +324,8 @@ def test_top_down_CrowdPose_dataset():
 
 def test_top_down_COCO_wholebody_dataset():
     dataset = 'TopDownCocoWholeBodyDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco_wholebody.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -388,6 +362,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     _ = dataset_class(
@@ -395,6 +370,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     # Test gt bbox
@@ -403,6 +379,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -424,6 +401,8 @@ def test_top_down_COCO_wholebody_dataset():
 
 def test_top_down_OCHuman_dataset():
     dataset = 'TopDownOCHumanDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/ochuman.py').dataset_info
     # test OCHuman datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -464,6 +443,7 @@ def test_top_down_OCHuman_dataset():
             img_prefix='tests/data/ochuman/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=True)
 
     # Test gt bbox
@@ -472,6 +452,7 @@ def test_top_down_OCHuman_dataset():
         img_prefix='tests/data/ochuman/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -493,6 +474,8 @@ def test_top_down_OCHuman_dataset():
 
 def test_top_down_MPII_dataset():
     dataset = 'TopDownMpiiDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/mpii.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -523,7 +506,9 @@ def test_top_down_MPII_dataset():
         ann_file='tests/data/mpii/test_mpii.json',
         img_prefix='tests/data/mpii/',
         data_cfg=data_cfg_copy,
-        pipeline=[])
+        pipeline=[],
+        dataset_info=dataset_info,
+    )
 
     assert len(custom_dataset) == 5
     assert custom_dataset.dataset_name == 'mpii'
@@ -532,6 +517,8 @@ def test_top_down_MPII_dataset():
 
 def test_top_down_MPII_TRB_dataset():
     dataset = 'TopDownMpiiTrbDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/mpii_trb.py').dataset_info
     # test MPII TRB datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -555,6 +542,7 @@ def test_top_down_MPII_TRB_dataset():
         img_prefix='tests/data/mpii/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -562,6 +550,7 @@ def test_top_down_MPII_TRB_dataset():
         img_prefix='tests/data/mpii/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -571,6 +560,8 @@ def test_top_down_MPII_TRB_dataset():
 
 def test_top_down_AIC_dataset():
     dataset = 'TopDownAicDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/aic.py').dataset_info
     # test AIC datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -608,6 +599,7 @@ def test_top_down_AIC_dataset():
             img_prefix='tests/data/aic/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=True)
 
         _ = dataset_class(
@@ -615,6 +607,7 @@ def test_top_down_AIC_dataset():
             img_prefix='tests/data/aic/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=False)
 
     # Test gt bbox
@@ -623,6 +616,7 @@ def test_top_down_AIC_dataset():
         img_prefix='tests/data/aic/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -644,6 +638,8 @@ def test_top_down_AIC_dataset():
 
 def test_top_down_JHMDB_dataset():
     dataset = 'TopDownJhmdbDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/jhmdb.py').dataset_info
     # test JHMDB datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -681,6 +677,7 @@ def test_top_down_JHMDB_dataset():
             img_prefix='tests/data/jhmdb/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=True)
 
         _ = dataset_class(
@@ -688,6 +685,7 @@ def test_top_down_JHMDB_dataset():
             img_prefix='tests/data/jhmdb/',
             data_cfg=data_cfg_copy,
             pipeline=[],
+            dataset_info=dataset_info,
             test_mode=False)
 
     # Test gt bbox
@@ -696,6 +694,7 @@ def test_top_down_JHMDB_dataset():
         img_prefix='tests/data/jhmdb/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
@@ -720,6 +719,8 @@ def test_top_down_JHMDB_dataset():
 
 def test_top_down_h36m_dataset():
     dataset = 'TopDownH36MDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/h36m.py').dataset_info
     # test AIC datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -749,6 +750,7 @@ def test_top_down_h36m_dataset():
         img_prefix='tests/data/h36m/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
