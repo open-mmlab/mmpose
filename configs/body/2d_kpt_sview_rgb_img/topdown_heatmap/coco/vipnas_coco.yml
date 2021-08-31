@@ -8,11 +8,11 @@ Collections:
   - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.md
 Models:
-- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/s_vipnas_res50_coco_256x192.py
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_res50_coco_256x192.py
   In Collection: vipnas_coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--s_vipnas_res50_coco_256x192
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--vipnas_res50_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
