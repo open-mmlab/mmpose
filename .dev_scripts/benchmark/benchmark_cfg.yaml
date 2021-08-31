@@ -13,7 +13,7 @@ model_list:
     # CPM
     ## CPM + MPII
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py
-      checkpoint: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py
+      checkpoint: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth
     # InterNet (Interhand2.6M)
     ## InterNet + Interhand3D
     - config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
@@ -65,7 +65,7 @@ model_list:
     # DeepPose
     ## DeepPose + ResNet + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192.py
-      checkpoint: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192.py
+      checkpoint: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192-f6de6c0e_20210205.pth
   P2:
     # CPM
     ## CPM + COCO
@@ -104,7 +104,7 @@ model_list:
     ## HRNet + Dark + MPII
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth
-    ## HRNetV2 + Dark + AFLW/WFLW/OneHand10k/Panoptic2D/RHD2D
+    ## HRNetV2 + Dark + AFLW
     - config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth
     ## HRNet + Dark + COCO-Wholebody
@@ -112,15 +112,17 @@ model_list:
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192_dark-469327ef_20200922.pth
     # SimpleBaselin3D
     ## SimpleBaseline3D + MPI-INF-3DHP
-    - config: https://mmpose.readthedocs.io/en/latest/papers/configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
+    - config: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/simplebaseline3d/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
     # UDP
     ## AE + HigherHRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
-    ## HRNetV2 + UDP + OneHand10k/Panoptic/RHD2D
+    ## HRNetV2 + UDP + OneHand10k/RHD2D
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_onehand10k_256x256_udp-0d1b515d_20210330.pth
+    - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_udp.py
+      checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_rhd2d_256x256_udp-63ba6007_20210330.pth
     # SCNet
     # SCNet + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
@@ -131,7 +133,7 @@ model_list:
       checkpoint: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256-a54b6af5_20200812.pth
     # VideoPose3D
     ## VideoPose3D + MPI-INF-3DHP
-    - config: https://mmpose.readthedocs.io/en/latest/papers/configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
+    - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth
     # LiteHRNet
     ## LiteHRNet + MPII
@@ -183,7 +185,7 @@ model_list:
     ## HRNet + Dark + MPII
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w48_mpii_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_mpii_256x256_dark-0decd39f_20200927.pth
-    ## HRNetV2 + Dark + AFLW/WFLW/OneHand10k/Panoptic2D/RHD2D
+    ## HRNetV2 + Dark + WFLW/OneHand10k/Panoptic2D/RHD2D
     - config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_wflw_256x256_dark-3f8e0c2c_20210125.pth
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_dark.py
@@ -199,7 +201,7 @@ model_list:
     ## AE + HigherHRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_udp-7cad61ef_20210222.pth
-    ## HRNetV2 + UDP + OneHand10k/Panoptic/RHD2D
+    ## HRNetV2 + UDP + Panoptic
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_panoptic_256x256_udp-f9e15948_20210330.pth
     # SCNet
