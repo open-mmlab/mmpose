@@ -10,16 +10,16 @@ Collections:
   - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/resnet_rhd2d.md
 Models:
-- Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_udp.py
+- Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/res50_rhd2d_256x256.py
   In Collection: resnet_rhd2d
   Metadata:
     Training Data: RHD
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_w18_rhd2d_256x256_udp
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--res50_rhd2d_256x256
   Results:
   - Dataset: RHD
     Metrics:
-      AUC: 0.902
-      EPE: 2.21
-      PCK@0.2: 0.992
+      AUC: 0.898
+      EPE: 2.33
+      PCK@0.2: 0.991
     Task: 2D Hand Pose Estimation
-  Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_rhd2d_256x256_udp-63ba6007_20210330.pth
+  Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_rhd2d_256x256-5dc7e4cc_20210330.pth
