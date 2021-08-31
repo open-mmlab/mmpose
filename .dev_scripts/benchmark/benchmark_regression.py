@@ -13,14 +13,12 @@ DEFAULT_TEST_ARGS = dict(
     gpus=1,
     gpus_per_node=1,
     cpus_per_task=5,
-    partition='mm_human',
 )
 
 DEFAULT_TRAIN_ARGS = dict(
     gpus=8,
     gpus_per_node=8,
     cpus_per_task=5,
-    partition='mm_human',
 )
 
 
@@ -44,10 +42,15 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='running benchmark regression with tmux')
     parser.add_argument(
+        '--partition',
+        '-p',
+        help='models with priority higher or equal to this will be included')
+
+    parser.add_argument(
         '--config',
         '-c',
         help='test config file path',
-        default='./.dev_scripts/benchmark/benchmark_regression_cfg_tmpl.yaml')
+        default='./.dev_scripts/benchmark/benchmark_cfg.yaml')
     parser.add_argument(
         '--mode',
         help='the benchmark regression mode, can be "test" or "train"',
@@ -55,7 +58,6 @@ def parse_args():
 
     parser.add_argument(
         '--priority',
-        '-p',
         type=int,
         help='models with priority higher or equal to this will be included',
         default=2)
@@ -191,7 +193,7 @@ def main():
                 cur_partition = model['test'][
                     'partition'] if 'test' in model.keys(
                     ) and 'partition' in model['test'].keys(
-                    ) else DEFAULT_TEST_ARGS['partition']
+                    ) else args.partition
 
                 # deal with extra python arguments
                 py_cmd = f' --work-dir {cur_work_dir} '
@@ -231,7 +233,7 @@ def main():
                 cur_partition = model['train'][
                     'partition'] if 'train' in model.keys(
                     ) and 'partition' in model['train'].keys(
-                    ) else DEFAULT_TRAIN_ARGS['partition']
+                    ) else args.partition
 
                 # deal with extra python arguments
                 py_cmd = ' '
