@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.18.0 (01/09/2021)
+
+**Bug Fixes**
+
+- Fix redundant model weight loading in pytorch-to-onnx conversion ([\#850](https://github.com/open-mmlab/mmpose/pull/850)) @ly015
+- Fix a bug in update_model_index.py that may cause pre-commit hook failure([\#866](https://github.com/open-mmlab/mmpose/pull/866))@ly015
+- Fix pose tracking demo failure caused by out-of-date configs ([\#891](https://github.com/open-mmlab/mmpose/pull/891))
+- Fix a bug in interhand_3d_head ([\#890](https://github.com/open-mmlab/mmpose/pull/890)) @zengwang430521
+
+**Improvements**
+
+- Add python3.9 in CI ([\#877](https://github.com/open-mmlab/mmpose/pull/877), [\#883](https://github.com/open-mmlab/mmpose/pull/883)) @ly015
+- Add automatic benchmark regression tools ([\#849](https://github.com/open-mmlab/mmpose/pull/849), [\#880](https://github.com/open-mmlab/mmpose/pull/880), [\#885](https://github.com/open-mmlab/mmpose/pull/885)) @liqikai9, @ly015
+- Add copyright information and checking hook ([\#872](https://github.com/open-mmlab/mmpose/pull/872))
+- Add PR template ([\#875](https://github.com/open-mmlab/mmpose/pull/875)) @ly015
+- Add citation information ([\#876](https://github.com/open-mmlab/mmpose/pull/876)) @ly015
+- Improve the quality of the documents ([\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#848](https://github.com/open-mmlab/mmpose/pull/848), [\#867](https://github.com/open-mmlab/mmpose/pull/867), [\#870](https://github.com/open-mmlab/mmpose/pull/870), [\#873](https://github.com/open-mmlab/mmpose/pull/873)) @jin-s13, @ly015, @zhiqwang
+
 ## v0.17.0 (06/08/2021)
 
 **Highlights**
