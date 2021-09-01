@@ -372,11 +372,12 @@ class Interhand3DHead(nn.Module):
             multiple heads.
         """
         accuracy = dict()
-        accuracy['acc_classification'] = multilabel_classification_accuracy(
+        avg_acc = multilabel_classification_accuracy(
             output[2].detach().cpu().numpy(),
             target[2].detach().cpu().numpy(),
             target_weight[2].detach().cpu().numpy(),
         )
+        accuracy['acc_classification'] = float(avg_acc)
         return accuracy
 
     def forward(self, x):

@@ -672,7 +672,7 @@ def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
     pred, gt = pred[valid], gt[valid]
 
     if pred.shape[0] == 0:
-        acc = 0  # when no sample is with gt labels, set acc to 0.
+        acc = 0.0  # when no sample is with gt labels, set acc to 0.
     else:
         # The classification of a sample is regarded as correct
         # only if it's correct for all labels.
