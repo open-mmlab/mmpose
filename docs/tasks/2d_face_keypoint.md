@@ -199,6 +199,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="http://openaccess.thecvf.com/content_iccv_2013/html/Burgos-Artizzu_Robust_Face_Landmark_2013_ICCV_paper.html">COFW (ICCV'2013)</a></summary>
+
 ```bibtex
 @inproceedings{burgos2013robust,
   title={Robust face landmark estimation under occlusion},
@@ -208,6 +211,8 @@ mmpose
   year={2013}
 }
 ```
+
+</details>
 
 For COFW data, please download from [COFW Dataset (Color Images)](http://www.vision.caltech.edu/xpburgos/ICCV13/Data/COFW_color.zip).
 Move `COFW_train_color.mat` and `COFW_test_color.mat` to `data/cofw/` and make them look like:
