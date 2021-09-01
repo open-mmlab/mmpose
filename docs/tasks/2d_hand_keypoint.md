@@ -93,7 +93,7 @@ mmpose
 ├── tools
 ├── configs
 `── data
-    │── onehand10k
+    │── freihand
         |── annotations
         |   |── freihand_train.json
         |   |── freihand_val.json
