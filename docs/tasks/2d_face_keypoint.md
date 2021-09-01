@@ -14,6 +14,9 @@ MMPose supported datasets:
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="https://www.sciencedirect.com/science/article/pii/S0262885616000147">300W (IMAVIS'2016)</a></summary>
+
 ```bibtex
 @article{sagonas2016300,
   title={300 faces in-the-wild challenge: Database and results},
@@ -25,6 +28,8 @@ MMPose supported datasets:
   publisher={Elsevier}
 }
 ```
+
+</details>
 
 For 300W data, please download images from [300W Dataset](https://ibug.doc.ic.ac.uk/resources/300-W/).
 Please download the annotation files from [300w_annotations](https://download.openmmlab.com/mmpose/datasets/300w_annotations.tar).
