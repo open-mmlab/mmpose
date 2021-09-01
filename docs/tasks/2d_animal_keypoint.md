@@ -272,7 +272,7 @@ mmpose
 ├── tools
 ├── configs
 `── data
-    │── fly
+    │── locust
         │-- annotations
         │   │-- locust_train.json
         │   |-- locust_test.json
