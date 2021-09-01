@@ -16,7 +16,7 @@
 - Add PR template ([\#875](https://github.com/open-mmlab/mmpose/pull/875)) @ly015
 - Add citation information ([\#876](https://github.com/open-mmlab/mmpose/pull/876)) @ly015
 - Add python3.9 in CI ([\#877](https://github.com/open-mmlab/mmpose/pull/877), [\#883](https://github.com/open-mmlab/mmpose/pull/883)) @ly015
-- Improve the quality of the documents ([\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#848](https://github.com/open-mmlab/mmpose/pull/848), [\#867](https://github.com/open-mmlab/mmpose/pull/867), [\#870](https://github.com/open-mmlab/mmpose/pull/870), [\#873](https://github.com/open-mmlab/mmpose/pull/873)) @jin-s13, @ly015, @zhiqwang
+- Improve the quality of the documents ([\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#845](https://github.com/open-mmlab/mmpose/pull/845), [\#848](https://github.com/open-mmlab/mmpose/pull/848), [\#867](https://github.com/open-mmlab/mmpose/pull/867), [\#870](https://github.com/open-mmlab/mmpose/pull/870), [\#873](https://github.com/open-mmlab/mmpose/pull/873), [\#896](https://github.com/open-mmlab/mmpose/pull/896)) @jin-s13, @ly015, @zhiqwang
 
 ## v0.17.0 (06/08/2021)
 
