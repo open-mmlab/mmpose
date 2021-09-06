@@ -138,26 +138,13 @@ class HeatmapGenerator:
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self,
-                 output_size,
-                 num_joints,
-                 sigma=-1,
-                 use_udp=False,
-                 add_neck=False,
-                 with_bg=False):
+    def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
         self.output_size = output_size
         self.num_joints = num_joints
-        self.add_neck = add_neck
-        self.with_bg = with_bg
-
-        if self.add_neck:
-            self.num_joints += 1
-
         if sigma < 0:
             sigma = self.output_size / 64
         self.sigma = sigma
         size = 6 * sigma + 3
-
         self.use_udp = use_udp
         if use_udp:
             self.x = np.arange(0, size, 1, np.float32)
@@ -170,14 +157,8 @@ class HeatmapGenerator:
 
     def __call__(self, joints):
         """Generate heatmaps."""
-        if self.with_bg:
-            hms = np.zeros(
-                (self.num_joints + 1, self.output_size, self.output_size),
-                dtype=np.float32)
-        else:
-            hms = np.zeros(
-                (self.num_joints, self.output_size, self.output_size),
-                dtype=np.float32)
+        hms = np.zeros((self.num_joints, self.output_size, self.output_size),
+                       dtype=np.float32)
 
         sigma = self.sigma
         for p in joints:
@@ -209,8 +190,6 @@ class HeatmapGenerator:
                     hms[idx, aa:bb,
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
-        if self.with_bg:
-            hms[-1] = 1 - np.max(hms[:-1], axis=0)
         return hms
 
 
@@ -542,17 +521,14 @@ class BottomUpGenerateHeatmapTarget:
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
     """
 
-    def __init__(self, sigma, use_udp=False, add_neck=False, with_bg=False):
+    def __init__(self, sigma, use_udp=False):
         self.sigma = sigma
         self.use_udp = use_udp
-        self.add_neck = add_neck
-        self.with_bg = with_bg
 
     def _generate(self, num_joints, heatmap_size):
         """Get heatmap generator."""
         heatmap_generator = [
-            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp,
-                             self.add_neck, self.with_bg)
+            HeatmapGenerator(output_size, num_joints, self.sigma, self.use_udp)
             for output_size in heatmap_size
         ]
         return heatmap_generator
@@ -563,15 +539,12 @@ class BottomUpGenerateHeatmapTarget:
             self._generate(results['ann_info']['num_joints'],
                            results['ann_info']['heatmap_size'])
         target_list = list()
-        mask_list, joints_list = results['mask'], results['joints']
+        joints_list = results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             heatmaps = heatmap_generator[scale_id](joints_list[scale_id])
             target_list.append(heatmaps.astype(np.float32))
-            mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
-
-        results['targets'] = target_list
-        results['masks'] = mask_list
+        results['target'] = target_list
 
         return results
 
@@ -661,15 +634,13 @@ class BottomUpGeneratePAFTarget:
             self._generate(results['ann_info']['heatmap_size'],
                            self.skeleton)
         target_list = list()
-        mask_list, joints_list = results['mask'], results['joints']
+        joints_list = results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             pafs = paf_generator[scale_id](joints_list[scale_id])
             target_list.append(pafs.astype(np.float32))
-            mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
 
-        results['targets'] = target_list
-        results['masks'] = mask_list
+        results['target'] = target_list
 
         return results
 

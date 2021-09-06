@@ -44,8 +44,6 @@ class BottomUpBaseDataset(Dataset):
         self.base_sigma = data_cfg['base_sigma']
         self.int_sigma = False
 
-        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
-
         self.ann_info['image_size'] = np.array(data_cfg['image_size'])
         self.ann_info['heatmap_size'] = np.array(data_cfg['heatmap_size'])
         self.ann_info['num_joints'] = data_cfg['num_joints']
@@ -54,7 +52,6 @@ class BottomUpBaseDataset(Dataset):
 
         self.ann_info['inference_channel'] = data_cfg['inference_channel']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
-        self.ann_info['add_neck'] = data_cfg.get('add_neck', False)
 
         self.use_nms = data_cfg.get('use_nms', False)
         self.soft_nms = data_cfg.get('soft_nms', True)

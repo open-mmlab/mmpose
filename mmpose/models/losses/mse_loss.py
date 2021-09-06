@@ -150,38 +150,3 @@ class JointsOHKMMSELoss(nn.Module):
         losses = torch.cat(losses, dim=1)
 
         return self._ohkm(losses) * self.loss_weight
-
-
-@LOSSES.register_module()
-class MaskedMSELoss(nn.Module):
-    """MSE loss for the bottom-up outputs with mask.
-
-    Args:
-        use_mask (bool): Option to use mask of target. Default: True.
-        loss_weight (float): Weight of the loss. Default: 1.0.
-        supervise_empty (bool): Whether to supervise empty channels.
-    """
-
-    def __init__(self, use_mask=True, loss_weight=1., supervise_empty=True):
-        super().__init__()
-        self.criterion = nn.MSELoss()
-        self.use_mask = use_mask
-        self.loss_weight = loss_weight
-        self.supervise_empty = supervise_empty
-
-    def forward(self, output, target, mask):
-        """Forward function."""
-        assert output.size() == target.size()
-
-        if self.use_mask:
-            if not self.supervise_empty:
-                empty_mask = (target.sum(dim=[2, 3], keepdim=True) > 0).float()
-                mask = empty_mask.expand_as(
-                    output) * mask[:, None, :, :].expand_as(output)
-            else:
-                mask = mask[:, None, :, :].expand_as(output)
-            loss = self.criterion(output * mask, target * mask)
-        else:
-            loss = self.criterion(output, target)
-
-        return loss * self.loss_weight
