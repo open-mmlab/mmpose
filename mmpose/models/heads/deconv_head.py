@@ -1,28 +1,19 @@
-# Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, build_upsample_layer,
                       constant_init, normal_init)
 
-from mmpose.core.evaluation import pose_pck_accuracy
-from mmpose.core.post_processing import flip_back
-from mmpose.models.builder import build_loss
+from mmpose.models.builder import HEADS, build_loss
 from mmpose.models.utils.ops import resize
-from ..builder import HEADS
-from .topdown_heatmap_base_head import TopdownHeatmapBaseHead
 
 
 @HEADS.register_module()
-class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
-    """Top-down heatmap simple head. paper ref: Bin Xiao et al. ``Simple
-    Baselines for Human Pose Estimation and Tracking``.
-
-    TopdownHeatmapSimpleHead is consisted of (>=0) number of deconv layers
-    and a simple conv2d layer.
+class DeconvHead(nn.Module):
+    """Simple deconv head.
 
     Args:
-        in_channels (int): Number of input channels
-        out_channels (int): Number of output channels
+        in_channels (int): Number of input channels.
+        out_channels (int): Number of output channels.
         num_deconv_layers (int): Number of deconv layers.
             num_deconv_layers should >= 0. Note that 0 means
             no deconv layers.
@@ -41,12 +32,12 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
             Default: None.
         align_corners (bool): align_corners argument of F.interpolate.
             Default: False.
-        loss_keypoint (dict): Config for keypoint loss. Default: None.
+        loss_keypoint (dict): Config for loss. Default: None.
     """
 
     def __init__(self,
-                 in_channels,
-                 out_channels,
+                 in_channels=3,
+                 out_channels=17,
                  num_deconv_layers=3,
                  num_deconv_filters=(256, 256, 256),
                  num_deconv_kernels=(4, 4, 4),
@@ -54,17 +45,11 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
                  in_index=0,
                  input_transform=None,
                  align_corners=False,
-                 loss_keypoint=None,
-                 train_cfg=None,
-                 test_cfg=None):
+                 loss_keypoint=None):
         super().__init__()
 
         self.in_channels = in_channels
         self.loss = build_loss(loss_keypoint)
-
-        self.train_cfg = {} if train_cfg is None else train_cfg
-        self.test_cfg = {} if test_cfg is None else test_cfg
-        self.target_type = self.test_cfg.get('target_type', 'GaussianHeatmap')
 
         self._init_inputs(in_channels, in_index, input_transform)
         self.in_index = in_index
@@ -138,89 +123,6 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
                 self.final_layer = nn.Sequential(*layers)
             else:
                 self.final_layer = layers[0]
-
-    def get_loss(self, output, target, target_weight):
-        """Calculate top-down keypoint loss.
-
-        Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
-
-        Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
-                Weights across different joint types.
-        """
-
-        losses = dict()
-
-        assert not isinstance(self.loss, nn.Sequential)
-        assert target.dim() == 4 and target_weight.dim() == 3
-        losses['mse_loss'] = self.loss(output, target, target_weight)
-
-        return losses
-
-    def get_accuracy(self, output, target, target_weight):
-        """Calculate accuracy for top-down keypoint loss.
-
-        Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
-
-        Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
-                Weights across different joint types.
-        """
-
-        accuracy = dict()
-
-        if self.target_type == 'GaussianHeatmap':
-            _, avg_acc, _ = pose_pck_accuracy(
-                output.detach().cpu().numpy(),
-                target.detach().cpu().numpy(),
-                target_weight.detach().cpu().numpy().squeeze(-1) > 0)
-            accuracy['acc_pose'] = float(avg_acc)
-
-        return accuracy
-
-    def forward(self, x):
-        """Forward function."""
-        x = self._transform_inputs(x)
-        x = self.deconv_layers(x)
-        x = self.final_layer(x)
-        return x
-
-    def inference_model(self, x, flip_pairs=None):
-        """Inference function.
-
-        Returns:
-            output_heatmap (np.ndarray): Output heatmaps.
-
-        Args:
-            x (torch.Tensor[NxKxHxW]): Input features.
-            flip_pairs (None | list[tuple()):
-                Pairs of keypoints which are mirrored.
-        """
-        output = self.forward(x)
-
-        if flip_pairs is not None:
-            output_heatmap = flip_back(
-                output.detach().cpu().numpy(),
-                flip_pairs,
-                target_type=self.target_type)
-            # feature is not aligned, shift flipped heatmap for higher accuracy
-            if self.test_cfg.get('shift_heatmap', False):
-                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
-        else:
-            output_heatmap = output.detach().cpu().numpy()
-        return output_heatmap
 
     def _init_inputs(self, in_channels, in_index, input_transform):
         """Check and initialize input transforms.
@@ -322,6 +224,59 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
             self.in_channels = planes
 
         return nn.Sequential(*layers)
+
+    @staticmethod
+    def _get_deconv_cfg(deconv_kernel):
+        """Get configurations for deconv layers."""
+        if deconv_kernel == 4:
+            padding = 1
+            output_padding = 0
+        elif deconv_kernel == 3:
+            padding = 1
+            output_padding = 1
+        elif deconv_kernel == 2:
+            padding = 0
+            output_padding = 0
+        else:
+            raise ValueError(f'Not supported num_kernels ({deconv_kernel}).')
+
+        return deconv_kernel, padding, output_padding
+
+    def get_loss(self, outputs, targets, masks):
+        """Calculate bottom-up masked mse loss.
+
+        Note:
+            batch_size: N
+            num_channels: C
+            heatmaps height: H
+            heatmaps weight: W
+
+        Args:
+            outputs (List(torch.Tensor[NxCxHxW])): Multi-scale outputs.
+            targets (List(torch.Tensor[NxCxHxW])): Multi-scale targets.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale targets.
+        """
+
+        losses = dict()
+
+        for idx in range(len(targets)):
+            if 'loss' not in losses:
+                losses['loss'] = self.loss(outputs[idx], targets[idx],
+                                           masks[idx])
+            else:
+                losses['loss'] += self.loss(outputs[idx], targets[idx],
+                                            masks[idx])
+
+        return losses
+
+    def forward(self, x):
+        """Forward function."""
+        x = self._transform_inputs(x)
+        final_outputs = []
+        x = self.deconv_layers(x)
+        y = self.final_layer(x)
+        final_outputs.append(y)
+        return final_outputs
 
     def init_weights(self):
         """Initialize model weights."""

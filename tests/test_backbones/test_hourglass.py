@@ -2,7 +2,7 @@
 import pytest
 import torch
 
-from mmpose.models import HourglassNet
+from mmpose.models import HourglassAENet, HourglassNet
 
 
 def test_hourglass_backbone():
@@ -43,3 +43,35 @@ def test_hourglass_backbone():
     assert len(feat) == 2
     assert feat[0].shape == torch.Size([1, 256, 128, 128])
     assert feat[1].shape == torch.Size([1, 256, 128, 128])
+
+
+def test_hourglass_ae_backbone():
+    with pytest.raises(AssertionError):
+        # HourglassAENet's num_stacks should larger than 0
+        HourglassAENet(num_stacks=0)
+
+    with pytest.raises(AssertionError):
+        # len(stage_channels) should lagrer than downsample_times
+        HourglassAENet(
+            downsample_times=5, stage_channels=[256, 256, 384, 384, 384])
+
+    # num_stack=1
+    model = HourglassAENet(num_stacks=1)
+    model.init_weights()
+    model.train()
+
+    imgs = torch.randn(1, 3, 512, 512)
+    feat = model(imgs)
+    assert len(feat) == 1
+    assert feat[0].shape == torch.Size([1, 34, 128, 128])
+
+    # num_stack=2
+    model = HourglassAENet(num_stacks=2)
+    model.init_weights()
+    model.train()
+
+    imgs = torch.randn(1, 3, 512, 512)
+    feat = model(imgs)
+    assert len(feat) == 2
+    assert feat[0].shape == torch.Size([1, 34, 128, 128])
+    assert feat[1].shape == torch.Size([1, 34, 128, 128])

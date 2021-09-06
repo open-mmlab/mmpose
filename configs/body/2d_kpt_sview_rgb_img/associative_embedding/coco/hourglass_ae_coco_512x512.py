@@ -50,33 +50,40 @@ data_cfg = dict(
 # model settings
 model = dict(
     type='AssociativeEmbedding',
-    pretrained='torchvision://resnet152',
-    backbone=dict(type='ResNet', depth=152),
+    pretrained=None,
+    backbone=dict(
+        type='HourglassAENet',
+        num_stacks=4,
+        out_channels=34,
+    ),
     keypoint_head=dict(
-        type='AESimpleHead',
-        in_channels=2048,
-        num_joints=17,
-        tag_per_joint=True,
-        with_ae_loss=[True],
+        type='AEMultiStageHead',
+        in_channels=34,
+        out_channels=34,
+        num_stages=4,
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=0),
         loss_keypoint=dict(
             type='MultiLossFactory',
             num_joints=17,
-            num_stages=1,
+            num_stages=4,
             ae_loss_type='exp',
-            with_ae_loss=[True],
-            push_loss_factor=[0.001],
-            pull_loss_factor=[0.001],
-            with_heatmaps_loss=[True],
-            heatmaps_loss_factor=[1.0])),
-    train_cfg=dict(),
+            with_heatmaps_loss=[True, True, True, True],
+            with_ae_loss=[True, True, True, True],
+            push_loss_factor=[0.001, 0.001, 0.001, 0.001],
+            pull_loss_factor=[0.001, 0.001, 0.001, 0.001],
+            heatmaps_loss_factor=[1.0, 1.0, 1.0, 1.0])),
+    train_cfg=dict(
+        num_joints=channel_cfg['dataset_joints'],
+        img_size=data_cfg['image_size']),
     test_cfg=dict(
         num_joints=channel_cfg['dataset_joints'],
         max_num_people=30,
         scale_factor=[1],
-        with_heatmaps=[True],
-        with_ae=[True],
+        with_heatmaps=[True, True, True, True],
+        with_ae=[True, True, True, True],
+        select_output_index=[3],
         project2image=True,
-        align_corners=False,
         nms_kernel=5,
         nms_padding=2,
         tag_per_joint=True,
@@ -103,10 +110,12 @@ train_pipeline = [
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
     dict(
-        type='BottomUpGenerateTarget',
-        sigma=2,
-        max_num_people=30,
-    ),
+        type='MultitaskGatherTarget',
+        pipeline_list=[
+            [dict(type='BottomUpGenerateTarget', sigma=2, max_num_people=30)],
+        ],
+        pipeline_indices=[0] * 4,
+        keys=['targets', 'masks', 'joints']),
     dict(
         type='Collect',
         keys=['img', 'joints', 'targets', 'masks'],
@@ -138,7 +147,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=16,
+    samples_per_gpu=24,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',

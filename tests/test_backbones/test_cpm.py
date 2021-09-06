@@ -3,6 +3,24 @@ import pytest
 import torch
 
 from mmpose.models import CPM
+from mmpose.models.backbones.cpm import CpmBlock
+
+
+def test_cpm_block():
+    with pytest.raises(AssertionError):
+        # len(channels) == len(kernels)
+        CpmBlock(
+            3, channels=[3, 3, 3], kernels=[
+                1,
+            ])
+
+    # Test CPM Block
+    model = CpmBlock(3, channels=[3, 3, 3], kernels=[1, 1, 1])
+    model.train()
+
+    imgs = torch.randn(1, 3, 10, 10)
+    feat = model(imgs)
+    assert feat.shape == torch.Size([1, 3, 10, 10])
 
 
 def test_cpm_backbone():
