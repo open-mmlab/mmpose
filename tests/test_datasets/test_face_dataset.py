@@ -3,64 +3,18 @@ import copy
 import tempfile
 from unittest.mock import MagicMock
 
-import numpy as np
 import pytest
+from mmcv import Config
 from numpy.testing import assert_almost_equal
+from tests.utils.data_utils import convert_db_to_output
 
 from mmpose.datasets import DATASETS
 
 
-def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
-    outputs = []
-    len_db = len(db)
-    for i in range(0, len_db, batch_size):
-        if is_3d:
-            keypoints = np.stack([
-                db[j]['joints_3d'].reshape((-1, 3))
-                for j in range(i, min(i + batch_size, len_db))
-            ])
-        else:
-            keypoints = np.stack([
-                np.hstack([
-                    db[j]['joints_3d'].reshape((-1, 3))[:, :2],
-                    db[j]['joints_3d_visible'].reshape((-1, 3))[:, :1]
-                ]) for j in range(i, min(i + batch_size, len_db))
-            ])
-        image_paths = [
-            db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
-        ]
-        bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack([
-            np.array([
-                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1],
-                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
-            ],
-                     dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db))
-        ])
-
-        output = {}
-        output['preds'] = keypoints
-        output['boxes'] = box
-        output['image_paths'] = image_paths
-        output['output_heatmap'] = None
-        output['bbox_ids'] = bbox_ids
-
-        if keys is not None:
-            keys = keys if isinstance(keys, list) else [keys]
-            for key in keys:
-                output[key] = [
-                    db[j][key] for j in range(i, min(i + batch_size, len_db))
-                ]
-
-        outputs.append(output)
-
-    return outputs
-
-
 def test_face_300W_dataset():
     dataset = 'Face300WDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/300w.py').dataset_info
     # test Face 300W datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -88,6 +42,7 @@ def test_face_300W_dataset():
         img_prefix='tests/data/300w/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -95,8 +50,10 @@ def test_face_300W_dataset():
         img_prefix='tests/data/300w/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
+    assert custom_dataset.dataset_name == '300w'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -112,6 +69,8 @@ def test_face_300W_dataset():
 
 def test_face_AFLW_dataset():
     dataset = 'FaceAFLWDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/aflw.py').dataset_info
     # test Face AFLW datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -139,6 +98,7 @@ def test_face_AFLW_dataset():
         img_prefix='tests/data/aflw/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -146,8 +106,10 @@ def test_face_AFLW_dataset():
         img_prefix='tests/data/aflw/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'aflw'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
@@ -163,6 +125,8 @@ def test_face_AFLW_dataset():
 
 def test_face_WFLW_dataset():
     dataset = 'FaceWFLWDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/wflw.py').dataset_info
     # test Face WFLW datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -190,6 +154,7 @@ def test_face_WFLW_dataset():
         img_prefix='tests/data/wflw/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -197,8 +162,67 @@ def test_face_WFLW_dataset():
         img_prefix='tests/data/wflw/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
+    assert custom_dataset.dataset_name == 'wflw'
+    assert custom_dataset.test_mode is False
+    assert custom_dataset.num_images == 2
+    _ = custom_dataset[0]
+
+    outputs = convert_db_to_output(custom_dataset.db)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
+        assert_almost_equal(infos['NME'], 0.0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+
+
+def test_face_COFW_dataset():
+    dataset = 'FaceCOFWDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/cofw.py').dataset_info
+    # test Face COFW datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=29,
+        dataset_joints=29,
+        dataset_channel=[
+            list(range(29)),
+        ],
+        inference_channel=list(range(29)))
+
+    data_cfg = dict(
+        image_size=[256, 256],
+        heatmap_size=[64, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'])
+    # Test
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    _ = dataset_class(
+        ann_file='tests/data/cofw/test_cofw.json',
+        img_prefix='tests/data/cofw/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/cofw/test_cofw.json',
+        img_prefix='tests/data/cofw/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    assert custom_dataset.dataset_name == 'cofw'
     assert custom_dataset.test_mode is False
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]

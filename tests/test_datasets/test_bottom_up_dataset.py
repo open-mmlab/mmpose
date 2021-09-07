@@ -3,6 +3,7 @@ import tempfile
 
 import numpy as np
 import pytest
+from mmcv import Config
 from numpy.testing import assert_almost_equal
 
 from mmpose.datasets import DATASETS
@@ -47,6 +48,8 @@ def convert_coco_to_output(coco, is_wholebody=False):
 
 def test_bottom_up_COCO_dataset():
     dataset = 'BottomUpCocoDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -76,6 +79,7 @@ def test_bottom_up_COCO_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -83,11 +87,12 @@ def test_bottom_up_COCO_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
+    assert custom_dataset.dataset_name == 'coco'
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'coco'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -100,6 +105,8 @@ def test_bottom_up_COCO_dataset():
 
 def test_bottom_up_CrowdPose_dataset():
     dataset = 'BottomUpCrowdPoseDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/crowdpose.py').dataset_info
     # test CrowdPose datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -127,6 +134,7 @@ def test_bottom_up_CrowdPose_dataset():
         img_prefix='tests/data/crowdpose/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -134,13 +142,15 @@ def test_bottom_up_CrowdPose_dataset():
         img_prefix='tests/data/crowdpose/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
+
+    assert custom_dataset.dataset_name == 'crowdpose'
 
     image_id = 103319
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'crowdpose'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -153,6 +163,8 @@ def test_bottom_up_CrowdPose_dataset():
 
 def test_bottom_up_MHP_dataset():
     dataset = 'BottomUpMhpDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/mhp.py').dataset_info
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -182,6 +194,7 @@ def test_bottom_up_MHP_dataset():
         img_prefix='tests/data/mhp/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -189,13 +202,15 @@ def test_bottom_up_MHP_dataset():
         img_prefix='tests/data/mhp/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
+
+    assert custom_dataset.dataset_name == 'mhp'
 
     image_id = 2889
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
-    assert custom_dataset.dataset_name == 'mhp'
 
     outputs = convert_coco_to_output(custom_dataset.coco)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -208,6 +223,8 @@ def test_bottom_up_MHP_dataset():
 
 def test_bottom_up_AIC_dataset():
     dataset = 'BottomUpAicDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/aic.py').dataset_info
     # test MHP datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -236,6 +253,7 @@ def test_bottom_up_AIC_dataset():
         img_prefix='tests/data/aic/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -243,7 +261,10 @@ def test_bottom_up_AIC_dataset():
         img_prefix='tests/data/aic/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
+
+    assert custom_dataset.dataset_name == 'aic'
 
     image_id = 1
     assert image_id in custom_dataset.img_ids
@@ -261,6 +282,8 @@ def test_bottom_up_AIC_dataset():
 
 def test_bottom_up_COCO_wholebody_dataset():
     dataset = 'BottomUpCocoWholeBodyDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco_wholebody.py').dataset_info
     # test COCO-wholebody datasets
     dataset_class = DATASETS.get(dataset)
 
@@ -289,6 +312,7 @@ def test_bottom_up_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     custom_dataset = dataset_class(
@@ -296,6 +320,7 @@ def test_bottom_up_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True

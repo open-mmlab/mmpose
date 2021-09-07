@@ -3,6 +3,7 @@ import warnings
 
 import mmcv
 import numpy as np
+from mmcv.utils.misc import deprecated_api_warning
 
 from mmpose.core import imshow_bboxes, imshow_keypoints, imshow_keypoints_3d
 from .. import builder
@@ -260,9 +261,7 @@ class PoseLifter(BasePose):
         return results
 
     def forward_dummy(self, input):
-        """Used for computing network FLOPs.
-
-        See ``tools/get_flops.py``.
+        """Used for computing network FLOPs. See ``tools/get_flops.py``.
 
         Args:
             input (torch.Tensor): Input pose
@@ -285,12 +284,14 @@ class PoseLifter(BasePose):
 
         return output
 
+    @deprecated_api_warning({'pose_limb_color': 'pose_link_color'},
+                            cls_name='PoseLifter')
     def show_result(self,
                     result,
                     img=None,
                     skeleton=None,
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     radius=8,
                     thickness=2,
                     vis_height=400,
@@ -311,20 +312,16 @@ class PoseLifter(BasePose):
                 - "title" (str): title for the subplot
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
-                limbs, each is a pair of joint indices.
+                links, each is a pair of joint indices.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             vis_height (int): The image hight of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
-            num_instances (int): Number of instances to be shown in 3D. If
-                smaller than 0, all the instances in the pose_result will be
-                shown. Otherwise, pad or truncate the pose_result to a length
-                of num_instances.
             win_name (str): The window name.
             wait_time (int): Value of waitKey param.
                 Default: 0.
@@ -334,7 +331,6 @@ class PoseLifter(BasePose):
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """
-
         if num_instances < 0:
             assert len(result) > 0
         result = sorted(result, key=lambda x: x.get('track_id', 1e4))
@@ -374,7 +370,7 @@ class PoseLifter(BasePose):
                     skeleton,
                     kpt_score_thr=0.3,
                     pose_kpt_color=pose_kpt_color,
-                    pose_limb_color=pose_limb_color,
+                    pose_link_color=pose_link_color,
                     radius=radius,
                     thickness=thickness)
             img = mmcv.imrescale(img, scale=vis_height / img.shape[0])
@@ -384,7 +380,7 @@ class PoseLifter(BasePose):
             img,
             skeleton,
             pose_kpt_color,
-            pose_limb_color,
+            pose_link_color,
             vis_height,
             num_instances=num_instances)
 
