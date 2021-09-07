@@ -4,6 +4,7 @@ import warnings
 import mmcv
 import torch
 from mmcv.image import imwrite
+from mmcv.utils.misc import deprecated_api_warning
 from mmcv.visualization.image import imshow
 
 from mmpose.core.evaluation import (aggregate_results, get_group_preds,
@@ -299,6 +300,8 @@ class AssociativeEmbedding(BasePose):
 
         return result
 
+    @deprecated_api_warning({'pose_limb_color': 'pose_link_color'},
+                            cls_name='AssociativeEmbedding')
     def show_result(self,
                     img,
                     result,
@@ -306,7 +309,7 @@ class AssociativeEmbedding(BasePose):
                     kpt_score_thr=0.3,
                     bbox_color=None,
                     pose_kpt_color=None,
-                    pose_limb_color=None,
+                    pose_link_color=None,
                     radius=4,
                     thickness=1,
                     font_scale=0.5,
@@ -322,12 +325,13 @@ class AssociativeEmbedding(BasePose):
             result (list[dict]): The results to draw over `img`
                 (bbox_result, pose_result).
             skeleton (list[list]): The connection of keypoints.
+                skeleton is 0-based indexing.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
             pose_kpt_color (np.array[Nx3]`): Color of N keypoints.
                 If None, do not draw keypoints.
-            pose_limb_color (np.array[Mx3]): Color of M limbs.
-                If None, do not draw limbs.
+            pose_link_color (np.array[Mx3]): Color of M links.
+                If None, do not draw links.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
             font_scale (float): Font scales of texts.
@@ -343,7 +347,6 @@ class AssociativeEmbedding(BasePose):
         Returns:
             Tensor: Visualized image only if not `show` or `out_file`
         """
-
         img = mmcv.imread(img)
         img = img.copy()
         img_h, img_w, _ = img.shape
@@ -353,7 +356,7 @@ class AssociativeEmbedding(BasePose):
             pose_result.append(res['keypoints'])
 
         imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                         pose_kpt_color, pose_limb_color, radius, thickness)
+                         pose_kpt_color, pose_link_color, radius, thickness)
 
         if show:
             imshow(img, win_name, wait_time)
