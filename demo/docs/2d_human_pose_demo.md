@@ -102,7 +102,7 @@ We provide a demo script to test a single image.
 ```shell
 python demo/bottom_up_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
+    --img-path ${IMG_PATH}\
     --out-img-root ${OUTPUT_DIR} \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]
@@ -114,7 +114,7 @@ Examples:
 python demo/bottom_up_img_demo.py \
     configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512.py \
     https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512-bcb8c247_20200816.pth \
-    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
+    --img-path tests/data/coco/ \
     --out-img-root vis_results
 ```
 
