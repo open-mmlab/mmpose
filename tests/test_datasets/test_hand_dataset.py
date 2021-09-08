@@ -74,6 +74,8 @@ def test_OneHand10K_dataset():
 
 def test_hand_coco_wholebody_dataset():
     dataset = 'HandCocoWholeBodyDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco_wholebody_hand.py').dataset_info
     dataset_class = DATASETS.get(dataset)
 
     channel_cfg = dict(
@@ -104,6 +106,7 @@ def test_hand_coco_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -111,6 +114,7 @@ def test_hand_coco_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.test_mode is False

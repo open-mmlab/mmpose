@@ -69,6 +69,8 @@ def test_face_300W_dataset():
 
 def test_face_coco_wholebody_dataset():
     dataset = 'FaceCocoWholeBodyDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco_wholebody_face.py').dataset_info
     # test Face wholebody datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -96,6 +98,7 @@ def test_face_coco_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     custom_dataset = dataset_class(
@@ -103,6 +106,7 @@ def test_face_coco_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     assert custom_dataset.test_mode is False

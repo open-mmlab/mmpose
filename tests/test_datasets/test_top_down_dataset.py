@@ -324,6 +324,8 @@ def test_top_down_CrowdPose_dataset():
 
 def test_top_down_COCO_wholebody_dataset():
     dataset = 'TopDownCocoWholeBodyDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/coco_wholebody.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
     dataset_class.load_annotations = MagicMock()
@@ -360,6 +362,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     _ = dataset_class(
@@ -367,6 +370,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg_copy,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=False)
 
     # Test gt bbox
@@ -375,6 +379,7 @@ def test_top_down_COCO_wholebody_dataset():
         img_prefix='tests/data/coco/',
         data_cfg=data_cfg,
         pipeline=[],
+        dataset_info=dataset_info,
         test_mode=True)
 
     assert custom_dataset.test_mode is True
