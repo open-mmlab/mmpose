@@ -37,7 +37,7 @@ python demo/body3d_two_stage_img_demo.py \
     --show-ground-truth
 ```
 
-### 3D Human Pose Two-stage Estimation Image Demo
+### 3D Human Pose Two-stage Estimation Video Demo
 
 #### Using mmdet for human bounding box detection and top-down model for the 1st stage (2D pose detection), and inference the 2nd stage (2D-to-3D lifting)
 
