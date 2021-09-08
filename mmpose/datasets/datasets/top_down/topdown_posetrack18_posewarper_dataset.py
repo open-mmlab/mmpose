@@ -41,9 +41,10 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             dataset_info=dataset_info,
             test_mode=test_mode)
 
-        self.timestep_delta = data_cfg['timestep_delta']
-        self.timestep_delta_rand = data_cfg['timestep_delta_rand']
-        self.timestep_delta_range = data_cfg['timestep_delta_range']
+        self.timestep_delta = data_cfg.get('timestep_delta', -1)
+        self.timestep_delta_rand = data_cfg.get('timestep_delta_rand', True)
+        self.timestep_delta_range = data_cfg.get('timestep_delta_range', 2)
+        self.timestep_delta_max = data_cfg.get('timestep_delta_max', 2)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
@@ -163,7 +164,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             else:
                 # testing mode, using multiple frames
                 # number of adjacent frames (one side)
-                num_adj_frames = int((self.timestep_delta_range - 1) / 2)
+                num_adj_frames = self.timestep_delta_max
 
                 for i in range(num_adj_frames):
                     prev_idx = ref_idx - (i + 1)
@@ -258,7 +259,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             cur_image_file = os.path.join(self.img_prefix, file_name)
             image_files.append(cur_image_file)
 
-            num_adj_frames = int((self.timestep_delta_range - 1) / 2)
+            num_adj_frames = self.timestep_delta_max
 
             for i in range(num_adj_frames):
                 prev_nm = file_name.split('/')[-1]
