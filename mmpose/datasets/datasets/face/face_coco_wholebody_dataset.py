@@ -1,16 +1,17 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import os
+import warnings
 from collections import OrderedDict
 
-import json_tricks as json
 import numpy as np
+from mmcv import Config
 
-from mmpose.core.evaluation.top_down_eval import keypoint_nme
 from mmpose.datasets.builder import DATASETS
-from .face_base_dataset import FaceBaseDataset
+from ..base import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
-class FaceCocoWholeBodyDataset(FaceBaseDataset):
+class FaceCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
     """CocoWholeBodyDataset for face keypoint localization.
 
     `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
@@ -28,6 +29,7 @@ class FaceCocoWholeBodyDataset(FaceBaseDataset):
             Default: None.
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """
@@ -37,25 +39,27 @@ class FaceCocoWholeBodyDataset(FaceBaseDataset):
                  img_prefix,
                  data_cfg,
                  pipeline,
+                 dataset_info=None,
                  test_mode=False):
+
+        if dataset_info is None:
+            warnings.warn(
+                'dataset_info is missing. '
+                'Check https://github.com/open-mmlab/mmpose/pull/663 '
+                'for details.', DeprecationWarning)
+            cfg = Config.fromfile('configs/_base_/datasets/'
+                                  'coco_wholebody_face.py')
+            dataset_info = cfg._cfg_dict['dataset_info']
+
         super().__init__(
-            ann_file, img_prefix, data_cfg, pipeline, test_mode=test_mode)
+            ann_file,
+            img_prefix,
+            data_cfg,
+            pipeline,
+            dataset_info=dataset_info,
+            test_mode=test_mode)
 
         self.ann_info['use_different_joint_weights'] = False
-        assert self.ann_info['num_joints'] == 68
-        self.ann_info['joint_weights'] = \
-            np.ones((self.ann_info['num_joints'], 1), dtype=np.float32)
-
-        self.ann_info['flip_pairs'] = [[0, 16], [1, 15], [2, 14], [3, 13],
-                                       [4, 12], [5, 11], [6, 10], [7, 9],
-                                       [17, 26], [18, 25], [19, 24], [20, 23],
-                                       [21, 22], [31, 35], [32, 34], [36, 45],
-                                       [37, 44], [38, 43], [39, 42], [40, 47],
-                                       [41, 46], [48, 54], [49, 53], [50, 52],
-                                       [61, 63], [60, 64], [67, 65], [58, 56],
-                                       [59, 55]]
-
-        self.dataset_name = 'face_coco_wholebody'
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -102,7 +106,7 @@ class FaceCocoWholeBodyDataset(FaceBaseDataset):
 
         return gt_db
 
-    def _get_normalize_factor(self, gts):
+    def _get_normalize_factor(self, gts, *args, **kwargs):
         """Get inter-ocular distance as the normalize factor, measured as the
         Euclidean distance between the outer corners of the eyes.
 
@@ -116,43 +120,6 @@ class FaceCocoWholeBodyDataset(FaceBaseDataset):
         interocular = np.linalg.norm(
             gts[:, 36, :] - gts[:, 45, :], axis=1, keepdims=True)
         return np.tile(interocular, [1, 2])
-
-    def _report_metric(self, res_file, metrics):
-        """Keypoint evaluation.
-
-        Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'NME'.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
-        """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-
-        if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(gts)
-            info_str.append(
-                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
-
-        return info_str
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate COCO-WholeBody Face keypoint results. The pose prediction

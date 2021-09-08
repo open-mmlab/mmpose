@@ -69,7 +69,6 @@ class FaceCOFWDataset(Kpt2dSviewRgbImgTopDownDataset):
         bbox_id = 0
         num_joints = self.ann_info['num_joints']
         for img_id in self.img_ids:
-            num_joints = self.ann_info['num_joints']
 
             ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
             objs = self.coco.loadAnns(ann_ids)

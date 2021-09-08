@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 
+
 def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
     outputs = []
     len_db = len(db)
