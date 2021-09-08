@@ -1,9 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import os.path as osp
 import warnings
 from argparse import ArgumentParser
 
-from xtcocotools.coco import COCO
+import mmcv
 
 from mmpose.apis import (inference_bottom_up_pose_model, init_pose_model,
                          vis_pose_result)
@@ -15,12 +16,10 @@ def main():
     parser = ArgumentParser()
     parser.add_argument('pose_config', help='Config file for detection')
     parser.add_argument('pose_checkpoint', help='Checkpoint file')
-    parser.add_argument('--img-root', type=str, default='', help='Image root')
     parser.add_argument(
-        '--json-file',
+        '--img-path',
         type=str,
-        default='',
-        help='Json file containing image info.')
+        help='Path to an image file or a image folder.')
     parser.add_argument(
         '--show',
         action='store_true',
@@ -56,7 +55,18 @@ def main():
 
     assert args.show or (args.out_img_root != '')
 
-    coco = COCO(args.json_file)
+    # prepare image list
+    if osp.isfile(args.img_path):
+        image_list = [args.img_path]
+    elif osp.isdir(args.img_path):
+        image_list = [
+            osp.join(args.img_path, fn) for fn in os.listdir(args.img_path)
+            if fn.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp'))
+        ]
+    else:
+        raise ValueError('Image path should be an image or image folder.'
+                         f'Got invalid image path: {args.img_path}')
+
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
@@ -72,8 +82,6 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    img_keys = list(coco.imgs.keys())
-
     # optional
     return_heatmap = False
 
@@ -81,10 +89,7 @@ def main():
     output_layer_names = None
 
     # process each image
-    for i in range(len(img_keys)):
-        image_id = img_keys[i]
-        image = coco.loadImgs(image_id)[0]
-        image_name = os.path.join(args.img_root, image['file_name'])
+    for image_name in mmcv.track_iter_progress(image_list):
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_bottom_up_pose_model(
@@ -100,7 +105,8 @@ def main():
             out_file = None
         else:
             os.makedirs(args.out_img_root, exist_ok=True)
-            out_file = os.path.join(args.out_img_root, f'vis_{i}.jpg')
+            out_file = os.path.join(args.out_img_root,
+                                    f'vis_{osp.basename(image_name)}.jpg')
 
         # show the results
         vis_pose_result(
