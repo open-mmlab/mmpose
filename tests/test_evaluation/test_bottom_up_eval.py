@@ -3,14 +3,17 @@ import numpy as np
 import torch
 
 from mmpose.core import (aggregate_scale, aggregate_stage_flip,
-                         flip_feature_maps, get_group_preds,
-                         split_ae_outputs)
+                         flip_feature_maps, get_group_preds, split_ae_outputs)
 
 
 def test_split_ae_outputs():
     fake_outputs = [torch.zeros((1, 4, 2, 2))]
     heatmaps, tags = split_ae_outputs(
-        fake_outputs, num_joints=4, with_heatmaps=[False], with_ae=[True])
+        fake_outputs,
+        num_joints=4,
+        with_heatmaps=[False],
+        with_ae=[True],
+        select_output_index=[0])
 
 
 def test_flip_feature_maps():

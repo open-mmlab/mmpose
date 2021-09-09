@@ -13,9 +13,10 @@ from .top_down_eval import (keypoint_auc, keypoint_epe, keypoint_pck_accuracy,
 
 __all__ = [
     'EvalHook', 'DistEvalHook', 'pose_pck_accuracy', 'keypoints_from_heatmaps',
-    'keypoints_from_regression', 'keypoint_pck_accuracy', 'keypoint_auc',
-    'keypoint_epe', 'get_group_preds', 'split_ae_outputs', 'flip_feature_maps',
-    'aggregate_stage_flip', 'aggregate_scale', 'compute_similarity_transform',
-    'post_dark_udp', 'keypoint_mpjpe', 'keypoints_from_heatmaps3d',
+    'keypoints_from_regression', 'keypoint_pck_accuracy', 'keypoint_3d_pck',
+    'keypoint_3d_auc', 'keypoint_auc', 'keypoint_epe', 'get_group_preds',
+    'split_ae_outputs', 'flip_feature_maps', 'aggregate_stage_flip',
+    'aggregate_scale', 'compute_similarity_transform', 'post_dark_udp',
+    'keypoint_mpjpe', 'keypoints_from_heatmaps3d',
     'multilabel_classification_accuracy'
 ]

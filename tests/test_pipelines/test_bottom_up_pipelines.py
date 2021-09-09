@@ -277,8 +277,8 @@ def test_BottomUpGenerateHeatmapTarget():
 
     generate_heatmap_target = BottomUpGenerateHeatmapTarget(2)
     results_generate_heatmap_target = generate_heatmap_target(results)
-    assert 'targets' in results_generate_heatmap_target
-    assert len(results_generate_heatmap_target['targets']
+    assert 'target' in results_generate_heatmap_target
+    assert len(results_generate_heatmap_target['target']
                ) == results['ann_info']['num_scales']
 
 
@@ -306,7 +306,7 @@ def test_BottomUpGeneratePAFTarget():
     generate_paf_target = BottomUpGeneratePAFTarget(1)
     results_generate_paf_target = generate_paf_target(results)
     sqrt = np.sqrt(2) / 2
-    assert (results_generate_paf_target['targets'] == np.array(
+    assert (results_generate_paf_target['target'] == np.array(
         [[[sqrt, sqrt, 0, sqrt, sqrt], [sqrt, sqrt, sqrt, sqrt, sqrt],
           [0, sqrt, sqrt, sqrt, 0], [sqrt, sqrt, sqrt, sqrt, sqrt],
           [sqrt, sqrt, 0, sqrt, sqrt]],

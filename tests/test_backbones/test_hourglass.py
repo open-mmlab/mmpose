@@ -17,7 +17,7 @@ def test_hourglass_backbone():
             stage_blocks=[2, 2, 2, 2, 2, 4])
 
     with pytest.raises(AssertionError):
-        # len(stage_channels) should lagrer than downsample_times
+        # len(stage_channels) should larger than downsample_times
         HourglassNet(
             downsample_times=5,
             stage_channels=[256, 256, 384, 384, 384],
@@ -51,7 +51,7 @@ def test_hourglass_ae_backbone():
         HourglassAENet(num_stacks=0)
 
     with pytest.raises(AssertionError):
-        # len(stage_channels) should lagrer than downsample_times
+        # len(stage_channels) should larger than downsample_times
         HourglassAENet(
             downsample_times=5, stage_channels=[256, 256, 384, 384, 384])
 

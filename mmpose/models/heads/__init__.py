@@ -18,5 +18,5 @@ __all__ = [
     'TopdownHeatmapMSMUHead', 'TopdownHeatmapBaseHead',
     'AEHigherResolutionHead', 'AESimpleHead', 'AEMultiStageHead',
     'DeepposeRegressionHead', 'TemporalRegressionHead', 'Interhand3DHead',
-    'HMRMeshHead', 'DeconvHead'
+    'HMRMeshHead', 'DeconvHead', 'ViPNASHeatmapSimpleHead'
 ]

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import copy
 
 import torch.nn as nn
@@ -95,8 +96,7 @@ class HourglassAENet(BaseBackbone):
         >>> level_outputs = self.forward(inputs)
         >>> for level_output in level_outputs:
         ...     print(tuple(level_output.shape))
-        (1, 256, 128, 128)
-        (1, 256, 128, 128)
+        (1, 34, 128, 128)
     """
 
     def __init__(self,
