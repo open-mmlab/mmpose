@@ -312,8 +312,7 @@ class AssociativeEmbedding(BasePose):
         grouped, scores = self.parser.parse(aggregated_heatmaps,
                                             aggregated_tags,
                                             self.test_cfg['adjust'],
-                                            self.test_cfg['refine'],
-                                            self.test_cfg.get('filter', False))
+                                            self.test_cfg['refine'])
 
         preds = get_group_preds(
             grouped,
