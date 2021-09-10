@@ -147,7 +147,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=24,
+    samples_per_gpu=6,
     workers_per_gpu=2,
     train=dict(
         type='BottomUpCocoDataset',
