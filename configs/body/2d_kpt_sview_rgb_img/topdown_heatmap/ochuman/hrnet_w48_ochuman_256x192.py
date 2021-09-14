@@ -1,10 +1,11 @@
+_base_ = ['../../../../_base_/datasets/ochuman.py']
 log_level = 'INFO'
 load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
+evaluation = dict(interval=10, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
@@ -40,7 +41,7 @@ channel_cfg = dict(
 model = dict(
     type='TopDown',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w32-36af842e.pth',
+    'pretrain_models/hrnet_w48-8ef0771d.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -56,35 +57,33 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(32, 64)),
+                num_channels=(48, 96)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
+                num_channels=(48, 96, 192)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256))),
+                num_channels=(48, 96, 192, 384))),
     ),
     keypoint_head=dict(
-        type='TopDownSimpleHead',
-        in_channels=32,
+        type='TopdownHeatmapSimpleHead',
+        in_channels=48,
         out_channels=channel_cfg['num_output_channels'],
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=1, ),
-    ),
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
-        post_process=True,
+        post_process='default',
         shift_heatmap=True,
-        unbiased_decoding=False,
-        modulate_kernel=11),
-    loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
+        modulate_kernel=11))
 
 data_cfg = dict(
     image_size=[192, 256],
@@ -97,9 +96,8 @@ data_cfg = dict(
     nms_thr=1.0,
     oks_thr=0.9,
     vis_thr=0.2,
-    bbox_thr=1.0,
     use_gt_bbox=True,
-    image_thr=0.0,
+    det_bbox_thr=0.0,
     bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
@@ -150,26 +148,31 @@ test_pipeline = val_pipeline
 
 data_root = 'data/ochuman'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownCocoDataset',
         ann_file='data/coco/annotations/person_keypoints_train2017.json',
         img_prefix='data/coco//train2017/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='TopDownOCHumanDataset',
         ann_file=f'{data_root}/annotations/'
         'ochuman_coco_format_val_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='TopDownOCHumanDataset',
         ann_file=f'{data_root}/annotations/'
         'ochuman_coco_format_test_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
 )
