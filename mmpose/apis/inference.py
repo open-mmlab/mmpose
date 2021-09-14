@@ -136,6 +136,8 @@ class LoadImage:
             results['image_file'] = ''
             if self.color_type == 'color' and self.channel_order == 'rgb':
                 img = cv2.cvtColor(results['img_or_path'], cv2.COLOR_BGR2RGB)
+            else:
+                img = results['img_or_path']
         else:
             raise TypeError('"img_or_path" must be a numpy array or a str or '
                             'a pathlib.Path object')
