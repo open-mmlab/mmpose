@@ -29,12 +29,13 @@ def _calc_distances(preds, targets, mask, normalize):
     """
     N, K, _ = preds.shape
     # set mask=0 when normalize==0
-    mask[np.where((normalize == 0).sum(1))[0], :] = False
+    _mask = mask.copy()
+    _mask[np.where((normalize == 0).sum(1))[0], :] = False
     distances = np.full((N, K), -1, dtype=np.float32)
     # handle invalid values
     normalize[np.where(normalize <= 0)] = 1e6
-    distances[mask] = np.linalg.norm(
-        ((preds - targets) / normalize[:, None, :])[mask], axis=-1)
+    distances[_mask] = np.linalg.norm(
+        ((preds - targets) / normalize[:, None, :])[_mask], axis=-1)
     return distances.T
 
 
