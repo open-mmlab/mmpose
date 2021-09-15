@@ -12,11 +12,49 @@ from poseval.evaluateAP import evaluateAP
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
-from .topdown_coco_dataset import TopDownCocoDataset
+from ..base import Kpt2dSviewRgbVidTopDownDataset
 
 
 @DATASETS.register_module()
-class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
+class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
+    """PoseTrack18 dataset for top-down pose estimation.
+
+    `Posetrack: A benchmark for human pose estimation and tracking' CVPR'2018
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1710.10000>`_ .
+
+    The dataset loads raw features and apply specified transforms
+    to return a dict containing the image tensors and other information.
+
+    PoseTrack2018 keypoint indexes::
+        0: 'nose',
+        1: 'head_bottom',
+        2: 'head_top',
+        3: 'left_ear',
+        4: 'right_ear',
+        5: 'left_shoulder',
+        6: 'right_shoulder',
+        7: 'left_elbow',
+        8: 'right_elbow',
+        9: 'left_wrist',
+        10: 'right_wrist',
+        11: 'left_hip',
+        12: 'right_hip',
+        13: 'left_knee',
+        14: 'right_knee',
+        15: 'left_ankle',
+        16: 'right_ankle'
+
+    Args:
+        ann_file (str): Path to the annotation file.
+        img_prefix (str): Path to a directory where videos/images are held.
+            Default: None.
+        data_cfg (dict): config
+        pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
+        test_mode (bool): Store True when building test or
+            validation dataset. Default: False.
+    """
 
     def __init__(self,
                  ann_file,
@@ -33,18 +71,13 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             cfg = Config.fromfile('configs/_base_/datasets/posetrack18.py')
             dataset_info = cfg._cfg_dict['dataset_info']
 
-        super(TopDownCocoDataset, self).__init__(
+        super().__init__(
             ann_file,
             img_prefix,
             data_cfg,
             pipeline,
             dataset_info=dataset_info,
             test_mode=test_mode)
-
-        self.timestep_delta = data_cfg.get('timestep_delta', -1)
-        self.timestep_delta_rand = data_cfg.get('timestep_delta_rand', True)
-        self.timestep_delta_range = data_cfg.get('timestep_delta_range', 2)
-        self.timestep_delta_max = data_cfg.get('timestep_delta_max', 2)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
@@ -54,6 +87,10 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
+
+        self.timestep_delta = data_cfg.get('timestep_delta', -1)
+        self.timestep_delta_rand = data_cfg.get('timestep_delta_rand', True)
+        self.timestep_delta_range = data_cfg.get('timestep_delta_range', 3)
 
         self.ann_info['use_different_joint_weights'] = False
         self.db = self._get_db()
@@ -68,7 +105,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             gt_db = self._load_coco_keypoint_annotations()
         else:
             # use bbox from detection
-            gt_db = self._load_coco_person_detection_results()
+            gt_db = self._load_posetrack_person_detection_results()
         return gt_db
 
     def _load_coco_keypoint_annotations(self):
@@ -164,7 +201,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             else:
                 # testing mode, using multiple frames
                 # number of adjacent frames (one side)
-                num_adj_frames = self.timestep_delta_max
+                num_adj_frames = self.timestep_delta_range
 
                 for i in range(num_adj_frames):
                     prev_idx = ref_idx - (i + 1)
@@ -208,7 +245,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
 
         return rec
 
-    def _load_coco_person_detection_results(self):
+    def _load_posetrack_person_detection_results(self):
         """Load Posetrack person detection results.
 
         Only in test mode.
@@ -259,8 +296,7 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
             cur_image_file = os.path.join(self.img_prefix, file_name)
             image_files.append(cur_image_file)
 
-            num_adj_frames = self.timestep_delta_max
-
+            num_adj_frames = self.timestep_delta_range
             for i in range(num_adj_frames):
                 prev_nm = file_name.split('/')[-1]
                 ref_idx = int(prev_nm.replace('.jpg', ''))
@@ -310,8 +346,8 @@ class TopDownPoseTrack18PoseWarperDataset(TopDownCocoDataset):
         return kpt_db
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
-        """Evaluate coco keypoint results. The pose prediction results will be
-        saved in `${res_folder}/result_keypoints.json`.
+        """Evaluate posetrack keypoint results. The pose prediction results
+        will be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             num_keypoints: K
