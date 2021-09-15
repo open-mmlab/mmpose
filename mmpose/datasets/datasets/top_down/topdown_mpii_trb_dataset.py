@@ -103,7 +103,6 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
             dataset_info=dataset_info,
             test_mode=test_mode)
 
-        self.ann_info['use_different_joint_weights'] = False
         self.db = self._get_db(ann_file)
         self.image_set = set(x['image_file'] for x in self.db)
         self.num_images = len(self.image_set)
