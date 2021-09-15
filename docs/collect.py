@@ -10,7 +10,9 @@ os.makedirs('topics', exist_ok=True)
 os.makedirs('papers', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
-minisections = [x.split('/')[-2:] for x in glob('../configs/*/*')]
+minisections = [
+    x.split('/')[-2:] for x in glob('../configs/*/*') if '_base_' not in x
+]
 alltopics = sorted(list(set(x[0] for x in minisections)))
 subtopics = []
 for t in alltopics:
