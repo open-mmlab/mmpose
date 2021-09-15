@@ -16,5 +16,6 @@ __all__ = [
     'TopDownAicDataset', 'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset',
     'TopDownCrowdPoseDataset', 'TopDownMpiiDataset', 'TopDownMpiiTrbDataset',
     'TopDownOCHumanDataset', 'TopDownPoseTrack18Dataset',
-    'TopDownJhmdbDataset', 'TopDownMhpDataset', 'TopDownH36MDataset', 'TopDownHalpeDataset'
+    'TopDownJhmdbDataset', 'TopDownMhpDataset', 'TopDownH36MDataset',
+    'TopDownHalpeDataset'
 ]
