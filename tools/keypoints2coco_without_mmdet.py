@@ -1,16 +1,15 @@
+import imagesize
 import os
 from argparse import ArgumentParser
-
+from tqdm import tqdm
 from xtcocotools.coco import COCO
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model, vis_pose_result)
-import imagesize
-import numpy as np
 import json
-from tqdm import tqdm
+from mmpose.apis import inference_top_down_pose_model, init_pose_model
+
+
 def main():
     """Visualize the demo images.
-
     pose_keypoints equire the json_file containing boxes.
     """
     parser = ArgumentParser()
@@ -26,7 +25,9 @@ def main():
         '--out-json-file',
         type=str,
         default='',
-        help='Output json containing bboxes from Json file and pseudolabeled keypoints')
+        help=
+        'Output json containing bboxes from Json file and pseudolabeled keypoints'
+    )
     parser.add_argument(
         '--show',
         action='store_true',
@@ -57,11 +58,11 @@ def main():
     output_layer_names = None
 
     categories = [{'id': 1, 'name': 'person'}]
-    img_anno_dict = {'images': [], 'annotations':[], 'categories':categories}
+    img_anno_dict = {'images': [], 'annotations': [], 'categories': categories}
 
     # process each image
     ann_uniq_id = int(0)
-    for idx, i in enumerate(tqdm(range(len(img_keys)))):
+    for i in tqdm(range(len(img_keys))):
         # get bounding box annotations
         image_id = img_keys[i]
         image = coco.loadImgs(image_id)[0]
@@ -87,45 +88,59 @@ def main():
             dataset=dataset,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
-    
+
         #add output of model and bboxes to dict
         for indx, i in enumerate(pose_results):
-            pose_results[indx]['keypoints'][pose_results[indx]['keypoints'][:, 2] < args.kpt_thr, :3] = 0
-            pose_results[indx]['keypoints'][pose_results[indx]['keypoints'][:, 2] >= args.kpt_thr, 2] = 2
+            pose_results[indx]['keypoints'][
+                pose_results[indx]['keypoints'][:, 2] < args.kpt_thr, :3] = 0
+            pose_results[indx]['keypoints'][
+                pose_results[indx]['keypoints'][:, 2] >= args.kpt_thr, 2] = 2
             x = int(pose_results[indx]['bbox'][0])
             y = int(pose_results[indx]['bbox'][1])
-            w = int(pose_results[indx]['bbox'][2] - pose_results[indx]['bbox'][0])
-            h = int(pose_results[indx]['bbox'][3] - pose_results[indx]['bbox'][1])
+            w = int(pose_results[indx]['bbox'][2] -
+                    pose_results[indx]['bbox'][0])
+            h = int(pose_results[indx]['bbox'][3] -
+                    pose_results[indx]['bbox'][1])
             bbox = [x, y, w, h]
-            area = round((w*h), 0)
-            
+            area = round((w * h), 0)
+
             images = {
-            'file_name': image_name.split('/')[-1],
-            'height': height,
-            'width': width,
-            'id': int(image_id)
-            }   
+                'file_name': image_name.split('/')[-1],
+                'height': height,
+                'width': width,
+                'id': int(image_id)
+            }
 
             annotations = {
-            'keypoints': [int(i) for i in pose_results[indx]['keypoints'].reshape(-1).tolist()],
-            'num_keypoints': len(pose_results[indx]['keypoints']),
-            'area': area,
-            'iscrowd': 0,
-            'image_id': int(image_id),
-            'bbox': bbox,
-            'category_id': 1,
-            'id': ann_uniq_id,
+                'keypoints': [
+                    int(i) for i in pose_results[indx]['keypoints'].reshape(
+                        -1).tolist()
+                ],
+                'num_keypoints':
+                len(pose_results[indx]['keypoints']),
+                'area':
+                area,
+                'iscrowd':
+                0,
+                'image_id':
+                int(image_id),
+                'bbox':
+                bbox,
+                'category_id':
+                1,
+                'id':
+                ann_uniq_id,
             }
 
             img_anno_dict['annotations'].append(annotations)
             ann_uniq_id += 1
-            
+
         img_anno_dict['images'].append(images)
-    
+
     #create json
     with open(args.out_json_file, "w") as outfile:
         json.dump(img_anno_dict, outfile, indent=2)
-            
+
 
 if __name__ == '__main__':
     main()
