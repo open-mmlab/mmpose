@@ -90,13 +90,14 @@ def main():
     
         #add output of model and bboxes to dict
         for indx, i in enumerate(pose_results):
-            pose_results[indx]['keypoints'][::, 2] = int(2)
-            top = int(pose_results[indx]['bbox'][0])
-            left = int(pose_results[indx]['bbox'][1])
-            bbox_width = int(pose_results[indx]['bbox'][2] - pose_results[indx]['bbox'][0])
-            bbox_height = int(pose_results[indx]['bbox'][3] - pose_results[indx]['bbox'][1])
-            bbox = [top, left, bbox_width, bbox_height]
-            area = round((bbox_width*bbox_height), 0)
+            pose_results[indx]['keypoints'][pose_results[indx]['keypoints'][:, 2] < args.kpt_thr, :3] = 0
+            pose_results[indx]['keypoints'][pose_results[indx]['keypoints'][:, 2] >= args.kpt_thr, 2] = 2
+            x = int(pose_results[indx]['bbox'][0])
+            y = int(pose_results[indx]['bbox'][1])
+            w = int(pose_results[indx]['bbox'][2] - pose_results[indx]['bbox'][0])
+            h = int(pose_results[indx]['bbox'][3] - pose_results[indx]['bbox'][1])
+            bbox = [x, y, w, h]
+            area = round((w*h), 0)
             
             images = {
             'file_name': image_name.split('/')[-1],
