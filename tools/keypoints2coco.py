@@ -21,23 +21,17 @@ def main():
         '--json-file',
         type=str,
         default='',
-        help='Json file containing image info.')
+        help='Json file containing image person bboxes in COCO format.')
     parser.add_argument(
         '--out-json-file',
         type=str,
         default='',
-        help='Json file containing image info.')
+        help='Output json containing bboxes from Json file and pseudolabeled keypoints')
     parser.add_argument(
         '--show',
         action='store_true',
         default=False,
         help='whether to show img')
-    parser.add_argument(
-        '--out-img-root',
-        type=str,
-        default='',
-        help='Root of the output img file. '
-        'Default not saving the visualization images.')
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     parser.add_argument(
@@ -84,8 +78,6 @@ def main():
             person['bbox'] = ann['bbox']
             person_results.append(person)
 
-        #print(ann_id, person_results)
-        # test a single image, with a list of bboxes
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
             image_name,
@@ -96,6 +88,7 @@ def main():
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
     
+        #add output of model and bboxes to dict
         for indx, i in enumerate(pose_results):
             pose_results[indx]['keypoints'][::, 2] = int(2)
             top = int(pose_results[indx]['bbox'][0])
@@ -105,14 +98,12 @@ def main():
             bbox = [top, left, bbox_width, bbox_height]
             area = round((bbox_width*bbox_height), 0)
             
-
             images = {
             'file_name': image_name.split('/')[-1],
             'height': height,
             'width': width,
             'id': int(image_id)
             }   
-
 
             annotations = {
             'keypoints': [int(i) for i in pose_results[indx]['keypoints'].reshape(-1).tolist()],
@@ -125,32 +116,15 @@ def main():
             'id': ann_uniq_id,
             }
 
-            
             img_anno_dict['annotations'].append(annotations)
             ann_uniq_id += 1
-
+            
         img_anno_dict['images'].append(images)
-
-        if args.out_img_root == '':
-                out_file = None
-        else:
-            os.makedirs(args.out_img_root, exist_ok=True)
-            out_file = os.path.join(args.out_img_root, image_name.split('/')[-1])
-        
-        
-        #vis_pose_result(
-        #    pose_model,
-        #    image_name,
-        #    pose_results,
-        #    dataset=dataset,
-        #    kpt_score_thr=args.kpt_thr,
-        #    show=args.show,
-        #    out_file=out_file)
-
+    
+    #create json
     with open(args.out_json_file, "w") as outfile:
         json.dump(img_anno_dict, outfile, indent=2)
             
 
 if __name__ == '__main__':
     main()
-
