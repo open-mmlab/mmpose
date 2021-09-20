@@ -74,7 +74,6 @@ class TopDownH36MDataset(Kpt2dSviewRgbImgTopDownDataset):
             dataset_info=dataset_info,
             test_mode=test_mode)
 
-        self.ann_info['use_different_joint_weights'] = False
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

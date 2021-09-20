@@ -73,8 +73,6 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
 
-        self.ann_info['use_different_joint_weights'] = False
-
         self.body_num = 17
         self.foot_num = 6
         self.face_num = 68
