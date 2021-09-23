@@ -8,4 +8,5 @@ opencv-python
 pillow
 scipy
 torchvision
+trimesh
 xtcocotools>=1.8

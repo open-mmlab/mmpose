@@ -4,4 +4,3 @@ onnxruntime
 poseval@git+https://github.com/svenkreiss/poseval.git
 pyrender
 smplx>=0.1.28
-trimesh
