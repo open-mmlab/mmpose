@@ -1,15 +1,18 @@
-import imagesize
+# Copyright (c) OpenMMLab. All rights reserved.
+import json
 import os
 from argparse import ArgumentParser
+
+import imagesize
 from tqdm import tqdm
 from xtcocotools.coco import COCO
 
-import json
 from mmpose.apis import inference_top_down_pose_model, init_pose_model
 
 
 def main():
     """Visualize the demo images.
+
     pose_keypoints equire the json_file containing boxes.
     """
     parser = ArgumentParser()
@@ -25,9 +28,7 @@ def main():
         '--out-json-file',
         type=str,
         default='',
-        help=
-        'Output json containing bboxes from Json file and pseudolabeled keypoints'
-    )
+        help='Output json contains pseudolabeled annotation')
     parser.add_argument(
         '--show',
         action='store_true',
@@ -39,8 +40,6 @@ def main():
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
 
     args = parser.parse_args()
-
-    assert args.show or (args.out_img_root != '')
 
     coco = COCO(args.json_file)
     # build the pose model from a config file and a checkpoint file
@@ -89,7 +88,7 @@ def main():
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
 
-        #add output of model and bboxes to dict
+        # add output of model and bboxes to dict
         for indx, i in enumerate(pose_results):
             pose_results[indx]['keypoints'][
                 pose_results[indx]['keypoints'][:, 2] < args.kpt_thr, :3] = 0
@@ -137,8 +136,8 @@ def main():
 
         img_anno_dict['images'].append(images)
 
-    #create json
-    with open(args.out_json_file, "w") as outfile:
+    # create json
+    with open(args.out_json_file, 'w') as outfile:
         json.dump(img_anno_dict, outfile, indent=2)
 
 
