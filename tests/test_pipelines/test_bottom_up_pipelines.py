@@ -285,7 +285,7 @@ def test_BottomUpGenerateHeatmapTarget():
 def test_BottomUpGeneratePAFTarget():
 
     ann_info = {}
-    ann_info['skeleton'] = [[1, 2], [3, 4]]
+    ann_info['skeleton'] = [[0, 1], [2, 3]]
     ann_info['heatmap_size'] = np.array([5])
     ann_info['num_joints'] = 4
     ann_info['num_scales'] = 1

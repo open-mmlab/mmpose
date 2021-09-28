@@ -94,7 +94,7 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
         mask = self._get_mask(anno, idx)
         anno = [
-            obj for obj in anno
+            obj.copy() for obj in anno
             if obj['iscrowd'] == 0 or obj['num_keypoints'] > 0
         ]
 
@@ -125,7 +125,7 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
                               dtype=np.float32)
 
         for i, obj in enumerate(anno):
-            joints[i, :self.ann_info['num_joints'], :3] = \
+            joints[i, :, :3] = \
                 np.array(obj['keypoints']).reshape([-1, 3])
             if self.ann_info['scale_aware_sigma']:
                 # get person box
