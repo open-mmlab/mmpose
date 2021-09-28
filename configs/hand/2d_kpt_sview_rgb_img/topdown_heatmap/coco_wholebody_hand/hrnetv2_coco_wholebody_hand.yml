@@ -1,0 +1,23 @@
+Collections:
+- Metadata:
+    Architecture:
+    - HRNetv2
+  Name: hrnetv2_coco_wholebody_hand
+  Paper:
+  - https://ieeexplore.ieee.org/abstract/document/9052469/
+  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/hrnetv2_coco_wholebody_hand.md
+Models:
+- Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/hrnetv2_w18_coco_wholebody_hand_256x256.py
+  In Collection: hrnetv2_coco_wholebody_hand
+  Metadata:
+    Training Data: COCO-WholeBody-Hand
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--hrnetv2_w18_coco_wholebody_hand_256x256
+  Results:
+  - Dataset: COCO-WholeBody-Hand
+    Metrics:
+      AUC: 0.84
+      EPE: 4.39
+      PCK@0.2: 0.813
+    Task: 2D Hand Pose Estimation
+  Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_coco_wholebody_hand_256x256-1c028db7_20210908.pth

@@ -1131,7 +1131,7 @@ dataset_info = dict(
     joint_weights=[1.] * 133,
 
     # 'https://github.com/jin-s13/COCO-WholeBody/blob/master/'
-    # 'evaluation/myeval_wholebody.py#L170'
+    # 'evaluation/myeval_wholebody.py#L175'
     sigmas=[
         0.026, 0.025, 0.025, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
         0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089, 0.068, 0.066, 0.066,

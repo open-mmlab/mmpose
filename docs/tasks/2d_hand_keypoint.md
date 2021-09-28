@@ -10,6 +10,7 @@ MMPose supported datasets:
 - [CMU Panoptic HandDB](#cmu-panoptic-handdb) \[ [Homepage](http://domedb.perception.cs.cmu.edu/handdb.html) \]
 - [InterHand2.6M](#interhand26m) \[ [Homepage](https://mks0601.github.io/InterHand2.6M/) \]
 - [RHD](#rhd-dataset) \[ [Homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html) \]
+- [COCO-WholeBody-Hand](#coco-wholebody-hand) \[ [Homepage](https://github.com/jin-s13/COCO-WholeBody/) \]
 
 ## OneHand10K
 
@@ -268,3 +269,51 @@ mmpose
         |   |   |── 00000.jpg
         |   |   |── 00001.jpg
 ```
+
+## COCO-WholeBody (Hand)
+
+[DATASET]
+
+```bibtex
+@inproceedings{jin2020whole,
+  title={Whole-Body Human Pose Estimation in the Wild},
+  author={Jin, Sheng and Xu, Lumin and Xu, Jin and Wang, Can and Liu, Wentao and Qian, Chen and Ouyang, Wanli and Luo, Ping},
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)},
+  year={2020}
+}
+```
+
+For [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) datatset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
+Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).
+Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── coco
+        │-- annotations
+        │   │-- coco_wholebody_train_v1.0.json
+        │   |-- coco_wholebody_val_v1.0.json
+        |-- person_detection_results
+        |   |-- COCO_val2017_detections_AP_H_56_person.json
+        │-- train2017
+        │   │-- 000000000009.jpg
+        │   │-- 000000000025.jpg
+        │   │-- 000000000030.jpg
+        │   │-- ...
+        `-- val2017
+            │-- 000000000139.jpg
+            │-- 000000000285.jpg
+            │-- 000000000632.jpg
+            │-- ...
+```
+
+Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) to support COCO-WholeBody evaluation:
+
+`pip install xtcocotools`

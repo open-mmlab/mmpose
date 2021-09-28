@@ -106,6 +106,18 @@ def test_keypoint_pck_accuracy():
     assert abs(avg_acc - 0.875) < 1e-4
     assert abs(cnt - 4) < 1e-4
 
+    acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, mask, 0.5,
+                                              np.zeros((2, 2)))
+    assert_array_almost_equal(acc, np.array([-1, -1, -1, -1, -1]), decimal=4)
+    assert abs(avg_acc) < 1e-4
+    assert abs(cnt) < 1e-4
+
+    acc, avg_acc, cnt = keypoint_pck_accuracy(output, target, mask, 0.5,
+                                              np.array([[0, 0], [10, 10]]))
+    assert_array_almost_equal(acc, np.array([1, 1, -1, 1, 1]), decimal=4)
+    assert abs(avg_acc - 1) < 1e-4
+    assert abs(cnt - 4) < 1e-4
+
 
 def test_keypoint_auc():
     output = np.zeros((1, 5, 2))

@@ -456,7 +456,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
         gts_rel_root = np.array(gts_rel_root, dtype=np.float32)
         preds_rel_root = np.array(preds_rel_root, dtype=np.float32)
-        rel_root_masks = np.array(rel_root_masks, dtype=bool)
+        rel_root_masks = np.array(rel_root_masks, dtype=bool)[:, None]
         gts_joint_coord_cam = np.array(gts_joint_coord_cam, dtype=np.float32)
         preds_joint_coord_cam = np.array(
             preds_joint_coord_cam, dtype=np.float32)
