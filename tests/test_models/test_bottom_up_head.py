@@ -32,7 +32,7 @@ def test_ae_simple_head():
             in_channels=512,
             num_joints=17,
             with_ae_loss=[True],
-            extra={'final_conv_kernel': 0},
+            extra={'final_conv_kernel': -1},
             loss_keypoint=dict(
                 type='MultiLossFactory',
                 num_joints=17,

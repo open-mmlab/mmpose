@@ -172,7 +172,7 @@ class AEHigherResolutionHead(nn.Module):
 
         return deconv_kernel, padding, output_padding
 
-    def get_loss(self, output, targets, masks, joints):
+    def get_loss(self, outputs, targets, masks, joints):
         """Calculate bottom-up keypoint loss.
 
         Note:
@@ -183,18 +183,18 @@ class AEHigherResolutionHead(nn.Module):
             heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            targets(List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks(List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
-            joints(List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
+            outputs (List(torch.Tensor[NxKxHxW])): Multi-scale output heatmaps.
+            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
+                heatmaps
+            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+                heatmaps for ae loss
         """
 
         losses = dict()
 
         heatmaps_losses, push_losses, pull_losses = self.loss(
-            output, targets, masks, joints)
+            outputs, targets, masks, joints)
 
         for idx in range(len(targets)):
             if heatmaps_losses[idx] is not None:

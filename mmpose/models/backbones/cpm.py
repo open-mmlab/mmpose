@@ -15,22 +15,34 @@ from .utils import load_checkpoint
 class CpmBlock(nn.Module):
     """CpmBlock for Convolutional Pose Machine.
 
-    Generate module recursively and use BasicBlock as the base unit.
-
     Args:
         in_channels (int): Input channels of this block.
-        out_channels (int): Output channels of this block.
+        channels (list): Output channels of each conv module.
+        kernels (list): Kernel sizes of each conv module.
     """
 
-    def __init__(self, in_channels, out_channels, norm_cfg=None):
+    def __init__(self,
+                 in_channels,
+                 channels=(128, 128, 128),
+                 kernels=(11, 11, 11),
+                 norm_cfg=None):
         super().__init__()
-        self.model = nn.Sequential(
-            ConvModule(
-                in_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg),
-            ConvModule(
-                out_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg),
-            ConvModule(
-                out_channels, out_channels, 11, padding=5, norm_cfg=norm_cfg))
+
+        assert len(channels) == len(kernels)
+        layers = []
+        for i in range(len(channels)):
+            if i == 0:
+                input_channels = in_channels
+            else:
+                input_channels = channels[i - 1]
+            layers.append(
+                ConvModule(
+                    input_channels,
+                    channels[i],
+                    kernels[i],
+                    padding=(kernels[i] - 1) // 2,
+                    norm_cfg=norm_cfg))
+        self.model = nn.Sequential(*layers)
 
     def forward(self, x):
         """Model forward function."""
@@ -108,8 +120,11 @@ class CPM(BaseBackbone):
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
 
         self.cpm_stages = nn.ModuleList([
-            CpmBlock(middle_channels + out_channels, feat_channels, norm_cfg)
-            for _ in range(num_stages - 1)
+            CpmBlock(
+                middle_channels + out_channels,
+                channels=[feat_channels, feat_channels, feat_channels],
+                kernels=[11, 11, 11],
+                norm_cfg=norm_cfg) for _ in range(num_stages - 1)
         ])
 
         self.middle_conv = nn.ModuleList([

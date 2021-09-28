@@ -5,7 +5,7 @@ import torch
 from mmpose.models.detectors import AssociativeEmbedding
 
 
-def test_bottomup_forward():
+def test_ae_forward():
     model_cfg = dict(
         type='AssociativeEmbedding',
         pretrained=None,
