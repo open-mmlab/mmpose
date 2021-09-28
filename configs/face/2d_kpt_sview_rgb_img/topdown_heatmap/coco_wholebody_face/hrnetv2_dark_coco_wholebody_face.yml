@@ -1,23 +1,26 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-    - DarkPose
-  Name: hrnetv2_dark_coco_wholebody_face
+    - HRNetv2 (TPAMI'2019)
+    - DarkPose (CVPR'2020)
+  Name: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: Whole-Body Human Pose Estimation in the Wild
+    URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_dark_coco_wholebody_face.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_w18_coco_wholebody_face_256x256_dark.py
-  In Collection: hrnetv2_dark_coco_wholebody_face
+  In Collection: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Metadata:
-    Training Data: COCO-WholeBody-Face
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--hrnetv2_w18_coco_wholebody_face_256x256_dark
+    Training Data: COCO-WholeBody-Face (ECCV'2020)
+  Name: topdown_heatmap_hrnetv2_w18_coco_wholebody_face_256x256_dark
   Results:
-  - Dataset: COCO-WholeBody-Face
+  - Dataset: COCO-WholeBody-Face (ECCV'2020)
     Metrics:
       NME: 0.0513
-    Task: 2D Face Landmark Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth

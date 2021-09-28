@@ -1,42 +1,46 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding
-    - HigherHRNet
-  Name: higherhrnet_aic
+    - Associative Embedding (NIPS'2017)
+    - HigherHRNet (CVPR'2020)
+  Name: body 2D Keypoint associative_embedding aic
   Paper:
-  - https://arxiv.org/abs/1611.05424
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://arxiv.org/abs/1711.06475
+  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
+    URL: https://arxiv.org/abs/1611.05424
+  - Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
+      Estimation'
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: 'Ai challenger: A large-scale dataset for going deeper in image understanding'
+    URL: https://arxiv.org/abs/1711.06475
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_aic.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
-  In Collection: higherhrnet_aic
+  In Collection: body 2D Keypoint associative_embedding aic
   Metadata:
-    Training Data: AI Challenger
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_w32_aic_512x512
+    Training Data: AI Challenger (ArXiv'2017)
+  Name: associative_embedding_higherhrnet_w32_aic_512x512
   Results:
-  - Dataset: AI Challenger
+  - Dataset: AI Challenger (ArXiv'2017)
     Metrics:
       AP: 0.315
       AP@0.5: 0.71
       AP@0.75: 0.243
       AR: 0.379
       AR@0.5: 0.757
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
-  In Collection: higherhrnet_aic
+  In Collection: body 2D Keypoint associative_embedding aic
   Metadata:
-    Training Data: AI Challenger
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_w32_aic_512x512
+    Training Data: AI Challenger (ArXiv'2017)
+  Name: associative_embedding_higherhrnet_w32_aic_512x512
   Results:
-  - Dataset: AI Challenger
+  - Dataset: AI Challenger (ArXiv'2017)
     Metrics:
       AP: 0.323
       AP@0.5: 0.718
       AP@0.75: 0.254
       AR: 0.379
       AR@0.5: 0.758
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth

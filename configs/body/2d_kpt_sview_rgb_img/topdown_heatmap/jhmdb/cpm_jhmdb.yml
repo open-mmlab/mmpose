@@ -1,20 +1,22 @@
 Collections:
 - Metadata:
     Architecture:
-    - CPM
-  Name: cpm_jhmdb
+    - CPM (CVPR'2016)
+  Name: body 2D Keypoint topdown_heatmap jhmdb
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
-  - https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
+  - Title: Convolutional pose machines
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
+  - Title: Towards understanding action recognition
+    URL: https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 87.3
       Elb: 81.0
@@ -24,15 +26,15 @@ Models:
       Mean: 89.5
       Sho: 91.9
       Wri: 78.9
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 84.7
       Elb: 77.1
@@ -42,15 +44,15 @@ Models:
       Mean: 87.4
       Sho: 93.6
       Wri: 70.9
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub3_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 86.2
       Elb: 87.3
@@ -60,15 +62,15 @@ Models:
       Mean: 92.4
       Sho: 94.9
       Wri: 84.0
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub1_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 61.2
       Elb: 54.0
@@ -78,15 +80,15 @@ Models:
       Mean: 66.0
       Sho: 63.0
       Wri: 54.9
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub2_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 62.4
       Elb: 46.8
@@ -96,15 +98,15 @@ Models:
       Mean: 61.1
       Sho: 57.9
       Wri: 44.3
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: cpm_jhmdb
+  In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb_sub3_368x368
+    Training Data: JHMDB (ICCV'2013)
+  Name: topdown_heatmap_cpm_jhmdb_sub3_368x368
   Results:
-  - Dataset: JHMDB
+  - Dataset: JHMDB (ICCV'2013)
     Metrics:
       Ank: 65.8
       Elb: 59.9
@@ -114,5 +116,5 @@ Models:
       Mean: 70.3
       Sho: 72.6
       Wri: 54.0
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth

@@ -1,51 +1,54 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: resnet_mpii_trb
+    - SimpleBaseline2D (ECCV'2018)
+    - ResNet (CVPR'2016)
+  Name: body 2D Keypoint topdown_heatmap mpii_trb
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - http://openaccess.thecvf.com/content_ICCV_2019/html/Duan_TRB_A_Novel_Triplet_Representation_for_Understanding_2D_Human_Body_ICCV_2019_paper.html
+  - Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: 'TRB: A Novel Triplet Representation for Understanding 2D Human Body'
+    URL: http://openaccess.thecvf.com/content_ICCV_2019/html/Duan_TRB_A_Novel_Triplet_Representation_for_Understanding_2D_Human_Body_ICCV_2019_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
-  In Collection: resnet_mpii_trb
+  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res50_mpii_trb_256x256
+    Training Data: MPII-TRB (ICCV'2019)
+  Name: topdown_heatmap_res50_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB
+  - Dataset: MPII-TRB (ICCV'2019)
     Metrics:
       Contour Acc: 0.858
       Mean Acc: 0.868
       Skeleton Acc: 0.887
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
-  In Collection: resnet_mpii_trb
+  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res101_mpii_trb_256x256
+    Training Data: MPII-TRB (ICCV'2019)
+  Name: topdown_heatmap_res101_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB
+  - Dataset: MPII-TRB (ICCV'2019)
     Metrics:
       Contour Acc: 0.863
       Mean Acc: 0.873
       Skeleton Acc: 0.89
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
-  In Collection: resnet_mpii_trb
+  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--res152_mpii_trb_256x256
+    Training Data: MPII-TRB (ICCV'2019)
+  Name: topdown_heatmap_res152_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB
+  - Dataset: MPII-TRB (ICCV'2019)
     Metrics:
       Contour Acc: 0.868
       Mean Acc: 0.879
       Skeleton Acc: 0.897
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth

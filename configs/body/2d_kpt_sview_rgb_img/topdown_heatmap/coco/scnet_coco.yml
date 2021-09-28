@@ -1,70 +1,72 @@
 Collections:
 - Metadata:
     Architecture:
-    - SCNet
-  Name: scnet_coco
+    - SCNet (CVPR'2020)
+  Name: body 2D Keypoint topdown_heatmap coco
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: Improving Convolutional Networks with Self-Calibrated Convolutions
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
-  In Collection: scnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_256x192
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_scnet50_coco_256x192
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.728
       AP@0.5: 0.899
       AP@0.75: 0.807
       AR: 0.784
       AR@0.5: 0.938
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
-  In Collection: scnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet50_coco_384x288
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_scnet50_coco_384x288
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.751
       AP@0.5: 0.906
       AP@0.75: 0.818
       AR: 0.802
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
-  In Collection: scnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_256x192
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_scnet101_coco_256x192
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.733
       AP@0.5: 0.903
       AP@0.75: 0.813
       AR: 0.79
       AR@0.5: 0.941
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_384x288.py
-  In Collection: scnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet101_coco_384x288
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_scnet101_coco_384x288
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.752
       AP@0.5: 0.906
       AP@0.75: 0.823
       AR: 0.804
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_384x288-0b6e631b_20200709.pth

@@ -1,25 +1,28 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: resnet_onehand10k
+    - SimpleBaseline2D (ECCV'2018)
+    - ResNet (CVPR'2016)
+  Name: hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/8529221/
+  - Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: Mask-pose cascaded cnn for 2d hand pose estimation from single color image
+    URL: https://ieeexplore.ieee.org/abstract/document/8529221/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/resnet_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/res50_onehand10k_256x256.py
-  In Collection: resnet_onehand10k
+  In Collection: hand 2D Keypoint topdown_heatmap onehand10k
   Metadata:
-    Training Data: OneHand10K
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--res50_onehand10k_256x256
+    Training Data: OneHand10K (TCSVT'2019)
+  Name: topdown_heatmap_res50_onehand10k_256x256
   Results:
-  - Dataset: OneHand10K
+  - Dataset: OneHand10K (TCSVT'2019)
     Metrics:
       AUC: 0.555
       EPE: 25.19
       PCK@0.2: 0.989
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-739c8639_20210330.pth

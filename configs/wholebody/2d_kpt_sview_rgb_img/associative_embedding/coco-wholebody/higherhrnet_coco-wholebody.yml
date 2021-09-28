@@ -1,22 +1,26 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding
-    - HigherHRNet
-  Name: higherhrnet_coco-wholebody
+    - Associative Embedding (NIPS'2017)
+    - HigherHRNet (CVPR'2020)
+  Name: wholebody 2D Keypoint associative_embedding coco-wholebody
   Paper:
-  - https://arxiv.org/abs/1611.05424
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
+    URL: https://arxiv.org/abs/1611.05424
+  - Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
+      Estimation'
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: Whole-Body Human Pose Estimation in the Wild
+    URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w32_coco_wholebody_512x512.py
-  In Collection: higherhrnet_coco-wholebody
+  In Collection: wholebody 2D Keypoint associative_embedding coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w32_coco_wholebody_512x512
+    Training Data: COCO-WholeBody (ECCV'2020)
+  Name: associative_embedding_higherhrnet_w32_coco_wholebody_512x512
   Results:
-  - Dataset: COCO-WholeBody
+  - Dataset: COCO-WholeBody (ECCV'2020)
     Metrics:
       Body AP: 0.59
       Body AR: 0.672
@@ -28,15 +32,15 @@ Models:
       Hand AR: 0.298
       Whole AP: 0.401
       Whole AR: 0.493
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_wholebody_512x512_plus-2fa137ab_20210517.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w48_coco_wholebody_512x512.py
-  In Collection: higherhrnet_coco-wholebody
+  In Collection: wholebody 2D Keypoint associative_embedding coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_w48_coco_wholebody_512x512
+    Training Data: COCO-WholeBody (ECCV'2020)
+  Name: associative_embedding_higherhrnet_w48_coco_wholebody_512x512
   Results:
-  - Dataset: COCO-WholeBody
+  - Dataset: COCO-WholeBody (ECCV'2020)
     Metrics:
       Body AP: 0.63
       Body AR: 0.706
@@ -48,5 +52,5 @@ Models:
       Hand AR: 0.477
       Whole AP: 0.487
       Whole AR: 0.574
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_wholebody_512x512_plus-934f08aa_20210517.pth

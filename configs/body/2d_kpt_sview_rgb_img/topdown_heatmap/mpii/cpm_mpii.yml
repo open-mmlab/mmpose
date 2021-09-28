@@ -1,22 +1,24 @@
 Collections:
 - Metadata:
     Architecture:
-    - CPM
-  Name: cpm_mpii
+    - CPM (CVPR'2016)
+  Name: body 2D Keypoint topdown_heatmap mpii
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
+  - Title: Convolutional pose machines
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
+  - Title: '2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
+    URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Andriluka_2D_Human_Pose_2014_CVPR_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py
-  In Collection: cpm_mpii
+  In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--cpm_mpii_368x368
+    Training Data: MPII (CVPR'2014)
+  Name: topdown_heatmap_cpm_mpii_368x368
   Results:
-  - Dataset: MPII
+  - Dataset: MPII (CVPR'2014)
     Metrics:
       Mean: 0.876
       Mean@0.1: 0.285
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth

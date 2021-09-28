@@ -1,24 +1,28 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-    - DarkPose
-  Name: hrnetv2_dark_aflw
+    - HRNetv2 (TPAMI'2019)
+    - DarkPose (CVPR'2020)
+  Name: face 2D Keypoint topdown_heatmap aflw
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/6130513/
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: 'Annotated facial landmarks in the wild: A large-scale, real-world database
+      for facial landmark localization'
+    URL: https://ieeexplore.ieee.org/abstract/document/6130513/
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_dark_aflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256_dark.py
-  In Collection: hrnetv2_dark_aflw
+  In Collection: face 2D Keypoint topdown_heatmap aflw
   Metadata:
-    Training Data: AFLW
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--aflw--hrnetv2_w18_aflw_256x256_dark
+    Training Data: AFLW (ICCVW'2011)
+  Name: topdown_heatmap_hrnetv2_w18_aflw_256x256_dark
   Results:
-  - Dataset: AFLW
+  - Dataset: AFLW (ICCVW'2011)
     Metrics:
       NME frontal: 1.27
       NME full: 1.41
-    Task: 2D Face Landmark Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth

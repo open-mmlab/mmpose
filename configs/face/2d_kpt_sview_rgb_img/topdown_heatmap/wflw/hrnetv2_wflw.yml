@@ -1,20 +1,22 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-  Name: hrnetv2_wflw
+    - HRNetv2 (TPAMI'2019)
+  Name: face 2D Keypoint topdown_heatmap wflw
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: 'Look at boundary: A boundary-aware face alignment algorithm'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256.py
-  In Collection: hrnetv2_wflw
+  In Collection: face 2D Keypoint topdown_heatmap wflw
   Metadata:
-    Training Data: WFLW
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--wflw--hrnetv2_w18_wflw_256x256
+    Training Data: WFLW (CVPR'2018)
+  Name: topdown_heatmap_hrnetv2_w18_wflw_256x256
   Results:
-  - Dataset: WFLW
+  - Dataset: WFLW (CVPR'2018)
     Metrics:
       NME blur: 4.59
       NME expression: 4.33
@@ -23,5 +25,5 @@ Models:
       NME occlusion: 4.83
       NME pose: 6.98
       NME test: 4.06
-    Task: 2D Face Landmark Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_wflw_256x256-2bf032a6_20210125.pth

@@ -1,132 +1,135 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding
-    - ResNet
-  Name: resnet_coco
+    - Associative Embedding (NIPS'2017)
+    - ResNet (CVPR'2016)
+  Name: body 2D Keypoint associative_embedding coco
   Paper:
-  - https://arxiv.org/abs/1611.05424
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
+    URL: https://arxiv.org/abs/1611.05424
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res50_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.466
       AP@0.5: 0.742
       AP@0.75: 0.479
       AR: 0.552
       AR@0.5: 0.797
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res50_coco_640x640
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.479
       AP@0.5: 0.757
       AP@0.75: 0.487
       AR: 0.566
       AR@0.5: 0.81
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res101_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.554
       AP@0.5: 0.807
       AP@0.75: 0.599
       AR: 0.622
       AR@0.5: 0.841
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res152_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.595
       AP@0.5: 0.829
       AP@0.75: 0.648
       AR: 0.651
       AR@0.5: 0.856
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res50_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.503
       AP@0.5: 0.765
       AP@0.75: 0.521
       AR: 0.591
       AR@0.5: 0.821
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res50_coco_640x640
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res50_coco_640x640
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.525
       AP@0.5: 0.784
       AP@0.75: 0.542
       AR: 0.61
       AR@0.5: 0.832
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res101_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res101_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.603
       AP@0.5: 0.831
       AP@0.75: 0.641
       AR: 0.668
       AR@0.5: 0.87
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
-  In Collection: resnet_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--res152_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_res152_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.66
       AP@0.5: 0.86
       AP@0.75: 0.713
       AR: 0.709
       AR@0.5: 0.889
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth

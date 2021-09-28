@@ -1,24 +1,27 @@
 Collections:
 - Metadata:
     Architecture:
-    - VideoPose3D
-  Name: videopose3d_mpi-inf-3dhp
+    - VideoPose3D (CVPR'2019)
+  Name: body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/8374605/
+  - Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
+      training
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  - Title: Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision
+    URL: https://ieeexplore.ieee.org/abstract/document/8374605/
   README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
-  In Collection: videopose3d_mpi-inf-3dhp
+  In Collection: body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Metadata:
-    Training Data: MPI-INF-3DHP
-  Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--mpi_inf_3dhp--videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
+    Training Data: MPI-INF-3DHP (3DV'2017)
+  Name: video_pose_lift_videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
   Results:
-  - Dataset: MPI-INF-3DHP
+  - Dataset: MPI-INF-3DHP (3DV'2017)
     Metrics:
       3DAUC: 63.1
       3DPCK: 94.1
       MPJPE: 58.3
       P-MPJPE: 40.6
-    Task: Video-based Single-view 3D Human Body Pose Estimation
+    Task: 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth

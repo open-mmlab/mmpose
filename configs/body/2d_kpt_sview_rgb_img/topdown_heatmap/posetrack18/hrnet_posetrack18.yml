@@ -1,20 +1,22 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNet
-  Name: hrnet_posetrack18
+    - HRNet (CVPR'2019)
+  Name: body 2D Keypoint topdown_heatmap posetrack18
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html
+  - Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - Title: 'Posetrack: A benchmark for human pose estimation and tracking'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Andriluka_PoseTrack_A_Benchmark_CVPR_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_posetrack18.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_w32_posetrack18_256x192.py
-  In Collection: hrnet_posetrack18
+  In Collection: body 2D Keypoint topdown_heatmap posetrack18
   Metadata:
-    Training Data: PoseTrack18
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--hrnet_w32_posetrack18_256x192
+    Training Data: PoseTrack18 (CVPR'2018)
+  Name: topdown_heatmap_hrnet_w32_posetrack18_256x192
   Results:
-  - Dataset: PoseTrack18
+  - Dataset: PoseTrack18 (CVPR'2018)
     Metrics:
       Ankl: 78.8
       Elb: 84.3
@@ -24,15 +26,15 @@ Models:
       Shou: 88.6
       Total: 83.0
       Wri: 78.5
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_w32_posetrack18_256x192.py
-  In Collection: hrnet_posetrack18
+  In Collection: body 2D Keypoint topdown_heatmap posetrack18
   Metadata:
-    Training Data: PoseTrack18
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--posetrack18--hrnet_w32_posetrack18_256x192
+    Training Data: PoseTrack18 (CVPR'2018)
+  Name: topdown_heatmap_hrnet_w32_posetrack18_256x192
   Results:
-  - Dataset: PoseTrack18
+  - Dataset: PoseTrack18 (CVPR'2018)
     Metrics:
       Ankl: 70.2
       Elb: 79.5
@@ -42,5 +44,5 @@ Models:
       Shou: 82.9
       Total: 76.9
       Wri: 73.8
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_posetrack18_256x192-1ee951c4_20201028.pth

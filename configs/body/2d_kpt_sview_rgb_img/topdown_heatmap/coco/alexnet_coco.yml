@@ -1,25 +1,27 @@
 Collections:
 - Metadata:
     Architecture:
-    - AlexNet
-  Name: alexnet_coco
+    - AlexNet (NeurIPS'2012)
+  Name: body 2D Keypoint topdown_heatmap coco
   Paper:
-  - https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: Imagenet classification with deep convolutional neural networks
+    URL: https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py
-  In Collection: alexnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--alexnet_coco_256x192
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_alexnet_coco_256x192
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.397
       AP@0.5: 0.758
       AP@0.75: 0.381
       AR: 0.478
       AR@0.5: 0.822
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/alexnet/alexnet_coco_256x192-a7b1fd15_20200727.pth

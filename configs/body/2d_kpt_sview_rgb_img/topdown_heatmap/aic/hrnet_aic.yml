@@ -1,25 +1,27 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNet
-  Name: hrnet_aic
+    - HRNet (CVPR'2019)
+  Name: body 2D Keypoint topdown_heatmap aic
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - https://arxiv.org/abs/1711.06475
+  - Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - Title: 'Ai challenger: A large-scale dataset for going deeper in image understanding'
+    URL: https://arxiv.org/abs/1711.06475
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_aic.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_w32_aic_256x192.py
-  In Collection: hrnet_aic
+  In Collection: body 2D Keypoint topdown_heatmap aic
   Metadata:
-    Training Data: AI Challenger
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--aic--hrnet_w32_aic_256x192
+    Training Data: AI Challenger (ArXiv'2017)
+  Name: topdown_heatmap_hrnet_w32_aic_256x192
   Results:
-  - Dataset: AI Challenger
+  - Dataset: AI Challenger (ArXiv'2017)
     Metrics:
       AP: 0.323
       AP@0.5: 0.762
       AP@0.75: 0.219
       AR: 0.366
       AR@0.5: 0.789
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_aic_256x192-30a4e465_20200826.pth

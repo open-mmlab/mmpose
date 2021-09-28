@@ -1,23 +1,25 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-  Name: hrnetv2_onehand10k
+    - HRNetv2 (TPAMI'2019)
+  Name: hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - https://ieeexplore.ieee.org/abstract/document/8529221/
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Mask-pose cascaded cnn for 2d hand pose estimation from single color image
+    URL: https://ieeexplore.ieee.org/abstract/document/8529221/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256.py
-  In Collection: hrnetv2_onehand10k
+  In Collection: hand 2D Keypoint topdown_heatmap onehand10k
   Metadata:
-    Training Data: OneHand10K
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_w18_onehand10k_256x256
+    Training Data: OneHand10K (TCSVT'2019)
+  Name: topdown_heatmap_hrnetv2_w18_onehand10k_256x256
   Results:
-  - Dataset: OneHand10K
+  - Dataset: OneHand10K (TCSVT'2019)
     Metrics:
       AUC: 0.568
       EPE: 24.16
       PCK@0.2: 0.99
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth

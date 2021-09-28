@@ -1,25 +1,28 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-    - DarkPose
-  Name: hrnetv2_dark_onehand10k
+    - HRNetv2 (TPAMI'2019)
+    - DarkPose (CVPR'2020)
+  Name: hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/8529221/
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: Mask-pose cascaded cnn for 2d hand pose estimation from single color image
+    URL: https://ieeexplore.ieee.org/abstract/document/8529221/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_dark_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_dark.py
-  In Collection: hrnetv2_dark_onehand10k
+  In Collection: hand 2D Keypoint topdown_heatmap onehand10k
   Metadata:
-    Training Data: OneHand10K
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_w18_onehand10k_256x256_dark
+    Training Data: OneHand10K (TCSVT'2019)
+  Name: topdown_heatmap_hrnetv2_w18_onehand10k_256x256_dark
   Results:
-  - Dataset: OneHand10K
+  - Dataset: OneHand10K (TCSVT'2019)
     Metrics:
       AUC: 0.573
       EPE: 23.84
       PCK@0.2: 0.99
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark-a2f80c64_20210330.pth

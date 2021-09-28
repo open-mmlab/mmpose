@@ -1,25 +1,28 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: resnet_panoptic2d
+    - SimpleBaseline2D (ECCV'2018)
+    - ResNet (CVPR'2016)
+  Name: hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
+  - Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: Hand keypoint detection in single images using multiview bootstrapping
+    URL: http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/resnet_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/res50_panoptic_256x256.py
-  In Collection: resnet_panoptic2d
+  In Collection: hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
-    Training Data: CMU Panoptic HandDB
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--res50_panoptic_256x256
+    Training Data: CMU Panoptic HandDB (CVPR'2017)
+  Name: topdown_heatmap_res50_panoptic_256x256
   Results:
-  - Dataset: CMU Panoptic HandDB
+  - Dataset: CMU Panoptic HandDB (CVPR'2017)
     Metrics:
       AUC: 0.713
       EPE: 9.0
       PCKh@0.7: 0.999
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_panoptic_256x256-4eafc561_20210330.pth

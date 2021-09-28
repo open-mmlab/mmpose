@@ -1,168 +1,172 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: resnet_interhand2d
+    - SimpleBaseline2D (ECCV'2018)
+    - ResNet (CVPR'2016)
+  Name: hand 2D Keypoint topdown_heatmap interhand2d
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  - Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
+      from a Single RGB Image'
+    URL: https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/resnet_interhand2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_human_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.828
       EPE: 5.15
       PCK@0.2: 0.973
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_human_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.826
       EPE: 5.27
       PCK@0.2: 0.973
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_human_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.841
       EPE: 4.9
       PCK@0.2: 0.975
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_human_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_human_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.839
       EPE: 4.97
       PCK@0.2: 0.975
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_machine_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.824
       EPE: 5.39
       PCK@0.2: 0.97
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_machine_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.821
       EPE: 5.52
       PCK@0.2: 0.969
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_machine_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.838
       EPE: 5.03
       PCK@0.2: 0.972
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_machine_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_machine_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.837
       EPE: 5.11
       PCK@0.2: 0.972
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_all_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.84
       EPE: 4.66
       PCK@0.2: 0.977
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_all_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.839
       EPE: 4.65
       PCK@0.2: 0.979
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_all_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.838
       EPE: 4.42
       PCK@0.2: 0.979
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
-  In Collection: resnet_interhand2d
+  In Collection: hand 2D Keypoint topdown_heatmap interhand2d
   Metadata:
-    Training Data: InterHand2.6M
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--res50_interhand2d_all_256x256
+    Training Data: InterHand2.6M (ECCV'2020)
+  Name: topdown_heatmap_res50_interhand2d_all_256x256
   Results:
-  - Dataset: InterHand2.6M
+  - Dataset: InterHand2.6M (ECCV'2020)
     Metrics:
       AUC: 0.851
       EPE: 4.46
       PCK@0.2: 0.979
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth

@@ -1,82 +1,84 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNet
-  Name: hrnet_horse10
+    - HRNet (CVPR'2019)
+  Name: animal 2D Keypoint topdown_heatmap horse10
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - https://openaccess.thecvf.com/content/WACV2021/html/Mathis_Pretraining_Boosts_Out-of-Domain_Robustness_for_Pose_Estimation_WACV_2021_paper.html
+  - Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - Title: Pretraining boosts out-of-domain robustness for pose estimation
+    URL: https://openaccess.thecvf.com/content/WACV2021/html/Mathis_Pretraining_Boosts_Out-of-Domain_Robustness_for_Pose_Estimation_WACV_2021_paper.html
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_horse10.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split1.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split1
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w32_horse10_256x256-split1
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.122
       PCK@0.3: 0.951
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split1-401d901a_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split2.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split2
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w32_horse10_256x256-split2
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.116
       PCK@0.3: 0.949
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split2-04840523_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w32_horse10_256x256-split3.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w32_horse10_256x256-split3
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w32_horse10_256x256-split3
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.153
       PCK@0.3: 0.939
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_horse10_256x256_split3-4db47400_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split1.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split1
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w48_horse10_256x256-split1
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.095
       PCK@0.3: 0.973
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_horse10_256x256_split1-3c950d3b_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split2.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split2
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w48_horse10_256x256-split2
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.101
       PCK@0.3: 0.969
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_horse10_256x256_split2-8ef72b5d_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/hrnet_w48_horse10_256x256-split3.py
-  In Collection: hrnet_horse10
+  In Collection: animal 2D Keypoint topdown_heatmap horse10
   Metadata:
-    Training Data: Horse-10
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--hrnet_w48_horse10_256x256-split3
+    Training Data: Horse-10 (WACV'2021)
+  Name: topdown_heatmap_hrnet_w48_horse10_256x256-split3
   Results:
-  - Dataset: Horse-10
+  - Dataset: Horse-10 (WACV'2021)
     Metrics:
       NME: 0.128
       PCK@0.3: 0.961
-    Task: 2D Animal Keypoint Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_horse10_256x256_split3-0232ec47_20210405.pth

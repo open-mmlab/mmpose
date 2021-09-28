@@ -1,23 +1,26 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: resnet_coco_wholebody_face
+    - SimpleBaseline2D (ECCV'2018)
+    - ResNet (CVPR'2016)
+  Name: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+  - Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: Whole-Body Human Pose Estimation in the Wild
+    URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/resnet_coco_wholebody_face.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/res50_coco_wholebody_face_256x256.py
-  In Collection: resnet_coco_wholebody_face
+  In Collection: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Metadata:
-    Training Data: COCO-WholeBody-Face
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--res50_coco_wholebody_face_256x256
+    Training Data: COCO-WholeBody-Face (ECCV'2020)
+  Name: topdown_heatmap_res50_coco_wholebody_face_256x256
   Results:
-  - Dataset: COCO-WholeBody-Face
+  - Dataset: COCO-WholeBody-Face (ECCV'2020)
     Metrics:
       NME: 0.0566
-    Task: 2D Face Landmark Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256-5128edf5_20210909.pth

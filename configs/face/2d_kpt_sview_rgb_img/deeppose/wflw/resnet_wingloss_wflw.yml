@@ -1,24 +1,29 @@
 Collections:
 - Metadata:
     Architecture:
-    - DeepPose
-    - ResNet
-    - Wingloss
-  Name: resnet_wingloss_wflw
+    - DeepPose (CVPR'2014)
+    - ResNet (CVPR'2016)
+    - Wingloss (CVPR'2018)
+  Name: face 2D Keypoint deeppose wflw
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
+  - Title: 'Deeppose: Human pose estimation via deep neural networks'
+    URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
+  - Title: Deep residual learning for image recognition
+    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  - Title: Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural
+      Networks
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
+  - Title: 'Look at boundary: A boundary-aware face alignment algorithm'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
   README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
-  In Collection: resnet_wingloss_wflw
+  In Collection: face 2D Keypoint deeppose wflw
   Metadata:
-    Training Data: WFLW
-  Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--res50_wflw_256x256_wingloss
+    Training Data: WFLW (CVPR'2018)
+  Name: deeppose_res50_wflw_256x256_wingloss
   Results:
-  - Dataset: WFLW
+  - Dataset: WFLW (CVPR'2018)
     Metrics:
       NME blur: 5.26
       NME expression: 5.07
@@ -27,5 +32,5 @@ Models:
       NME occlusion: 5.56
       NME pose: 8.25
       NME test: 4.64
-    Task: 2D Face Landmark Detection
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth

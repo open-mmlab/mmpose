@@ -1,42 +1,45 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding
-    - MobilenetV2
-  Name: mobilenetv2_coco
+    - Associative Embedding (NIPS'2017)
+    - MobilenetV2 (CVPR'2018)
+  Name: body 2D Keypoint associative_embedding coco
   Paper:
-  - https://arxiv.org/abs/1611.05424
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
+    URL: https://arxiv.org/abs/1611.05424
+  - Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
-  In Collection: mobilenetv2_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_mobilenetv2_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.38
       AP@0.5: 0.671
       AP@0.75: 0.368
       AR: 0.473
       AR@0.5: 0.741
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
-  In Collection: mobilenetv2_coco
+  In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco_512x512
+    Training Data: COCO (ECCV'2014)
+  Name: associative_embedding_mobilenetv2_coco_512x512
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.442
       AP@0.5: 0.696
       AP@0.75: 0.422
       AR: 0.517
       AR@0.5: 0.766
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth

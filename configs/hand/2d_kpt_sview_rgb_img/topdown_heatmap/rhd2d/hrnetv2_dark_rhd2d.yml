@@ -1,25 +1,28 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-    - DarkPose
-  Name: hrnetv2_dark_rhd2d
+    - HRNetv2 (TPAMI'2019)
+    - DarkPose (CVPR'2020)
+  Name: hand 2D Keypoint topdown_heatmap rhd2d
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  - Title: Learning to Estimate 3D Hand Pose from Single RGB Images
+    URL: https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_dark_rhd2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_dark.py
-  In Collection: hrnetv2_dark_rhd2d
+  In Collection: hand 2D Keypoint topdown_heatmap rhd2d
   Metadata:
-    Training Data: RHD
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_w18_rhd2d_256x256_dark
+    Training Data: RHD (ICCV'2017)
+  Name: topdown_heatmap_hrnetv2_w18_rhd2d_256x256_dark
   Results:
-  - Dataset: RHD
+  - Dataset: RHD (ICCV'2017)
     Metrics:
       AUC: 0.903
       EPE: 2.17
       PCK@0.2: 0.992
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark-4df3a347_20210330.pth

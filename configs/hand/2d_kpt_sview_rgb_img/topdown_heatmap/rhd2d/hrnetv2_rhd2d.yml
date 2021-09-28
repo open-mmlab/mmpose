@@ -1,23 +1,25 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2
-  Name: hrnetv2_rhd2d
+    - HRNetv2 (TPAMI'2019)
+  Name: hand 2D Keypoint topdown_heatmap rhd2d
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - https://lmb.informatik.uni-freiburg.de/projects/hand3d/
+  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  - Title: Learning to Estimate 3D Hand Pose from Single RGB Images
+    URL: https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_rhd2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256.py
-  In Collection: hrnetv2_rhd2d
+  In Collection: hand 2D Keypoint topdown_heatmap rhd2d
   Metadata:
-    Training Data: RHD
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_w18_rhd2d_256x256
+    Training Data: RHD (ICCV'2017)
+  Name: topdown_heatmap_hrnetv2_w18_rhd2d_256x256
   Results:
-  - Dataset: RHD
+  - Dataset: RHD (ICCV'2017)
     Metrics:
       AUC: 0.902
       EPE: 2.21
       PCK@0.2: 0.992
-    Task: 2D Hand Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_rhd2d_256x256-95b20dd8_20210330.pth

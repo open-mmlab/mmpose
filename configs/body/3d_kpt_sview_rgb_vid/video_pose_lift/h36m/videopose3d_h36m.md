@@ -49,7 +49,7 @@ Results on Human3.6M dataset with CPN 2D detections<sup>1</sup>, supervised trai
 | Arch | Receptive Field | MPJPE | P-MPJPE | ckpt | log |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | [VideoPose3D](/configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_1frame_fullconv_supervised_cpn_ft.py) | 1 | 52.9 | 41.3 | [ckpt](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth) | [log](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft_20210527.log.json) |
-| [VideoPose3D](/cconfigs/body3d/videopose/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py) | 243 | 47.9 | 38.0 | [ckpt](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth) | [log](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft_20210527.log.json) |
+| [VideoPose3D](/configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py) | 243 | 47.9 | 38.0 | [ckpt](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth) | [log](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft_20210527.log.json) |
 
 Results on Human3.6M dataset with ground truth 2D detections, semi-supervised training
 

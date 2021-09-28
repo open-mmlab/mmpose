@@ -1,40 +1,42 @@
 Collections:
 - Metadata:
     Architecture:
-    - LiteHRNet
-  Name: litehrnet_coco
+    - LiteHRNet (CVPR'2021)
+  Name: body 2D Keypoint topdown_heatmap coco
   Paper:
-  - https://arxiv.org/abs/2104.06403
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
+    URL: https://arxiv.org/abs/2104.06403
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_256x192.py
-  In Collection: litehrnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_30_coco_256x192
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_litehrnet_30_coco_256x192
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.675
       AP@0.5: 0.881
       AP@0.75: 0.754
       AR: 0.736
       AR@0.5: 0.924
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_256x192-4176555b_20210626.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_384x288.py
-  In Collection: litehrnet_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_30_coco_384x288
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_litehrnet_30_coco_384x288
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.7
       AP@0.5: 0.884
       AP@0.75: 0.776
       AR: 0.758
       AR@0.5: 0.928
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_384x288-a3aef5c4_20210626.pth

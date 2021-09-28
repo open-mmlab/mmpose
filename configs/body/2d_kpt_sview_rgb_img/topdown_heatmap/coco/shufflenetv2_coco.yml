@@ -1,40 +1,42 @@
 Collections:
 - Metadata:
     Architecture:
-    - ShufflenetV2
-  Name: shufflenetv2_coco
+    - ShufflenetV2 (ECCV'2018)
+  Name: body 2D Keypoint topdown_heatmap coco
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+  - Title: 'Shufflenet v2: Practical guidelines for efficient cnn architecture design'
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
+  - Title: 'Microsoft coco: Common objects in context'
+    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_256x192.py
-  In Collection: shufflenetv2_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco_256x192
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_shufflenetv2_coco_256x192
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.599
       AP@0.5: 0.854
       AP@0.75: 0.663
       AR: 0.664
       AR@0.5: 0.899
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_256x192-0aba71c7_20200921.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_384x288.py
-  In Collection: shufflenetv2_coco
+  In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco_384x288
+    Training Data: COCO (ECCV'2014)
+  Name: topdown_heatmap_shufflenetv2_coco_384x288
   Results:
-  - Dataset: COCO
+  - Dataset: COCO (ECCV'2014)
     Metrics:
       AP: 0.636
       AP@0.5: 0.865
       AP@0.75: 0.705
       AR: 0.697
       AR@0.5: 0.909
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_384x288-fb38ac3a_20200921.pth

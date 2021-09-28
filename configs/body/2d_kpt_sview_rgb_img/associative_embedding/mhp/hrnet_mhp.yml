@@ -1,42 +1,46 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding
-    - HRNet
-  Name: hrnet_mhp
+    - Associative Embedding (NIPS'2017)
+    - HRNet (CVPR'2019)
+  Name: body 2D Keypoint associative_embedding mhp
   Paper:
-  - https://arxiv.org/abs/1611.05424
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - https://dl.acm.org/doi/abs/10.1145/3240508.3240509
+  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
+    URL: https://arxiv.org/abs/1611.05424
+  - Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
+  - Title: 'Understanding humans in crowded scenes: Deep nested adversarial learning
+      and a new benchmark for multi-human parsing'
+    URL: https://dl.acm.org/doi/abs/10.1145/3240508.3240509
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/mhp/hrnet_mhp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
-  In Collection: hrnet_mhp
+  In Collection: body 2D Keypoint associative_embedding mhp
   Metadata:
-    Training Data: MHP
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_mhp_512x512
+    Training Data: MHP (ACM MM'2018)
+  Name: associative_embedding_hrnet_w48_mhp_512x512
   Results:
-  - Dataset: MHP
+  - Dataset: MHP (ACM MM'2018)
     Metrics:
       AP: 0.583
       AP@0.5: 0.895
       AP@0.75: 0.666
       AR: 0.656
       AR@0.5: 0.931
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
-  In Collection: hrnet_mhp
+  In Collection: body 2D Keypoint associative_embedding mhp
   Metadata:
-    Training Data: MHP
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_w48_mhp_512x512
+    Training Data: MHP (ACM MM'2018)
+  Name: associative_embedding_hrnet_w48_mhp_512x512
   Results:
-  - Dataset: MHP
+  - Dataset: MHP (ACM MM'2018)
     Metrics:
       AP: 0.592
       AP@0.5: 0.898
       AP@0.75: 0.673
       AR: 0.664
       AR@0.5: 0.932
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w48_mhp_512x512-85a6ab6f_20201229.pth
