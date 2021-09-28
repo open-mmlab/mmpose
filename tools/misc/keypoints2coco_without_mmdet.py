@@ -3,8 +3,8 @@ import json
 import os
 from argparse import ArgumentParser
 
-import imagesize
-from tqdm import tqdm
+from mmcv import track_iter_progress
+from PIL import Image
 from xtcocotools.coco import COCO
 
 from mmpose.apis import inference_top_down_pose_model, init_pose_model
@@ -61,12 +61,13 @@ def main():
 
     # process each image
     ann_uniq_id = int(0)
-    for i in tqdm(range(len(img_keys))):
+    for i in track_iter_progress(range(len(img_keys))):
         # get bounding box annotations
         image_id = img_keys[i]
         image = coco.loadImgs(image_id)[0]
         image_name = os.path.join(args.img_root, image['file_name'])
-        width, height = imagesize.get(image_name)
+
+        width, height = Image.open(image_name).size
         ann_ids = coco.getAnnIds(image_id)
 
         # make person bounding boxes
