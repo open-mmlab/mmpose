@@ -20,4 +20,4 @@ Models:
     Metrics:
       NME: 0.0513
     Task: 2D Face Landmark Detection
-  Weights: https://download.openmmlab.com/mmpose/face/dark/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth
+  Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth
