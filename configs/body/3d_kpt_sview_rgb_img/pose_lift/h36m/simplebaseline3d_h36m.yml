@@ -2,21 +2,21 @@ Collections:
 - Metadata:
     Architecture:
     - SimpleBaseline3D
-  Name: simplebaseline3d_h36m
+  Name: Body 3D Keypoint pose_lift h36m
   Paper:
-  - http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/6682899/
+    Title: A simple yet effective baseline for 3d human pose estimation
+    URL: http://openaccess.thecvf.com/content_iccv_2017/html/Martinez_A_Simple_yet_ICCV_2017_paper.html
   README: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
-  In Collection: simplebaseline3d_h36m
+  In Collection: Body 3D Keypoint pose_lift h36m
   Metadata:
     Training Data: Human3.6M
-  Name: body--3d_kpt_sview_rgb_img--pose_lift--h36m--simplebaseline3d_h36m
+  Name: pose_lift_simplebaseline3d_h36m
   Results:
   - Dataset: Human3.6M
     Metrics:
       MPJPE: 43.4
       P-MPJPE: 34.3
-    Task: Single-view 3D Human Body Pose Estimation
+    Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth

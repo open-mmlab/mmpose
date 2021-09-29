@@ -96,20 +96,47 @@ def collate_metrics(keys):
     return used_metrics, metric_idx
 
 
-def get_task_name(md_file):
-    """Get task name from README.md".
+def parse_config_path(path):
+    """Parse model information from the config path.
 
     Args:
-        md_file: Path to .md file.
+        path (str): a path under the configs folder
 
     Returns:
-        Str: Task name.
+        dict: model information with following fields
+            - target: target type
+            - task
+            - algo
+            - dataset
+            - model
     """
-    task_dir = osp.relpath(md_file, MMPOSE_ROOT).rsplit(osp.sep, 3)[0]
-    readme_file = osp.join(task_dir, 'README.md')
-    with open(readme_file, 'r', encoding='utf-8') as f:
-        task = f.readline()[2:].strip()
-    return task
+    info_str = osp.splitext(
+        osp.relpath(path, osp.join(MMPOSE_ROOT, 'configs')))[0]
+
+    target, task, algorithm, dataset, model = (info_str.split(osp.sep) +
+                                               ['None'] * 5)[:5]
+
+    # capitalize target
+    target = target.capitalize()
+    # convert task name to readable version
+    task2readable = {
+        '2d_kpt_sview_rgb_img': '2D Keypoint',
+        '3d_kpt_sview_rgb_img': '3D Keypoint',
+        '3d_kpt_sview_rgb_vid': '3D Keypoint',
+        '3d_mesh_sview_rgb_img': '3D Mesh',
+        None: None
+    }
+    task_readable = task2readable.get(task)
+
+    model_info = {
+        'target': target,
+        'task': task_readable,
+        'algorithm': algorithm,
+        'dataset': dataset,
+        'model': model,
+    }
+
+    return model_info
 
 
 def parse_md(md_file):
@@ -120,32 +147,58 @@ def parse_md(md_file):
     Returns:
         Bool: If the target YAML file is different from the original.
     """
-    collection_name = osp.splitext(osp.basename(md_file))[0]
+    collection_info = parse_config_path(md_file)
+    collection_name = ' '.join([
+        collection_info['target'], collection_info['task'],
+        collection_info['algorithm'], collection_info['dataset']
+    ])
+    # collection_name = osp.splitext(osp.basename(md_file))[0]
     collection = dict(
         Name=collection_name,
         Metadata={'Architecture': []},
         README=osp.relpath(md_file, MMPOSE_ROOT),
-        Paper=[])
+        Paper=None)
     models = []
-    task = get_task_name(md_file)
+
+    # record the publish year of the latest paper
+    paper_year = -1
+
     with open(md_file, 'r') as md:
         lines = md.readlines()
         i = 0
         while i < len(lines):
+
             # parse reference
             if lines[i][:2] == '<!':
-                url, name = re.findall(r'<a href="(.*)">(.*)</a>',
-                                       lines[i + 3])[0]
-                name = name.split('(', 1)[0].strip()
+                details_start = lines.index('<details>\n', i)
+                details_end = lines.index('</details>\n', i)
+                details = ''.join(lines[details_start:details_end + 1])
+                url, name, year = re.findall(
+                    r'<a href="(.*)">(.*?)[ ]*\(.*\'(.*)\).*</a>', details)[0]
+                year = int(year)
+                try:
+                    title = re.findall(r'title.*\{(.*)\}\,', details)[0]
+                except IndexError:
+                    title = None
+
+                paper_type = re.findall(r'\[(.*)\]', lines[i])[0]
+
+                if paper_type == 'DATASET':
+                    # DATASET paper has lower priority
+                    year = 0
+
+                if year > paper_year:
+                    collection['Paper'] = dict(Title=title, URL=url)
+                    paper_year = year
+
                 # get architecture
-                if 'ALGORITHM' in lines[i] or 'BACKBONE' in lines[i]:
+                if paper_type in {'ALGORITHM', 'BACKBONE'}:
                     collection['Metadata']['Architecture'].append(name)
                 # get dataset
-                elif 'DATASET' in lines[i]:
+                elif paper_type == 'DATASET':
                     dataset = name
-                # get paper url
-                collection['Paper'].append(url)
-                i += 4
+
+                i = details_end + 1
 
             # parse table
             elif lines[i][0] == '|' and i + 1 < len(lines) and \
@@ -178,8 +231,11 @@ def parse_md(md_file):
                     right = line[ckpt_idx].index(')', left)
                     ckpt = line[ckpt_idx][left:right]
 
-                    model_name = osp.splitext(config)[0].replace(
-                        'configs/', '', 1).replace('/', '--')
+                    model_info = parse_config_path(config)
+                    model_name = '_'.join(
+                        [model_info['algorithm'], model_info['model']])
+                    task_name = ' '.join(
+                        [model_info['target'], model_info['task']])
 
                     metadata = {'Training Data': dataset}
                     if flops_idx != -1:
@@ -202,7 +258,7 @@ def parse_md(md_file):
                         'Metadata':
                         metadata,
                         'Results': [{
-                            'Task': task,
+                            'Task': task_name,
                             'Dataset': dataset,
                             'Metrics': metrics
                         }],

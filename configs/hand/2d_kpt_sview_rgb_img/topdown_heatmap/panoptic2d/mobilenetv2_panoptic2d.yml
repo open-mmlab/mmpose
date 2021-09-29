@@ -2,22 +2,22 @@ Collections:
 - Metadata:
     Architecture:
     - MobilenetV2
-  Name: mobilenetv2_panoptic2d
+  Name: Hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
+    Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/mobilenetv2_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/mobilenetv2_panoptic_256x256.py
-  In Collection: mobilenetv2_panoptic2d
+  In Collection: Hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
     Training Data: CMU Panoptic HandDB
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--mobilenetv2_panoptic_256x256
+  Name: topdown_heatmap_mobilenetv2_panoptic_256x256
   Results:
   - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.694
       EPE: 9.7
       PCKh@0.7: 0.998
-    Task: 2D Hand Pose Estimation
+    Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/mobilenetv2/mobilenetv2_panoptic_256x256-b733d98c_20210330.pth

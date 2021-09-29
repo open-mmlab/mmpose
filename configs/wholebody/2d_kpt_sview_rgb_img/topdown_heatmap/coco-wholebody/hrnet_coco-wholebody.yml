@@ -2,17 +2,17 @@ Collections:
 - Metadata:
     Architecture:
     - HRNet
-  Name: hrnet_coco-wholebody
+  Name: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+    Title: Deep high-resolution representation learning for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
   README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192.py
-  In Collection: hrnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_256x192
+  Name: topdown_heatmap_hrnet_w32_coco_wholebody_256x192
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -26,13 +26,13 @@ Models:
       Hand AR: 0.546
       Whole AP: 0.553
       Whole AR: 0.626
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192-853765cd_20200918.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_384x288.py
-  In Collection: hrnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w32_coco_wholebody_384x288
+  Name: topdown_heatmap_hrnet_w32_coco_wholebody_384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -46,13 +46,13 @@ Models:
       Hand AR: 0.604
       Whole AP: 0.586
       Whole AR: 0.674
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_384x288-78cacac3_20200922.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_256x192.py
-  In Collection: hrnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_256x192
+  Name: topdown_heatmap_hrnet_w48_coco_wholebody_256x192
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -66,13 +66,13 @@ Models:
       Hand AR: 0.639
       Whole AP: 0.579
       Whole AR: 0.681
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_256x192-643e18cb_20200922.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288.py
-  In Collection: hrnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_w48_coco_wholebody_384x288
+  Name: topdown_heatmap_hrnet_w48_coco_wholebody_384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -86,5 +86,5 @@ Models:
       Hand AR: 0.679
       Whole AP: 0.631
       Whole AR: 0.716
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288-6e061c6a_20200922.pth
