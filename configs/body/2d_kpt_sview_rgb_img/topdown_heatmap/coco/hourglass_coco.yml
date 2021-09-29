@@ -4,10 +4,8 @@ Collections:
     - Hourglass
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: Stacked hourglass networks for human pose estimation
+    Title: Stacked hourglass networks for human pose estimation
     URL: https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hourglass_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hourglass52_coco_256x256.py

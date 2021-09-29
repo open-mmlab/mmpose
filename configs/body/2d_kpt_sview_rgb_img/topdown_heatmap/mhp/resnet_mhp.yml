@@ -5,13 +5,8 @@ Collections:
     - ResNet
   Name: Body 2D Keypoint topdown_heatmap mhp
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
+    Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: Deep residual learning for image recognition
-    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - Title: 'Understanding humans in crowded scenes: Deep nested adversarial learning
-      and a new benchmark for multi-human parsing'
-    URL: https://dl.acm.org/doi/abs/10.1145/3240508.3240509
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/resnet_mhp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/res50_mhp_256x192.py

@@ -5,12 +5,8 @@ Collections:
     - DarkPose
   Name: Hand 2D Keypoint topdown_heatmap rhd2d
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
-    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: Distribution-aware coordinate representation for human pose estimation
+    Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - Title: Learning to Estimate 3D Hand Pose from Single RGB Images
-    URL: https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_dark_rhd2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_dark.py

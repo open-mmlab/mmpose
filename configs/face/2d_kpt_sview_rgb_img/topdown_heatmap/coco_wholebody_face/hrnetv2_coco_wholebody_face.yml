@@ -4,9 +4,7 @@ Collections:
     - HRNetv2
   Name: Face 2D Keypoint topdown_heatmap coco_wholebody_face
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
-    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: Whole-Body Human Pose Estimation in the Wild
+    Title: Whole-Body Human Pose Estimation in the Wild
     URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_coco_wholebody_face.md
 Models:

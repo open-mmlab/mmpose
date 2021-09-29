@@ -4,9 +4,7 @@ Collections:
     - SimpleBaseline2D
   Name: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
-    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: Whole-Body Human Pose Estimation in the Wild
+    Title: Whole-Body Human Pose Estimation in the Wild
     URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
 Models:

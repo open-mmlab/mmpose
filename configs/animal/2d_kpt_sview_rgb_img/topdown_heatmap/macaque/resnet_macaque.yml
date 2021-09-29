@@ -4,9 +4,7 @@ Collections:
     - SimpleBaseline2D
   Name: Animal 2D Keypoint topdown_heatmap macaque
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
-    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: "MacaquePose: A novel \u2018in the wild\u2019macaque monkey pose dataset
+    Title: "MacaquePose: A novel \u2018in the wild\u2019macaque monkey pose dataset
       for markerless motion capture"
     URL: https://www.ncbi.nlm.nih.gov/pmc/articles/pmc7874091/
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/resnet_macaque.md

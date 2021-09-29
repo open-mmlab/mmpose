@@ -4,9 +4,7 @@ Collections:
     - SimpleBaseline2D
   Name: Animal 2D Keypoint topdown_heatmap atrw
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
-    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: 'ATRW: A Benchmark for Amur Tiger Re-identification in the Wild'
+    Title: 'ATRW: A Benchmark for Amur Tiger Re-identification in the Wild'
     URL: https://arxiv.org/abs/1906.05586
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/resnet_atrw.md
 Models:

@@ -4,10 +4,8 @@ Collections:
     - ResNext
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: Aggregated residual transformations for deep neural networks
+    Title: Aggregated residual transformations for deep neural networks
     URL: http://openaccess.thecvf.com/content_cvpr_2017/html/Xie_Aggregated_Residual_Transformations_CVPR_2017_paper.html
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_256x192.py

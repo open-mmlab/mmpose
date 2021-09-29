@@ -4,10 +4,8 @@ Collections:
     - SEResNet
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: Squeeze-and-excitation networks
+    Title: Squeeze-and-excitation networks
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_256x192.py

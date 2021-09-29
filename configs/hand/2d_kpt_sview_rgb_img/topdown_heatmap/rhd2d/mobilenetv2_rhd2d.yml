@@ -4,10 +4,8 @@ Collections:
     - MobilenetV2
   Name: Hand 2D Keypoint topdown_heatmap rhd2d
   Paper:
-  - Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
+    Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
-  - Title: Learning to Estimate 3D Hand Pose from Single RGB Images
-    URL: https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/mobilenetv2_rhd2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/mobilenetv2_rhd2d_256x256.py

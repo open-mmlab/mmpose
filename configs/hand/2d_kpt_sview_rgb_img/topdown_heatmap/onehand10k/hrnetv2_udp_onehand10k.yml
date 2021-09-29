@@ -5,13 +5,9 @@ Collections:
     - UDP
   Name: Hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
-    URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
+    Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
-  - Title: Mask-pose cascaded cnn for 2d hand pose estimation from single color image
-    URL: https://ieeexplore.ieee.org/abstract/document/8529221/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_udp_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_udp.py

@@ -4,10 +4,8 @@ Collections:
     - HRNetv2
   Name: Face 2D Keypoint topdown_heatmap wflw
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: 'Look at boundary: A boundary-aware face alignment algorithm'
-    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Wu_Look_at_Boundary_CVPR_2018_paper.html
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256.py

@@ -5,13 +5,8 @@ Collections:
     - HRNet
   Name: Body 2D Keypoint associative_embedding mhp
   Paper:
-  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
-    URL: https://arxiv.org/abs/1611.05424
-  - Title: Deep high-resolution representation learning for human pose estimation
+    Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - Title: 'Understanding humans in crowded scenes: Deep nested adversarial learning
-      and a new benchmark for multi-human parsing'
-    URL: https://dl.acm.org/doi/abs/10.1145/3240508.3240509
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/mhp/hrnet_mhp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py

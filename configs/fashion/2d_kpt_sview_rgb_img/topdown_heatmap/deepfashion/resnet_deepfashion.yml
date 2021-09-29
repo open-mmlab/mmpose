@@ -5,15 +5,8 @@ Collections:
     - ResNet
   Name: Fashion 2D Keypoint topdown_heatmap deepfashion
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
+    Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: Deep residual learning for image recognition
-    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - Title: 'DeepFashion: Powering Robust Clothes Recognition and Retrieval with Rich
-      Annotations'
-    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Liu_DeepFashion_Powering_Robust_CVPR_2016_paper.html
-  - Title: Fashion Landmark Detection in the Wild
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-46475-6_15
   README: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/resnet_deepfashion.md
 Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_upper_256x192.py

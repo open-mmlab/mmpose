@@ -5,11 +5,7 @@ Collections:
     - ResNet
   Name: Body 2D Keypoint topdown_heatmap crowdpose
   Paper:
-  - Title: Simple baselines for human pose estimation and tracking
-    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - Title: Deep residual learning for image recognition
-    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - Title: 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
+    Title: 'CrowdPose: Efficient Crowded Scenes Pose Estimation and A New Benchmark'
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Li_CrowdPose_Efficient_Crowded_Scenes_Pose_Estimation_and_a_New_Benchmark_CVPR_2019_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
 Models:

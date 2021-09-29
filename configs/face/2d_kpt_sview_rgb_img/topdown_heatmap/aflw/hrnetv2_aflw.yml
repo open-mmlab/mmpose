@@ -4,11 +4,8 @@ Collections:
     - HRNetv2
   Name: Face 2D Keypoint topdown_heatmap aflw
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: 'Annotated facial landmarks in the wild: A large-scale, real-world database
-      for facial landmark localization'
-    URL: https://ieeexplore.ieee.org/abstract/document/6130513/
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_aflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py

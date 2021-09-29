@@ -5,13 +5,9 @@ Collections:
     - HigherHRNet
   Name: Wholebody 2D Keypoint associative_embedding coco-wholebody
   Paper:
-  - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
-    URL: https://arxiv.org/abs/1611.05424
-  - Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
+    Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  - Title: Whole-Body Human Pose Estimation in the Wild
-    URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
   README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w32_coco_wholebody_512x512.py

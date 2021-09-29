@@ -157,36 +157,43 @@ def parse_md(md_file):
         Name=collection_name,
         Metadata={'Architecture': []},
         README=osp.relpath(md_file, MMPOSE_ROOT),
-        Paper=[])
+        Paper=None)
     models = []
+
+    # record the publish year of the latest paper
+    paper_year = -1
 
     with open(md_file, 'r') as md:
         lines = md.readlines()
         i = 0
         while i < len(lines):
+
             # parse reference
             if lines[i][:2] == '<!':
                 details_start = lines.index('<details>\n', i)
                 details_end = lines.index('</details>\n', i)
                 details = ''.join(lines[details_start:details_end + 1])
-                url, name = re.findall(r'<a href="(.*)">(.*)</a>', details)[0]
-
-                # remove "(...)" in name
-                # e.g. "COCO (ECCV'2014)" -> "COCO"
-                name = re.sub(r'[ ]*\(.*\).*', '', name)
-
+                url, name, year = re.findall(
+                    r'<a href="(.*)">(.*?)[ ]*\(.*\'(.*)\).*</a>', details)[0]
+                year = int(year)
                 try:
                     title = re.findall(r'title.*\{(.*)\}\,', details)[0]
                 except IndexError:
                     title = None
+
+                paper_type = re.findall(r'\[(.*)\]', lines[i])[0]
+                if year > paper_year:
+                    collection['Paper'] = dict(Title=title, URL=url)
+                    # DATASET paper has lower priority
+                    paper_year = year if paper_type != 'DATASET' else -1
+
                 # get architecture
-                if 'ALGORITHM' in lines[i] or 'BACKBONE' in lines[i]:
+                if paper_type in {'ALGORITHM', 'BACKBONE'}:
                     collection['Metadata']['Architecture'].append(name)
                 # get dataset
-                elif 'DATASET' in lines[i]:
+                elif paper_type == 'DATASET':
                     dataset = name
-                # get paper url
-                collection['Paper'].append(dict(Title=title, URL=url))
+
                 i = details_end + 1
 
             # parse table

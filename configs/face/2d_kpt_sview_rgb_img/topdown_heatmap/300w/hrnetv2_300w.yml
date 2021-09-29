@@ -4,9 +4,7 @@ Collections:
     - HRNetv2
   Name: Face 2D Keypoint topdown_heatmap 300w
   Paper:
-  - Title: Deep High-Resolution Representation Learning for Visual Recognition
+    Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
-  - Title: '300 faces in-the-wild challenge: Database and results'
-    URL: https://www.sciencedirect.com/science/article/pii/S0262885616000147
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/300w/hrnetv2_300w.md
 Models: []

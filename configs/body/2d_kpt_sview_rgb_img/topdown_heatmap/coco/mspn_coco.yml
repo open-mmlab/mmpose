@@ -4,10 +4,8 @@ Collections:
     - MSPN
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: Rethinking on Multi-Stage Networks for Human Pose Estimation
+    Title: Rethinking on Multi-Stage Networks for Human Pose Estimation
     URL: https://arxiv.org/abs/1901.00148
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn50_coco_256x192.py

@@ -4,11 +4,9 @@ Collections:
     - ShufflenetV1
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
+    Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
       devices'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_256x192.py

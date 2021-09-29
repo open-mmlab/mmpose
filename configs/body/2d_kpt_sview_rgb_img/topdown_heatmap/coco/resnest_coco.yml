@@ -4,10 +4,8 @@ Collections:
     - ResNeSt
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - Title: 'ResNeSt: Split-Attention Networks'
+    Title: 'ResNeSt: Split-Attention Networks'
     URL: https://arxiv.org/abs/2004.08955
-  - Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_256x192.py

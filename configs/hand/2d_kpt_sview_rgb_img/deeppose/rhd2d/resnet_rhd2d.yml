@@ -5,11 +5,7 @@ Collections:
     - ResNet
   Name: Hand 2D Keypoint deeppose rhd2d
   Paper:
-  - Title: 'Deeppose: Human pose estimation via deep neural networks'
-    URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
-  - Title: Deep residual learning for image recognition
-    URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - Title: Learning to Estimate 3D Hand Pose from Single RGB Images
+    Title: Learning to Estimate 3D Hand Pose from Single RGB Images
     URL: https://lmb.informatik.uni-freiburg.de/projects/hand3d/
   README: configs/hand/2d_kpt_sview_rgb_img/deeppose/rhd2d/resnet_rhd2d.md
 Models:

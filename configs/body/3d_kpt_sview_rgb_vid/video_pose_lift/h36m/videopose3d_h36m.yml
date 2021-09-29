@@ -4,12 +4,9 @@ Collections:
     - VideoPose3D
   Name: Body 3D Keypoint video_pose_lift h36m
   Paper:
-  - Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
+    Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
       training
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
-  - Title: 'Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human Sensing
-      in Natural Environments'
-    URL: https://ieeexplore.ieee.org/abstract/document/6682899/
   README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
