@@ -182,10 +182,14 @@ def parse_md(md_file):
                     title = None
 
                 paper_type = re.findall(r'\[(.*)\]', lines[i])[0]
+
+                if paper_type == 'DATASET':
+                    # DATASET paper has lower priority
+                    year = 0
+
                 if year > paper_year:
                     collection['Paper'] = dict(Title=title, URL=url)
-                    # DATASET paper has lower priority
-                    paper_year = year if paper_type != 'DATASET' else -1
+                    paper_year = year
 
                 # get architecture
                 if paper_type in {'ALGORITHM', 'BACKBONE'}:

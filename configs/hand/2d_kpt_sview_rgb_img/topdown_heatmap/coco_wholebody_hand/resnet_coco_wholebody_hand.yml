@@ -5,8 +5,8 @@ Collections:
     - ResNet
   Name: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
   Paper:
-    Title: Whole-Body Human Pose Estimation in the Wild
-    URL: https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/resnet_coco_wholebody_hand.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/res50_coco_wholebody_hand_256x256.py

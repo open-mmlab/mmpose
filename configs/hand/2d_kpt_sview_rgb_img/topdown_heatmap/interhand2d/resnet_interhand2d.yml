@@ -5,9 +5,8 @@ Collections:
     - ResNet
   Name: Hand 2D Keypoint topdown_heatmap interhand2d
   Paper:
-    Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
-      from a Single RGB Image'
-    URL: https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/resnet_interhand2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py

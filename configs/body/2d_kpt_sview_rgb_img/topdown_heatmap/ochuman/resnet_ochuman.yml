@@ -5,8 +5,8 @@ Collections:
     - ResNet
   Name: Body 2D Keypoint topdown_heatmap ochuman
   Paper:
-    Title: 'Pose2seg: Detection free human instance segmentation'
-    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Zhang_Pose2Seg_Detection_Free_Human_Instance_Segmentation_CVPR_2019_paper.html
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/ochuman/resnet_ochuman.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py

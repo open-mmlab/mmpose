@@ -4,8 +4,8 @@ Collections:
     - AlexNet
   Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-    Title: 'Microsoft coco: Common objects in context'
-    URL: https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+    Title: Imagenet classification with deep convolutional neural networks
+    URL: https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py
