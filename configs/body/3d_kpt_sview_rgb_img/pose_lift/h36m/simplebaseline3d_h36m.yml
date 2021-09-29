@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline3D (ICCV'2017)
+    - SimpleBaseline3D
   Name: body 3D Keypoint pose_lift h36m
   Paper:
   - Title: A simple yet effective baseline for 3d human pose estimation
@@ -14,10 +14,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
   In Collection: body 3D Keypoint pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: pose_lift_simplebaseline3d_h36m
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 43.4
       P-MPJPE: 34.3

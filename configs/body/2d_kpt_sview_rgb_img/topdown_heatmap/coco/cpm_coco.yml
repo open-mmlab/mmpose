@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - CPM (CVPR'2016)
+    - CPM
   Name: body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Convolutional pose machines
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_cpm_coco_256x192
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.623
       AP@0.5: 0.859
@@ -28,10 +28,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_384x288.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_cpm_coco_384x288
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.65
       AP@0.5: 0.864

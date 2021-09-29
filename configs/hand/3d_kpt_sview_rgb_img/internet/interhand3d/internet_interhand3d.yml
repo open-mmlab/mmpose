@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - InterNet (ECCV'2020)
-    - ResNet (CVPR'2016)
+    - InterNet
+    - ResNet
   Name: hand 3D Keypoint internet interhand3d
   Paper:
   - Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
@@ -18,10 +18,10 @@ Models:
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   In Collection: hand 3D Keypoint internet interhand3d
   Metadata:
-    Training Data: InterHand2.6M (ECCV'2020)
+    Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
   Results:
-  - Dataset: InterHand2.6M (ECCV'2020)
+  - Dataset: InterHand2.6M
     Metrics:
       APh: 0.99
       MPJPE-all: 11.59
@@ -32,10 +32,10 @@ Models:
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   In Collection: hand 3D Keypoint internet interhand3d
   Metadata:
-    Training Data: InterHand2.6M (ECCV'2020)
+    Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
   Results:
-  - Dataset: InterHand2.6M (ECCV'2020)
+  - Dataset: InterHand2.6M
     Metrics:
       APh: 0.98
       MPJPE-all: 13.16

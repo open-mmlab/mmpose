@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - LiteHRNet (CVPR'2021)
+    - LiteHRNet
   Name: body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_litehrnet_18_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.859
       Mean@0.1: 0.26
@@ -25,10 +25,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_30_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_litehrnet_30_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.869
       Mean@0.1: 0.271

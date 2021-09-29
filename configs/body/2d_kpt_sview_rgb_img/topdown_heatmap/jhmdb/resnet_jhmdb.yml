@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap jhmdb
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub1_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 92.8
       Elb: 93.8
@@ -34,10 +34,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub2_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 94.1
       Elb: 90.6
@@ -52,10 +52,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub3_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 94.7
       Elb: 94.0
@@ -70,10 +70,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 92.5
       Elb: 94.6
@@ -88,10 +88,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 93.8
       Elb: 91.0
@@ -106,10 +106,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 93.8
       Elb: 94.3
@@ -124,10 +124,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub1_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 78.9
       Elb: 74.4
@@ -142,10 +142,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub2_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 78.6
       Elb: 64.5
@@ -160,10 +160,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub3_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 84.2
       Elb: 74.9
@@ -178,10 +178,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 75.0
       Elb: 73.2
@@ -196,10 +196,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 75.5
       Elb: 63.8
@@ -214,10 +214,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
-    Training Data: JHMDB (ICCV'2013)
+    Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
   Results:
-  - Dataset: JHMDB (ICCV'2013)
+  - Dataset: JHMDB
     Metrics:
       Ank: 81.5
       Elb: 72.6

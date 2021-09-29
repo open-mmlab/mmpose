@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - HMR (CVPR'2018)
-    - ResNet (CVPR'2016)
+    - HMR
+    - ResNet
   Name: body 3D Mesh hmr mixed
   Paper:
   - Title: End-to-end Recovery of Human Shape and Pose
@@ -17,10 +17,10 @@ Models:
 - Config: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/res50_mixed_224x224.py
   In Collection: body 3D Mesh hmr mixed
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: hmr_res50_mixed_224x224
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE (P1): 80.75
       MPJPE (P2): 80.35

@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - DeepPose (CVPR'2014)
-    - ResNet (CVPR'2016)
+    - DeepPose
+    - ResNet
   Name: hand 2D Keypoint deeppose panoptic2d
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
@@ -16,10 +16,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/res50_panoptic2d_256x256.py
   In Collection: hand 2D Keypoint deeppose panoptic2d
   Metadata:
-    Training Data: CMU Panoptic HandDB (CVPR'2017)
+    Training Data: CMU Panoptic HandDB
   Name: deeppose_res50_panoptic2d_256x256
   Results:
-  - Dataset: CMU Panoptic HandDB (CVPR'2017)
+  - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.686
       EPE: 9.36

@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNet (CVPR'2019)
+    - HRNet
   Name: body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: Deep high-resolution representation learning for human pose estimation
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_hrnet_w32_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.9
       Mean@0.1: 0.334
@@ -25,10 +25,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w48_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_hrnet_w48_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.901
       Mean@0.1: 0.337

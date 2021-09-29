@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding (NIPS'2017)
-    - ResNet (CVPR'2016)
+    - Associative Embedding
+    - ResNet
   Name: body 2D Keypoint associative_embedding coco
   Paper:
   - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.466
       AP@0.5: 0.742
@@ -31,10 +31,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.479
       AP@0.5: 0.757
@@ -46,10 +46,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.554
       AP@0.5: 0.807
@@ -61,10 +61,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.595
       AP@0.5: 0.829
@@ -76,10 +76,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.503
       AP@0.5: 0.765
@@ -91,10 +91,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.525
       AP@0.5: 0.784
@@ -106,10 +106,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.603
       AP@0.5: 0.831
@@ -121,10 +121,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   In Collection: body 2D Keypoint associative_embedding coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.66
       AP@0.5: 0.86

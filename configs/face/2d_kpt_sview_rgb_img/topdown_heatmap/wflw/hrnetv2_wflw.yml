@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2 (TPAMI'2019)
+    - HRNetv2
   Name: face 2D Keypoint topdown_heatmap wflw
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
@@ -13,10 +13,10 @@ Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256.py
   In Collection: face 2D Keypoint topdown_heatmap wflw
   Metadata:
-    Training Data: WFLW (CVPR'2018)
+    Training Data: WFLW
   Name: topdown_heatmap_hrnetv2_w18_wflw_256x256
   Results:
-  - Dataset: WFLW (CVPR'2018)
+  - Dataset: WFLW
     Metrics:
       NME blur: 4.59
       NME expression: 4.33

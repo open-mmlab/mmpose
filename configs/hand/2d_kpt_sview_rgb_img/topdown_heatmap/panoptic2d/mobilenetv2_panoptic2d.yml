@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - MobilenetV2 (CVPR'2018)
+    - MobilenetV2
   Name: hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
   - Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
@@ -13,10 +13,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/mobilenetv2_panoptic_256x256.py
   In Collection: hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
-    Training Data: CMU Panoptic HandDB (CVPR'2017)
+    Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_mobilenetv2_panoptic_256x256
   Results:
-  - Dataset: CMU Panoptic HandDB (CVPR'2017)
+  - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.694
       EPE: 9.7

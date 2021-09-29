@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - VideoPose3D (CVPR'2019)
+    - VideoPose3D
   Name: body 3D Keypoint video_pose_lift h36m
   Paper:
   - Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
@@ -15,10 +15,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_supervised
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 40.0
       P-MPJPE: 30.1
@@ -27,10 +27,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_81frames_fullconv_supervised.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_81frames_fullconv_supervised
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 38.9
       P-MPJPE: 29.2
@@ -39,10 +39,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 37.6
       P-MPJPE: 28.3
@@ -51,10 +51,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_1frame_fullconv_supervised_cpn_ft.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_1frame_fullconv_supervised_cpn_ft
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 52.9
       P-MPJPE: 41.3
@@ -63,10 +63,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised_cpn_ft
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 47.9
       P-MPJPE: 38.0
@@ -75,10 +75,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 58.1
       N-MPJPE: 54.7
@@ -88,10 +88,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft.py
   In Collection: body 3D Keypoint video_pose_lift h36m
   Metadata:
-    Training Data: Human3.6M (TPAMI'2014)
+    Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft
   Results:
-  - Dataset: Human3.6M (TPAMI'2014)
+  - Dataset: Human3.6M
     Metrics:
       MPJPE: 67.4
       N-MPJPE: 63.2

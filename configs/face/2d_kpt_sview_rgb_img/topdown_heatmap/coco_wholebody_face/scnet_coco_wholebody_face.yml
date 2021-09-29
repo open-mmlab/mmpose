@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - SCNet (CVPR'2020)
+    - SCNet
   Name: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Paper:
   - Title: Improving Convolutional Networks with Self-Calibrated Convolutions
@@ -13,10 +13,10 @@ Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/scnet50_coco_wholebody_face_256x256.py
   In Collection: face 2D Keypoint topdown_heatmap coco_wholebody_face
   Metadata:
-    Training Data: COCO-WholeBody-Face (ECCV'2020)
+    Training Data: COCO-WholeBody-Face
   Name: topdown_heatmap_scnet50_coco_wholebody_face_256x256
   Results:
-  - Dataset: COCO-WholeBody-Face (ECCV'2020)
+  - Dataset: COCO-WholeBody-Face
     Metrics:
       NME: 0.0565
     Task: 2D Keypoint

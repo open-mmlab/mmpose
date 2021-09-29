@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - Hourglass (ECCV'2016)
+    - Hourglass
   Name: hand 2D Keypoint topdown_heatmap coco_wholebody_hand
   Paper:
   - Title: Stacked hourglass networks for human pose estimation
@@ -13,10 +13,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/hourglass52_coco_wholebody_hand_256x256.py
   In Collection: hand 2D Keypoint topdown_heatmap coco_wholebody_hand
   Metadata:
-    Training Data: COCO-WholeBody-Hand (ECCV'2020)
+    Training Data: COCO-WholeBody-Hand
   Name: topdown_heatmap_hourglass52_coco_wholebody_hand_256x256
   Results:
-  - Dataset: COCO-WholeBody-Hand (ECCV'2020)
+  - Dataset: COCO-WholeBody-Hand
     Metrics:
       AUC: 0.835
       EPE: 4.54

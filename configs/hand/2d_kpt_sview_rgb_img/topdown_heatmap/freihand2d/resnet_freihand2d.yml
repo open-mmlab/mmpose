@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: hand 2D Keypoint topdown_heatmap freihand2d
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -17,10 +17,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
   In Collection: hand 2D Keypoint topdown_heatmap freihand2d
   Metadata:
-    Training Data: FreiHand (ICCV'2019)
+    Training Data: FreiHand
   Name: topdown_heatmap_res50_freihand_224x224
   Results:
-  - Dataset: FreiHand (ICCV'2019)
+  - Dataset: FreiHand
     Metrics:
       AUC: 0.868
       EPE: 3.25
@@ -30,10 +30,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py
   In Collection: hand 2D Keypoint topdown_heatmap freihand2d
   Metadata:
-    Training Data: FreiHand (ICCV'2019)
+    Training Data: FreiHand
   Name: topdown_heatmap_res50_freihand_224x224
   Results:
-  - Dataset: FreiHand (ICCV'2019)
+  - Dataset: FreiHand
     Metrics:
       AUC: 0.868
       EPE: 3.27

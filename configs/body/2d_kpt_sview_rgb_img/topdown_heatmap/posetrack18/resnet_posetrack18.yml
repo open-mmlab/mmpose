@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap posetrack18
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap posetrack18
   Metadata:
-    Training Data: PoseTrack18 (CVPR'2018)
+    Training Data: PoseTrack18
   Name: topdown_heatmap_res50_posetrack18_256x192
   Results:
-  - Dataset: PoseTrack18 (CVPR'2018)
+  - Dataset: PoseTrack18
     Metrics:
       Ankl: 74.0
       Elb: 82.3
@@ -34,10 +34,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/res50_posetrack18_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap posetrack18
   Metadata:
-    Training Data: PoseTrack18 (CVPR'2018)
+    Training Data: PoseTrack18
   Name: topdown_heatmap_res50_posetrack18_256x192
   Results:
-  - Dataset: PoseTrack18 (CVPR'2018)
+  - Dataset: PoseTrack18
     Metrics:
       Ankl: 66.4
       Elb: 77.8

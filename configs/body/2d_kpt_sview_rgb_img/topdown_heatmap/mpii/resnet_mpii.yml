@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res50_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_res50_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.882
       Mean@0.1: 0.286
@@ -28,10 +28,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res101_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_res101_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.888
       Mean@0.1: 0.29
@@ -40,10 +40,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res152_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_res152_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.889
       Mean@0.1: 0.303

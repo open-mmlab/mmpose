@@ -1,9 +1,9 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
-    - DarkPose (CVPR'2020)
+    - SimpleBaseline2D
+    - ResNet
+    - DarkPose
   Name: body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -19,10 +19,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.724
       AP@0.5: 0.898
@@ -34,10 +34,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res50_coco_384x288_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.735
       AP@0.5: 0.9
@@ -49,10 +49,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res101_coco_256x192_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.732
       AP@0.5: 0.899
@@ -64,10 +64,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res101_coco_384x288_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.749
       AP@0.5: 0.902
@@ -79,10 +79,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res152_coco_256x192_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.745
       AP@0.5: 0.905
@@ -94,10 +94,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288_dark.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_res152_coco_384x288_dark
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.757
       AP@0.5: 0.909

@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - Associative Embedding (NIPS'2017)
-    - HRNet (CVPR'2019)
+    - Associative Embedding
+    - HRNet
   Name: body 2D Keypoint associative_embedding mhp
   Paper:
   - Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
@@ -17,10 +17,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
   In Collection: body 2D Keypoint associative_embedding mhp
   Metadata:
-    Training Data: MHP (ACM MM'2018)
+    Training Data: MHP
   Name: associative_embedding_hrnet_w48_mhp_512x512
   Results:
-  - Dataset: MHP (ACM MM'2018)
+  - Dataset: MHP
     Metrics:
       AP: 0.583
       AP@0.5: 0.895
@@ -32,10 +32,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_mhp_512x512.py
   In Collection: body 2D Keypoint associative_embedding mhp
   Metadata:
-    Training Data: MHP (ACM MM'2018)
+    Training Data: MHP
   Name: associative_embedding_hrnet_w48_mhp_512x512
   Results:
-  - Dataset: MHP (ACM MM'2018)
+  - Dataset: MHP
     Metrics:
       AP: 0.592
       AP@0.5: 0.898

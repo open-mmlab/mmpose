@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - DeepPose (CVPR'2014)
-    - ResNet (CVPR'2016)
+    - DeepPose
+    - ResNet
   Name: body 2D Keypoint deeppose mpii
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256.py
   In Collection: body 2D Keypoint deeppose mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: deeppose_res50_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.825
       Mean@0.1: 0.174
@@ -28,10 +28,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res101_mpii_256x256.py
   In Collection: body 2D Keypoint deeppose mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: deeppose_res101_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.841
       Mean@0.1: 0.193
@@ -40,10 +40,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res152_mpii_256x256.py
   In Collection: body 2D Keypoint deeppose mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: deeppose_res152_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.85
       Mean@0.1: 0.198

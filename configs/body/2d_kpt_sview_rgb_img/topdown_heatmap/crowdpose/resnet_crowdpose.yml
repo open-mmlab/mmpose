@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap crowdpose
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res50_crowdpose_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
-    Training Data: CrowdPose (CVPR'2019)
+    Training Data: CrowdPose
   Name: topdown_heatmap_res50_crowdpose_256x192
   Results:
-  - Dataset: CrowdPose (CVPR'2019)
+  - Dataset: CrowdPose
     Metrics:
       AP: 0.637
       AP (E): 0.739
@@ -32,10 +32,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
-    Training Data: CrowdPose (CVPR'2019)
+    Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_256x192
   Results:
-  - Dataset: CrowdPose (CVPR'2019)
+  - Dataset: CrowdPose
     Metrics:
       AP: 0.647
       AP (E): 0.744
@@ -48,10 +48,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_320x256.py
   In Collection: body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
-    Training Data: CrowdPose (CVPR'2019)
+    Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_320x256
   Results:
-  - Dataset: CrowdPose (CVPR'2019)
+  - Dataset: CrowdPose
     Metrics:
       AP: 0.661
       AP (E): 0.759
@@ -64,10 +64,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res152_crowdpose_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
-    Training Data: CrowdPose (CVPR'2019)
+    Training Data: CrowdPose
   Name: topdown_heatmap_res152_crowdpose_256x192
   Results:
-  - Dataset: CrowdPose (CVPR'2019)
+  - Dataset: CrowdPose
     Metrics:
       AP: 0.656
       AP (E): 0.754

@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/res50_panoptic_256x256.py
   In Collection: hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
-    Training Data: CMU Panoptic HandDB (CVPR'2017)
+    Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_res50_panoptic_256x256
   Results:
-  - Dataset: CMU Panoptic HandDB (CVPR'2017)
+  - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.713
       EPE: 9.0

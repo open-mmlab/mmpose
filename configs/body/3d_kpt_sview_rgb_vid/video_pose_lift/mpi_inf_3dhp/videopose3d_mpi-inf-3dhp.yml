@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - VideoPose3D (CVPR'2019)
+    - VideoPose3D
   Name: body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Paper:
   - Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
@@ -14,10 +14,10 @@ Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
   In Collection: body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Metadata:
-    Training Data: MPI-INF-3DHP (3DV'2017)
+    Training Data: MPI-INF-3DHP
   Name: video_pose_lift_videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
   Results:
-  - Dataset: MPI-INF-3DHP (3DV'2017)
+  - Dataset: MPI-INF-3DHP
     Metrics:
       3DAUC: 63.1
       3DPCK: 94.1

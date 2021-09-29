@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
+    - SimpleBaseline2D
   Name: animal 2D Keypoint topdown_heatmap fly
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -13,10 +13,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res50_fly_192x192.py
   In Collection: animal 2D Keypoint topdown_heatmap fly
   Metadata:
-    Training Data: Vinegar Fly (Nature Methods'2019)
+    Training Data: Vinegar Fly
   Name: topdown_heatmap_res50_fly_192x192
   Results:
-  - Dataset: Vinegar Fly (Nature Methods'2019)
+  - Dataset: Vinegar Fly
     Metrics:
       AUC: 0.91
       EPE: 2.0
@@ -26,10 +26,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res101_fly_192x192.py
   In Collection: animal 2D Keypoint topdown_heatmap fly
   Metadata:
-    Training Data: Vinegar Fly (Nature Methods'2019)
+    Training Data: Vinegar Fly
   Name: topdown_heatmap_res101_fly_192x192
   Results:
-  - Dataset: Vinegar Fly (Nature Methods'2019)
+  - Dataset: Vinegar Fly
     Metrics:
       AUC: 0.912
       EPE: 1.95
@@ -39,10 +39,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py
   In Collection: animal 2D Keypoint topdown_heatmap fly
   Metadata:
-    Training Data: Vinegar Fly (Nature Methods'2019)
+    Training Data: Vinegar Fly
   Name: topdown_heatmap_res152_fly_192x192
   Results:
-  - Dataset: Vinegar Fly (Nature Methods'2019)
+  - Dataset: Vinegar Fly
     Metrics:
       AUC: 0.917
       EPE: 1.78

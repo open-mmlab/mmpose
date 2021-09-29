@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2 (TPAMI'2019)
+    - HRNetv2
   Name: hand 2D Keypoint topdown_heatmap rhd2d
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
@@ -13,10 +13,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256.py
   In Collection: hand 2D Keypoint topdown_heatmap rhd2d
   Metadata:
-    Training Data: RHD (ICCV'2017)
+    Training Data: RHD
   Name: topdown_heatmap_hrnetv2_w18_rhd2d_256x256
   Results:
-  - Dataset: RHD (ICCV'2017)
+  - Dataset: RHD
     Metrics:
       AUC: 0.902
       EPE: 2.21

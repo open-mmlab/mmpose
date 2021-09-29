@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
+    - SimpleBaseline2D
   Name: animal 2D Keypoint topdown_heatmap animalpose
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -13,10 +13,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res50_animalpose_256x256.py
   In Collection: animal 2D Keypoint topdown_heatmap animalpose
   Metadata:
-    Training Data: Animal-Pose (ICCV'2019)
+    Training Data: Animal-Pose
   Name: topdown_heatmap_res50_animalpose_256x256
   Results:
-  - Dataset: Animal-Pose (ICCV'2019)
+  - Dataset: Animal-Pose
     Metrics:
       AP: 0.688
       AP@0.5: 0.945
@@ -28,10 +28,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res101_animalpose_256x256.py
   In Collection: animal 2D Keypoint topdown_heatmap animalpose
   Metadata:
-    Training Data: Animal-Pose (ICCV'2019)
+    Training Data: Animal-Pose
   Name: topdown_heatmap_res101_animalpose_256x256
   Results:
-  - Dataset: Animal-Pose (ICCV'2019)
+  - Dataset: Animal-Pose
     Metrics:
       AP: 0.696
       AP@0.5: 0.948
@@ -43,10 +43,10 @@ Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res152_animalpose_256x256.py
   In Collection: animal 2D Keypoint topdown_heatmap animalpose
   Metadata:
-    Training Data: Animal-Pose (ICCV'2019)
+    Training Data: Animal-Pose
   Name: topdown_heatmap_res152_animalpose_256x256
   Results:
-  - Dataset: Animal-Pose (ICCV'2019)
+  - Dataset: Animal-Pose
     Metrics:
       AP: 0.709
       AP@0.5: 0.948

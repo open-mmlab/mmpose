@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - AlexNet (NeurIPS'2012)
+    - AlexNet
   Name: body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Imagenet classification with deep convolutional neural networks
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_alexnet_coco_256x192
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.397
       AP@0.5: 0.758

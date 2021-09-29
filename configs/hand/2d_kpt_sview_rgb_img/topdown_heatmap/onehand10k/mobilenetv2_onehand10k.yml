@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - MobilenetV2 (CVPR'2018)
+    - MobilenetV2
   Name: hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
   - Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
@@ -13,10 +13,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/mobilenetv2_onehand10k_256x256.py
   In Collection: hand 2D Keypoint topdown_heatmap onehand10k
   Metadata:
-    Training Data: OneHand10K (TCSVT'2019)
+    Training Data: OneHand10K
   Name: topdown_heatmap_mobilenetv2_onehand10k_256x256
   Results:
-  - Dataset: OneHand10K (TCSVT'2019)
+  - Dataset: OneHand10K
     Metrics:
       AUC: 0.537
       EPE: 28.6

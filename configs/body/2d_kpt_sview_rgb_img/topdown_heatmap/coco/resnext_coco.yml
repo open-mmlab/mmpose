@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - ResNext (CVPR'2017)
+    - ResNext
   Name: body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Aggregated residual transformations for deep neural networks
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_256x192
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.714
       AP@0.5: 0.898
@@ -28,10 +28,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_384x288.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_384x288
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.724
       AP@0.5: 0.899
@@ -43,10 +43,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_256x192
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.726
       AP@0.5: 0.9
@@ -58,10 +58,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_384x288.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_384x288
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.743
       AP@0.5: 0.903
@@ -73,10 +73,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_256x192
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.73
       AP@0.5: 0.904
@@ -88,10 +88,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_384x288.py
   In Collection: body 2D Keypoint topdown_heatmap coco
   Metadata:
-    Training Data: COCO (ECCV'2014)
+    Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_384x288
   Results:
-  - Dataset: COCO (ECCV'2014)
+  - Dataset: COCO
     Metrics:
       AP: 0.742
       AP@0.5: 0.902

@@ -1,9 +1,9 @@
 Collections:
 - Metadata:
     Architecture:
-    - DeepPose (CVPR'2014)
-    - ResNet (CVPR'2016)
-    - Wingloss (CVPR'2018)
+    - DeepPose
+    - ResNet
+    - Wingloss
   Name: face 2D Keypoint deeppose wflw
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
@@ -20,10 +20,10 @@ Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
   In Collection: face 2D Keypoint deeppose wflw
   Metadata:
-    Training Data: WFLW (CVPR'2018)
+    Training Data: WFLW
   Name: deeppose_res50_wflw_256x256_wingloss
   Results:
-  - Dataset: WFLW (CVPR'2018)
+  - Dataset: WFLW
     Metrics:
       NME blur: 5.26
       NME expression: 5.07

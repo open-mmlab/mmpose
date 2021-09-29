@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap mhp
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -17,10 +17,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/res50_mhp_256x192.py
   In Collection: body 2D Keypoint topdown_heatmap mhp
   Metadata:
-    Training Data: MHP (ACM MM'2018)
+    Training Data: MHP
   Name: topdown_heatmap_res50_mhp_256x192
   Results:
-  - Dataset: MHP (ACM MM'2018)
+  - Dataset: MHP
     Metrics:
       AP: 0.583
       AP@0.5: 0.897

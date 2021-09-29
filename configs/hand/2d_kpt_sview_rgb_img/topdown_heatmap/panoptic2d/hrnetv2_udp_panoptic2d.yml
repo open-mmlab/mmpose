@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - HRNetv2 (TPAMI'2019)
-    - UDP (CVPR'2020)
+    - HRNetv2
+    - UDP
   Name: hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
@@ -17,10 +17,10 @@ Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
   In Collection: hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
-    Training Data: CMU Panoptic HandDB (CVPR'2017)
+    Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256_udp
   Results:
-  - Dataset: CMU Panoptic HandDB (CVPR'2017)
+  - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.742
       EPE: 7.84

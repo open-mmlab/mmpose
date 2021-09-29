@@ -168,6 +168,11 @@ def parse_md(md_file):
                 details_end = lines.index('</details>\n', i)
                 details = ''.join(lines[details_start:details_end + 1])
                 url, name = re.findall(r'<a href="(.*)">(.*)</a>', details)[0]
+
+                # remove "(...)" in name
+                # e.g. "COCO (ECCV'2014)" -> "COCO"
+                name = re.sub(r'[ ]*\(.*\).*', '', name)
+
                 try:
                     title = re.findall(r'title.*\{(.*)\}\,', details)[0]
                 except IndexError:

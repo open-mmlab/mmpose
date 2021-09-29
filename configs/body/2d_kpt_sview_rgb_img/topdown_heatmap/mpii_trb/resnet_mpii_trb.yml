@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: body 2D Keypoint topdown_heatmap mpii_trb
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -16,10 +16,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB (ICCV'2019)
+    Training Data: MPII-TRB
   Name: topdown_heatmap_res50_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB (ICCV'2019)
+  - Dataset: MPII-TRB
     Metrics:
       Contour Acc: 0.858
       Mean Acc: 0.868
@@ -29,10 +29,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB (ICCV'2019)
+    Training Data: MPII-TRB
   Name: topdown_heatmap_res101_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB (ICCV'2019)
+  - Dataset: MPII-TRB
     Metrics:
       Contour Acc: 0.863
       Mean Acc: 0.873
@@ -42,10 +42,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
-    Training Data: MPII-TRB (ICCV'2019)
+    Training Data: MPII-TRB
   Name: topdown_heatmap_res152_mpii_trb_256x256
   Results:
-  - Dataset: MPII-TRB (ICCV'2019)
+  - Dataset: MPII-TRB
     Metrics:
       Contour Acc: 0.868
       Mean Acc: 0.879

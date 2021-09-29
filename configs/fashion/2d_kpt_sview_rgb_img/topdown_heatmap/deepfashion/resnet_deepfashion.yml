@@ -1,8 +1,8 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
-    - ResNet (CVPR'2016)
+    - SimpleBaseline2D
+    - ResNet
   Name: fashion 2D Keypoint topdown_heatmap deepfashion
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -19,10 +19,10 @@ Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_upper_256x192.py
   In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
-    Training Data: DeepFashion (ECCV'2016)
+    Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_upper_256x192
   Results:
-  - Dataset: DeepFashion (ECCV'2016)
+  - Dataset: DeepFashion
     Metrics:
       AUC: 0.578
       EPE: 16.8
@@ -32,10 +32,10 @@ Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_lower_256x192.py
   In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
-    Training Data: DeepFashion (ECCV'2016)
+    Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_lower_256x192
   Results:
-  - Dataset: DeepFashion (ECCV'2016)
+  - Dataset: DeepFashion
     Metrics:
       AUC: 0.744
       EPE: 10.5
@@ -45,10 +45,10 @@ Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_full_256x192.py
   In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
-    Training Data: DeepFashion (ECCV'2016)
+    Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_full_256x192
   Results:
-  - Dataset: DeepFashion (ECCV'2016)
+  - Dataset: DeepFashion
     Metrics:
       AUC: 0.664
       EPE: 12.7

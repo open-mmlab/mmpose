@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - ResNetV1D (CVPR'2019)
+    - ResNetV1D
   Name: body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: Bag of tricks for image classification with convolutional neural networks
@@ -13,10 +13,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d50_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_resnetv1d50_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.881
       Mean@0.1: 0.29
@@ -25,10 +25,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d101_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_resnetv1d101_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.883
       Mean@0.1: 0.295
@@ -37,10 +37,10 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnetv1d152_mpii_256x256.py
   In Collection: body 2D Keypoint topdown_heatmap mpii
   Metadata:
-    Training Data: MPII (CVPR'2014)
+    Training Data: MPII
   Name: topdown_heatmap_resnetv1d152_mpii_256x256
   Results:
-  - Dataset: MPII (CVPR'2014)
+  - Dataset: MPII
     Metrics:
       Mean: 0.888
       Mean@0.1: 0.3

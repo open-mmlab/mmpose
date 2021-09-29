@@ -1,7 +1,7 @@
 Collections:
 - Metadata:
     Architecture:
-    - SimpleBaseline2D (ECCV'2018)
+    - SimpleBaseline2D
   Name: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
@@ -13,10 +13,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_256x192.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_256x192
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.652
       Body AR: 0.739
@@ -33,10 +33,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_384x288.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_384x288
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.666
       Body AR: 0.747
@@ -53,10 +53,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_256x192.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_256x192
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.67
       Body AR: 0.754
@@ -73,10 +73,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_384x288.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_384x288
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.692
       Body AR: 0.77
@@ -93,10 +93,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_256x192.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_256x192
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.682
       Body AR: 0.764
@@ -113,10 +113,10 @@ Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_384x288.py
   In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
-    Training Data: COCO-WholeBody (ECCV'2020)
+    Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_384x288
   Results:
-  - Dataset: COCO-WholeBody (ECCV'2020)
+  - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.703
       Body AR: 0.78
