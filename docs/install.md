@@ -47,7 +47,10 @@ b. Install PyTorch and torchvision following the [official instructions](https:/
 conda install pytorch torchvision -c pytorch
 ```
 
-Note: Make sure that your compilation CUDA version and runtime CUDA version match.
+:::{note}
+Make sure that your compilation CUDA version and runtime CUDA version match.
+:::
+
 You can check the supported CUDA version for precompiled packages on the [PyTorch website](https://pytorch.org/).
 
 `E.g.1` If you have CUDA 10.2 installed under `/usr/local/cuda` and would like to install PyTorch 1.8.0,
@@ -121,7 +124,7 @@ d. Install optional modules
 - [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (to run 3d mesh demos)
 - [smplx](https://github.com/vchoutas/smplx) (to run 3d mesh demos)
 
-Note:
+:::{note}
 
 1. The git commit id will be written to the version number with step c, e.g. 0.6.0+2e7045c. The version will also be saved in trained models.
    It is recommended that you run step d each time you pull some updates from github. If C++/CUDA codes are modified, then this step is compulsory.
@@ -137,6 +140,7 @@ Note:
    To use optional dependencies like `smplx`, either install them with `pip install -r requirements/optional.txt`
    or specify desired extras when calling `pip` (e.g. `pip install -v -e .[optional]`,
    valid keys for the `[optional]` field are `all`, `tests`, `build`, and `optional`) like `pip install -v -e .[tests,build]`.
+:::
 
 ## Install with CPU only
 
