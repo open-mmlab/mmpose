@@ -2,17 +2,17 @@ Collections:
 - Metadata:
     Architecture:
     - SimpleBaseline2D
-  Name: resnet_coco-wholebody
+  Name: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_256x192.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res50_coco_wholebody_256x192
+  Name: topdown_heatmap_res50_coco_wholebody_256x192
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -26,13 +26,13 @@ Models:
       Hand AR: 0.584
       Whole AP: 0.457
       Whole AR: 0.578
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_256x192-9e37ed88_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_384x288.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res50_coco_wholebody_384x288
+  Name: topdown_heatmap_res50_coco_wholebody_384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -46,13 +46,13 @@ Models:
       Hand AR: 0.647
       Whole AP: 0.573
       Whole AR: 0.671
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_384x288-ce11e294_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_256x192.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res101_coco_wholebody_256x192
+  Name: topdown_heatmap_res101_coco_wholebody_256x192
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -66,13 +66,13 @@ Models:
       Hand AR: 0.589
       Whole AP: 0.533
       Whole AR: 0.647
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_256x192-7325f982_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_384x288.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res101_coco_wholebody_384x288
+  Name: topdown_heatmap_res101_coco_wholebody_384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -86,13 +86,13 @@ Models:
       Hand AR: 0.658
       Whole AP: 0.597
       Whole AR: 0.692
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_384x288-6c137b9a_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_256x192.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res152_coco_wholebody_256x192
+  Name: topdown_heatmap_res152_coco_wholebody_256x192
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -106,13 +106,13 @@ Models:
       Hand AR: 0.606
       Whole AP: 0.548
       Whole AR: 0.661
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_256x192-5de8ae23_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_384x288.py
-  In Collection: resnet_coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--res152_coco_wholebody_384x288
+  Name: topdown_heatmap_res152_coco_wholebody_384x288
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -126,5 +126,5 @@ Models:
       Hand AR: 0.667
       Whole AP: 0.61
       Whole AR: 0.705
-    Task: 2D Human Whole-Body Pose Estimation
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_384x288-eab8caa8_20201004.pth

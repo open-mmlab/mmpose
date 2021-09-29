@@ -2,17 +2,17 @@ Collections:
 - Metadata:
     Architecture:
     - ResNeSt
-  Name: resnest_coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - https://arxiv.org/abs/2004.08955
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+    Title: 'ResNeSt: Split-Attention Networks'
+    URL: https://arxiv.org/abs/2004.08955
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_256x192.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest50_coco_256x192
+  Name: topdown_heatmap_resnest50_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -21,13 +21,13 @@ Models:
       AP@0.75: 0.802
       AR: 0.776
       AR@0.5: 0.938
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_256x192-6e65eece_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_384x288.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest50_coco_384x288
+  Name: topdown_heatmap_resnest50_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -36,13 +36,13 @@ Models:
       AP@0.75: 0.811
       AR: 0.789
       AR@0.5: 0.938
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_384x288-dcd20436_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_256x192.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest101_coco_256x192
+  Name: topdown_heatmap_resnest101_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -51,13 +51,13 @@ Models:
       AP@0.75: 0.807
       AR: 0.781
       AR@0.5: 0.939
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_256x192-2ffcdc9d_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_384x288.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest101_coco_384x288
+  Name: topdown_heatmap_resnest101_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -66,13 +66,13 @@ Models:
       AP@0.75: 0.82
       AR: 0.798
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_384x288-80660658_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_256x192.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest200_coco_256x192
+  Name: topdown_heatmap_resnest200_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -81,13 +81,13 @@ Models:
       AP@0.75: 0.812
       AR: 0.787
       AR@0.5: 0.942
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_256x192-db007a48_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_384x288.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest200_coco_384x288
+  Name: topdown_heatmap_resnest200_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -96,13 +96,13 @@ Models:
       AP@0.75: 0.827
       AR: 0.807
       AR@0.5: 0.945
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_384x288-b5bb76cb_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_256x192.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest269_coco_256x192
+  Name: topdown_heatmap_resnest269_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -111,13 +111,13 @@ Models:
       AP@0.75: 0.819
       AR: 0.793
       AR@0.5: 0.945
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest269_coco_256x192-2a7882ac_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_384x288.py
-  In Collection: resnest_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest269_coco_384x288
+  Name: topdown_heatmap_resnest269_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -126,5 +126,5 @@ Models:
       AP@0.75: 0.828
       AR: 0.806
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest269_coco_384x288-b142b9fb_20210517.pth

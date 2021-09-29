@@ -3,18 +3,17 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: resnet_mhp
+  Name: Body 2D Keypoint topdown_heatmap mhp
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://dl.acm.org/doi/abs/10.1145/3240508.3240509
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/resnet_mhp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/res50_mhp_256x192.py
-  In Collection: resnet_mhp
+  In Collection: Body 2D Keypoint topdown_heatmap mhp
   Metadata:
     Training Data: MHP
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mhp--res50_mhp_256x192
+  Name: topdown_heatmap_res50_mhp_256x192
   Results:
   - Dataset: MHP
     Metrics:
@@ -23,5 +22,5 @@ Models:
       AP@0.75: 0.669
       AR: 0.636
       AR@0.5: 0.918
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mhp_256x192-28c5b818_20201229.pth

@@ -3,18 +3,17 @@ Collections:
     Architecture:
     - HMR
     - ResNet
-  Name: resnet_mixed
+  Name: Body 3D Mesh hmr mixed
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://ieeexplore.ieee.org/abstract/document/6682899/
+    Title: End-to-end Recovery of Human Shape and Pose
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
   README: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.md
 Models:
-- Config: configs/body/3d_mesh_sview_rgb_img/hmr/res50_mixed_224x224.py
-  In Collection: resnet_mixed
+- Config: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/res50_mixed_224x224.py
+  In Collection: Body 3D Mesh hmr mixed
   Metadata:
     Training Data: Human3.6M
-  Name: body--3d_mesh_sview_rgb_img--hmr--res50_mixed_224x224
+  Name: hmr_res50_mixed_224x224
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -22,5 +21,5 @@ Models:
       MPJPE (P2): 80.35
       MPJPE-PA (P1): 55.08
       MPJPE-PA (P2): 52.6
-    Task: Human Body 3D Mesh Recovery
+    Task: Body 3D Mesh
   Weights: https://download.openmmlab.com/mmpose/mesh/hmr/hmr_mesh_224x224-c21e8229_20201015.pth

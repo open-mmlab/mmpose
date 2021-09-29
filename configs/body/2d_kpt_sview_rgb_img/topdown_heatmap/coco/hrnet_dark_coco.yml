@@ -3,18 +3,17 @@ Collections:
     Architecture:
     - HRNet
     - DarkPose
-  Name: hrnet_dark_coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+    Title: Distribution-aware coordinate representation for human pose estimation
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_dark.py
-  In Collection: hrnet_dark_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_256x192_dark
+  Name: topdown_heatmap_hrnet_w32_coco_256x192_dark
   Results:
   - Dataset: COCO
     Metrics:
@@ -23,13 +22,13 @@ Models:
       AP@0.75: 0.823
       AR: 0.808
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_dark-07f147eb_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_384x288_dark.py
-  In Collection: hrnet_dark_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w32_coco_384x288_dark
+  Name: topdown_heatmap_hrnet_w32_coco_384x288_dark
   Results:
   - Dataset: COCO
     Metrics:
@@ -38,13 +37,13 @@ Models:
       AP@0.75: 0.831
       AR: 0.815
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark-307dafc2_20210203.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192_dark.py
-  In Collection: hrnet_dark_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_256x192_dark
+  Name: topdown_heatmap_hrnet_w48_coco_256x192_dark
   Results:
   - Dataset: COCO
     Metrics:
@@ -53,13 +52,13 @@ Models:
       AP@0.75: 0.83
       AR: 0.814
       AR@0.5: 0.943
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_384x288_dark.py
-  In Collection: hrnet_dark_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_w48_coco_384x288_dark
+  Name: topdown_heatmap_hrnet_w48_coco_384x288_dark
   Results:
   - Dataset: COCO
     Metrics:
@@ -68,5 +67,5 @@ Models:
       AP@0.75: 0.836
       AR: 0.82
       AR@0.5: 0.946
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288_dark-e881a4b6_20210203.pth

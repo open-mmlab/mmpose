@@ -2,17 +2,18 @@ Collections:
 - Metadata:
     Architecture:
     - ShufflenetV1
-  Name: shufflenetv1_coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+    Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
+      devices'
+    URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_256x192.py
-  In Collection: shufflenetv1_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv1_coco_256x192
+  Name: topdown_heatmap_shufflenetv1_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -21,13 +22,13 @@ Models:
       AP@0.75: 0.65
       AR: 0.651
       AR@0.5: 0.894
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv1/shufflenetv1_coco_256x192-353bc02c_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_384x288.py
-  In Collection: shufflenetv1_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv1_coco_384x288
+  Name: topdown_heatmap_shufflenetv1_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -36,5 +37,5 @@ Models:
       AP@0.75: 0.685
       AR: 0.684
       AR@0.5: 0.901
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv1/shufflenetv1_coco_384x288-b2930b24_20200804.pth

@@ -3,18 +3,18 @@ Collections:
     Architecture:
     - InterNet
     - ResNet
-  Name: internet_interhand3d
+  Name: Hand 3D Keypoint internet interhand3d
   Paper:
-  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+    Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
+      from a Single RGB Image'
+    URL: https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
   README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
 Models:
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
-  In Collection: internet_interhand3d
+  In Collection: Hand 3D Keypoint internet interhand3d
   Metadata:
     Training Data: InterHand2.6M
-  Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+  Name: internet_res50_interhand3d_all_256x256
   Results:
   - Dataset: InterHand2.6M
     Metrics:
@@ -22,13 +22,13 @@ Models:
       MPJPE-all: 11.59
       MPJPE-interacting: 13.4
       MPJPE-single: 9.47
-    Task: 3D Hand Pose Estimation
+    Task: Hand 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
-  In Collection: internet_interhand3d
+  In Collection: Hand 3D Keypoint internet interhand3d
   Metadata:
     Training Data: InterHand2.6M
-  Name: hand--3d_kpt_sview_rgb_img--internet--interhand3d--res50_interhand3d_all_256x256
+  Name: internet_res50_interhand3d_all_256x256
   Results:
   - Dataset: InterHand2.6M
     Metrics:
@@ -36,5 +36,5 @@ Models:
       MPJPE-all: 13.16
       MPJPE-interacting: 15.23
       MPJPE-single: 11.22
-    Task: 3D Hand Pose Estimation
+    Task: Hand 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth

@@ -2,17 +2,17 @@ Collections:
 - Metadata:
     Architecture:
     - ResNetV1D
-  Name: resnetv1d_coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
-  - http://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html
-  - https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48
+    Title: Bag of tricks for image classification with convolutional neural networks
+    URL: http://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_256x192.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d50_coco_256x192
+  Name: topdown_heatmap_resnetv1d50_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -21,13 +21,13 @@ Models:
       AP@0.75: 0.799
       AR: 0.777
       AR@0.5: 0.933
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_256x192-a243b840_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_384x288.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d50_coco_384x288
+  Name: topdown_heatmap_resnetv1d50_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -36,13 +36,13 @@ Models:
       AP@0.75: 0.799
       AR: 0.78
       AR@0.5: 0.934
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_384x288-01f3fbb9_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_256x192.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_256x192
+  Name: topdown_heatmap_resnetv1d101_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -51,13 +51,13 @@ Models:
       AP@0.75: 0.809
       AR: 0.786
       AR@0.5: 0.938
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_256x192-5bd08cab_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_384x288.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d101_coco_384x288
+  Name: topdown_heatmap_resnetv1d101_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -66,13 +66,13 @@ Models:
       AP@0.75: 0.816
       AR: 0.799
       AR@0.5: 0.939
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-5f9e421d_20200730.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_256x192.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_256x192
+  Name: topdown_heatmap_resnetv1d152_coco_256x192
   Results:
   - Dataset: COCO
     Metrics:
@@ -81,13 +81,13 @@ Models:
       AP@0.75: 0.812
       AR: 0.791
       AR@0.5: 0.94
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192-c4df51dc_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_384x288.py
-  In Collection: resnetv1d_coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnetv1d152_coco_384x288
+  Name: topdown_heatmap_resnetv1d152_coco_384x288
   Results:
   - Dataset: COCO
     Metrics:
@@ -96,5 +96,5 @@ Models:
       AP@0.75: 0.821
       AR: 0.802
       AR@0.5: 0.944
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-626c622d_20200730.pth

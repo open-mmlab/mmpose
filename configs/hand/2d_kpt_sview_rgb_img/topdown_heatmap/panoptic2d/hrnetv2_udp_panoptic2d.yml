@@ -3,23 +3,23 @@ Collections:
     Architecture:
     - HRNetv2
     - UDP
-  Name: hrnetv2_udp_panoptic2d
+  Name: Hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
-  - https://ieeexplore.ieee.org/abstract/document/9052469/
-  - http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2017/html/Simon_Hand_Keypoint_Detection_CVPR_2017_paper.html
+    Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
+      Human Pose Estimation'
+    URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_udp_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
-  In Collection: hrnetv2_udp_panoptic2d
+  In Collection: Hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
     Training Data: CMU Panoptic HandDB
-  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_w18_panoptic_256x256_udp
+  Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256_udp
   Results:
   - Dataset: CMU Panoptic HandDB
     Metrics:
       AUC: 0.742
       EPE: 7.84
       PCKh@0.7: 0.998
-    Task: 2D Hand Pose Estimation
+    Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_panoptic_256x256_udp-f9e15948_20210330.pth

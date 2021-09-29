@@ -3,18 +3,17 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: resnet_jhmdb
+  Name: Body 2D Keypoint topdown_heatmap jhmdb
   Paper:
-  - http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  - http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
-  - https://www.cv-foundation.org/openaccess/content_iccv_2013/html/Jhuang_Towards_Understanding_Action_2013_ICCV_paper.html
+    Title: Simple baselines for human pose estimation and tracking
+    URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub1_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub1_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -26,13 +25,13 @@ Models:
       Mean: 96.1
       Sho: 98.0
       Wri: 91.3
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub2_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub2_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -44,13 +43,13 @@ Models:
       Mean: 95.0
       Sho: 97.1
       Wri: 87.0
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub3_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub3_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -62,13 +61,13 @@ Models:
       Mean: 96.7
       Sho: 97.9
       Wri: 91.6
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub1_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -80,13 +79,13 @@ Models:
       Mean: 96.1
       Sho: 98.5
       Wri: 92.0
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub2_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -98,13 +97,13 @@ Models:
       Mean: 95.2
       Sho: 97.8
       Wri: 87.0
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub3_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -116,13 +115,13 @@ Models:
       Mean: 96.7
       Sho: 98.4
       Wri: 92.1
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub1_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub1_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -134,13 +133,13 @@ Models:
       Mean: 81.9
       Sho: 83.2
       Wri: 72.7
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub2_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub2_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -152,13 +151,13 @@ Models:
       Mean: 75.5
       Sho: 74.9
       Wri: 62.5
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_jhmdb_sub3_256x256
+  Name: topdown_heatmap_res50_jhmdb_sub3_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -170,13 +169,13 @@ Models:
       Mean: 82.9
       Sho: 82.2
       Wri: 70.7
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub1_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -188,13 +187,13 @@ Models:
       Mean: 79.2
       Sho: 80.6
       Wri: 70.5
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub2_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -206,13 +205,13 @@ Models:
       Mean: 73.7
       Sho: 73.6
       Wri: 60.5
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
-  In Collection: resnet_jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--res50_2deconv_jhmdb_sub3_256x256
+  Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -224,5 +223,5 @@ Models:
       Mean: 81.2
       Sho: 81.2
       Wri: 67.9
-    Task: Image-based Human Body 2D Pose Estimation
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth
