@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - ResNetV1D
-  Name: body 2D Keypoint topdown_heatmap coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Bag of tricks for image classification with convolutional neural networks
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d50_coco_256x192
@@ -23,10 +23,10 @@ Models:
       AP@0.75: 0.799
       AR: 0.777
       AR@0.5: 0.933
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_256x192-a243b840_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d50_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d50_coco_384x288
@@ -38,10 +38,10 @@ Models:
       AP@0.75: 0.799
       AR: 0.78
       AR@0.5: 0.934
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d50_coco_384x288-01f3fbb9_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d101_coco_256x192
@@ -53,10 +53,10 @@ Models:
       AP@0.75: 0.809
       AR: 0.786
       AR@0.5: 0.938
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_256x192-5bd08cab_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d101_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d101_coco_384x288
@@ -68,10 +68,10 @@ Models:
       AP@0.75: 0.816
       AR: 0.799
       AR@0.5: 0.939
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d101_coco_384x288-5f9e421d_20200730.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d152_coco_256x192
@@ -83,10 +83,10 @@ Models:
       AP@0.75: 0.812
       AR: 0.791
       AR@0.5: 0.94
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_256x192-c4df51dc_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnetv1d152_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_resnetv1d152_coco_384x288
@@ -98,5 +98,5 @@ Models:
       AP@0.75: 0.821
       AR: 0.802
       AR@0.5: 0.944
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnetv1d/resnetv1d152_coco_384x288-626c622d_20200730.pth

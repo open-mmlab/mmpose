@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - InterNet
     - ResNet
-  Name: hand 3D Keypoint internet interhand3d
+  Name: Hand 3D Keypoint internet interhand3d
   Paper:
   - Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
       from a Single RGB Image'
@@ -16,7 +16,7 @@ Collections:
   README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
 Models:
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
-  In Collection: hand 3D Keypoint internet interhand3d
+  In Collection: Hand 3D Keypoint internet interhand3d
   Metadata:
     Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
@@ -27,10 +27,10 @@ Models:
       MPJPE-all: 11.59
       MPJPE-interacting: 13.4
       MPJPE-single: 9.47
-    Task: 3D Keypoint
+    Task: Hand 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
-  In Collection: hand 3D Keypoint internet interhand3d
+  In Collection: Hand 3D Keypoint internet interhand3d
   Metadata:
     Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
@@ -41,5 +41,5 @@ Models:
       MPJPE-all: 13.16
       MPJPE-interacting: 15.23
       MPJPE-single: 11.22
-    Task: 3D Keypoint
+    Task: Hand 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand3d/internet/res50_intehand3dv1.0_all_256x256-42b7f2ac_20210702.pth

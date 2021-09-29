@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - Hourglass
-  Name: body 2D Keypoint topdown_heatmap mpii
+  Name: Body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: Stacked hourglass networks for human pose estimation
     URL: https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass52_mpii_256x256.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii
+  In Collection: Body 2D Keypoint topdown_heatmap mpii
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_hourglass52_mpii_256x256
@@ -20,10 +20,10 @@ Models:
     Metrics:
       Mean: 0.889
       Mean@0.1: 0.317
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_mpii_256x256-ae358435_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass52_mpii_384x384.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii
+  In Collection: Body 2D Keypoint topdown_heatmap mpii
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_hourglass52_mpii_384x384
@@ -32,5 +32,5 @@ Models:
     Metrics:
       Mean: 0.894
       Mean@0.1: 0.366
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_mpii_384x384-04090bc3_20200812.pth

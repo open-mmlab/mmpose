@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: fashion 2D Keypoint topdown_heatmap deepfashion
+  Name: Fashion 2D Keypoint topdown_heatmap deepfashion
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -17,7 +17,7 @@ Collections:
   README: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/resnet_deepfashion.md
 Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_upper_256x192.py
-  In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_upper_256x192
@@ -27,10 +27,10 @@ Models:
       AUC: 0.578
       EPE: 16.8
       PCK@0.2: 0.954
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_upper_256x192-41794f03_20210124.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_lower_256x192.py
-  In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_lower_256x192
@@ -40,10 +40,10 @@ Models:
       AUC: 0.744
       EPE: 10.5
       PCK@0.2: 0.965
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_lower_256x192-1292a839_20210124.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_full_256x192.py
-  In Collection: fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_full_256x192
@@ -53,5 +53,5 @@ Models:
       AUC: 0.664
       EPE: 12.7
       PCK@0.2: 0.977
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_full_256x192-0dbd6e42_20210124.pth

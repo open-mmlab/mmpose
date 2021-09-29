@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - DeepPose
     - ResNet
-  Name: body 2D Keypoint deeppose coco
+  Name: Body 2D Keypoint deeppose coco
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
     URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/resnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res50_coco_256x192.py
-  In Collection: body 2D Keypoint deeppose coco
+  In Collection: Body 2D Keypoint deeppose coco
   Metadata:
     Training Data: COCO
   Name: deeppose_res50_coco_256x192
@@ -26,10 +26,10 @@ Models:
       AP@0.75: 0.586
       AR: 0.638
       AR@0.5: 0.887
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192-f6de6c0e_20210205.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res101_coco_256x192.py
-  In Collection: body 2D Keypoint deeppose coco
+  In Collection: Body 2D Keypoint deeppose coco
   Metadata:
     Training Data: COCO
   Name: deeppose_res101_coco_256x192
@@ -41,10 +41,10 @@ Models:
       AP@0.75: 0.628
       AR: 0.668
       AR@0.5: 0.9
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192-2f247111_20210205.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_256x192.py
-  In Collection: body 2D Keypoint deeppose coco
+  In Collection: Body 2D Keypoint deeppose coco
   Metadata:
     Training Data: COCO
   Name: deeppose_res152_coco_256x192
@@ -56,5 +56,5 @@ Models:
       AP@0.75: 0.659
       AR: 0.686
       AR@0.5: 0.907
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192-7df89a88_20210205.pth

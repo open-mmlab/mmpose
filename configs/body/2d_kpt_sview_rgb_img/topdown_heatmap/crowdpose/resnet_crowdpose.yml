@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: body 2D Keypoint topdown_heatmap crowdpose
+  Name: Body 2D Keypoint topdown_heatmap crowdpose
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res50_crowdpose_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap crowdpose
+  In Collection: Body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
     Training Data: CrowdPose
   Name: topdown_heatmap_res50_crowdpose_256x192
@@ -27,10 +27,10 @@ Models:
       AP (M): 0.65
       AP@0.5: 0.808
       AP@0.75: 0.692
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_crowdpose_256x192-c6a526b6_20201227.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap crowdpose
+  In Collection: Body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
     Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_256x192
@@ -43,10 +43,10 @@ Models:
       AP (M): 0.658
       AP@0.5: 0.81
       AP@0.75: 0.703
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_256x192-8f5870f4_20201227.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res101_crowdpose_320x256.py
-  In Collection: body 2D Keypoint topdown_heatmap crowdpose
+  In Collection: Body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
     Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_320x256
@@ -59,10 +59,10 @@ Models:
       AP (M): 0.671
       AP@0.5: 0.821
       AP@0.75: 0.714
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_crowdpose_320x256-c88c512a_20201227.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res152_crowdpose_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap crowdpose
+  In Collection: Body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
     Training Data: CrowdPose
   Name: topdown_heatmap_res152_crowdpose_256x192
@@ -75,5 +75,5 @@ Models:
       AP (M): 0.666
       AP@0.5: 0.818
       AP@0.75: 0.712
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_crowdpose_256x192-dbd49aba_20201227.pth

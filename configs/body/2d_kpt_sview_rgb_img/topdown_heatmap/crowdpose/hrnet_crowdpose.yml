@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - HRNet
-  Name: body 2D Keypoint topdown_heatmap crowdpose
+  Name: Body 2D Keypoint topdown_heatmap crowdpose
   Paper:
   - Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_crowdpose.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_w32_crowdpose_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap crowdpose
+  In Collection: Body 2D Keypoint topdown_heatmap crowdpose
   Metadata:
     Training Data: CrowdPose
   Name: topdown_heatmap_hrnet_w32_crowdpose_256x192
@@ -24,5 +24,5 @@ Models:
       AP (M): 0.687
       AP@0.5: 0.825
       AP@0.75: 0.729
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_crowdpose_256x192-960be101_20201227.pth

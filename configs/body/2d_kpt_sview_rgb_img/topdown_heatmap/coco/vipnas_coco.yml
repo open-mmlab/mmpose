@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - ViPNAS
-  Name: body 2D Keypoint topdown_heatmap coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: 'ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search'
     URL: https://arxiv.org/abs/2105.10154
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_res50_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_vipnas_res50_coco_256x192
@@ -23,5 +23,5 @@ Models:
       AP@0.75: 0.789
       AR: 0.769
       AR@0.5: 0.769
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192-cc43b466_20210624.pth

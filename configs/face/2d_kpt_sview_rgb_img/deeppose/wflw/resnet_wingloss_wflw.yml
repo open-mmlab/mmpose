@@ -4,7 +4,7 @@ Collections:
     - DeepPose
     - ResNet
     - Wingloss
-  Name: face 2D Keypoint deeppose wflw
+  Name: Face 2D Keypoint deeppose wflw
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
     URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
@@ -18,7 +18,7 @@ Collections:
   README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
-  In Collection: face 2D Keypoint deeppose wflw
+  In Collection: Face 2D Keypoint deeppose wflw
   Metadata:
     Training Data: WFLW
   Name: deeppose_res50_wflw_256x256_wingloss
@@ -32,5 +32,5 @@ Models:
       NME occlusion: 5.56
       NME pose: 8.25
       NME test: 4.64
-    Task: 2D Keypoint
+    Task: Face 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth

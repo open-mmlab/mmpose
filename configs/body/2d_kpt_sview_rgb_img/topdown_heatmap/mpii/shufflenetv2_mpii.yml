@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - ShufflenetV2
-  Name: body 2D Keypoint topdown_heatmap mpii
+  Name: Body 2D Keypoint topdown_heatmap mpii
   Paper:
   - Title: 'Shufflenet v2: Practical guidelines for efficient cnn architecture design'
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv2_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv2_mpii_256x256.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii
+  In Collection: Body 2D Keypoint topdown_heatmap mpii
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_shufflenetv2_mpii_256x256
@@ -20,5 +20,5 @@ Models:
     Metrics:
       Mean: 0.828
       Mean@0.1: 0.205
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_mpii_256x256-4fb9df2d_20200925.pth

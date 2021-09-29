@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNetv2
     - DarkPose
-  Name: face 2D Keypoint topdown_heatmap aflw
+  Name: Face 2D Keypoint topdown_heatmap aflw
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
@@ -15,7 +15,7 @@ Collections:
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_dark_aflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256_dark.py
-  In Collection: face 2D Keypoint topdown_heatmap aflw
+  In Collection: Face 2D Keypoint topdown_heatmap aflw
   Metadata:
     Training Data: AFLW
   Name: topdown_heatmap_hrnetv2_w18_aflw_256x256_dark
@@ -24,5 +24,5 @@ Models:
     Metrics:
       NME frontal: 1.27
       NME full: 1.41
-    Task: 2D Keypoint
+    Task: Face 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth

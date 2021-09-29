@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - HRNetv2
-  Name: face 2D Keypoint topdown_heatmap cofw
+  Name: Face 2D Keypoint topdown_heatmap cofw
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/

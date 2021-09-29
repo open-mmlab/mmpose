@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNet
     - DarkPose
-  Name: wholebody 2D Keypoint topdown_heatmap coco-wholebody
+  Name: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Paper:
   - Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_dark_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192_dark.py
-  In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_hrnet_w32_coco_wholebody_256x192_dark
@@ -31,10 +31,10 @@ Models:
       Hand AR: 0.602
       Whole AP: 0.582
       Whole AR: 0.671
-    Task: 2D Keypoint
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192_dark-469327ef_20200922.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py
-  In Collection: wholebody 2D Keypoint topdown_heatmap coco-wholebody
+  In Collection: Wholebody 2D Keypoint topdown_heatmap coco-wholebody
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_hrnet_w48_coco_wholebody_384x288_dark_plus
@@ -51,5 +51,5 @@ Models:
       Hand AR: 0.694
       Whole AP: 0.661
       Whole AR: 0.743
-    Task: 2D Keypoint
+    Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth

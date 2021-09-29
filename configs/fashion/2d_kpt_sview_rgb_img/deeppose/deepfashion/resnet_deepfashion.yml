@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - DeepPose
     - ResNet
-  Name: fashion 2D Keypoint deeppose deepfashion
+  Name: Fashion 2D Keypoint deeppose deepfashion
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
     URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
@@ -17,7 +17,7 @@ Collections:
   README: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/resnet_deepfashion.md
 Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_upper_256x192.py
-  In Collection: fashion 2D Keypoint deeppose deepfashion
+  In Collection: Fashion 2D Keypoint deeppose deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: deeppose_res50_deepfashion_upper_256x192
@@ -27,10 +27,10 @@ Models:
       AUC: 0.535
       EPE: 17.2
       PCK@0.2: 0.965
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_upper_256x192-497799fb_20210309.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_lower_256x192.py
-  In Collection: fashion 2D Keypoint deeppose deepfashion
+  In Collection: Fashion 2D Keypoint deeppose deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: deeppose_res50_deepfashion_lower_256x192
@@ -40,10 +40,10 @@ Models:
       AUC: 0.678
       EPE: 11.8
       PCK@0.2: 0.971
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_lower_256x192-94e0e653_20210309.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/res50_deepfashion_full_256x192.py
-  In Collection: fashion 2D Keypoint deeppose deepfashion
+  In Collection: Fashion 2D Keypoint deeppose deepfashion
   Metadata:
     Training Data: DeepFashion
   Name: deeppose_res50_deepfashion_full_256x192
@@ -53,5 +53,5 @@ Models:
       AUC: 0.602
       EPE: 14.0
       PCK@0.2: 0.983
-    Task: 2D Keypoint
+    Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/deeppose/deeppose_res50_deepfashion_full_256x192-4e0273e2_20210309.pth

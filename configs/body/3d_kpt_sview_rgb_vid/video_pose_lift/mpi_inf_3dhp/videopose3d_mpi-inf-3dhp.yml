@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - VideoPose3D
-  Name: body 3D Keypoint video_pose_lift mpi_inf_3dhp
+  Name: Body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Paper:
   - Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
       training
@@ -12,7 +12,7 @@ Collections:
   README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
-  In Collection: body 3D Keypoint video_pose_lift mpi_inf_3dhp
+  In Collection: Body 3D Keypoint video_pose_lift mpi_inf_3dhp
   Metadata:
     Training Data: MPI-INF-3DHP
   Name: video_pose_lift_videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
@@ -23,5 +23,5 @@ Models:
       3DPCK: 94.1
       MPJPE: 58.3
       P-MPJPE: 40.6
-    Task: 3D Keypoint
+    Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth

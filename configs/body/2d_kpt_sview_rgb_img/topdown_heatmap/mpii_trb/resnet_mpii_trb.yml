@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: body 2D Keypoint topdown_heatmap mpii_trb
+  Name: Body 2D Keypoint topdown_heatmap mpii_trb
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
+  In Collection: Body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
     Training Data: MPII-TRB
   Name: topdown_heatmap_res50_mpii_trb_256x256
@@ -24,10 +24,10 @@ Models:
       Contour Acc: 0.858
       Mean Acc: 0.868
       Skeleton Acc: 0.887
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
+  In Collection: Body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
     Training Data: MPII-TRB
   Name: topdown_heatmap_res101_mpii_trb_256x256
@@ -37,10 +37,10 @@ Models:
       Contour Acc: 0.863
       Mean Acc: 0.873
       Skeleton Acc: 0.89
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
-  In Collection: body 2D Keypoint topdown_heatmap mpii_trb
+  In Collection: Body 2D Keypoint topdown_heatmap mpii_trb
   Metadata:
     Training Data: MPII-TRB
   Name: topdown_heatmap_res152_mpii_trb_256x256
@@ -50,5 +50,5 @@ Models:
       Contour Acc: 0.868
       Mean Acc: 0.879
       Skeleton Acc: 0.897
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_mpii_trb_256x256-dd369ce6_20200812.pth

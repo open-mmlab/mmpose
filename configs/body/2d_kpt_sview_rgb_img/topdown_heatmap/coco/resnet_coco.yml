@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: body 2D Keypoint topdown_heatmap coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192
@@ -26,10 +26,10 @@ Models:
       AP@0.75: 0.795
       AR: 0.773
       AR@0.5: 0.937
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_384x288
@@ -41,10 +41,10 @@ Models:
       AP@0.75: 0.799
       AR: 0.783
       AR@0.5: 0.931
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_256x192
@@ -56,10 +56,10 @@ Models:
       AP@0.75: 0.806
       AR: 0.781
       AR@0.5: 0.939
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_384x288
@@ -71,10 +71,10 @@ Models:
       AP@0.75: 0.817
       AR: 0.798
       AR@0.5: 0.94
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_256x192
@@ -86,10 +86,10 @@ Models:
       AP@0.75: 0.812
       AR: 0.79
       AR@0.5: 0.943
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_384x288
@@ -101,5 +101,5 @@ Models:
       AP@0.75: 0.821
       AR: 0.8
       AR@0.5: 0.942
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_384x288-3860d4c9_20200709.pth

@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNetv2
     - UDP
-  Name: hand 2D Keypoint topdown_heatmap panoptic2d
+  Name: Hand 2D Keypoint topdown_heatmap panoptic2d
   Paper:
   - Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
@@ -15,7 +15,7 @@ Collections:
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_udp_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
-  In Collection: hand 2D Keypoint topdown_heatmap panoptic2d
+  In Collection: Hand 2D Keypoint topdown_heatmap panoptic2d
   Metadata:
     Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256_udp
@@ -25,5 +25,5 @@ Models:
       AUC: 0.742
       EPE: 7.84
       PCKh@0.7: 0.998
-    Task: 2D Keypoint
+    Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_panoptic_256x256_udp-f9e15948_20210330.pth

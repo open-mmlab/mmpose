@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - DeepPose
     - ResNet
-  Name: hand 2D Keypoint deeppose panoptic2d
+  Name: Hand 2D Keypoint deeppose panoptic2d
   Paper:
   - Title: 'Deeppose: Human pose estimation via deep neural networks'
     URL: http://openaccess.thecvf.com/content_cvpr_2014/html/Toshev_DeepPose_Human_Pose_2014_CVPR_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/resnet_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/res50_panoptic2d_256x256.py
-  In Collection: hand 2D Keypoint deeppose panoptic2d
+  In Collection: Hand 2D Keypoint deeppose panoptic2d
   Metadata:
     Training Data: CMU Panoptic HandDB
   Name: deeppose_res50_panoptic2d_256x256
@@ -24,5 +24,5 @@ Models:
       AUC: 0.686
       EPE: 9.36
       PCKh@0.7: 0.999
-    Task: 2D Keypoint
+    Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/deeppose/deeppose_res50_panoptic_256x256-8a745183_20210330.pth

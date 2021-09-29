@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNet
     - UDP
-  Name: body 2D Keypoint topdown_heatmap coco
+  Name: Body 2D Keypoint topdown_heatmap coco
   Paper:
   - Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
@@ -15,7 +15,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_udp_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_udp.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_udp
@@ -27,10 +27,10 @@ Models:
       AP@0.75: 0.827
       AR: 0.811
       AR@0.5: 0.945
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_256x192_udp-aba0be42_20210220.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_384x288_udp.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_384x288_udp
@@ -42,10 +42,10 @@ Models:
       AP@0.75: 0.833
       AR: 0.817
       AR@0.5: 0.944
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_384x288_udp-e97c1a0f_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192_udp.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_256x192_udp
@@ -57,10 +57,10 @@ Models:
       AP@0.75: 0.834
       AR: 0.817
       AR@0.5: 0.945
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_256x192_udp-2554c524_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_384x288_udp.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_384x288_udp
@@ -72,10 +72,10 @@ Models:
       AP@0.75: 0.835
       AR: 0.82
       AR@0.5: 0.945
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_384x288_udp-0f89c63e_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_udp_regress.py
-  In Collection: body 2D Keypoint topdown_heatmap coco
+  In Collection: Body 2D Keypoint topdown_heatmap coco
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_udp_regress
@@ -87,5 +87,5 @@ Models:
       AP@0.75: 0.823
       AR: 0.812
       AR@0.5: 0.943
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_256x192_udp_regress-be2dbba4_20210222.pth

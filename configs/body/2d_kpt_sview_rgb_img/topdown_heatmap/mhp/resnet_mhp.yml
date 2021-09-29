@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: body 2D Keypoint topdown_heatmap mhp
+  Name: Body 2D Keypoint topdown_heatmap mhp
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -15,7 +15,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/resnet_mhp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/res50_mhp_256x192.py
-  In Collection: body 2D Keypoint topdown_heatmap mhp
+  In Collection: Body 2D Keypoint topdown_heatmap mhp
   Metadata:
     Training Data: MHP
   Name: topdown_heatmap_res50_mhp_256x192
@@ -27,5 +27,5 @@ Models:
       AP@0.75: 0.669
       AR: 0.636
       AR@0.5: 0.918
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mhp_256x192-28c5b818_20201229.pth

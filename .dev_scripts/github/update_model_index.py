@@ -116,6 +116,8 @@ def parse_config_path(path):
     target, task, algorithm, dataset, model = (info_str.split(osp.sep) +
                                                ['None'] * 5)[:5]
 
+    # capitalize target
+    target = target.capitalize()
     # convert task name to readable version
     task2readable = {
         '2d_kpt_sview_rgb_img': '2D Keypoint',
@@ -221,7 +223,8 @@ def parse_md(md_file):
                     model_info = parse_config_path(config)
                     model_name = '_'.join(
                         [model_info['algorithm'], model_info['model']])
-                    task_name = model_info['task']
+                    task_name = ' '.join(
+                        [model_info['target'], model_info['task']])
 
                     metadata = {'Training Data': dataset}
                     if flops_idx != -1:

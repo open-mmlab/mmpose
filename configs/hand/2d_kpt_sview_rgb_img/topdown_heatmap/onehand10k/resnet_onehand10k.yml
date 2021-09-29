@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: hand 2D Keypoint topdown_heatmap onehand10k
+  Name: Hand 2D Keypoint topdown_heatmap onehand10k
   Paper:
   - Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -14,7 +14,7 @@ Collections:
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/resnet_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/res50_onehand10k_256x256.py
-  In Collection: hand 2D Keypoint topdown_heatmap onehand10k
+  In Collection: Hand 2D Keypoint topdown_heatmap onehand10k
   Metadata:
     Training Data: OneHand10K
   Name: topdown_heatmap_res50_onehand10k_256x256
@@ -24,5 +24,5 @@ Models:
       AUC: 0.555
       EPE: 25.19
       PCK@0.2: 0.989
-    Task: 2D Keypoint
+    Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_onehand10k_256x256-739c8639_20210330.pth

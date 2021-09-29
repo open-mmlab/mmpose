@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - CPM
-  Name: body 2D Keypoint topdown_heatmap jhmdb
+  Name: Body 2D Keypoint topdown_heatmap jhmdb
   Paper:
   - Title: Convolutional pose machines
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
@@ -11,7 +11,7 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
@@ -26,10 +26,10 @@ Models:
       Mean: 89.5
       Sho: 91.9
       Wri: 78.9
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
@@ -44,10 +44,10 @@ Models:
       Mean: 87.4
       Sho: 93.6
       Wri: 70.9
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub3_368x368
@@ -62,10 +62,10 @@ Models:
       Mean: 92.4
       Sho: 94.9
       Wri: 84.0
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
@@ -80,10 +80,10 @@ Models:
       Mean: 66.0
       Sho: 63.0
       Wri: 54.9
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
@@ -98,10 +98,10 @@ Models:
       Mean: 61.1
       Sho: 57.9
       Wri: 44.3
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub3_368x368
@@ -116,5 +116,5 @@ Models:
       Mean: 70.3
       Sho: 72.6
       Wri: 54.0
-    Task: 2D Keypoint
+    Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
