@@ -97,7 +97,7 @@ cd ..
 b. Clone the mmpose repository
 
 ```shell
-git clone git@github.com:open-mmlab/mmpose.git
+git clone git@github.com:open-mmlab/mmpose.git # or git clone https://github.com/open-mmlab/mmpose
 cd mmpose
 ```
 
