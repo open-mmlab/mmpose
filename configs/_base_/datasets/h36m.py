@@ -12,49 +12,49 @@ dataset_info = dict(
     ),
     keypoint_info={
         0:
-        dict(name='root', id=0, color=[255, 128, 0], type='lower', swap=''),
+        dict(name='root', id=0, color=[51, 153, 255], type='lower', swap=''),
         1:
         dict(
-            name='left_hip',
+            name='right_hip',
             id=1,
             color=[255, 128, 0],
             type='lower',
-            swap='right_hip'),
+            swap='left_hip'),
         2:
         dict(
-            name='left_knee',
+            name='right_knee',
             id=2,
             color=[255, 128, 0],
             type='lower',
-            swap='right_knee'),
+            swap='left_knee'),
         3:
         dict(
-            name='left_foot',
+            name='right_foot',
             id=3,
-            color=[0, 255, 0],
+            color=[255, 128, 0],
             type='lower',
-            swap='right_foot'),
+            swap='left_foot'),
         4:
         dict(
-            name='right_hip',
+            name='left_hip',
             id=4,
             color=[0, 255, 0],
             type='lower',
-            swap='left_hip'),
+            swap='right_hip'),
         5:
         dict(
-            name='right_knee',
+            name='left_knee',
             id=5,
             color=[0, 255, 0],
             type='lower',
-            swap='left_knee'),
+            swap='right_knee'),
         6:
         dict(
-            name='right_foot',
+            name='left_foot',
             id=6,
-            color=[51, 153, 255],
+            color=[0, 255, 0],
             type='lower',
-            swap='left_foot'),
+            swap='right_foot'),
         7:
         dict(name='spine', id=7, color=[51, 153, 255], type='upper', swap=''),
         8:
