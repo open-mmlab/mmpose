@@ -12,14 +12,14 @@ dataset_info = dict(
     ),
     keypoint_info={
         0:
-        dict(name='root', id=0, color=[255, 128, 0], type='lower', swap=''),
+        dict(name='root', id=0, color=[51, 153, 255], type='lower', swap=''),
         1:
         dict(
             name='right_hip',
             id=1,
             color=[255, 128, 0],
             type='lower',
-            swap='left_hip'),        
+            swap='left_hip'),
         2:
         dict(
             name='right_knee',
@@ -31,7 +31,7 @@ dataset_info = dict(
         dict(
             name='right_foot',
             id=3,
-            color=[51, 153, 255],
+            color=[255, 128, 0],
             type='lower',
             swap='left_foot'),
         4:
@@ -52,7 +52,7 @@ dataset_info = dict(
         dict(
             name='left_foot',
             id=6,
-            color=[51, 153, 255],
+            color=[0, 255, 0],
             type='lower',
             swap='right_foot'),
         7:
