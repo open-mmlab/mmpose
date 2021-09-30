@@ -88,7 +88,7 @@ def save_coco_anno(data_annotation,
                 _min_x, _min_y = segmentation.min(0)
 
                 max_x = max(max_x, _max_x)
-                _max_y = max(max_y, _max_y)
+                max_y = max(max_y, _max_y)
                 min_x = max(min_x, _min_x)
                 min_y = max(min_y, _min_y)
 
