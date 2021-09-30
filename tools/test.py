@@ -111,15 +111,29 @@ def main():
 
     # build the dataloader
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
-    dataloader_setting = dict(
-        samples_per_gpu=1,
-        workers_per_gpu=cfg.data.get('workers_per_gpu', 1),
-        dist=distributed,
-        shuffle=False,
-        drop_last=False)
-    dataloader_setting = dict(dataloader_setting,
-                              **cfg.data.get('test_dataloader', {}))
-    data_loader = build_dataloader(dataset, **dataloader_setting)
+    # step 1: give default values and override (if exist) from cfg.data
+    loader_cfg = {
+        **dict(seed=cfg.get('seed'), drop_last=False, dist=distributed),
+        **({} if torch.__version__ != 'parrots' else dict(
+               prefetch_num=2,
+               pin_memory=False,
+           )),
+        **dict((k, cfg.data[k]) for k in [
+                   'seed',
+                   'prefetch_num',
+                   'pin_memory',
+                   'persistent_workers',
+               ] if k in cfg.data)
+    }
+    # step2: cfg.data.test_dataloader has higher priority
+    test_loader_cfg = {
+        **loader_cfg,
+        **dict(shuffle=False, drop_last=False),
+        **dict(workers_per_gpu=cfg.data.get('workers_per_gpu', 1)),
+        **cfg.data.get('test_dataloader', {}),
+        **dict(samples_per_gpu=1)
+    }
+    data_loader = build_dataloader(dataset, **test_loader_cfg)
 
     # build the model and load checkpoint
     model = build_posenet(cfg.model)
