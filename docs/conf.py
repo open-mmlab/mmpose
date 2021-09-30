@@ -87,7 +87,7 @@ html_theme_options = {
         },
         {
             'name':
-            'Upstream',
+            'Projects',
             'children': [
                 {
                     'name': 'MMCV',
@@ -99,12 +99,6 @@ html_theme_options = {
                     'url': 'https://github.com/open-mmlab/mmdetection',
                     'description': 'Object detection toolbox and benchmark'
                 },
-            ]
-        },
-        {
-            'name':
-            'Projects',
-            'children': [
                 {
                     'name': 'MMAction2',
                     'url': 'https://github.com/open-mmlab/mmaction2',
@@ -124,10 +118,6 @@ html_theme_options = {
                 {
                     'name': 'MMEditing',
                     'url': 'https://github.com/open-mmlab/mmediting',
-                },
-                {
-                    'name': 'MMDetection3D',
-                    'url': 'https://github.com/open-mmlab/mmdetection3d',
                 },
                 {
                     'name': 'MMOCR',
