@@ -10,7 +10,7 @@ import numpy as np
 np.random.seed(0)
 
 
-def PolyArea(x, y):
+def get_poly_area(x, y):
     """Calculate area of polygon given (x,y) coordinates (Shoelace formula)
 
     :param x: np.ndarray(N, )
@@ -21,10 +21,10 @@ def PolyArea(x, y):
                  np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))))
 
 
-def GetSegArea(segmentations):
+def get_seg_area(segmentations):
     area = 0
     for segmentation in segmentations:
-        area += PolyArea(segmentation[:, 0], segmentation[:, 1])
+        area += get_poly_area(segmentation[:, 0], segmentation[:, 1])
     return area
 
 
@@ -104,7 +104,7 @@ def save_coco_anno(data_annotation,
                 float(max_y - min_y + 1)
             ]
             anno['iscrowd'] = 0
-            anno['area'] = GetSegArea(segmentations)
+            anno['area'] = get_seg_area(segmentations)
             anno['category_id'] = 1
             anno['segmentation'] = [
                 seg.reshape(-1).tolist() for seg in segmentations
