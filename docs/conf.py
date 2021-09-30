@@ -73,18 +73,17 @@ source_suffix = {
 html_theme = 'pytorch_sphinx_theme'
 html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 html_theme_options = {
-    # 'logo_url': 'https://mmocr.readthedocs.io/en/latest/',
     'menu': [
         {
             'name':
             'Tutorial',
             'url':
             'https://colab.research.google.com/github/'
-            'open-mmlab/mmocr/blob/main/demo/MMOCR_Tutorial.ipynb'
+            'open-mmlab/mmpose/blob/main/demo/MMPose_Tutorial.ipynb'
         },
         {
             'name': 'GitHub',
-            'url': 'https://github.com/open-mmlab/mmocr'
+            'url': 'https://github.com/open-mmlab/mmpose'
         },
         {
             'name':
@@ -131,8 +130,8 @@ html_theme_options = {
                     'url': 'https://github.com/open-mmlab/mmdetection3d',
                 },
                 {
-                    'name': 'MMPose',
-                    'url': 'https://github.com/open-mmlab/mmpose',
+                    'name': 'MMOCR',
+                    'url': 'https://github.com/open-mmlab/mmocr',
                 },
                 {
                     'name': 'MMTracking',
