@@ -89,8 +89,8 @@ def save_coco_anno(data_annotation,
 
                 max_x = max(max_x, _max_x)
                 max_y = max(max_y, _max_y)
-                min_x = max(min_x, _min_x)
-                min_y = max(min_y, _min_y)
+                min_x = min(min_x, _min_x)
+                min_y = min(min_y, _min_y)
 
             anno = {}
             anno['keypoints'] = keypoints.reshape(-1).tolist()
