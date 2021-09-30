@@ -43,19 +43,33 @@ def train_model(model,
 
     # prepare data loaders
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
-    dataloader_setting = dict(
-        samples_per_gpu=cfg.data.get('samples_per_gpu', {}),
-        workers_per_gpu=cfg.data.get('workers_per_gpu', {}),
-        # cfg.gpus will be ignored if distributed
-        num_gpus=len(cfg.gpu_ids),
-        dist=distributed,
-        seed=cfg.seed)
-    dataloader_setting = dict(dataloader_setting,
-                              **cfg.data.get('train_dataloader', {}))
+    # step 1: give default values and override (if exist) from cfg.data
+    loader_cfg = {
+        **dict(
+            seed=cfg.get('seed'),
+            drop_last=False,
+            dist=distributed,
+            num_gpus=len(cfg.gpu_ids)),
+        **({} if torch.__version__ != 'parrots' else dict(
+               prefetch_num=2,
+               pin_memory=False,
+           )),
+        **dict((k, cfg.data[k]) for k in [
+                   'samples_per_gpu',
+                   'workers_per_gpu',
+                   'shuffle',
+                   'seed',
+                   'drop_last',
+                   'prefetch_num',
+                   'pin_memory',
+                   'persistent_workers',
+               ] if k in cfg.data)
+    }
 
-    data_loaders = [
-        build_dataloader(ds, **dataloader_setting) for ds in dataset
-    ]
+    # step 2: cfg.data.train_dataloader has highest priority
+    train_loader_cfg = dict(loader_cfg, **cfg.data.get('train_dataloader', {}))
+
+    data_loaders = [build_dataloader(ds, **train_loader_cfg) for ds in dataset]
 
     # determine wether use adversarial training precess or not
     use_adverserial_train = cfg.get('use_adversarial_train', False)
