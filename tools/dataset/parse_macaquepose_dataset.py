@@ -17,7 +17,15 @@ def PolyArea(x, y):
     :param y: np.ndarray(N, )
     :return: area
     """
-    return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+    return float(0.5 *
+                 np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))))
+
+
+def GetSegArea(segmentations):
+    area = 0
+    for segmentation in segmentations:
+        area += PolyArea(segmentation[:, 0], segmentation[:, 1])
+    return area
 
 
 def save_coco_anno(data_annotation,
@@ -63,9 +71,26 @@ def save_coco_anno(data_annotation,
                     keypoints[ind, 1] = p['position'][1]
                     keypoints[ind, 2] = 2
 
-            segmentation = np.array(seg[0]['segment'])
-            max_x, max_y = segmentation.max(0)
-            min_x, min_y = segmentation.min(0)
+            segmentations = []
+
+            max_x = -1
+            max_y = -1
+            min_x = 999999
+            min_y = 999999
+            for segm in seg:
+                if len(segm['segment']) == 0:
+                    continue
+
+                segmentation = np.array(segm['segment'])
+                segmentations.append(segmentation)
+
+                _max_x, _max_y = segmentation.max(0)
+                _min_x, _min_y = segmentation.min(0)
+
+                max_x = max(max_x, _max_x)
+                _max_y = max(max_y, _max_y)
+                min_x = max(min_x, _min_x)
+                min_y = max(min_y, _min_y)
 
             anno = {}
             anno['keypoints'] = keypoints.reshape(-1).tolist()
@@ -79,10 +104,11 @@ def save_coco_anno(data_annotation,
                 float(max_y - min_y + 1)
             ]
             anno['iscrowd'] = 0
-            anno['area'] = float(
-                PolyArea(segmentation[:, 0], segmentation[:, 1]))
+            anno['area'] = GetSegArea(segmentations)
             anno['category_id'] = 1
-            anno['segmentation'] = segmentation.reshape([1, -1]).tolist()
+            anno['segmentation'] = [
+                seg.reshape(-1).tolist() for seg in segmentations
+            ]
 
             annotations.append(anno)
             ann_id += 1
@@ -133,7 +159,6 @@ def save_coco_anno(data_annotation,
 
 
 dataset_dir = '/data/macaque/'
-
 with open(os.path.join(dataset_dir, 'annotations.csv'), 'r') as fp:
     data_annotation_all = list(csv.reader(fp, delimiter=','))[1:]
 
