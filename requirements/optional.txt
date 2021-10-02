@@ -3,3 +3,4 @@ onnx
 onnxruntime
 pyrender
 smplx>=0.1.28
+trimesh

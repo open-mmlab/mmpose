@@ -3,6 +3,7 @@
 __version__ = '0.18.0'
 short_version = __version__
 
+
 def parse_version_info(version_str):
     version_info = []
     for x in version_str.split('.'):
