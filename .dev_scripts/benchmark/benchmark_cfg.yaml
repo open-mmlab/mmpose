@@ -43,7 +43,7 @@ model_list:
     - config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth
       input_shape: 34, 1
-  # UDP
+    # UDP
     ## AE + HRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512_udp-91663bf9_20210220.pth
