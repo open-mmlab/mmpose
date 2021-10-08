@@ -6,10 +6,15 @@ import warnings
 import cv2
 import mmcv
 import numpy as np
-import trimesh
 from matplotlib import pyplot as plt
 from mmcv.utils.misc import deprecated_api_warning
 from mmcv.visualization.color import color_val
+
+try:
+    import trimesh
+    has_trimesh = True
+except (ImportError, ModuleNotFoundError):
+    has_trimesh = False
 
 try:
     os.environ['PYOPENGL_PLATFORM'] = 'osmesa'
@@ -367,6 +372,10 @@ def imshow_mesh_3d(img,
 
     if not has_pyrender:
         warnings.warn('pyrender package is not installed.')
+        return img
+
+    if not has_trimesh:
+        warnings.warn('trimesh package is not installed.')
         return img
 
     try:

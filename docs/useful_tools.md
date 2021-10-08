@@ -86,7 +86,10 @@ Params: 28.04 M
 ==============================
 ```
 
-**Note**: This tool is still experimental and we do not guarantee that the number is absolutely correct.
+:::{note}
+This tool is still experimental and we do not guarantee that the number is absolutely correct.
+:::
+
 You may use the result for simple comparisons, but double check it before you adopt it in technical reports or papers.
 
 (1) FLOPs are related to the input shape while parameters are not. The default input shape is (1, 3, 340, 256) for 2D recognizer, (1, 3, 32, 340, 256) for 3D recognizer.
