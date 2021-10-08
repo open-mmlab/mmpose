@@ -21,7 +21,7 @@ Models:
       AP@0.5: 0.833
       AP@0.75: 0.667
       AR: 0.659
-      AR@0.5: 0.850
+      AR@0.5: 0.85
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py
