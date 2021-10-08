@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.19.0 (08/10/2021)
+
+**Highlights**
+
+- Add models for Associative Embedding with Hourglass network backbone ([\#906](https://github.com/open-mmlab/mmpose/pull/906)) @jin-s13, @luminxu
+- Support COCO-Wholebody-Face and COCO-Wholebody-Hand datasets ([\#813](https://github.com/open-mmlab/mmpose/pull/813)) @jin-s13, @innerlee, @luminxu
+- Upgrade dataset interface ([\#901](https://github.com/open-mmlab/mmpose/pull/901), [\#924](https://github.com/open-mmlab/mmpose/pull/924)) @jin-s13, @innerlee, @ly015, @liqikai9
+- New style of documentation ([\#945](https://github.com/open-mmlab/mmpose/pull/945)) @ly015
+
+**New Features**
+
+- Add models for Associative Embedding with Hourglass network backbone ([\#906](https://github.com/open-mmlab/mmpose/pull/906)) @jin-s13, @luminxu
+- Support COCO-Wholebody-Face and COCO-Wholebody-Hand datasets ([\#813](https://github.com/open-mmlab/mmpose/pull/813)) @jin-s13, @innerlee, @luminxu
+- Add pseudo-labeling tool to generate COCO style keypoint annotations with given bounding boxes ([\#928](https://github.com/open-mmlab/mmpose/pull/928)) @soltkreig
+- New style of documentation ([\#945](https://github.com/open-mmlab/mmpose/pull/945)) @ly015
+
+**Bug Fixes**
+
+- Fix segmentation parsing in Macaque dataset preprocessing ([\#948](https://github.com/open-mmlab/mmpose/pull/948)) @jin-s13
+- Fix requirements that may lead to CI failure in downstream projects ([\#936](https://github.com/open-mmlab/mmpose/pull/936)) @RangiLyu
+- Fix keypoint order in Human3.6M dataset ([\#940](https://github.com/open-mmlab/mmpose/pull/940)) @ttxskk
+- Fix unstable image loading for Interhand2.6M ([\#913](https://github.com/open-mmlab/mmpose/pull/913)) @zengwang430521
+
+**Improvements**
+
+- Upgrade dataset interface ([\#901](https://github.com/open-mmlab/mmpose/pull/901), [\#924](https://github.com/open-mmlab/mmpose/pull/924)) @jin-s13, @innerlee, @ly015, @liqikai9
+- Improve demo usability and stability ([\#908](https://github.com/open-mmlab/mmpose/pull/908), [\#934](https://github.com/open-mmlab/mmpose/pull/934)) @ly015
+- Standardize model metafile format ([\#941](https://github.com/open-mmlab/mmpose/pull/941)) @ly015
+- Support `persistent_worker` and several other arguments in configs ([\#946](https://github.com/open-mmlab/mmpose/pull/946)) @jin-s13
+- Use MMCV root model registry to enable cross-project module building ([\#935](https://github.com/open-mmlab/mmpose/pull/935)) @RangiLyu
+- Improve the document quality ([\#916](https://github.com/open-mmlab/mmpose/pull/916), [\#909](https://github.com/open-mmlab/mmpose/pull/909), [\#942](https://github.com/open-mmlab/mmpose/pull/942), [\#913](https://github.com/open-mmlab/mmpose/pull/913)) @jin-s13, @ly015, @bit-scientist, @zengwang430521
+- Improve pull request template ([\#952](https://github.com/open-mmlab/mmpose/pull/952)) @ly015
+
+**Breaking Changes**
+
+- Upgrade dataset interface ([\#901](https://github.com/open-mmlab/mmpose/pull/901)) @jin-s13, @innerlee, @ly015
+
 ## v0.18.0 (01/09/2021)
 
 **Bug Fixes**
