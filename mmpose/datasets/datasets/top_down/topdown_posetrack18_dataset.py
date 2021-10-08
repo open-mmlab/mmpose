@@ -7,12 +7,17 @@ from collections import OrderedDict, defaultdict
 import json_tricks as json
 import numpy as np
 from mmcv import Config
-from poseval import eval_helpers
-from poseval.evaluateAP import evaluateAP
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
 from .topdown_coco_dataset import TopDownCocoDataset
+
+try:
+    from poseval import eval_helpers
+    from poseval.evaluateAP import evaluateAP
+    has_poseval = True
+except (ImportError, ModuleNotFoundError):
+    has_poseval = False
 
 
 @DATASETS.register_module()
@@ -258,6 +263,11 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
     def _do_python_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation using poseval."""
+
+        if not has_poseval:
+            raise ImportError('Please install poseval package for evaluation'
+                              'on PoseTrack dataset '
+                              '(see requirements/optional.txt)')
 
         argv = ['', gt_folder + '/', pred_folder + '/']
 
