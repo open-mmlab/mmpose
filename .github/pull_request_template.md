@@ -6,36 +6,20 @@ Thanks for your contribution and we appreciate it a lot. The following instructi
 
 ## Motivation
 
-<!--
-
-Please describe the motivation of this PR and the goal you want to achieve through this PR.
-
--->
+<!-- Please describe the motivation of this PR and the goal you want to achieve through this PR. -->
 
 ## Modification
 
-<!--
-
-Please briefly describe what modification is made in this PR.
-
--->
+<!-- Please briefly describe what modification is made in this PR. -->
 
 ## BC-breaking (Optional)
 
-<!--
-
-Does the modification introduce changes that break the backward compatibility of the downstream repositories?
-If so, please describe how it breaks the compatibility and how the downstream projects should modify their code to keep compatibility with this PR.
-
--->
+<!-- Does the modification introduce changes that break the backward compatibility of the downstream repositories?
+If so, please describe how it breaks the compatibility and how the downstream projects should modify their code to keep compatibility with this PR. -->
 
 ## Use cases (Optional)
 
-<!--
-
-If this PR introduces a new feature, it is better to list some use cases here and update the documentation.
-
--->
+<!-- If this PR introduces a new feature, it is better to list some use cases here and update the documentation. -->
 
 ## Checklist
 
