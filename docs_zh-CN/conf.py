@@ -15,6 +15,8 @@ import os
 import subprocess
 import sys
 
+import pytorch_sphinx_theme
+
 sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
@@ -42,10 +44,14 @@ release = get_version()
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.viewcode',
-    'recommonmark', 'sphinx_markdown_tables'
+    'sphinx_markdown_tables', 'sphinx_copybutton', 'myst_parser'
 ]
 
 autodoc_mock_imports = ['json_tricks', 'mmpose.version']
+
+# Ignore >>> when copying code
+copybutton_prompt_text = r'>>> |\.\.\. '
+copybutton_prompt_is_regexp = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -64,14 +70,105 @@ source_suffix = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pytorch_sphinx_theme'
+html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
+html_theme_options = {
+    'menu': [
+        {
+            'name':
+            'Tutorial',
+            'url':
+            'https://colab.research.google.com/github/'
+            'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
+        },
+        {
+            'name': 'GitHub',
+            'url': 'https://github.com/open-mmlab/mmpose'
+        },
+        {
+            'name':
+            'Projects',
+            'children': [
+                {
+                    'name': 'MMCV',
+                    'url': 'https://github.com/open-mmlab/mmcv',
+                    'description': '计算机视觉基础库'
+                },
+                {
+                    'name': 'MMDetection',
+                    'url': 'https://github.com/open-mmlab/mmdetection',
+                    'description': '检测工具箱与测试基准'
+                },
+                {
+                    'name': 'MMAction2',
+                    'url': 'https://github.com/open-mmlab/mmaction2',
+                    'description': '视频理解工具箱与测试基准'
+                },
+                {
+                    'name': 'MMClassification',
+                    'url': 'https://github.com/open-mmlab/mmclassification',
+                    'description': '图像分类工具箱与测试基准'
+                },
+                {
+                    'name': 'MMSegmentation',
+                    'url': 'https://github.com/open-mmlab/mmsegmentation',
+                    'description': '语义分割工具箱与测试基准'
+                },
+                {
+                    'name': 'MMDetection3D',
+                    'url': 'https://github.com/open-mmlab/mmdetection3d',
+                    'description': '通用3D目标检测平台'
+                },
+                {
+                    'name': 'MMEditing',
+                    'url': 'https://github.com/open-mmlab/mmediting',
+                    'description': '图像视频编辑工具箱'
+                },
+                {
+                    'name': 'MMOCR',
+                    'url': 'https://github.com/open-mmlab/mmocr',
+                    'description': '全流程文字检测识别理解工具包'
+                },
+                {
+                    'name': 'MMTracking',
+                    'url': 'https://github.com/open-mmlab/mmtracking',
+                    'description': '一体化视频目标感知平台'
+                },
+                {
+                    'name': 'MMGeneration',
+                    'url': 'https://github.com/open-mmlab/mmgeneration',
+                    'description': '生成模型工具箱'
+                },
+            ]
+        },
+        {
+            'name':
+            'OpenMMLab',
+            'children': [
+                {
+                    'name': '主页',
+                    'url': 'https://openmmlab.com/'
+                },
+                {
+                    'name': 'GitHub',
+                    'url': 'https://github.com/open-mmlab/'
+                },
+            ]
+        },
+    ]
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
 
 language = 'zh_CN'
+
+html_static_path = ['_static']
+html_css_files = ['css/readthedocs.css']
+
+# Enable ::: for my_st
+myst_enable_extensions = ['colon_fence']
 
 master_doc = 'index'
 

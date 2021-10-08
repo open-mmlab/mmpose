@@ -1,6 +1,3 @@
-API Documentation
-=================
-
 mmpose.apis
 -------------
 .. automodule:: mmpose.apis

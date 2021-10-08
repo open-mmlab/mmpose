@@ -9,5 +9,4 @@ pillow
 poseval@git+https://github.com/svenkreiss/poseval.git
 scipy
 torchvision
-trimesh
 xtcocotools>=1.8
