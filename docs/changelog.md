@@ -31,6 +31,7 @@
 - Support `persistent_worker` and several other arguments in configs ([\#946](https://github.com/open-mmlab/mmpose/pull/946)) @jin-s13
 - Use MMCV root model registry to enable cross-project module building ([\#935](https://github.com/open-mmlab/mmpose/pull/935)) @RangiLyu
 - Improve the document quality ([\#916](https://github.com/open-mmlab/mmpose/pull/916), [\#909](https://github.com/open-mmlab/mmpose/pull/909), [\#942](https://github.com/open-mmlab/mmpose/pull/942), [\#913](https://github.com/open-mmlab/mmpose/pull/913)) @jin-s13, @ly015, @bit-scientist, @zengwang430521
+- Improve pull request template ([\#952](https://github.com/open-mmlab/mmpose/pull/952)) @ly015
 
 **Breaking Changes**
 
