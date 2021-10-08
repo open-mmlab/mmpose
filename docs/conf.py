@@ -79,7 +79,7 @@ html_theme_options = {
             'Tutorial',
             'url':
             'https://colab.research.google.com/github/'
-            'open-mmlab/mmpose/blob/main/demo/MMPose_Tutorial.ipynb'
+            'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
         },
         {
             'name': 'GitHub',
@@ -102,34 +102,46 @@ html_theme_options = {
                 {
                     'name': 'MMAction2',
                     'url': 'https://github.com/open-mmlab/mmaction2',
+                    'description': 'Action understanding toolbox and benchmark'
                 },
                 {
                     'name': 'MMClassification',
                     'url': 'https://github.com/open-mmlab/mmclassification',
+                    'description': 'Image classification toolbox and benchmark'
                 },
                 {
                     'name': 'MMSegmentation',
                     'url': 'https://github.com/open-mmlab/mmsegmentation',
+                    'description':
+                    'Semantic segmentation toolbox and benchmark'
                 },
                 {
                     'name': 'MMDetection3D',
                     'url': 'https://github.com/open-mmlab/mmdetection3d',
+                    'description': 'General 3D object detection platform'
                 },
                 {
                     'name': 'MMEditing',
                     'url': 'https://github.com/open-mmlab/mmediting',
+                    'description': 'Image and video editing toolbox'
                 },
                 {
-                    'name': 'MMOCR',
-                    'url': 'https://github.com/open-mmlab/mmocr',
+                    'name':
+                    'MMOCR',
+                    'url':
+                    'https://github.com/open-mmlab/mmocr',
+                    'description':
+                    'Text detection, recognition and understanding toolbox'
                 },
                 {
                     'name': 'MMTracking',
                     'url': 'https://github.com/open-mmlab/mmtracking',
+                    'description': 'Video perception toolbox and benchmark'
                 },
                 {
                     'name': 'MMGeneration',
                     'url': 'https://github.com/open-mmlab/mmgeneration',
+                    'description': 'Generative model toolbox'
                 },
             ]
         },

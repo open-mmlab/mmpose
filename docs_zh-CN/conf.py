@@ -79,7 +79,7 @@ html_theme_options = {
             'Tutorial',
             'url':
             'https://colab.research.google.com/github/'
-            'open-mmlab/mmpose/blob/main/demo/MMPose_Tutorial.ipynb'
+            'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
         },
         {
             'name': 'GitHub',
@@ -92,44 +92,52 @@ html_theme_options = {
                 {
                     'name': 'MMCV',
                     'url': 'https://github.com/open-mmlab/mmcv',
-                    'description': 'Foundational library for computer vision'
+                    'description': '计算机视觉基础库'
                 },
                 {
                     'name': 'MMDetection',
                     'url': 'https://github.com/open-mmlab/mmdetection',
-                    'description': 'Object detection toolbox and benchmark'
+                    'description': '检测工具箱与测试基准'
                 },
                 {
                     'name': 'MMAction2',
                     'url': 'https://github.com/open-mmlab/mmaction2',
+                    'description': '视频理解工具箱与测试基准'
                 },
                 {
                     'name': 'MMClassification',
                     'url': 'https://github.com/open-mmlab/mmclassification',
+                    'description': '图像分类工具箱与测试基准'
                 },
                 {
                     'name': 'MMSegmentation',
                     'url': 'https://github.com/open-mmlab/mmsegmentation',
+                    'description': '语义分割工具箱与测试基准'
                 },
                 {
                     'name': 'MMDetection3D',
                     'url': 'https://github.com/open-mmlab/mmdetection3d',
+                    'description': '通用3D目标检测平台'
                 },
                 {
                     'name': 'MMEditing',
                     'url': 'https://github.com/open-mmlab/mmediting',
+                    'description': '图像视频编辑工具箱'
                 },
                 {
                     'name': 'MMOCR',
                     'url': 'https://github.com/open-mmlab/mmocr',
+                    'description': '全流程文字检测识别理解工具包'
                 },
                 {
                     'name': 'MMTracking',
                     'url': 'https://github.com/open-mmlab/mmtracking',
+                    'description': '一体化视频目标感知平台'
                 },
                 {
                     'name': 'MMGeneration',
                     'url': 'https://github.com/open-mmlab/mmgeneration',
+                    'description': '生成模型工具箱'
                 },
             ]
         },
