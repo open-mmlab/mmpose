@@ -146,7 +146,7 @@ html_theme_options = {
             'OpenMMLab',
             'children': [
                 {
-                    'name': 'Homepage',
+                    'name': '主页',
                     'url': 'https://openmmlab.com/'
                 },
                 {
