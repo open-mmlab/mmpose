@@ -15,8 +15,7 @@ All kinds of contributions are welcome, including but not limited to the followi
 :::{note}
 
 - If you plan to add some new features that involve large changes, it is encouraged to open an issue for discussion first.
-- If you are the author of some papers and would like to include your method to mmpose,
-  please contact Can Wang (wangcan@sensetime.com) or Sheng Jin (jinsheng@sensetime.com). We will much appreciate your contribution.
+- If you are the author of some papers and would like to include your method to mmpose, please contact us. We will much appreciate your contribution.
 :::
 
 ## Code style
