@@ -1,5 +1,6 @@
 import copy
 
+import torch
 import torch.nn as nn
 from mmcv.cnn import ConvModule, constant_init, normal_init
 from torch.nn.modules.batchnorm import _BatchNorm
@@ -29,6 +30,8 @@ class HourglassModule(nn.Module):
                  depth,
                  stage_channels,
                  stage_blocks,
+                 int=None,
+                 out=None,
                  norm_cfg=dict(type='BN', requires_grad=True)):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -74,14 +77,33 @@ class HourglassModule(nn.Module):
 
         self.up2 = nn.Upsample(scale_factor=2)
 
+        self.int = int
+        self.out = out
+
+        if int is not None:
+            self.adjust_channel_int = ResLayer(
+                BasicBlock, 1, int, cur_channel, stride=1, norm_cfg=norm_cfg)
+
+        if out is not None:
+            self.adjust_channel_out = ResLayer(
+                BasicBlock, 1, cur_channel, out, stride=1, norm_cfg=norm_cfg)
+
     def forward(self, x):
         """Model forward function."""
+        if self.int is not None:
+            x = self.adjust_channel_int(x)
+
+        # up1 256*64*64
         up1 = self.up1(x)
+        # up1 256*64*64
         low1 = self.low1(x)
         low2 = self.low2(low1)
         low3 = self.low3(low2)
         up2 = self.up2(low3)
-        return up1 + up2
+        out = up1 + up2
+        if self.out is not None:
+            out = self.adjust_channel_out(out)
+        return out
 
 
 @BACKBONES.register_module()
@@ -90,7 +112,7 @@ class HourglassNet(BaseBackbone):
 
     Stacked Hourglass Networks for Human Pose Estimation.
     More details can be found in the `paper
-    <https://arxiv.orgabs/1603.06937>`__ .
+    <https://arxiv.org/abs/1603.06937>`__ .
 
     Args:
         downsample_times (int): Downsample times in a HourglassModule.
@@ -132,64 +154,151 @@ class HourglassNet(BaseBackbone):
         assert len(stage_channels) == len(stage_blocks)
         assert len(stage_channels) > downsample_times
 
-        cur_channel = stage_channels[0]
+        # cur_channel = stage_channels[0]
 
-        self.stem = nn.Sequential(
-            ConvModule(3, 128, 7, padding=3, stride=2, norm_cfg=norm_cfg),
-            ResLayer(BasicBlock, 1, 128, 256, stride=2, norm_cfg=norm_cfg))
+        self.stem_1 = nn.Sequential(
+            ConvModule(3, 64, 7, padding=3, stride=2, norm_cfg=norm_cfg),
+            ResLayer(BasicBlock, 1, 64, 128, stride=2, norm_cfg=norm_cfg))
+
+        self.stem_2 = nn.Sequential(
+            ResLayer(BasicBlock, 2, 128, 128, stride=1, norm_cfg=norm_cfg),
+            ResLayer(BasicBlock, 1, 128, 256, stride=1, norm_cfg=norm_cfg))
 
         self.hourglass_modules = nn.ModuleList([
+            HourglassModule(downsample_times, stage_channels, stage_blocks),
+            HourglassModule(downsample_times, stage_channels, stage_blocks),
+            HourglassModule(downsample_times, stage_channels, stage_blocks),
             HourglassModule(downsample_times, stage_channels, stage_blocks)
-            for _ in range(num_stacks)
         ])
 
-        self.inters = ResLayer(
-            BasicBlock,
-            num_stacks - 1,
-            cur_channel,
-            cur_channel,
-            norm_cfg=norm_cfg)
-
-        self.conv1x1s = nn.ModuleList([
-            ConvModule(
-                cur_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
+        self.adjust_channel = nn.ModuleList([
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None),
+                ConvModule(256, 128, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None),
+                ConvModule(256, 128, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None),
+                ConvModule(256, 128, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None),
+                ConvModule(256, 512, 1, norm_cfg=norm_cfg, act_cfg=None))
         ])
 
-        if isinstance(feat_channel, list):
-            self.out_convs = nn.ModuleList([
-                ConvModule(
-                    cur_channel,
-                    feat_channel[i],
-                    3,
-                    padding=1,
-                    norm_cfg=norm_cfg) for i in range(num_stacks)
-            ])
+        self.final_convs = nn.ModuleList([
+            nn.Sequential(
+                ConvModule(128, 1 * 16, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(128, 2 * 16, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(128, 4 * 16, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(512, 64 * 16, 1, norm_cfg=norm_cfg, act_cfg=None))
+        ])
 
-            self.remap_convs = nn.ModuleList([
-                ConvModule(
-                    feat_channel[i],
-                    cur_channel,
-                    1,
-                    norm_cfg=norm_cfg,
-                    act_cfg=None) for i in range(num_stacks - 1)
-            ])
+        self.remap_1 = nn.ModuleList([
+            nn.Sequential(
+                ConvModule(1 * 16, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(2 * 16, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(4 * 16, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+        ])
 
-        else:
-            self.out_convs = nn.ModuleList([
-                ConvModule(
-                    cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
-                for _ in range(num_stacks)
-            ])
+        self.remap_2 = nn.ModuleList([
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+            nn.Sequential(
+                ConvModule(256, 256, 1, norm_cfg=norm_cfg, act_cfg=None)),
+        ])
 
-            self.remap_convs = nn.ModuleList([
-                ConvModule(
-                    feat_channel,
-                    cur_channel,
-                    1,
-                    norm_cfg=norm_cfg,
-                    act_cfg=None) for _ in range(num_stacks - 1)
-            ])
+        # self.inters = ResLayer(
+        #     BasicBlock,
+        #     num_stacks - 1,
+        #     cur_channel,
+        #     cur_channel,
+        #     norm_cfg=norm_cfg)
+
+        # self.conv1x1s = nn.ModuleList([
+        #     ConvModule(
+        #         cur_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
+        #     for _ in range(num_stacks - 1)
+        # ])
+
+        # self.out_convs = nn.ModuleList([
+        #     ConvModule(
+        #         cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
+        #     for _ in range(num_stacks)
+        # ])
+
+        # self.final_convs = nn.ModuleList([
+        #     nn.Sequential(
+        #         ConvModule(
+        #             feat_channel,
+        #             feat_channel,
+        #             1,
+        #             norm_cfg=norm_cfg,
+        #             act_cfg=None),
+        #         nn.Conv2d(feat_channel, 16, 1),
+        #     ),
+        #     nn.Sequential(
+        #         ConvModule(
+        #             feat_channel,
+        #             feat_channel,
+        #             1,
+        #             norm_cfg=norm_cfg,
+        #             act_cfg=None),
+        #         nn.Conv2d(feat_channel, 16 * 2, 1),
+        #     ),
+        #     nn.Sequential(
+        #         ConvModule(
+        #             feat_channel,
+        #             feat_channel,
+        #             1,
+        #             norm_cfg=norm_cfg,
+        #             act_cfg=None),
+        #         nn.Conv2d(feat_channel, 16 * 4, 1),
+        #     ),
+        #     nn.Sequential(
+        #         ConvModule(
+        #             feat_channel,
+        #             feat_channel,
+        #             1,
+        #             norm_cfg=norm_cfg,
+        #             act_cfg=None),
+        #         nn.Conv2d(feat_channel, 16 * 8, 1),
+        #     ),
+        #     nn.Sequential(
+        #         ConvModule(
+        #             feat_channel,
+        #             feat_channel,
+        #             1,
+        #             norm_cfg=norm_cfg,
+        #             act_cfg=None),
+        #         nn.Conv2d(feat_channel, 16 * 64, 1),
+        #     )
+        # ])
+
+        # self.remap_convs = nn.ModuleList([
+        #     ConvModule(
+        #         feat_channel,
+        #         cur_channel,
+        #         1, norm_cfg=norm_cfg, act_cfg=None)
+        #     for _ in range(num_stacks - 1)
+        # ])
+
+        # self.remap_final = nn.ModuleList([
+        #     ConvModule(16, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None),
+        #     ConvModule(
+        #         16 * 2, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None),
+        #     ConvModule(
+        #         16 * 4, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None),
+        #     ConvModule(
+        #         16 * 8, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None),
+        # ])
 
         self.relu = nn.ReLU(inplace=True)
 
@@ -214,21 +323,29 @@ class HourglassNet(BaseBackbone):
 
     def forward(self, x):
         """Model forward function."""
-        inter_feat = self.stem(x)
+
+        mid_feat = self.stem_1(x)
+        inter_feat = self.stem_2(mid_feat)
         out_feats = []
 
         for ind in range(self.num_stacks):
             single_hourglass = self.hourglass_modules[ind]
-            out_conv = self.out_convs[ind]
+            adjust = self.adjust_channel[ind]
+            final = self.final_convs[ind]
 
             hourglass_feat = single_hourglass(inter_feat)
-            out_feat = out_conv(hourglass_feat)
+            res = adjust(hourglass_feat)
+            out_feat = final(res)
             out_feats.append(out_feat)
 
             if ind < self.num_stacks - 1:
-                inter_feat = self.conv1x1s[ind](
-                    inter_feat) + self.remap_convs[ind](
-                        out_feat)
-                inter_feat = self.inters[ind](self.relu(inter_feat))
+                # import pdb
+                # pdb.set_trace()
+                r1 = self.remap_1[ind](out_feat)
+                cat = torch.cat([res, mid_feat], axis=1)
+                r2 = self.remap_2[ind](cat)
+
+                inter_feat = r2 + r1
+                mid_feat = res
 
         return out_feats

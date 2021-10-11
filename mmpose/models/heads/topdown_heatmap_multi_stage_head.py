@@ -137,7 +137,8 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
 
         if isinstance(self.loss, nn.Sequential):
             assert len(self.loss) == len(output)
-
+        target_weight_i = target_weight
+        loss_func = self.loss
         for i in range(len(output)):
             target_i = target[i]
             target_weight_i = target_weight
@@ -145,11 +146,16 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
                 loss_func = self.loss[i]
             else:
                 loss_func = self.loss
+
             loss_i = loss_func(output[i], target_i, target_weight_i)
+            # if 'mse_loss' not in losses:
+            #     losses['mse_loss'] = loss_i * (float(i) / 4 + 0.5)
+            # else:
+            #     losses['mse_loss'] += loss_i * (float(i) / 4 + 0.5)
             if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i * (float(i) / 4 + 0.5)
+                losses['mse_loss'] = loss_i
             else:
-                losses['mse_loss'] += loss_i * (float(i) / 4 + 0.5)
+                losses['mse_loss'] += loss_i
 
         return losses
 
@@ -248,9 +254,8 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             root_idx (int|None): If not none, the root joint will be inserted
                 back to the pose at the given index.
         """
-        x = x + root_pos
-        if root_idx is not None:
-            x = np.insert(x, root_idx, root_pos.squeeze(1), axis=1)
+        x[:, :, 2] = x[:, :, 2] + root_pos[:, :, 2]
+        # if root_idx is not None:
         return x
 
     def decode(self, img_metas, output, **kwargs):
@@ -289,21 +294,26 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             if bbox_ids is not None:
                 bbox_ids.append(img_metas[i]['bbox_id'])
 
+        # import pdb
+        # pdb.set_trace()
+
         preds, maxvals = keypoints_from_heatmaps3d(
             output.reshape(batch_size, 16, 64, 64, 64), c, s)
 
         for i in range(batch_size):
-            cam = SimpleCamera(img_metas[i]['camera_param'])
             # import pdb
             # pdb.set_trace()
-            preds[i][:, 2] = ((preds[i][:, 2] / 64) - 0.5) / 2 + 5
-            preds[i] = cam.pixel_to_camera(preds[i])
-
-        preds -= np.array([0, 0, 5])
-
+            preds[i][:, 2] = (preds[i][:, 2] / 64) * 2 - 1
+        # preds -= np.array([0, 0, 9])
         root_pos = np.stack([m['root_position'] for m in img_metas])
         root_idx = img_metas[0].get('root_position_index', None)
         preds = self._restore_global_position(preds, root_pos, root_idx)
+
+        for i in range(batch_size):
+            cam = SimpleCamera(img_metas[i]['camera_param'])
+            preds[i] = cam.pixel_to_camera(preds[i])
+
+        preds = np.insert(preds, root_idx, root_pos.squeeze(1), axis=1)
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
@@ -514,7 +524,7 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
     def __init__(self,
                  out_shape,
                  unit_channels=256,
-                 out_channels=17,
+                 out_channels=16,
                  num_stages=4,
                  num_units=4,
                  use_prm=False,
@@ -584,10 +594,11 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
                 loss_func = self.loss
 
             loss_i = loss_func(output[i], target_i, target_weight_i)
-            if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i
-            else:
-                losses['mse_loss'] += loss_i
+            if i == 4:
+                if 'mse_loss' not in losses:
+                    losses['mse_loss'] = loss_i
+                else:
+                    losses['mse_loss'] += loss_i
 
         return losses
 

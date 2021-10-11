@@ -3,13 +3,13 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
-evaluation = dict(interval=1, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
+checkpoint_config = dict(interval=2)
+evaluation = dict(interval=2, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
 
 # optimizer settings
 optimizer = dict(
     type='Adam',
-    lr=1e-3,
+    lr=2.5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -30,8 +30,8 @@ log_config = dict(
     ])
 
 channel_cfg = dict(
-    num_output_channels=17,
-    dataset_joints=17,
+    num_output_channels=16,
+    dataset_joints=16,
     dataset_channel=[
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
     ],
@@ -51,14 +51,20 @@ model = dict(
     pretrained=None,
     backbone=dict(
         type='HourglassNet',
-        downsample_times=2,
-        num_stacks=5,
-        feat_channel=[1 * 16, 2 * 16, 4 * 16, 8 * 16, 64 * 16]),
+        # downsample_times=4,
+        downsample_times=4,
+        num_stacks=4,
+        # stage_channels=(512, 512, 640, 640, 768),
+        stage_channels=(256, 256, 384, 384, 512),
+        # stage_blocks=(1, 1, 1, 1, 2),
+        stage_blocks=(1, 1, 1, 1, 2),
+        # feat_channel=[1 * 16, 2 * 16, 4 * 16, 8 * 16, 64 * 16]),
+        feat_channel=512),
     keypoint_head=dict(
         type='TopdownHeatmapMultiStageHead',
-        in_channels=channel_cfg['num_output_channels'],
-        out_channels=channel_cfg['num_output_channels'],
-        num_stages=5,
+        in_channels=256,
+        out_channels=17 * 64,
+        num_stages=4,
         num_deconv_layers=0,
         extra=dict(final_conv_kernel=0, ),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=False)),
@@ -69,8 +75,8 @@ model = dict(
 data_root = 'data/h36m'
 data_cfg = dict(
     image_size=[256, 256],
-    heatmap_size=[64, 64, [1, 2, 4, 8, 64]],
-    heatmap3d_depth_bound=0.5,
+    heatmap_size=[64, 64, [1, 2, 4, 64]],
+    heatmap3d_depth_bound=2,
     num_joints=17,
     seq_len=1,
     seq_frame_interval=1,
@@ -119,17 +125,17 @@ joint_3d_normalize_param = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
+        type='CameraProjection',
+        item='target',
+        mode='camera_to_pixel',
+        output_name='joints_3d'),
+    dict(
         type='GetRootCenteredPose',
         item='target',
         visible_item='target_visible',
         root_index=0,
         root_name='root_position',
         remove_root=True),
-    dict(
-        type='CameraProjection',
-        item='target',
-        mode='camera_to_pixel',
-        output_name='joints_3d'),
     # dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
@@ -148,12 +154,14 @@ train_pipeline = [
         meta_name='metas',
         meta_keys=[
             'target_image_path',
+            'input_3d',
             'flip_pairs',
             'root_position',
             'root_position_index',
             'center',
             'scale',
             'rotation',
+            'img_ori',
             'image_file',
             'target_image_path',
             'target_image_paths',
@@ -163,12 +171,6 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopDownAffine'),
-    dict(type='ToTensor'),
-    dict(
-        type='NormalizeTensor',
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]),
     dict(
         type='GetRootCenteredPose',
         item='target',
@@ -176,6 +178,12 @@ val_pipeline = [
         root_index=0,
         root_name='root_position',
         remove_root=True),
+    dict(type='TopDownAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
     dict(
         type='Collect',
         keys=[('img', 'input'), 'target'],
@@ -198,10 +206,10 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=64,
-    workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=64),
-    test_dataloader=dict(samples_per_gpu=64),
+    samples_per_gpu=1,
+    workers_per_gpu=0,
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='Body3DH36MDataset_E2E',
         ann_file=f'{data_root}/annotation_body3d/fps50/h36m_train.npz',

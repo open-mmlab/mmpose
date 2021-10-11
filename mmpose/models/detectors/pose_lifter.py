@@ -192,10 +192,10 @@ class PoseLifter(BasePose):
         if self.with_keypoint:
             keypoint_losses = self.keypoint_head.get_loss(
                 output, target, target_weight)
-            keypoint_accuracy = self.keypoint_head.get_accuracy(
-                output, target, target_weight)
+            # keypoint_accuracy = self.keypoint_head.get_accuracy(
+            #     output, target, target_weight)
             losses.update(keypoint_losses)
-            losses.update(keypoint_accuracy)
+            # losses.update(keypoint_accuracy)
 
         # trajectory model
         if self.with_traj:
