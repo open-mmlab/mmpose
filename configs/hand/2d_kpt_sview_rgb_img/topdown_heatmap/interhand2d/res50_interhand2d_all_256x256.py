@@ -143,6 +143,6 @@ data = dict(
         'InterHand2.6M_test_joint_3d.json',
         img_prefix=f'{data_root}/images/test/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )
