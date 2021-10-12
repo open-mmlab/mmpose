@@ -141,5 +141,4 @@ data = dict(
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
-        dataset_info={{_base_.dataset_info}}),
-)
+        dataset_info={{_base_.dataset_info}}))

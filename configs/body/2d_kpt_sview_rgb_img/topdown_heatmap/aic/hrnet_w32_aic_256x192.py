@@ -172,6 +172,5 @@ data = dict(
         img_prefix=f'{data_root}/ai_challenger_keypoint_validation_20170911/'
         'keypoint_validation_images_20170911/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
-        dataset_info={{_base_.dataset_info}}),
-)
+        pipeline=test_pipeline,
+        dataset_info={{_base_.dataset_info}}))

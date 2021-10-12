@@ -170,4 +170,5 @@ data = dict(
         ann_file=f'{data_root}/annotations/mmpose_crowdpose_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline))
+        pipeline=test_pipeline,
+        dataset_info={{_base_.dataset_info}}))
