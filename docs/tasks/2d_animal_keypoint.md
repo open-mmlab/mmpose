@@ -97,6 +97,63 @@ We choose the images from PascalVOC for train & val. In total, we have 3608 imag
 2798 images with 4000 annotations are used for training, and 810 images with 1117 annotations are used for validation.
 Those images from other sources (1000 images with 1000 annotations) are used for testing.
 
+## AP-10K
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (Neurips Dataset Track'2021)</a></summary>
+
+```bibtex
+@misc{yu2021ap10k,
+      title={AP-10K: A Benchmark for Animal Pose Estimation in the Wild},
+      author={Hang Yu and Yufei Xu and Jing Zhang and Wei Zhao and Ziyu Guan and Dacheng Tao},
+      year={2021},
+      eprint={2108.12617},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
+</details>
+
+For [AP-10K](https://github.com/AlexTheBad/AP-10K) datatset, images and annotations can be downloaded from [download]().
+Note, this data and annotation data is for non-commercial use only, per the authors (see http://horse10.deeplabcut.org for more information).
+
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── AP-10K
+        │-- old_annotations
+        │   │-- AP10K-train-split1.json
+        │   |-- AP10K-train-split2.json
+        │   |-- AP10K-train-split3.json
+        │   │-- AP10K-val-split1.json
+        │   |-- AP10K-val-split2.json
+        │   |-- AP10K-val-split3.json
+        │-- annotations
+        │   │-- AP10K-train-split1.json
+        │   |-- AP10K-train-split2.json
+        │   |-- AP10K-train-split3.json
+        │   │-- AP10K-val-split1.json
+        │   |-- AP10K-val-split2.json
+        │   |-- AP10K-val-split3.json
+        │-- data
+        │   │-- 000000000001.jpg
+        │   │-- 000000000002.jpg
+        │   │-- ...
+
+```
+
+The annotation files in 'old_annotation' folder contains 57 labeled animal species and breeds. The annotation files in 'annotation' folder contains XX labeld animal species (we merge animal breeds into species following the taxonomic rank). There are total XXX labeled images with XXX instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
+
 ## Horse-10
 
 <!-- [DATASET] -->
