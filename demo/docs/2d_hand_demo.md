@@ -99,7 +99,7 @@ python demo/top_down_video_demo_with_mmdet.py demo/mmdetection_cfg/cascade_rcnn_
     https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth \
     configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/res50_onehand10k_256x256.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_onehand10k_256x256-e67998f6_20200813.pth \
-    --video-path demo/resources/demo.mp4 \
+    --video-path demo/resources/<demo_hand>.mp4 \
     --out-video-root vis_results
 ```
 
