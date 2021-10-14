@@ -157,6 +157,6 @@ data = dict(
         ann_file=f'{data_root}/annotations/face_landmarks_aflw_test.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )
