@@ -36,7 +36,7 @@ python demo/top_down_img_demo.py \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res50_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth \
     --img-root tests/data/macaque/ --json-file tests/data/macaque/test_macaque.json \
-    --out-img-root vis_results
+    --out-img-root vis_results \
     --device=cpu
 ```
 
