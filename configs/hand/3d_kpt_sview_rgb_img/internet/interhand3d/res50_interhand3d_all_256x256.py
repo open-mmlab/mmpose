@@ -178,6 +178,6 @@ data = dict(
         data_cfg=data_cfg,
         use_gt_root_depth=True,
         rootnet_result_file=None,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )

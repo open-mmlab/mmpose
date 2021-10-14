@@ -137,6 +137,6 @@ data = dict(
         img_prefix=f'{data_root}/img/',
         subset='upper',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )

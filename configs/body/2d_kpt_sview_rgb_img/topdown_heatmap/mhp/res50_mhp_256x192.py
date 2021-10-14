@@ -138,6 +138,6 @@ data = dict(
         ann_file=f'{data_root}/annotations/mhp_val.json',
         img_prefix=f'{data_root}/val/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )

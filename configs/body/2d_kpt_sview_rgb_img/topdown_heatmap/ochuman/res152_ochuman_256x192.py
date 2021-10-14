@@ -142,6 +142,6 @@ data = dict(
         'ochuman_coco_format_test_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline,
+        pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )
