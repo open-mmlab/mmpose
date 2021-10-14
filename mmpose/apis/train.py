@@ -137,7 +137,7 @@ def train_model(model,
         val_dataset = build_dataset(cfg.data.val, dict(test_mode=True))
         dataloader_setting = dict(
             samples_per_gpu=1,
-            workers_per_gpu=cfg.data.get('workers_per_gpu', {}),
+            workers_per_gpu=cfg.data.get('workers_per_gpu', 1),
             # cfg.gpus will be ignored if distributed
             num_gpus=len(cfg.gpu_ids),
             dist=distributed,
