@@ -89,7 +89,7 @@ Examples:
 python demo/face_video_demo.py \
     configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
-    --video-path demo/resources/<demo_face>.mp4 \
+    --video-path https://user-images.githubusercontent.com/87690686/137441355-ec4da09c-3a8f-421b-bee9-b8b26f8c2dd0.mp4 \
     --out-video-root vis_results
 ```
 
