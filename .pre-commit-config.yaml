@@ -43,7 +43,7 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-        args: ["--skip", "*.ipynb"]
+        args: ["--skip", "*.ipynb", "-L", "mot"]
   - repo: local
     hooks:
       - id: update-model-index

@@ -71,7 +71,7 @@ def train_model(model,
 
     data_loaders = [build_dataloader(ds, **train_loader_cfg) for ds in dataset]
 
-    # determine wether use adversarial training precess or not
+    # determine whether use adversarial training precess or not
     use_adverserial_train = cfg.get('use_adversarial_train', False)
 
     # put model on gpus

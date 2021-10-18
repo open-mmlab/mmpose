@@ -25,9 +25,9 @@ def save_coco_anno(keypoints_all,
     :param keypoints_all: keypoint annotations.
     :param annotated_all: images annotated or not.
     :param imgs_all: the array of images.
-    :param keypoints_info: infomation about keypoint name.
-    :param skeleton_info: infomation about skeleton connection.
-    :param dataset: infomation about dataset name.
+    :param keypoints_info: information about keypoint name.
+    :param skeleton_info: information about skeleton connection.
+    :param dataset: information about dataset name.
     :param img_root: the path to save images.
     :param save_path: the path to save transformed annotation file.
     :param start_img_id: the starting point to count the image id.

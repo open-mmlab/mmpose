@@ -16,7 +16,7 @@ class MobileNetV3(BaseBackbone):
     """MobileNetV3 backbone.
 
     Args:
-        arch (str): Architechture of mobilnetv3, from {small, big}.
+        arch (str): Architecture of mobilnetv3, from {small, big}.
             Default: small.
         conv_cfg (dict): Config dict for convolution layer.
             Default: None, which means using conv2d.
@@ -25,13 +25,13 @@ class MobileNetV3(BaseBackbone):
         out_indices (None or Sequence[int]): Output from which stages.
             Default: (10, ), which means output tensors from final stage.
         frozen_stages (int): Stages to be frozen (all param fixed).
-            Defualt: -1, which means not freezing any parameters.
+            Default: -1, which means not freezing any parameters.
         norm_eval (bool): Whether to set norm layers to eval mode, namely,
             freeze running stats (mean and var). Note: Effect on Batch Norm
             and its variants only. Default: False.
         with_cp (bool): Use checkpoint or not. Using checkpoint will save
             some memory while slowing down the training speed.
-            Defualt: False.
+            Default: False.
     """
     # Parameters to build each block:
     #     [kernel size, mid channels, out channels, with_se, act type, stride]

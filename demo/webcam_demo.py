@@ -127,7 +127,7 @@ def parse_args():
         type=int,
         default=-1,
         help='Frame buffer size. If set -1, the buffer size will be '
-        'automatically inferred from the display delay time. Deafult: -1')
+        'automatically inferred from the display delay time. Default: -1')
 
     parser.add_argument(
         '--inference-fps',

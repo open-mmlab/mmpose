@@ -41,7 +41,7 @@ optimizer = dict(type='Adam', lr=0.0003, weight_decay=0.0001)
 To modify the learning rate of the model, the users only need to modify the `lr` in the config of optimizer.
 The users can directly set arguments following the [API doc](https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim) of PyTorch.
 
-For example, if you want to use `Adam` with the setting like `torch.optim.Adam(parms, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)` in PyTorch,
+For example, if you want to use `Adam` with the setting like `torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)` in PyTorch,
 the modification could be set as the following.
 
 ```python
