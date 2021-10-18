@@ -112,8 +112,8 @@ def _match_by_tag(inp, params):
                         joints[row]
                     tag_dict[key] = [tags[row]]
 
-    ans = np.array([joint_dict[i] for i in joint_dict]).astype(np.float32)
-    return ans
+    results = np.array([joint_dict[i] for i in joint_dict]).astype(np.float32)
+    return results
 
 
 class _Params:
@@ -232,16 +232,16 @@ class HeatmapParser:
 
         ind_k = torch.stack((x, y), dim=3)
 
-        ans = {
+        results = {
             'tag_k': tag_k.cpu().numpy(),
             'loc_k': ind_k.cpu().numpy(),
             'val_k': val_k.cpu().numpy()
         }
 
-        return ans
+        return results
 
     @staticmethod
-    def adjust(ans, heatmaps):
+    def adjust(results, heatmaps):
         """Adjust the coordinates for better accuracy.
 
         Note:
@@ -251,11 +251,11 @@ class HeatmapParser:
             heatmap width: W
 
         Args:
-            ans (list(np.ndarray)): Keypoint predictions.
+            results (list(np.ndarray)): Keypoint predictions.
             heatmaps (torch.Tensor[NxKxHxW]): Heatmaps.
         """
         _, _, H, W = heatmaps.shape
-        for batch_id, people in enumerate(ans):
+        for batch_id, people in enumerate(results):
             for people_id, people_i in enumerate(people):
                 for joint_id, joint in enumerate(people_i):
                     if joint[2] > 0:
@@ -273,9 +273,9 @@ class HeatmapParser:
                             x += 0.25
                         else:
                             x -= 0.25
-                        ans[batch_id][people_id, joint_id,
-                                      0:2] = (x + 0.5, y + 0.5)
-        return ans
+                        results[batch_id][people_id, joint_id,
+                                          0:2] = (x + 0.5, y + 0.5)
+        return results
 
     @staticmethod
     def refine(heatmap, tag, keypoints, use_udp=False):
@@ -314,7 +314,7 @@ class HeatmapParser:
 
         # mean tag of current detected people
         prev_tag = np.mean(tags, axis=0)
-        ans = []
+        results = []
 
         for _heatmap, _tag in zip(heatmap, tag):
             # distance of all tag values with mean tag of
@@ -345,14 +345,14 @@ class HeatmapParser:
             else:
                 y -= 0.25
 
-            ans.append((x, y, val))
-        ans = np.array(ans)
+            results.append((x, y, val))
+        results = np.array(results)
 
-        if ans is not None:
+        if results is not None:
             for i in range(K):
                 # add keypoint if it is not detected
-                if ans[i, 2] > 0 and keypoints[i, 2] == 0:
-                    keypoints[i, :3] = ans[i, :3]
+                if results[i, 2] > 0 and keypoints[i, 2] == 0:
+                    keypoints[i, :3] = results[i, :3]
 
         return keypoints
 
@@ -374,33 +374,33 @@ class HeatmapParser:
         Returns:
             tuple: A tuple containing keypoint grouping results.
 
-            - ans (list(np.ndarray)): Pose results.
+            - results (list(np.ndarray)): Pose results.
             - scores (list): Score of people.
         """
-        ans = self.match(**self.top_k(heatmaps, tags))
+        results = self.match(**self.top_k(heatmaps, tags))
 
         if adjust:
             if self.use_udp:
-                for i in range(len(ans)):
-                    if ans[i].shape[0] > 0:
-                        ans[i][..., :2] = post_dark_udp(
-                            ans[i][..., :2].copy(), heatmaps[i:i + 1, :])
+                for i in range(len(results)):
+                    if results[i].shape[0] > 0:
+                        results[i][..., :2] = post_dark_udp(
+                            results[i][..., :2].copy(), heatmaps[i:i + 1, :])
             else:
-                ans = self.adjust(ans, heatmaps)
+                results = self.adjust(results, heatmaps)
 
-        scores = [i[:, 2].mean() for i in ans[0]]
+        scores = [i[:, 2].mean() for i in results[0]]
 
         if refine:
-            ans = ans[0]
+            results = results[0]
             # for every detected person
-            for i in range(len(ans)):
+            for i in range(len(results)):
                 heatmap_numpy = heatmaps[0].cpu().numpy()
                 tag_numpy = tags[0].cpu().numpy()
                 if not self.tag_per_joint:
                     tag_numpy = np.tile(tag_numpy,
                                         (self.params.num_joints, 1, 1, 1))
-                ans[i] = self.refine(
-                    heatmap_numpy, tag_numpy, ans[i], use_udp=self.use_udp)
-            ans = [ans]
+                results[i] = self.refine(
+                    heatmap_numpy, tag_numpy, results[i], use_udp=self.use_udp)
+            results = [results]
 
-        return ans, scores
+        return results, scores

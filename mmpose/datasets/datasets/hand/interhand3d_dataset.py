@@ -273,7 +273,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
                     , scale[1],area, score]
                 :image_paths (list[str]): For example, ['Capture6/
                     0012_aokay_upright/cam410061/image4996.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
