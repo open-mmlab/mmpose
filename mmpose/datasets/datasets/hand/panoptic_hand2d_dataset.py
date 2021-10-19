@@ -150,7 +150,7 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
                     , scale[1],area, score]
                 :image_paths (list[str]): For example, ['hand_labels/'
                     'manual_test/000648952_02_l.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.

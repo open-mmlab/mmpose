@@ -155,7 +155,7 @@
 
 - Fix opencv compatibility ([\#635](https://github.com/open-mmlab/mmpose/pull/635))
 - Fix demo with UDP ([\#637](https://github.com/open-mmlab/mmpose/pull/637))
-- Fix bottom-up model onnx convertion ([\#680](https://github.com/open-mmlab/mmpose/pull/680))
+- Fix bottom-up model onnx conversion ([\#680](https://github.com/open-mmlab/mmpose/pull/680))
 - Fix `GPU_IDS` in distributed training ([\#668](https://github.com/open-mmlab/mmpose/pull/668))
 - Fix MANIFEST.in ([\#641](https://github.com/open-mmlab/mmpose/pull/641), [\#657](https://github.com/open-mmlab/mmpose/pull/657))
 - Fix docs ([\#643](https://github.com/open-mmlab/mmpose/pull/643),[\#684](https://github.com/open-mmlab/mmpose/pull/684),[\#688](https://github.com/open-mmlab/mmpose/pull/688),[\#690](https://github.com/open-mmlab/mmpose/pull/690),[\#692](https://github.com/open-mmlab/mmpose/pull/692))

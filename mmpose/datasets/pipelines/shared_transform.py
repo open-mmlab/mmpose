@@ -113,9 +113,9 @@ class Collect:
 
     Args:
         keys (Sequence[str|tuple]): Required keys to be collected. If a tuple
-          (key, key_new) is given as an element, the item retrived by key will
+          (key, key_new) is given as an element, the item retrieved by key will
           be renamed as key_new in collected data.
-        meta_name (str): The name of the key that contains meta infomation.
+        meta_name (str): The name of the key that contains meta information.
           This key is always populated. Default: "img_metas".
         meta_keys (Sequence[str|tuple]): Keys that are collected under
           meta_name. The contents of the `meta_name` dictionary depends
@@ -128,7 +128,7 @@ class Collect:
         self.meta_name = meta_name
 
     def __call__(self, results):
-        """Performs the Collect formating.
+        """Performs the Collect formatting.
 
         Args:
             results (dict): The resulting dict to be modified and passed
@@ -449,7 +449,7 @@ class RenameKeys:
 
     Args:
     key_pairs (Sequence[tuple]): Required keys to be renamed. If a tuple
-    (key_src, key_tgt) is given as an element, the item retrived by key_src
+    (key_src, key_tgt) is given as an element, the item retrieved by key_src
     will be renamed as key_tgt.
     """
 

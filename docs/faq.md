@@ -8,7 +8,7 @@ If the contents here do not cover your issue, please create an issue using the [
 
 - **Unable to install xtcocotools**
 
-  1. Try to install it using pypi mannually `pip install xtcocotools`.
+  1. Try to install it using pypi manually `pip install xtcocotools`.
   1. If step1 does not work. Try to install it from [source](https://github.com/jin-s13/xtcocoapi).
 
   ```
@@ -90,7 +90,7 @@ If the contents here do not cover your issue, please create an issue using the [
 ## Evaluation
 
 - **How to evaluate on MPII test dataset?**
-  Since we do not have the ground-truth for test dataset, we cannot evalute it 'locally'.
+  Since we do not have the ground-truth for test dataset, we cannot evaluate it 'locally'.
   If you would like to evaluate the performance on test set, you have to upload the pred.mat (which is generated during testing) to the official server via email, according to [the MPII guideline](http://human-pose.mpi-inf.mpg.de/#evaluation).
 
 ## Inference

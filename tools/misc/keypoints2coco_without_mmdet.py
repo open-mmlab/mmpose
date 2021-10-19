@@ -13,7 +13,7 @@ from mmpose.apis import inference_top_down_pose_model, init_pose_model
 def main():
     """Visualize the demo images.
 
-    pose_keypoints equire the json_file containing boxes.
+    pose_keypoints require the json_file containing boxes.
     """
     parser = ArgumentParser()
     parser.add_argument('pose_config', help='Config file for detection')

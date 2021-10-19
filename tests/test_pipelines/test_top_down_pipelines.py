@@ -123,7 +123,7 @@ def test_top_down_pipeline():
     results['ann_info']['image_size'] = np.array([192, 256])
     results['ann_info']['heatmap_size'] = np.array([48, 64])
 
-    # test filp
+    # test flip
     random_flip = TopDownRandomFlip(flip_prob=1.)
     results_flip = random_flip(copy.deepcopy(results))
     assert _check_flip(results['img'], results_flip['img'])

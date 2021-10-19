@@ -141,7 +141,7 @@ class Interhand3D(TopDown):
                 If None, do not draw keypoints.
             pose_link_color (np.array[Mx3]): Color of M limbs.
                 If None, do not draw limbs.
-            vis_height (int): The image hight of the visualization. The width
+            vis_height (int): The image height of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
             num_instances (int): Number of instances to be shown in 3D. If

@@ -173,7 +173,7 @@ def test_mesh_pipeline():
     assert results['iuv'].shape == (1002, 1000, 3)
     assert results['iuv'][:, :, 0].max() <= 1
 
-    # test filp
+    # test flip
     random_flip = MeshRandomFlip(flip_prob=1.)
     results_flip = random_flip(copy.deepcopy(results))
     assert _check_flip(results['img'], results_flip['img'])
@@ -182,7 +182,7 @@ def test_mesh_pipeline():
     assert _check_flip(results['iuv'], flip_iuv)
     results = results_flip
 
-    # test filp without IUV image
+    # test flip without IUV image
     results_no_iuv = random_flip(copy.deepcopy(results_no_iuv))
     assert results_no_iuv['iuv'] is None
 
@@ -223,7 +223,7 @@ def test_mesh_pipeline():
     assert isinstance(results_tensor['uv_coordinates'], torch.FloatTensor)
     assert results_tensor['uv_coordinates'].shape == torch.Size([2, 64, 64])
 
-    # transfer IUV image to tensor withou GT IUV image
+    # transfer IUV image to tensor without GT IUV image
     results_no_iuv = iuv_to_tensor(results_no_iuv)
     assert isinstance(results_no_iuv['part_index'], torch.LongTensor)
     assert results_no_iuv['part_index'].shape == torch.Size([1, 64, 64])

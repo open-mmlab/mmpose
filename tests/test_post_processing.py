@@ -10,17 +10,17 @@ from mmpose.core import (affine_transform, flip_back, fliplr_joints,
 def test_affine_transform():
     pt = np.array([0, 1])
     trans = np.array([[1, 0, 1], [0, 1, 0]])
-    ans = affine_transform(pt, trans)
-    assert_array_almost_equal(ans, np.array([1, 1]), decimal=4)
-    assert isinstance(ans, np.ndarray)
+    result = affine_transform(pt, trans)
+    assert_array_almost_equal(result, np.array([1, 1]), decimal=4)
+    assert isinstance(result, np.ndarray)
 
 
 def test_rotate_point():
     src_point = np.array([0, 1])
     rot_rad = np.pi / 2.
-    ans = rotate_point(src_point, rot_rad)
-    assert_array_almost_equal(ans, np.array([-1, 0]), decimal=4)
-    assert isinstance(ans, list)
+    result = rotate_point(src_point, rot_rad)
+    assert_array_almost_equal(result, np.array([-1, 0]), decimal=4)
+    assert isinstance(result, list)
 
 
 def test_fliplr_joints():
@@ -54,24 +54,24 @@ def test_transform_preds():
     center = np.array([50, 50])
     scale = np.array([100 / 200.0, 100 / 200.0])
     size = np.array([100, 100])
-    ans = transform_preds(coords, center, scale, size)
-    assert_array_almost_equal(coords, ans)
+    result = transform_preds(coords, center, scale, size)
+    assert_array_almost_equal(coords, result)
 
     coords = np.random.random([2, 2])
     center = np.array([50, 50])
     scale = np.array([100 / 200.0, 100 / 200.0])
     size = np.array([101, 101])
-    ans = transform_preds(coords, center, scale, size, use_udp=True)
-    assert_array_almost_equal(coords, ans)
+    result = transform_preds(coords, center, scale, size, use_udp=True)
+    assert_array_almost_equal(coords, result)
 
 
 def test_get_affine_transform():
     center = np.array([50, 50])
     scale = np.array([100 / 200.0, 100 / 200.0])
     size = np.array([100, 100])
-    ans = get_affine_transform(center, scale, 0, size)
+    result = get_affine_transform(center, scale, 0, size)
     trans = np.array([[1, 0, 0], [0, 1, 0]])
-    assert_array_almost_equal(trans, ans)
+    assert_array_almost_equal(trans, result)
 
 
 def test_flip_regression():

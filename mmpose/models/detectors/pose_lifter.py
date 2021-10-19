@@ -319,7 +319,7 @@ class PoseLifter(BasePose):
                 If None, do not draw links.
             radius (int): Radius of circles.
             thickness (int): Thickness of lines.
-            vis_height (int): The image hight of the visualization. The width
+            vis_height (int): The image height of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
             win_name (str): The window name.

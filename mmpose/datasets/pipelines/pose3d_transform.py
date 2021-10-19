@@ -14,7 +14,7 @@ from mmpose.datasets.builder import PIPELINES
 @PIPELINES.register_module()
 class GetRootCenteredPose:
     """Zero-center the pose around a given root joint. Optionally, the root
-    joint can be removed from the origianl pose and stored as a separate item.
+    joint can be removed from the original pose and stored as a separate item.
 
     Note that the root-centered joints may no longer align with some annotation
     information (e.g. flip_pairs, num_joints, inference_channel, etc.) due to
@@ -85,7 +85,7 @@ class NormalizeJointCoordinate:
 
     Args:
         item (str): The name of the pose to normalize.
-        mean (array): Mean values of joint coordiantes in shape [K, C].
+        mean (array): Mean values of joint coordinates in shape [K, C].
         std (array): Std values of joint coordinates in shape [K, C].
         norm_param_file (str): Optionally load a dict containing `mean` and
             `std` from a file using `mmcv.load`.
@@ -427,7 +427,7 @@ class PoseSequenceToTensor:
     Args:
         item (str): The name of the pose sequence
 
-    Requred keys:
+    Required keys:
         item
     Modified keys:
         item

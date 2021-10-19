@@ -90,7 +90,7 @@ def test_pose_lifter_forward():
 
     assert isinstance(losses, dict)
 
-    # Test forward test for supervised learning wiht pose model only
+    # Test forward test for supervised learning with pose model only
     with torch.no_grad():
         _ = detector.forward(
             inputs['input'],
