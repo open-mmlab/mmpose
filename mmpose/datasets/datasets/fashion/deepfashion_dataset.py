@@ -167,7 +167,7 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
                 :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
                     , scale[1],area, score]
                 :image_paths (list[str]): For example, [ 'img_00000001.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.

@@ -341,7 +341,7 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
         batch size: B
         num keypoints: K
         num persons: N
-        hight of heatmaps: H
+        height of heatmaps: H
         width of heatmaps: W
         B=1 for bottom_up paradigm where all persons share the same heatmap.
         B=N for top_down paradigm where each person has its own heatmaps.

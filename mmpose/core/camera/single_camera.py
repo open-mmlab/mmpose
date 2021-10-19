@@ -10,7 +10,7 @@ class SimpleCamera(SingleCameraBase):
     intrinsic/extrinsic camera parameters.
 
     Notes:
-        The keypoint coordiante should be an np.ndarray with a shape of
+        The keypoint coordinate should be an np.ndarray with a shape of
     [...,J, C] where J is the keypoint number of an instance, and C is
     the coordinate dimension. For example:
 

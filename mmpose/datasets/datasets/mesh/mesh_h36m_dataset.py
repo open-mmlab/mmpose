@@ -13,7 +13,7 @@ from .mesh_base_dataset import MeshBaseDataset
 @DATASETS.register_module()
 class MeshH36MDataset(MeshBaseDataset):
     """Human3.6M Dataset for 3D human mesh estimation. It inherits all function
-    from MeshBaseDataset and has its own evaluate fuction.
+    from MeshBaseDataset and has its own evaluate function.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

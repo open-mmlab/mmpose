@@ -234,7 +234,7 @@ def imshow_keypoints_3d(
             not nddraw keypoints.
         pose_link_color (np.array[Mx3]): Color of M links. If None, do not
             draw links.
-        vis_height (int): The image hight of the visualization. The width
+        vis_height (int): The image height of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
         kpt_score_thr (float): Minimum score of keypoints to be shown.

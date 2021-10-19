@@ -50,8 +50,8 @@ class VGG(BaseBackbone):
             otherwise multiple stages are specified, a tuple of tensors will
             be returned. When it is None, the default behavior depends on
             whether num_classes is specified. If num_classes <= 0, the default
-            value is (4, ), outputing the last feature map before classifier.
-            If num_classes > 0, the default value is (5, ), outputing the
+            value is (4, ), outputting the last feature map before classifier.
+            If num_classes > 0, the default value is (5, ), outputting the
             classification score. Default: None.
         frozen_stages (int): Stages to be frozen (all param fixed). -1 means
             not freezing any parameters.

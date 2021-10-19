@@ -12,7 +12,7 @@ def test_pose_pck_accuracy():
     output = np.zeros((1, 5, 64, 64), dtype=np.float32)
     target = np.zeros((1, 5, 64, 64), dtype=np.float32)
     mask = np.array([[True, True, False, False, False]])
-    # first channnel
+    # first channel
     output[0, 0, 20, 20] = 1
     target[0, 0, 10, 10] = 1
     # second channel
@@ -84,7 +84,7 @@ def test_keypoint_pck_accuracy():
     mask = np.array([[True, True, False, True, True],
                      [True, True, False, True, True]])
     thr = np.full((2, 2), 10, dtype=np.float32)
-    # first channnel
+    # first channel
     output[0, 0] = [10, 0]
     target[0, 0] = [10, 0]
     # second channel
@@ -96,7 +96,7 @@ def test_keypoint_pck_accuracy():
     # fourth channel
     output[0, 3] = [30, 30]
     target[0, 3] = [30, 30]
-    # fifth channnel
+    # fifth channel
     output[0, 4] = [0, 10]
     target[0, 4] = [0, 10]
 
@@ -123,7 +123,7 @@ def test_keypoint_auc():
     output = np.zeros((1, 5, 2))
     target = np.zeros((1, 5, 2))
     mask = np.array([[True, True, False, True, True]])
-    # first channnel
+    # first channel
     output[0, 0] = [10, 4]
     target[0, 0] = [10, 0]
     # second channel
@@ -135,7 +135,7 @@ def test_keypoint_auc():
     # fourth channel
     output[0, 3] = [40, 40]
     target[0, 3] = [30, 30]
-    # fifth channnel
+    # fifth channel
     output[0, 4] = [20, 10]
     target[0, 4] = [0, 10]
 
@@ -147,7 +147,7 @@ def test_keypoint_epe():
     output = np.zeros((1, 5, 2))
     target = np.zeros((1, 5, 2))
     mask = np.array([[True, True, False, True, True]])
-    # first channnel
+    # first channel
     output[0, 0] = [10, 4]
     target[0, 0] = [10, 0]
     # second channel
@@ -159,7 +159,7 @@ def test_keypoint_epe():
     # fourth channel
     output[0, 3] = [40, 40]
     target[0, 3] = [30, 30]
-    # fifth channnel
+    # fifth channel
     output[0, 4] = [20, 10]
     target[0, 4] = [0, 10]
 

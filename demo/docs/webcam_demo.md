@@ -42,7 +42,7 @@ It will launch a window to display the webcam video steam with detection and pos
 
 - **How to enable/disable the special effects?**
 
-  The special effects can be enabled/disabled at launch time by setting arguments like `--bugeye`, `--sunglasses`, *etc*. You can also toggle the effects by keyboard shorcuts like `b`, `s` when the tool starts.
+  The special effects can be enabled/disabled at launch time by setting arguments like `--bugeye`, `--sunglasses`, *etc*. You can also toggle the effects by keyboard shortcuts like `b`, `s` when the tool starts.
 
 - **What if my computer doesn't have a camera?**
 

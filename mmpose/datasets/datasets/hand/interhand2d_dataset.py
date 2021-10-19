@@ -251,7 +251,7 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
                     '/', 'c', 'a', 'm', '4', '1', '0', '2', '0', '9', '/',
                     'i', 'm', 'a', 'g', 'e', '6', '2', '4', '3', '4', '.',
                     'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.

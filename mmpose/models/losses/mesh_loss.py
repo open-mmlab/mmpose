@@ -49,7 +49,7 @@ def perspective_projection(points, rotation, translation, focal_length,
 @LOSSES.register_module()
 class MeshLoss(nn.Module):
     """Mix loss for 3D human mesh. It is composed of loss on 2D joints, 3D
-    joints, mesh vertices and smpl paramters (if any).
+    joints, mesh vertices and smpl parameters (if any).
 
     Args:
         joints_2d_loss_weight (float): Weight for loss on 2D joints.
@@ -206,7 +206,7 @@ class MeshLoss(nn.Module):
         loss_vertex = self.vertex_loss(pred_vertices, gt_vertices, has_smpl)
         losses['vertex_loss'] = loss_vertex * self.vertex_loss_weight
 
-        # Compute loss on SMPL parameters, if avaliable
+        # Compute loss on SMPL parameters, if available
         if 'pose' in output.keys() and 'beta' in output.keys():
             pred_rotmat = output['pose']
             pred_betas = output['beta']

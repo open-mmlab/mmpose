@@ -66,7 +66,7 @@ def main():
         '--json-file',
         type=str,
         default=None,
-        help='Json file containing image and bbox inforamtion. Optionally,'
+        help='Json file containing image and bbox information. Optionally,'
         'The Json file can also contain 2D pose information. See'
         '"only-second-stage"')
     parser.add_argument(

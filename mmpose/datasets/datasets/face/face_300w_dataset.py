@@ -142,7 +142,7 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
                 :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
                     'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
                     '1', '8', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outpus.
+                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'NME'.
