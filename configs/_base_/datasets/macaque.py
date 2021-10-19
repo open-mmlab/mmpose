@@ -5,7 +5,7 @@ dataset_info = dict(
         'Negrete, Salvador and Nishimaru, Hiroshi and '
         'Nishijo, Hisao and Takada, Masahiko and '
         'Go, Yasuhiro and Inoue, Ken-ichi and Shibata, Tomohiro',
-        title='MacaquePose: A novel ‘in the wild’macaque monkey pose dataset '
+        title='MacaquePose: A novel "in the wild" macaque monkey pose dataset '
         'for markerless motion capture',
         container='bioRxiv',
         year='2020',
