@@ -595,11 +595,11 @@ dataset_info = dict(
             swap='face-65'),
         91:
         dict(
-            name='left_wrist',
+            name='left_hand_root',
             id=91,
             color=[255, 255, 255],
             type='',
-            swap='right_wrist'),
+            swap='right_hand_root'),
         92:
         dict(
             name='left_thumb1',
@@ -742,11 +742,11 @@ dataset_info = dict(
             swap='right_pinky_finger4'),
         112:
         dict(
-            name='right_wrist',
+            name='right_hand_root',
             id=112,
             color=[255, 255, 255],
             type='',
-            swap='left_wrist'),
+            swap='left_hand_root'),
         113:
         dict(
             name='right_thumb1',
