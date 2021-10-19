@@ -17,7 +17,7 @@ Models:
   Results:
   - Dataset: AFLW
     Metrics:
-      NME frontal: 1.27
-      NME full: 1.41
+      NME frontal: 1.2
+      NME full: 1.34
     Task: Face 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth
