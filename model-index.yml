@@ -1,6 +1,8 @@
 Import:
 - configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/hrnet_animalpose.yml
 - configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.yml
+- configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/hrnet_ap10k.yml
+- configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/resnet_ap10k.yml
 - configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/hrnet_atrw.yml
 - configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/resnet_atrw.yml
 - configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/resnet_fly.yml

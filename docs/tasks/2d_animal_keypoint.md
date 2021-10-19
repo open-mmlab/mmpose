@@ -102,7 +102,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 <!-- [DATASET] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (Neurips Dataset Track'2021)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (Neurips Track on Datasets and Benchmarks'2021)</a></summary>
 
 ```bibtex
 @misc{yu2021ap10k,
@@ -118,7 +118,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 </details>
 
 For [AP-10K](https://github.com/AlexTheBad/AP-10K) datatset, images and annotations can be downloaded from [download]().
-Note, this data and annotation data is for non-commercial use only, per the authors (see http://horse10.deeplabcut.org for more information).
+Note, this data and annotation data is for non-commercial use only.
 
 Extract them under {MMPose}/data, and make them look like this:
 
@@ -130,21 +130,14 @@ mmpose
 ├── tools
 ├── configs
 `── data
-    │── AP-10K
-        │-- old_annotations
-        │   │-- AP10K-train-split1.json
-        │   |-- AP10K-train-split2.json
-        │   |-- AP10K-train-split3.json
-        │   │-- AP10K-val-split1.json
-        │   |-- AP10K-val-split2.json
-        │   |-- AP10K-val-split3.json
+    │── ap10k
         │-- annotations
-        │   │-- AP10K-train-split1.json
-        │   |-- AP10K-train-split2.json
-        │   |-- AP10K-train-split3.json
-        │   │-- AP10K-val-split1.json
-        │   |-- AP10K-val-split2.json
-        │   |-- AP10K-val-split3.json
+        │   │-- ap10k-train-split1.json
+        │   |-- ap10k-train-split2.json
+        │   |-- ap10k-train-split3.json
+        │   │-- ap10k-val-split1.json
+        │   |-- ap10k-val-split2.json
+        │   |-- ap10k-val-split3.json
         │-- data
         │   │-- 000000000001.jpg
         │   │-- 000000000002.jpg
@@ -152,7 +145,7 @@ mmpose
 
 ```
 
-The annotation files in 'old_annotation' folder contains 57 labeled animal species and breeds. The annotation files in 'annotation' folder contains XX labeld animal species (we merge animal breeds into species following the taxonomic rank). There are total XXX labeled images with XXX instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
+The annotation files in 'annotation' folder contains 52 labeld animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
 
 ## Horse-10
 
