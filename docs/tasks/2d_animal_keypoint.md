@@ -6,6 +6,7 @@ If your folder structure is different, you may need to change the corresponding 
 MMPose supported datasets:
 
 - [Animal-Pose](#animal-pose) \[ [Homepage](https://sites.google.com/view/animal-pose/) \]
+- [AP-10K](#ap-10k) \[ [Homepage](https://github.com/AlexTheBad/AP-10K/) \]
 - [Horse-10](#horse-10) \[ [Homepage](http://www.mackenziemathislab.org/horse10) \]
 - [MacaquePose](#macaquepose) \[ [Homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
 - [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
