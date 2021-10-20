@@ -273,3 +273,74 @@ def test_body3d_mpi_inf_3dhp_dataset():
             np.testing.assert_almost_equal(infos['P-3DPCK'], 100.)
             np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
             np.testing.assert_almost_equal(infos['P-3DAUC'], 30 / 31 * 100)
+
+
+def test_body3dmview_direct_panoptic_dataset():
+    # Test Mview-Panoptic dataset
+    dataset = 'Body3DMviewDirectPanopticDataset'
+    dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/panoptic_body3d.py').dataset_info
+    train_data_cfg = dict(
+        image_size=(960, 512),
+        heatmap_size=(240, 128),
+        num_joints=15,
+        seq_list=['160906_band1', '160906_band2'],
+        cam_list=[(0, 12), (0, 6)],
+        num_cameras=2,
+        seq_frame_interval=2,
+        # subset='train',
+        need_2d_label=True,
+        need_camera_param=True,
+        root_id=2)
+
+    test_data_cfg = dict(
+        image_size=(960, 512),
+        heatmap_size=(240, 128),
+        num_joints=15,
+        seq_list=['160906_band1', '160906_band2'],
+        cam_list=[(0, 12), (0, 6)],
+        num_cameras=2,
+        seq_frame_interval=2,
+        subset='validation',
+        need_2d_label=True,
+        need_camera_param=True,
+        root_id=2)
+
+    _ = dataset_class(
+        ann_file=None,
+        img_prefix='tests/data/panoptic_body3d',
+        data_cfg=train_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    test_dataset = dataset_class(
+        ann_file=None,
+        img_prefix='tests/data/panoptic_body3d',
+        data_cfg=test_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    import copy
+    gt_num = test_dataset.db_size // test_dataset.num_cameras
+    preds = []
+    for i in range(gt_num):
+        index = test_dataset.num_cameras * i
+        db_rec = copy.deepcopy(test_dataset.db[index])
+        joints_3d = db_rec['joints_3d']
+        joints_3d_vis = db_rec['joints_3d_vis']
+        num_gts = len(joints_3d)
+        gt_pose = -np.ones((10, test_dataset.num_joints, 5))
+
+        if num_gts > 0:
+            gt_pose[:num_gts, :, :3] = np.array(joints_3d)
+            gt_pose[:num_gts, :, 3] = np.array(joints_3d_vis)[:, :, 0]
+
+        preds.append(gt_pose)
+    print('test evaluate')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        results = test_dataset.evaluate(
+            preds, res_folder=tmpdir, metric=['mAP', 'mpjpe'])
+    print(results)
