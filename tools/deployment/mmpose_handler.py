@@ -40,8 +40,8 @@ class MMPoseHandler(BaseHandler):
             image = row.get('data') or row.get('body')
             if isinstance(image, str):
                 image = base64.b64decode(image)
-                image = mmcv.imfrombytes(image)
-                image.append(image)
+            image = mmcv.imfrombytes(image)
+            images.append(image)
 
         return images
 

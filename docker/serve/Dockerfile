@@ -17,14 +17,15 @@ RUN apt-get update && \
 ENV PATH="/opt/conda/bin:$PATH"
 RUN export FORCE_CUDA=1
 
-# TORCHSEVER
-RUN pip install torchserve torch-model-archiver
 
 # MMLAB
 ARG PYTORCH
 ARG CUDA
 RUN ["/bin/bash", "-c", "pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu${CUDA//./}/torch${PYTORCH}/index.html"]
 RUN pip install mmpose
+
+# TORCHSEVER
+RUN pip install torchserve torch-model-archiver
 
 RUN useradd -m model-server \
     && mkdir -p /home/model-server/tmp

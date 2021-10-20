@@ -30,15 +30,15 @@ def parse_args():
 
 
 def main(args):
-    os.makedirs(args.out_dir)
+    os.makedirs(args.out_dir, exist_ok=True)
 
     # Inference single image by native apis.
     model = init_pose_model(args.config, args.checkpoint, device=args.device)
     if isinstance(model, TopDown):
-        pytorch_result = inference_top_down_pose_model(
+        pytorch_result, _ = inference_top_down_pose_model(
             model, args.img, person_results=None)
     elif isinstance(model, (AssociativeEmbedding, )):
-        pytorch_result = inference_bottom_up_pose_model(model, args.img)
+        pytorch_result, _ = inference_bottom_up_pose_model(model, args.img)
     else:
         raise NotImplementedError()
 
@@ -53,11 +53,12 @@ def main(args):
     with open(args.img, 'rb') as image:
         response = requests.post(url, image)
     server_result = response.json()
+
     vis_pose_result(
         model,
         args.img,
         server_result,
-        out_file=osp.join(args.out_dir, 'pytorch_result.png'))
+        out_file=osp.join(args.out_dir, 'torchserve_result.png'))
 
 
 if __name__ == '__main__':

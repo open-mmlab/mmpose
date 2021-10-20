@@ -4,6 +4,8 @@ from argparse import ArgumentParser, Namespace
 from tempfile import TemporaryDirectory
 
 import mmcv
+import torch
+from mmcv.runner import CheckpointLoader
 
 try:
     from model_archiver.model_packaging import package_model
@@ -46,15 +48,22 @@ def mmpose2torchserve(config_file: str,
     config = mmcv.Config.fromfile(config_file)
 
     with TemporaryDirectory() as tmpdir:
-        config.dump(f'{tmpdir}/config.py')
-
+        model_file = osp.join(tmpdir, 'config.py')
+        config.dump(model_file)
         handler_path = osp.join(osp.dirname(__file__), 'mmpose_handler.py')
         model_name = model_name or osp.splitext(
             osp.basename(checkpoint_file))[0]
 
+        # use mmcv CheckpointLoader if checkpoint is not from a local file
+        if not osp.isfile(checkpoint_file):
+            ckpt = CheckpointLoader.load_checkpoint(checkpoint_file)
+            checkpoint_file = osp.join(tmpdir, 'checkpoint.pth')
+            with open(checkpoint_file, 'wb') as f:
+                torch.save(ckpt, f)
+
         args = Namespace(
             **{
-                'model_file': osp.join(tmpdir, 'config.py'),
+                'model_file': model_file,
                 'serialized_file': checkpoint_file,
                 'handler': handler_path,
                 'model_name': model_name,
