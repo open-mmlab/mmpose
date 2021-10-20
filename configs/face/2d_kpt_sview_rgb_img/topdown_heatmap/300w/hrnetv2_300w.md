@@ -35,4 +35,10 @@
 
 </details>
 
-Checkpoints will be revealed after mmpose reaches 1k star :D
+Results on 300W dataset
+
+The model is trained on 300W train.
+
+| Arch  | Input Size | NME<sub>*common*</sub> | NME<sub>*challenge*</sub> | NME<sub>*full*</sub> | NME<sub>*test*</sub> | ckpt | log |
+| :-----| :--------: | :------------------: | :------------------: | :--------------: |:-------------------------: |:---: | :---: |
+| [pose_hrnetv2_w18](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/300w/hrnetv2_w18_300w_256x256.py)  | 256x256 | 2.86 | 5.45 | 3.37  | 3.97  | [ckpt](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_300w_256x256-eea53406_20211019.pth) | [log](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_300w_256x256_20211019.log.json) |

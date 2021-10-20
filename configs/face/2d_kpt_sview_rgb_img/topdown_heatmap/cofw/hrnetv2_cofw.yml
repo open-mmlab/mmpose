@@ -7,4 +7,15 @@ Collections:
     Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
   README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.md
-Models: []
+Models:
+- Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_w18_cofw_256x256.py
+  In Collection: Face 2D Keypoint topdown_heatmap cofw
+  Metadata:
+    Training Data: COFW
+  Name: topdown_heatmap_hrnetv2_w18_cofw_256x256
+  Results:
+  - Dataset: COFW
+    Metrics:
+      NME: 3.4
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_cofw_256x256-49243ab8_20211019.pth
