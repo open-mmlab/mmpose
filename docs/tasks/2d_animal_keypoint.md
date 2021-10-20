@@ -118,7 +118,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 
 </details>
 
-For [AP-10K](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing) datatset, images and annotations can be downloaded from [download]().
+For [AP-10K](https://github.com/AlexTheBad/AP-10K/) datatset, images and annotations can be downloaded from [download](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing).
 Note, this data and annotation data is for non-commercial use only.
 
 Extract them under {MMPose}/data, and make them look like this:
