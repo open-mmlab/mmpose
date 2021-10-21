@@ -71,7 +71,7 @@ class TopDown(BasePose):
 
     @property
     def with_neck(self):
-        """Check if has keypoint_head."""
+        """Check if has neck."""
         return hasattr(self, 'neck')
 
     @property
