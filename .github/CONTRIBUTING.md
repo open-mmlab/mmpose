@@ -12,12 +12,10 @@ All kinds of contributions are welcome, including but not limited to the followi
 1. Commit your changes
 1. Create a PR
 
-:::{note}
-
+```{note}
 - If you plan to add some new features that involve large changes, it is encouraged to open an issue for discussion first.
 - If you are the author of some papers and would like to include your method to mmpose, please contact us. We will much appreciate your contribution.
-
-:::
+```
 
 ## Code style
 
