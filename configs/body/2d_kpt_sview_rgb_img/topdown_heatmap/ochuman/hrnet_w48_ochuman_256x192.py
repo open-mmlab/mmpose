@@ -40,12 +40,43 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet152',
-    backbone=dict(type='ResNet', depth=152),
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrnet_w48-8ef0771d.pth',
+    backbone=dict(
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(48, 96)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(48, 96, 192)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(48, 96, 192, 384))),
+    ),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=2048,
+        in_channels=48,
         out_channels=channel_cfg['num_output_channels'],
+        num_deconv_layers=0,
+        extra=dict(final_conv_kernel=1, ),
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
@@ -55,8 +86,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[288, 384],
-    heatmap_size=[72, 96],
+    image_size=[192, 256],
+    heatmap_size=[48, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -86,7 +117,7 @@ train_pipeline = [
         type='NormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(type='TopDownGenerateTarget', sigma=3),
+    dict(type='TopDownGenerateTarget', sigma=2),
     dict(
         type='Collect',
         keys=['img', 'target', 'target_weight'],
@@ -117,7 +148,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/ochuman'
 data = dict(
-    samples_per_gpu=48,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
@@ -142,6 +173,6 @@ data = dict(
         'ochuman_coco_format_test_range_0.00_1.00.json',
         img_prefix=f'{data_root}/images/',
         data_cfg=data_cfg,
-        pipeline=test_pipeline,
+        pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
 )
