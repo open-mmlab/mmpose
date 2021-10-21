@@ -45,10 +45,16 @@ class TopDownRandomFlip:
                     i = i[:, ::-1, :]
                     tmp_img.append(i)
                 img = tmp_img
-            joints_3d, joints_3d_visible = fliplr_joints(
-                joints_3d, joints_3d_visible, img.shape[1],
-                results['ann_info']['flip_pairs'])
-            center[0] = img.shape[1] - center[0] - 1
+            if not isinstance(img, list):
+                joints_3d, joints_3d_visible = fliplr_joints(
+                    joints_3d, joints_3d_visible, img.shape[1],
+                    results['ann_info']['flip_pairs'])
+                center[0] = img.shape[1] - center[0] - 1
+            else:
+                joints_3d, joints_3d_visible = fliplr_joints(
+                    joints_3d, joints_3d_visible, img[0].shape[1],
+                    results['ann_info']['flip_pairs'])
+                center[0] = img[0].shape[1] - center[0] - 1
 
         results['img'] = img
         results['joints_3d'] = joints_3d

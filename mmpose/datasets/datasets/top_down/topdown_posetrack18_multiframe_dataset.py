@@ -88,11 +88,14 @@ class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
 
-        self.timestep_delta = data_cfg.get('timestep_delta', -1)
+        # select the frame indices
         self.timestep_delta_rand = data_cfg.get('timestep_delta_rand', True)
-        self.timestep_delta_range = data_cfg.get('timestep_delta_range', 3)
+        self.timestep_delta_range = data_cfg.get('timestep_delta_range',
+                                                 [-2, 2])
+        self.num_adj_frames = data_cfg.get('num_adj_frames', 1)
+        self.timestep_delta = data_cfg.get('timestep_delta',
+                                           [-2, -1, 1, 2]).sort()
 
-        self.ann_info['use_different_joint_weights'] = False
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -178,14 +181,14 @@ class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
             prev_nm = file_name.split('/')[-1]
             ref_idx = int(prev_nm.replace('.jpg', ''))
 
-            # training mode, choose an extra supporting frame
-            if not self.test_mode:
-                T = self.timestep_delta_range
-                if self.timestep_delta_rand:
-                    delta = -T + np.random.randint(T * 2 + 1)
-                else:
-                    delta = self.timestep_delta
+            # select the frame indices
+            if self.timestep_delta_rand:
+                low, high = self.timestep_delta_range
+                deltas = np.random.randint(low, high + 1, self.num_adj_frames)
+            else:
+                deltas = self.timestep_delta
 
+            for delta in deltas:
                 sup_idx = ref_idx + delta
                 sup_idx = np.clip(sup_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
@@ -193,39 +196,9 @@ class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
                     str(sup_idx).zfill(6) + '.jpg')
 
                 if os.path.exists(sup_image_file):
-                    sup_image_file = sup_image_file
+                    image_files.append(sup_image_file)
                 else:
-                    sup_image_file = cur_image_file
-
-                image_files.append(sup_image_file)
-            else:
-                # testing mode, using multiple frames
-                # number of adjacent frames (one side)
-                num_adj_frames = self.timestep_delta_range
-
-                for i in range(num_adj_frames):
-                    prev_idx = ref_idx - (i + 1)
-                    next_idx = ref_idx + (i + 1)
-
-                    prev_idx = np.clip(prev_idx, 0, nframes - 1)
-                    next_idx = np.clip(next_idx, 0, nframes - 1)
-
-                    prev_image_file = cur_image_file.replace(
-                        prev_nm,
-                        str(prev_idx).zfill(6) + '.jpg')
-                    next_image_file = cur_image_file.replace(
-                        prev_nm,
-                        str(next_idx).zfill(6) + '.jpg')
-
-                    if os.path.exists(prev_image_file):
-                        image_files.append(prev_image_file)
-                    else:
-                        image_files.append(cur_image_file)
-
-                    if os.path.exists(next_image_file):
-                        image_files.append(next_image_file)
-                    else:
-                        image_files.append(cur_image_file)
+                    image_files.append(cur_image_file)
 
             rec.append({
                 'image_file': image_files,
@@ -296,30 +269,19 @@ class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
             cur_image_file = os.path.join(self.img_prefix, file_name)
             image_files.append(cur_image_file)
 
-            num_adj_frames = self.timestep_delta_range
-            for i in range(num_adj_frames):
-                prev_nm = file_name.split('/')[-1]
-                ref_idx = int(prev_nm.replace('.jpg', ''))
-                prev_idx = ref_idx - (i + 1)
-                next_idx = ref_idx + (i + 1)
+            prev_nm = file_name.split('/')[-1]
+            ref_idx = int(prev_nm.replace('.jpg', ''))
 
-                prev_idx = np.clip(prev_idx, 0, nframes - 1)
-                next_idx = np.clip(next_idx, 0, nframes - 1)
-
-                prev_image_file = cur_image_file.replace(
+            deltas = self.timestep_delta
+            for delta in deltas:
+                sup_idx = ref_idx + delta
+                sup_idx = np.clip(sup_idx, 0, nframes - 1)
+                sup_image_file = cur_image_file.replace(
                     prev_nm,
-                    str(prev_idx).zfill(6) + '.jpg')
-                next_image_file = cur_image_file.replace(
-                    prev_nm,
-                    str(next_idx).zfill(6) + '.jpg')
+                    str(sup_idx).zfill(6) + '.jpg')
 
-                if os.path.exists(prev_image_file):
-                    image_files.append(prev_image_file)
-                else:
-                    image_files.append(cur_image_file)
-
-                if os.path.exists(next_image_file):
-                    image_files.append(next_image_file)
+                if os.path.exists(sup_image_file):
+                    image_files.append(sup_image_file)
                 else:
                     image_files.append(cur_image_file)
 
@@ -444,6 +406,17 @@ class TopDownPoseTrack18MultiFrameDataset(Kpt2dSviewRgbVidTopDownDataset):
         name_value = OrderedDict(info_str)
 
         return name_value
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        for img_id, persons in kpts.items():
+            num = len(persons)
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
+            for i in range(num - 1, 0, -1):
+                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
+                    del kpts[img_id][i]
+
+        return kpts
 
     @staticmethod
     def _write_posetrack18_keypoint_results(keypoint_results, gt_folder,

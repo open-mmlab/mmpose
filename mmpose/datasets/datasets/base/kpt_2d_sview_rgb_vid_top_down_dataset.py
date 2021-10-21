@@ -60,6 +60,9 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
         self.ann_info['num_output_channels'] = data_cfg['num_output_channels']
         self.ann_info['dataset_channel'] = data_cfg['dataset_channel']
 
+        self.ann_info['use_different_joint_weights'] = data_cfg.get(
+            'use_different_joint_weights', False)
+
         if dataset_info is None:
             raise ValueError(
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
