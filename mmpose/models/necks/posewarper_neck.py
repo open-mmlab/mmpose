@@ -12,7 +12,7 @@ from ..builder import NECKS
 
 
 @NECKS.register_module()
-class PoseWarper(nn.Module):
+class PoseWarperNeck(nn.Module):
     """PoseWarper neck. Paper ref: Bertasius, Gedas, et al. "Learning temporal
     pose estimation from sparsely-labeled videos." arXiv preprint
     arXiv:1906.04016 (2019).
@@ -24,6 +24,8 @@ class PoseWarper(nn.Module):
         out_channels (int): Number of output channels
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
+        weight_frame (list|tuple): weight of each frame during aggregation,
+            the order is based on the frame indices
         dilations (list|tuple): different dilations of the offset conv layers
         extra (dict): config of the conv layer to get heatmap
         res_blocks (dict): config of residual blocks
@@ -39,6 +41,11 @@ class PoseWarper(nn.Module):
                 a list and passed into decode head.
             None: Only one select feature map is allowed.
             Default: None.
+        freeze_final_layer (bool): Whether to freeze the final layer
+            (stop grad and set eval mode). Default: False.
+        norm_eval (bool): Whether to set norm layers to eval mode, namely,
+            freeze running stats (mean and var). Note: Effect on Batch Norm
+            and its variants only. Default: False
     """
     blocks_dict = {'BASIC': BasicBlock, 'BOTTLENECK': Bottleneck}
 
@@ -47,18 +54,22 @@ class PoseWarper(nn.Module):
                  out_channels,
                  inner_channels,
                  deform_groups,
+                 weight_frame,
                  dilations=(3, 6, 12, 18, 24),
                  extra=None,
                  res_blocks=None,
                  offsets=None,
                  deform_conv=None,
                  in_index=0,
-                 input_transform=None):
+                 input_transform=None,
+                 freeze_final_layer=False,
+                 norm_eval=False):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.inner_channels = inner_channels
         self.deform_groups = deform_groups
+        self.weight_frame = weight_frame
         self.dilations = dilations
         self.extra = extra
         self.res_blocks = res_blocks
@@ -66,6 +77,8 @@ class PoseWarper(nn.Module):
         self.deform_conv = deform_conv
         self.in_index = in_index
         self.input_transform = input_transform
+        self.freeze_final_layer = freeze_final_layer
+        self.norm_eval = norm_eval
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -109,7 +122,8 @@ class PoseWarper(nn.Module):
                 out_channels=inner_channels,
                 kernel_size=1,
                 stride=1,
-                bias=False), build_norm_layer(dict(type='BN'), inner_channels))
+                bias=False),
+            build_norm_layer(dict(type='BN'), inner_channels)[1])
         res_layers.append(
             block(
                 in_channels=out_channels,
@@ -151,11 +165,20 @@ class PoseWarper(nn.Module):
                     out_channels=out_channels,
                     kernel_size=kernel,
                     stride=1,
-                    padding=int(kernel) / 2 * dilations[i],
+                    padding=int(kernel / 2) * dilations[i],
                     dilation=dilations[i],
                     deform_groups=deform_groups,
                 ))
         self.deform_conv_layers = nn.ModuleList(deform_conv_layers)
+
+        self.freeze_layers()
+
+    def freeze_layers(self):
+        if self.freeze_final_layer:
+            self.final_layer.eval()
+
+            for param in self.final_layer.parameters():
+                param.requires_grad = False
 
     def init_weights(self):
         for m in self.modules():
@@ -212,57 +235,79 @@ class PoseWarper(nn.Module):
 
         return inputs
 
-    def forward(self, inputs):
-        # inputs (list): each element of the list is a batch of frame data
-        num_frames = len(inputs)
-        num_offset_layers = len(self.offset_layers)
+    def forward(self, inputs, concat_tensors=False):
+        if not concat_tensors:
+            # the inputs is a list, each element is a batch of data
+            # batch_size, _, heatmap_height, heatmap_width = inputs[0].shape
+            num_frames = len(inputs)
+            assert num_frames == len(self.weight_frame), 'The number of ' \
+                'frames and the length of weights for each frame must match'
 
-        # batch_size, _, heatmap_height, heatmap_width = inputs[0].shape
-        for i in range(num_frames):
-            inputs[i] = self._transform_inputs(inputs[i])
-            inputs[i] = self.final_layer(inputs[i])
+            num_offset_layers = len(self.offset_layers)
+            assert num_offset_layers != 0
 
-        ref_feature = inputs[0]
-        # calculate difference features
-        if num_frames == 2:  # train mode, input two frames
-            diff_feature = ref_feature - inputs[1]
-            diff_feature = self.offset_feats(diff_feature)
+            for i in range(num_frames):
+                inputs[i] = self._transform_inputs(inputs[i])
+                inputs[i] = self.final_layer(inputs[i])
 
-            warped_heatmap = 0
-            for j in range(num_offset_layers):
-                offset = (self.offset_layers[j](diff_feature))
-                warped_heatmap_tmp = self.deform_conv_layers[j](ref_feature,
-                                                                offset)
-                warped_heatmap += warped_heatmap_tmp / num_offset_layers
+            ref_x = inputs[0]
 
-            return warped_heatmap
-
-        else:  # test mode, multi frames
-            if num_frames == 5:
-                weight_frame = [0.3, 0.25, 0.25, 0.1, 0.1]
-            elif num_frames == 3:
-                weight_frame = [0.4, 0.3, 0.3]
-            elif num_frames == 7:
-                weight_frame = [0.3, 0.2, 0.2, 0.1, 0.1, 0.05, 0.05]
-            elif num_frames % 2 == 0:
-                raise ValueError('Number of frames must be odd number')
-            else:
-                weight_frame = [1.0 / num_frames for _ in range(num_frames)]
-
+            # calculate difference features
             diff_features = []
             for i in range(num_frames):
-                diff_feature = ref_feature - inputs[i]
+                diff_feature = ref_x - inputs[i]
                 diff_features.append(self.offset_feats(diff_feature))
 
             output_heatmap = 0
             for i in range(num_frames):
+                if self.weight_frame == 0:
+                    continue
                 warped_heatmap = 0
                 for j in range(num_offset_layers):
                     offset = (self.offset_layers[j](diff_features[i]))
-                    warped_heatmap_tmp = self.deform_conv_layers[j](
-                        ref_feature, offset)
+                    warped_heatmap_tmp = self.deform_conv_layers[j](inputs[i],
+                                                                    offset)
                     warped_heatmap += warped_heatmap_tmp / num_offset_layers
 
-                output_heatmap += warped_heatmap * weight_frame[i]
+                output_heatmap += warped_heatmap * self.weight_frame[i]
 
             return output_heatmap
+        else:
+            inputs = self._transform_inputs(inputs)
+            # inputs are concated tensors with size [FNxCximgHximgW]
+            inputs = self.final_layer(inputs)
+
+            num_frames = len(self.weight_frame)
+            assert inputs.size(0) % num_frames == 0, 'The number of frames' \
+                ' and the length of weights for each frame must match'
+
+            num_offset_layers = len(self.offset_layers)
+            assert num_offset_layers != 0
+
+            batch_size = inputs.size(0) // num_frames
+            ref_x = inputs[:batch_size, :, :, :]
+            ref_x_tiled = ref_x.repeat(num_frames, 1, 1, 1)
+
+            diff_features = ref_x_tiled - inputs
+
+            warped_heatmap = 0
+            for j in range(num_offset_layers):
+                offset = self.offset_layers[j](diff_features)
+                warped_heatmap_tmp = self.deform_conv_layers[j](inputs, offset)
+                warped_heatmap += warped_heatmap_tmp / num_offset_layers
+
+            output_heatmap = 0
+            for i in range(num_frames):
+                output_heatmap += warped_heatmap[i * batch_size:(
+                    i + 1) * batch_size, :, :, :] * self.weight_frame[i]
+
+            return output_heatmap
+
+    def train(self, mode=True):
+        """Convert the model into training mode."""
+        super().train(mode)
+        self.freeze_layers()
+        if mode and self.norm_eval:
+            for m in self.modules():
+                if isinstance(m, _BatchNorm):
+                    m.eval()
