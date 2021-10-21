@@ -86,8 +86,9 @@ Params: 28.04 M
 ==============================
 ```
 
-**{note}**
+```{note}
 This tool is still experimental and we do not guarantee that the number is absolutely correct.
+```
 
 You may use the result for simple comparisons, but double check it before you adopt it in technical reports or papers.
 
