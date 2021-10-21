@@ -27,6 +27,8 @@ class PoseWarperNeck(nn.Module):
         out_channels (int): Number of output channels
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
+        weight_frame (list|tuple): weight of each frame during aggregation,
+            the order is based on the frame indices
         dilations (list|tuple): different dilations of the offset conv layers
         extra (dict): config of the conv layer to get heatmap
         res_blocks (dict): config of residual blocks
@@ -73,6 +75,7 @@ class PoseWarperNeck(nn.Module):
         self.out_channels = out_channels
         self.inner_channels = inner_channels
         self.deform_groups = deform_groups
+        self.weight_frame = weight_frame
         self.dilations = dilations
         self.extra = extra
         self.res_blocks = res_blocks

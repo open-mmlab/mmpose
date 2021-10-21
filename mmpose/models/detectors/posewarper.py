@@ -207,7 +207,6 @@ class PoseWarper(TopDown):
         Args:
             img (torch.Tensor[NxCximgHximgW], or list/tuple of tensors):
             multiple input frames, N >= 2
-
         Returns:
             Tensor: Output heatmaps.
         """
