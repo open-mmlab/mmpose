@@ -36,7 +36,7 @@ python demo/top_down_img_demo.py \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res50_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth \
     --img-root tests/data/macaque/ --json-file tests/data/macaque/test_macaque.json \
-    --out-img-root vis_results
+    --out-img-root vis_results \
     --device=cpu
 ```
 
@@ -63,7 +63,7 @@ Examples:
 python demo/top_down_video_demo_full_frame_without_det.py \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth \
-    --video-path demo/resources/demo_fly_video.avi \
+    --video-path demo/resources/<demo_fly_video.avi> \
     --out-video-root vis_results
 ```
 
@@ -97,7 +97,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_2x_coco/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split1.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split1-3a3dc37e_20210405.pth \
-    --video-path demo/resources/demo_horse.mp4 \
+    --video-path demo/resources/<demo_horse.mp4> \
     --out-video-root vis_results \
     --bbox-thr 0.1 \
     --kpt-thr 0.4 \
@@ -130,7 +130,7 @@ python demo/top_down_video_demo_with_mmdet.py \
     https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_macaque-e45e36f5_20210409.pth \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res152_macaque_256x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_macaque_256x192-c42abc02_20210407.pth \
-    --video-path demo/resources/demo_macaque.mp4 \
+    --video-path demo/resources/<demo_macaque.mp4> \
     --out-video-root vis_results \
     --bbox-thr 0.5 \
     --kpt-thr 0.3 \
