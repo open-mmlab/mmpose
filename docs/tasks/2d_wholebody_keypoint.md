@@ -6,6 +6,7 @@ If your folder structure is different, you may need to change the corresponding 
 MMPose supported datasets:
 
 - [COCO-WholeBody](#coco-wholebody) \[ [Homepage](https://github.com/jin-s13/COCO-WholeBody/) \]
+- [Halpe](#halpe) \[ [Homepage](https://github.com/Fang-Haoshu/Halpe-FullBody/) \]
 
 ## COCO-WholeBody
 
@@ -58,5 +59,67 @@ mmpose
 ```
 
 Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support COCO-WholeBody evaluation:
+
+`pip install xtcocotools`
+
+## Halpe
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2004.00945">Halpe (CVPR'2020)</a></summary>
+
+```bibtex
+@inproceedings{li2020pastanet,
+  title={PaStaNet: Toward Human Activity Knowledge Engine},
+  author={Li, Yong-Lu and Xu, Liang and Liu, Xinpeng and Huang, Xijie and Xu, Yue and Wang, Shiyi and Fang, Hao-Shu and Ma, Ze and Chen, Mingyang and Lu, Cewu},
+  booktitle={CVPR},
+  year={2020}
+}
+```
+
+</details>
+
+For [Halpe](https://github.com/Fang-Haoshu/Halpe-FullBody/) dataset, please download images and annotations from [Halpe download](https://github.com/Fang-Haoshu/Halpe-FullBody).
+The images of the training set are from [HICO-Det](https://drive.google.com/open?id=1QZcJmGVlF9f4h-XLWe9Gkmnmj2z1gSnk) and those of the validation set are from [COCO](http://images.cocodataset.org/zips/val2017.zip).
+Download person detection result of COCO val2017 from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
+Download and extract them under $MMPOSE/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── halpe
+        │-- annotations
+        │   │-- halpe_train_v1.json
+        │   |-- halpe_val_v1.json
+        |-- person_detection_results
+        |   |-- COCO_val2017_detections_AP_H_56_person.json
+        │-- hico_20160224_det
+        │   │-- anno_bbox.mat
+        │   │-- anno.mat
+        │   │-- README
+        │   │-- images
+        │   │   │-- train2015
+        │   │   │   │-- HICO_train2015_00000001.jpg
+        │   │   │   │-- HICO_train2015_00000002.jpg
+        │   │   │   │-- HICO_train2015_00000003.jpg
+        │   │   │   │-- ...
+        │   │   │-- test2015
+        │   │-- tools
+        │   │-- ...
+        `-- val2017
+            │-- 000000000139.jpg
+            │-- 000000000285.jpg
+            │-- 000000000632.jpg
+            │-- ...
+
+```
+
+Please also install the latest version of [Extended COCO API](https://github.com/jin-s13/xtcocoapi) (version>=1.5) to support Halpe evaluation:
 
 `pip install xtcocotools`
