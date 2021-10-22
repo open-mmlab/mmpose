@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNetv2
   Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_panoptic2d
-    [HRNetv2]
+    [HRNetv2@CMU Panoptic HandDB]
   Paper:
     Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
@@ -11,7 +11,7 @@ Collections:
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_panoptic2d
-    [HRNetv2]
+    [HRNetv2@CMU Panoptic HandDB]
   Metadata:
     Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256

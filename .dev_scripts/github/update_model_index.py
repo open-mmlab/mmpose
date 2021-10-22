@@ -158,6 +158,7 @@ def parse_md(md_file):
 
     # record the publish year of the latest paper
     paper_year = -1
+    dataset = 'Unknown'
 
     with open(md_file, 'r') as md:
         lines = md.readlines()
@@ -271,7 +272,8 @@ def parse_md(md_file):
     # fill in collection name
     readme_name = '--'.join(
         osp.splitext(osp.relpath(readme_path, 'configs'))[0].split(osp.sep))
-    collection_alias = ' '.join(collection['Metadata']['Architecture'])
+    collection_alias = '+'.join(
+        collection['Metadata']['Architecture']) + f'@{dataset}'
     collection_name = f'{readme_name} [{collection_alias}]'
     collection['Name'] = collection_name
     for model in models:

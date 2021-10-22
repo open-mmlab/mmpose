@@ -4,7 +4,7 @@ Collections:
     - Associative Embedding
     - ResNet
   Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco [Associative
-    Embedding ResNet]
+    Embedding+ResNet@COCO]
   Paper:
     Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
     URL: https://arxiv.org/abs/1611.05424
@@ -12,7 +12,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
@@ -28,7 +28,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
@@ -44,7 +44,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
@@ -60,7 +60,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
@@ -76,7 +76,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
@@ -92,7 +92,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
@@ -108,7 +108,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
@@ -124,7 +124,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--resnet_coco
-    [Associative Embedding ResNet]
+    [Associative Embedding+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512

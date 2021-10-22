@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - ShufflenetV2
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv2_mpii [ShufflenetV2]
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv2_mpii [ShufflenetV2@MPII]
   Paper:
     Title: 'Shufflenet v2: Practical guidelines for efficient cnn architecture design'
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
@@ -10,7 +10,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv2_mpii_256x256.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv2_mpii
-    [ShufflenetV2]
+    [ShufflenetV2@MPII]
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_shufflenetv2_mpii_256x256

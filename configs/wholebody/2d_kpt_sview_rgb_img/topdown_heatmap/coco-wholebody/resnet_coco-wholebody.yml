@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - SimpleBaseline2D
   Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -11,7 +11,7 @@ Collections:
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_256x192.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_256x192
@@ -32,7 +32,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_256x192-9e37ed88_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_384x288.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_384x288
@@ -53,7 +53,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_384x288-ce11e294_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_256x192.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_256x192
@@ -74,7 +74,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_256x192-7325f982_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res101_coco_wholebody_384x288.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_384x288
@@ -95,7 +95,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_wholebody_384x288-6c137b9a_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_256x192.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_256x192
@@ -116,7 +116,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_wholebody_256x192-5de8ae23_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res152_coco_wholebody_384x288.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--resnet_coco-wholebody
-    [SimpleBaseline2D]
+    [SimpleBaseline2D@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_384x288

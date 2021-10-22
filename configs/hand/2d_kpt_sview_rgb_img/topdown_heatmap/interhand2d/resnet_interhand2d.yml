@@ -4,7 +4,7 @@ Collections:
     - SimpleBaseline2D
     - ResNet
   Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
@@ -12,7 +12,7 @@ Collections:
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_human_256x256
@@ -26,7 +26,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_human_256x256
@@ -40,7 +40,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_human_256x256
@@ -54,7 +54,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_human_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_human_256x256
@@ -68,7 +68,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_human-77b27d1a_20201029.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_machine_256x256
@@ -82,7 +82,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_machine_256x256
@@ -96,7 +96,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_machine_256x256
@@ -110,7 +110,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_machine_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_machine_256x256
@@ -124,7 +124,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_machine-8f3efe9a_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_all_256x256
@@ -138,7 +138,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_all_256x256
@@ -152,7 +152,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_all_256x256
@@ -166,7 +166,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/hand/resnet/res50_interhand2d_256x256_all-78cc95d4_20201102.pth
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/interhand2d/res50_interhand2d_all_256x256.py
   In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--interhand2d--resnet_interhand2d
-    [SimpleBaseline2D ResNet]
+    [SimpleBaseline2D+ResNet@InterHand2.6M]
   Metadata:
     Training Data: InterHand2.6M
   Name: topdown_heatmap_res50_interhand2d_all_256x256

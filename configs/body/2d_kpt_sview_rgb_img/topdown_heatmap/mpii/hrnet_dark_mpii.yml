@@ -3,8 +3,7 @@ Collections:
     Architecture:
     - HRNet
     - DarkPose
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_dark_mpii [HRNet
-    DarkPose]
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_dark_mpii [HRNet+DarkPose@MPII]
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
@@ -12,7 +11,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256_dark.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_dark_mpii
-    [HRNet DarkPose]
+    [HRNet+DarkPose@MPII]
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_hrnet_w32_mpii_256x256_dark
@@ -25,7 +24,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_mpii_256x256_dark-f1601c5b_20200927.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w48_mpii_256x256_dark.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--hrnet_dark_mpii
-    [HRNet DarkPose]
+    [HRNet+DarkPose@MPII]
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_hrnet_w48_mpii_256x256_dark

@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - LiteHRNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_coco [LiteHRNet]
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_coco [LiteHRNet@COCO]
   Paper:
     Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
     URL: https://arxiv.org/abs/2104.06403
@@ -10,7 +10,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_256x192.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_coco
-    [LiteHRNet]
+    [LiteHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_litehrnet_30_coco_256x192
@@ -26,7 +26,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_coco_256x192-4176555b_20210626.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_30_coco_384x288.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--litehrnet_coco
-    [LiteHRNet]
+    [LiteHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_litehrnet_30_coco_384x288

@@ -4,7 +4,7 @@ Collections:
     - Associative Embedding
     - HigherHRNet
   Name: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_aic [Associative
-    Embedding HigherHRNet]
+    Embedding+HigherHRNet@AI Challenger]
   Paper:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
@@ -13,7 +13,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_aic
-    [Associative Embedding HigherHRNet]
+    [Associative Embedding+HigherHRNet@AI Challenger]
   Metadata:
     Training Data: AI Challenger
   Name: associative_embedding_higherhrnet_w32_aic_512x512
@@ -29,7 +29,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--aic--higherhrnet_aic
-    [Associative Embedding HigherHRNet]
+    [Associative Embedding+HigherHRNet@AI Challenger]
   Metadata:
     Training Data: AI Challenger
   Name: associative_embedding_higherhrnet_w32_aic_512x512

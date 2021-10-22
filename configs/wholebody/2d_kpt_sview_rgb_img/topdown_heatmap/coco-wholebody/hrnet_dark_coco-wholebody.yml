@@ -4,7 +4,7 @@ Collections:
     - HRNet
     - DarkPose
   Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_dark_coco-wholebody
-    [HRNet DarkPose]
+    [HRNet+DarkPose@COCO-WholeBody]
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
@@ -12,7 +12,7 @@ Collections:
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w32_coco_wholebody_256x192_dark.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_dark_coco-wholebody
-    [HRNet DarkPose]
+    [HRNet+DarkPose@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_hrnet_w32_coco_wholebody_256x192_dark
@@ -33,7 +33,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_wholebody_256x192_dark-469327ef_20200922.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py
   In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--coco-wholebody--hrnet_dark_coco-wholebody
-    [HRNet DarkPose]
+    [HRNet+DarkPose@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_hrnet_w48_coco_wholebody_384x288_dark_plus

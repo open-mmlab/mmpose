@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - ShufflenetV1
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv1_mpii [ShufflenetV1]
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv1_mpii [ShufflenetV1@MPII]
   Paper:
     Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
       devices'
@@ -11,7 +11,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/shufflenetv1_mpii_256x256.py
   In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--shufflenetv1_mpii
-    [ShufflenetV1]
+    [ShufflenetV1@MPII]
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_shufflenetv1_mpii_256x256

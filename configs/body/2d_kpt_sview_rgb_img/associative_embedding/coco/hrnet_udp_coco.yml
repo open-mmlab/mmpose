@@ -5,7 +5,7 @@ Collections:
     - HRNet
     - UDP
   Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_udp_coco [Associative
-    Embedding HRNet UDP]
+    Embedding+HRNet+UDP@COCO]
   Paper:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
@@ -14,7 +14,7 @@ Collections:
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512_udp.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_udp_coco
-    [Associative Embedding HRNet UDP]
+    [Associative Embedding+HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_hrnet_w32_coco_512x512_udp
@@ -30,7 +30,7 @@ Models:
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_512x512_udp-91663bf9_20210220.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w48_coco_512x512_udp.py
   In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hrnet_udp_coco
-    [Associative Embedding HRNet UDP]
+    [Associative Embedding+HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_hrnet_w48_coco_512x512_udp
