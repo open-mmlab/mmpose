@@ -27,7 +27,7 @@ Examples:
 python demo/top_down_img_demo.py \
     configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
-    --img-root tests/data/onehand10k/ --json-file tests/data/onehand10k/test_onehand10k.json \
+    --img-root tests/data/aflw/ --json-file tests/data/aflw/test_aflw.json \
     --out-img-root vis_results
 ```
 
@@ -38,7 +38,7 @@ python demo/top_down_img_demo.py \
     configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
     --img-root tests/data/aflw/ --json-file tests/data/aflw/test_aflw.json \
-    --out-img-root vis_results
+    --out-img-root vis_results \
     --device=cpu
 ```
 
@@ -89,7 +89,7 @@ Examples:
 python demo/face_video_demo.py \
     configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py \
     https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth \
-    --video-path demo/resources/demo_video.mp4 \
+    --video-path https://user-images.githubusercontent.com/87690686/137441355-ec4da09c-3a8f-421b-bee9-b8b26f8c2dd0.mp4 \
     --out-video-root vis_results
 ```
 
