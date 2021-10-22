@@ -8,8 +8,10 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
+from PIL import Image
 
 from mmpose.core.post_processing import oks_nms
+from mmpose.datasets.dataset_info import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
@@ -332,7 +334,7 @@ def _inference_single_pose_model(model,
 
 def inference_top_down_pose_model(model,
                                   img_or_path,
-                                  person_results,
+                                  person_results=None,
                                   bbox_thr=None,
                                   format='xywh',
                                   dataset='TopDownCocoDataset',
@@ -349,11 +351,14 @@ def inference_top_down_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str| np.ndarray): Image filename or loaded image.
-        person_results (List(dict)): the item in the dict may contain
-            'bbox' and/or 'track_id'.
-            'bbox' (4, ) or (5, ): The person bounding box, which contains
-            4 box coordinates (and score).
-            'track_id' (int): The unique id for each human instance.
+        person_results (List(dict), optional): a list of detected persons that
+            contains following items:
+            - 'bbox' and/or 'track_id'.
+            - 'bbox' (4, ) or (5, ): The person bounding box, which contains
+                4 box coordinates (and score).
+            - 'track_id' (int): The unique id for each human instance.
+            If not provided, a dummy person result with a bbox covering the
+            entire image will be used. Default: None.
         bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
             will be fed into the pose detector. If bbox_thr is None, ignore it.
         format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
@@ -375,18 +380,30 @@ def inference_top_down_pose_model(model,
             Output feature maps from layers specified in `outputs`.
             Includes 'heatmap' if `return_heatmap` is True.
     """
+    # get dataset info
+    if (dataset_info is None and hasattr(model, 'cfg')
+            and 'dataset_info' in model.cfg):
+        dataset_info = DatasetInfo(model.cfg.dataset_info)
     if dataset_info is None:
         warnings.warn(
             'dataset is deprecated.'
             'Please set `dataset_info` in the config.'
-            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
-            DeprecationWarning)
+            'Check https://github.com/open-mmlab/mmpose/pull/663'
+            ' for details.', DeprecationWarning)
 
     # only two kinds of bbox format is supported.
     assert format in ['xyxy', 'xywh']
 
     pose_results = []
     returned_outputs = []
+
+    if person_results is None:
+        # create dummy person results
+        if isinstance(img_or_path, str):
+            width, height = Image.open(img_or_path).size
+        else:
+            height, width = img_or_path.shape[:2]
+        person_results = [{'bbox': np.array([0, 0, width, height])}]
 
     if len(person_results) == 0:
         return pose_results, returned_outputs
@@ -474,17 +491,10 @@ def inference_bottom_up_pose_model(model,
             Output feature maps from layers specified in `outputs`.
             Includes 'heatmap' if `return_heatmap` is True.
     """
-    pose_results = []
-    returned_outputs = []
-
-    cfg = model.cfg
-    device = next(model.parameters()).device
-
-    # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
+    # get dataset info
+    if (dataset_info is None and hasattr(model, 'cfg')
+            and 'dataset_info' in model.cfg):
+        dataset_info = DatasetInfo(model.cfg.dataset_info)
 
     if dataset_info is not None:
         dataset_name = dataset_info.dataset_name
@@ -498,6 +508,18 @@ def inference_bottom_up_pose_model(model,
         assert (dataset == 'BottomUpCocoDataset')
         dataset_name = dataset
         flip_index = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+
+    pose_results = []
+    returned_outputs = []
+
+    cfg = model.cfg
+    device = next(model.parameters()).device
+
+    # build the data pipeline
+    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
+    test_pipeline = [LoadImage(channel_order=channel_order)
+                     ] + cfg.test_pipeline[1:]
+    test_pipeline = Compose(test_pipeline)
 
     # prepare data
     data = {
@@ -574,6 +596,12 @@ def vis_pose_result(model,
         show (bool):  Whether to show the image. Default True.
         out_file (str|None): The filename of the output visualization image.
     """
+
+    # get dataset info
+    if (dataset_info is None and hasattr(model, 'cfg')
+            and 'dataset_info' in model.cfg):
+        dataset_info = DatasetInfo(model.cfg.dataset_info)
+
     if dataset_info is not None:
         skeleton = dataset_info.skeleton
         pose_kpt_color = dataset_info.pose_kpt_color

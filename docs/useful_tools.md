@@ -1,14 +1,15 @@
-# Useful Tools Link
+# Useful Tools
 
 Apart from training/testing scripts, We provide lots of useful tools under the `tools/` directory.
 
 <!-- TOC -->
 
 - [Log Analysis](#log-analysis)
-- [Model Complexity (experimental)](#model-complexity)
+- [Model Complexity (experimental)](#model-complexity-experimental)
 - [Model Conversion](#model-conversion)
-  - [MMPose model to ONNX (experimental)](#mmpose-model-to-onnx--experimental-)
+  - [MMPose model to ONNX (experimental)](#mmpose-model-to-onnx-experimental)
   - [Prepare a model for publishing](#prepare-a-model-for-publishing)
+- [Model Serving](#model-serving)
 - [Miscellaneous](#miscellaneous)
   - [Evaluating a metric](#evaluating-a-metric)
   - [Print the entire config](#print-the-entire-config)
@@ -67,7 +68,7 @@ python tools/analysis/analyze_logs.py cal_train_time ${JSON_LOGS} [--include-out
   average iter time: 0.8406 s/iter
   ```
 
-## Model Complexity
+## Model Complexity (Experimental)
 
 `/tools/analysis/get_flops.py` is a script adapted from [flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch) to compute the FLOPs and params of a given model.
 
@@ -86,9 +87,9 @@ Params: 28.04 M
 ==============================
 ```
 
-:::{note}
+```{note}
 This tool is still experimental and we do not guarantee that the number is absolutely correct.
-:::
+```
 
 You may use the result for simple comparisons, but double check it before you adopt it in technical reports or papers.
 
@@ -128,6 +129,97 @@ python tools/publish_model.py work_dirs/hrnet_w32_coco_256x192/latest.pth hrnet_
 ```
 
 The final output filename will be `hrnet_w32_coco_256x192-{hash id}_{time_stamp}.pth`.
+
+## Model Serving
+
+MMPose supports model serving with [`TorchServe`](https://pytorch.org/serve/). You can serve an MMPose model via following steps:
+
+### 1. Install TorchServe
+
+Please follow the official installation guide of TorchServe: https://github.com/pytorch/serve#install-torchserve-and-torch-model-archiver
+
+### 2. Convert model from MMPose to TorchServe
+
+```shell
+python tools/deployment/mmpose2torchserve.py \
+  ${CONFIG_FILE} ${CHECKPOINT_FILE} \
+  --output-folder ${MODEL_STORE} \
+  --model-name ${MODEL_NAME}
+```
+
+**Note**: ${MODEL_STORE} needs to be an absolute path to a folder.
+
+A model file `${MODEL_NAME}.mar` will be generated and placed in the `${MODEL_STORE}` folder.
+
+### 3. Deploy model serving
+
+We introduce following 2 approaches to deploying the model serving.
+
+#### Use TorchServe API
+
+```shell
+torchserve --start \
+  --model-store ${MODEL_STORE} \
+  --models ${MODEL_PATH1} [${MODEL_NAME}=${MODEL_PATH2} ... ]
+```
+
+Example:
+
+```shell
+# serve one model
+torchserve --start --model-store /models --models hrnet=hrnet.mar
+
+# serve all models in model-store
+torchserve --start --model-store /models --models all
+```
+
+After executing the `torchserve` command above, TorchServe runse on your host, listening for inference requests. Check the [official docs](https://github.com/pytorch/serve/blob/master/docs/server.md) for more information.
+
+#### Use `mmpose-serve` docker image
+
+**Build `mmpose-serve` docker image:**
+
+```shell
+docker build -t mmpose-serve:latest docker/serve/
+```
+
+**Run `mmpose-serve`:**
+
+Check the official docs for [running TorchServe with docker](https://github.com/pytorch/serve/blob/master/docker/README.md#running-torchserve-in-a-production-docker-environment).
+
+In order to run in GPU, you need to install [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html). You can omit the `--gpus` argument in order to run in CPU.
+
+Example:
+
+```shell
+docker run --rm \
+--cpus 8 \
+--gpus device=0 \
+-p8080:8080 -p8081:8081 -p8082:8082 \
+--mount type=bind,source=$MODEL_STORE,target=/home/model-server/model-store \
+mmpose-serve:latest
+```
+
+[Read the docs](https://github.com/pytorch/serve/blob/072f5d088cce9bb64b2a18af065886c9b01b317b/docs/rest_api.md/) about the Inference (8080), Management (8081) and Metrics (8082) APis
+
+### 4. Test deployment
+
+You can use `tools/deployment/test_torchserver.py` to test the model serving. It will compare and visualize the result of torchserver and pytorch.
+
+```shell
+python tools/deployment/test_torchserver.py ${IMAGE_PAHT} ${CONFIG_PATH} ${CHECKPOINT_PATH} ${MODEL_NAME} --out-dir ${OUT_DIR}
+```
+
+Example:
+
+```shell
+python tools/deployment/test_torchserver.py \
+  ls tests/data/coco/000000000785.jpg \
+  configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192.py \
+  https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
+  hrnet \
+  --out-dir vis_results
+```
 
 ## Miscellaneous
 
