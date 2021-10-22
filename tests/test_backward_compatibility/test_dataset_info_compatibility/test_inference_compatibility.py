@@ -17,8 +17,11 @@ def test_inference_without_dataset_info():
         'coco/res50_coco_256x192.py',
         None,
         device='cpu')
-    image_name = 'tests/data/coco/000000000785.jpg'
 
+    if 'dataset_info' in pose_model.cfg:
+        _ = pose_model.cfg.pop('dataset_info')
+
+    image_name = 'tests/data/coco/000000000785.jpg'
     person_result = []
     person_result.append({'bbox': [50, 50, 50, 100]})
 
@@ -44,8 +47,11 @@ def test_inference_without_dataset_info():
         'coco/res50_coco_512x512.py',
         None,
         device='cpu')
+    if 'dataset_info' in pose_model.cfg:
+        _ = pose_model.cfg.pop('dataset_info')
 
     image_name = 'tests/data/coco/000000000785.jpg'
+
     with pytest.warns(DeprecationWarning):
         pose_results, _ = inference_bottom_up_pose_model(
             pose_model, image_name)
@@ -58,6 +64,10 @@ def test_inference_without_dataset_info():
         'coco/res50_coco_256x192.py',
         None,
         device='cpu')
+
+    if 'dataset_info' in pose_model.cfg:
+        _ = pose_model.cfg.pop('dataset_info')
+
     image_name = 'tests/data/coco/000000000785.jpg'
     person_result = [{'bbox': [50, 50, 50, 100]}]
 
@@ -81,6 +91,9 @@ def test_inference_without_dataset_info():
         'coco/res50_coco_512x512.py',
         None,
         device='cpu')
+
+    if 'dataset_info' in pose_model.cfg:
+        _ = pose_model.cfg.pop('dataset_info')
 
     image_name = 'tests/data/coco/000000000785.jpg'
     with pytest.warns(DeprecationWarning):
@@ -109,6 +122,9 @@ def test_inference_without_dataset_info():
         'track_id': 0,
         'image_name': 'tests/data/h36m/S1_Directions_1.54138969_000001.jpg',
     }
+
+    if 'dataset_info' in pose_model.cfg:
+        _ = pose_model.cfg.pop('dataset_info')
 
     pose_results_2d = [[pose_det_result]]
 
