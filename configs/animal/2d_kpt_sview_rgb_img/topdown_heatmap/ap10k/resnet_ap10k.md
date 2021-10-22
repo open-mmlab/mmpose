@@ -33,7 +33,7 @@
 
 </details>
 
-Results on AP-10K test set
+Results on AP-10K validation set
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP<sup>M</sup> | AP<sup>L</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
