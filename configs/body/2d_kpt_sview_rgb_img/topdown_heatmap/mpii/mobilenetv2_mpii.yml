@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - MobilenetV2
-  Name: Body 2D Keypoint topdown_heatmap mpii
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--mobilenetv2_mpii [MobilenetV2@MPII]
   Paper:
     Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/mobilenetv2_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mobilenet_v2/mpii/mobilenet_v2_mpii_256x256.py
-  In Collection: Body 2D Keypoint topdown_heatmap mpii
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--mobilenetv2_mpii
+    [MobilenetV2@MPII]
   Metadata:
     Training Data: MPII
   Name: topdown_heatmap_mpii

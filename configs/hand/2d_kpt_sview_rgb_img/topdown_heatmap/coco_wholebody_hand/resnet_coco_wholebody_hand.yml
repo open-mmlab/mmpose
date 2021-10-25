@@ -3,14 +3,16 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--resnet_coco_wholebody_hand
+    [SimpleBaseline2D+ResNet@COCO-WholeBody-Hand]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/resnet_coco_wholebody_hand.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/res50_coco_wholebody_hand_256x256.py
-  In Collection: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--resnet_coco_wholebody_hand
+    [SimpleBaseline2D+ResNet@COCO-WholeBody-Hand]
   Metadata:
     Training Data: COCO-WholeBody-Hand
   Name: topdown_heatmap_res50_coco_wholebody_hand_256x256

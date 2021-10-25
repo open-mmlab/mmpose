@@ -2,14 +2,14 @@ Collections:
 - Metadata:
     Architecture:
     - RSN
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn_coco [RSN@COCO]
   Paper:
     Title: Learning Delicate Local Representations for Multi-Person Pose Estimation
     URL: https://link.springer.com/chapter/10.1007/978-3-030-58580-8_27
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn18_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn_coco [RSN@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_rsn18_coco_256x192
@@ -24,7 +24,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn18_coco_256x192-72f4b4a7_20201127.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/rsn50_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn_coco [RSN@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_rsn50_coco_256x192
@@ -39,7 +39,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/rsn50_coco_256x192-72ffe709_20201127.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/2xrsn50_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn_coco [RSN@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_2xrsn50_coco_256x192
@@ -54,7 +54,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/rsn/2xrsn50_coco_256x192-50648f0e_20201127.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/3xrsn50_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--rsn_coco [RSN@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_3xrsn50_coco_256x192

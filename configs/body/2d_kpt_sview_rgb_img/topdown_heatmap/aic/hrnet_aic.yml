@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - HRNet
-  Name: Body 2D Keypoint topdown_heatmap aic
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--aic--hrnet_aic [HRNet@AI Challenger]
   Paper:
     Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_aic.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/hrnet_w32_aic_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap aic
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--aic--hrnet_aic [HRNet@AI
+    Challenger]
   Metadata:
     Training Data: AI Challenger
   Name: topdown_heatmap_hrnet_w32_aic_256x192

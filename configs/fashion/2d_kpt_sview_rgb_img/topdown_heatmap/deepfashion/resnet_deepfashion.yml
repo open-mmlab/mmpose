@@ -3,14 +3,16 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: Fashion 2D Keypoint topdown_heatmap deepfashion
+  Name: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--resnet_deepfashion
+    [SimpleBaseline2D+ResNet@DeepFashion]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/resnet_deepfashion.md
 Models:
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_upper_256x192.py
-  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--resnet_deepfashion
+    [SimpleBaseline2D+ResNet@DeepFashion]
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_upper_256x192
@@ -23,7 +25,8 @@ Models:
     Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_upper_256x192-41794f03_20210124.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_lower_256x192.py
-  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--resnet_deepfashion
+    [SimpleBaseline2D+ResNet@DeepFashion]
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_lower_256x192
@@ -36,7 +39,8 @@ Models:
     Task: Fashion 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/fashion/resnet/res50_deepfashion_lower_256x192-1292a839_20210124.pth
 - Config: configs/fashion/2d_kpt_sview_rgb_img/topdown_heatmap/deepfashion/res50_deepfashion_full_256x192.py
-  In Collection: Fashion 2D Keypoint topdown_heatmap deepfashion
+  In Collection: fashion--2d_kpt_sview_rgb_img--topdown_heatmap--deepfashion--resnet_deepfashion
+    [SimpleBaseline2D+ResNet@DeepFashion]
   Metadata:
     Training Data: DeepFashion
   Name: topdown_heatmap_res50_deepfashion_full_256x192

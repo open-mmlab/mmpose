@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNetv2
     - UDP
-  Name: Hand 2D Keypoint topdown_heatmap rhd2d
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_udp_rhd2d [HRNetv2+UDP@RHD]
   Paper:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
@@ -11,7 +11,8 @@ Collections:
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_udp_rhd2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_udp.py
-  In Collection: Hand 2D Keypoint topdown_heatmap rhd2d
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--rhd2d--hrnetv2_udp_rhd2d
+    [HRNetv2+UDP@RHD]
   Metadata:
     Training Data: RHD
   Name: topdown_heatmap_hrnetv2_w18_rhd2d_256x256_udp

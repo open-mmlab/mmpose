@@ -3,14 +3,15 @@ Collections:
     Architecture:
     - SimpleBaseline2D
     - ResNet
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_fp16_coco [SimpleBaseline2D+ResNet@COCO]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_fp16_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_fp16_dynamic.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_fp16_coco
+    [SimpleBaseline2D+ResNet@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192_fp16_dynamic

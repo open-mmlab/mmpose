@@ -3,14 +3,14 @@ Collections:
     Architecture:
     - HMR
     - ResNet
-  Name: Body 3D Mesh hmr mixed
+  Name: body--3d_mesh_sview_rgb_img--hmr--mixed--resnet_mixed [HMR+ResNet@Human3.6M]
   Paper:
     Title: End-to-end Recovery of Human Shape and Pose
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
   README: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.md
 Models:
 - Config: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/res50_mixed_224x224.py
-  In Collection: Body 3D Mesh hmr mixed
+  In Collection: body--3d_mesh_sview_rgb_img--hmr--mixed--resnet_mixed [HMR+ResNet@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: hmr_res50_mixed_224x224

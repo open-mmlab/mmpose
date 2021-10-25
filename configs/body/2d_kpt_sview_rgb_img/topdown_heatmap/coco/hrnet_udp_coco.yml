@@ -3,7 +3,7 @@ Collections:
     Architecture:
     - HRNet
     - UDP
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco [HRNet+UDP@COCO]
   Paper:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
@@ -11,7 +11,8 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_udp_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_udp.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco
+    [HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_udp
@@ -26,7 +27,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_256x192_udp-aba0be42_20210220.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_384x288_udp.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco
+    [HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_384x288_udp
@@ -41,7 +43,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w32_coco_384x288_udp-e97c1a0f_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192_udp.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco
+    [HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_256x192_udp
@@ -56,7 +59,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_256x192_udp-2554c524_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_384x288_udp.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco
+    [HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_384x288_udp
@@ -71,7 +75,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/udp/hrnet_w48_coco_384x288_udp-0f89c63e_20210223.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_udp_regress.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_udp_coco
+    [HRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_udp_regress

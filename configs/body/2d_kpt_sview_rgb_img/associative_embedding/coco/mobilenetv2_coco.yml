@@ -3,14 +3,16 @@ Collections:
     Architecture:
     - Associative Embedding
     - MobilenetV2
-  Name: Body 2D Keypoint associative_embedding coco
+  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco
+    [Associative Embedding+MobilenetV2@COCO]
   Paper:
     Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco
+    [Associative Embedding+MobilenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_mobilenetv2_coco_512x512
@@ -25,7 +27,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--mobilenetv2_coco
+    [Associative Embedding+MobilenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_mobilenetv2_coco_512x512

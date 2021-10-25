@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - SimpleBaseline2D
-  Name: Animal 2D Keypoint topdown_heatmap horse10
+  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10 [SimpleBaseline2D@Horse-10]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/resnet_horse10.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split1.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res50_horse10_256x256-split1
@@ -21,7 +22,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split1-3a3dc37e_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split2.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res50_horse10_256x256-split2
@@ -33,7 +35,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split2-65e2a508_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split3.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res50_horse10_256x256-split3
@@ -45,7 +48,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split3-9637d4eb_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split1.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res101_horse10_256x256-split1
@@ -57,7 +61,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split1-1b7c259c_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split2.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res101_horse10_256x256-split2
@@ -69,7 +74,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split2-30e2fa87_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res101_horse10_256x256-split3.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res101_horse10_256x256-split3
@@ -81,7 +87,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_horse10_256x256_split3-2eea5bb1_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split1.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res152_horse10_256x256-split1
@@ -93,7 +100,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_horse10_256x256_split1-7e81fe2d_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split2.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res152_horse10_256x256-split2
@@ -105,7 +113,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res152_horse10_256x256_split2-3b3404a3_20210405.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res152_horse10_256x256-split3.py
-  In Collection: Animal 2D Keypoint topdown_heatmap horse10
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--horse10--resnet_horse10
+    [SimpleBaseline2D@Horse-10]
   Metadata:
     Training Data: Horse-10
   Name: topdown_heatmap_res152_horse10_256x256-split3

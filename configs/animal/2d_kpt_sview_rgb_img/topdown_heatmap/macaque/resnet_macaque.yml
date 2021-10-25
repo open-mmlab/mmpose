@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - SimpleBaseline2D
-  Name: Animal 2D Keypoint topdown_heatmap macaque
+  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--resnet_macaque [SimpleBaseline2D@MacaquePose]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/resnet_macaque.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res50_macaque_256x192.py
-  In Collection: Animal 2D Keypoint topdown_heatmap macaque
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--resnet_macaque
+    [SimpleBaseline2D@MacaquePose]
   Metadata:
     Training Data: MacaquePose
   Name: topdown_heatmap_res50_macaque_256x192
@@ -24,7 +25,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res101_macaque_256x192.py
-  In Collection: Animal 2D Keypoint topdown_heatmap macaque
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--resnet_macaque
+    [SimpleBaseline2D@MacaquePose]
   Metadata:
     Training Data: MacaquePose
   Name: topdown_heatmap_res101_macaque_256x192
@@ -39,7 +41,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_macaque_256x192-e3b9c6bb_20210407.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res152_macaque_256x192.py
-  In Collection: Animal 2D Keypoint topdown_heatmap macaque
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--macaque--resnet_macaque
+    [SimpleBaseline2D@MacaquePose]
   Metadata:
     Training Data: MacaquePose
   Name: topdown_heatmap_res152_macaque_256x192

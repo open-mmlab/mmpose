@@ -2,14 +2,16 @@ Collections:
 - Metadata:
     Architecture:
     - LiteHRNet
-  Name: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--litehrnet_coco_wholebody_hand
+    [LiteHRNet@COCO-WholeBody-Hand]
   Paper:
     Title: 'Lite-HRNet: A Lightweight High-Resolution Network'
     URL: https://arxiv.org/abs/2104.06403
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/litehrnet_coco_wholebody_hand.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/litehrnet_w18_coco_wholebody_hand_256x256.py
-  In Collection: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--litehrnet_coco_wholebody_hand
+    [LiteHRNet@COCO-WholeBody-Hand]
   Metadata:
     Training Data: COCO-WholeBody-Hand
   Name: topdown_heatmap_litehrnet_w18_coco_wholebody_hand_256x256
