@@ -8,20 +8,28 @@ import mmcv
 import torch
 from mmcv import Config
 from mmcv.cnn import fuse_conv_bn
+from mmcv.parallel import MMDataParallel
+from mmcv.runner import IterLoader
 from mmcv.runner.fp16_utils import wrap_fp16_model
 
+from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='running benchmark regression with tmux')
+        description='test the inference speed of multiple models')
 
     parser.add_argument(
         '--config',
         '-c',
         help='test config file path',
         default='./.dev_scripts/benchmark/benchmark_cfg.yaml')
+
+    parser.add_argument(
+        '--dummy-dataset-config',
+        help='dummy dataset config file path',
+        default='./.dev_scripts/benchmark/dummy_dataset_cfg.yaml')
 
     parser.add_argument(
         '--priority',
@@ -41,8 +49,11 @@ def parse_args():
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
 
-    parser.add_argument('--num-iters', default=50, help='test iterations')
-    parser.add_argument('--num-warmup', default=5, help='warmup iterations')
+    parser.add_argument(
+        '--num-iters', type=int, help='test iterations', default=50)
+
+    parser.add_argument(
+        '--num-warmup', type=int, help='warmup iterations', default=5)
 
     args = parser.parse_args()
     return args
@@ -55,10 +66,11 @@ def main():
         # get the current time stamp
         now = datetime.now()
         ts = now.strftime('%Y_%m_%d_%H_%M')
-        args.root_work_dir = f'work_dirs/speed_test_{ts}'
+        args.root_work_dir = f'work_dirs/inference_speed_test_{ts}'
     mmcv.mkdir_or_exist(osp.abspath(args.root_work_dir))
 
     cfg = mmcv.load(args.config)
+    dummy_datasets = mmcv.load(args.dummy_dataset_config)['dummy_datasets']
 
     results = []
     for i in range(args.priority + 1):
@@ -66,41 +78,51 @@ def main():
         for cur_model in models:
             cfg_file = cur_model['config']
             model_cfg = Config.fromfile(cfg_file)
-            if 'input_shape' in cur_model.keys():
-                input_shape = cur_model['input_shape']
-                input_shape = tuple(map(int, input_shape.split(',')))
-            else:
-                image_size = model_cfg.data_cfg.image_size
-                if isinstance(image_size, list):
-                    input_shape = (3, ) + tuple(image_size)
-                else:
-                    input_shape = (3, image_size, image_size)
+            test_dataset = model_cfg['data']['test']
+            dummy_dataset = dummy_datasets[test_dataset['type']]
+            test_dataset.update(dummy_dataset)
 
+            dataset = build_dataset(test_dataset)
+            data_loader = build_dataloader(
+                dataset,
+                samples_per_gpu=1,
+                workers_per_gpu=model_cfg.data.workers_per_gpu,
+                dist=False,
+                shuffle=False)
+            data_loader = IterLoader(data_loader)
+
+            if 'pretrained' in model_cfg.model.keys():
+                del model_cfg.model['pretrained']
             model = build_posenet(model_cfg.model)
-            model = model.cuda()
             model.eval()
-
-            fp16_cfg = cfg.get('fp16', None)
+            fp16_cfg = model_cfg.get('fp16', None)
             if fp16_cfg is not None:
                 wrap_fp16_model(model)
             if args.fuse_conv_bn:
                 model = fuse_conv_bn(model)
+            model = MMDataParallel(model, device_ids=[0])
 
-            if hasattr(model, 'forward_dummy'):
-                model.forward = model.forward_dummy
-            else:
-                raise NotImplementedError(
-                    'FLOPs counter is currently not currently supported '
-                    'with {}'.format(model.__class__.__name__))
+            # benchmark with several iterations and take the average
+            pure_inf_time = 0
+            for iteration in range(args.num_iters + args.num_warmup):
+                data = next(data_loader)
+                torch.cuda.synchronize()
+                start_time = time.perf_counter()
+                with torch.no_grad():
+                    model(return_loss=False, **data)
 
-            its, num_iters, pure_inf_time = get_model_inference_speed(
-                model, input_shape, args.num_iters, args.num_warmup)
+                torch.cuda.synchronize()
+                elapsed = time.perf_counter() - start_time
+
+                if iteration >= args.num_warmup:
+                    pure_inf_time += elapsed
+
+            its = args.num_iters / pure_inf_time
 
             split_line = '=' * 30
             result = f'{split_line}\nModel config:{cfg_file}\n' \
-                     f'Input shape: {input_shape}\n' \
                      f'Overall average: {its:.2f} items / s\n' \
-                     f'Total iters: {num_iters}\n'\
+                     f'Total iters: {args.num_iters}\n'\
                      f'Total time: {pure_inf_time:.2f} s \n{split_line}\n'\
 
             print(result)
@@ -109,39 +131,9 @@ def main():
     print('!!!Please be cautious if you use the results in papers. '
           'You may need to check if all ops are included and verify that the '
           'speed computation is correct.')
-    with open(osp.join(args.root_work_dir, 'speed.txt'), 'w') as f:
+    with open(osp.join(args.root_work_dir, 'inference_speed.txt'), 'w') as f:
         for res in results:
             f.write(res)
-
-
-def get_model_inference_speed(model, input_shape, num_iters=100, num_warmup=5):
-    pure_inf_time = 0
-
-    # benchmark with total batch and take the average
-    for i in range(num_iters + num_warmup):
-
-        try:
-            batch = torch.ones(()).new_empty(
-                (1, *input_shape),
-                dtype=next(model.parameters()).dtype,
-                device=next(model.parameters()).device)
-        except StopIteration:
-            # Avoid StopIteration for models which have no parameters,
-            # like `nn.Relu()`, `nn.AvgPool2d`, etc.
-            batch = torch.ones(()).new_empty((1, *input_shape))
-
-        torch.cuda.synchronize()
-        start_time = time.perf_counter()
-        with torch.no_grad():
-            model(batch)
-
-        torch.cuda.synchronize()
-        elapsed = time.perf_counter() - start_time
-
-        if i >= num_warmup:
-            pure_inf_time += elapsed
-    its = num_iters / pure_inf_time
-    return its, num_iters, pure_inf_time
 
 
 if __name__ == '__main__':
