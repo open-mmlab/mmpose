@@ -94,7 +94,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         self.db_file = os.path.join(self.img_prefix, self.db_file)
 
         if osp.exists(self.db_file):
-            info = pickle.load(open(self.db_file, 'rb'))
+            with open(self.db_file, 'rb') as f:
+                info = pickle.load(f)
             assert info['seq_list'] == self.seq_list
             assert info['seq_frame_interval'] == self.seq_frame_interval
             assert info['cam_list'] == self.cam_list
@@ -107,7 +108,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 'cam_list': self.cam_list,
                 'db': self.db
             }
-            pickle.dump(info, open(self.db_file, 'wb'))
+            with open(self.db_file, 'wb') as f:
+                pickle.dump(info, f)
 
         self.db_size = len(self.db)
         self.db = self._get_db()
@@ -127,9 +129,10 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         assert self.num_cameras == len(self.cam_list)
         self.seq_frame_interval = data_cfg.get('seq_frame_interval', 1)
         self.subset = data_cfg.get('subset', 'train')
-        self.need_2d_label = data_cfg.get('need_2d_label', False)
+        # self.need_2d_label = data_cfg.get('need_2d_label', False)
         self.need_camera_param = True
         self.root_id = data_cfg.get('root_id', 0)
+        self.max_persons = data_cfg.get('max_num', 10)
 
     def _get_cam(self, seq):
         cam_file = osp.join(self.img_prefix, seq,
@@ -160,6 +163,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         width = 1920
         height = 1080
         db = []
+        sample_id = 0
         for seq in self.seq_list:
             cameras = self._get_cam(seq)
             curr_anno = osp.join(self.img_prefix, seq,
@@ -181,11 +185,22 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                               prefix + postfix)
                         image_file = image_file.replace('json', 'jpg')
 
-                        all_poses_3d = []
-                        all_poses_vis_3d = []
-                        all_poses = []
-                        all_poses_vis = []
+                        all_poses_3d = np.zeros(
+                            (self.max_persons, self.num_joints, 3),
+                            dtype=np.float32)
+                        all_poses_vis_3d = np.zeros(
+                            (self.max_persons, self.num_joints, 3),
+                            dtype=np.float32)
+                        all_roots_3d = np.zeros((self.max_persons, 3),
+                                                dtype=np.float32)
+                        all_poses = np.zeros(
+                            (self.max_persons, self.num_joints, 3),
+                            dtype=np.float32)
+
+                        cnt = 0
                         for body in bodies:
+                            if cnt >= self.max_persons:
+                                break
                             pose3d = np.array(body['joints19']).reshape(
                                 (-1, 4))
                             pose3d = pose3d[:self.num_joints]
@@ -200,13 +215,12 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                           [0.0, 1.0, 0.0]])
                             pose3d[:, 0:3] = pose3d[:, 0:3].dot(M) * 10.0
 
-                            all_poses_3d.append(pose3d[:, 0:3])
-                            all_poses_vis_3d.append(
-                                np.repeat(
-                                    np.reshape(joints_vis, (-1, 1)), 3,
-                                    axis=1))
+                            all_poses_3d[cnt] = pose3d[:, :3]
+                            all_roots_3d[cnt] = pose3d[self.root_id, :3]
+                            all_poses_vis_3d[cnt] = np.repeat(
+                                np.reshape(joints_vis, (-1, 1)), 3, axis=1)
 
-                            pose2d = np.zeros((pose3d.shape[0], 2))
+                            pose2d = np.zeros((pose3d.shape[0], 3))
                             # get pose_2d from pose_3d
                             pose2d[:, :2] = single_view_camera.world_to_pixel(
                                 pose3d[:, :3])
@@ -216,28 +230,37 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                 pose2d[:, 1] >= 0, pose2d[:, 1] <= height - 1)
                             check = np.bitwise_and(x_check, y_check)
                             joints_vis[np.logical_not(check)] = 0
+                            pose2d[:, -1] = joints_vis
 
-                            all_poses.append(pose2d)
-                            all_poses_vis.append(
-                                np.repeat(
-                                    np.reshape(joints_vis, (-1, 1)), 2,
-                                    axis=1))
+                            all_poses[cnt] = pose2d
 
                         if len(all_poses_3d) > 0:
                             db.append({
+                                'mask':
+                                [np.ones((height, width), dtype=np.float32)],
                                 'image_file':
                                 osp.join(self.img_prefix, image_file),
                                 'joints_3d':
                                 all_poses_3d,
-                                'joints_3d_vis':
+                                'joints_3d_visible':
                                 all_poses_vis_3d,
-                                'joints_2d':
-                                all_poses,
-                                'joints_2d_vis':
-                                all_poses_vis,
+                                'joints': [all_poses],  # should be a list
+                                'roots_3d':
+                                all_roots_3d,
                                 'camera':
-                                cam_param
+                                cam_param,
+                                'num_persons':
+                                cnt,
+                                'sample_id':
+                                sample_id,
+                                'center':
+                                np.array([width, height], dtype=np.float32) /
+                                2,
+                                'scale':
+                                np.array([1920, 1920], dtype=np.float32) /
+                                200.0
                             })
+                            sample_id += 1
         return db
 
     def evaluate(self,
@@ -246,6 +269,14 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                  metric='mpjpe',
                  logger=None,
                  **kwargs):
+        pose_3ds = np.concatenate([output['pose_3d'] for output in outputs],
+                                  axis=0)
+        sample_ids = []
+        for output in outputs:
+            sample_ids.extend(output['sample_id'])
+        _outputs = [(sample_id, pose_3d)
+                    for (sample_id, pose_3d) in zip(sample_ids, pose_3ds)]
+        _outputs = sorted(_outputs, key=lambda x: x[0])
 
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
@@ -256,23 +287,23 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
 
         res_file = osp.join(res_folder, 'result_keypoints.json')
 
-        mmcv.dump(outputs, res_file)
+        mmcv.dump(_outputs, res_file)
 
         eval_list = []
         gt_num = self.db_size // self.num_cameras
-        assert len(outputs) == gt_num, 'number mismatch'
+        assert len(_outputs) == gt_num, 'number mismatch'
 
         total_gt = 0
         for i in range(gt_num):
             index = self.num_cameras * i
             db_rec = copy.deepcopy(self.db[index])
             joints_3d = db_rec['joints_3d']
-            joints_3d_vis = db_rec['joints_3d_vis']
+            joints_3d_vis = db_rec['joints_3d_visible']
 
             if len(joints_3d) == 0:
                 continue
 
-            pred = outputs[i].copy()
+            pred = _outputs[i][1].copy()
             pred = pred[pred[:, 0, 3] >= 0]
             for pose in pred:
                 mpjpes = []

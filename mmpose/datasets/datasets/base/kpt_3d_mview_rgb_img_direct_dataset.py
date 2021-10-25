@@ -51,6 +51,12 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
         self.ann_info['heatmap_size'] = np.array(data_cfg['heatmap_size'])
         self.ann_info['num_joints'] = data_cfg['num_joints']
 
+        self.ann_info['space_size'] = data_cfg['space_size']
+        self.ann_info['space_center'] = data_cfg['space_center']
+        self.ann_info['cube_size'] = data_cfg['cube_size']
+        self.ann_info['scale_aware_sigma'] = data_cfg.get(
+            'scale_aware_sigma', False)
+
         if dataset_info is None:
             raise ValueError(
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
@@ -60,6 +66,7 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         assert self.ann_info['num_joints'] <= dataset_info.keypoint_num
         self.ann_info['flip_pairs'] = dataset_info.flip_pairs
+        self.ann_info['num_scales'] = 1
         self.ann_info['flip_index'] = dataset_info.flip_index
         self.ann_info['upper_body_ids'] = dataset_info.upper_body_ids
         self.ann_info['lower_body_ids'] = dataset_info.lower_body_ids
@@ -128,18 +135,13 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
         """Get the size of the dataset."""
         return len(self.db) // self.num_cameras
 
-    def _get_single_camera(self, idx):
-        """Get the sample given index."""
-        results = copy.deepcopy(self.db[idx])
-        results['ann_info'] = self.ann_info
-        return self.pipeline(results)
-
     def __getitem__(self, idx):
         """Get the sample given index."""
-        results = []
+        results = {}
         # return self.pipeline(results)
-        for k in range(self.num_cameras):
-            single_result = self._get_single_camera(self.num_cameras * idx + k)
-            results.append(single_result)
+        for c in range(self.num_cameras):
+            result = copy.deepcopy(self.db[self.num_cameras * idx + c])
+            result['ann_info'] = self.ann_info
+            results[c] = result
 
-        return results
+        return self.pipeline(results)

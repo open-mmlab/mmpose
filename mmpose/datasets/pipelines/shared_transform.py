@@ -407,6 +407,44 @@ class PhotometricDistortion:
 
 
 @PIPELINES.register_module()
+class MultiItemProcess:
+    """
+    Args:
+        pipeline
+    """
+
+    def __init__(self, pipeline):
+        self.pipeline = Compose(pipeline)
+
+    def __call__(self, results):
+        results_ = {}
+        for idx, result in results.items():
+            single_result = self.pipeline(result)
+            for k, v in single_result.items():
+                if k in results_:
+                    results_[k].append(v)
+                else:
+                    results_[k] = [v]
+
+        return results_
+
+
+@PIPELINES.register_module()
+class MultiItemDeduplicate:
+
+    def __init__(self, keys_list):
+        self.keys_list = keys_list
+
+    def __call__(self, results):
+        for k, v in results.items():
+            if k in self.keys_list:
+                assert isinstance(v, Sequence)
+                results[k] = v[0]
+
+        return results
+
+
+@PIPELINES.register_module()
 class MultitaskGatherTarget:
     """Gather the targets for multitask heads.
 
