@@ -89,6 +89,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
 
+        self.ann_info['use_different_joint_weights'] = False
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')

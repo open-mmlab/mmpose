@@ -71,7 +71,7 @@ dataset_info = dict(
             name='R_F_Paw',
             id=10,
             color=[0, 255, 0],
-            type='upper',
+            type='lower',
             swap='L_F_Paw'),
         11:
         dict(
