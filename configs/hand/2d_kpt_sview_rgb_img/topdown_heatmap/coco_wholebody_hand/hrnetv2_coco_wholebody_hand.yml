@@ -2,14 +2,16 @@ Collections:
 - Metadata:
     Architecture:
     - HRNetv2
-  Name: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--hrnetv2_coco_wholebody_hand
+    [HRNetv2@COCO-WholeBody-Hand]
   Paper:
     Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/hrnetv2_coco_wholebody_hand.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/hrnetv2_w18_coco_wholebody_hand_256x256.py
-  In Collection: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--hrnetv2_coco_wholebody_hand
+    [HRNetv2@COCO-WholeBody-Hand]
   Metadata:
     Training Data: COCO-WholeBody-Hand
   Name: topdown_heatmap_hrnetv2_w18_coco_wholebody_hand_256x256

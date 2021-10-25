@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - ShufflenetV2
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco [ShufflenetV2@COCO]
   Paper:
     Title: 'Shufflenet v2: Practical guidelines for efficient cnn architecture design'
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Ningning_Light-weight_CNN_Architecture_ECCV_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco
+    [ShufflenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv2_coco_256x192
@@ -24,7 +25,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv2/shufflenetv2_coco_256x192-0aba71c7_20200921.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--shufflenetv2_coco
+    [ShufflenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv2_coco_384x288

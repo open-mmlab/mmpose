@@ -2,14 +2,16 @@ Collections:
 - Metadata:
     Architecture:
     - HRNetv2
-  Name: Hand 2D Keypoint topdown_heatmap onehand10k
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_onehand10k
+    [HRNetv2@OneHand10K]
   Paper:
     Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_onehand10k.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256.py
-  In Collection: Hand 2D Keypoint topdown_heatmap onehand10k
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--onehand10k--hrnetv2_onehand10k
+    [HRNetv2@OneHand10K]
   Metadata:
     Training Data: OneHand10K
   Name: topdown_heatmap_hrnetv2_w18_onehand10k_256x256

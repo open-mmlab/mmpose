@@ -147,21 +147,18 @@ def parse_md(md_file):
     Returns:
         Bool: If the target YAML file is different from the original.
     """
-    collection_info = parse_config_path(md_file)
-    collection_name = ' '.join([
-        collection_info['target'], collection_info['task'],
-        collection_info['algorithm'], collection_info['dataset']
-    ])
-    # collection_name = osp.splitext(osp.basename(md_file))[0]
+    readme_path = osp.relpath(md_file, MMPOSE_ROOT)
+
     collection = dict(
-        Name=collection_name,
+        Name=None,  # fill in later
         Metadata={'Architecture': []},
-        README=osp.relpath(md_file, MMPOSE_ROOT),
+        README=readme_path,
         Paper=None)
     models = []
 
     # record the publish year of the latest paper
     paper_year = -1
+    dataset = 'Unknown'
 
     with open(md_file, 'r') as md:
         lines = md.readlines()
@@ -252,7 +249,7 @@ def parse_md(md_file):
                         'Name':
                         model_name,
                         'In Collection':
-                        collection_name,
+                        None,  # fill in later
                         'Config':
                         config,
                         'Metadata':
@@ -271,6 +268,16 @@ def parse_md(md_file):
 
             else:
                 i += 1
+
+    # fill in collection name
+    readme_name = '--'.join(
+        osp.splitext(osp.relpath(readme_path, 'configs'))[0].split(osp.sep))
+    collection_alias = '+'.join(
+        collection['Metadata']['Architecture']) + f'@{dataset}'
+    collection_name = f'{readme_name} [{collection_alias}]'
+    collection['Name'] = collection_name
+    for model in models:
+        model['In Collection'] = collection_name
 
     result = {'Collections': [collection], 'Models': models}
     yml_file = md_file[:-2] + 'yml'

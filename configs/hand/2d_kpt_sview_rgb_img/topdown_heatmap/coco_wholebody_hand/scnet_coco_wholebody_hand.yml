@@ -2,14 +2,16 @@ Collections:
 - Metadata:
     Architecture:
     - SCNet
-  Name: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--scnet_coco_wholebody_hand
+    [SCNet@COCO-WholeBody-Hand]
   Paper:
     Title: Improving Convolutional Networks with Self-Calibrated Convolutions
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/scnet_coco_wholebody_hand.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_hand/scnet50_coco_wholebody_hand_256x256.py
-  In Collection: Hand 2D Keypoint topdown_heatmap coco_wholebody_hand
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_hand--scnet_coco_wholebody_hand
+    [SCNet@COCO-WholeBody-Hand]
   Metadata:
     Training Data: COCO-WholeBody-Hand
   Name: topdown_heatmap_scnet50_coco_wholebody_hand_256x256

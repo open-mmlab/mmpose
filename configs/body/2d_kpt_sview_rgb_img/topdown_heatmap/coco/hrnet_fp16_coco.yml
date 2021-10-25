@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - HRNet
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_fp16_coco [HRNet@COCO]
   Paper:
     Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_fp16_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_fp16_dynamic.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_fp16_coco
+    [HRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_fp16_dynamic

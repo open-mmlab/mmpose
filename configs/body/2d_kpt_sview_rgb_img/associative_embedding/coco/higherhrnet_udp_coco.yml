@@ -4,7 +4,8 @@ Collections:
     - Associative Embedding
     - HigherHRNet
     - UDP
-  Name: Body 2D Keypoint associative_embedding coco
+  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_udp_coco
+    [Associative Embedding+HigherHRNet+UDP@COCO]
   Paper:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
@@ -12,7 +13,8 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_udp_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_udp_coco
+    [Associative Embedding+HigherHRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w32_coco_512x512_udp
@@ -27,7 +29,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_udp_coco
+    [Associative Embedding+HigherHRNet+UDP@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w48_coco_512x512_udp

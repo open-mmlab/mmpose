@@ -2,14 +2,14 @@ Collections:
 - Metadata:
     Architecture:
     - CPM
-  Name: Body 2D Keypoint topdown_heatmap jhmdb
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Paper:
     Title: Convolutional pose machines
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/Wei_Convolutional_Pose_Machines_CVPR_2016_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
@@ -27,7 +27,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
@@ -45,7 +45,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub3_368x368
@@ -63,7 +63,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub3_368x368-49337155_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub1_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub1_368x368
@@ -81,7 +81,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub1_368x368-2d2585c9_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub2_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub2_368x368
@@ -99,7 +99,7 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/cpm/cpm_jhmdb_sub2_368x368-fc742f1f_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/cpm_jhmdb_sub3_368x368.py
-  In Collection: Body 2D Keypoint topdown_heatmap jhmdb
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--cpm_jhmdb [CPM@JHMDB]
   Metadata:
     Training Data: JHMDB
   Name: topdown_heatmap_cpm_jhmdb_sub3_368x368

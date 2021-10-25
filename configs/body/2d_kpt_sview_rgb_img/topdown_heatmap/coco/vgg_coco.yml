@@ -2,14 +2,14 @@ Collections:
 - Metadata:
     Architecture:
     - VGG
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--vgg_coco [VGG@COCO]
   Paper:
     Title: Very deep convolutional networks for large-scale image recognition
     URL: https://arxiv.org/abs/1409.1556
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg16_bn_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--vgg_coco [VGG@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_vgg16_bn_coco_256x192

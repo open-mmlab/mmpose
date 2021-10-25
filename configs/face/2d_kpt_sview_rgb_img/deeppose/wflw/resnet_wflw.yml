@@ -3,14 +3,14 @@ Collections:
     Architecture:
     - DeepPose
     - ResNet
-  Name: Face 2D Keypoint deeppose wflw
+  Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--resnet_wflw [DeepPose+ResNet@WFLW]
   Paper:
     Title: Deep residual learning for image recognition
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
   README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256.py
-  In Collection: Face 2D Keypoint deeppose wflw
+  In Collection: face--2d_kpt_sview_rgb_img--deeppose--wflw--resnet_wflw [DeepPose+ResNet@WFLW]
   Metadata:
     Training Data: WFLW
   Name: deeppose_res50_wflw_256x256

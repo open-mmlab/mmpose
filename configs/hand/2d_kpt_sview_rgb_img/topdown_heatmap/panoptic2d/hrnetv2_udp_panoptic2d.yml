@@ -3,7 +3,8 @@ Collections:
     Architecture:
     - HRNetv2
     - UDP
-  Name: Hand 2D Keypoint topdown_heatmap panoptic2d
+  Name: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_udp_panoptic2d
+    [HRNetv2+UDP@CMU Panoptic HandDB]
   Paper:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
@@ -11,7 +12,8 @@ Collections:
   README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_udp_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
-  In Collection: Hand 2D Keypoint topdown_heatmap panoptic2d
+  In Collection: hand--2d_kpt_sview_rgb_img--topdown_heatmap--panoptic2d--hrnetv2_udp_panoptic2d
+    [HRNetv2+UDP@CMU Panoptic HandDB]
   Metadata:
     Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256_udp

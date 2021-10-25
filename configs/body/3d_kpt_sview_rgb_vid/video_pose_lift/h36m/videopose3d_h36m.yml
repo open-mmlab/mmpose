@@ -2,7 +2,7 @@ Collections:
 - Metadata:
     Architecture:
     - VideoPose3D
-  Name: Body 3D Keypoint video_pose_lift h36m
+  Name: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m [VideoPose3D@Human3.6M]
   Paper:
     Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
       training
@@ -10,7 +10,8 @@ Collections:
   README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_supervised
@@ -22,7 +23,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_81frames_fullconv_supervised.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_81frames_fullconv_supervised
@@ -34,7 +36,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised
@@ -46,7 +49,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised-880bea25_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_1frame_fullconv_supervised_cpn_ft.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_1frame_fullconv_supervised_cpn_ft
@@ -58,7 +62,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised_cpn_ft
@@ -70,7 +75,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised
@@ -83,7 +89,8 @@ Models:
     Task: Body 3D Keypoint
   Weights: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft.py
-  In Collection: Body 3D Keypoint video_pose_lift h36m
+  In Collection: body--3d_kpt_sview_rgb_vid--video_pose_lift--h36m--videopose3d_h36m
+    [VideoPose3D@Human3.6M]
   Metadata:
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft

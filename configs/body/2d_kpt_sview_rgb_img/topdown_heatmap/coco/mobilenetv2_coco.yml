@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - MobilenetV2
-  Name: Body 2D Keypoint topdown_heatmap coco
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco [MobilenetV2@COCO]
   Paper:
     Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco
+    [MobilenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_mobilenetv2_coco_256x192
@@ -24,7 +25,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_coco_256x192-d1e58e7b_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mobilenetv2_coco
+    [MobilenetV2@COCO]
   Metadata:
     Training Data: COCO
   Name: topdown_heatmap_mobilenetv2_coco_384x288

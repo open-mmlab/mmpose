@@ -3,14 +3,16 @@ Collections:
     Architecture:
     - Associative Embedding
     - HRNet
-  Name: Wholebody 2D Keypoint associative_embedding coco-wholebody
+  Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--hrnet_coco-wholebody
+    [Associative Embedding+HRNet@COCO-WholeBody]
   Paper:
     Title: Deep high-resolution representation learning for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Sun_Deep_High-Resolution_Representation_Learning_for_Human_Pose_Estimation_CVPR_2019_paper.html
   README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_w32_coco_wholebody_512x512.py
-  In Collection: Wholebody 2D Keypoint associative_embedding coco-wholebody
+  In Collection: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--hrnet_coco-wholebody
+    [Associative Embedding+HRNet@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: associative_embedding_hrnet_w32_coco_wholebody_512x512
@@ -30,7 +32,8 @@ Models:
     Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/hrnet_w32_coco_wholebody_512x512_plus-f1f1185c_20210517.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_w48_coco_wholebody_512x512.py
-  In Collection: Wholebody 2D Keypoint associative_embedding coco-wholebody
+  In Collection: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--hrnet_coco-wholebody
+    [Associative Embedding+HRNet@COCO-WholeBody]
   Metadata:
     Training Data: COCO-WholeBody
   Name: associative_embedding_hrnet_w48_coco_wholebody_512x512

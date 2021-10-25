@@ -3,7 +3,8 @@ Collections:
     Architecture:
     - Associative Embedding
     - HigherHRNet
-  Name: Body 2D Keypoint associative_embedding coco
+  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Paper:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
@@ -11,7 +12,8 @@ Collections:
   README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w32_coco_512x512
@@ -26,7 +28,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w32_coco_640x640
@@ -41,7 +44,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w48_coco_512x512
@@ -56,7 +60,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512-60fedcbc_20200712.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w32_coco_512x512
@@ -71,7 +76,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512-8ae85183_20200713.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_640x640.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w32_coco_640x640
@@ -86,7 +92,8 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_640x640-a22fe938_20200712.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--higherhrnet_coco
+    [Associative Embedding+HigherHRNet@COCO]
   Metadata:
     Training Data: COCO
   Name: associative_embedding_higherhrnet_w48_coco_512x512

@@ -3,14 +3,16 @@ Collections:
     Architecture:
     - DeepPose
     - ResNet
-  Name: Hand 2D Keypoint deeppose panoptic2d
+  Name: hand--2d_kpt_sview_rgb_img--deeppose--panoptic2d--resnet_panoptic2d [DeepPose+ResNet@CMU
+    Panoptic HandDB]
   Paper:
     Title: Deep residual learning for image recognition
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
   README: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/resnet_panoptic2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/deeppose/panoptic2d/res50_panoptic2d_256x256.py
-  In Collection: Hand 2D Keypoint deeppose panoptic2d
+  In Collection: hand--2d_kpt_sview_rgb_img--deeppose--panoptic2d--resnet_panoptic2d
+    [DeepPose+ResNet@CMU Panoptic HandDB]
   Metadata:
     Training Data: CMU Panoptic HandDB
   Name: deeppose_res50_panoptic2d_256x256

@@ -2,14 +2,15 @@ Collections:
 - Metadata:
     Architecture:
     - SimpleBaseline2D
-  Name: Animal 2D Keypoint topdown_heatmap atrw
+  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--atrw--resnet_atrw [SimpleBaseline2D@ATRW]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
   README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/resnet_atrw.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/res50_atrw_256x256.py
-  In Collection: Animal 2D Keypoint topdown_heatmap atrw
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--atrw--resnet_atrw
+    [SimpleBaseline2D@ATRW]
   Metadata:
     Training Data: ATRW
   Name: topdown_heatmap_res50_atrw_256x256
@@ -24,7 +25,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_atrw_256x256-546c4594_20210414.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/res101_atrw_256x256.py
-  In Collection: Animal 2D Keypoint topdown_heatmap atrw
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--atrw--resnet_atrw
+    [SimpleBaseline2D@ATRW]
   Metadata:
     Training Data: ATRW
   Name: topdown_heatmap_res101_atrw_256x256
@@ -39,7 +41,8 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_atrw_256x256-da93f371_20210414.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/atrw/res152_atrw_256x256.py
-  In Collection: Animal 2D Keypoint topdown_heatmap atrw
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--atrw--resnet_atrw
+    [SimpleBaseline2D@ATRW]
   Metadata:
     Training Data: ATRW
   Name: topdown_heatmap_res152_atrw_256x256
