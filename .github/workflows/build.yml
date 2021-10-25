@@ -101,6 +101,8 @@ jobs:
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg python${{matrix.python-version}}-dev
           apt-get clean
           rm -rf /var/lib/apt/lists/*
+      - name: Upgrade pip
+        run: python -m pip install pip --upgrade
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get install -y libprotobuf-dev protobuf-compiler
         if: ${{matrix.python-version == '3.9'}}
@@ -160,6 +162,8 @@ jobs:
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
           apt-get clean
           rm -rf /var/lib/apt/lists/*
+      - name: Upgrade pip
+        run: python -m pip install pip --upgrade
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get update && apt-get -y install libprotobuf-dev protobuf-compiler cmake
         if: ${{matrix.python-version == '3.9'}}
