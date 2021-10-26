@@ -38,4 +38,4 @@ Results on AP-10K validation set
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP<sup>M</sup> | AP<sup>L</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
 | [pose_hrnet_w32](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/hrnet_w32_ap10k_256x256.py)  | 256x256 | 0.738 | 0.958 | 0.808 | 0.592 | 0.743 | [ckpt]() | [log]() |
-| [pose_hrnet_w48](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/hrnet_w48_ap10k_256x256.py)  | 256x256 | 0.744 | 0.959 | 0.807 | 0.589 | 0.748 | [ckpt]() | [log]() |
+| [pose_hrnet_w48](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/hrnet_w48_ap10k_256x256.py)  | 256x256 | 0.744 | 0.959 | 0.807 | 0.589 | 0.748 | [ckpt]() | [log]() |
