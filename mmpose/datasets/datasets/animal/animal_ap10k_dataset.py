@@ -29,8 +29,8 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         0: 'L_Eye',
         1: 'R_Eye',
-        2: 'nose',
-        3: 'neck',
+        2: 'Nose',
+        3: 'Neck',
         4: 'root of tail',
         5: 'L_Shoulder',
         6: 'L_Elbow',
@@ -69,7 +69,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
                 'dataset_info is missing. '
                 'Check https://github.com/open-mmlab/mmpose/pull/663 '
                 'for details.', DeprecationWarning)
-            cfg = Config.fromfile('configs/_base_/datasets/animalpose.py')
+            cfg = Config.fromfile('configs/_base_/datasets/ap10k.py')
             dataset_info = cfg._cfg_dict['dataset_info']
 
         super().__init__(
@@ -83,6 +83,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
+
         self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
@@ -90,7 +91,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.vis_thr = data_cfg['vis_thr']
 
         self.ann_info['use_different_joint_weights'] = False
-        self.db = self._get_db()
+        self.db, self.id2Cat = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
@@ -98,15 +99,18 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
     def _get_db(self):
         """Load dataset."""
         assert self.use_gt_bbox
-        gt_db = self._load_coco_keypoint_annotations()
-        return gt_db
+        gt_db, id2Cat = self._load_coco_keypoint_annotations()
+        return gt_db, id2Cat
 
     def _load_coco_keypoint_annotations(self):
         """Ground truth bbox and keypoints."""
-        gt_db = []
+        gt_db, id2Cat = [], dict()
         for img_id in self.img_ids:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernel(img_id))
-        return gt_db
+            db_tmp, id2Cat_tmp = self._load_coco_keypoint_annotation_kernel(
+                img_id)
+            gt_db.extend(db_tmp)
+            id2Cat.update({img_id: id2Cat_tmp})
+        return gt_db, id2Cat
 
     def _load_coco_keypoint_annotation_kernel(self, img_id):
         """load annotation from COCOAPI.
@@ -143,6 +147,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         bbox_id = 0
         rec = []
+        id2Cat = []
         for obj in objs:
             if 'keypoints' not in obj:
                 continue
@@ -172,9 +177,15 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
                 'bbox_score': 1,
                 'bbox_id': bbox_id
             })
+            category = obj['category_id']
+            id2Cat.append({
+                'image_file': image_file,
+                'bbox_id': bbox_id,
+                'category': category,
+            })
             bbox_id = bbox_id + 1
 
-        return rec
+        return rec, id2Cat
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
@@ -221,6 +232,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
             batch_size = len(image_paths)
             for i in range(batch_size):
                 image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+                cat = self.id2Cat[image_id][bbox_ids[i]]['category']
                 kpts[image_id].append({
                     'keypoints': preds[i],
                     'center': boxes[i][0:2],
@@ -228,7 +240,8 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
                     'area': boxes[i][4],
                     'score': boxes[i][5],
                     'image_id': image_id,
-                    'bbox_id': bbox_ids[i]
+                    'bbox_id': bbox_ids[i],
+                    'category': cat
                 })
         kpts = self._sort_and_unique_bboxes(kpts)
 
@@ -285,7 +298,6 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def _coco_keypoint_results_one_category_kernel(self, data_pack):
         """Get coco keypoint results."""
-        cat_id = data_pack['cat_id']
         keypoints = data_pack['keypoints']
         cat_results = []
 
@@ -300,7 +312,7 @@ class AnimalAP10KDataset(Kpt2dSviewRgbImgTopDownDataset):
 
             result = [{
                 'image_id': img_kpt['image_id'],
-                'category_id': cat_id,
+                'category_id': img_kpt['category'],
                 'keypoints': key_point.tolist(),
                 'score': float(img_kpt['score']),
                 'center': img_kpt['center'].tolist(),
