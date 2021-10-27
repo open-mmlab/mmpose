@@ -118,7 +118,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 
 </details>
 
-For [AP-10K](https://github.com/AlexTheBad/AP-10K/) datatset, images and annotations can be downloaded from [download](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing).
+For [AP-10K](https://github.com/AlexTheBad/AP-10K/) dataset, images and annotations can be downloaded from [download](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing).
 Note, this data and annotation data is for non-commercial use only.
 
 Extract them under {MMPose}/data, and make them look like this:
@@ -149,7 +149,7 @@ mmpose
 
 ```
 
-The annotation files in 'annotation' folder contains 50 labeld animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
+The annotation files in 'annotation' folder contains 50 labeled animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
 
 ## Horse-10
 
