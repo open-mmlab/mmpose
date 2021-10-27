@@ -618,7 +618,7 @@ class GenerateVoxel3DHeatmapTarget:
                 g = np.exp(-((gridx - mu_x)**2 + (gridy - mu_y)**2 +
                              (gridz - mu_z)**2) / (2 * self.sigma**2))
                 target[idx, i_x[0]:i_x[1], i_y[0]:i_y[1], i_z[0]:i_z[1]] \
-                    = np.maximum(target[i_x[0]:i_x[1],
+                    = np.maximum(target[idx, i_x[0]:i_x[1],
                                  i_y[0]:i_y[1], i_z[0]:i_z[1]], g)
 
         target = np.clip(target, 0, 1)

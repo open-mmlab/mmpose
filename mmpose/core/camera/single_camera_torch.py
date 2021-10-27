@@ -113,7 +113,6 @@ class SimpleCameraTorch(SingleCameraBase):
 
             tangential = 2 * (p[1] * _X[..., 0] + p[0] * _X[..., 1])
 
-            _X[..., :2] = _X_2d * (radial +
-                                   tangential)[..., None] + torch.outer(
-                                       r2, p.flip([0])).reshape(_X_2d.shape)
+            _X[..., :2] = _X_2d * (radial + tangential)[..., None] + torch.ger(
+                r2, p.flip([0])).reshape(_X_2d.shape)
         return _X @ self.param['K']

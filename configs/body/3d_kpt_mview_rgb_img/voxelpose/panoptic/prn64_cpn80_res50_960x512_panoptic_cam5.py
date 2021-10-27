@@ -4,12 +4,12 @@ load_from = None
 resume_from = None
 dist_params = dict(backend='nccl')
 workflow = [('train', 1)]
-checkpoint_config = dict(interval=50)
-evaluation = dict(interval=50, metric='mAP', save_best='AP')
+checkpoint_config = dict(interval=1)
+evaluation = dict(interval=3, metric='mAP', save_best='mAP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.0015,
+    lr=0.0001,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -18,8 +18,8 @@ lr_config = dict(
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[200, 260])
-total_epochs = 300
+    step=[9, 12])
+total_epochs = 15
 log_config = dict(
     interval=50,
     hooks=[
@@ -32,21 +32,21 @@ space_center = [0, -500, 800]
 cube_size = [80, 80, 20]
 sub_space_size = [2000, 2000, 2000]
 sub_cube_size = [64, 64, 64]
-image_size = 640
-heatmap_size = 160
+image_size = [960, 512]
+heatmap_size = [240, 128]
 num_joints = 15
 
 train_data_cfg = dict(
     image_size=image_size,
     heatmap_size=[heatmap_size],
     num_joints=num_joints,
-    seq_list=[  # '160422_ultimatum1', '160224_haggling1', '160226_haggling1',
-        # '161202_haggling1', '160906_ian1', '160906_ian2', '160906_ian3',
-        '160906_band1',
-        '160906_band2'
+    seq_list=[
+        '160422_ultimatum1', '160224_haggling1', '160226_haggling1',
+        '161202_haggling1', '160906_ian1', '160906_ian2', '160906_ian3',
+        '160906_band1', '160906_band2'
     ],
-    cam_list=[(0, 12), (0, 6)],  # , (0, 23), (0, 13), (0, 3)],
-    num_cameras=2,
+    cam_list=[(0, 12), (0, 6), (0, 23), (0, 13), (0, 3)],
+    num_cameras=5,
     seq_frame_interval=3,
     subset='train',
     root_id=2,
@@ -59,15 +59,16 @@ train_data_cfg = dict(
 test_data_cfg = train_data_cfg.copy()
 test_data_cfg.update(
     dict(
-        seq_list=[  # '160906_pizza1',
-            # '160422_haggling1',
-            # '160906_ian5',
-            # '160906_band4',
-            '160906_band1',
-            '160906_band2'
+        seq_list=[
+            '160906_pizza1',
+            '160422_haggling1',
+            '160906_ian5',
+            '160906_band4',
+            # '160906_band1',
+            # '160906_band2'
         ],
-        seq_frame_interval=100,
-        subset='test'))
+        seq_frame_interval=12,
+        subset='validation'))
 
 # model settings
 detector_2d = dict(
@@ -108,6 +109,7 @@ detector_2d = dict(
 model = dict(
     type='VoxelPose',
     detector_2d=detector_2d,
+    pretrained='checkpoints/resnet_50_deconv.pth.tar',
     space_3d=dict(
         space_size=space_size,
         space_center=space_center,
@@ -146,7 +148,7 @@ train_pipeline = [
                 type='NormalizeTensor',
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]),
-            dict(type='BottomUpGenerateTarget', sigma=3, max_num_people=30),
+            # dict(type='BottomUpGenerateTarget', sigma=3, max_num_people=30),
         ]),
     dict(
         type='MultiItemDeduplicate',
@@ -157,10 +159,10 @@ train_pipeline = [
     dict(type='GenerateVoxel3DHeatmapTarget', sigma=200.0, joint_indices=[2]),
     dict(
         type='Collect',
-        keys=['img', 'targets', 'targets_3d'],
+        keys=['img', 'targets_3d'],
         meta_keys=[
             'num_persons', 'joints_3d', 'camera', 'center', 'scale',
-            'joints_3d_visible', 'roots_3d', 'sample_id'
+            'joints_3d_visible', 'roots_3d'
         ]),
 ]
 
@@ -198,7 +200,7 @@ test_pipeline = val_pipeline
 data_root = 'data/panoptic/'
 data = dict(
     samples_per_gpu=2,
-    workers_per_gpu=2,
+    workers_per_gpu=4,
     train=dict(
         type='Body3DMviewDirectPanopticDataset',
         ann_file='',

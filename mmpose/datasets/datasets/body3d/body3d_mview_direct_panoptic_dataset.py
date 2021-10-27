@@ -96,15 +96,15 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         if osp.exists(self.db_file):
             with open(self.db_file, 'rb') as f:
                 info = pickle.load(f)
-            assert info['seq_list'] == self.seq_list
-            assert info['seq_frame_interval'] == self.seq_frame_interval
+            assert info['sequence_list'] == self.seq_list
+            assert info['interval'] == self.seq_frame_interval
             assert info['cam_list'] == self.cam_list
             self.db = info['db']
         else:
             self.db = self._get_db()
             info = {
-                'seq_list': self.seq_list,
-                'seq_frame_interval': self.seq_frame_interval,
+                'sequence_list': self.seq_list,
+                'interval': self.seq_frame_interval,
                 'cam_list': self.cam_list,
                 'db': self.db
             }
@@ -158,6 +158,21 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 cameras[(cam['panel'], cam['node'])] = sel_cam
 
         return cameras
+
+    @staticmethod
+    def _get_scale(image_size, resized_size):
+        w, h = image_size
+        w_resized, h_resized = resized_size
+        if w / w_resized < h / h_resized:
+            w_pad = h / h_resized * w_resized
+            h_pad = h
+        else:
+            w_pad = w
+            h_pad = w / w_resized * h_resized
+
+        scale = np.array([w_pad, h_pad], dtype=np.float32)
+
+        return scale / 200.0
 
     def _get_db(self):
         width = 1920
@@ -233,6 +248,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                             pose2d[:, -1] = joints_vis
 
                             all_poses[cnt] = pose2d
+                            cnt += 1
 
                         if len(all_poses_3d) > 0:
                             db.append({
@@ -253,12 +269,12 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                 cnt,
                                 'sample_id':
                                 sample_id,
-                                'center':
-                                np.array([width, height], dtype=np.float32) /
-                                2,
-                                'scale':
-                                np.array([1920, 1920], dtype=np.float32) /
-                                200.0
+                                # 'center':
+                                # np.array([width, height], dtype=np.float32) /
+                                # 2,
+                                # 'scale':
+                                # np.array([1920, 1920], dtype=np.float32) /
+                                # 200.0
                             })
                             sample_id += 1
         return db
@@ -282,7 +298,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
                 raise ValueError(
-                    f'Unsupported metric "{_metric}" for mpi-inf-3dhp dataset.'
+                    f'Unsupported metric "{_metric}"'
                     f'Supported metrics are {self.ALLOWED_METRICS}')
 
         res_file = osp.join(res_folder, 'result_keypoints.json')
@@ -300,7 +316,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
             joints_3d = db_rec['joints_3d']
             joints_3d_vis = db_rec['joints_3d_visible']
 
-            if len(joints_3d) == 0:
+            if joints_3d_vis.sum() < 1:
                 continue
 
             pred = _outputs[i][1].copy()
@@ -309,6 +325,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 mpjpes = []
                 for (gt, gt_vis) in zip(joints_3d, joints_3d_vis):
                     vis = gt_vis[:, 0] > 0
+                    if vis.sum() < 1:
+                        break
                     mpjpe = np.mean(
                         np.sqrt(
                             np.sum((pose[vis, 0:3] - gt[vis])**2, axis=-1)))
@@ -322,7 +340,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                     'gt_id': int(total_gt + min_gt)
                 })
 
-            total_gt += len(joints_3d)
+            total_gt += (joints_3d_vis[:, :, 0].sum(-1) >= 1).sum()
 
         mpjpe_threshold = np.arange(25, 155, 25)
         aps = []

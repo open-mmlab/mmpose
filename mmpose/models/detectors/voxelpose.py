@@ -2,6 +2,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from mmcv.runner import load_checkpoint
 
 from mmpose.core.camera import SimpleCameraTorch
 from mmpose.core.post_processing.post_transforms import (
@@ -35,8 +36,12 @@ class ProjectLayer(nn.Module):
 
     def __init__(self, cfg):
         super(ProjectLayer, self).__init__()
-        self.img_size = [cfg['image_size'], cfg['image_size']]
-        self.heatmap_size = [cfg['heatmap_size'], cfg['heatmap_size']]
+        self.img_size = cfg['image_size']
+        self.heatmap_size = cfg['heatmap_size']
+        if isinstance(self.img_size, int):
+            self.img_size = [self.img_size, self.img_size]
+        if isinstance(self.heatmap_size, int):
+            self.heatmap_size = [self.heatmap_size, self.heatmap_size]
 
     def compute_grid(self, boxSize, boxCenter, nBins, device=None):
         if isinstance(boxSize, int) or isinstance(boxSize, float):
@@ -87,7 +92,8 @@ class ProjectLayer(nn.Module):
 
                     width, height = center * 2
                     trans = torch.as_tensor(
-                        get_affine_transform(center, scale, 0, self.img_size),
+                        get_affine_transform(center, scale / 200.0, 0,
+                                             self.img_size),
                         dtype=torch.float,
                         device=device)
 
@@ -151,11 +157,17 @@ class VoxelPose(BasePose):
                  pose_head,
                  train_cfg=None,
                  test_cfg=None,
-                 pretrained=None):
+                 pretrained=None,
+                 freeze_2d=True):
         super(VoxelPose, self).__init__()
 
-        self.backbone = None if detector_2d is None \
-            else builder.build_posenet(detector_2d)
+        self.backbone = builder.build_posenet(detector_2d)
+        if self.training and pretrained is not None:
+            load_checkpoint(self.backbone, pretrained)
+        if self.training and freeze_2d:
+            self._freeze(self.backbone)
+
+        self.freeze_2d = freeze_2d
         self.project_layer = ProjectLayer(project_layer)
         self.root_net = CuboidProposalNet(center_net)
         self.center_head = builder.build_head(center_head)
@@ -174,11 +186,19 @@ class VoxelPose(BasePose):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
 
+    @staticmethod
+    def _freeze(model):
+        """Freeze parameters."""
+        model.eval()
+        for param in model.parameters():
+            param.requires_grad = False
+
     def forward(self,
                 img,
                 img_metas,
                 return_loss=True,
                 targets=None,
+                masks=None,
                 targets_3d=None,
                 input_heatmaps=None,
                 **kwargs):
@@ -212,11 +232,34 @@ class VoxelPose(BasePose):
         center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
         center_candidates = self.center_head(center_heatmaps_3d)
 
+        device = center_candidates.device
         if return_loss:
-            gt_centers = img_metas['roots_3d'].float()
-            gt_num_persons = img_metas['num_persons']
+            gt_centers = torch.stack([
+                torch.tensor(img_meta['roots_3d'], device=device)
+                for img_meta in img_metas
+            ])
+            # gt_centers = img_metas['roots_3d'].float()
+            gt_num_persons = torch.stack([
+                torch.tensor(img_meta['num_persons'], device=device)
+                for img_meta in img_metas
+            ])
+            # gt_num_persons = img_metas['num_persons']
             center_candidates = self.assign2gt(center_candidates, gt_centers,
                                                gt_num_persons)
+            gt_3d = torch.stack([
+                torch.tensor(img_meta['joints_3d'], device=device)
+                for img_meta in img_metas
+            ])
+            gt_3d_vis = torch.stack([
+                torch.tensor(img_meta['joints_3d_visible'], device=device)
+                for img_meta in img_metas
+            ])
+            # gt_3d = img_metas['joints_3d'].float()
+            # gt_3d_vis = img_metas['joints_3d_visible']
+            valid_preds = []
+            valid_targets = []
+            valid_weights = []
+
         else:
             center_candidates[..., 3] = \
                 (center_candidates[..., 4] >
@@ -226,13 +269,6 @@ class VoxelPose(BasePose):
         pred = center_candidates.new_zeros(batch_size, num_candidates,
                                            self.num_joints, 5)
         pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]  # matched gt
-
-        if return_loss:
-            gt_3d = img_metas['joints_3d'].float()
-            gt_3d_vis = img_metas['joints_3d_visible']
-            valid_preds = []
-            valid_targets = []
-            valid_weights = []
 
         for n in range(num_candidates):
             index = pred[:, n, 0, 3] >= 0
@@ -260,16 +296,27 @@ class VoxelPose(BasePose):
 
         if return_loss:
             losses = dict()
-            valid_targets = torch.cat(valid_targets, dim=0)
-            valid_weights = torch.cat(valid_weights, dim=0)
-            valid_preds = torch.cat(valid_preds, dim=0)
-
             losses.update(
                 self.center_head.get_loss(center_heatmaps_3d, targets_3d))
+            if len(valid_preds) > 0:
+                valid_targets = torch.cat(valid_targets, dim=0)
+                valid_weights = torch.cat(valid_weights, dim=0)
+                valid_preds = torch.cat(valid_preds, dim=0)
+                losses.update(
+                    self.pose_head.get_loss(valid_preds, valid_targets,
+                                            valid_weights))
 
-            losses.update(
-                self.pose_head.get_loss(valid_preds, valid_targets,
-                                        valid_weights))
+            if not self.freeze_2d:
+                losses_2d = {}
+                heatmaps_tensor = torch.cat(heatmaps, dim=0)
+                targets_tensor = torch.cat(targets, dim=0)
+                masks_tensor = torch.cat(masks, dim=0)
+                losses_2d_ = self.backbone.get_loss(heatmaps_tensor,
+                                                    targets_tensor,
+                                                    masks_tensor)
+                for k, v in losses_2d_.items():
+                    losses_2d[k + '_2d'] = v
+                losses.update(losses_2d)
 
             return losses
 
