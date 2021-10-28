@@ -22,7 +22,7 @@ def _get_multi_scale_size(image,
 
     Args:
         image: Input image.
-        input_size (np.array[2): Size of the image input.
+        input_size (np.ndarray[2): Size of the image input.
         current_scale (float): Scale factor.
         min_scale (float): Minimal scale.
         use_udp (bool): To use unbiased data processing.
@@ -76,7 +76,7 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.array[2]): Size of the image input
+        input_size (np.ndarray[2]): Size of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
@@ -102,7 +102,7 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.array[2]): Size of the image input
+        input_size (np.ndarray[2]): Size of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
@@ -136,7 +136,7 @@ class HeatmapGenerator:
 
     Args:
         num_joints (int): Number of keypoints
-        output_size (np.array): Size of feature map
+        output_size (np.ndarray): Size of feature map
         sigma (int): Sigma of the heatmaps.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -144,7 +144,8 @@ class HeatmapGenerator:
     """
 
     def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
-        assert isinstance(output_size, np.ndarray)
+        if not isinstance(output_size, np.ndarray):
+            output_size = np.array(output_size)
         if output_size.size > 1:
             assert len(output_size) == 2
             self.output_size = output_size
@@ -216,14 +217,15 @@ class JointsEncoder:
     Args:
         max_num_people(int): Max number of people in an image
         num_joints(int): Number of keypoints
-        output_size(np.array): Size of feature map
+        output_size(np.ndarray): Size of feature map
         tag_per_joint(bool):  Option to use one tag map per joint.
     """
 
     def __init__(self, max_num_people, num_joints, output_size, tag_per_joint):
         self.max_num_people = max_num_people
         self.num_joints = num_joints
-        assert isinstance(output_size, np.ndarray)
+        if not isinstance(output_size, np.ndarray):
+            output_size = np.array(output_size)
         if output_size.size > 1:
             assert len(output_size) == 2
             self.output_size = output_size
@@ -267,13 +269,14 @@ class PAFGenerator:
     """Generate part affinity fields.
 
     Args:
-        output_size (np.array): Size of feature map.
+        output_size (np.ndarray): Size of feature map.
         limb_width (int): Limb width of part affinity fields.
         skeleton (list[list]): connections of joints.
     """
 
     def __init__(self, output_size, limb_width, skeleton):
-        assert isinstance(output_size, np.ndarray)
+        if not isinstance(output_size, np.ndarray):
+            output_size = np.array(output_size)
         if output_size.size > 1:
             assert len(output_size) == 2
             self.output_size = output_size
@@ -379,7 +382,8 @@ class BottomUpRandomFlip:
         if np.random.random() < self.flip_prob:
             image = image[:, ::-1].copy() - np.zeros_like(image)
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
+                if not isinstance(_output_size, np.ndarray):
+                    _output_size = np.array(_output_size)
                 if _output_size.size > 1:
                     assert len(_output_size) == 2
                 else:
@@ -448,7 +452,8 @@ class BottomUpRandomAffine:
             'joints']
 
         self.input_size = results['ann_info']['image_size']
-        assert isinstance(self.input_size, np.ndarray)
+        if not isinstance(self.input_size, np.ndarray):
+            self.input_size = np.array(self.input_size)
         if self.input_size.size > 1:
             assert len(self.input_size) == 2
         else:
@@ -484,7 +489,8 @@ class BottomUpRandomAffine:
             center[1] += dy
         if self.use_udp:
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
+                if not isinstance(_output_size, np.ndarray):
+                    _output_size = np.array(_output_size)
                 if _output_size.size > 1:
                     assert len(_output_size) == 2
                 else:
@@ -521,7 +527,8 @@ class BottomUpRandomAffine:
                 flags=cv2.INTER_LINEAR)
         else:
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
+                if not isinstance(_output_size, np.ndarray):
+                    _output_size = np.array(_output_size)
                 if _output_size.size > 1:
                     assert len(_output_size) == 2
                 else:
@@ -534,7 +541,7 @@ class BottomUpRandomAffine:
                     output_size=_output_size)
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8), mat_output,
-                    (_output_size[0], _output_size[1])) / 255
+                    (int(_output_size[0]), int(_output_size[1]))) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
 
                 joints[i][:, :, 0:2] = \
@@ -718,7 +725,8 @@ class BottomUpGetImgSize:
     def __call__(self, results):
         """Get multi-scale image sizes for bottom-up."""
         input_size = results['ann_info']['image_size']
-        assert isinstance(input_size, np.ndarray)
+        if not isinstance(input_size, np.ndarray):
+            input_size = np.array(input_size)
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
@@ -785,7 +793,8 @@ class BottomUpResizeAlign:
     def __call__(self, results):
         """Resize multi-scale size and align transform for bottom-up."""
         input_size = results['ann_info']['image_size']
-        assert isinstance(input_size, np.ndarray)
+        if not isinstance(input_size, np.ndarray):
+            input_size = np.array(input_size)
         if input_size.size > 1:
             assert len(input_size) == 2
         else:
