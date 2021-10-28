@@ -431,16 +431,20 @@ class BottomUpRandomAffine:
             if self.scale_type == 'long':
                 w_pad = h / h_resized * w_resized
                 h_pad = h
-            else:
+            elif self.scale_type == 'short':
                 w_pad = w
                 h_pad = w / w_resized * h_resized
+            else:
+                raise ValueError(f'Unknown scale type: {self.scale_type}')
         else:
             if self.scale_type == 'long':
                 w_pad = w
                 h_pad = w / w_resized * h_resized
-            else:
+            elif self.scale_type == 'short':
                 w_pad = h / h_resized * w_resized
                 h_pad = h
+            else:
+                raise ValueError(f'Unknown scale type: {self.scale_type}')
 
         scale = np.array([w_pad, h_pad], dtype=np.float32)
 
