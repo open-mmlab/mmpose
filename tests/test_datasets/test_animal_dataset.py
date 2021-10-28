@@ -494,6 +494,11 @@ def test_ap10k_dataset():
     _ = custom_dataset[0]
 
     outputs = convert_db_to_output(custom_dataset.db)
+
+    for output in outputs:
+        # as there is only one box in each image for test
+        output['bbox_ids'] = 0
+
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
         assert_almost_equal(infos['AP'], 1.0)
