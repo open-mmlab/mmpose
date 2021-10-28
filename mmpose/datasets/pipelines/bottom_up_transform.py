@@ -402,7 +402,6 @@ class BottomUpRandomAffine:
         scale_factor (float): Scaling to [1-scale_factor, 1+scale_factor]
         scale_type: wrt ``long`` or ``short`` length of the image.
         trans_factor: Translation factor.
-        scale_aware_sigma: Option to use scale-aware sigma
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
