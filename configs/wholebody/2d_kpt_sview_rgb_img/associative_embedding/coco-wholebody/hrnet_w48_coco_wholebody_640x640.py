@@ -172,8 +172,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=8,
     workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=8),
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',
