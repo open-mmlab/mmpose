@@ -309,6 +309,20 @@ class AssociativeEmbedding(BasePose):
             align_corners=self.test_cfg.get('align_corners', True),
             aggregate_scale='unsqueeze_concat')
 
+        heatmap_size = aggregated_heatmaps.shape[2:4]
+        tag_size = aggregated_tags.shape[2:4]
+        if heatmap_size != tag_size:
+            tmp = []
+            for idx in range(aggregated_tags.shape[-1]):
+                tmp.append(
+                    torch.nn.functional.interpolate(
+                        aggregated_tags[..., idx],
+                        size=heatmap_size,
+                        mode='bilinear',
+                        align_corners=self.test_cfg.get('align_corners',
+                                                        True)).unsqueeze(-1))
+            aggregated_tags = torch.cat(tmp, dim=-1)
+
         # perform grouping
         grouped, scores = self.parser.parse(aggregated_heatmaps,
                                             aggregated_tags,
