@@ -229,6 +229,7 @@ class VoxelPose(BasePose):
                                               [self.space_center],
                                               self.cube_size)
         center_heatmaps_3d = self.root_net(initial_cubes)
+        num_joints = initial_cubes.shape[1]
         center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
         center_candidates = self.center_head(center_heatmaps_3d)
 
@@ -305,6 +306,22 @@ class VoxelPose(BasePose):
                 losses.update(
                     self.pose_head.get_loss(valid_preds, valid_targets,
                                             valid_weights))
+            else:
+                pose_input_cube = initial_cubes.new_zeros(
+                    batch_size, num_joints, *self.sub_cube_size)
+                coordinates = initial_cubes.new_zeros(batch_size,
+                                                      *self.sub_cube_size,
+                                                      3).view(
+                                                          batch_size, -1, 3)
+                pseudo_targets = initial_cubes.new_zeros(
+                    batch_size, num_joints, 3)
+                pseudo_weights = initial_cubes.new_zeros(
+                    batch_size, num_joints, 1)
+                pose_heatmaps_3d = self.pose_net(pose_input_cube)
+                pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
+                losses.update(
+                    self.pose_head.get_loss(pose_3d, pseudo_targets,
+                                            pseudo_weights))
 
             if not self.freeze_2d:
                 losses_2d = {}
@@ -326,6 +343,40 @@ class VoxelPose(BasePose):
         result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
 
         return result
+
+    def train_step(self, data_batch, optimizer, **kwargs):
+        """The iteration step during training.
+
+        This method defines an iteration step during training, except for the
+        back propagation and optimizer updating, which are done in an optimizer
+        hook. Note that in some complicated cases or models, the whole process
+        including back propagation and optimizer updating is also defined in
+        this method, such as GAN.
+
+        Args:
+            data_batch (dict): The output of dataloader.
+            optimizer (:obj:`torch.optim.Optimizer` | dict): The optimizer of
+                runner is passed to ``train_step()``. This argument is unused
+                and reserved.
+
+        Returns:
+            dict: It should contain at least 3 keys: ``loss``, ``log_vars``,
+                ``num_samples``.
+                ``loss`` is a tensor for back propagation, which can be a
+                weighted sum of multiple losses.
+                ``log_vars`` contains all the variables to be sent to the
+                logger.
+                ``num_samples`` indicates the batch size (when the model is
+                DDP, it means the batch size on each GPU), which is used for
+                averaging the logs.
+        """
+        losses = self.forward(**data_batch)
+
+        loss, log_vars = self._parse_losses(losses)
+        batch_size = data_batch['img'][0].shape[0]
+        outputs = dict(loss=loss, log_vars=log_vars, num_samples=batch_size)
+
+        return outputs
 
     def assign2gt(self, center_candidates, gt_centers, gt_num_persons):
         det_centers = center_candidates[..., :3]

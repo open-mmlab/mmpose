@@ -11,6 +11,7 @@ from collections import OrderedDict
 import mmcv
 import numpy as np
 from mmcv import Config
+from tqdm import tqdm
 
 from mmpose.core.camera import SimpleCamera
 from mmpose.datasets.builder import DATASETS
@@ -112,7 +113,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 pickle.dump(info, f)
 
         self.db_size = len(self.db)
-        self.db = self._get_db()
+        # self.db = self._get_db()
 
         print(f'=> load {len(self.db)} samples')
 
@@ -184,8 +185,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
             curr_anno = osp.join(self.img_prefix, seq,
                                  'hdPose3d_stage1_coco19')
             anno_files = sorted(glob.iglob('{:s}/*.json'.format(curr_anno)))
-
-            for i, file in enumerate(anno_files):
+            print(f'load sequence: {seq}', flush=True)
+            for i, file in tqdm(enumerate(anno_files)):
                 if i % self.seq_frame_interval == 0:
                     with open(file) as dfile:
                         bodies = json.load(dfile)['bodies']
@@ -250,10 +251,10 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                             all_poses[cnt] = pose2d
                             cnt += 1
 
-                        if len(all_poses_3d) > 0:
+                        if cnt > 0:
                             db.append({
-                                'mask':
-                                [np.ones((height, width), dtype=np.float32)],
+                                # 'mask':
+                                # [np.ones((height, width), dtype=np.float32)],
                                 'image_file':
                                 osp.join(self.img_prefix, image_file),
                                 'joints_3d':
@@ -420,3 +421,17 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         gt_ids = [e['gt_id'] for e in eval_list if e['mpjpe'] < threshold]
 
         return len(np.unique(gt_ids)) / total_gt
+
+    def __getitem__(self, idx):
+        """Get the sample given index."""
+        results = {}
+        # return self.pipeline(results)
+        for c in range(self.num_cameras):
+            result = copy.deepcopy(self.db[self.num_cameras * idx + c])
+            result['ann_info'] = self.ann_info
+            width = 1920
+            height = 1080
+            result['mask'] = [np.ones((height, width), dtype=np.float32)]
+            results[c] = result
+
+        return self.pipeline(results)
