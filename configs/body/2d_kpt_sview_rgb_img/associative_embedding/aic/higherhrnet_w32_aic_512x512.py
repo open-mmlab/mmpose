@@ -173,8 +173,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/aic'
 data = dict(
-    samples_per_gpu=24,
     workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=24),
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpAicDataset',
         ann_file=f'{data_root}/annotations/aic_train.json',
