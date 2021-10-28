@@ -22,7 +22,7 @@ def _get_multi_scale_size(image,
 
     Args:
         image: Input image.
-        input_size (np.array[2): Size of the image input.
+        input_size (int): Size of the image input.
         current_scale (float): Scale factor.
         min_scale (float): Minimal scale.
         use_udp (bool): To use unbiased data processing.
@@ -36,16 +36,14 @@ def _get_multi_scale_size(image,
         - center (np.ndarray)image center
         - scale (np.ndarray): scales wrt width/height
     """
-    assert len(input_size) == 2
     h, w, _ = image.shape
 
     # calculate the size for min_scale
-    min_input_w = _ceil_to_multiples_of(min_scale * input_size[0], 64)
-    min_input_h = _ceil_to_multiples_of(min_scale * input_size[1], 64)
+    min_input_size = _ceil_to_multiples_of(min_scale * input_size, 64)
     if w < h:
-        w_resized = int(min_input_w * current_scale / min_scale)
+        w_resized = int(min_input_size * current_scale / min_scale)
         h_resized = int(
-            _ceil_to_multiples_of(min_input_w / w * h, 64) * current_scale /
+            _ceil_to_multiples_of(min_input_size / w * h, 64) * current_scale /
             min_scale)
         if use_udp:
             scale_w = w - 1.0
@@ -54,9 +52,9 @@ def _get_multi_scale_size(image,
             scale_w = w / 200.0
             scale_h = h_resized / w_resized * w / 200.0
     else:
-        h_resized = int(min_input_h * current_scale / min_scale)
+        h_resized = int(min_input_size * current_scale / min_scale)
         w_resized = int(
-            _ceil_to_multiples_of(min_input_h / h * w, 64) * current_scale /
+            _ceil_to_multiples_of(min_input_size / h * w, 64) * current_scale /
             min_scale)
         if use_udp:
             scale_h = h - 1.0
@@ -76,7 +74,7 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.array[2]): Size of the image input
+        input_size (int): Size of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
@@ -87,7 +85,6 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
         - center (np.ndarray): center of image
         - scale (np.ndarray): scale
     """
-    assert len(input_size) == 2
     size_resized, center, scale = _get_multi_scale_size(
         image, input_size, current_scale, min_scale)
 
@@ -102,7 +99,7 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.array[2]): Size of the image input
+        input_size (int): Size of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
@@ -113,7 +110,6 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
         - center (np.ndarray): center of image
         - scale (np.ndarray): scale
     """
-    assert len(input_size) == 2
     size_resized, _, _ = _get_multi_scale_size(image, input_size,
                                                current_scale, min_scale, True)
 
@@ -136,7 +132,7 @@ class HeatmapGenerator:
 
     Args:
         num_joints (int): Number of keypoints
-        output_size (np.array): Size of feature map
+        output_size (int): Size of feature map
         sigma (int): Sigma of the heatmaps.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -144,16 +140,10 @@ class HeatmapGenerator:
     """
 
     def __init__(self, output_size, num_joints, sigma=-1, use_udp=False):
-        assert isinstance(output_size, np.ndarray)
-        if output_size.size > 1:
-            assert len(output_size) == 2
-            self.output_size = output_size
-        else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+        self.output_size = output_size
         self.num_joints = num_joints
         if sigma < 0:
-            sigma = self.output_size.prod()**0.5 / 64
+            sigma = self.output_size / 64
         self.sigma = sigma
         size = 6 * sigma + 3
         self.use_udp = use_udp
@@ -168,9 +158,8 @@ class HeatmapGenerator:
 
     def __call__(self, joints):
         """Generate heatmaps."""
-        hms = np.zeros(
-            (self.num_joints, self.output_size[1], self.output_size[0]),
-            dtype=np.float32)
+        hms = np.zeros((self.num_joints, self.output_size, self.output_size),
+                       dtype=np.float32)
 
         sigma = self.sigma
         for p in joints:
@@ -178,7 +167,7 @@ class HeatmapGenerator:
                 if pt[2] > 0:
                     x, y = int(pt[0]), int(pt[1])
                     if x < 0 or y < 0 or \
-                       x >= self.output_size[0] or y >= self.output_size[1]:
+                       x >= self.output_size or y >= self.output_size:
                         continue
 
                     if self.use_udp:
@@ -194,13 +183,11 @@ class HeatmapGenerator:
                     br = int(np.round(x + 3 * sigma +
                                       2)), int(np.round(y + 3 * sigma + 2))
 
-                    c, d = max(0,
-                               -ul[0]), min(br[0], self.output_size[0]) - ul[0]
-                    a, b = max(0,
-                               -ul[1]), min(br[1], self.output_size[1]) - ul[1]
+                    c, d = max(0, -ul[0]), min(br[0], self.output_size) - ul[0]
+                    a, b = max(0, -ul[1]), min(br[1], self.output_size) - ul[1]
 
-                    cc, dd = max(0, ul[0]), min(br[0], self.output_size[0])
-                    aa, bb = max(0, ul[1]), min(br[1], self.output_size[1])
+                    cc, dd = max(0, ul[0]), min(br[0], self.output_size)
+                    aa, bb = max(0, ul[1]), min(br[1], self.output_size)
                     hms[idx, aa:bb,
                         cc:dd] = np.maximum(hms[idx, aa:bb, cc:dd], g[a:b,
                                                                       c:d])
@@ -216,20 +203,14 @@ class JointsEncoder:
     Args:
         max_num_people(int): Max number of people in an image
         num_joints(int): Number of keypoints
-        output_size(np.array): Size of feature map
+        output_size(int): Size of feature map
         tag_per_joint(bool):  Option to use one tag map per joint.
     """
 
     def __init__(self, max_num_people, num_joints, output_size, tag_per_joint):
         self.max_num_people = max_num_people
         self.num_joints = num_joints
-        assert isinstance(output_size, np.ndarray)
-        if output_size.size > 1:
-            assert len(output_size) == 2
-            self.output_size = output_size
-        else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+        self.output_size = output_size
         self.tag_per_joint = tag_per_joint
 
     def __call__(self, joints):
@@ -247,18 +228,18 @@ class JointsEncoder:
         """
         visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
                                 dtype=np.float32)
+        output_size = self.output_size
         for i in range(len(joints)):
             tot = 0
             for idx, pt in enumerate(joints[i]):
                 x, y = int(pt[0]), int(pt[1])
-                if (pt[2] > 0 and 0 <= y < self.output_size[1]
-                        and 0 <= x < self.output_size[0]):
+                if (pt[2] > 0 and 0 <= y < self.output_size
+                        and 0 <= x < self.output_size):
                     if self.tag_per_joint:
                         visible_kpts[i][tot] = \
-                            (idx * self.output_size.prod()
-                             + y * self.output_size[0] + x, 1)
+                            (idx * output_size**2 + y * output_size + x, 1)
                     else:
-                        visible_kpts[i][tot] = (y * self.output_size[0] + x, 1)
+                        visible_kpts[i][tot] = (y * output_size + x, 1)
                     tot += 1
         return visible_kpts
 
@@ -267,19 +248,13 @@ class PAFGenerator:
     """Generate part affinity fields.
 
     Args:
-        output_size (np.array): Size of feature map.
+        output_size (int): Size of feature map.
         limb_width (int): Limb width of part affinity fields.
         skeleton (list[list]): connections of joints.
     """
 
     def __init__(self, output_size, limb_width, skeleton):
-        assert isinstance(output_size, np.ndarray)
-        if output_size.size > 1:
-            assert len(output_size) == 2
-            self.output_size = output_size
-        else:
-            self.output_size = np.array([output_size, output_size],
-                                        dtype=np.int)
+        self.output_size = output_size
         self.limb_width = limb_width
         self.skeleton = skeleton
 
@@ -306,11 +281,11 @@ class PAFGenerator:
         min_x = max(np.floor(min(src[0], dst[0]) - self.limb_width), 0)
         max_x = min(
             np.ceil(max(src[0], dst[0]) + self.limb_width),
-            self.output_size[0] - 1)
+            self.output_size - 1)
         min_y = max(np.floor(min(src[1], dst[1]) - self.limb_width), 0)
         max_y = min(
             np.ceil(max(src[1], dst[1]) + self.limb_width),
-            self.output_size[1] - 1)
+            self.output_size - 1)
 
         range_x = list(range(int(min_x), int(max_x + 1), 1))
         range_y = list(range(int(min_y), int(max_y + 1), 1))
@@ -334,11 +309,11 @@ class PAFGenerator:
     def __call__(self, joints):
         """Generate the target part affinity fields."""
         pafs = np.zeros(
-            (len(self.skeleton) * 2, self.output_size[1], self.output_size[0]),
+            (len(self.skeleton) * 2, self.output_size, self.output_size),
             dtype=np.float32)
 
         for idx, sk in enumerate(self.skeleton):
-            count = np.zeros((self.output_size[1], self.output_size[0]),
+            count = np.zeros((self.output_size, self.output_size),
                              dtype=np.float32)
 
             for p in joints:
@@ -379,15 +354,9 @@ class BottomUpRandomFlip:
         if np.random.random() < self.flip_prob:
             image = image[:, ::-1].copy() - np.zeros_like(image)
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
-                if _output_size.size > 1:
-                    assert len(_output_size) == 2
-                else:
-                    _output_size = np.array([_output_size, _output_size],
-                                            dtype=np.int)
                 mask[i] = mask[i][:, ::-1].copy()
                 joints[i] = joints[i][:, self.flip_index]
-                joints[i][:, :, 0] = _output_size[0] - joints[i][:, :, 0] - 1
+                joints[i][:, :, 0] = _output_size - joints[i][:, :, 0] - 1
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
         return results
@@ -421,27 +390,32 @@ class BottomUpRandomAffine:
         self.trans_factor = trans_factor
         self.use_udp = use_udp
 
-    def _get_scale(self, image_size, resized_size):
-        w, h = image_size
-        w_resized, h_resized = resized_size
-        if w / w_resized < h / h_resized:
-            if self.scale_type == 'long':
-                w_pad = h / h_resized * w_resized
-                h_pad = h
-            else:
-                w_pad = w
-                h_pad = w / w_resized * h_resized
-        else:
-            if self.scale_type == 'long':
-                w_pad = w
-                h_pad = w / w_resized * h_resized
-            else:
-                w_pad = h / h_resized * w_resized
-                h_pad = h
-
-        scale = np.array([w_pad, h_pad], dtype=np.float32)
-
-        return scale
+    @staticmethod
+    def _get_affine_matrix(center, scale, res, rot=0):
+        """Generate transformation matrix."""
+        h = scale
+        t = np.zeros((3, 3), dtype=np.float32)
+        t[0, 0] = float(res[1]) / h
+        t[1, 1] = float(res[0]) / h
+        t[0, 2] = res[1] * (-float(center[0]) / h + .5)
+        t[1, 2] = res[0] * (-float(center[1]) / h + .5)
+        t[2, 2] = 1
+        if rot != 0:
+            rot = -rot  # To match direction of rotation from cropping
+            rot_mat = np.zeros((3, 3), dtype=np.float32)
+            rot_rad = rot * np.pi / 180
+            sn, cs = np.sin(rot_rad), np.cos(rot_rad)
+            rot_mat[0, :2] = [cs, -sn]
+            rot_mat[1, :2] = [sn, cs]
+            rot_mat[2, 2] = 1
+            # Need to rotate around center
+            t_mat = np.eye(3)
+            t_mat[0, 2] = -res[1] / 2
+            t_mat[1, 2] = -res[0] / 2
+            t_inv = t_mat.copy()
+            t_inv[:2, 2] *= -1
+            t = np.dot(t_inv, np.dot(rot_mat, np.dot(t_mat, t)))
+        return t
 
     def __call__(self, results):
         """Perform data augmentation with random scaling & rotating."""
@@ -449,11 +423,6 @@ class BottomUpRandomAffine:
             'joints']
 
         self.input_size = results['ann_info']['image_size']
-        assert isinstance(self.input_size, np.ndarray)
-        if self.input_size.size > 1:
-            assert len(self.input_size) == 2
-        else:
-            self.input_size = [self.input_size, self.input_size]
         self.output_size = results['ann_info']['heatmap_size']
 
         assert isinstance(mask, list)
@@ -468,94 +437,76 @@ class BottomUpRandomAffine:
             center = np.array(((width - 1.0) / 2, (height - 1.0) / 2))
         else:
             center = np.array((width / 2, height / 2))
-
-        img_scale = np.array([width, height], dtype=np.float32)
+        if self.scale_type == 'long':
+            scale = max(height, width) / 1.0
+        elif self.scale_type == 'short':
+            scale = min(height, width) / 1.0
+        else:
+            raise ValueError(f'Unknown scale type: {self.scale_type}')
         aug_scale = np.random.random() * (self.max_scale - self.min_scale) \
             + self.min_scale
-        img_scale *= aug_scale
+        scale *= aug_scale
         aug_rot = (np.random.random() * 2 - 1) * self.max_rotation
 
         if self.trans_factor > 0:
-            dx = np.random.randint(-self.trans_factor * img_scale[0] / 200.0,
-                                   self.trans_factor * img_scale[0] / 200.0)
-            dy = np.random.randint(-self.trans_factor * img_scale[1] / 200.0,
-                                   self.trans_factor * img_scale[1] / 200.0)
+            dx = np.random.randint(-self.trans_factor * scale / 200.0,
+                                   self.trans_factor * scale / 200.0)
+            dy = np.random.randint(-self.trans_factor * scale / 200.0,
+                                   self.trans_factor * scale / 200.0)
 
             center[0] += dx
             center[1] += dy
         if self.use_udp:
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
-                if _output_size.size > 1:
-                    assert len(_output_size) == 2
-                else:
-                    _output_size = [_output_size, _output_size]
-
-                scale = self._get_scale(img_scale, _output_size)
-
                 trans = get_warp_matrix(
                     theta=aug_rot,
                     size_input=center * 2.0,
                     size_dst=np.array(
-                        (_output_size[0], _output_size[1]), dtype=np.float32) -
-                    1.0,
-                    size_target=scale)
+                        (_output_size, _output_size), dtype=np.float32) - 1.0,
+                    size_target=np.array((scale, scale), dtype=np.float32))
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8),
-                    trans, (int(_output_size[0]), int(_output_size[1])),
+                    trans, (int(_output_size), int(_output_size)),
                     flags=cv2.INTER_LINEAR) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
                 joints[i][:, :, 0:2] = \
                     warp_affine_joints(joints[i][:, :, 0:2].copy(), trans)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-            scale = self._get_scale(img_scale, self.input_size)
             mat_input = get_warp_matrix(
                 theta=aug_rot,
                 size_input=center * 2.0,
-                size_dst=np.array((self.input_size[0], self.input_size[1]),
-                                  dtype=np.float32) - 1.0,
-                size_target=scale)
+                size_dst=np.array(
+                    (self.input_size, self.input_size), dtype=np.float32) -
+                1.0,
+                size_target=np.array((scale, scale), dtype=np.float32))
             image = cv2.warpAffine(
                 image,
-                mat_input, (int(self.input_size[0]), int(self.input_size[1])),
+                mat_input, (int(self.input_size), int(self.input_size)),
                 flags=cv2.INTER_LINEAR)
         else:
             for i, _output_size in enumerate(self.output_size):
-                assert isinstance(_output_size, np.ndarray)
-                if _output_size.size > 1:
-                    assert len(_output_size) == 2
-                else:
-                    _output_size = [_output_size, _output_size]
-                scale = self._get_scale(img_scale, _output_size)
-                mat_output = get_affine_transform(
-                    center=center,
-                    scale=scale / 200.0,
-                    rot=aug_rot,
-                    output_size=_output_size)
+                mat_output = self._get_affine_matrix(center, scale,
+                                                     (_output_size,
+                                                      _output_size),
+                                                     aug_rot)[:2]
                 mask[i] = cv2.warpAffine(
                     (mask[i] * 255).astype(np.uint8), mat_output,
-                    (_output_size[0], _output_size[1])) / 255
+                    (_output_size, _output_size)) / 255
                 mask[i] = (mask[i] > 0.5).astype(np.float32)
 
                 joints[i][:, :, 0:2] = \
                     warp_affine_joints(joints[i][:, :, 0:2], mat_output)
                 if results['ann_info']['scale_aware_sigma']:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
-
-            scale = self._get_scale(img_scale, self.input_size)
-            mat_input = get_affine_transform(
-                center=center,
-                scale=scale / 200.0,
-                rot=aug_rot,
-                output_size=self.input_size)
-            image = cv2.warpAffine(image, mat_input, (int(
-                self.input_size[0]), int(self.input_size[1])))
+            mat_input = self._get_affine_matrix(center, scale,
+                                                (self.input_size,
+                                                 self.input_size), aug_rot)[:2]
+            image = cv2.warpAffine(image, mat_input, (self.input_size.item(),
+                                                      self.input_size.item()))
 
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
-
-        results['center'], results['scale'] = center, scale
 
         return results
 
@@ -719,22 +670,17 @@ class BottomUpGetImgSize:
     def __call__(self, results):
         """Get multi-scale image sizes for bottom-up."""
         input_size = results['ann_info']['image_size']
-        assert isinstance(input_size, np.ndarray)
-        if input_size.size > 1:
-            assert len(input_size) == 2
-        else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
         img = results['img']
 
         h, w, _ = img.shape
 
         # calculate the size for min_scale
-        min_input_w = _ceil_to_multiples_of(self.min_scale * input_size[0], 64)
-        min_input_h = _ceil_to_multiples_of(self.min_scale * input_size[1], 64)
+        min_input_size = _ceil_to_multiples_of(self.min_scale * input_size, 64)
         if w < h:
-            w_resized = int(min_input_w * self.current_scale / self.min_scale)
+            w_resized = int(min_input_size * self.current_scale /
+                            self.min_scale)
             h_resized = int(
-                _ceil_to_multiples_of(min_input_w / w * h, 64) *
+                _ceil_to_multiples_of(min_input_size / w * h, 64) *
                 self.current_scale / self.min_scale)
             if self.use_udp:
                 scale_w = w - 1.0
@@ -743,9 +689,10 @@ class BottomUpGetImgSize:
                 scale_w = w / 200.0
                 scale_h = h_resized / w_resized * w / 200.0
         else:
-            h_resized = int(min_input_h * self.current_scale / self.min_scale)
+            h_resized = int(min_input_size * self.current_scale /
+                            self.min_scale)
             w_resized = int(
-                _ceil_to_multiples_of(min_input_h / h * w, 64) *
+                _ceil_to_multiples_of(min_input_size / h * w, 64) *
                 self.current_scale / self.min_scale)
             if self.use_udp:
                 scale_h = h - 1.0
@@ -786,11 +733,6 @@ class BottomUpResizeAlign:
     def __call__(self, results):
         """Resize multi-scale size and align transform for bottom-up."""
         input_size = results['ann_info']['image_size']
-        assert isinstance(input_size, np.ndarray)
-        if input_size.size > 1:
-            assert len(input_size) == 2
-        else:
-            input_size = np.array([input_size, input_size], dtype=np.int)
         test_scale_factor = results['ann_info']['test_scale_factor']
         aug_data = []
 
