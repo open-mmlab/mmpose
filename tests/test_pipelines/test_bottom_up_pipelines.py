@@ -93,8 +93,8 @@ def test_bottomup_pipeline():
         1.5
     ],
                                          dtype=np.float32).reshape((17, 1))
-    ann_info['image_size'] = np.array(512)
-    ann_info['heatmap_size'] = np.array([128, 256])
+    ann_info['image_size'] = np.array([384, 512])
+    ann_info['heatmap_size'] = np.array([[96, 128], [192, 256]])
     ann_info['num_joints'] = 17
     ann_info['num_scales'] = 2
     ann_info['scale_aware_sigma'] = False
@@ -158,12 +158,12 @@ def test_bottomup_pipeline():
     # test TopDownAffine
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short', 0)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short',
                                                    40)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     results_copy = copy.deepcopy(results)
     results_copy['ann_info']['scale_aware_sigma'] = True
@@ -171,7 +171,7 @@ def test_bottomup_pipeline():
     results_copy['joints'] = \
         [joints.copy() for _ in range(results_copy['ann_info']['num_scales'])]
     results_affine_transform = random_affine_transform(results_copy)
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     results_copy = copy.deepcopy(results)
     results_copy['mask'] = mask_list[0]
@@ -199,7 +199,7 @@ def test_bottomup_pipeline():
 
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'long', 40)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     with pytest.raises(ValueError):
         random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5],
@@ -241,7 +241,7 @@ def test_bottomup_pipeline():
     results_copy = copy.deepcopy(results)
     results_copy['img'] = np.random.rand(640, 425, 3)
     results_get_multi_scale_size = get_multi_scale_size(results_copy)
-    assert results_get_multi_scale_size['ann_info']['base_size'][0] == 512
+    assert results_get_multi_scale_size['ann_info']['base_size'][0] == 384
 
 
 def test_BottomUpGenerateHeatmapTarget():
