@@ -103,7 +103,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 <!-- [DATASET] -->
 
 <details>
-<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (Neurips Track on Datasets and Benchmarks'2021)</a></summary>
+<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (NeurIPS'2021)</a></summary>
 
 ```bibtex
 @misc{yu2021ap10k,
