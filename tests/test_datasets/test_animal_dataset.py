@@ -497,7 +497,7 @@ def test_ap10k_dataset():
 
     for output in outputs:
         # as there is only one box in each image for test
-        output['bbox_ids'] = 0
+        output['bbox_ids'] = [0 for _ in range(len(output['bbox_ids']))]
 
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
