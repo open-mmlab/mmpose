@@ -23,7 +23,7 @@ Models:
       APL: 0.743
       APM: 0.592
     Task: Animal 2D Keypoint
-  Weights: ''
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_ap10k_256x256-18aac840_20211029.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/hrnet_w48_ap10k_256x256.py
   In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--ap10k--hrnet_ap10k
     [HRNet@AP-10K]
@@ -39,4 +39,4 @@ Models:
       APL: 0.748
       APM: 0.589
     Task: Animal 2D Keypoint
-  Weights: ''
+  Weights: https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w48_ap10k_256x256-d95ab412_20211029.pth

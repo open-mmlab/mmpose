@@ -37,5 +37,5 @@ Results on AP-10K validation set
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP<sup>M</sup> | AP<sup>L</sup> | ckpt | log |
 | :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res50_ap10k_256x256.py)  | 256x256 | 0.699 | 0.940 | 0.760 | 0.570 | 0.703 | [ckpt]() | [log]() |
-| [pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res101_ap10k_256x256.py) | 256x256 | 0.698 | 0.943 | 0.754 | 0.543 | 0.702 | [ckpt]() | [log]() |
+| [pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res50_ap10k_256x256.py)  | 256x256 | 0.699 | 0.940 | 0.760 | 0.570 | 0.703 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.log.json) |
+| [pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res101_ap10k_256x256.py) | 256x256 | 0.698 | 0.943 | 0.754 | 0.543 | 0.702 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.log.json) |
