@@ -164,8 +164,6 @@ class VoxelPose(BasePose):
         self.backbone = builder.build_posenet(detector_2d)
         if self.training and pretrained is not None:
             load_checkpoint(self.backbone, pretrained)
-        if self.training and freeze_2d:
-            self._freeze(self.backbone)
 
         self.freeze_2d = freeze_2d
         self.project_layer = ProjectLayer(project_layer)
@@ -192,6 +190,13 @@ class VoxelPose(BasePose):
         model.eval()
         for param in model.parameters():
             param.requires_grad = False
+
+    def train(self, mode=True):
+        super().train(mode)
+        if mode and self.freeze_2d:
+            self._freeze(self.backbone)
+
+        return self
 
     def forward(self,
                 img,

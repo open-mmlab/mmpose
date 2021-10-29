@@ -60,12 +60,7 @@ test_data_cfg = train_data_cfg.copy()
 test_data_cfg.update(
     dict(
         seq_list=[
-            '160906_pizza1',
-            '160422_haggling1',
-            '160906_ian5',
-            '160906_band4',
-            # '160906_band1',
-            # '160906_band2'
+            '160906_pizza1', '160422_haggling1', '160906_ian5', '160906_band4'
         ],
         seq_frame_interval=12,
         subset='validation'))
@@ -201,6 +196,8 @@ data_root = 'data/panoptic/'
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=4,
+    val_dataloader=dict(samples_per_gpu=2),
+    test_dataloader=dict(samples_per_gpu=2),
     train=dict(
         type='Body3DMviewDirectPanopticDataset',
         ann_file='',
