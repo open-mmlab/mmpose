@@ -117,7 +117,7 @@ mmpose/.mim
 *.npy
 work_dirs/
 docs/topics/
-docs/papers/**/*.md
+docs/papers/*.md
 docs/datasets.md
 docs/modelzoo.md
 docs_zh-CN/topics/
