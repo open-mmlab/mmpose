@@ -6,6 +6,7 @@ If your folder structure is different, you may need to change the corresponding 
 MMPose supported datasets:
 
 - [Animal-Pose](#animal-pose) \[ [Homepage](https://sites.google.com/view/animal-pose/) \]
+- [AP-10K](#ap-10k) \[ [Homepage](https://github.com/AlexTheBad/AP-10K/) \]
 - [Horse-10](#horse-10) \[ [Homepage](http://www.mackenziemathislab.org/horse10) \]
 - [MacaquePose](#macaquepose) \[ [Homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) \]
 - [Vinegar Fly](#vinegar-fly) \[ [Homepage](https://github.com/jgraving/DeepPoseKit-Data) \]
@@ -96,6 +97,59 @@ The official dataset does not provide the official train/val/test set split.
 We choose the images from PascalVOC for train & val. In total, we have 3608 images and 5117 annotations for train+val, where
 2798 images with 4000 annotations are used for training, and 810 images with 1117 annotations are used for validation.
 Those images from other sources (1000 images with 1000 annotations) are used for testing.
+
+## AP-10K
+
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://arxiv.org/abs/2108.12617">AP-10K (NeurIPS'2021)</a></summary>
+
+```bibtex
+@misc{yu2021ap10k,
+      title={AP-10K: A Benchmark for Animal Pose Estimation in the Wild},
+      author={Hang Yu and Yufei Xu and Jing Zhang and Wei Zhao and Ziyu Guan and Dacheng Tao},
+      year={2021},
+      eprint={2108.12617},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
+</details>
+
+For [AP-10K](https://github.com/AlexTheBad/AP-10K/) dataset, images and annotations can be downloaded from [download](https://drive.google.com/file/d/1-FNNGcdtAQRehYYkGY1y4wzFNg4iWNad/view?usp=sharing).
+Note, this data and annotation data is for non-commercial use only.
+
+Extract them under {MMPose}/data, and make them look like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    │── ap10k
+        │-- annotations
+        │   │-- ap10k-train-split1.json
+        │   |-- ap10k-train-split2.json
+        │   |-- ap10k-train-split3.json
+        │   │-- ap10k-val-split1.json
+        │   |-- ap10k-val-split2.json
+        │   |-- ap10k-val-split3.json
+        │   |-- ap10k-test-split1.json
+        │   |-- ap10k-test-split2.json
+        │   |-- ap10k-test-split3.json
+        │-- data
+        │   │-- 000000000001.jpg
+        │   │-- 000000000002.jpg
+        │   │-- ...
+
+```
+
+The annotation files in 'annotation' folder contains 50 labeled animal species. There are total 10,015 labeled images with 13,028 instances in the AP-10K dataset. We randonly split them into train, val, and test set following the ratio of 7:1:2.
 
 ## Horse-10
 
