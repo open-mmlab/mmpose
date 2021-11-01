@@ -526,7 +526,7 @@ def inference_bottom_up_pose_model(model,
         'img_or_path': img_or_path,
         'dataset': dataset_name,
         'ann_info': {
-            'image_size': cfg.data_cfg['image_size'],
+            'image_size': np.array(cfg.data_cfg['image_size']),
             'num_joints': cfg.data_cfg['num_joints'],
             'flip_index': flip_index,
         }
