@@ -540,3 +540,91 @@ class Generate3DHeatmapTarget:
         results['target'] = target
         results['target_weight'] = target_weight
         return results
+
+
+@PIPELINES.register_module()
+class GenerateVoxel3DHeatmapTarget:
+    """Generate the target 3d heatmap.
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info_3d'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+        sigma: Sigma of heatmap gaussian (mm).
+        joint_indices (list): Indices of joints used for heatmap generation.
+        If None (default) is given, all joints will be used.
+    """
+
+    def __init__(self, sigma=200.0, joint_indices=None):
+        self.sigma = sigma  # mm
+        self.joint_indices = joint_indices
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+        cfg = results['ann_info']
+
+        num_people = len(joints_3d)
+        num_joints = joints_3d[0].shape[0]
+
+        if self.joint_indices is not None:
+            num_joints = len(self.joint_indices)
+            joint_indices = self.joint_indices
+        else:
+            joint_indices = list(range(num_joints))
+
+        space_size = cfg['space_size']
+        space_center = cfg['space_center']
+        cube_size = cfg['cube_size']
+        grid1Dx = np.linspace(-space_size[0] / 2, space_size[0] / 2,
+                              cube_size[0]) + space_center[0]
+        grid1Dy = np.linspace(-space_size[1] / 2, space_size[1] / 2,
+                              cube_size[1]) + space_center[1]
+        grid1Dz = np.linspace(-space_size[2] / 2, space_size[2] / 2,
+                              cube_size[2]) + space_center[2]
+
+        target = np.zeros(
+            (num_joints, cube_size[0], cube_size[1], cube_size[2]),
+            dtype=np.float32)
+
+        for n in range(num_people):
+            for idx, joint_id in enumerate(joint_indices):
+                mu_x = joints_3d[n][joint_id][0]
+                mu_y = joints_3d[n][joint_id][1]
+                mu_z = joints_3d[n][joint_id][2]
+                vis = joints_3d_visible[n][joint_id][0]
+                if vis < 1:
+                    continue
+                i_x = [
+                    np.searchsorted(grid1Dx, mu_x - 3 * self.sigma),
+                    np.searchsorted(grid1Dx, mu_x + 3 * self.sigma, 'right')
+                ]
+                i_y = [
+                    np.searchsorted(grid1Dy, mu_y - 3 * self.sigma),
+                    np.searchsorted(grid1Dy, mu_y + 3 * self.sigma, 'right')
+                ]
+                i_z = [
+                    np.searchsorted(grid1Dz, mu_z - 3 * self.sigma),
+                    np.searchsorted(grid1Dz, mu_z + 3 * self.sigma, 'right')
+                ]
+                if i_x[0] >= i_x[1] or i_y[0] >= i_y[1] or i_z[0] >= i_z[1]:
+                    continue
+                gridx, gridy, gridz = np.meshgrid(
+                    grid1Dx[i_x[0]:i_x[1]],
+                    grid1Dy[i_y[0]:i_y[1]],
+                    grid1Dz[i_z[0]:i_z[1]],
+                    indexing='ij')
+                g = np.exp(-((gridx - mu_x)**2 + (gridy - mu_y)**2 +
+                             (gridz - mu_z)**2) / (2 * self.sigma**2))
+                target[idx, i_x[0]:i_x[1], i_y[0]:i_y[1], i_z[0]:i_z[1]] \
+                    = np.maximum(target[idx, i_x[0]:i_x[1],
+                                 i_y[0]:i_y[1], i_z[0]:i_z[1]], g)
+
+        target = np.clip(target, 0, 1)
+        if target.shape[0] == 1:
+            target = target[0]
+
+        results['targets_3d'] = target
+
+        return results
