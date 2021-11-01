@@ -93,8 +93,8 @@ def test_bottomup_pipeline():
         1.5
     ],
                                          dtype=np.float32).reshape((17, 1))
-    ann_info['image_size'] = np.array(512)
-    ann_info['heatmap_size'] = np.array([128, 256])
+    ann_info['image_size'] = np.array([384, 512])
+    ann_info['heatmap_size'] = np.array([[96, 128], [192, 256]])
     ann_info['num_joints'] = 17
     ann_info['num_scales'] = 2
     ann_info['scale_aware_sigma'] = False
@@ -158,12 +158,12 @@ def test_bottomup_pipeline():
     # test TopDownAffine
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short', 0)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short',
                                                    40)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     results_copy = copy.deepcopy(results)
     results_copy['ann_info']['scale_aware_sigma'] = True
@@ -171,7 +171,7 @@ def test_bottomup_pipeline():
     results_copy['joints'] = \
         [joints.copy() for _ in range(results_copy['ann_info']['num_scales'])]
     results_affine_transform = random_affine_transform(results_copy)
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     results_copy = copy.deepcopy(results)
     results_copy['mask'] = mask_list[0]
@@ -199,7 +199,7 @@ def test_bottomup_pipeline():
 
     random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'long', 40)
     results_affine_transform = random_affine_transform(copy.deepcopy(results))
-    assert results_affine_transform['img'].shape == (512, 512, 3)
+    assert results_affine_transform['img'].shape == (512, 384, 3)
 
     with pytest.raises(ValueError):
         random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5],
@@ -237,10 +237,117 @@ def test_bottomup_pipeline():
     results_resize_align_multi_scale = resize_align_multi_scale(results_copy)
     assert 'aug_data' in results_resize_align_multi_scale['ann_info']
 
-    # test BottomUpGetImgSize when W < H
+    # test when W < H
+    ann_info['image_size'] = np.array([512, 384])
+    ann_info['heatmap_size'] = np.array([[128, 96], [256, 192]])
+    results = {}
+    results['dataset'] = 'coco'
+    results['image_file'] = osp.join(data_prefix, '000000000785.jpg')
+    results['mask'] = mask_list
+    results['joints'] = joints_list
+    results['ann_info'] = ann_info
+    results['img'] = np.random.rand(640, 425, 3)
+
+    # test HorizontalFlip
+    random_horizontal_flip = BottomUpRandomFlip(flip_prob=1.)
+    results_horizontal_flip = random_horizontal_flip(copy.deepcopy(results))
+    assert _check_flip(results['img'], results_horizontal_flip['img'])
+
+    random_horizontal_flip = BottomUpRandomFlip(flip_prob=0.)
+    results_horizontal_flip = random_horizontal_flip(copy.deepcopy(results))
+    assert (results['img'] == results_horizontal_flip['img']).all()
+
     results_copy = copy.deepcopy(results)
-    results_copy['img'] = np.random.rand(640, 425, 3)
-    results_get_multi_scale_size = get_multi_scale_size(results_copy)
+    results_copy['mask'] = mask_list[0]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_horizontal_flip(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['joints'] = joints_list[0]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_horizontal_flip(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['joints'] = joints_list[:1]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_horizontal_flip(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['mask'] = mask_list[:1]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_horizontal_flip(
+            copy.deepcopy(results_copy))
+
+    # test TopDownAffine
+    random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short', 0)
+    results_affine_transform = random_affine_transform(copy.deepcopy(results))
+    assert results_affine_transform['img'].shape == (384, 512, 3)
+
+    random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'short',
+                                                   40)
+    results_affine_transform = random_affine_transform(copy.deepcopy(results))
+    assert results_affine_transform['img'].shape == (384, 512, 3)
+
+    results_copy = copy.deepcopy(results)
+    results_copy['ann_info']['scale_aware_sigma'] = True
+    joints = _get_joints(anno, results_copy['ann_info'], False)
+    results_copy['joints'] = \
+        [joints.copy() for _ in range(results_copy['ann_info']['num_scales'])]
+    results_affine_transform = random_affine_transform(results_copy)
+    assert results_affine_transform['img'].shape == (384, 512, 3)
+
+    results_copy = copy.deepcopy(results)
+    results_copy['mask'] = mask_list[0]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_affine_transform(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['joints'] = joints_list[0]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_affine_transform(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['joints'] = joints_list[:1]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_affine_transform(
+            copy.deepcopy(results_copy))
+
+    results_copy = copy.deepcopy(results)
+    results_copy['mask'] = mask_list[:1]
+    with pytest.raises(AssertionError):
+        results_horizontal_flip = random_affine_transform(
+            copy.deepcopy(results_copy))
+
+    random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5], 'long', 40)
+    results_affine_transform = random_affine_transform(copy.deepcopy(results))
+    assert results_affine_transform['img'].shape == (384, 512, 3)
+
+    with pytest.raises(ValueError):
+        random_affine_transform = BottomUpRandomAffine(30, [0.75, 1.5],
+                                                       'short-long', 40)
+        results_affine_transform = random_affine_transform(
+            copy.deepcopy(results))
+
+    # test BottomUpGenerateTarget
+    generate_multi_target = BottomUpGenerateTarget(2, 30)
+    results_generate_multi_target = generate_multi_target(
+        copy.deepcopy(results))
+    assert 'targets' in results_generate_multi_target
+    assert len(results_generate_multi_target['targets']
+               ) == results['ann_info']['num_scales']
+
+    # test BottomUpGetImgSize when W < H
+    get_multi_scale_size = BottomUpGetImgSize([1])
+    results_get_multi_scale_size = get_multi_scale_size(copy.deepcopy(results))
+    assert 'test_scale_factor' in results_get_multi_scale_size['ann_info']
+    assert 'base_size' in results_get_multi_scale_size['ann_info']
+    assert 'center' in results_get_multi_scale_size['ann_info']
+    assert 'scale' in results_get_multi_scale_size['ann_info']
     assert results_get_multi_scale_size['ann_info']['base_size'][0] == 512
 
 
