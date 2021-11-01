@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.20.0 (01/11/2021)
+
+**Highlights**
+
+- Add AP-10K dataset for animal pose estimation ([\#987](https://github.com/open-mmlab/mmpose/pull/987)) @Annbless, @AlexTheBad, @jin-s13, @ly015
+- Support TorchServe ([\#979](https://github.com/open-mmlab/mmpose/pull/979)) @ly015
+
+**New Features**
+
+- Add AP-10K dataset for animal pose estimation ([\#987](https://github.com/open-mmlab/mmpose/pull/987)) @Annbless, @AlexTheBad, @jin-s13, @ly015
+- Add HRNetv2 checkpoints on 300W and COFW datasets ([\#980](https://github.com/open-mmlab/mmpose/pull/980)) @jin-s13
+- Support TorchServe ([\#979](https://github.com/open-mmlab/mmpose/pull/979)) @ly015
+
+**Bug Fixes**
+
+- Fix some deprecated or risky settings in configs ([\#963](https://github.com/open-mmlab/mmpose/pull/963), [\#976](https://github.com/open-mmlab/mmpose/pull/976), [\#992](https://github.com/open-mmlab/mmpose/pull/992)) @jin-s13, @wusize
+- Fix issues of default arguments of training and testing scripts ([\#970](https://github.com/open-mmlab/mmpose/pull/970), [\#985](https://github.com/open-mmlab/mmpose/pull/985)) @liqikai9, @wusize
+- Fix heatmap and tag size mismatch in bottom-up with UDP ([\#994](https://github.com/open-mmlab/mmpose/pull/994)) @wusize
+- Fix python3.9 installation in CI ([\#983](https://github.com/open-mmlab/mmpose/pull/983)) @ly015
+- Fix model zoo document integrity issue ([\#990](https://github.com/open-mmlab/mmpose/pull/990)) @jin-s13
+
+**Improvements**
+
+- Support non-square input shape for bottom-up ([\#991](https://github.com/open-mmlab/mmpose/pull/991)) @wusize
+- Add image and video resources for demo ([\#971](https://github.com/open-mmlab/mmpose/pull/971)) @liqikai9
+- Use CUDA docker images to accelerate CI ([\#973](https://github.com/open-mmlab/mmpose/pull/973)) @ly015
+- Add codespell hook and fix detected typos ([\#977](https://github.com/open-mmlab/mmpose/pull/977)) @ly015
+
 ## v0.19.0 (08/10/2021)
 
 **Highlights**
