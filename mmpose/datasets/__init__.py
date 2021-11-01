@@ -16,7 +16,7 @@ from .datasets import (  # isort:skip
     TopDownFreiHandDataset, TopDownJhmdbDataset, TopDownMhpDataset,
     TopDownMpiiDataset, TopDownMpiiTrbDataset, TopDownOCHumanDataset,
     TopDownOneHand10KDataset, TopDownPanopticDataset,
-    TopDownPoseTrack18Dataset)
+    TopDownPoseTrack18Dataset, TopDownPoseTrack18VideoDataset)
 
 __all__ = [
     'AnimalATRWDataset', 'TopDownCocoDataset', 'BottomUpCocoDataset',
@@ -28,9 +28,10 @@ __all__ = [
     'MeshAdversarialDataset', 'TopDownCrowdPoseDataset',
     'BottomUpCrowdPoseDataset', 'TopDownFreiHandDataset',
     'TopDownOneHand10KDataset', 'TopDownPanopticDataset',
-    'TopDownPoseTrack18Dataset', 'TopDownJhmdbDataset', 'TopDownMhpDataset',
-    'Face300WDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
-    'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset',
-    'AnimalPoseDataset', 'build_dataloader', 'build_dataset', 'Compose',
-    'DistributedSampler', 'DATASETS', 'PIPELINES', 'DatasetInfo'
+    'TopDownPoseTrack18Dataset', 'TopDownPoseTrack18VideoDataset',
+    'TopDownJhmdbDataset', 'TopDownMhpDataset', 'Face300WDataset',
+    'AnimalHorse10Dataset', 'AnimalMacaqueDataset', 'AnimalFlyDataset',
+    'AnimalLocustDataset', 'AnimalZebraDataset', 'AnimalPoseDataset',
+    'build_dataloader', 'build_dataset', 'Compose', 'DistributedSampler',
+    'DATASETS', 'PIPELINES', 'DatasetInfo'
 ]
