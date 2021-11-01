@@ -79,7 +79,8 @@ class PoseWarper(TopDown):
 
         Args:
             imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-            target (torch.Tensor[NxKxHxW]): Target heatmaps for one frame.
+            target (torch.Tensor[NxKxHxW]): Target<<<<<<< HEAD
+ heatmaps for one frame.
             target_weight (torch.Tensor[NxKx1]): Weights across
                 different joint types.
             img_metas (list(dict)): Information about data augmentation
@@ -99,7 +100,8 @@ class PoseWarper(TopDown):
                   and heatmaps.
         """
         if return_loss:
-            return self.forward_train(img, target, target_weight, img_metas,
+            return self.forward_train(img, target,<<<<<<< HEAD
+ target_weight, img_metas,
                                       **kwargs)
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
@@ -150,6 +152,7 @@ class PoseWarper(TopDown):
             f'({len(frame_weight)}) must match'
 
         batch_size, _, img_height, img_width = imgs[0].shape
+
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 

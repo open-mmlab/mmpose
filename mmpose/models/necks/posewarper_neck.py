@@ -23,12 +23,14 @@ class PoseWarperNeck(nn.Module):
     <`https://arxiv.org/abs/1906.04016`>
 
     Args:
-        in_channels (int): Number of input channels from backbone
+        in_channels (int): Number of intput channels from backbone
         out_channels (int): Number of output channels
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
-        weight_frame (list|tuple): weight of each frame during aggregation,
-            the order is based on the frame indices
+        weight_frame_train (list|tuple): weight of frames during training,
+            the order is based on the frame indexes
+        weight_frame_test (list|tuple): weight of frames during aggregation,
+            the order is based on the frame indexes
         dilations (list|tuple): different dilations of the offset conv layers
         extra (dict): config of the conv layer to get heatmap
         res_blocks (dict): config of residual blocks
@@ -75,7 +77,8 @@ class PoseWarperNeck(nn.Module):
         self.out_channels = out_channels
         self.inner_channels = inner_channels
         self.deform_groups = deform_groups
-        self.weight_frame = weight_frame
+        self.weight_frame_train = weight_frame_train
+        self.weight_frame_test = weight_frame_test
         self.dilations = dilations
         self.extra = extra
         self.res_blocks = res_blocks
@@ -87,6 +90,7 @@ class PoseWarperNeck(nn.Module):
         self.norm_eval = norm_eval
         self.im2col_step = im2col_step
         self.least_mmcv_version = least_mmcv_version
+
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -164,7 +168,7 @@ class PoseWarperNeck(nn.Module):
         ]
         self.offset_layers = nn.ModuleList(offset_layers)
 
-        # build deformable conv layers
+        # bulid deformable conv layers
         kernel = deform_conv.get('kernel', 3)
 
         deform_conv_layers = [
