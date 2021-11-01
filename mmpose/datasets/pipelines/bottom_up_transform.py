@@ -22,7 +22,7 @@ def _get_multi_scale_size(image,
 
     Args:
         image: Input image.
-        input_size (np.ndarray[2): Size of the image input.
+        input_size (np.ndarray[2]): Size (w, h) of the image input.
         current_scale (float): Scale factor.
         min_scale (float): Minimal scale.
         use_udp (bool): To use unbiased data processing.
@@ -76,14 +76,14 @@ def _resize_align_multi_scale(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.ndarray[2]): Size of the image input
+        input_size (np.ndarray[2]): Size (w, h) of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
     Returns:
         tuple: A tuple containing image info.
 
-        - image_resized (tuple): size of resize image
+        - image_resized (np.ndarray): resized image
         - center (np.ndarray): center of image
         - scale (np.ndarray): scale
     """
@@ -102,14 +102,14 @@ def _resize_align_multi_scale_udp(image, input_size, current_scale, min_scale):
 
     Args:
         image: Input image
-        input_size (np.ndarray[2]): Size of the image input
+        input_size (np.ndarray[2]): Size (w, h) of the image input
         current_scale (float): Current scale
         min_scale (float): Minimal scale
 
     Returns:
         tuple: A tuple containing image info.
 
-        - image_resized (tuple): size of resize image
+        - image_resized (np.ndarray): resized image
         - center (np.ndarray): center of image
         - scale (np.ndarray): scale
     """
@@ -136,7 +136,7 @@ class HeatmapGenerator:
 
     Args:
         num_joints (int): Number of keypoints
-        output_size (np.ndarray): Size of feature map
+        output_size (np.ndarray): Size (w, h) of feature map
         sigma (int): Sigma of the heatmaps.
         use_udp (bool): To use unbiased data processing.
             Paper ref: Huang et al. The Devil is in the Details: Delving into
@@ -217,7 +217,7 @@ class JointsEncoder:
     Args:
         max_num_people(int): Max number of people in an image
         num_joints(int): Number of keypoints
-        output_size(np.ndarray): Size of feature map
+        output_size(np.ndarray): Size (w, h) of feature map
         tag_per_joint(bool):  Option to use one tag map per joint.
     """
 
@@ -269,7 +269,7 @@ class PAFGenerator:
     """Generate part affinity fields.
 
     Args:
-        output_size (np.ndarray): Size of feature map.
+        output_size (np.ndarray): Size (w, h) of feature map.
         limb_width (int): Limb width of part affinity fields.
         skeleton (list[list]): connections of joints.
     """
