@@ -23,7 +23,7 @@ class PoseWarperNeck(nn.Module):
     <`https://arxiv.org/abs/1906.04016`>
 
     Args:
-        in_channels (int): Number of intput channels from backbone
+        in_channels (int): Number of input channels from backbone
         out_channels (int): Number of output channels
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
@@ -168,7 +168,7 @@ class PoseWarperNeck(nn.Module):
         ]
         self.offset_layers = nn.ModuleList(offset_layers)
 
-        # bulid deformable conv layers
+        # build deformable conv layers
         kernel = deform_conv.get('kernel', 3)
 
         deform_conv_layers = [
