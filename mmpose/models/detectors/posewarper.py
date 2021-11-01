@@ -114,13 +114,12 @@ class PoseWarper(TopDown):
                 feature = self.backbone(img[i])
                 features.append(feature)
         else:
-            imgs = img[0]
-            for i in range(1, num_frames):
-                imgs = torch.cat((imgs, img[i]), 0)
+            imgs = torch.cat(img, 0)
             features = self.backbone(imgs)
 
         if self.with_neck:
-            features = self.neck(features, concat_tensors=self.concat_tensors)
+            features = self.neck(
+                features, concat_tensors=self.concat_tensors, test_mode=False)
 
         if self.with_keypoint:
             output = self.keypoint_head(features)
@@ -139,9 +138,7 @@ class PoseWarper(TopDown):
 
     def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
-        # img: a list of Tensors
-        # each element in img is of size NxCximgHximgW
-        # it is a batch of Tensors of the frame at specific position
+        # img (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
         assert img[0].size(0) == len(img_metas)
         num_frames = len(img)
         batch_size, _, img_height, img_width = img[0].shape
@@ -156,13 +153,12 @@ class PoseWarper(TopDown):
                 feature = self.backbone(img[i])
                 features.append(feature)
         else:
-            imgs = img[0]
-            for i in range(1, num_frames):
-                imgs = torch.cat((imgs, img[i]), 0)
+            imgs = torch.cat(img, 0)
             features = self.backbone(imgs)
 
         if self.with_neck:
-            features = self.neck(features, concat_tensors=self.concat_tensors)
+            features = self.neck(
+                features, concat_tensors=self.concat_tensors, test_mode=True)
 
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
@@ -179,14 +175,14 @@ class PoseWarper(TopDown):
                     feature_flipped = self.backbone(img_flipped[i])
                     features_flipped.append(feature_flipped)
             else:
-                imgs_flipped = img[0]
-                for i in range(1, num_frames):
-                    imgs_flipped = torch.cat((imgs_flipped, img_flipped[i]), 0)
+                imgs_flipped = torch.cat(img_flipped, 0)
                 features_flipped = self.backbone(imgs_flipped)
 
             if self.with_neck:
                 features_flipped = self.neck(
-                    features_flipped, concat_tensors=self.concat_tensors)
+                    features_flipped,
+                    concat_tensors=self.concat_tensors,
+                    test_mode=True)
 
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
@@ -212,15 +208,12 @@ class PoseWarper(TopDown):
         See ``tools/get_flops.py``.
 
         Args:
-            img (torch.Tensor): Input image.
+            img (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
 
         Returns:
             Tensor: Output heatmaps.
         """
-        num_frames = len(img)
-        imgs = img[0]
-        for i in range(1, num_frames):
-            imgs = torch.cat((imgs, img[i]), 0)
+        imgs = torch.cat(img, 0)
         output = self.backbone(imgs)
 
         if self.with_neck:
