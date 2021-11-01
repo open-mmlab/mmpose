@@ -100,8 +100,7 @@ class PoseWarper(TopDown):
                   and heatmaps.
         """
         if return_loss:
-            return self.forward_train(img, target,<<<<<<< HEAD
- target_weight, img_metas,
+            return self.forward_train(img, target,target_weight, img_metas,
                                       **kwargs)
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
