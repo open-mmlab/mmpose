@@ -137,6 +137,24 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         self.root_id = data_cfg.get('root_id', 0)
         self.max_persons = data_cfg.get('max_num', 10)
 
+    def _get_scale(self, raw_image_size):
+        heatmap_size = self.ann_info['heatmap_size']
+        image_size = self.ann_info['image_size']
+        assert heatmap_size[0][0] / heatmap_size[0][1] \
+               == image_size[0] / image_size[1]
+        w, h = raw_image_size
+        w_resized, h_resized = image_size
+        if w / w_resized < h / h_resized:
+            w_pad = h / h_resized * w_resized
+            h_pad = h
+        else:
+            w_pad = w
+            h_pad = w / w_resized * h_resized
+
+        scale = np.array([w_pad, h_pad], dtype=np.float32)
+
+        return scale
+
     def _get_cam(self, seq):
         """Get camera parameters.
 
@@ -168,21 +186,6 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 cameras[(cam['panel'], cam['node'])] = sel_cam
 
         return cameras
-
-    @staticmethod
-    def _get_scale(image_size, resized_size):
-        w, h = image_size
-        w_resized, h_resized = resized_size
-        if w / w_resized < h / h_resized:
-            w_pad = h / h_resized * w_resized
-            h_pad = h
-        else:
-            w_pad = w
-            h_pad = w / w_resized * h_resized
-
-        scale = np.array([w_pad, h_pad], dtype=np.float32)
-
-        return scale / 200.0
 
     def _get_db(self):
         """Get dataset base.
@@ -282,6 +285,11 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                 cnt,
                                 'sample_id':
                                 sample_id,
+                                'center':
+                                np.array((width / 2, height / 2),
+                                         dtype=np.float32),
+                                'scale':
+                                self._get_scale((width, height))
                             })
                             sample_id += 1
         return db

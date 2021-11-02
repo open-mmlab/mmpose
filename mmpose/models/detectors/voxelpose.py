@@ -17,7 +17,8 @@ class CuboidProposalNet(nn.Module):
     Human Pose Estimation in Wild Environment".
 
     Args:
-        v2v_net (dict): dictionary to construct the 3D convolutional layers.
+        v2v_net (ConfigDict): dictionary to construct
+            the 3D convolutional layers.
     """
 
     def __init__(self, v2v_net):
@@ -33,7 +34,8 @@ class PoseRegressionNet(nn.Module):
     Human Pose Estimation in Wild Environment".
 
     Args:
-        v2v_net (dict): dictionary to construct the 3D convolutional layers.
+        v2v_net (ConfigDict): dictionary to construct
+            the 3D convolutional layers.
     """
 
     def __init__(self, v2v_net):
@@ -95,7 +97,6 @@ class ProjectLayer(nn.Module):
         n = len(heatmaps)
         cubes = torch.zeros(
             batch_size, num_joints, 1, num_bins, n, device=device)
-        # h, w = heatmaps[0].shape[2], heatmaps[0].shape[3]
         w, h = self.heatmap_size
         grids = torch.zeros(batch_size, num_bins, 3, device=device)
         bounding = torch.zeros(batch_size, 1, 1, num_bins, n, device=device)
@@ -119,8 +120,6 @@ class ProjectLayer(nn.Module):
                         dtype=torch.float,
                         device=device)
 
-                    # for k, v in meta[i]['camera'][c].items():
-                    #     cam_param[k] = v
                     cam_param = meta[i]['camera'][c].copy()
 
                     single_view_camera = SimpleCameraTorch(
@@ -169,20 +168,20 @@ class VoxelPose(BasePose):
     for details.
 
     Args:
-        detector_2d (dict): Dictionary to construct the 2D pose detector
-        space_3d (dict): Dictionary that contains the 3D space information
+        detector_2d (ConfigDict): Dictionary to construct the 2D pose detector
+        space_3d (ConfigDict): Dictionary that contains 3D space information
             space_size (list): Size of the 3D space
             cube_size (list): Size of the input volume to the  center net.
             space_center (list): Coordinate of the center of the 3D space
             sub_space_size (list): Size of the cuboid human proposal.
             sub_cube_size (list): Size of the input volume to the pose net.
-        project_layer (dict): Dictionary to construct the project layer.
-        center_net (dict): Dictionary to construct the center net.
-        center_head (dict): Dictionary to construct the center head.
-        pose_net (dict): Dictionary to construct the pose net.
-        pose_head (dict): Dictionary to construct the pose head.
-        train_cfg (dict): Config for training. Default: None.
-        test_cfg (dict): Config for testing. Default: None.
+        project_layer (ConfigDict): Dictionary to construct the project layer.
+        center_net (ConfigDict): Dictionary to construct the center net.
+        center_head (ConfigDict): Dictionary to construct the center head.
+        pose_net (ConfigDict): Dictionary to construct the pose net.
+        pose_head (ConfigDict): Dictionary to construct the pose head.
+        train_cfg (ConfigDict): Config for training. Default: None.
+        test_cfg (ConfigDict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained 2D model. Default: None.
         freeze_2d (bool): Whether to freeze the 2D model in training.
             Default: True.
@@ -261,7 +260,7 @@ class VoxelPose(BasePose):
         Args:
             img (list(torch.Tensor[NxCximgHximgW])):
                 Multi-camera input images to the 2D model.
-            img_metas (dict):
+            img_metas (list(dict)):
                 Information about image, 3D groundtruth and camera parameters.
             return_loss: Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
@@ -283,7 +282,9 @@ class VoxelPose(BasePose):
         """
         if self.backbone is None:
             assert input_heatmaps is not None
-            heatmaps = input_heatmaps
+            heatmaps = []
+            for input_heatmap in input_heatmaps:
+                heatmaps.append(input_heatmap[0])
         else:
             heatmaps = []
             assert isinstance(img, list)
@@ -330,7 +331,7 @@ class VoxelPose(BasePose):
         batch_size, num_candidates, _ = center_candidates.shape
         pred = center_candidates.new_zeros(batch_size, num_candidates,
                                            self.num_joints, 5)
-        pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]  # matched gt
+        pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]
 
         for n in range(num_candidates):
             index = pred[:, n, 0, 3] >= 0
