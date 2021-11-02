@@ -408,9 +408,10 @@ class PhotometricDistortion:
 
 @PIPELINES.register_module()
 class MultiItemProcess:
-    """
+    """Process each item and merge multi-item results to lists.
+
     Args:
-        pipeline
+        pipeline (dict): Dictionary to construct pipeline for a single item.
     """
 
     def __init__(self, pipeline):
@@ -433,6 +434,11 @@ class MultiItemProcess:
 class MultiItemDeduplicate:
 
     def __init__(self, keys_list):
+        """Discard duplicated single-item results.
+
+        Args:
+            keys_list (list): List of keys that need to be deduplicate.
+        """
         self.keys_list = keys_list
 
     def __call__(self, results):
