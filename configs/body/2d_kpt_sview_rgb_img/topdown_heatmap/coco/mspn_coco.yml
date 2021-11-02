@@ -1,18 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - MSPN
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mspn_coco [MSPN@COCO]
+- Name: MSPN
   Paper:
     Title: Rethinking on Multi-Stage Networks for Human Pose Estimation
     URL: https://arxiv.org/abs/1901.00148
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mspn_coco [MSPN@COCO]
+  In Collection: MSPN
   Metadata:
+    Architecture: &id001
+    - MSPN
     Training Data: COCO
   Name: topdown_heatmap_mspn50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -24,10 +23,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/mspn/mspn50_coco_256x192-8fbfb5d0_20201123.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/2xmspn50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mspn_coco [MSPN@COCO]
+  In Collection: MSPN
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_2xmspn50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -39,10 +40,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/mspn/2xmspn50_coco_256x192-c8765a5c_20201123.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/3xmspn50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mspn_coco [MSPN@COCO]
+  In Collection: MSPN
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_3xmspn50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -54,10 +57,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/mspn/3xmspn50_coco_256x192-e348f18e_20201123.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/4xmspn50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--mspn_coco [MSPN@COCO]
+  In Collection: MSPN
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_4xmspn50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.md
   Results:
   - Dataset: COCO
     Metrics:
