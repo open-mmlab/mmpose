@@ -1,4 +1,9 @@
-# Copyright (c) OpenMMLab. All rights reserved.
+# ------------------------------------------------------------------------------
+# Adapted from
+# https://github.com/microsoft/voxelpose-pytorch/blob/main/lib/models
+# Original licence: MIT License.
+# ------------------------------------------------------------------------------
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -45,7 +50,6 @@ class CuboidCenterHead(nn.Module):
         self.grid_center = torch.tensor(cfg['space_center'])
         self.num_cand = cfg['max_num']
         self.loss = nn.MSELoss()
-        # self.threshold = cfg['threshold']
 
     def get_real_loc(self, index):
         device = index.device
@@ -67,7 +71,6 @@ class CuboidCenterHead(nn.Module):
             batch_size, self.num_cand, 5, device=root_cubes.device)
         grid_centers[:, :, 0:3] = topk_unravel_index
         grid_centers[:, :, 4] = topk_values
-        # grid_centers[:, :, 3] = (topk_values > self.threshold).float() - 1.0
 
         return grid_centers
 
