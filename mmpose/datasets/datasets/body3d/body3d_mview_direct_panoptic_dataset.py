@@ -19,15 +19,15 @@ from mmpose.datasets.datasets.base import Kpt3dMviewRgbImgDirectDataset
 
 @DATASETS.register_module()
 class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
-    """Panoptic dataset for top-down hand pose estimation.
+    """Panoptic dataset for direct multi-view human pose estimation.
 
-    `Hand Keypoint Detection in Single Images using Multiview
-    Bootstrapping' CVPR'2017
+    `Panoptic Studio: A Massively Multiview System for Social Motion
+    Capture' ICCV'2015
     More details can be found in the `paper
-    <https://arxiv.org/abs/1704.07809>`__ .
+    <https://openaccess.thecvf.com/content_iccv_2015/papers/
+    Joo_Panoptic_Studio_A_ICCV_2015_paper.pdf>`__ .
 
-    The dataset loads raw features and apply specified transforms
-    to return a dict containing the image tensors and other information.
+    The dataset loads both 2D and 3D annotations as well as camera parameters.
 
     Panoptic keypoint indexes::
 
