@@ -11,8 +11,8 @@ from mmpose.datasets.pipelines import Compose
 
 
 class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
-    """Base class for keypoint 3D top-down pose estimation with single-view RGB
-    image as the input.
+    """Base class for keypoint 3D top-down pose estimation with multi-view RGB
+    images as the input.
 
     All fashion datasets should subclass it.
     All subclasses should overwrite:
