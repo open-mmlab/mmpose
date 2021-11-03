@@ -75,6 +75,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/ochuman/resnet_ochuman.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_posetrack18.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/resnet_posetrack18.yml
+- configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/prn64x64x64_cpn80x80x20_panoptic_cam5.yml
 - configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.yml
 - configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.yml
 - configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.yml
