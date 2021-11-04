@@ -43,6 +43,7 @@ class Basic3DBlock(nn.Module):
             bias=True)
 
     def forward(self, x):
+        """Forward function."""
         return self.block(x)
 
 
@@ -103,6 +104,7 @@ class Res3DBlock(nn.Module):
                 bias=True)
 
     def forward(self, x):
+        """Forward function."""
         res = self.res_branch(x)
         skip = self.skip_con(x)
         return F.relu(res + skip, True)
@@ -120,6 +122,7 @@ class Pool3DBlock(nn.Module):
         self.pool_size = pool_size
 
     def forward(self, x):
+        """Forward function."""
         return F.max_pool3d(
             x, kernel_size=self.pool_size, stride=self.pool_size)
 
@@ -150,6 +153,7 @@ class Upsample3DBlock(nn.Module):
                 output_padding=0), nn.BatchNorm3d(out_channels), nn.ReLU(True))
 
     def forward(self, x):
+        """Forward function."""
         return self.block(x)
 
 
@@ -181,6 +185,7 @@ class EncoderDecorder(nn.Module):
         self.skip_res2 = Res3DBlock(in_channels * 2, in_channels * 2)
 
     def forward(self, x):
+        """Forward function."""
         skip_x1 = self.skip_res1(x)
         x = self.encoder_pool1(x)
         x = self.encoder_res1(x)
@@ -234,6 +239,7 @@ class V2VNet(BaseBackbone):
         self._initialize_weights()
 
     def forward(self, x):
+        """Forward function."""
         x = self.front_layers(x)
         x = self.encoder_decoder(x)
         x = self.output_layer(x)

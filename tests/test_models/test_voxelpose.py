@@ -68,7 +68,8 @@ def test_voxelpose_forward():
                 space_size=space_size,
                 space_center=space_center,
                 cube_size=cube_size,
-                max_num=10)))
+                max_num=10,
+                max_pool_kernel=3)))
     pose_net = PoseRegressionNet(
         dict(type='V2VNet', input_channels=15, output_channels=15))
     pose_head = builder.build_head(dict(type='CuboidPoseHead', beta=100.0))

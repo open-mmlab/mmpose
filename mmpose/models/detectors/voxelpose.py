@@ -72,21 +72,22 @@ class ProjectLayer(nn.Module):
         if isinstance(num_bins, int):
             num_bins = [num_bins, num_bins, num_bins]
 
-        grid1Dx = torch.linspace(
+        grid_1D_x = torch.linspace(
             -box_size[0] / 2, box_size[0] / 2, num_bins[0], device=device)
-        grid1Dy = torch.linspace(
+        grid_1D_y = torch.linspace(
             -box_size[1] / 2, box_size[1] / 2, num_bins[1], device=device)
-        grid1Dz = torch.linspace(
+        grid_1D_z = torch.linspace(
             -box_size[2] / 2, box_size[2] / 2, num_bins[2], device=device)
-        gridx, gridy, gridz = torch.meshgrid(
-            grid1Dx + box_center[0],
-            grid1Dy + box_center[1],
-            grid1Dz + box_center[2],
+        grid_x, grid_y, grid_z = torch.meshgrid(
+            grid_1D_x + box_center[0],
+            grid_1D_y + box_center[1],
+            grid_1D_z + box_center[2],
         )
-        gridx = gridx.contiguous().view(-1, 1)
-        gridy = gridy.contiguous().view(-1, 1)
-        gridz = gridz.contiguous().view(-1, 1)
-        grid = torch.cat([gridx, gridy, gridz], dim=1)
+        grid_x = grid_x.contiguous().view(-1, 1)
+        grid_y = grid_y.contiguous().view(-1, 1)
+        grid_z = grid_z.contiguous().view(-1, 1)
+        grid = torch.cat([grid_x, grid_y, grid_z], dim=1)
+
         return grid
 
     def get_voxel(self, heatmaps, meta, grid_size, grid_center, cube_size):
