@@ -121,7 +121,8 @@ model = dict(
             space_size=space_size,
             space_center=space_center,
             cube_size=cube_size,
-            max_num=10)),
+            max_num=10,
+            max_pool_kernel=3)),
     pose_net=dict(
         type='V2VNet', input_channels=num_joints, output_channels=num_joints),
     pose_head=dict(type='CuboidPoseHead', beta=100.0),

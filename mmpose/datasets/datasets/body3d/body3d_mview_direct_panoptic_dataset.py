@@ -115,7 +115,6 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                 pickle.dump(info, f)
 
         self.db_size = len(self.db)
-        # self.db = self._get_db()
 
         print(f'=> load {len(self.db)} samples')
 
@@ -132,7 +131,6 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         assert self.num_cameras == len(self.cam_list)
         self.seq_frame_interval = data_cfg.get('seq_frame_interval', 1)
         self.subset = data_cfg.get('subset', 'train')
-        # self.need_2d_label = data_cfg.get('need_2d_label', False)
         self.need_camera_param = True
         self.root_id = data_cfg.get('root_id', 0)
         self.max_persons = data_cfg.get('max_num', 10)
@@ -371,11 +369,11 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
 
         mpjpe_threshold = np.arange(25, 155, 25)
         aps = []
-        recs = []
+        ars = []
         for t in mpjpe_threshold:
-            ap, rec = self._eval_list_to_ap(eval_list, total_gt, t)
+            ap, ar = self._eval_list_to_ap(eval_list, total_gt, t)
             aps.append(ap)
-            recs.append(rec)
+            ars.append(ar)
 
         name_value_tuples = []
         for _metric in metrics:
@@ -393,8 +391,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                     'AR 150', 'mAR'
                 ]
                 mAP = np.array(aps).mean()
-                mAR = np.array(recs).mean()
-                info_str = list(zip(stats_names, aps + [mAP] + recs + [mAR]))
+                mAR = np.array(ars).mean()
+                info_str = list(zip(stats_names, aps + [mAP] + ars + [mAR]))
             else:
                 raise NotImplementedError
             name_value_tuples.extend(info_str)
@@ -403,6 +401,9 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
 
     @staticmethod
     def _eval_list_to_ap(eval_list, total_gt, threshold):
+        """Get Average Precision (AP) and Average Recall at a certain
+        threshold."""
+
         eval_list.sort(key=lambda k: k['score'], reverse=True)
         total_num = len(eval_list)
 
@@ -431,6 +432,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
 
     @staticmethod
     def _eval_list_to_mpjpe(eval_list, threshold=500):
+        """Get MPJPE within a certain threshold."""
         eval_list.sort(key=lambda k: k['score'], reverse=True)
         gt_det = []
 
@@ -444,6 +446,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
 
     @staticmethod
     def _eval_list_to_recall(eval_list, total_gt, threshold=500):
+        """Get Recall at a certain threshold."""
         gt_ids = [e['gt_id'] for e in eval_list if e['mpjpe'] < threshold]
 
         return len(np.unique(gt_ids)) / total_gt
