@@ -77,7 +77,7 @@ class MobileNetV3(BaseBackbone):
         super().__init__()
         assert arch in self.arch_settings
         for index in out_indices:
-            if index not in range(0, len(self.arch_settings[arch])):
+            if index not in range(-1, len(self.arch_settings[arch])):
                 raise ValueError('the item in out_indices must in '
                                  f'range(0, {len(self.arch_settings[arch])}). '
                                  f'But received {index}')
@@ -86,8 +86,6 @@ class MobileNetV3(BaseBackbone):
             raise ValueError('frozen_stages must be in range(-1, '
                              f'{len(self.arch_settings[arch])}). '
                              f'But received {frozen_stages}')
-        self.out_indices = out_indices
-        self.frozen_stages = frozen_stages
         self.arch = arch
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
