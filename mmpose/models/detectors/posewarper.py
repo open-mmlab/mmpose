@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
+import numpy as np
 import torch
 
 from ..builder import POSENETS
@@ -33,13 +34,13 @@ class PoseWarper(TopDown):
 
     def __init__(self,
                  backbone,
-                 concat_tensors=False,
                  neck=None,
                  keypoint_head=None,
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None,
-                 loss_pose=None):
+                 loss_pose=None,
+                 concat_tensors=True):
         super().__init__(
             backbone=backbone,
             neck=neck,
@@ -77,7 +78,7 @@ class PoseWarper(TopDown):
             heatmaps weight: W
 
         Args:
-            img (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
+            imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
             target (torch.Tensor[NxKxHxW]): Target heatmaps for one frame.
             target_weight (torch.Tensor[NxKx1]): Weights across
                 different joint types.
@@ -103,23 +104,24 @@ class PoseWarper(TopDown):
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
-    def forward_train(self, img, target, target_weight, img_metas, **kwargs):
+    def forward_train(self, imgs, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
-        assert img[0].size(0) == len(img_metas)
-        num_frames = len(img)
+        # imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
+        assert imgs[0].size(0) == len(img_metas)
+        num_frames = len(imgs)
+        frame_weight = img_metas[0]['frame_weight']
 
-        if not self.concat_tensors:
-            features = []
-            for i in range(num_frames):
-                feature = self.backbone(img[i])
-                features.append(feature)
+        assert num_frames == len(frame_weight), f'The number of frames ' \
+            f'({num_frames}) and the length of weights for each frame ' \
+            f'({len(frame_weight)}) must match'
+
+        if self.concat_tensors:
+            features = [self.backbone(torch.cat(imgs, 0))]
         else:
-            imgs = torch.cat(img, 0)
-            features = self.backbone(imgs)
+            features = [self.backbone(img) for img in imgs]
 
         if self.with_neck:
-            features = self.neck(
-                features, concat_tensors=self.concat_tensors, test_mode=False)
+            features = self.neck(features, frame_weight=frame_weight)
 
         if self.with_keypoint:
             output = self.keypoint_head(features)
@@ -136,53 +138,48 @@ class PoseWarper(TopDown):
 
         return losses
 
-    def forward_test(self, img, img_metas, return_heatmap=False, **kwargs):
+    def forward_test(self, imgs, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
-        # img (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-        assert img[0].size(0) == len(img_metas)
-        num_frames = len(img)
-        batch_size, _, img_height, img_width = img[0].shape
+        # imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
+        assert imgs[0].size(0) == len(img_metas)
+        num_frames = len(imgs)
+        frame_weight = img_metas[0]['frame_weight']
+
+        assert num_frames == len(frame_weight), f'The number of frames ' \
+            f'({num_frames}) and the length of weights for each frame ' \
+            f'({len(frame_weight)}) must match'
+
+        batch_size, _, img_height, img_width = imgs[0].shape
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
         result = {}
 
-        if not self.concat_tensors:
-            features = []
-            for i in range(num_frames):
-                feature = self.backbone(img[i])
-                features.append(feature)
+        if self.concat_tensors:
+            features = [self.backbone(torch.cat(imgs, 0))]
         else:
-            imgs = torch.cat(img, 0)
-            features = self.backbone(imgs)
+            features = [self.backbone(img) for img in imgs]
 
         if self.with_neck:
-            features = self.neck(
-                features, concat_tensors=self.concat_tensors, test_mode=True)
+            features = self.neck(features, frame_weight=frame_weight)
 
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
                 features, flip_pairs=None)
 
         if self.test_cfg.get('flip_test', True):
-            img_flipped = []
-            for i in range(num_frames):
-                img_flipped.append(img[i].flip(3))
+            imgs_flipped = [img.flip(3) for img in imgs]
 
-            if not self.concat_tensors:
-                features_flipped = []
-                for i in range(num_frames):
-                    feature_flipped = self.backbone(img_flipped[i])
-                    features_flipped.append(feature_flipped)
+            if self.concat_tensors:
+                features_flipped = [self.backbone(torch.cat(imgs_flipped, 0))]
             else:
-                imgs_flipped = torch.cat(img_flipped, 0)
-                features_flipped = self.backbone(imgs_flipped)
+                features_flipped = [
+                    self.backbone(img_flipped) for img_flipped in imgs_flipped
+                ]
 
             if self.with_neck:
                 features_flipped = self.neck(
-                    features_flipped,
-                    concat_tensors=self.concat_tensors,
-                    test_mode=True)
+                    features_flipped, frame_weight=frame_weight)
 
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
@@ -208,16 +205,31 @@ class PoseWarper(TopDown):
         See ``tools/get_flops.py``.
 
         Args:
-            img (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
+            img (torch.Tensor[NxCximgHximgW], or list/tuple of tensors):
+            multiple input frames, N >= 2
 
         Returns:
             Tensor: Output heatmaps.
         """
-        imgs = torch.cat(img, 0)
-        output = self.backbone(imgs)
+        # concat tensors if they are in a list
+        if isinstance(img, (list, tuple)):
+            img = torch.cat(img, 0)
+
+        batch_size = img.size(0)
+        assert batch_size > 1, 'Input batch size to PoseWarper ' \
+            'should be larger than 1.'
+        if batch_size == 2:
+            warnings.warn('Current batch size: 2, for pytorch2onnx and '
+                          'getting flops both.')
+        else:
+            warnings.warn(
+                f'Current batch size: {batch_size}, for getting flops only.')
+
+        frame_weight = np.random.uniform(0, 1, batch_size)
+        output = [self.backbone(img)]
 
         if self.with_neck:
-            output = self.neck(output, concat_tensors=True)
+            output = self.neck(output, frame_weight=frame_weight)
         if self.with_keypoint:
             output = self.keypoint_head(output)
         return output

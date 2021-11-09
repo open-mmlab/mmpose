@@ -273,11 +273,10 @@ class TopDown(BasePose):
         bbox_result = []
         pose_result = []
         for res in result:
-            if 'bbox' in res:
-                bbox_result.append(res['bbox'])
+            bbox_result.append(res['bbox'])
             pose_result.append(res['keypoints'])
 
-        if bbox_result:
+        if len(bbox_result) > 0:
             bboxes = np.vstack(bbox_result)
             labels = None
             if 'label' in result[0]:
@@ -293,8 +292,9 @@ class TopDown(BasePose):
                 font_scale=font_scale,
                 show=False)
 
-        imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                         pose_kpt_color, pose_link_color, radius, thickness)
+            imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
+                             pose_kpt_color, pose_link_color, radius,
+                             thickness)
 
         if show:
             imshow(img, win_name, wait_time)
