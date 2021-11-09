@@ -28,7 +28,11 @@ class ToTensor:
     """
 
     def __call__(self, results):
-        results['img'] = F.to_tensor(results['img'])
+        if not isinstance(results['img'], list):
+            results['img'] = F.to_tensor(results['img'])
+        else:
+            results['img'] = [F.to_tensor(img) for img in results['img']]
+
         return results
 
 
@@ -48,8 +52,15 @@ class NormalizeTensor:
         self.std = std
 
     def __call__(self, results):
-        results['img'] = F.normalize(
-            results['img'], mean=self.mean, std=self.std)
+        if not isinstance(results['img'], list):
+            results['img'] = F.normalize(
+                results['img'], mean=self.mean, std=self.std)
+        else:
+            results['img'] = [
+                F.normalize(img, mean=self.mean, std=self.std)
+                for img in results['img']
+            ]
+
         return results
 
 
@@ -415,31 +426,29 @@ class MultitaskGatherTarget:
         pipeline_indices (list[int]): Pipeline index of each head.
     """
 
-    def __init__(self,
-                 pipeline_list,
-                 pipeline_indices=None,
-                 keys=('target', 'target_weight')):
-        self.keys = keys
+    def __init__(self, pipeline_list, pipeline_indices):
         self.pipelines = []
         for pipeline in pipeline_list:
             self.pipelines.append(Compose(pipeline))
-        if pipeline_indices is None:
-            self.pipeline_indices = list(range(len(pipeline_list)))
-        else:
-            self.pipeline_indices = pipeline_indices
+        self.pipeline_indices = pipeline_indices
 
     def __call__(self, results):
         # generate target and target weights using all pipelines
-        pipeline_outputs = []
+        _target, _target_weight = [], []
         for pipeline in self.pipelines:
-            pipeline_output = pipeline(results)
-            pipeline_outputs.append(pipeline_output.copy())
+            results_head = pipeline(results)
+            _target.append(results_head['target'])
+            _target_weight.append(results_head['target_weight'])
 
-        for key in self.keys:
-            result_key = []
-            for ind in self.pipeline_indices:
-                result_key.append(pipeline_outputs[ind].get(key, None))
-            results[key] = result_key
+        # reorganize generated target, target_weights according
+        # to self.pipelines_indices
+        target, target_weight = [], []
+        for ind in self.pipeline_indices:
+            target.append(_target[ind])
+            target_weight.append(_target_weight[ind])
+
+        results['target'] = target
+        results['target_weight'] = target_weight
         return results
 
 
