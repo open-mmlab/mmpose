@@ -79,8 +79,7 @@ class PoseWarper(TopDown):
 
         Args:
             imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-            target (torch.Tensor[NxKxHxW]): Target<<<<<<< HEAD
- heatmaps for one frame.
+            target (torch.Tensor[NxKxHxW]): Target heatmaps for one frame.
             target_weight (torch.Tensor[NxKx1]): Weights across
                 different joint types.
             img_metas (list(dict)): Information about data augmentation
@@ -209,6 +208,7 @@ class PoseWarper(TopDown):
         Args:
             img (torch.Tensor[NxCximgHximgW], or list/tuple of tensors):
             multiple input frames, N >= 2
+
         Returns:
             Tensor: Output heatmaps.
         """
