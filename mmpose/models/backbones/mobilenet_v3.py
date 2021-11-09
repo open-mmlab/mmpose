@@ -162,6 +162,8 @@ class MobileNetV3(BaseBackbone):
             x = layer(x)
             if i in self.out_indices:
                 outs.append(x)
+            elif i == (len(self.layers) - 1) and -1 in self.out_indices:
+                outs.append(x)
 
         if len(outs) == 1:
             return outs[0]
