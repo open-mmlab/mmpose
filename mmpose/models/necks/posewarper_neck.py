@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
+import mmcv
 import torch
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
@@ -26,10 +27,6 @@ class PoseWarperNeck(nn.Module):
         out_channels (int): Number of output channels
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
-        weight_frame_train (list|tuple): weight of frames during training,
-            the order is based on the frame indexes
-        weight_frame_test (list|tuple): weight of frames during aggregation,
-            the order is based on the frame indexes
         dilations (list|tuple): different dilations of the offset conv layers
         extra (dict): config of the conv layer to get heatmap
         res_blocks (dict): config of residual blocks
@@ -50,7 +47,8 @@ class PoseWarperNeck(nn.Module):
         norm_eval (bool): Whether to set norm layers to eval mode, namely,
             freeze running stats (mean and var). Note: Effect on Batch Norm
             and its variants only. Default: False
-        im2col_step: the argument `im2col_step` in mmcv.ops.deform_conv
+        im2col_step: the argument `im2col_step` in deform_conv
+        least_mmcv_version (str): should use version newer than this version
     """
     blocks_dict = {'BASIC': BasicBlock, 'BOTTLENECK': Bottleneck}
 
@@ -58,26 +56,23 @@ class PoseWarperNeck(nn.Module):
                  in_channels,
                  out_channels,
                  inner_channels,
-                 deform_groups,
-                 weight_frame_train,
-                 weight_frame_test,
+                 deform_groups=17,
                  dilations=(3, 6, 12, 18, 24),
                  extra=None,
-                 res_blocks=None,
-                 offsets=None,
-                 deform_conv=None,
+                 res_blocks={},
+                 offsets={},
+                 deform_conv={},
                  in_index=0,
                  input_transform=None,
                  freeze_trans_layer=False,
                  norm_eval=False,
-                 im2col_step=32):
+                 im2col_step=32,
+                 least_mmcv_version='1.3.16'):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.inner_channels = inner_channels
         self.deform_groups = deform_groups
-        self.weight_frame_train = weight_frame_train
-        self.weight_frame_test = weight_frame_test
         self.dilations = dilations
         self.extra = extra
         self.res_blocks = res_blocks
@@ -88,6 +83,7 @@ class PoseWarperNeck(nn.Module):
         self.freeze_trans_layer = freeze_trans_layer
         self.norm_eval = norm_eval
         self.im2col_step = im2col_step
+        self.least_mmcv_version = least_mmcv_version
 
         if extra is not None and not isinstance(extra, dict):
             raise TypeError('extra should be dict or None.')
@@ -144,40 +140,41 @@ class PoseWarperNeck(nn.Module):
         self.offset_feats = nn.Sequential(*res_layers)
 
         # build offset layers
-        num_offset_layers = len(dilations)
+        self.num_offset_layers = len(dilations)
+        assert self.num_offset_layers > 0, 'Number of offset layers ' \
+            'should be larger than 0.'
+
         kernel = offsets.get('kernel', 3)
         target_offset_channels = 2 * kernel * kernel * deform_groups
 
-        offset_layers = []
-        for i in range(num_offset_layers):
-            offset_layers.append(
-                build_conv_layer(
-                    cfg=dict(type='Conv2d'),
-                    in_channels=inner_channels,
-                    out_channels=target_offset_channels,
-                    kernel_size=kernel,
-                    stride=1,
-                    dilation=dilations[i],
-                    padding=dilations[i],
-                    bias=False,
-                ))
+        offset_layers = [
+            build_conv_layer(
+                cfg=dict(type='Conv2d'),
+                in_channels=inner_channels,
+                out_channels=target_offset_channels,
+                kernel_size=kernel,
+                stride=1,
+                dilation=dilations[i],
+                padding=dilations[i],
+                bias=False,
+            ) for i in range(self.num_offset_layers)
+        ]
         self.offset_layers = nn.ModuleList(offset_layers)
 
         # build deformable conv layers
         kernel = deform_conv.get('kernel', 3)
 
-        deform_conv_layers = []
-        for i in range(num_offset_layers):
-            deform_conv_layers.append(
-                DeformConv2d(
-                    in_channels=out_channels,
-                    out_channels=out_channels,
-                    kernel_size=kernel,
-                    stride=1,
-                    padding=int(kernel / 2) * dilations[i],
-                    dilation=dilations[i],
-                    deform_groups=deform_groups,
-                ))
+        deform_conv_layers = [
+            DeformConv2d(
+                in_channels=out_channels,
+                out_channels=out_channels,
+                kernel_size=kernel,
+                stride=1,
+                padding=int(kernel / 2) * dilations[i],
+                dilation=dilations[i],
+                deform_groups=deform_groups,
+            ) for i in range(self.num_offset_layers)
+        ]
         self.deform_conv_layers = nn.ModuleList(deform_conv_layers)
 
         self.freeze_layers()
@@ -244,108 +241,86 @@ class PoseWarperNeck(nn.Module):
 
         return inputs
 
-    def forward(self, inputs, concat_tensors=False, test_mode=False):
-        if test_mode:
-            weight_frame = self.weight_frame_test
-        else:
-            weight_frame = self.weight_frame_train
+    def forward(self, inputs, frame_weight):
+        assert isinstance(inputs, (list, tuple)), 'PoseWarperNeck inputs ' \
+            'should be list or tuple, even though the length is 1, ' \
+            'for unified processing.'
 
-        if not concat_tensors:
-            # batch_size, _, heatmap_height, heatmap_width = inputs[0].shape
-            num_frames = len(inputs)
-            assert num_frames == len(weight_frame), f'The number of ' \
-                f'frames ({num_frames}) and the length of weights for '\
-                f'each frame({len(weight_frame)}) must match'
-
-            num_offset_layers = len(self.offset_layers)
-            assert num_offset_layers != 0
-
-            for i in range(num_frames):
-                inputs[i] = self._transform_inputs(inputs[i])
-                inputs[i] = self.trans_layer(inputs[i])
+        output_heatmap = 0
+        if len(inputs) > 1:
+            inputs = [self._transform_inputs(input) for input in inputs]
+            inputs = [self.trans_layer(input) for input in inputs]
 
             # calculate difference features
-            diff_features = []
-            for i in range(num_frames):
-                diff_feature = inputs[0] - inputs[i]
-                diff_features.append(self.offset_feats(diff_feature))
+            diff_features = [
+                self.offset_feats(inputs[0] - input) for input in inputs
+            ]
 
-            output_heatmap = 0
-            for i in range(num_frames):
-                if weight_frame[i] == 0:
+            for i in range(len(inputs)):
+                if frame_weight[i] == 0:
                     continue
                 warped_heatmap = 0
-                for j in range(num_offset_layers):
+                for j in range(self.num_offset_layers):
                     offset = (self.offset_layers[j](diff_features[i]))
                     warped_heatmap_tmp = self.deform_conv_layers[j](inputs[i],
                                                                     offset)
-                    warped_heatmap += warped_heatmap_tmp / num_offset_layers
+                    warped_heatmap += warped_heatmap_tmp / \
+                        self.num_offset_layers
 
-                output_heatmap += warped_heatmap * weight_frame[i]
+                output_heatmap += warped_heatmap * frame_weight[i]
 
-            return output_heatmap
         else:
+            inputs = inputs[0]
             inputs = self._transform_inputs(inputs)
             inputs = self.trans_layer(inputs)
 
-            num_frames = len(weight_frame)
-            assert inputs.size(0) % num_frames == 0, f'The number of ' \
-                f'frames times batch({inputs.size(0)}) and the length of ' \
-                f'weights for each frame ({num_frames}) must match'
-
-            num_offset_layers = len(self.offset_layers)
-            assert num_offset_layers != 0
-
+            num_frames = len(frame_weight)
             batch_size = inputs.size(0) // num_frames
-            ref_x = inputs[:batch_size, :, :, :]
+            ref_x = inputs[:batch_size]
             ref_x_tiled = ref_x.repeat(num_frames, 1, 1, 1)
 
-            diff_features = ref_x_tiled - inputs
-            offset_features = self.offset_feats(diff_features)
+            offset_features = self.offset_feats(ref_x_tiled - inputs)
 
-            if inputs.size(0) > self.im2col_step and inputs.size(
-                    0) % self.im2col_step != 0:
-                # can not concat tensors to input deform_conv
-                # see https://github.com/open-mmlab/mmcv/issues/1440
-                warnings.warn(f'The current input size ({inputs.size(0)})'
-                              f'to DeformConv2d in mmcv.ops.deform_conv is'
-                              f'not appropriate, adjust forward function.')
-
-                output_heatmap = 0
-                for j in range(num_offset_layers):
+            if mmcv.__version__ <= self.least_mmcv_version and (
+                    inputs.size(0) > self.im2col_step
+                    and inputs.size(0) % self.im2col_step != 0):
+                warnings.warn(
+                    'Due to the limit of mmcv version, can not concat tensors'
+                    ' as input to deform_conv, see'
+                    ' https://github.com/open-mmlab/mmcv/issues/1440.'
+                    'Please try to update to the newest mmcv.')
+                for j in range(self.num_offset_layers):
                     offset = self.offset_layers[j](offset_features)
 
                     warped_heatmap = 0
                     for i in range(num_frames):
-                        if weight_frame[i] == 0:
+                        if frame_weight[i] == 0:
                             continue
                         warped_heatmap_tmp = self.deform_conv_layers[j](
-                            inputs[i * batch_size:(i + 1) *
-                                   batch_size, :, :, :],
-                            offset[i * batch_size:(i + 1) *
-                                   batch_size, :, :, :])
+                            inputs[i * batch_size:(i + 1) * batch_size],
+                            offset[i * batch_size:(i + 1) * batch_size])
 
-                        warped_heatmap = warped_heatmap_tmp * weight_frame[i]
+                        warped_heatmap = warped_heatmap_tmp * frame_weight[i]
 
-                    output_heatmap += warped_heatmap / num_offset_layers
-                return output_heatmap
+                    output_heatmap += warped_heatmap / self.num_offset_layers
             else:
                 # concat all tensors
                 warped_heatmap = 0
-                for j in range(num_offset_layers):
+                for j in range(self.num_offset_layers):
                     offset = self.offset_layers[j](offset_features)
 
                     warped_heatmap_tmp = self.deform_conv_layers[j](inputs,
                                                                     offset)
-                    warped_heatmap += warped_heatmap_tmp / num_offset_layers
+                    warped_heatmap += warped_heatmap_tmp / \
+                        self.num_offset_layers
 
-                output_heatmap = 0
                 for i in range(num_frames):
-                    if weight_frame[i] == 0:
+                    if frame_weight[i] == 0:
                         continue
                     output_heatmap += warped_heatmap[i * batch_size:(
-                        i + 1) * batch_size, :, :, :] * weight_frame[i]
-                return output_heatmap
+                        i + 1) * batch_size] * frame_weight[i]
+
+        return output_heatmap
 
     def train(self, mode=True):
         """Convert the model into training mode."""
