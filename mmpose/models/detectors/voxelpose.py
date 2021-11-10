@@ -59,10 +59,10 @@ class ProjectLayer(nn.Module):
                 heatmap_size: output size of the 2D model
         """
         super(ProjectLayer, self).__init__()
-        self.img_size = cfg['image_size']
+        self.image_size = cfg['image_size']
         self.heatmap_size = cfg['heatmap_size']
-        if isinstance(self.img_size, int):
-            self.img_size = [self.img_size, self.img_size]
+        if isinstance(self.image_size, int):
+            self.image_size = [self.image_size, self.image_size]
         if isinstance(self.heatmap_size, int):
             self.heatmap_size = [self.heatmap_size, self.heatmap_size]
 
@@ -117,7 +117,7 @@ class ProjectLayer(nn.Module):
                     width, height = center * 2
                     trans = torch.as_tensor(
                         get_affine_transform(center, scale / 200.0, 0,
-                                             self.img_size),
+                                             self.image_size),
                         dtype=torch.float,
                         device=device)
 
@@ -135,7 +135,7 @@ class ProjectLayer(nn.Module):
                     xy = xy * torch.tensor(
                         [w, h], dtype=torch.float,
                         device=device) / torch.tensor(
-                            self.img_size, dtype=torch.float, device=device)
+                            self.image_size, dtype=torch.float, device=device)
                     sample_grid = xy / torch.tensor([w - 1, h - 1],
                                                     dtype=torch.float,
                                                     device=device) * 2.0 - 1.0
