@@ -77,7 +77,8 @@ class MobileNetV3(BaseBackbone):
         super().__init__()
         assert arch in self.arch_settings
         for index in out_indices:
-            if index not in range(-1, len(self.arch_settings[arch])):
+            if index not in range(-len(self.arch_settings[arch]),
+                                  len(self.arch_settings[arch])):
                 raise ValueError('the item in out_indices must in '
                                  f'range(0, {len(self.arch_settings[arch])}). '
                                  f'But received {index}')
@@ -160,9 +161,8 @@ class MobileNetV3(BaseBackbone):
         for i, layer_name in enumerate(self.layers):
             layer = getattr(self, layer_name)
             x = layer(x)
-            if i in self.out_indices:
-                outs.append(x)
-            elif i == (len(self.layers) - 1) and -1 in self.out_indices:
+            if i in self.out_indices or \
+                    i - len(self.layers) in self.out_indices:
                 outs.append(x)
 
         if len(outs) == 1:
