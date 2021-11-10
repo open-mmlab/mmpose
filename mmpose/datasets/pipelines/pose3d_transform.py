@@ -577,11 +577,11 @@ class GenerateVoxel3DHeatmapTarget:
         space_size = cfg['space_size']
         space_center = cfg['space_center']
         cube_size = cfg['cube_size']
-        grid1Dx = np.linspace(-space_size[0] / 2, space_size[0] / 2,
+        grids_x = np.linspace(-space_size[0] / 2, space_size[0] / 2,
                               cube_size[0]) + space_center[0]
-        grid1Dy = np.linspace(-space_size[1] / 2, space_size[1] / 2,
+        grids_y = np.linspace(-space_size[1] / 2, space_size[1] / 2,
                               cube_size[1]) + space_center[1]
-        grid1Dz = np.linspace(-space_size[2] / 2, space_size[2] / 2,
+        grids_z = np.linspace(-space_size[2] / 2, space_size[2] / 2,
                               cube_size[2]) + space_center[2]
 
         target = np.zeros(
@@ -597,26 +597,26 @@ class GenerateVoxel3DHeatmapTarget:
                 if vis < 1:
                     continue
                 i_x = [
-                    np.searchsorted(grid1Dx, mu_x - 3 * self.sigma),
-                    np.searchsorted(grid1Dx, mu_x + 3 * self.sigma, 'right')
+                    np.searchsorted(grids_x, mu_x - 3 * self.sigma),
+                    np.searchsorted(grids_x, mu_x + 3 * self.sigma, 'right')
                 ]
                 i_y = [
-                    np.searchsorted(grid1Dy, mu_y - 3 * self.sigma),
-                    np.searchsorted(grid1Dy, mu_y + 3 * self.sigma, 'right')
+                    np.searchsorted(grids_y, mu_y - 3 * self.sigma),
+                    np.searchsorted(grids_y, mu_y + 3 * self.sigma, 'right')
                 ]
                 i_z = [
-                    np.searchsorted(grid1Dz, mu_z - 3 * self.sigma),
-                    np.searchsorted(grid1Dz, mu_z + 3 * self.sigma, 'right')
+                    np.searchsorted(grids_z, mu_z - 3 * self.sigma),
+                    np.searchsorted(grids_z, mu_z + 3 * self.sigma, 'right')
                 ]
                 if i_x[0] >= i_x[1] or i_y[0] >= i_y[1] or i_z[0] >= i_z[1]:
                     continue
-                gridx, gridy, gridz = np.meshgrid(
-                    grid1Dx[i_x[0]:i_x[1]],
-                    grid1Dy[i_y[0]:i_y[1]],
-                    grid1Dz[i_z[0]:i_z[1]],
+                kernel_xs, kernel_ys, kernel_zs = np.meshgrid(
+                    grids_x[i_x[0]:i_x[1]],
+                    grids_y[i_y[0]:i_y[1]],
+                    grids_z[i_z[0]:i_z[1]],
                     indexing='ij')
-                g = np.exp(-((gridx - mu_x)**2 + (gridy - mu_y)**2 +
-                             (gridz - mu_z)**2) / (2 * self.sigma**2))
+                g = np.exp(-((kernel_xs - mu_x)**2 + (kernel_ys - mu_y)**2 +
+                             (kernel_zs - mu_z)**2) / (2 * self.sigma**2))
                 target[idx, i_x[0]:i_x[1], i_y[0]:i_y[1], i_z[0]:i_z[1]] \
                     = np.maximum(target[idx, i_x[0]:i_x[1],
                                  i_y[0]:i_y[1], i_z[0]:i_z[1]], g)

@@ -29,7 +29,7 @@ class CuboidCenterHead(nn.Module):
         self.grid_size = torch.tensor(cfg['space_size'])
         self.cube_size = torch.tensor(cfg['cube_size'])
         self.grid_center = torch.tensor(cfg['space_center'])
-        self.num_cand = cfg['max_num']
+        self.num_candidates = cfg['max_num']
         self.max_pool_kernel = cfg['max_pool_kernel']
         self.loss = nn.MSELoss()
 
@@ -51,7 +51,7 @@ class CuboidCenterHead(nn.Module):
         return real_locations
 
     def _nms_by_max_pool(self, heatmap_volumes):
-        max_num = self.num_cand
+        max_num = self.num_candidates
         batch_size = heatmap_volumes.shape[0]
         root_cubes_nms = self._max_pool(heatmap_volumes)
         root_cubes_nms_reshape = root_cubes_nms.reshape(batch_size, -1)
@@ -108,7 +108,7 @@ class CuboidCenterHead(nn.Module):
         topk_unravel_index = self._get_real_locations(topk_unravel_index)
 
         human_centers = torch.zeros(
-            batch_size, self.num_cand, 5, device=heatmap_volumes.device)
+            batch_size, self.num_candidates, 5, device=heatmap_volumes.device)
         human_centers[:, :, 0:3] = topk_unravel_index
         human_centers[:, :, 4] = topk_values
 
