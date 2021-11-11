@@ -16,7 +16,7 @@ def test_voxelpose_forward():
         'configs/_base_/datasets/panoptic_body3d.py').dataset_info
     space_size = [8000, 8000, 2000]
     space_center = [0, -500, 800]
-    cube_size = [80, 80, 20]
+    cube_size = [20, 20, 8]
     train_data_cfg = dict(
         image_size=[960, 512],
         heatmap_size=[[240, 128]],
@@ -110,8 +110,8 @@ def test_voxelpose_forward():
                 pose_input_cube, coordinates \
                     = project_layer([htm[0] for htm in data['input_heatmaps']],
                                     data['img_metas'].data[0],
-                                    [2000, 2000, 2000],
+                                    [800, 800, 800],
                                     center_candidates[:, n, :3],
-                                    [32, 32, 32])
+                                    [8, 8, 8])
                 pose_heatmaps_3d = pose_net(pose_input_cube)
                 _ = pose_head(pose_heatmaps_3d[index], coordinates[index])
