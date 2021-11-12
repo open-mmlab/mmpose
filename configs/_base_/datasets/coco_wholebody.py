@@ -949,7 +949,10 @@ dataset_info = dict(
         24:
         dict(link=('right_ankle', 'right_heel'), id=24, color=[255, 128, 0]),
         25:
-        dict(link=('left_hand_root', 'left_thumb1'), id=25, color=[255, 128, 0]),
+        dict(
+            link=('left_hand_root', 'left_thumb1'),
+            id=25,
+            color=[255, 128, 0]),
         26:
         dict(link=('left_thumb1', 'left_thumb2'), id=26, color=[255, 128, 0]),
         27:
@@ -1037,7 +1040,10 @@ dataset_info = dict(
             id=44,
             color=[0, 255, 0]),
         45:
-        dict(link=('right_hand_root', 'right_thumb1'), id=45, color=[255, 128, 0]),
+        dict(
+            link=('right_hand_root', 'right_thumb1'),
+            id=45,
+            color=[255, 128, 0]),
         46:
         dict(
             link=('right_thumb1', 'right_thumb2'), id=46, color=[255, 128, 0]),
