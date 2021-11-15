@@ -236,6 +236,8 @@ def test_topdown_forward():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
         _ = detector.forward_dummy(imgs)
 
+
+def test_posewarper_forward():
     # test PoseWarper
     model_cfg = dict(
         type='PoseWarper',
@@ -304,7 +306,7 @@ def test_topdown_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 256, 256)
+    input_shape = (1, 3, 128, 128)
     num_frames = 5
     mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
                                 model_cfg['concat_tensors'])
@@ -370,7 +372,7 @@ def test_topdown_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 256, 256)
+    input_shape = (1, 3, 128, 128)
     num_frames = 2
     mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
                                 model_cfg['concat_tensors'])
@@ -403,7 +405,7 @@ def test_topdown_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 256, 256)
+    input_shape = (1, 3, 128, 128)
     num_frames = 2
     mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
                                 model_cfg['concat_tensors'])
