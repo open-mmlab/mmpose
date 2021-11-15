@@ -950,9 +950,8 @@ dataset_info = dict(
         dict(link=('right_ankle', 'right_heel'), id=24, color=[255, 128, 0]),
         25:
         dict(
-            link=('left_hand_root', 'left_thumb1'),
-            id=25,
-            color=[255, 128, 0]),
+            link=('left_hand_root', 'left_thumb1'), id=25, color=[255, 128,
+                                                                  0]),
         26:
         dict(link=('left_thumb1', 'left_thumb2'), id=26, color=[255, 128, 0]),
         27:
