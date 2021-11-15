@@ -55,26 +55,15 @@ def parse_args():
     parser.add_argument(
         '--human-pose-config',
         type=str,
-        default='configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/'
-        'hrnet_w48_coco_256x192.py',
-        help='Config file for human pose')
-    parser.add_argument(
-        '--human-pose-checkpoint',
-        type=str,
-        default='https://download.openmmlab.com/mmpose/top_down/hrnet/'
-        'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth',
-        help='Checkpoint file for human pose')
-    parser.add_argument(
-        '--human-pose-config',
-        type=str,
         default='configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/'
         'coco-wholebody/vipnas_res50_coco_wholebody_256x192_dark.py',
         help='Config file for human pose')
     parser.add_argument(
         '--human-pose-checkpoint',
         type=str,
-        default='work_dirs/vipnas_res50_coco_wholebody_256x192_dark/'
-        'best_AP_epoch_210.pth',
+        default='https://openmmlab-share.oss-cn-hangzhou.aliyuncs.com/'
+        'mmpose/top_down/vipnas/'
+        'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
         help='Checkpoint file for human pose')
     parser.add_argument(
         '--human-det-ids',
