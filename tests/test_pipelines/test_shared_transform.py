@@ -2,9 +2,55 @@
 import os.path as osp
 
 import numpy as np
+import pytest
 from mmcv.utils import build_from_cfg
 
 from mmpose.datasets import PIPELINES
+
+
+def test_load_image_from_file():
+    # Define simple pipeline
+    load = dict(type='LoadImageFromFile')
+    load = build_from_cfg(load, PIPELINES)
+
+    data_prefix = 'tests/data/coco/'
+    image_file = osp.join(data_prefix, '00000000078.jpg')
+    results = dict(image_file=image_file)
+
+    # load an image that doesn't exist
+    with pytest.raises(FileNotFoundError):
+        results = load(results)
+
+    # mormal loading
+    image_file = osp.join(data_prefix, '000000000785.jpg')
+    results = dict(image_file=image_file)
+    results = load(results)
+    assert results['img'].shape == (425, 640, 3)
+
+    # load a single image from a list
+    image_file = [osp.join(data_prefix, '000000000785.jpg')]
+    results = dict(image_file=image_file)
+    results = load(results)
+    assert len(results['img']) == 1
+
+    # test loading multi images from a list
+    image_file = [
+        osp.join(data_prefix, '000000000785.jpg'),
+        osp.join(data_prefix, '00000004008.jpg'),
+    ]
+    results = dict(image_file=image_file)
+
+    with pytest.raises(FileNotFoundError):
+        results = load(results)
+
+    image_file = [
+        osp.join(data_prefix, '000000000785.jpg'),
+        osp.join(data_prefix, '000000040083.jpg'),
+    ]
+    results = dict(image_file=image_file)
+
+    results = load(results)
+    assert len(results['img']) == 2
 
 
 def test_albu_transform():

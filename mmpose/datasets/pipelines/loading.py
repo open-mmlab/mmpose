@@ -19,14 +19,7 @@ class LoadImageFromFile:
         """Loading image(s) from file."""
         image_file = results['image_file']
 
-        if not isinstance(image_file, list):
-            img = mmcv.imread(image_file, self.color_type, self.channel_order)
-
-            if img is None:
-                raise ValueError(f'Fail to read {image_file}')
-            results['img'] = img
-            return results
-        else:
+        if isinstance(image_file, (list, tuple)):
             imgs = []
             for image in image_file:
                 img = mmcv.imread(image, self.color_type, self.channel_order)
@@ -35,4 +28,11 @@ class LoadImageFromFile:
                 imgs.append(img)
 
             results['img'] = imgs
-            return results
+        else:
+            img = mmcv.imread(image_file, self.color_type, self.channel_order)
+
+            if img is None:
+                raise ValueError(f'Fail to read {image_file}')
+            results['img'] = img
+
+        return results
