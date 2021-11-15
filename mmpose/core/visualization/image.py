@@ -76,9 +76,7 @@ def imshow_bboxes(img,
     if labels is not None:
         if not isinstance(labels, list):
             labels = [labels for _ in range(len(bboxes))]
-        if len(labels) != len(bboxes):
-            raise ValueError('Label and bbox number doesn\'t match'
-                             f'({len(labels)} vs {len(bboxes)})')
+        assert len(labels) == len(bboxes)
 
         for bbox, label, color in zip(bboxes, labels, colors):
             bbox_int = bbox[0, :4].astype(np.int32)
