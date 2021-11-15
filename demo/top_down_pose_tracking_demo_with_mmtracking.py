@@ -24,6 +24,8 @@ def process_mmtracking_results(mmtracking_results):
     :return: a list of tracked bounding boxes
     """
     person_results = []
+    # 'track_results' is changed to 'track_bboxes'
+    # in https://github.com/open-mmlab/mmtracking/pull/300
     if 'track_bboxes' in mmtracking_results:
         tracking_results = mmtracking_results['track_bboxes'][0]
     elif 'track_results' in mmtracking_results:
