@@ -1,7 +1,7 @@
 # Tutorial 1: Finetuning Models
 
 Detectors pre-trained on the COCO dataset can serve as a good pre-trained model for other datasets, e.g., COCO-WholeBody Dataset.
-This tutorial provides instruction for users to use the models provided in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html) for other datasets to obatin better performance.
+This tutorial provides instruction for users to use the models provided in the [Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html) for other datasets to obtain better performance.
 
 <!-- TOC -->
 
