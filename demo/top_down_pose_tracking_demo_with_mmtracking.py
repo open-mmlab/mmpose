@@ -24,7 +24,7 @@ def process_mmtracking_results(mmtracking_results):
     :return: a list of tracked bounding boxes
     """
     person_results = []
-    for track in mmtracking_results['track_results'][0]:
+    for track in mmtracking_results['track_bboxes'][0]:
         person = {}
         person['track_id'] = int(track[0])
         person['bbox'] = track[1:]
