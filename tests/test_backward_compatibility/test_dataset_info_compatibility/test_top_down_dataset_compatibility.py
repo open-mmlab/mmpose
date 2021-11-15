@@ -198,7 +198,7 @@ def test_top_down_PoseTrack18_dataset_compatibility():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.0,
-        bbox_file='tests/data/posetrack18/'
+        bbox_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_human_detections.json',
     )
     # Test det bbox
@@ -206,7 +206,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
     data_cfg_copy['use_gt_bbox'] = False
     with pytest.warns(DeprecationWarning):
         _ = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
@@ -214,7 +215,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
 
     with pytest.warns(DeprecationWarning):
         _ = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
@@ -223,7 +225,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
     # Test gt bbox
     with pytest.warns(DeprecationWarning):
         custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg,
             pipeline=[],
@@ -269,13 +272,13 @@ def test_top_down_PoseTrack18Video_dataset_compatibility():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.2,
-        bbox_file='tests/data/posetrack18/'
+        bbox_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_human_detections.json',
         # frame-related arguments
         frame_index_rand=True,
         frame_index_range=[-2, 2],
         num_adj_frames=1,
-        frame_indexes_test=[-2, 2, -1, 1, 0],
+        frame_indices_test=[-2, 2, -1, 1, 0],
         frame_weight_train=(0.0, 1.0),
         frame_weight_test=(0.3, 0.1, 0.25, 0.25, 0.1),
     )
@@ -283,7 +286,8 @@ def test_top_down_PoseTrack18Video_dataset_compatibility():
     # Test train mode (must use gt bbox)
     with pytest.warns(DeprecationWarning):
         _ = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg,
             pipeline=[],
@@ -292,7 +296,8 @@ def test_top_down_PoseTrack18Video_dataset_compatibility():
     # Test gt bbox + test mode
     with pytest.warns(DeprecationWarning):
         custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg,
             pipeline=[],
@@ -312,27 +317,29 @@ def test_top_down_PoseTrack18Video_dataset_compatibility():
     data_cfg_copy['use_gt_bbox'] = False
     with pytest.warns(DeprecationWarning):
         custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
             test_mode=True)
 
-    assert custom_dataset.frame_indexes_test == [-2, -1, 0, 1, 2]
+    assert custom_dataset.frame_indices_test == [-2, -1, 0, 1, 2]
 
     # Test non-random index
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['frame_index_rand'] = False
-    data_cfg_copy['frame_indexes_train'] = [0, -1]
+    data_cfg_copy['frame_indices_train'] = [0, -1]
     with pytest.warns(DeprecationWarning):
         custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
             test_mode=False)
 
-    assert custom_dataset.frame_indexes_train == [-1, 0]
+    assert custom_dataset.frame_indices_train == [-1, 0]
 
 
 def test_top_down_CrowdPose_dataset_compatibility():
