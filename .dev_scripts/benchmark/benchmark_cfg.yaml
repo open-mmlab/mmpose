@@ -42,6 +42,7 @@ model_list:
     ## SimpleBaseline3D + H36M
     - config: configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simple3Dbaseline_h36m-f0ad73a4_20210419.pth
+      input_shape: 34, 1
     # UDP
     ## AE + HRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512_udp.py
@@ -50,6 +51,7 @@ model_list:
     ## VideoPose3D + H36M
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_supervised-fe8fbba9_20210527.pth
+      input_shape: 34, 27
     # MSPN
     ## MSPN + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn50_coco_256x192.py
@@ -114,6 +116,7 @@ model_list:
     ## SimpleBaseline3D + MPI-INF-3DHP
     - config: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/simplebaseline3d/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
+      input_shape: 34, 1
     # UDP
     ## AE + HigherHRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
@@ -135,6 +138,7 @@ model_list:
     ## VideoPose3D + MPI-INF-3DHP
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth
+      input_shape: 34, 1
     # LiteHRNet
     ## LiteHRNet + MPII
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py
@@ -190,7 +194,7 @@ model_list:
       checkpoint: https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_wflw_256x256_dark-3f8e0c2c_20210125.pth
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_onehand10k_256x256_dark-a2f80c64_20210330.pth
-    - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_dark.py
+    - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic2d_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_panoptic_256x256_dark-1f1e4b74_20210330.pth
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_dark.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/dark/hrnetv2_w18_rhd2d_256x256_dark-4df3a347_20210330.pth
@@ -202,7 +206,7 @@ model_list:
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_udp-7cad61ef_20210222.pth
     ## HRNetV2 + UDP + Panoptic
-    - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
+    - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic2d_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_panoptic_256x256_udp-f9e15948_20210330.pth
     # SCNet
     # SCNet + COCO
@@ -219,17 +223,23 @@ model_list:
     ## VideoPose3D + H36M
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_81frames_fullconv_supervised.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_81frames_fullconv_supervised-1f2d1104_20210527.pth
+      input_shape: 34, 81
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+      input_shape: 34, 243
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_1frame_fullconv_supervised_cpn_ft.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_1frame_fullconv_supervised_cpn_ft-5c3afaed_20210527.pth
-    - config: cconfigs/body3d/videopose/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py
+      input_shape: 34, 1
+    - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth
+      input_shape: 34, 243
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised-54aef83b_20210527.pth
+      input_shape: 34, 27
     - config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_27frames_fullconv_semi-supervised_cpn_ft-71be9cde_20210527.pth
-    # Associative Embedding
+      input_shape: 34, 27
+  # Associative Embedding
     ## TODO: Other AE models
     ## AE + ResNet + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
