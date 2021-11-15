@@ -7,12 +7,17 @@ from collections import OrderedDict, defaultdict
 import json_tricks as json
 import numpy as np
 from mmcv import Config
-from poseval import eval_helpers
-from poseval.evaluateAP import evaluateAP
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
 from ..base import Kpt2dSviewRgbVidTopDownDataset
+
+try:
+    from poseval import eval_helpers
+    from poseval.evaluateAP import evaluateAP
+    has_poseval = True
+except (ImportError, ModuleNotFoundError):
+    has_poseval = False
 
 
 @DATASETS.register_module()
@@ -97,17 +102,17 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
         self.ph_fill_len = ph_fill_len
 
-        # select the frame indexes
+        # select the frame indices
         self.frame_index_rand = data_cfg.get('frame_index_rand', True)
         self.frame_index_range = data_cfg.get('frame_index_range', [-2, 2])
         self.num_adj_frames = data_cfg.get('num_adj_frames', 1)
-        self.frame_indexes_train = data_cfg.get('frame_indexes_train', None)
-        self.frame_indexes_test = data_cfg.get('frame_indexes_test',
+        self.frame_indices_train = data_cfg.get('frame_indices_train', None)
+        self.frame_indices_test = data_cfg.get('frame_indices_test',
                                                [-2, -1, 0, 1, 2])
 
-        if self.frame_indexes_train is not None:
-            self.frame_indexes_train.sort()
-        self.frame_indexes_test.sort()
+        if self.frame_indices_train is not None:
+            self.frame_indices_train.sort()
+        self.frame_indices_test.sort()
 
         self.db = self._get_db()
 
@@ -191,26 +196,27 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                                           self.id2name[img_id])
             image_files.append(cur_image_file)
 
-            prev_nm = file_name.split('/')[-1]
-            ref_idx = int(prev_nm.replace('.jpg', ''))
+            prev_name = file_name.split('/')[-1]
+            ref_idx = int(prev_name.replace('.jpg', ''))
 
             # select the frame indices
-            if not self.test_mode and self.frame_indexes_train is not None:
-                indexes = self.frame_indexes_train
+            if not self.test_mode and self.frame_indices_train is not None:
+                indices = self.frame_indices_train
             elif not self.test_mode and self.frame_index_rand:
                 low, high = self.frame_index_range
-                indexes = np.random.randint(low, high + 1, self.num_adj_frames)
+                indices = np.random.randint(low, high + 1, self.num_adj_frames)
             else:
-                indexes = self.frame_indexes_test
+                indices = self.frame_indices_test
 
-            for index in indexes:
+            for index in indices:
                 if self.test_mode and index == 0:
                     continue
-                sup_idx = ref_idx + index
-                sup_idx = np.clip(sup_idx, 0, nframes - 1)
+                # the supporting frame index
+                support_idx = ref_idx + index
+                support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
-                    prev_nm,
-                    str(sup_idx).zfill(self.ph_fill_len) + '.jpg')
+                    prev_name,
+                    str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
                 if os.path.exists(sup_image_file):
                     image_files.append(sup_image_file)
@@ -288,18 +294,19 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             cur_image_file = os.path.join(self.img_prefix, file_name)
             image_files.append(cur_image_file)
 
-            prev_nm = file_name.split('/')[-1]
-            ref_idx = int(prev_nm.replace('.jpg', ''))
+            prev_name = file_name.split('/')[-1]
+            ref_idx = int(prev_name.replace('.jpg', ''))
 
-            indexes = self.frame_indexes_test
-            for index in indexes:
+            indices = self.frame_indices_test
+            for index in indices:
                 if self.test_mode and index == 0:
                     continue
-                sup_idx = ref_idx + index
-                sup_idx = np.clip(sup_idx, 0, nframes - 1)
+                # the supporting frame index
+                support_idx = ref_idx + index
+                support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
-                    prev_nm,
-                    str(sup_idx).zfill(self.ph_fill_len) + '.jpg')
+                    prev_name,
+                    str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
                 if os.path.exists(sup_image_file):
                     image_files.append(sup_image_file)
@@ -512,6 +519,11 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
     def _do_python_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation using poseval."""
+
+        if not has_poseval:
+            raise ImportError('Please install poseval package for evaluation'
+                              'on PoseTrack dataset '
+                              '(see requirements/optional.txt)')
 
         argv = ['', gt_folder + '/', pred_folder + '/']
 
