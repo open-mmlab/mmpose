@@ -303,4 +303,5 @@ class TopDown(BasePose):
         if out_file is not None:
             imwrite(img, out_file)
 
+
         return img
