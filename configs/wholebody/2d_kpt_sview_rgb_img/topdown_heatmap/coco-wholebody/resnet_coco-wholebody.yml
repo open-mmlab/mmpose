@@ -26,8 +26,8 @@ Models:
       Foot AR: 0.746
       Hand AP: 0.46
       Hand AR: 0.584
-      Whole AP: 0.457
-      Whole AR: 0.578
+      Whole AP: 0.52
+      Whole AR: 0.633
     Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_wholebody_256x192-9e37ed88_20201004.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_384x288.py
