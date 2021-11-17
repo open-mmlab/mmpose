@@ -276,7 +276,7 @@ class TopDown(BasePose):
         for res in result:
             if 'bbox' in res:
                 bbox_result.append(res['bbox'])
-                bbox_labels.append(res.get('label', 'unknown'))
+                bbox_labels.append(res.get('label', None))
             pose_result.append(res['keypoints'])
 
         if bbox_result:
