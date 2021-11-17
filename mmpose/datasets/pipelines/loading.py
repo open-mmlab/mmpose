@@ -6,6 +6,13 @@ from ..builder import PIPELINES
 
 @PIPELINES.register_module()
 class LoadImageFromFile:
+    """Loading image(s) from file.
+
+    Args:
+        color_type (str): Flags specifying the color type of a loaded image,
+          candidates are 'color', 'grayscale' and 'unchanged'.
+        channel_order (str): Order of channel, candidates are 'bgr' and 'rgb'.
+    """
 
     def __init__(self,
                  to_float32=False,
