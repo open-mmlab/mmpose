@@ -27,3 +27,10 @@ RUN mkdir -p /mmpose/data
 ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
+
+RUN pip install --upgrade torch torchvision
+RUN pip install -r requirements.txt
+RUN pip install --upgrade numpy
+RUN pip uninstall -y mmcv-full
+RUN pip install mmcv-full==1.3.11
+RUN pip install tensorboard
