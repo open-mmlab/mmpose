@@ -243,6 +243,8 @@ def _inference_single_pose_model(model,
                       [89, 91], [95, 93], [96, 97]]
     elif dataset in 'TopDownForkliftDataset':
         flip_pairs = [[0, 1], [2, 3], [4, 5]]
+    elif dataset in 'TopDownForkliftDataset4KP':
+        flip_pairs = [[0, 1], [2, 3]]
     elif dataset in 'AnimalFlyDataset':
         flip_pairs = [[1, 2], [6, 18], [7, 19], [8, 20], [9, 21], [10, 22],
                       [11, 23], [12, 24], [13, 25], [14, 26], [15, 27],
@@ -680,6 +682,15 @@ def vis_pose_result(model,
 
         pose_limb_color = palette[[]]
         pose_kpt_color = palette[[19] * 6]
+        radius = 3
+        kpt_score_thr = 0
+
+    elif dataset == 'TopDownForkliftDataset4KP':
+        # show the results
+        skeleton = []
+
+        pose_limb_color = palette[[]]
+        pose_kpt_color = palette[[19] * 4]
         radius = 3
         kpt_score_thr = 0
 
