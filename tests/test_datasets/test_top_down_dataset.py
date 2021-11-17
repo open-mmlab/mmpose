@@ -17,6 +17,8 @@ def test_top_down_COCO_dataset():
         'configs/_base_/datasets/coco.py').dataset_info
     # test COCO datasets
     dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
 
     channel_cfg = dict(
         num_output_channels=17,
