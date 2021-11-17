@@ -245,6 +245,7 @@ def test_top_down_PoseTrack18_dataset():
     image_id = 10128340000
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
+    assert len(custom_dataset) == 14
     _ = custom_dataset[0]
 
     # Test evaluate function, use gt bbox
@@ -268,6 +269,9 @@ def test_top_down_PoseTrack18_dataset():
         pipeline=[],
         dataset_info=dataset_info,
         test_mode=True)
+
+    assert len(custom_dataset) == 278
+
     outputs = convert_db_to_output(custom_dataset.db)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
@@ -311,7 +315,7 @@ def test_top_down_PoseTrack18Video_dataset():
         oks_thr=0.9,
         vis_thr=0.2,
         use_gt_bbox=True,
-        det_bbox_thr=0.,
+        det_bbox_thr=0.0,
         bbox_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_human_detections.json',
         # frame-related arguments
@@ -322,6 +326,17 @@ def test_top_down_PoseTrack18Video_dataset():
         frame_weight_train=(0.0, 1.0),
         frame_weight_test=(0.3, 0.1, 0.25, 0.25, 0.1),
     )
+
+    # Test value of dataset_info
+    with pytest.raises(ValueError):
+        _ = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg,
+            pipeline=[],
+            dataset_info=None,
+            test_mode=False)
 
     # Test train mode (must use gt bbox)
     _ = dataset_class(
@@ -350,6 +365,7 @@ def test_top_down_PoseTrack18Video_dataset():
     image_id = 10128340000
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
+    assert len(custom_dataset) == 14
     _ = custom_dataset[0]
 
     # Test det bbox + test mode
@@ -365,6 +381,7 @@ def test_top_down_PoseTrack18Video_dataset():
         test_mode=True)
 
     assert custom_dataset.frame_indices_test == [-2, -1, 0, 1, 2]
+    assert len(custom_dataset) == 278
 
     # Test non-random index
     data_cfg_copy = copy.deepcopy(data_cfg)
@@ -406,7 +423,7 @@ def test_top_down_PoseTrack18Video_dataset():
     outputs = convert_db_to_output(custom_dataset.db)
     with tempfile.TemporaryDirectory() as tmpdir:
         infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        # since the det box input assume each keypoint position to be (0,0)
+        # since the det box input assume each keypoint position to be (0,0),
         # the Total AP will be zero.
         assert_almost_equal(infos['Total AP'], 0)
 

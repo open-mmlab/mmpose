@@ -6,7 +6,6 @@ from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
@@ -71,14 +70,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                  dataset_info=None,
                  test_mode=False,
                  ph_fill_len=6):
-        if dataset_info is None:
-            warnings.warn(
-                'dataset_info is missing. '
-                'Check https://github.com/open-mmlab/mmpose/pull/663 '
-                'for details.', DeprecationWarning)
-            cfg = Config.fromfile('configs/_base_/datasets/posetrack18.py')
-            dataset_info = cfg._cfg_dict['dataset_info']
-
         super().__init__(
             ann_file,
             img_prefix,
@@ -196,8 +187,9 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                                           self.id2name[img_id])
             image_files.append(cur_image_file)
 
-            prev_name = file_name.split('/')[-1]
-            ref_idx = int(prev_name.replace('.jpg', ''))
+            # "images/val/012834_mpii_test/000000.jpg" -->> "000000.jpg"
+            cur_image_name = file_name.split('/')[-1]
+            ref_idx = int(cur_image_name.replace('.jpg', ''))
 
             # select the frame indices
             if not self.test_mode and self.frame_indices_train is not None:
@@ -215,7 +207,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 support_idx = ref_idx + index
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
-                    prev_name,
+                    cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
                 if os.path.exists(sup_image_file):
@@ -294,8 +286,9 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             cur_image_file = os.path.join(self.img_prefix, file_name)
             image_files.append(cur_image_file)
 
-            prev_name = file_name.split('/')[-1]
-            ref_idx = int(prev_name.replace('.jpg', ''))
+            # "images/val/012834_mpii_test/000000.jpg" -->> "000000.jpg"
+            cur_image_name = file_name.split('/')[-1]
+            ref_idx = int(cur_image_name.replace('.jpg', ''))
 
             indices = self.frame_indices_test
             for index in indices:
@@ -305,7 +298,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 support_idx = ref_idx + index
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
-                    prev_name,
+                    cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
                 if os.path.exists(sup_image_file):
@@ -430,28 +423,15 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             else:
                 valid_kpts[image_id].append(img_kpts)
 
-        self._write_posetrack18_keypoint_results(valid_kpts, gt_folder,
-                                                 pred_folder)
+        self._write_keypoint_results(valid_kpts, gt_folder, pred_folder)
 
-        info_str = self._do_python_keypoint_eval(gt_folder, pred_folder)
+        info_str = self._do_keypoint_eval(gt_folder, pred_folder)
         name_value = OrderedDict(info_str)
 
         return name_value
 
-    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
-        """sort kpts and remove the repeated ones."""
-        for img_id, persons in kpts.items():
-            num = len(persons)
-            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
-            for i in range(num - 1, 0, -1):
-                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
-                    del kpts[img_id][i]
-
-        return kpts
-
     @staticmethod
-    def _write_posetrack18_keypoint_results(keypoint_results, gt_folder,
-                                            pred_folder):
+    def _write_keypoint_results(keypoint_results, gt_folder, pred_folder):
         """Write results into a json file.
 
         Args:
@@ -517,7 +497,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             with open(osp.join(pred_folder, json_file), 'w') as f:
                 json.dump(info, f, sort_keys=True, indent=4)
 
-    def _do_python_keypoint_eval(self, gt_folder, pred_folder):
+    def _do_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation using poseval."""
 
         if not has_poseval:

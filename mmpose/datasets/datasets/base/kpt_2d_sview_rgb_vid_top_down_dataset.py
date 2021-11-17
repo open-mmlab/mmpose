@@ -2,14 +2,10 @@
 import copy
 from abc import ABCMeta, abstractmethod
 
-import json_tricks as json
 import numpy as np
 from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
-from mmpose.core.evaluation.top_down_eval import (keypoint_auc, keypoint_epe,
-                                                  keypoint_nme,
-                                                  keypoint_pck_accuracy)
 from mmpose.datasets import DatasetInfo
 from mmpose.datasets.pipelines import Compose
 
@@ -156,113 +152,31 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
 
         return center, scale
 
-    def _get_normalize_factor(self, gts, *args, **kwargs):
-        """Get the normalize factor. generally inter-ocular distance measured
-        as the Euclidean distance between the outer corners of the eyes is
-        used. This function should be overridden to measure NME.
-
-        Args:
-            gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
-
-        Return:
-            np.ndarray[N, 2]: normalized factor
-        """
-        return np.ones([gts.shape[0], 2], dtype=np.float32)
-
     @abstractmethod
     def _get_db(self):
         """Load dataset."""
-        raise NotImplementedError
 
     @abstractmethod
-    def evaluate(self, cfg, outputs, res_folder, metric, *args, **kwargs):
+    def evaluate(self, outputs, res_folder, metric, *args, **kwargs):
         """Evaluate keypoint results."""
-        raise NotImplementedError
 
     @staticmethod
-    def _write_keypoint_results(keypoints, res_file):
+    @abstractmethod
+    def _write_keypoint_results(keypoint_results, gt_folder, pred_folder):
         """Write results into a json file."""
 
-        with open(res_file, 'w') as f:
-            json.dump(keypoints, f, sort_keys=True, indent=4)
-
-    def _report_metric(self,
-                       res_file,
-                       metrics,
-                       pck_thr=0.2,
-                       pckh_thr=0.7,
-                       auc_nor=30):
+    @abstractmethod
+    def _do_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation.
-
         Args:
-            res_file (str): Json file stored prediction results.
-            metrics (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'PCKh', 'AUC', 'EPE', 'NME'.
-            pck_thr (float): PCK threshold, default as 0.2.
-            pckh_thr (float): PCKh threshold, default as 0.7.
-            auc_nor (float): AUC normalization factor, default as 30 pixel.
+            gt_folder (str): The folder of the json files storing
+                ground truth keypoint annotations.
+            pred_folder (str): The folder of the json files storing
+                prediction results.
 
         Returns:
             List: Evaluation results for evaluation metric.
         """
-        info_str = []
-
-        with open(res_file, 'r') as fin:
-            preds = json.load(fin)
-        assert len(preds) == len(self.db)
-
-        outputs = []
-        gts = []
-        masks = []
-        box_sizes = []
-        threshold_bbox = []
-        threshold_head_box = []
-
-        for pred, item in zip(preds, self.db):
-            outputs.append(np.array(pred['keypoints'])[:, :-1])
-            gts.append(np.array(item['joints_3d'])[:, :-1])
-            masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
-            if 'PCK' in metrics:
-                bbox = np.array(item['bbox'])
-                bbox_thr = np.max(bbox[2:])
-                threshold_bbox.append(np.array([bbox_thr, bbox_thr]))
-            if 'PCKh' in metrics:
-                head_box_thr = item['head_size']
-                threshold_head_box.append(
-                    np.array([head_box_thr, head_box_thr]))
-            box_sizes.append(item.get('box_size', 1))
-
-        outputs = np.array(outputs)
-        gts = np.array(gts)
-        masks = np.array(masks)
-        threshold_bbox = np.array(threshold_bbox)
-        threshold_head_box = np.array(threshold_head_box)
-        box_sizes = np.array(box_sizes).reshape([-1, 1])
-
-        if 'PCK' in metrics:
-            _, pck, _ = keypoint_pck_accuracy(outputs, gts, masks, pck_thr,
-                                              threshold_bbox)
-            info_str.append(('PCK', pck))
-
-        if 'PCKh' in metrics:
-            _, pckh, _ = keypoint_pck_accuracy(outputs, gts, masks, pckh_thr,
-                                               threshold_head_box)
-            info_str.append(('PCKh', pckh))
-
-        if 'AUC' in metrics:
-            info_str.append(('AUC', keypoint_auc(outputs, gts, masks,
-                                                 auc_nor)))
-
-        if 'EPE' in metrics:
-            info_str.append(('EPE', keypoint_epe(outputs, gts, masks)))
-
-        if 'NME' in metrics:
-            normalize_factor = self._get_normalize_factor(
-                gts=gts, box_sizes=box_sizes)
-            info_str.append(
-                ('NME', keypoint_nme(outputs, gts, masks, normalize_factor)))
-
-        return info_str
 
     def __len__(self):
         """Get the size of the dataset."""
@@ -276,10 +190,11 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
 
     def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
         """sort kpts and remove the repeated ones."""
-        kpts = sorted(kpts, key=lambda x: x[key])
-        num = len(kpts)
-        for i in range(num - 1, 0, -1):
-            if kpts[i][key] == kpts[i - 1][key]:
-                del kpts[i]
+        for img_id, persons in kpts.items():
+            num = len(persons)
+            kpts[img_id] = sorted(kpts[img_id], key=lambda x: x[key])
+            for i in range(num - 1, 0, -1):
+                if kpts[img_id][i][key] == kpts[img_id][i - 1][key]:
+                    del kpts[img_id][i]
 
         return kpts
