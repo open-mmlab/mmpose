@@ -51,6 +51,7 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
     def __init__(self,
                  in_channels,
                  out_channels,
+                 mid_channels=None,
                  num_deconv_layers=3,
                  num_deconv_filters=(144, 144, 144),
                  num_deconv_kernels=(4, 4, 4),
@@ -65,6 +66,7 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
         super().__init__()
 
         self.in_channels = in_channels
+        self.mid_channels = mid_channels
         self.loss = build_loss(loss_keypoint)
 
         self.train_cfg = {} if train_cfg is None else train_cfg
@@ -316,6 +318,15 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
             planes = num_filters[i]
             groups = num_groups[i]
+            if self.mid_channels is not None:
+                layers.append(build_conv_layer(
+                            dict(type='Conv2d'),
+                            in_channels=self.in_channels,
+                            out_channels=self.mid_channels,
+                            kernel_size=1,
+                            stride=1,
+                            padding=0))
+                self.in_channels = self.mid_channels
             layers.append(
                 build_upsample_layer(
                     dict(type='deconv'),

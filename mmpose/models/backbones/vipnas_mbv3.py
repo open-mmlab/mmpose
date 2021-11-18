@@ -3,7 +3,7 @@ import copy
 import logging
 
 import torch.nn as nn
-from mmcv.cnn import ConvModule, constant_init, kaiming_init
+from mmcv.cnn import ConvModule
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from ..builder import BACKBONES
@@ -79,7 +79,7 @@ class ViPNAS_MobileNetV3(BaseBackbone):
             out_channels=self.wid[0],
             kernel_size=self.ks[0],
             stride=self.stride[0],
-            padding=1,
+            padding=self.ks[0] // 2,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
             act_cfg=dict(type=self.act[0]))
@@ -91,6 +91,7 @@ class ViPNAS_MobileNetV3(BaseBackbone):
         layer_index = 0
         for i, dep in enumerate(self.dep[1:]):
             mid_channels = self.wid[i + 1] * self.expan[i + 1]
+
             if self.att[i + 1]:
                 se_cfg = dict(
                     channels=mid_channels,
@@ -98,6 +99,11 @@ class ViPNAS_MobileNetV3(BaseBackbone):
                     act_cfg=(dict(type='ReLU'), dict(type='HSigmoid')))
             else:
                 se_cfg = None
+
+            if self.expan[i + 1] == 1:
+                with_expand_conv = False
+            else:
+                with_expand_conv = True
 
             for j in range(dep):
                 if j == 0:
@@ -115,7 +121,7 @@ class ViPNAS_MobileNetV3(BaseBackbone):
                     groups=self.group[i + 1],
                     stride=stride,
                     se_cfg=se_cfg,
-                    with_expand_conv=True,
+                    with_expand_conv=with_expand_conv,
                     conv_cfg=self.conv_cfg,
                     norm_cfg=self.norm_cfg,
                     act_cfg=dict(type=self.act[i + 1]),
