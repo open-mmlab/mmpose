@@ -1,8 +1,25 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import time
+import uuid
 from collections import defaultdict, deque, namedtuple
 from threading import Event, Lock
+from typing import Any, Optional
 
 Buffer = namedtuple('Buffer', ['queue', 'mutex'])
+
+
+class Message():
+
+    def __init__(self,
+                 msg: str = '',
+                 data: Any = None,
+                 meta: Any = None,
+                 timestamp: Optional[float] = None):
+        self.msg = msg
+        self.data = data
+        self.meta = meta
+        self.timestamp = timestamp if timestamp else time.time()
+        self.id = uuid.uuid4()
 
 
 class BufferManager():
@@ -18,7 +35,7 @@ class BufferManager():
         mutex = Lock()
         self._buffers[name] = Buffer(queue, mutex)
 
-    def put(self, obj, name):
+    def put(self, name, obj):
         if name not in self._buffers:
             raise ValueError('Fail to put object into buffer. '
                              f'Invalid buffer name "{name}".')
@@ -41,8 +58,8 @@ class BufferManager():
     def has_buffer(self, name):
         return name in self._buffers
 
-    def get_len(self, name):
-        return len(self._buffers[name].queue)
+    def is_empty(self, name):
+        return not len(self._buffers[name].queue)
 
 
 class EventManager():
