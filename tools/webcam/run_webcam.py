@@ -9,7 +9,6 @@ if __name__ == '__main__':
         # camera_id='demo/resources/demo.mp4',
         display_delay=0,
         frame_buffer_size=30,
-        synchronous_mode=False,
     )
     cfgs = Config(cfgs)
     runner = WebcamRunner(cfgs)
