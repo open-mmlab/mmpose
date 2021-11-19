@@ -503,9 +503,11 @@ def _demo_mm_inputs(
         'target_weight': torch.FloatTensor(target_weight),
         'img_metas': img_metas
     }
+
     if num_frames == 1:
         imgs = torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
     else:
+
         imgs = [
             torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
             for _ in range(num_frames)

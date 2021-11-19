@@ -167,6 +167,7 @@ class PoseWarperNeck(nn.Module):
             f'Please install the latest MMCV.'
 
         kernel = deform_conv.get('kernel', 3)
+
         deform_conv_layers = [
             DeformConv2d(
                 in_channels=out_channels,
