@@ -23,6 +23,7 @@ except ImportError:
 @POSENETS.register_module()
 class TopDown(BasePose):
     """Top-down pose detectors.
+
     Args:
         backbone (dict): Backbone modules to extract feature.
         keypoint_head (dict): Keypoint head to process feature.
@@ -70,7 +71,7 @@ class TopDown(BasePose):
 
     @property
     def with_neck(self):
-        """Check if has keypoint_head."""
+        """Check if has neck."""
         return hasattr(self, 'neck')
 
     @property
@@ -101,6 +102,7 @@ class TopDown(BasePose):
         Tensor and List[dict]), and when `resturn_loss=False`, img and img_meta
         should be double nested (i.e.  List[Tensor], List[List[dict]]), with
         the outer list indicating test time augmentations.
+
         Note:
             batch_size: N
             num_keypoints: K
@@ -109,6 +111,7 @@ class TopDown(BasePose):
             img width: imgW
             heatmaps height: H
             heatmaps weight: W
+
         Args:
             img (torch.Tensor[NxCximgHximgW]): Input images.
             target (torch.Tensor[NxKxHxW]): Target heatmaps.
@@ -124,10 +127,11 @@ class TopDown(BasePose):
             return_loss (bool): Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
             return_heatmap (bool) : Option to return heatmap.
+
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes, image paths
-                  and heatmaps.
+                Otherwise, return predicted poses, boxes, image paths
+                and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
@@ -196,9 +200,12 @@ class TopDown(BasePose):
 
     def forward_dummy(self, img):
         """Used for computing network FLOPs.
+
         See ``tools/get_flops.py``.
+
         Args:
             img (torch.Tensor): Input image.
+
         Returns:
             Tensor: Output heatmaps.
         """
@@ -230,6 +237,7 @@ class TopDown(BasePose):
                     wait_time=0,
                     out_file=None):
         """Draw `result` over `img`.
+
         Args:
             img (str or Tensor): The image to be displayed.
             result (list[dict]): The results to draw over `img`
@@ -255,6 +263,7 @@ class TopDown(BasePose):
                 Default: 0.
             out_file (str or None): The filename to write the image.
                 Default: None.
+
         Returns:
             Tensor: Visualized img, only if not `show` or `out_file`.
         """

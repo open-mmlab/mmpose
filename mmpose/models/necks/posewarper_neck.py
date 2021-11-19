@@ -1,6 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import warnings
-
 import mmcv
 import torch
 import torch.nn as nn
@@ -66,7 +64,7 @@ class PoseWarperNeck(nn.Module):
                  input_transform=None,
                  freeze_trans_layer=False,
                  norm_eval=False,
-                 im2col_step=32,
+                 im2col_step=80,
                  least_mmcv_version='1.3.16'):
         super().__init__()
         self.in_channels = in_channels
@@ -162,8 +160,13 @@ class PoseWarperNeck(nn.Module):
         self.offset_layers = nn.ModuleList(offset_layers)
 
         # build deformable conv layers
-        kernel = deform_conv.get('kernel', 3)
+        assert mmcv.__version__ > self.least_mmcv_version, \
+            f'Current MMCV version: {mmcv.__version__}, ' \
+            f'but MMCV > {self.least_mmcv_version} is required, see ' \
+            f'https://github.com/open-mmlab/mmcv/issues/1440, ' \
+            f'Please install the latest MMCV.'
 
+        kernel = deform_conv.get('kernel', 3)
         deform_conv_layers = [
             DeformConv2d(
                 in_channels=out_channels,
@@ -173,6 +176,7 @@ class PoseWarperNeck(nn.Module):
                 padding=int(kernel / 2) * dilations[i],
                 dilation=dilations[i],
                 deform_groups=deform_groups,
+                im2col_step=self.im2col_step,
             ) for i in range(self.num_offset_layers)
         ]
         self.deform_conv_layers = nn.ModuleList(deform_conv_layers)
@@ -281,44 +285,18 @@ class PoseWarperNeck(nn.Module):
 
             offset_features = self.offset_feats(ref_x_tiled - inputs)
 
-            if mmcv.__version__ <= self.least_mmcv_version and (
-                    inputs.size(0) > self.im2col_step
-                    and inputs.size(0) % self.im2col_step != 0):
-                warnings.warn(
-                    'Due to the limit of mmcv version, can not concat tensors'
-                    ' as input to deform_conv, see'
-                    ' https://github.com/open-mmlab/mmcv/issues/1440.'
-                    'Please try to update to the newest mmcv.')
-                for j in range(self.num_offset_layers):
-                    offset = self.offset_layers[j](offset_features)
+            warped_heatmap = 0
+            for j in range(self.num_offset_layers):
+                offset = self.offset_layers[j](offset_features)
 
-                    warped_heatmap = 0
-                    for i in range(num_frames):
-                        if frame_weight[i] == 0:
-                            continue
-                        warped_heatmap_tmp = self.deform_conv_layers[j](
-                            inputs[i * batch_size:(i + 1) * batch_size],
-                            offset[i * batch_size:(i + 1) * batch_size])
+                warped_heatmap_tmp = self.deform_conv_layers[j](inputs, offset)
+                warped_heatmap += warped_heatmap_tmp / self.num_offset_layers
 
-                        warped_heatmap = warped_heatmap_tmp * frame_weight[i]
-
-                    output_heatmap += warped_heatmap / self.num_offset_layers
-            else:
-                # concat all tensors
-                warped_heatmap = 0
-                for j in range(self.num_offset_layers):
-                    offset = self.offset_layers[j](offset_features)
-
-                    warped_heatmap_tmp = self.deform_conv_layers[j](inputs,
-                                                                    offset)
-                    warped_heatmap += warped_heatmap_tmp / \
-                        self.num_offset_layers
-
-                for i in range(num_frames):
-                    if frame_weight[i] == 0:
-                        continue
-                    output_heatmap += warped_heatmap[i * batch_size:(
-                        i + 1) * batch_size] * frame_weight[i]
+            for i in range(num_frames):
+                if frame_weight[i] == 0:
+                    continue
+                output_heatmap += warped_heatmap[i * batch_size:(i + 1) *
+                                                 batch_size] * frame_weight[i]
 
         return output_heatmap
 
