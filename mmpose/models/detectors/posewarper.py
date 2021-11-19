@@ -95,8 +95,8 @@ class PoseWarper(TopDown):
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes, image paths
-                  and heatmaps.
+                Otherwise, return predicted poses, boxes, image paths
+                and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target,target_weight, img_metas,
@@ -207,7 +207,7 @@ class PoseWarper(TopDown):
 
         Args:
             img (torch.Tensor[NxCximgHximgW], or list/tuple of tensors):
-            multiple input frames, N >= 2
+                multiple input frames, N >= 2
 
         Returns:
             Tensor: Output heatmaps.
