@@ -121,9 +121,17 @@ def test_posewarper_neck():
     x1 = [x1]
     frame_weight_0 = np.random.uniform(0, 1, num_frame_1)
 
-    # # get mmcv version
     y = neck(x1, frame_weight_1)
     assert y.shape == torch.Size([b_1, out_channels, h_1, h_1])
+
+    # test the inappropriate value of `im2col_step`
+    neck = PoseWarperNeck(
+        in_channels=in_channels,
+        out_channels=out_channels,
+        inner_channels=inner_channels,
+        im2col_step=32)
+    with pytest.raises(AssertionError):
+        _ = neck(x1, frame_weight_1)
 
 
 def _demo_inputs(input_shape=(80, 48, 4, 4), length=1):
