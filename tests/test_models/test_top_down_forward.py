@@ -303,13 +303,13 @@ def test_posewarper_forward():
                           model_cfg['keypoint_head'], model_cfg['train_cfg'],
                           model_cfg['test_cfg'], model_cfg['pretrained'], None,
                           model_cfg['concat_tensors'])
+    assert detector.concat_tensors
 
     detector.init_weights()
 
-    input_shape = (1, 3, 128, 128)
-    num_frames = 5
-    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
-                                model_cfg['concat_tensors'])
+    input_shape = (2, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')
@@ -336,13 +336,13 @@ def test_posewarper_forward():
                           model_cfg_copy['test_cfg'],
                           model_cfg_copy['pretrained'], None,
                           model_cfg_copy['concat_tensors'])
+    assert not detector.concat_tensors
 
     detector.init_weights()
 
-    input_shape = (4, 3, 256, 256)
+    input_shape = (2, 3, 64, 64)
     num_frames = 2
-    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
-                                model_cfg['concat_tensors'])
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')
@@ -372,10 +372,9 @@ def test_posewarper_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 128, 128)
+    input_shape = (1, 3, 64, 64)
     num_frames = 2
-    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
-                                model_cfg['concat_tensors'])
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')
@@ -545,10 +544,9 @@ def test_posewarper_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 128, 128)
+    input_shape = (2, 3, 64, 64)
     num_frames = 2
-    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
-                                model_cfg['concat_tensors'])
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')
@@ -578,10 +576,9 @@ def test_posewarper_forward():
 
     detector.init_weights()
 
-    input_shape = (1, 3, 128, 128)
+    input_shape = (1, 3, 64, 64)
     num_frames = 2
-    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames,
-                                model_cfg['concat_tensors'])
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
 
     imgs = mm_inputs.pop('imgs')
     target = mm_inputs.pop('target')
@@ -639,20 +636,15 @@ def test_posewarper_forward():
 
 
 def _demo_mm_inputs(
-        input_shape=(1, 3, 256, 256),
-        num_outputs=None,
-        num_frames=1,
-        concat_tensors=False):
+        input_shape=(1, 3, 256, 256), num_outputs=None, num_frames=1):
     """Create a superset of inputs needed to run test or train batches.
 
     Args:
         input_shape (tuple):
             input batch dimensions
         num_frames (int):
-            number of frames for each sample.
-        concat_tensors (bool):
-            If set True, concat the tensors on the dimension 0,
-            otherwise, return a list containing multiple tensors.
+            number of frames for each sample, default: 1,
+            if larger than 1, return a list of tensors
     """
     (N, C, H, W) = input_shape
 
@@ -684,14 +676,13 @@ def _demo_mm_inputs(
         'target_weight': torch.FloatTensor(target_weight),
         'img_metas': img_metas
     }
-    if concat_tensors:
+    if num_frames == 1:
+        imgs = torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
+    else:
         imgs = [
             torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
             for _ in range(num_frames)
         ]
-    else:
-        imgs = torch.FloatTensor(rng.rand(N * num_frames, C, H,
-                                          W)).requires_grad_(True)
 
     mm_inputs['imgs'] = imgs
     return mm_inputs
