@@ -143,6 +143,12 @@ html_theme_options = {
                     'url': 'https://github.com/open-mmlab/mmgeneration',
                     'description': 'Generative model toolbox'
                 },
+                {
+                    'name': 'MMFlow',
+                    'url': 'https://github.com/open-mmlab/mmflow',
+                    'description':
+                    'OpenMMLab optical flow toolbox and benchmark'
+                },
             ]
         },
         {

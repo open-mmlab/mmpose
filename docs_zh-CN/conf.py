@@ -139,6 +139,11 @@ html_theme_options = {
                     'url': 'https://github.com/open-mmlab/mmgeneration',
                     'description': '生成模型工具箱'
                 },
+                {
+                    'name': 'MMFlow',
+                    'url': 'https://github.com/open-mmlab/mmflow',
+                    'description': '光流估计工具箱与测试基准'
+                },
             ]
         },
         {
