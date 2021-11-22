@@ -243,7 +243,7 @@ def test_vipnas_bottleneck_reslayer():
 def test_resnet():
     """Test ViPNAS_ResNet backbone."""
     with pytest.raises(KeyError):
-        # ViPNAS_ResNet depth should be in [18, 34, 50, 101, 152]
+        # ViPNAS_ResNet depth should be in [50]
         ViPNAS_ResNet(20)
 
     with pytest.raises(AssertionError):
