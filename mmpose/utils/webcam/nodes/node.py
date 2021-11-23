@@ -53,11 +53,6 @@ class Node(Thread, metaclass=ABCMeta):
 
         self._runner = weakref.ref(runner)
 
-        # Check buffers
-        for buffer_name in [self.input_buffer
-                            ] + self.input_buffer_ex + self.output_buffer:
-            assert runner.buffer_manager.has_buffer(buffer_name)
-
     def check_enabled(self):
         # Always enabled if there is no toggle key
         if self.enable_key is None:
@@ -95,19 +90,18 @@ class Node(Thread, metaclass=ABCMeta):
         for buffer_info in self.input_buffers:
             try:
                 data = buffer_manager.get(buffer_info['buffer_name'])
-            except IndexError:
+            except (IndexError, KeyError):
                 if buffer_info['essential']:
                     return False, None
                 data = None
 
-            result[buffer_info['buffer_name']] = data
+            result[buffer_info['input_name']] = data
 
         return True, result
 
     def run(self):
 
         while True:
-
             # Check if enabled
             enabled = self.check_enabled()
             if not enabled:
@@ -122,7 +116,8 @@ class Node(Thread, metaclass=ABCMeta):
             # Process
             output_msg = self.process(input_msgs)
 
-            for buffer_name in self.output_buffer:
+            for buffer_info in self.output_buffers:
+                buffer_name = buffer_info['buffer_name']
                 self.runner.buffer_manager.put(buffer_name, output_msg)
 
     @abstractmethod
