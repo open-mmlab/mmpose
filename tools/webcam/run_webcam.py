@@ -1,16 +1,27 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from mmcv import Config
-from webcam import WebcamRunner
+
+from argparse import ArgumentParser
+
+import mmcv
+
+from mmpose.utils import WebcamRunner
+
+
+def parse_args():
+    parser = ArgumentParser('Lauch webcam runner')
+    parser.add_argument(
+        '--cfg', type=str, default='tools/webcam/configs/test.py')
+
+    return parser.parse_args()
+
+
+def launch():
+    args = parse_args()
+    cfg = mmcv.Config.fromfile(args.cfg)
+
+    runner = WebcamRunner(cfg.runner)
+    runner.run()
+
 
 if __name__ == '__main__':
-    cfgs = dict(
-        name='Camera Runner',
-        camera_id=0,
-        # camera_id='demo/resources/demo.mp4',
-        display_delay=0,
-        frame_buffer_size=30,
-    )
-    cfgs = Config(cfgs)
-    runner = WebcamRunner(cfgs)
-
-    runner.run()
+    launch()
