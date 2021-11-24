@@ -4,6 +4,7 @@ from .cpm import CPM
 from .hourglass import HourglassNet
 from .hourglass_ae import HourglassAENet
 from .hrnet import HRNet
+from .lstm_pm import LSTM_PM
 from .litehrnet import LiteHRNet
 from .mobilenet_v2 import MobileNetV2
 from .mobilenet_v3 import MobileNetV3
@@ -28,5 +29,5 @@ __all__ = [
     'MobileNetV3', 'RegNet', 'ResNet', 'ResNetV1d', 'ResNeXt', 'SCNet',
     'SEResNet', 'SEResNeXt', 'ShuffleNetV1', 'ShuffleNetV2', 'CPM', 'RSN',
     'MSPN', 'ResNeSt', 'VGG', 'TCN', 'ViPNAS_ResNet', 'ViPNAS_MobileNetV3',
-    'LiteHRNet'
+    'LiteHRNet', 'LSTM_PM'
 ]
