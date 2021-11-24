@@ -215,8 +215,8 @@ class HRModule(nn.Module):
 class HRNet(nn.Module):
     """HRNet backbone.
 
-    `High-Resolution Representations for Labeling Pixels and Regions
-    <https://arxiv.org/abs/1904.04514>`__
+    `Deep High-Resolution Representation Learning for Human Pose Estimation
+    <https://arxiv.org/abs/1902.09212>`__
 
     Args:
         extra (dict): detailed configuration for each stage of HRNet.
