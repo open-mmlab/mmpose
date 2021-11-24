@@ -54,7 +54,7 @@ class WebcamRunner():
             # capture a camera frame
             ret_val, frame = vcap.read()
             if ret_val:
-                frame_msg = Message(data=frame)
+                frame_msg = Message(data=dict(image=frame))
                 self.buffer_manager.put('_input_', frame_msg)
                 self.buffer_manager.put('_frame_', frame_msg)
                 # self.frame_buffer.put(frame_msg)
@@ -83,7 +83,7 @@ class WebcamRunner():
                 self.event_manager.set('exit')
                 break
 
-            img = output_msg.data
+            img = output_msg.data['image']
 
             # delay control
             if self.cfg.display_delay > 0:
