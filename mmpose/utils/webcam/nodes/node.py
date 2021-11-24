@@ -11,13 +11,8 @@ from ..webcam_utils import Message
 
 class Node(Thread, metaclass=ABCMeta):
 
-    def __init__(self,
-                 name: Optional[str] = None,
-                 hotkeys=None,
-                 enable_key=None):
+    def __init__(self, name: Optional[str] = None, enable_key=None):
         super().__init__(name=name, daemon=True)
-
-        self.hotkeys = hotkeys
         self._runner = None
         self.enabled = True
         self.enable_key = enable_key

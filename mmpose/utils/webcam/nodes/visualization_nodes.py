@@ -11,12 +11,11 @@ class PoseVisualizer(Node):
 
     def __init__(self,
                  name: Optional[str] = None,
-                 hotkeys=None,
                  enable_key=None,
                  frame_buffer: str = '_frame_',
                  result_buffer: Optional[str] = None,
                  output_buffer: str = '_output_'):
-        super().__init__(name=name, hotkeys=hotkeys, enable_key=enable_key)
+        super().__init__(name=name, enable_key=enable_key)
 
         # Register buffers
         self.register_input_buffer(frame_buffer, 'frame', essential=True)

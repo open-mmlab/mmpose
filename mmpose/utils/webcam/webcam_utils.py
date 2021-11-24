@@ -12,12 +12,10 @@ class Message():
 
     def __init__(self,
                  msg: str = '',
-                 data: Any = None,
-                 meta: Any = None,
+                 data: Optional[dict] = None,
                  timestamp: Optional[float] = None):
         self.msg = msg
         self.data = data
-        self.meta = meta
         self.timestamp = timestamp if timestamp else time.time()
         self.id = uuid.uuid4()
 
