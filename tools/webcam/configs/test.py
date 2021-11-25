@@ -7,7 +7,11 @@ runner = dict(
     user_buffers=[('result', 1)],
     nodes=[
         dict(
-            type='PoseVisualizer',
+            type='DetectorNode',
+            name='detector',
+        ),
+        dict(
+            type='PoseVisualizerNode',
             name='visualizer',
             frame_buffer='_frame_',
             output_buffer='_output_')
