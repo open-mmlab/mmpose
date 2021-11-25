@@ -1,20 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - HRNet
-    - DarkPose
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_dark_coco [HRNet+DarkPose@COCO]
+- Name: DarkPose
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_dark.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_dark_coco
-    [HRNet+DarkPose@COCO]
+  In Collection: DarkPose
   Metadata:
+    Architecture: &id001
+    - HRNet
+    - DarkPose
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_dark
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -26,11 +24,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_dark-07f147eb_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_384x288_dark.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_dark_coco
-    [HRNet+DarkPose@COCO]
+  In Collection: DarkPose
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_384x288_dark
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -42,11 +41,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_384x288_dark-307dafc2_20210203.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_256x192_dark.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_dark_coco
-    [HRNet+DarkPose@COCO]
+  In Collection: DarkPose
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_256x192_dark
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -58,11 +58,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192_dark-8cba3197_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w48_coco_384x288_dark.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--hrnet_dark_coco
-    [HRNet+DarkPose@COCO]
+  In Collection: DarkPose
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_coco_384x288_dark
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:

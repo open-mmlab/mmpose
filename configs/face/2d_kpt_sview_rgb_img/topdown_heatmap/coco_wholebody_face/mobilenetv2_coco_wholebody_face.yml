@@ -1,20 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - MobilenetV2
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--mobilenetv2_coco_wholebody_face
-    [MobilenetV2@COCO-WholeBody-Face]
+- Name: MobilenetV2
   Paper:
     Title: 'Mobilenetv2: Inverted residuals and linear bottlenecks'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Sandler_MobileNetV2_Inverted_Residuals_CVPR_2018_paper.html
-  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/mobilenetv2_coco_wholebody_face.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/mobilenetv2_coco_wholebody_face_256x256.py
-  In Collection: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--mobilenetv2_coco_wholebody_face
-    [MobilenetV2@COCO-WholeBody-Face]
+  In Collection: MobilenetV2
   Metadata:
+    Architecture:
+    - MobilenetV2
     Training Data: COCO-WholeBody-Face
   Name: topdown_heatmap_mobilenetv2_coco_wholebody_face_256x256
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/mobilenetv2_coco_wholebody_face.md
   Results:
   - Dataset: COCO-WholeBody-Face
     Metrics:

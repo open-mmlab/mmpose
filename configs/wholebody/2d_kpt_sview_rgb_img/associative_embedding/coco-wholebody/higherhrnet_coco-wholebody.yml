@@ -1,22 +1,19 @@
 Collections:
-- Metadata:
-    Architecture:
-    - Associative Embedding
-    - HigherHRNet
-  Name: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_coco-wholebody
-    [Associative Embedding+HigherHRNet@COCO-WholeBody]
+- Name: HigherHRNet
   Paper:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w32_coco_wholebody_512x512.py
-  In Collection: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_coco-wholebody
-    [Associative Embedding+HigherHRNet@COCO-WholeBody]
+  In Collection: HigherHRNet
   Metadata:
+    Architecture: &id001
+    - Associative Embedding
+    - HigherHRNet
     Training Data: COCO-WholeBody
   Name: associative_embedding_higherhrnet_w32_coco_wholebody_512x512
+  README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -33,11 +30,12 @@ Models:
     Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_wholebody_512x512_plus-2fa137ab_20210517.pth
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_w48_coco_wholebody_512x512.py
-  In Collection: wholebody--2d_kpt_sview_rgb_img--associative_embedding--coco-wholebody--higherhrnet_coco-wholebody
-    [Associative Embedding+HigherHRNet@COCO-WholeBody]
+  In Collection: HigherHRNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO-WholeBody
   Name: associative_embedding_higherhrnet_w48_coco_wholebody_512x512
+  README: configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:

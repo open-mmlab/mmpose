@@ -1,21 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--resnet_coco_wholebody_face
-    [SimpleBaseline2D+ResNet@COCO-WholeBody-Face]
+- Name: SimpleBaseline2D
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/resnet_coco_wholebody_face.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/res50_coco_wholebody_face_256x256.py
-  In Collection: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--resnet_coco_wholebody_face
-    [SimpleBaseline2D+ResNet@COCO-WholeBody-Face]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
     Training Data: COCO-WholeBody-Face
   Name: topdown_heatmap_res50_coco_wholebody_face_256x256
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/resnet_coco_wholebody_face.md
   Results:
   - Dataset: COCO-WholeBody-Face
     Metrics:

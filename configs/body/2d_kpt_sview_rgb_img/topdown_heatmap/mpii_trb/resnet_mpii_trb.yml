@@ -1,20 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--resnet_mpii_trb [SimpleBaseline2D+ResNet@MPII-TRB]
+- Name: SimpleBaseline2D
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--resnet_mpii_trb
-    [SimpleBaseline2D+ResNet@MPII-TRB]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
     Training Data: MPII-TRB
   Name: topdown_heatmap_res50_mpii_trb_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:
@@ -24,11 +22,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_trb_256x256-896036b8_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res101_mpii_trb_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--resnet_mpii_trb
-    [SimpleBaseline2D+ResNet@MPII-TRB]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: MPII-TRB
   Name: topdown_heatmap_res101_mpii_trb_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:
@@ -38,11 +37,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_trb_256x256-cfad2f05_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res152_mpii_trb_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii_trb--resnet_mpii_trb
-    [SimpleBaseline2D+ResNet@MPII-TRB]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: MPII-TRB
   Name: topdown_heatmap_res152_mpii_trb_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:

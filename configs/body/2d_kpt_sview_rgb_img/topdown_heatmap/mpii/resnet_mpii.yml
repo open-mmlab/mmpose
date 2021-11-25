@@ -1,19 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnet_mpii [SimpleBaseline2D+ResNet@MPII]
+- Name: SimpleBaseline2D
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res50_mpii_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnet_mpii [SimpleBaseline2D+ResNet@MPII]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
     Training Data: MPII
   Name: topdown_heatmap_res50_mpii_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.md
   Results:
   - Dataset: MPII
     Metrics:
@@ -22,10 +21,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res101_mpii_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnet_mpii [SimpleBaseline2D+ResNet@MPII]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: MPII
   Name: topdown_heatmap_res101_mpii_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.md
   Results:
   - Dataset: MPII
     Metrics:
@@ -34,10 +35,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_mpii_256x256-416f5d71_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/res152_mpii_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--resnet_mpii [SimpleBaseline2D+ResNet@MPII]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: MPII
   Name: topdown_heatmap_res152_mpii_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/resnet_mpii.md
   Results:
   - Dataset: MPII
     Metrics:

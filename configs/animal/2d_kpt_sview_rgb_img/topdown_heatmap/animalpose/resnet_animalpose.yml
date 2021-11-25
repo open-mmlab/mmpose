@@ -1,20 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SimpleBaseline2D
-  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--resnet_animalpose
-    [SimpleBaseline2D@Animal-Pose]
+- Name: SimpleBaseline2D
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res50_animalpose_256x256.py
-  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--resnet_animalpose
-    [SimpleBaseline2D@Animal-Pose]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
     Training Data: Animal-Pose
   Name: topdown_heatmap_res50_animalpose_256x256
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.md
   Results:
   - Dataset: Animal-Pose
     Metrics:
@@ -26,11 +23,12 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_animalpose_256x256-e1f30bff_20210426.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res101_animalpose_256x256.py
-  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--resnet_animalpose
-    [SimpleBaseline2D@Animal-Pose]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: Animal-Pose
   Name: topdown_heatmap_res101_animalpose_256x256
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.md
   Results:
   - Dataset: Animal-Pose
     Metrics:
@@ -42,11 +40,12 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_animalpose_256x256-85563f4a_20210426.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/res152_animalpose_256x256.py
-  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--animalpose--resnet_animalpose
-    [SimpleBaseline2D@Animal-Pose]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: Animal-Pose
   Name: topdown_heatmap_res152_animalpose_256x256
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/animalpose/resnet_animalpose.md
   Results:
   - Dataset: Animal-Pose
     Metrics:
