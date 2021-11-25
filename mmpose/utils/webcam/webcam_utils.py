@@ -3,7 +3,7 @@ import time
 import uuid
 from collections import defaultdict, deque, namedtuple
 from threading import Event, Lock
-from typing import Any, Optional
+from typing import Optional
 
 Buffer = namedtuple('Buffer', ['queue', 'mutex'])
 
