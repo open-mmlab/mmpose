@@ -24,6 +24,7 @@ except ImportError:
 
 def init_random_seed(seed=None, device='cuda'):
     """Initialize random seed.
+
     If the seed is not set, the seed will be automatically randomized,
     and then broadcast to all processes to prevent some potential bugs.
     Args:
@@ -50,6 +51,7 @@ def init_random_seed(seed=None, device='cuda'):
         random_num = torch.tensor(0, dtype=torch.int32, device=device)
     dist.broadcast(random_num, src=0)
     return random_num.item()
+
 
 def train_model(model,
                 dataset,
