@@ -149,6 +149,14 @@ html_theme_options = {
                     'description':
                     'OpenMMLab optical flow toolbox and benchmark'
                 },
+                {
+                    'name':
+                    'MMFewShot',
+                    'url':
+                    'https://github.com/open-mmlab/mmfewshot',
+                    'description':
+                    'OpenMMLab FewShot Learning Toolbox and Benchmark'
+                },
             ]
         },
         {

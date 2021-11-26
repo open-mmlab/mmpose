@@ -88,63 +88,55 @@ html_theme_options = {
         {
             'name':
             'Projects',
-            'children': [
-                {
-                    'name': 'MMCV',
-                    'url': 'https://github.com/open-mmlab/mmcv',
-                    'description': '计算机视觉基础库'
-                },
-                {
-                    'name': 'MMDetection',
-                    'url': 'https://github.com/open-mmlab/mmdetection',
-                    'description': '检测工具箱与测试基准'
-                },
-                {
-                    'name': 'MMAction2',
-                    'url': 'https://github.com/open-mmlab/mmaction2',
-                    'description': '视频理解工具箱与测试基准'
-                },
-                {
-                    'name': 'MMClassification',
-                    'url': 'https://github.com/open-mmlab/mmclassification',
-                    'description': '图像分类工具箱与测试基准'
-                },
-                {
-                    'name': 'MMSegmentation',
-                    'url': 'https://github.com/open-mmlab/mmsegmentation',
-                    'description': '语义分割工具箱与测试基准'
-                },
-                {
-                    'name': 'MMDetection3D',
-                    'url': 'https://github.com/open-mmlab/mmdetection3d',
-                    'description': '通用3D目标检测平台'
-                },
-                {
-                    'name': 'MMEditing',
-                    'url': 'https://github.com/open-mmlab/mmediting',
-                    'description': '图像视频编辑工具箱'
-                },
-                {
-                    'name': 'MMOCR',
-                    'url': 'https://github.com/open-mmlab/mmocr',
-                    'description': '全流程文字检测识别理解工具包'
-                },
-                {
-                    'name': 'MMTracking',
-                    'url': 'https://github.com/open-mmlab/mmtracking',
-                    'description': '一体化视频目标感知平台'
-                },
-                {
-                    'name': 'MMGeneration',
-                    'url': 'https://github.com/open-mmlab/mmgeneration',
-                    'description': '生成模型工具箱'
-                },
-                {
-                    'name': 'MMFlow',
-                    'url': 'https://github.com/open-mmlab/mmflow',
-                    'description': '光流估计工具箱与测试基准'
-                },
-            ]
+            'children': [{
+                'name': 'MMCV',
+                'url': 'https://github.com/open-mmlab/mmcv',
+                'description': '计算机视觉基础库'
+            }, {
+                'name': 'MMDetection',
+                'url': 'https://github.com/open-mmlab/mmdetection',
+                'description': '检测工具箱与测试基准'
+            }, {
+                'name': 'MMAction2',
+                'url': 'https://github.com/open-mmlab/mmaction2',
+                'description': '视频理解工具箱与测试基准'
+            }, {
+                'name': 'MMClassification',
+                'url': 'https://github.com/open-mmlab/mmclassification',
+                'description': '图像分类工具箱与测试基准'
+            }, {
+                'name': 'MMSegmentation',
+                'url': 'https://github.com/open-mmlab/mmsegmentation',
+                'description': '语义分割工具箱与测试基准'
+            }, {
+                'name': 'MMDetection3D',
+                'url': 'https://github.com/open-mmlab/mmdetection3d',
+                'description': '通用3D目标检测平台'
+            }, {
+                'name': 'MMEditing',
+                'url': 'https://github.com/open-mmlab/mmediting',
+                'description': '图像视频编辑工具箱'
+            }, {
+                'name': 'MMOCR',
+                'url': 'https://github.com/open-mmlab/mmocr',
+                'description': '全流程文字检测识别理解工具包'
+            }, {
+                'name': 'MMTracking',
+                'url': 'https://github.com/open-mmlab/mmtracking',
+                'description': '一体化视频目标感知平台'
+            }, {
+                'name': 'MMGeneration',
+                'url': 'https://github.com/open-mmlab/mmgeneration',
+                'description': '生成模型工具箱'
+            }, {
+                'name': 'MMFlow',
+                'url': 'https://github.com/open-mmlab/mmflow',
+                'description': '光流估计工具箱与测试基准'
+            }, {
+                'name': 'MMFewShot',
+                'url': 'https://github.com/open-mmlab/mmfewshot',
+                'description': '少样本学习工具箱与测试基准'
+            }]
         },
         {
             'name':
