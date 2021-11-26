@@ -50,8 +50,10 @@ class ViPNAS_MobileNetV3(BaseBackbone):
                  group=[None, 8, 120, 20, 100, 280, 240],
                  att=[None, True, True, False, True, True, True],
                  stride=[2, 1, 2, 2, 2, 1, 2],
-                 act=['HSwish', 'ReLU', 'ReLU', 'ReLU', 'HSwish', 'HSwish',
-                      'HSwish'],
+                 act=[
+                     'HSwish', 'ReLU', 'ReLU', 'ReLU', 'HSwish', 'HSwish',
+                     'HSwish'
+                 ],
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
                  frozen_stages=-1,

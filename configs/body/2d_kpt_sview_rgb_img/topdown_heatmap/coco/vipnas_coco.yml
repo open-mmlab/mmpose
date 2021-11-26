@@ -12,7 +12,7 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.700
+      AP: 0.7
       AP@0.5: 0.887
       AP@0.75: 0.778
       AR: 0.757
