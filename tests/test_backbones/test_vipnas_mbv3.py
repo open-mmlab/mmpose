@@ -30,9 +30,10 @@ def test_mobilenetv3_backbone():
         model = ViPNAS_MobileNetV3()
         model.init_weights(pretrained=0)
 
-    with pytest.raises(ValueError):
-        # frozen_stages must less than 21
-        ViPNAS_MobileNetV3(frozen_stages=21)
+    with pytest.raises(AttributeError):
+        # frozen_stages must no more than 21
+        model = ViPNAS_MobileNetV3(frozen_stages=22)
+        model.train()
 
     # Test MobileNetv3
     model = ViPNAS_MobileNetV3()
@@ -93,3 +94,6 @@ def test_mobilenetv3_backbone():
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
     assert feat.shape == torch.Size([1, 160, 7, 7])
+
+
+test_mobilenetv3_backbone()
