@@ -54,10 +54,10 @@ Results on COCO val2017 without multi-scale test
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_hourglass_ae](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py)  | 512x512 | 0.613 | 0.833 | 0.667 | 0.659 | 0.850 | [ckpt](https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth) | [log](https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512_20210920.log.json) |
+| [pose_hourglass_ae](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py)  | 512x512 | 0.613 | 0.833 | 0.667 | 0.659 | 0.850 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512_20210920.log.json) |
 
 Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
 | Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_hourglass_ae](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py)  | 512x512 | 0.667 | 0.855 | 0.723 | 0.707 | 0.877 | [ckpt](https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth) | [log](https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512_20210920.log.json) |
+| [pose_hourglass_ae](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py)  | 512x512 | 0.667 | 0.855 | 0.723 | 0.707 | 0.877 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512_20210920.log.json) |
