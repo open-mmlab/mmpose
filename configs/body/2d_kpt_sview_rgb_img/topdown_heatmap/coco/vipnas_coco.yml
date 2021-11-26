@@ -5,10 +5,13 @@ Collections:
     URL: https://arxiv.org/abs/2105.10154
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_mbv3_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--vipnas_coco [ViPNAS@COCO]
+  In Collection: ViPNAS
   Metadata:
+    Architecture: &id001
+    - ViPNAS
     Training Data: COCO
   Name: topdown_heatmap_vipnas_mbv3_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -22,8 +25,7 @@ Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_res50_coco_256x192.py
   In Collection: ViPNAS
   Metadata:
-    Architecture:
-    - ViPNAS
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_vipnas_res50_coco_256x192
   README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.md
