@@ -1,6 +1,5 @@
 <!-- [ALGORITHM] -->
 
-
 <details>
 <summary align="right"><a href="https://arxiv.org/abs/2105.10154">ViPNAS (CVPR'2021)</a></summary>
 
