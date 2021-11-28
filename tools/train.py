@@ -12,7 +12,7 @@ from mmcv.runner import get_dist_info, init_dist, set_random_seed
 from mmcv.utils import get_git_hash
 
 from mmpose import __version__
-from mmpose.apis import train_model
+from mmpose.apis import init_random_seed, train_model
 from mmpose.datasets import build_dataset
 from mmpose.models import build_posenet
 from mmpose.utils import collect_env, get_root_logger
@@ -134,12 +134,12 @@ def main():
     logger.info(f'Config:\n{cfg.pretty_text}')
 
     # set random seeds
-    if args.seed is not None:
-        logger.info(f'Set random seed to {args.seed}, '
-                    f'deterministic: {args.deterministic}')
-        set_random_seed(args.seed, deterministic=args.deterministic)
-    cfg.seed = args.seed
-    meta['seed'] = args.seed
+    seed = init_random_seed(args.seed)
+    logger.info(f'Set random seed to {seed}, '
+                f'deterministic: {args.deterministic}')
+    set_random_seed(seed, deterministic=args.deterministic)
+    cfg.seed = seed
+    meta['seed'] = seed
 
     model = build_posenet(cfg.model)
     datasets = [build_dataset(cfg.data.train)]
