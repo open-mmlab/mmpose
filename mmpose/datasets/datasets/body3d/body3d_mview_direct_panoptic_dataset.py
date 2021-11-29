@@ -229,6 +229,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                             dtype=np.float32)
 
                         cnt = 0
+                        person_ids = -np.ones(self.max_persons, dtype=np.int)
                         for body in bodies:
                             if cnt >= self.max_persons:
                                 break
@@ -264,6 +265,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                             pose2d[:, -1] = joints_vis
 
                             all_poses[cnt] = pose2d
+                            person_ids[cnt] = body['id']
                             cnt += 1
 
                         if cnt > 0:
@@ -272,6 +274,8 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                                 osp.join(self.img_prefix, image_file),
                                 'joints_3d':
                                 all_poses_3d,
+                                'person_ids':
+                                person_ids,
                                 'joints_3d_visible':
                                 all_poses_vis_3d,
                                 'joints': [all_poses],
