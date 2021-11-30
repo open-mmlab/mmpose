@@ -5,7 +5,7 @@ from threading import Thread
 import cv2
 
 from .nodes import NODES
-from .webcam_utils import BufferManager, EventManager, Message
+from .webcam_utils import BufferManager, EventManager, FrameMessage
 
 
 class WebcamRunner():
@@ -19,7 +19,7 @@ class WebcamRunner():
         # register default buffers
         self.buffer_manager.add_buffer('_frame_', maxlen=cfg.frame_buffer_size)
         self.buffer_manager.add_buffer('_input_')
-        self.buffer_manager.add_buffer('_output_')
+        self.buffer_manager.add_buffer('_display_')
 
         # register user defined buffers
         for buffer_name, buffer_size in cfg.user_buffers:
@@ -54,7 +54,7 @@ class WebcamRunner():
             # capture a camera frame
             ret_val, frame = vcap.read()
             if ret_val:
-                frame_msg = Message(data=dict(image=frame))
+                frame_msg = FrameMessage(frame)
                 self.buffer_manager.put('_input_', frame_msg)
                 self.buffer_manager.put('_frame_', frame_msg)
                 # self.frame_buffer.put(frame_msg)
@@ -72,18 +72,18 @@ class WebcamRunner():
         vwriter = None
 
         while not self.event_manager.is_set('exit'):
-            while self.buffer_manager.is_empty('_output_'):
+            while self.buffer_manager.is_empty('_display_'):
                 time.sleep(0.001)
 
             # acquire output from buffer
-            output_msg = self.buffer_manager.get('_output_')
+            output_msg = self.buffer_manager.get('_display_')
 
             # None indicates input stream ends
             if output_msg is None:
                 self.event_manager.set('exit')
                 break
 
-            img = output_msg.data['image']
+            img = output_msg.get_image()
 
             # delay control
             if self.cfg.display_delay > 0:
