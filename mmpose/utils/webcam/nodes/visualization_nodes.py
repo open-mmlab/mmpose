@@ -2,7 +2,7 @@
 from typing import Optional, Union
 
 from mmpose.apis import vis_pose_result
-from ..webcam_utils import Message
+from ..webcam_utils import FrameMessage
 from .builder import NODES
 from .node import Node
 
@@ -27,6 +27,8 @@ class PoseVisualizerNode(Node):
         self.thickness = thickness
         self.bbox_color = bbox_color
 
+        self.last_results = None
+
         # Register buffers
         self.register_input_buffer(frame_buffer, 'frame', essential=True)
         if result_buffer is None:
@@ -36,13 +38,9 @@ class PoseVisualizerNode(Node):
             self.show_result = True
         self.register_output_buffer(output_buffer)
 
-    def _show_result(self, frame_msg, result_msg):
+    def _show_results(self, img, results):
 
-        if 'pose_result_list' not in result_msg.data:
-            return Message(data=frame_msg.data)
-
-        img = frame_msg.data['img']
-        for pose_result in result_msg.data['pose_result_list']:
+        for pose_result in results:
             model = pose_result['model_ref']()
             preds = pose_result['preds']
             img = vis_pose_result(
@@ -54,16 +52,18 @@ class PoseVisualizerNode(Node):
                 kpt_score_thr=self.kpt_thr,
                 bbox_color=self.bbox_color)
 
-        return Message(data=dict(img=img))
+        return img
 
     def process(self, input_msgs):
         frame_msg = input_msgs['frame']
+        img = frame_msg.get_image()
 
-        if self.show_result:
-            result_msg = input_msgs['result']
-            output_msg = self.show_result(frame_msg, result_msg)
+        result_msg = input_msgs['result']
 
-        else:
-            output_msg = Message(data=frame_msg.data)
+        if result_msg is not None:
+            self.last_results = result_msg.get_pose_result()
 
-        return output_msg
+        if self.last_results:
+            img = self._show_results(img, self.last_results)
+
+        return FrameMessage(img)

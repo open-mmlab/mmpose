@@ -16,8 +16,9 @@ class TopDownPoseEstimatorNode(Node):
                  name: str,
                  model_config: str,
                  model_checkpoint: str,
-                 device: str,
+                 device: str = 'cuda:0',
                  cls_ids: Optional[list] = None,
+                 cls_names: Optional[list] = None,
                  bbox_thr: float = 0.5,
                  enable_key=None,
                  input_buffer: str = 'input',
@@ -29,6 +30,7 @@ class TopDownPoseEstimatorNode(Node):
             model_config, model_checkpoint, device=device.lower())
 
         self.cls_ids = cls_ids
+        self.cls_names = cls_names
         self.bbox_thr = bbox_thr
 
         # Store history for pose tracking
@@ -41,18 +43,37 @@ class TopDownPoseEstimatorNode(Node):
     def process(self, input_msgs: dict[str, Message]) -> Message:
 
         input_msg = input_msgs['input']
-        img = input_msg.data['img']
-        det_result = input_msg.data['detection_result']
+        img = input_msg.get_image()
+        det_results = input_msg.get_detection_result()
 
-        det_preds = det_result['preds']
-        if self.cls_ids:
-            det_preds = [
-                pred for pred in det_preds if pred['cls_id'] in self.cls_ids
-            ]
+        if det_results is None:
+            raise ValueError(
+                'No detection results are found in the frame message.'
+                f'{self.__class__.__name__} should be used after a '
+                'detector node.')
+
+        full_det_preds = []
+        for det_result in det_results:
+            det_preds = det_result['preds']
+            if self.cls_ids:
+                # Filter detection results by class ID
+                det_preds = [
+                    p for p in det_preds if p['cls_id'] in self.cls_ids
+                ]
+            elif self.cls_names:
+                # Filter detection results by class name
+                det_preds = [
+                    p for p in det_preds if p['label'] in self.cls_names
+                ]
+            full_det_preds.extend(det_preds)
 
         # Inference pose
         pose_preds, _ = inference_top_down_pose_model(
-            self.model, img, det_preds, bbox_thr=self.bbox_thr, format='xyxy')
+            self.model,
+            img,
+            full_det_preds,
+            bbox_thr=self.bbox_thr,
+            format='xyxy')
 
         # Pose tracking
         pose_preds, next_id = get_track_id(
@@ -72,10 +93,6 @@ class TopDownPoseEstimatorNode(Node):
             'model_ref': weakref.ref(self.model)
         }
 
-        output_data = input_msg.data.copy()
+        input_msg.add_pose_result(pose_result, tag=self.name)
 
-        if 'pose_result_list' not in output_data:
-            output_data['pose_result_list'] = []
-        output_data['pose_result_list'].append(pose_result)
-
-        return Message(data=output_data)
+        return input_msg
