@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import weakref
 
-from ..webcam_utils import Message
 from .builder import NODES
 from .node import Node
 
@@ -19,7 +18,7 @@ class DetectorNode(Node):
                  name: str,
                  model_config: str,
                  model_checkpoint: str,
-                 device: str,
+                 device: str = 'cuda:0',
                  enable_key=None,
                  input_buffer: str = 'input',
                  output_buffer: str = 'output'):
@@ -38,15 +37,13 @@ class DetectorNode(Node):
     def process(self, input_msgs):
         input_msg = input_msgs['input']
 
-        img = input_msg.data['img']
+        img = input_msg.get_image()
 
         preds = inference_detector(self.model, img)
         det_result = self._post_process(preds)
 
-        output_data = input_msg.data.copy()
-        output_data['detection_result'] = det_result
-
-        return Message(data=output_data)
+        input_msg.add_detection_result(det_result, tag=self.name)
+        return input_msg
 
     def _post_process(self, preds):
         if isinstance(preds, tuple):
@@ -56,11 +53,11 @@ class DetectorNode(Node):
         result = {'preds': [], 'model_ref': weakref.ref(self.model)}
 
         for i, (cls_name, bboxes) in enumerate(zip(self.model.CLASSES, preds)):
-            _preds_i = [{
+            preds_i = [{
                 'cls_id': i,
-                'cls_name': cls_name,
+                'label': cls_name,
                 'bbox': bbox
             } for bbox in bboxes]
-            result['preds'].append(_preds_i)
+            result['preds'].extend(preds_i)
 
         return result
