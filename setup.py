@@ -119,7 +119,7 @@ def add_mim_extension():
         if platform.system() == 'Windows':
             mode = 'copy'
         else:
-            mode = 'symlik'
+            mode = 'symlink'
     elif 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
         # installed by `pip install .`
         # or create source distribution by `python setup.py sdist`
