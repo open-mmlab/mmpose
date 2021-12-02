@@ -136,11 +136,7 @@ dataset_info = dict(
         1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
         1.5
     ],
-
-    # Note: The original paper did not provide enough information about
-    # the sigmas. We modified from 'https://github.com/cocodataset/'
-    # 'cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py#L523'
     sigmas=[
-        0.025, 0.025, 0.026, 0.035, 0.035, 0.079, 0.079, 0.072, 0.072, 0.062,
-        0.062, 0.107, 0.107, 0.087, 0.087, 0.089, 0.089
+        0.025, 0.025, 0.026, 0.035, 0.035, 0.079, 0.072, 0.062, 0.079, 0.072,
+        0.062, 0.107, 0.087, 0.089, 0.107, 0.087, 0.089
     ])
