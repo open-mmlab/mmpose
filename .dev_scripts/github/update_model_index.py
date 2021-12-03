@@ -122,6 +122,7 @@ def parse_config_path(path):
     task2readable = {
         '2d_kpt_sview_rgb_img': '2D Keypoint',
         '3d_kpt_sview_rgb_img': '3D Keypoint',
+        '3d_kpt_mview_rgb_img': '3D Keypoint',
         '3d_kpt_sview_rgb_vid': '3D Keypoint',
         '3d_mesh_sview_rgb_img': '3D Mesh',
         None: None

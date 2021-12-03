@@ -565,8 +565,6 @@ class BottomUpRandomAffine:
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
 
-        results['center'], results['scale'] = center, scale
-
         return results
 
 
@@ -645,8 +643,7 @@ class BottomUpGenerateTarget:
             self._generate(results['ann_info']['num_joints'],
                            results['ann_info']['heatmap_size'])
         target_list = list()
-        img, mask_list, joints_list = results['img'], results['mask'], results[
-            'joints']
+        mask_list, joints_list = results['mask'], results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             target_t = heatmap_generator[scale_id](joints_list[scale_id])
@@ -656,8 +653,7 @@ class BottomUpGenerateTarget:
             mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
             joints_list[scale_id] = joints_t.astype(np.int32)
 
-        results['img'], results['masks'], results[
-            'joints'] = img, mask_list, joints_list
+        results['masks'], results['joints'] = mask_list, joints_list
         results['targets'] = target_list
 
         return results
