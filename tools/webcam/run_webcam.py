@@ -9,7 +9,7 @@ from webcam_apis import WebcamRunner
 def parse_args():
     parser = ArgumentParser('Lauch webcam runner')
     parser.add_argument(
-        '--cfg', type=str, default='tools/webcam/configs/test.py')
+        '--cfg', type=str, default='tools/webcam/configs/human_pose.py')
 
     return parser.parse_args()
 
