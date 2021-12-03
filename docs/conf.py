@@ -172,16 +172,19 @@ html_theme_options = {
         {
             'name':
             'OpenMMLab',
-            'children': [
-                {
-                    'name': 'Homepage',
-                    'url': 'https://openmmlab.com/'
-                },
-                {
-                    'name': 'GitHub',
-                    'url': 'https://github.com/open-mmlab/'
-                },
-            ]
+            'children': [{
+                'name': 'Homepage',
+                'url': 'https://openmmlab.com/'
+            }, {
+                'name': 'GitHub',
+                'url': 'https://github.com/open-mmlab/'
+            }, {
+                'name': 'Twitter',
+                'url': 'https://twitter.com/OpenMMLab'
+            }, {
+                'name': 'Zhihu',
+                'url': 'https://zhihu.com/people/openmmlab'
+            }]
         },
     ]
 }

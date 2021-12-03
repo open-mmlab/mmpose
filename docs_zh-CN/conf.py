@@ -76,7 +76,7 @@ html_theme_options = {
     'menu': [
         {
             'name':
-            'Tutorial',
+            '教程',
             'url':
             'https://colab.research.google.com/github/'
             'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
@@ -87,7 +87,7 @@ html_theme_options = {
         },
         {
             'name':
-            'Projects',
+            '算法库',
             'children': [{
                 'name': 'MMCV',
                 'url': 'https://mmcv.readthedocs.io/zh_CN/latest/',
@@ -145,16 +145,19 @@ html_theme_options = {
         {
             'name':
             'OpenMMLab',
-            'children': [
-                {
-                    'name': '主页',
-                    'url': 'https://openmmlab.com/'
-                },
-                {
-                    'name': 'GitHub',
-                    'url': 'https://github.com/open-mmlab/'
-                },
-            ]
+            'children': [{
+                'name': '主页',
+                'url': 'https://openmmlab.com/'
+            }, {
+                'name': 'GitHub',
+                'url': 'https://github.com/open-mmlab/'
+            }, {
+                'name': '推特',
+                'url': 'https://twitter.com/OpenMMLab'
+            }, {
+                'name': '知乎',
+                'url': 'https://zhihu.com/people/openmmlab'
+            }]
         },
     ]
 }
