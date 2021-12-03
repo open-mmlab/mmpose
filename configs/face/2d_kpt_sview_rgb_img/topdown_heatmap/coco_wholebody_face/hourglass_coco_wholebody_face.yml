@@ -1,17 +1,20 @@
 Collections:
-- Name: Hourglass
+- Metadata:
+    Architecture:
+    - Hourglass
+  Name: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--hourglass_coco_wholebody_face
+    [Hourglass@COCO-WholeBody-Face]
   Paper:
     Title: Stacked hourglass networks for human pose estimation
     URL: https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29
+  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hourglass_coco_wholebody_face.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hourglass52_coco_wholebody_face_256x256.py
-  In Collection: Hourglass
+  In Collection: face--2d_kpt_sview_rgb_img--topdown_heatmap--coco_wholebody_face--hourglass_coco_wholebody_face
+    [Hourglass@COCO-WholeBody-Face]
   Metadata:
-    Architecture:
-    - Hourglass
     Training Data: COCO-WholeBody-Face
   Name: topdown_heatmap_hourglass52_coco_wholebody_face_256x256
-  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hourglass_coco_wholebody_face.md
   Results:
   - Dataset: COCO-WholeBody-Face
     Metrics:

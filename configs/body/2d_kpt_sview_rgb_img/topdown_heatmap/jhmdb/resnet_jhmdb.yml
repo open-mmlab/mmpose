@@ -1,18 +1,20 @@
 Collections:
-- Name: SimpleBaseline2D
+- Metadata:
+    Architecture:
+    - SimpleBaseline2D
+    - ResNet
+  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb [SimpleBaseline2D+ResNet@JHMDB]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: &id001
-    - SimpleBaseline2D
-    - ResNet
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub1_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -27,12 +29,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub2_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -47,12 +48,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub3_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -67,12 +67,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -87,12 +86,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -107,12 +105,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -127,12 +124,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub3_256x256-c4bc2ddb_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub1_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub1_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -147,12 +143,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub1_256x256-932cb3b4_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub2_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub2_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -167,12 +162,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub2_256x256-83d606f7_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_jhmdb_sub3_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_jhmdb_sub3_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -187,12 +181,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_jhmdb_sub3_256x256-c4ec1a0b_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub1_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub1_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -207,12 +200,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub1_256x256-f0574a52_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub2_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub2_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:
@@ -227,12 +219,11 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_2deconv_jhmdb_sub2_256x256-f63af0ff_20201122.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/res50_2deconv_jhmdb_sub3_256x256.py
-  In Collection: SimpleBaseline2D
+  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--jhmdb--resnet_jhmdb
+    [SimpleBaseline2D+ResNet@JHMDB]
   Metadata:
-    Architecture: *id001
     Training Data: JHMDB
   Name: topdown_heatmap_res50_2deconv_jhmdb_sub3_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/jhmdb/resnet_jhmdb.md
   Results:
   - Dataset: JHMDB
     Metrics:

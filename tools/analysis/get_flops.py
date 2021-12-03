@@ -1,7 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 
-from mmpose.apis.inference import init_pose_model
+from mmcv import Config
+
+from mmpose.models import build_posenet
 
 try:
     from mmcv.cnn import get_model_complexity_info
@@ -33,7 +35,10 @@ def main():
     else:
         raise ValueError('invalid input shape')
 
-    model = init_pose_model(args.config)
+    cfg = Config.fromfile(args.config)
+    model = build_posenet(cfg.model)
+    model = model.cuda()
+    model.eval()
 
     if hasattr(model, 'forward_dummy'):
         model.forward = model.forward_dummy

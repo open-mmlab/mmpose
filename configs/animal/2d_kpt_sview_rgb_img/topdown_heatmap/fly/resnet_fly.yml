@@ -1,17 +1,20 @@
 Collections:
-- Name: SimpleBaseline2D
+- Metadata:
+    Architecture:
+    - SimpleBaseline2D
+  Name: animal--2d_kpt_sview_rgb_img--topdown_heatmap--fly--resnet_fly [SimpleBaseline2D@Vinegar
+    Fly]
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/resnet_fly.md
 Models:
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res50_fly_192x192.py
-  In Collection: SimpleBaseline2D
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--fly--resnet_fly [SimpleBaseline2D@Vinegar
+    Fly]
   Metadata:
-    Architecture: &id001
-    - SimpleBaseline2D
     Training Data: Vinegar Fly
   Name: topdown_heatmap_res50_fly_192x192
-  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/resnet_fly.md
   Results:
   - Dataset: Vinegar Fly
     Metrics:
@@ -21,12 +24,11 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_fly_192x192-5d0ee2d9_20210407.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res101_fly_192x192.py
-  In Collection: SimpleBaseline2D
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--fly--resnet_fly [SimpleBaseline2D@Vinegar
+    Fly]
   Metadata:
-    Architecture: *id001
     Training Data: Vinegar Fly
   Name: topdown_heatmap_res101_fly_192x192
-  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/resnet_fly.md
   Results:
   - Dataset: Vinegar Fly
     Metrics:
@@ -36,12 +38,11 @@ Models:
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_fly_192x192-41a7a6cc_20210407.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py
-  In Collection: SimpleBaseline2D
+  In Collection: animal--2d_kpt_sview_rgb_img--topdown_heatmap--fly--resnet_fly [SimpleBaseline2D@Vinegar
+    Fly]
   Metadata:
-    Architecture: *id001
     Training Data: Vinegar Fly
   Name: topdown_heatmap_res152_fly_192x192
-  README: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/resnet_fly.md
   Results:
   - Dataset: Vinegar Fly
     Metrics:

@@ -3,7 +3,6 @@ import tempfile
 
 import mmcv
 import numpy as np
-import pytest
 
 from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_bboxes, imshow_keypoints, imshow_keypoints_3d)
@@ -59,15 +58,6 @@ def test_imshow_bbox():
             labels=None,
             colors='red',
             show=False)
-
-        # test unmatched bboxes and labels
-        with pytest.raises(AssertionError):
-            _ = imshow_bboxes(
-                img,
-                np.zeros((0, 4), dtype=np.float32),
-                labels=labels[:1],
-                colors='red',
-                show=False)
 
 
 def test_effects():

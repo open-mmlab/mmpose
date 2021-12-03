@@ -271,31 +271,30 @@ class TopDown(BasePose):
         img = img.copy()
 
         bbox_result = []
-        bbox_labels = []
         pose_result = []
         for res in result:
             if 'bbox' in res:
                 bbox_result.append(res['bbox'])
-                bbox_labels.append(res.get('label', None))
             pose_result.append(res['keypoints'])
 
         if bbox_result:
             bboxes = np.vstack(bbox_result)
+            labels = None
+            if 'label' in result[0]:
+                labels = [res['label'] for res in result]
             # draw bounding boxes
             imshow_bboxes(
                 img,
                 bboxes,
-                labels=bbox_labels,
+                labels=labels,
                 colors=bbox_color,
                 text_color=text_color,
                 thickness=bbox_thickness,
                 font_scale=font_scale,
                 show=False)
 
-        if pose_result:
-            imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                             pose_kpt_color, pose_link_color, radius,
-                             thickness)
+        imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
+                         pose_kpt_color, pose_link_color, radius, thickness)
 
         if show:
             imshow(img, win_name, wait_time)

@@ -17,8 +17,6 @@ class InvertedResidual(nn.Module):
         mid_channels (int): The input channels of the depthwise convolution.
         kernel_size (int): The kernel size of the depthwise convolution.
             Default: 3.
-        groups (None or int): The group number of the depthwise convolution.
-            Default: None, which means group number = mid_channels.
         stride (int): The stride of the depthwise convolution. Default: 1.
         se_cfg (dict): Config dict for se layer. Default: None, which means no
             se layer.
@@ -43,7 +41,6 @@ class InvertedResidual(nn.Module):
                  out_channels,
                  mid_channels,
                  kernel_size=3,
-                 groups=None,
                  stride=1,
                  se_cfg=None,
                  with_expand_conv=True,
@@ -60,9 +57,6 @@ class InvertedResidual(nn.Module):
         self.with_cp = with_cp
         self.with_se = se_cfg is not None
         self.with_expand_conv = with_expand_conv
-
-        if groups is None:
-            groups = mid_channels
 
         if self.with_se:
             assert isinstance(se_cfg, dict)
@@ -85,7 +79,7 @@ class InvertedResidual(nn.Module):
             kernel_size=kernel_size,
             stride=stride,
             padding=kernel_size // 2,
-            groups=groups,
+            groups=mid_channels,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
             act_cfg=act_cfg)
@@ -99,7 +93,7 @@ class InvertedResidual(nn.Module):
             padding=0,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=None)
+            act_cfg=act_cfg)
 
     def forward(self, x):
 
