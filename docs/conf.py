@@ -163,7 +163,7 @@ html_theme_options = {
                     'url':
                     'https://github.com/open-mmlab/mmhuman3d',
                     'description':
-                    'Human Pose and Shape Estimation Toolbox and Benchmark.'  
+                    '3D human parametric model toolbox and benchmark.'
                 }
             ]
         },
