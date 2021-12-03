@@ -341,7 +341,7 @@ class ViPNAS_ResLayer(nn.Sequential):
 
 @BACKBONES.register_module()
 class ViPNAS_ResNet(BaseBackbone):
-    """ResNet backbone.
+    """ViPNAS_ResNet backbone.
 
     ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search.
     More details can be found in the `paper
@@ -377,12 +377,12 @@ class ViPNAS_ResNet(BaseBackbone):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): Whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
-        wid (list(int)): searched width config for each stage.
-        expan (list(int)): searched expansion ratio config for each stage.
-        dep (list(int)): searched depth config for each stage.
-        ks (list(int)): searched kernel size config for each stage.
-        group (list(int)): searched group number config for each stage.
-        att (list(int)): searched attention config for each stage.
+        wid (list(int)): Searched width config for each stage.
+        expan (list(int)): Searched expansion ratio config for each stage.
+        dep (list(int)): Searched depth config for each stage.
+        ks (list(int)): Searched kernel size config for each stage.
+        group (list(int)): Searched group number config for each stage.
+        att (list(bool)): Searched attention config for each stage.
     """
 
     arch_settings = {
@@ -558,15 +558,6 @@ class ViPNAS_ResNet(BaseBackbone):
                 elif isinstance(m, nn.BatchNorm2d):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
-                elif isinstance(m, nn.ConvTranspose2d):
-                    nn.init.normal_(m.weight, std=0.001)
-                    for name, _ in m.named_parameters():
-                        if name in ['bias']:
-                            nn.init.constant_(m.bias, 0)
-                elif isinstance(m, nn.ConvTranspose2d):
-                    nn.init.normal_(m.weight, std=0.001)
-                    if self.deconv_with_bias:
-                        nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         """Forward function."""

@@ -40,7 +40,7 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     model = build_posenet(config.model)
     if checkpoint is not None:
         # load model checkpoint
-        load_checkpoint(model, checkpoint, map_location=device)
+        load_checkpoint(model, checkpoint, map_location='cpu')
     # save the config in the model for convenience
     model.cfg = config
     model.to(device)

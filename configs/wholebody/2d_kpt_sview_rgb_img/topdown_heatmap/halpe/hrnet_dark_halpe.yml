@@ -1,21 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - HRNet
-    - DarkPose
-  Name: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--halpe--hrnet_dark_halpe
-    [HRNet+DarkPose@Halpe]
+- Name: DarkPose
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_dark_halpe.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_w48_halpe_384x288_dark_plus.py
-  In Collection: wholebody--2d_kpt_sview_rgb_img--topdown_heatmap--halpe--hrnet_dark_halpe
-    [HRNet+DarkPose@Halpe]
+  In Collection: DarkPose
   Metadata:
+    Architecture:
+    - HRNet
+    - DarkPose
     Training Data: Halpe
   Name: topdown_heatmap_hrnet_w48_halpe_384x288_dark_plus
+  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_dark_halpe.md
   Results:
   - Dataset: Halpe
     Metrics:

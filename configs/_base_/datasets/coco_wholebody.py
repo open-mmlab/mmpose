@@ -949,7 +949,9 @@ dataset_info = dict(
         24:
         dict(link=('right_ankle', 'right_heel'), id=24, color=[255, 128, 0]),
         25:
-        dict(link=('left_wrist', 'left_thumb1'), id=25, color=[255, 128, 0]),
+        dict(
+            link=('left_hand_root', 'left_thumb1'), id=25, color=[255, 128,
+                                                                  0]),
         26:
         dict(link=('left_thumb1', 'left_thumb2'), id=26, color=[255, 128, 0]),
         27:
@@ -958,7 +960,7 @@ dataset_info = dict(
         dict(link=('left_thumb3', 'left_thumb4'), id=28, color=[255, 128, 0]),
         29:
         dict(
-            link=('left_wrist', 'left_forefinger1'),
+            link=('left_hand_root', 'left_forefinger1'),
             id=29,
             color=[255, 153, 255]),
         30:
@@ -978,7 +980,7 @@ dataset_info = dict(
             color=[255, 153, 255]),
         33:
         dict(
-            link=('left_wrist', 'left_middle_finger1'),
+            link=('left_hand_root', 'left_middle_finger1'),
             id=33,
             color=[102, 178, 255]),
         34:
@@ -998,7 +1000,7 @@ dataset_info = dict(
             color=[102, 178, 255]),
         37:
         dict(
-            link=('left_wrist', 'left_ring_finger1'),
+            link=('left_hand_root', 'left_ring_finger1'),
             id=37,
             color=[255, 51, 51]),
         38:
@@ -1018,7 +1020,7 @@ dataset_info = dict(
             color=[255, 51, 51]),
         41:
         dict(
-            link=('left_wrist', 'left_pinky_finger1'),
+            link=('left_hand_root', 'left_pinky_finger1'),
             id=41,
             color=[0, 255, 0]),
         42:
@@ -1037,7 +1039,10 @@ dataset_info = dict(
             id=44,
             color=[0, 255, 0]),
         45:
-        dict(link=('right_wrist', 'right_thumb1'), id=45, color=[255, 128, 0]),
+        dict(
+            link=('right_hand_root', 'right_thumb1'),
+            id=45,
+            color=[255, 128, 0]),
         46:
         dict(
             link=('right_thumb1', 'right_thumb2'), id=46, color=[255, 128, 0]),
@@ -1049,7 +1054,7 @@ dataset_info = dict(
             link=('right_thumb3', 'right_thumb4'), id=48, color=[255, 128, 0]),
         49:
         dict(
-            link=('right_wrist', 'right_forefinger1'),
+            link=('right_hand_root', 'right_forefinger1'),
             id=49,
             color=[255, 153, 255]),
         50:
@@ -1069,7 +1074,7 @@ dataset_info = dict(
             color=[255, 153, 255]),
         53:
         dict(
-            link=('right_wrist', 'right_middle_finger1'),
+            link=('right_hand_root', 'right_middle_finger1'),
             id=53,
             color=[102, 178, 255]),
         54:
@@ -1089,7 +1094,7 @@ dataset_info = dict(
             color=[102, 178, 255]),
         57:
         dict(
-            link=('right_wrist', 'right_ring_finger1'),
+            link=('right_hand_root', 'right_ring_finger1'),
             id=57,
             color=[255, 51, 51]),
         58:
@@ -1109,7 +1114,7 @@ dataset_info = dict(
             color=[255, 51, 51]),
         61:
         dict(
-            link=('right_wrist', 'right_pinky_finger1'),
+            link=('right_hand_root', 'right_pinky_finger1'),
             id=61,
             color=[0, 255, 0]),
         62:
@@ -1129,7 +1134,6 @@ dataset_info = dict(
             color=[0, 255, 0])
     },
     joint_weights=[1.] * 133,
-
     # 'https://github.com/jin-s13/COCO-WholeBody/blob/master/'
     # 'evaluation/myeval_wholebody.py#L175'
     sigmas=[
