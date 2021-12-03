@@ -4,7 +4,6 @@
 
 ### 3D Mesh Recovery Demo
 
-
 We provide a demo script to recover human 3D mesh from a single image.
 
 ```shell
