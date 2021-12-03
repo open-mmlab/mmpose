@@ -1,18 +1,32 @@
-# Inference speed results
+# Inference speed summary
 
-We show the results of complexity information and inference speed for the major models in MMPose on COCO human keypoint dataset, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes. We also compare the mAP of different models, showing the trade-off between model performance and model complexity.
+We show the summary of complexity information and inference speed for the major models in MMPose, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes. We also compare the mAP of different models on COCO human keypoint dataset, showing the trade-off between model performance and model complexity.
 
 ## Comparison Rules
 
-To ensure the fairness of the comparison, the comparison experiments are conducted under the same hardware and software environment using the same COCO human keypoint dataset. We also list the mAP (mean average precision) on COCO human keypoint dataset of the models along with the corresponding config files.
+To ensure the fairness of the comparison, the comparison experiments are conducted under the same hardware and software environment using the same dataset. We also list the mAP (mean average precision) on COCO human keypoint dataset of the models along with the corresponding config files.
 
-For model complexity information measurement, we calculate the FLOPs and parameter counts of a model with corresponding input shape. Note that some layers or ops are currently not supported, for example, `DeformConv2d`, so you may need to check if all ops are supported and verify that the flops computation is correct.
+For model complexity information measurement, we calculate the FLOPs and parameter counts of a model with corresponding input shape. Note that some layers or ops are currently not supported, for example, `DeformConv2d`, so you may need to check if all ops are supported and verify that the flops and parameter counts computation is correct.
 
 For inference speed, we omit the time for data pre-processing and only measure the time for model forwarding and data post-processing. For each model setting, we keep the same data pre-processing methods to make sure the same feature input. We measure the inference speed on both CPU and GPU devices. For topdown heatmap models, we also test the case when the batch size is larger, e.g., 10, to test model performance in crowded scenes.
 
 The inference speed is measured with frames per second (FPS), namely the average iterations per second, which can show how fast the model can handle an input. The higher, the faster, the better.
 
-### Model complexity information and inference speed results of major models in MMPose on COCO human keypoint dataset
+### Hardware
+
+- GPU: GeForce GTX 1660 SUPER
+- CPU: Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+
+### Software Environment
+
+- Ubuntu 16.04
+- Python 3.8
+- PyTorch 1.10
+- CUDA 10.2
+- mmcv-full 1.3.17
+- mmpose 0.20.0
+
+## Model complexity information and inference speed results of major models in MMPose
 
 | Algorithm | Model | config | Input size | mAP | Flops (GFLOPs) | Params (M) | GPU Inference Speed<br>(FPS)<sup>1</sup> | GPU Inference Speed<br>(FPS, bs=10)<sup>2</sup> | CPU Inference Speed<br>(FPS) | CPU Inference Speed<br>(FPS, bs=10) |
 | :--- | :---------------: | :-----------------: |:--------------------: | :----------------------------: | :-----------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: | :-----------------: |
@@ -98,17 +112,3 @@ The inference speed is measured with frames per second (FPS), namely the average
 <sup>1</sup> Note that we run multiple iterations and record the time of each iteration, and the mean and standard deviation value of FPS are both shown.
 
 <sup>2</sup> The FPS is defined as the average iterations per second, regardless of the batch size in this iteration.
-
-## Hardware
-
-- GPU: GeForce GTX 1660 SUPER
-- CPU: Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
-
-## Software Environment
-
-- Ubuntu 16.04
-- Python 3.8
-- PyTorch 1.10
-- CUDA 10.2
-- mmcv-full 1.3.17
-- mmpose 0.20.0

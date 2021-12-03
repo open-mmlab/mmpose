@@ -12,6 +12,7 @@ You can change the documentation language at the lower-left corner of the page.
    getting_started.md
    demo.md
    benchmark.md
+   inference_speed_summary.md
 
 .. toctree::
    :maxdepth: 2
