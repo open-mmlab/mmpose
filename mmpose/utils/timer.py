@@ -1,8 +1,31 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import defaultdict
+from contextlib import contextmanager
+from functools import partial
 
 import numpy as np
 from mmcv import Timer
+
+
+class RunningAverage():
+    r"""A helper class to calculate running average in a sliding window.
+
+    Args:
+        window (int): The size of the sliding window.
+    """
+
+    def __init__(self, window: int = 1):
+        self.window = window
+        self._data = []
+
+    def update(self, value):
+        """Update a new data sample."""
+        self._data.append(value)
+        self._data = self._data[-self.window:]
+
+    def average(self):
+        """Get the average value of current window."""
+        return np.mean(self._data)
 
 
 class StopWatch:
@@ -29,10 +52,11 @@ class StopWatch:
     """
 
     def __init__(self, window=1):
-        self._record = defaultdict(list)
-        self._timer_stack = []
         self.window = window
+        self._record = defaultdict(partial(RunningAverage, window=self.window))
+        self._timer_stack = []
 
+    @contextmanager
     def timeit(self, timer_name='_FPS_'):
         """Timing a code snippet with an assigned name.
 
@@ -47,17 +71,13 @@ class StopWatch:
             in the example.
         """
         self._timer_stack.append((timer_name, Timer()))
-        return self
+        try:
+            yield
+        finally:
+            timer_name, timer = self._timer_stack.pop()
+            self._record[timer_name].update(timer.since_start())
 
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_value, trackback):
-        timer_name, timer = self._timer_stack.pop()
-        self._record[timer_name].append(timer.since_start())
-        self._record[timer_name] = self._record[timer_name][-self.window:]
-
-    def report(self):
+    def report(self, key=None):
         """Report timing information.
 
         Returns:
@@ -65,10 +85,16 @@ class StopWatch:
                 corresponding average time consuming.
         """
         result = {
-            name: np.mean(vals) * 1000.
-            for name, vals in self._record.items()
+            name: r.average() * 1000.
+            for name, r in self._record.items()
         }
-        return result
+
+        if '_FPS_' in result:
+            result['_FPS_'] = 1000. / result.pop('_FPS_')
+
+        if key is None:
+            return result
+        return result[key]
 
     def report_strings(self):
         """Report timing information in texture strings.
@@ -82,11 +108,10 @@ class StopWatch:
         result = self.report()
         strings = []
         if '_FPS_' in result:
-            fps = 1000. / result.pop('_FPS_')
-            strings.append(f'FPS: {fps:>5.1f}')
+            strings.append(f'FPS: {result["_FPS_"]:>5.1f}')
         strings += [f'{name}: {val:>3.0f}' for name, val in result.items()]
         return strings
 
     def reset(self):
         self._record = defaultdict(list)
-        self._timer_stack = []
+        self._active_timer_stack = []

@@ -40,6 +40,9 @@ class TopDownPoseEstimatorNode(Node):
         self.register_input_buffer(input_buffer, 'input', essential=True)
         self.register_output_buffer(output_buffer)
 
+    def bypass(self, input_msgs):
+        return input_msgs['input']
+
     def process(self, input_msgs: dict[str, Message]) -> Message:
 
         input_msg = input_msgs['input']

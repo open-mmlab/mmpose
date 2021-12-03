@@ -1,7 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
 import uuid
+import warnings
 from collections import defaultdict, deque, namedtuple
+from contextlib import contextmanager
 from threading import Event, Lock
 from typing import Optional
 
@@ -10,23 +12,34 @@ Buffer = namedtuple('Buffer', ['queue', 'mutex'])
 
 class Message():
 
-    def __init__(self,
-                 msg: str = '',
-                 data: Optional[dict] = None,
-                 timestamp: Optional[float] = None):
+    def __init__(self, msg: str = '', data: Optional[dict] = None):
         self.msg = msg
         self.data = data if data else {}
         self.route_info = []
-        self.timestamp = timestamp if timestamp else time.time()
+        self.timestamp = time.time()
         self.id = uuid.uuid4()
 
-    def update_route_info(self, node, meta=None):
-        info = {
-            'node': node.name,
-            'node_type': node.__class__.__name__,
-            'meta': meta
-        }
-        self.route_info.append(info)
+    def update_route_info(self,
+                          node=None,
+                          node_name=None,
+                          node_type=None,
+                          info: Optional[dict] = None):
+        if node is not None:
+            if node_name is not None or node_type is not None:
+                warnings.warn(
+                    '`node_name` and `node_type` will be overridden if node'
+                    'is provided.')
+            node_name = node.name
+            node_type = node.__class__.__name__
+
+        node_info = {'node': node_name, 'node_type': node_type, 'info': info}
+        self.route_info.append(node_info)
+
+    def set_route_info(self, route_info):
+        self.route_info = route_info
+
+    def get_route_info(self) -> list:
+        return self.route_info.copy()
 
 
 class FrameMessage(Message):
@@ -36,6 +49,9 @@ class FrameMessage(Message):
 
     def get_image(self):
         return self.data.get('image', None)
+
+    def set_image(self, img):
+        self.data['image'] = img
 
     def add_detection_result(self, result, tag=None):
         if 'detection_results' not in self.data:
@@ -145,3 +161,16 @@ class EventManager():
 
     def clear_keyboard(self, key):
         return self.clear(self._get_keyboard_event(key))
+
+
+@contextmanager
+def limit_max_fps(fps: Optional[float]):
+    t_start = time.time()
+    try:
+        yield
+    finally:
+        t_end = time.time()
+        if fps is not None:
+            t_sleep = 1.0 / fps - t_end + t_start
+            if t_sleep > 0:
+                time.sleep(t_sleep)

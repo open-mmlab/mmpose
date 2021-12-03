@@ -15,6 +15,7 @@ class WebcamRunner():
         self.buffer_manager = BufferManager()
         self.event_manager = EventManager()
         self.node_list = []
+        self.vcap = None  # Video Capture
 
         # register default buffers
         self.buffer_manager.add_buffer('_frame_', maxlen=cfg.frame_buffer_size)
@@ -45,24 +46,32 @@ class WebcamRunner():
         cfg = self.cfg
         camera_id = cfg.camera_id
 
-        vcap = cv2.VideoCapture(camera_id)
-        if not vcap.isOpened():
+        self.vcap = cv2.VideoCapture(camera_id)
+        if not self.vcap.isOpened():
             self.logger.warn(f'Cannot open camera (ID={camera_id})')
             exit()
 
         while not self.event_manager.is_set('exit'):
             # capture a camera frame
-            ret_val, frame = vcap.read()
+            ret_val, frame = self.vcap.read()
             if ret_val:
+                # Put frame message (for display) into buffer
                 frame_msg = FrameMessage(frame)
-                self.buffer_manager.put('_input_', frame_msg)
                 self.buffer_manager.put('_frame_', frame_msg)
-                # self.frame_buffer.put(frame_msg)
+
+                # Put input message (for model inference or other usage)
+                # into buffer
+                input_msg = FrameMessage(frame)
+                input_msg.update_route_info(
+                    node_name='Camera Info',
+                    node_type='dummy',
+                    info=self.get_camera_info())
+                self.buffer_manager.put('_input_', input_msg)
 
             else:
                 self.buffer_manager.put('_frame_', None)
 
-        vcap.release()
+        self.vcap.release()
 
     def _display(self):
 
@@ -98,17 +107,30 @@ class WebcamRunner():
             # handle keyboard input
             key = cv2.waitKey(1)
             if key != -1:
-                self.on_keyboard_input_(key)
+                self.on_keyboard_input(key)
 
         cv2.destroyAllWindows()
         if vwriter is not None:
             vwriter.release()
 
-    def on_keyboard_input_(self, key):
+    def on_keyboard_input(self, key):
         if key in (27, ord('q'), ord('Q')):
             self.event_manager.set('exit')
         else:
             self.event_manager.set_keyboard(key)
+
+    def get_camera_info(self):
+        frame_width = self.vcap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        frame_height = self.vcap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        frame_rate = self.vcap.get(cv2.CAP_PROP_FPS)
+
+        cam_info = {
+            'Camera ID': self.cfg.camera_id,
+            'Frame size': f'{frame_width}x{frame_height}',
+            'Frame rate': frame_rate,
+        }
+
+        return cam_info
 
     def run(self):
         print('run')

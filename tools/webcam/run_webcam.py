@@ -3,8 +3,7 @@
 from argparse import ArgumentParser
 
 import mmcv
-
-from mmpose.utils import WebcamRunner
+from webcam_apis import WebcamRunner
 
 
 def parse_args():

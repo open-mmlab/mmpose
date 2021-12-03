@@ -4,20 +4,39 @@ import warnings
 import weakref
 from abc import ABCMeta, abstractmethod
 from threading import Thread
-from typing import Optional
+from typing import Optional, Union
 
-from ..webcam_utils import Message
+from mmcv.utils.misc import is_method_overridden
+
+from mmpose.utils import StopWatch
+from ..webcam_utils import Message, limit_max_fps
 
 
 class Node(Thread, metaclass=ABCMeta):
 
-    def __init__(self, name: Optional[str] = None, enable_key=None):
+    def __init__(self,
+                 name: Optional[str] = None,
+                 enable_key: Optional[Union[str, int]] = None,
+                 max_fps: Optional[float] = 30):
         super().__init__(name=name, daemon=True)
         self._runner = None
-        self.enabled = True
+        self._enabled = True
         self.enable_key = enable_key
         self.input_buffers = []
         self.output_buffers = []
+        self.max_fps = max_fps
+
+        # If the node allows toggling enable, it should override the `bypass`
+        # method to define the node behavior when disabled.
+        if self.enable_key:
+            if not is_method_overridden('bypass', Node, self.__class__):
+                raise NotImplementedError(
+                    f'The node {self.__class__} does not support toggling'
+                    'enable but got argument `enable_key`. To support toggling'
+                    'enable, please override the `bypass` method of the node.')
+
+        # A timer to calculate node FPS
+        self._timer = StopWatch(window=10)
 
     def register_input_buffer(self, buffer_name, input_name, essential=False):
         buffer_info = {
@@ -57,7 +76,7 @@ class Node(Thread, metaclass=ABCMeta):
             self._enabled = not self._enabled
             self.runner.event_manager.clear_keyboard(self.enable_key)
 
-        return self.enable_key
+        return self._enabled
 
     def get_input(self) -> tuple[bool, Optional[dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
@@ -94,27 +113,45 @@ class Node(Thread, metaclass=ABCMeta):
 
         return True, result
 
+    @abstractmethod
+    def process(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+        ...
+
+    def bypass(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+        raise NotImplementedError
+
+    def get_node_info(self):
+        info = {'fps': self._timer.report('_FPS_')}
+        return info
+
     def run(self):
 
         while True:
-            # Check if enabled
-            enabled = self.check_enabled()
-            if not enabled:
-                time.sleep(0.0001)
-                continue
+
             # Check if input is ready
             input_status, input_msgs = self.get_input()
             if not input_status:
-                time.sleep(0.0001)
+                time.sleep(0.001)
                 continue
 
-            # Process
-            output_msg = self.process(input_msgs)
+            # Check if enabled
+            enabled = self.check_enabled()
+            if not enabled:
+                # Override bypass method to define node behavior when disabled
+                output_msg = self.bypass(input_msgs)
+            else:
+                with self._timer.timeit():
+                    with limit_max_fps(self.max_fps):
+                        # Process
+                        output_msg = self.process(input_msgs)
 
-            for buffer_info in self.output_buffers:
-                buffer_name = buffer_info['buffer_name']
-                self.runner.buffer_manager.put(buffer_name, output_msg)
+                if output_msg:
+                    # Update route information
+                    node_info = self.get_node_info()
+                    output_msg.update_route_info(node=self, info=node_info)
 
-    @abstractmethod
-    def process(self, input_msgs: dict[str, Message]) -> Message:
-        ...
+            # Dispatch output message
+            if output_msg:
+                for buffer_info in self.output_buffers:
+                    buffer_name = buffer_info['buffer_name']
+                    self.runner.buffer_manager.put(buffer_name, output_msg)
