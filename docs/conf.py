@@ -147,7 +147,7 @@ html_theme_options = {
                     'name': 'MMFlow',
                     'url': 'https://github.com/open-mmlab/mmflow',
                     'description':
-                    'OpenMMLab optical flow toolbox and benchmark'
+                    'Optical flow toolbox and benchmark'
                 },
                 {
                     'name':
@@ -155,8 +155,16 @@ html_theme_options = {
                     'url':
                     'https://github.com/open-mmlab/mmfewshot',
                     'description':
-                    'OpenMMLab FewShot Learning Toolbox and Benchmark'
+                    'FewShot learning toolbox and benchmark'
                 },
+                {
+                    'name':
+                    'MMHuman3D',
+                    'url':
+                    'https://github.com/open-mmlab/mmhuman3d',
+                    'description':
+                    'Human Pose and Shape Estimation Toolbox and Benchmark.'  
+                }
             ]
         },
         {

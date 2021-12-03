@@ -136,6 +136,13 @@ html_theme_options = {
                 'name': 'MMFewShot',
                 'url': 'https://github.com/open-mmlab/mmfewshot',
                 'description': '少样本学习工具箱与测试基准'
+            }, {
+                'name':
+                'MMHuman3D',
+                'url':
+                'https://github.com/open-mmlab/mmhuman3d',
+                'description':
+                'OpenMMLab 人体参数化模型工具箱与测试基准.' 
             }]
         },
         {
