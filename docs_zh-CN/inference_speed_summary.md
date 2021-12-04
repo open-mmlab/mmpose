@@ -28,7 +28,7 @@
 
 ## MMPose 中主要模型的复杂度信息和推理速度总结
 
-| 算法 | 模型 | 配置文件 | 输入分辨率 | 全类别平均正确率 | 浮点数运算次数<br>(10亿) | 参数数量<br>(百万) | GPU 上的推理速度<br>(每秒处理的帧数)| GPU 上的推理速度<br>(每秒处理的帧数, 批处理大小为10) | CPU 上的推理速度<br>(每秒处理的帧数) | CPU 上的推理速度<br>(每秒处理的帧数, 批处理大小为10) |
+| Algorithm | Model | config | Input size | mAP | Flops (GFLOPs) | Params (M) | GPU Inference Speed<br>(FPS)<sup>1</sup> | GPU Inference Speed<br>(FPS, bs=10)<sup>2</sup> | CPU Inference Speed<br>(FPS) | CPU Inference Speed<br>(FPS, bs=10) |
 | :--- | :---------------: | :-----------------: |:--------------------: | :----------------------------: | :-----------------: | :---------------: |:--------------------: | :----------------------------: | :-----------------: | :-----------------: |
 | topdown_heatmap | Alexnet | [config](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py) | (3, 192, 256) | 0.397 | 1.42 | 5.62 | 229.21 ± 16.91 | 33.52 ± 1.14 | 13.92 ± 0.60 | 1.38 ± 0.02 |
 | topdown_heatmap | CPM | [config](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco_256x192.py) | (3, 192, 256) | 0.623 | 63.81 | 31.3 | 11.35 ± 0.22 | 3.87 ± 0.07 | 0.31 ± 0.01 | 0.03 ± 0.00 |
