@@ -76,7 +76,7 @@ html_theme_options = {
     'menu': [
         {
             'name':
-            'Tutorial',
+            '教程',
             'url':
             'https://colab.research.google.com/github/'
             'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
@@ -87,70 +87,77 @@ html_theme_options = {
         },
         {
             'name':
-            'Projects',
+            '算法库',
             'children': [{
                 'name': 'MMCV',
-                'url': 'https://github.com/open-mmlab/mmcv',
+                'url': 'https://mmcv.readthedocs.io/zh_CN/latest/',
                 'description': '计算机视觉基础库'
             }, {
                 'name': 'MMDetection',
-                'url': 'https://github.com/open-mmlab/mmdetection',
+                'url': 'https://mmdetection.readthedocs.io/zh_CN/latest/',
                 'description': '检测工具箱与测试基准'
             }, {
                 'name': 'MMAction2',
-                'url': 'https://github.com/open-mmlab/mmaction2',
+                'url': 'https://mmaction2.readthedocs.io/zh_CN/latest/',
                 'description': '视频理解工具箱与测试基准'
             }, {
                 'name': 'MMClassification',
-                'url': 'https://github.com/open-mmlab/mmclassification',
+                'url': 'https://mmclassification.readthedocs.io/zh_CN/latest/',
                 'description': '图像分类工具箱与测试基准'
             }, {
                 'name': 'MMSegmentation',
-                'url': 'https://github.com/open-mmlab/mmsegmentation',
+                'url': 'https://mmsegmentation.readthedocs.io/zh_CN/latest/',
                 'description': '语义分割工具箱与测试基准'
             }, {
                 'name': 'MMDetection3D',
-                'url': 'https://github.com/open-mmlab/mmdetection3d',
+                'url': 'https://mmdetection3d.readthedocs.io/zh_CN/latest/',
                 'description': '通用3D目标检测平台'
             }, {
                 'name': 'MMEditing',
-                'url': 'https://github.com/open-mmlab/mmediting',
+                'url': 'https://mmediting.readthedocs.io/zh_CN/latest/',
                 'description': '图像视频编辑工具箱'
             }, {
                 'name': 'MMOCR',
-                'url': 'https://github.com/open-mmlab/mmocr',
+                'url': 'https://mmocr.readthedocs.io/zh_CN/latest/',
                 'description': '全流程文字检测识别理解工具包'
             }, {
                 'name': 'MMTracking',
-                'url': 'https://github.com/open-mmlab/mmtracking',
+                'url': 'https://mmtracking.readthedocs.io/zh_CN/latest/',
                 'description': '一体化视频目标感知平台'
             }, {
                 'name': 'MMGeneration',
-                'url': 'https://github.com/open-mmlab/mmgeneration',
+                'url': 'https://mmgeneration.readthedocs.io/zh_CN/latest/',
                 'description': '生成模型工具箱'
             }, {
                 'name': 'MMFlow',
-                'url': 'https://github.com/open-mmlab/mmflow',
+                'url': 'https://mmflow.readthedocs.io/zh_CN/latest/',
                 'description': '光流估计工具箱与测试基准'
             }, {
                 'name': 'MMFewShot',
-                'url': 'https://github.com/open-mmlab/mmfewshot',
+                'url': 'https://mmfewshot.readthedocs.io/zh_CN/latest/',
                 'description': '少样本学习工具箱与测试基准'
+            }, {
+                'name': 'MMHuman3D',
+                'url': 'https://mmhuman3d.readthedocs.io/zh_CN/latest/',
+                'description': 'OpenMMLab 人体参数化模型工具箱与测试基准.'
             }]
         },
         {
             'name':
             'OpenMMLab',
-            'children': [
-                {
-                    'name': '主页',
-                    'url': 'https://openmmlab.com/'
-                },
-                {
-                    'name': 'GitHub',
-                    'url': 'https://github.com/open-mmlab/'
-                },
-            ]
+            'children': [{
+                'name': '主页',
+                'url': 'https://openmmlab.com/'
+            }, {
+                'name': 'GitHub',
+                'url': 'https://github.com/open-mmlab/'
+            }, {
+                'name': '推特',
+                'url': 'https://twitter.com/OpenMMLab'
+            }, {
+                'name': '知乎',
+                'url': 'https://zhihu.com/people/openmmlab'
+            }]
         },
     ]
 }
