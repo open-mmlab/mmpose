@@ -1,6 +1,6 @@
-# Inference speed summary
+# Inference Speed
 
-We show the summary of complexity information and inference speed for the major models in MMPose, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes. We also compare the mAP of different models on COCO human keypoint dataset, showing the trade-off between model performance and model complexity.
+We summarize the model complexity and inference speed of major models in MMPose, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes. We also compare the mAP of different models on COCO human keypoint dataset, showing the trade-off between model performance and model complexity.
 
 ## Comparison Rules
 
