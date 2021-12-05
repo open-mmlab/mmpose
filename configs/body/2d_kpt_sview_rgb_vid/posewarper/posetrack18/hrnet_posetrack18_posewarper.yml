@@ -10,11 +10,11 @@ Models:
     Architecture: &id001
     - PoseWarper
     - HRNet
-    Training Data: PoseTrack18
+    Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_posetrack18_384x288_posewarper_stage2
-  README: configs/body/2d_kpt_sview_rgb_vid/topdown_heatmap/posetrack18/hrnet_posetrack18_posewarper.md
+  README: configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_posetrack18_posewarper.md
   Results:
-  - Dataset: PoseTrack18
+  - Dataset: COCO
     Metrics:
       Ankl: 81.5
       Elb: 86.1
@@ -30,11 +30,11 @@ Models:
   In Collection: PoseWarper
   Metadata:
     Architecture: *id001
-    Training Data: PoseTrack18
+    Training Data: COCO
   Name: topdown_heatmap_hrnet_w48_posetrack18_384x288_posewarper_stage2
-  README: configs/body/2d_kpt_sview_rgb_vid/topdown_heatmap/posetrack18/hrnet_posetrack18_posewarper.md
+  README: configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_posetrack18_posewarper.md
   Results:
-  - Dataset: PoseTrack18
+  - Dataset: COCO
     Metrics:
       Ankl: 74.4
       Elb: 82.7

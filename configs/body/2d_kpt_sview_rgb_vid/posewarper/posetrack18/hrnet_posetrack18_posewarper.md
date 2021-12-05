@@ -49,6 +49,24 @@ year = {2019},
 
 </details>
 
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-319-10602-1_48">COCO (ECCV'2014)</a></summary>
+
+```bibtex
+@inproceedings{lin2014microsoft,
+  title={Microsoft coco: Common objects in context},
+  author={Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C Lawrence},
+  booktitle={European conference on computer vision},
+  pages={740--755},
+  year={2014},
+  organization={Springer}
+}
+```
+
+</details>
+
 Note that the training of PoseWarper can be split into two stages.
 
 The first-stage is trained with the pre-trained [checkpoint](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_384x288-314c8528_20200708.pth) on COCO dataset, and the main backbone is fine-tuned on PoseTrack18 in a single-frame setting.
@@ -61,7 +79,7 @@ Results on PoseTrack2018 val with ground-truth bounding boxes
 | :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
 | [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_vid/topdown_heatmap/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py) | 384x288 | 88.2 | 90.3 | 86.1 | 81.6 | 81.8 | 83.8 | 81.5 | 85.0 | [ckpt](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth) | [log](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2_20211130.log.json) |
 
-Results on PoseTrack2018 val with precomputed human bounding boxes from PoseWarper supplementary data files from [this link](https://www.dropbox.com/s/ygfy6r8nitoggfq/PoseWarper_supp_files.zip?dl=0)
+Results on PoseTrack2018 val with precomputed human bounding boxes from PoseWarper supplementary data files from [this link](https://www.dropbox.com/s/ygfy6r8nitoggfq/PoseWarper_supp_files.zip?dl=0).
 
 | Arch  | Input Size | Head | Shou | Elb | Wri | Hip | Knee | Ankl | Total  | ckpt    | log     |
 | :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
