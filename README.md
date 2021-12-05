@@ -165,6 +165,12 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 
 More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
 
+## Inference Speed
+
+We summarize the model complexity and inference speed of major models in MMPose, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes.
+
+Please refer to [inference_speed_summary.md](docs/inference_speed_summary.md) for more details.
+
 ## Installation
 
 Please refer to [install.md](docs/install.md) for installation.

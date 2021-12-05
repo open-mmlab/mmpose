@@ -164,6 +164,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 更多详情可见 [基准测试](docs/benchmark.md)。
 
+## 推理速度
+
+我们总结了 MMPose 中主要模型的复杂度信息和推理速度，包括模型的计算复杂度、参数数量，以及以不同的批处理大小在 CPU 和 GPU 上的推理速度。
+
+详细信息可见 [模型推理速度](docs_zh-CN/inference_speed_summary.md).
+
 ## 安装
 
 请参考 [安装指南](docs/install.md) 进行安装。
