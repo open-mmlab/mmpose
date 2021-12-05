@@ -8,15 +8,6 @@ from mmpose.models.necks import PoseWarperNeck
 
 def test_posewarper_neck():
     """Test PoseWarperNeck."""
-    with pytest.raises(TypeError):
-        # type of extra must be dict
-        _ = PoseWarperNeck(
-            out_channels=3,
-            in_channels=512,
-            inner_channels=128,
-            deform_groups=17,
-            extra=[])
-
     with pytest.raises(AssertionError):
         # test value of trans_conv_kernel
         _ = PoseWarperNeck(
@@ -24,7 +15,7 @@ def test_posewarper_neck():
             in_channels=512,
             inner_channels=128,
             deform_groups=17,
-            extra={'trans_conv_kernel': 2})
+            trans_conv_kernel=2)
 
     with pytest.raises(AssertionError):
         # test value of dilations

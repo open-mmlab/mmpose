@@ -5,6 +5,7 @@ import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
 from mmcv.ops import DeformConv2d
+from mmcv.utils import digit_version
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.models.utils.ops import resize
@@ -26,10 +27,14 @@ class PoseWarperNeck(nn.Module):
         inner_channels (int): Number of intermediate channels
         deform_groups (int): Number of groups in the deformable conv
         dilations (list|tuple): different dilations of the offset conv layers
-        extra (dict): config of the conv layer to get heatmap
-        res_blocks (dict): config of residual blocks
-        offsets (dict): config of offset conv layer
-        deform_conv (dict): config of defomrable conv layer
+        trans_conv_kernel (int): the kernel of the trans conv layer, which is
+            used to get heatmap from the output of backbone. Default: 1
+        res_blocks_cfg (dict): config of residual blocks. It should contain
+            two keys, 'block' and 'num_blocks',  to specify the type of the
+            residual block and the number of blocks. 
+            Default: None, use BASIC block and the number of blocks is 20.
+        offsets_kernel (int): the kernel of offset conv layer.
+        deform_conv_kernel (int): the kernel of defomrable conv layer.
         in_index (int|Sequence[int]): Input feature index. Default: 0
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
@@ -46,9 +51,9 @@ class PoseWarperNeck(nn.Module):
             freeze running stats (mean and var). Note: Effect on Batch Norm
             and its variants only. Default: False
         im2col_step: the argument `im2col_step` in deform_conv
-        least_mmcv_version (str): should use version newer than this version
     """
     blocks_dict = {'BASIC': BasicBlock, 'BOTTLENECK': Bottleneck}
+    minimum_mmcv_version = '1.3.17'
 
     def __init__(self,
                  in_channels,
@@ -56,50 +61,42 @@ class PoseWarperNeck(nn.Module):
                  inner_channels,
                  deform_groups=17,
                  dilations=(3, 6, 12, 18, 24),
-                 extra=None,
-                 res_blocks={},
-                 offsets={},
-                 deform_conv={},
+                 trans_conv_kernel=1,
+                 res_blocks_cfg=None,
+                 offsets_kernel=3,
+                 deform_conv_kernel=3,
                  in_index=0,
                  input_transform=None,
                  freeze_trans_layer=False,
                  norm_eval=False,
-                 im2col_step=80,
-                 least_mmcv_version='1.3.16'):
+                 im2col_step=80):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.inner_channels = inner_channels
         self.deform_groups = deform_groups
         self.dilations = dilations
-        self.extra = extra
-        self.res_blocks = res_blocks
-        self.offsets = offsets
-        self.deform_conv = deform_conv
+        self.trans_conv_kernel = trans_conv_kernel
+        self.res_blocks_cfg = res_blocks_cfg
+        self.offsets_kernel = offsets_kernel
+        self.deform_conv_kernel = deform_conv_kernel
         self.in_index = in_index
         self.input_transform = input_transform
         self.freeze_trans_layer = freeze_trans_layer
         self.norm_eval = norm_eval
         self.im2col_step = im2col_step
-        self.least_mmcv_version = least_mmcv_version
-
-        if extra is not None and not isinstance(extra, dict):
-            raise TypeError('extra should be dict or None.')
 
         identity_trans_layer = False
-        if extra is not None and 'trans_conv_kernel' in extra:
-            assert extra['trans_conv_kernel'] in [0, 1, 3]
-            if extra['trans_conv_kernel'] == 3:
-                padding = 1
-            elif extra['trans_conv_kernel'] == 1:
-                padding = 0
-            else:
-                # 0 for Identity mapping.
-                identity_trans_layer = True
-            kernel_size = extra['trans_conv_kernel']
-        else:
-            kernel_size = 1
+
+        assert trans_conv_kernel in [0, 1, 3]
+        kernel_size = trans_conv_kernel
+        if kernel_size == 3:
+            padding = 1
+        elif kernel_size == 1:
             padding = 0
+        else:
+            # 0 for Identity mapping.
+            identity_trans_layer = True
 
         if identity_trans_layer:
             self.trans_layer = nn.Identity()
@@ -113,9 +110,12 @@ class PoseWarperNeck(nn.Module):
                 padding=padding)
 
         # build chain of residual blocks
-        block_type = self.res_blocks.get('block', 'BASIC')
+        if res_blocks_cfg is not None and not isinstance(res_blocks_cfg, dict):
+            raise TypeError('res_blocks_cfg should be dict or None.')
+
+        block_type = res_blocks_cfg.get('block', 'BASIC')
         block = self.blocks_dict[block_type]
-        num_blocks = self.res_blocks.get('num_blocks', 20)
+        num_blocks = res_blocks_cfg.get('num_blocks', 20)
 
         res_layers = []
         downsample = nn.Sequential(
@@ -142,15 +142,14 @@ class PoseWarperNeck(nn.Module):
         assert self.num_offset_layers > 0, 'Number of offset layers ' \
             'should be larger than 0.'
 
-        kernel = offsets.get('kernel', 3)
-        target_offset_channels = 2 * kernel * kernel * deform_groups
+        target_offset_channels = 2 * offsets_kernel * offsets_kernel * deform_groups
 
         offset_layers = [
             build_conv_layer(
                 cfg=dict(type='Conv2d'),
                 in_channels=inner_channels,
                 out_channels=target_offset_channels,
-                kernel_size=kernel,
+                kernel_size=offsets_kernel,
                 stride=1,
                 dilation=dilations[i],
                 padding=dilations[i],
@@ -160,20 +159,20 @@ class PoseWarperNeck(nn.Module):
         self.offset_layers = nn.ModuleList(offset_layers)
 
         # build deformable conv layers
-        assert mmcv.__version__ > self.least_mmcv_version, \
+        assert digit_version(mmcv.__version__) >= \
+            digit_version(self.minimum_mmcv_version), \
             f'Current MMCV version: {mmcv.__version__}, ' \
-            f'but MMCV > {self.least_mmcv_version} is required, see ' \
+            f'but MMCV >= {self.minimum_mmcv_version} is required, see ' \
             f'https://github.com/open-mmlab/mmcv/issues/1440, ' \
             f'Please install the latest MMCV.'
 
-        kernel = deform_conv.get('kernel', 3)
         deform_conv_layers = [
             DeformConv2d(
                 in_channels=out_channels,
                 out_channels=out_channels,
-                kernel_size=kernel,
+                kernel_size=deform_conv_kernel,
                 stride=1,
-                padding=int(kernel / 2) * dilations[i],
+                padding=int(deform_conv_kernel / 2) * dilations[i],
                 dilation=dilations[i],
                 deform_groups=deform_groups,
                 im2col_step=self.im2col_step,

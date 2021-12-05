@@ -2,6 +2,8 @@
 import argparse
 from functools import partial
 
+import torch
+
 from mmpose.apis.inference import init_pose_model
 
 try:
