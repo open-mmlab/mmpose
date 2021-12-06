@@ -1,19 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SEResNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco [SEResNet@COCO]
+- Name: SEResNet
   Paper:
     Title: Squeeze-and-excitation networks
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Squeeze-and-Excitation_Networks_CVPR_2018_paper
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: &id001
+    - SEResNet
     Training Data: COCO
   Name: topdown_heatmap_seresnet50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -25,11 +23,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_256x192-25058b66_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet50_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_seresnet50_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -41,11 +40,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_coco_384x288-bc0b7680_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_seresnet101_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -57,11 +57,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_256x192-83f29c4d_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet101_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_seresnet101_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -73,11 +74,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_coco_384x288-48de1709_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_seresnet152_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -89,11 +91,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_coco_256x192-1c628d79_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet152_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--seresnet_coco
-    [SEResNet@COCO]
+  In Collection: SEResNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_seresnet152_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

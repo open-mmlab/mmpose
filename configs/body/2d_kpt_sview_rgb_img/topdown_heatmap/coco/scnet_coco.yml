@@ -1,18 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SCNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet_coco [SCNet@COCO]
+- Name: SCNet
   Paper:
     Title: Improving Convolutional Networks with Self-Calibrated Convolutions
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet_coco [SCNet@COCO]
+  In Collection: SCNet
   Metadata:
+    Architecture: &id001
+    - SCNet
     Training Data: COCO
   Name: topdown_heatmap_scnet50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -24,10 +23,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet_coco [SCNet@COCO]
+  In Collection: SCNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_scnet50_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -39,10 +40,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet_coco [SCNet@COCO]
+  In Collection: SCNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_scnet101_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -54,10 +57,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet101_coco_256x192-6d348ef9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--scnet_coco [SCNet@COCO]
+  In Collection: SCNet
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_scnet101_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

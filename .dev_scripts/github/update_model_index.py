@@ -121,6 +121,7 @@ def parse_config_path(path):
     # convert task name to readable version
     task2readable = {
         '2d_kpt_sview_rgb_img': '2D Keypoint',
+        '2d_kpt_sview_rgb_vid': '2D Keypoint',
         '3d_kpt_sview_rgb_img': '3D Keypoint',
         '3d_kpt_sview_rgb_vid': '3D Keypoint',
         '3d_mesh_sview_rgb_img': '3D Mesh',
@@ -149,16 +150,15 @@ def parse_md(md_file):
     """
     readme_path = osp.relpath(md_file, MMPOSE_ROOT)
 
-    collection = dict(
-        Name=None,  # fill in later
-        Metadata={'Architecture': []},
-        README=readme_path,
-        Paper=None)
+    collection = {'Name': None, 'Paper': None}
     models = []
 
     # record the publish year of the latest paper
     paper_year = -1
-    dataset = 'Unknown'
+    dataset = None
+
+    # architectures for collection and model
+    architecture = []
 
     with open(md_file, 'r') as md:
         lines = md.readlines()
@@ -180,17 +180,19 @@ def parse_md(md_file):
 
                 paper_type = re.findall(r'\[(.*)\]', lines[i])[0]
 
+                # lower priority for dataset paper
                 if paper_type == 'DATASET':
-                    # DATASET paper has lower priority
                     year = 0
 
                 if year > paper_year:
                     collection['Paper'] = dict(Title=title, URL=url)
+                    collection['Name'] = name
                     paper_year = year
 
                 # get architecture
                 if paper_type in {'ALGORITHM', 'BACKBONE'}:
-                    collection['Metadata']['Architecture'].append(name)
+                    architecture.append(name)
+
                 # get dataset
                 elif paper_type == 'DATASET':
                     dataset = name
@@ -234,7 +236,10 @@ def parse_md(md_file):
                     task_name = ' '.join(
                         [model_info['target'], model_info['task']])
 
-                    metadata = {'Training Data': dataset}
+                    metadata = {
+                        'Training Data': dataset,
+                        'Architecture': architecture
+                    }
                     if flops_idx != -1:
                         metadata['FLOPs'] = float(line[flops_idx])
                     if params_idx != -1:
@@ -248,8 +253,10 @@ def parse_md(md_file):
                     model = {
                         'Name':
                         model_name,
+                        'README':
+                        readme_path,
                         'In Collection':
-                        None,  # fill in later
+                        collection['Name'],
                         'Config':
                         config,
                         'Metadata':
@@ -269,19 +276,8 @@ def parse_md(md_file):
             else:
                 i += 1
 
-    # fill in collection name
-    readme_name = '--'.join(
-        osp.splitext(osp.relpath(readme_path, 'configs'))[0].split(osp.sep))
-    collection_alias = '+'.join(
-        collection['Metadata']['Architecture']) + f'@{dataset}'
-    collection_name = f'{readme_name} [{collection_alias}]'
-    collection['Name'] = collection_name
-    for model in models:
-        model['In Collection'] = collection_name
-
     result = {'Collections': [collection], 'Models': models}
-    yml_file = md_file[:-2] + 'yml'
-
+    yml_file = osp.splitext(md_file)[0] + '.yml'
     is_different = dump_yaml_and_check_difference(result, yml_file)
     return is_different
 

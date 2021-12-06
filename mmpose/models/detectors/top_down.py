@@ -71,7 +71,7 @@ class TopDown(BasePose):
 
     @property
     def with_neck(self):
-        """Check if has keypoint_head."""
+        """Check if has neck."""
         return hasattr(self, 'neck')
 
     @property
@@ -130,8 +130,8 @@ class TopDown(BasePose):
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes, image paths
-                  and heatmaps.
+                Otherwise, return predicted poses, boxes, image paths
+                and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
@@ -271,30 +271,31 @@ class TopDown(BasePose):
         img = img.copy()
 
         bbox_result = []
+        bbox_labels = []
         pose_result = []
         for res in result:
             if 'bbox' in res:
                 bbox_result.append(res['bbox'])
+                bbox_labels.append(res.get('label', None))
             pose_result.append(res['keypoints'])
 
         if bbox_result:
             bboxes = np.vstack(bbox_result)
-            labels = None
-            if 'label' in result[0]:
-                labels = [res['label'] for res in result]
             # draw bounding boxes
             imshow_bboxes(
                 img,
                 bboxes,
-                labels=labels,
+                labels=bbox_labels,
                 colors=bbox_color,
                 text_color=text_color,
                 thickness=bbox_thickness,
                 font_scale=font_scale,
                 show=False)
 
-        imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
-                         pose_kpt_color, pose_link_color, radius, thickness)
+        if pose_result:
+            imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
+                             pose_kpt_color, pose_link_color, radius,
+                             thickness)
 
         if show:
             imshow(img, win_name, wait_time)

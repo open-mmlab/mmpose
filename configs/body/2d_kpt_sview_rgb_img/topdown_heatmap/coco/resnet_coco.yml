@@ -1,19 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SimpleBaseline2D
-    - ResNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+- Name: SimpleBaseline2D
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: &id001
+    - SimpleBaseline2D
+    - ResNet
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -25,10 +24,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -40,10 +41,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_384x288-e6f795e9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -55,10 +58,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_256x192-6e6babf0_20200708.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res101_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -70,10 +75,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res101_coco_384x288-8c71bdc9_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -85,10 +92,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnet/res152_coco_256x192-f6e307c2_20200709.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res152_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnet_coco [SimpleBaseline2D+ResNet@COCO]
+  In Collection: SimpleBaseline2D
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

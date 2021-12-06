@@ -5,10 +5,28 @@ name: build
 
 on:
   push:
-   branches:
-    - master
+    branches:
+      - master
+    paths-ignore:
+      - 'README.md'
+      - 'README_CN.md'
+      - 'docs/**'
+      - 'docs_zh-CN/**'
+      - 'examples/**'
+      - '.dev_scripts/**'
 
   pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'README_CN.md'
+      - 'docs/**'
+      - 'docs_zh-CN/**'
+      - 'examples/**'
+      - '.dev_scripts/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:

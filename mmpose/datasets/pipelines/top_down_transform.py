@@ -37,11 +37,20 @@ class TopDownRandomFlip:
         flipped = False
         if np.random.rand() <= self.flip_prob:
             flipped = True
-            img = img[:, ::-1, :]
-            joints_3d, joints_3d_visible = fliplr_joints(
-                joints_3d, joints_3d_visible, img.shape[1],
-                results['ann_info']['flip_pairs'])
-            center[0] = img.shape[1] - center[0] - 1
+            if not isinstance(img, list):
+                img = img[:, ::-1, :]
+            else:
+                img = [i[:, ::-1, :] for i in img]
+            if not isinstance(img, list):
+                joints_3d, joints_3d_visible = fliplr_joints(
+                    joints_3d, joints_3d_visible, img.shape[1],
+                    results['ann_info']['flip_pairs'])
+                center[0] = img.shape[1] - center[0] - 1
+            else:
+                joints_3d, joints_3d_visible = fliplr_joints(
+                    joints_3d, joints_3d_visible, img[0].shape[1],
+                    results['ann_info']['flip_pairs'])
+                center[0] = img[0].shape[1] - center[0] - 1
 
         results['img'] = img
         results['joints_3d'] = joints_3d
@@ -197,18 +206,36 @@ class TopDownAffine:
 
         if self.use_udp:
             trans = get_warp_matrix(r, c * 2.0, image_size - 1.0, s * 200.0)
-            img = cv2.warpAffine(
-                img,
-                trans, (int(image_size[0]), int(image_size[1])),
-                flags=cv2.INTER_LINEAR)
+            if not isinstance(img, list):
+                img = cv2.warpAffine(
+                    img,
+                    trans, (int(image_size[0]), int(image_size[1])),
+                    flags=cv2.INTER_LINEAR)
+            else:
+                img = [
+                    cv2.warpAffine(
+                        i,
+                        trans, (int(image_size[0]), int(image_size[1])),
+                        flags=cv2.INTER_LINEAR) for i in img
+                ]
+
             joints_3d[:, 0:2] = \
                 warp_affine_joints(joints_3d[:, 0:2].copy(), trans)
+
         else:
             trans = get_affine_transform(c, s, r, image_size)
-            img = cv2.warpAffine(
-                img,
-                trans, (int(image_size[0]), int(image_size[1])),
-                flags=cv2.INTER_LINEAR)
+            if not isinstance(img, list):
+                img = cv2.warpAffine(
+                    img,
+                    trans, (int(image_size[0]), int(image_size[1])),
+                    flags=cv2.INTER_LINEAR)
+            else:
+                img = [
+                    cv2.warpAffine(
+                        i,
+                        trans, (int(image_size[0]), int(image_size[1])),
+                        flags=cv2.INTER_LINEAR) for i in img
+                ]
             for i in range(results['ann_info']['num_joints']):
                 if joints_3d_visible[i, 0] > 0.0:
                     joints_3d[i,

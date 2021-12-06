@@ -1,18 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - SCNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--scnet_mpii [SCNet@MPII]
+- Name: SCNet
   Paper:
     Title: Improving Convolutional Networks with Self-Calibrated Convolutions
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Liu_Improving_Convolutional_Networks_With_Self-Calibrated_Convolutions_CVPR_2020_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/scnet_mpii.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/scnet50_mpii_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--scnet_mpii [SCNet@MPII]
+  In Collection: SCNet
   Metadata:
+    Architecture: &id001
+    - SCNet
     Training Data: MPII
   Name: topdown_heatmap_scnet50_mpii_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/scnet_mpii.md
   Results:
   - Dataset: MPII
     Metrics:
@@ -21,10 +20,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_mpii_256x256-a54b6af5_20200812.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/scnet101_mpii_256x256.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--mpii--scnet_mpii [SCNet@MPII]
+  In Collection: SCNet
   Metadata:
+    Architecture: *id001
     Training Data: MPII
   Name: topdown_heatmap_scnet101_mpii_256x256
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/scnet_mpii.md
   Results:
   - Dataset: MPII
     Metrics:

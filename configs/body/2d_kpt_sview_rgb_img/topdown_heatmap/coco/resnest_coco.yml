@@ -1,18 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - ResNeSt
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+- Name: ResNeSt
   Paper:
     Title: 'ResNeSt: Split-Attention Networks'
     URL: https://arxiv.org/abs/2004.08955
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: &id001
+    - ResNeSt
     Training Data: COCO
   Name: topdown_heatmap_resnest50_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -24,10 +23,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_256x192-6e65eece_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest50_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest50_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -39,10 +40,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest50_coco_384x288-dcd20436_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest101_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -54,10 +57,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_256x192-2ffcdc9d_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest101_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest101_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -69,10 +74,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest101_coco_384x288-80660658_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest200_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -84,10 +91,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_256x192-db007a48_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest200_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest200_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -99,10 +108,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest200_coco_384x288-b5bb76cb_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest269_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -114,10 +125,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnest/resnest269_coco_256x192-2a7882ac_20210517.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest269_coco_384x288.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--resnest_coco [ResNeSt@COCO]
+  In Collection: ResNeSt
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnest269_coco_384x288
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.md
   Results:
   - Dataset: COCO
     Metrics:
