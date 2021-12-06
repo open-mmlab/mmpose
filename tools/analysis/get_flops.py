@@ -3,9 +3,8 @@ import argparse
 from functools import partial
 
 import torch
-from mmcv import Config
 
-from mmpose.models import build_posenet
+from mmpose.apis.inference import init_pose_model
 
 try:
     from mmcv.cnn import get_model_complexity_info
@@ -67,10 +66,12 @@ def main():
     else:
         raise ValueError('invalid input shape')
 
-    cfg = Config.fromfile(args.config)
-    model = build_posenet(cfg.model)
-    model = model.cuda()
-    model.eval()
+    model = init_pose_model(args.config)
+
+    if args.input_constructor == 'batch':
+        input_constructor = partial(batch_constructor, model, args.batch_size)
+    else:
+        input_constructor = None
 
     if args.input_constructor == 'batch':
         input_constructor = partial(batch_constructor, model, args.batch_size)

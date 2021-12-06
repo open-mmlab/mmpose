@@ -17,7 +17,15 @@ except ImportError:
 
 @POSENETS.register_module()
 class PoseWarper(TopDown):
-    """Top-down pose detectors for video inputs.
+    """Top-down pose detectors for multi-frame settings for video inputs. Paper
+    ref: Bertasius, Gedas, et al. "Learning temporal pose estimation from
+    sparsely-labeled videos." arXiv preprint:1906.04016 (2019).
+
+    <`https://arxiv.org/abs/1906.04016`>
+
+    A child class of TopDown detector. The main difference between PoseWarper
+    and TopDown lies in that the former takes a list of tensors as input image
+    while the latter takes a single tensor as input image in forward method.
 
     Args:
         backbone (dict): Backbone modules to extract features.
@@ -150,6 +158,7 @@ class PoseWarper(TopDown):
             f'({len(frame_weight)}) must match'
 
         batch_size, _, img_height, img_width = imgs[0].shape
+
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 

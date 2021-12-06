@@ -1,22 +1,19 @@
 Collections:
-- Metadata:
-    Architecture:
-    - Associative Embedding
-    - HigherHRNet
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_crowdpose
-    [Associative Embedding+HigherHRNet@CrowdPose]
+- Name: HigherHRNet
   Paper:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
-  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_crowdpose
-    [Associative Embedding+HigherHRNet@CrowdPose]
+  In Collection: HigherHRNet
   Metadata:
+    Architecture: &id001
+    - Associative Embedding
+    - HigherHRNet
     Training Data: CrowdPose
   Name: associative_embedding_higherhrnet_w32_crowdpose_512x512
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -29,11 +26,12 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py
-  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--crowdpose--higherhrnet_crowdpose
-    [Associative Embedding+HigherHRNet@CrowdPose]
+  In Collection: HigherHRNet
   Metadata:
+    Architecture: *id001
     Training Data: CrowdPose
   Name: associative_embedding_higherhrnet_w32_crowdpose_512x512
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:

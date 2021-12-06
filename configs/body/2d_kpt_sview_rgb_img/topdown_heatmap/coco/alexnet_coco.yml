@@ -1,18 +1,17 @@
 Collections:
-- Metadata:
-    Architecture:
-    - AlexNet
-  Name: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--alexnet_coco [AlexNet@COCO]
+- Name: AlexNet
   Paper:
     Title: Imagenet classification with deep convolutional neural networks
     URL: https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py
-  In Collection: body--2d_kpt_sview_rgb_img--topdown_heatmap--coco--alexnet_coco [AlexNet@COCO]
+  In Collection: AlexNet
   Metadata:
+    Architecture:
+    - AlexNet
     Training Data: COCO
   Name: topdown_heatmap_alexnet_coco_256x192
+  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

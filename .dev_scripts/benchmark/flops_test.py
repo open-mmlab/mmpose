@@ -6,7 +6,7 @@ from datetime import datetime
 import mmcv
 from mmcv import Config
 
-from mmpose.models import build_posenet
+from mmpose.apis.inference import init_pose_model
 
 try:
     from mmcv.cnn import get_model_complexity_info
@@ -68,9 +68,7 @@ def main():
                 else:
                     input_shape = (3, image_size, image_size)
 
-            model = build_posenet(model_cfg.model)
-            model = model.cuda()
-            model.eval()
+            model = init_pose_model(cfg_file)
 
             if hasattr(model, 'forward_dummy'):
                 model.forward = model.forward_dummy

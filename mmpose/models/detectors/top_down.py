@@ -292,8 +292,9 @@ class TopDown(BasePose):
                 thickness=bbox_thickness,
                 font_scale=font_scale,
                 show=False)
-
+                
         if pose_result:
+
             imshow_keypoints(img, pose_result, skeleton, kpt_score_thr,
                              pose_kpt_color, pose_link_color, radius,
                              thickness)
