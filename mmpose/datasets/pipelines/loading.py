@@ -6,7 +6,7 @@ from ..builder import PIPELINES
 
 @PIPELINES.register_module()
 class LoadImageFromFile:
-    """Loading image from file.
+    """Loading image(s) from file.
 
     Args:
         color_type (str): Flags specifying the color type of a loaded image,
@@ -23,12 +23,23 @@ class LoadImageFromFile:
         self.channel_order = channel_order
 
     def __call__(self, results):
-        """Loading image from file."""
+        """Loading image(s) from file."""
         image_file = results['image_file']
-        img = mmcv.imread(image_file, self.color_type, self.channel_order)
 
-        if img is None:
-            raise ValueError(f'Fail to read {image_file}')
+        if isinstance(image_file, (list, tuple)):
+            imgs = []
+            for image in image_file:
+                img = mmcv.imread(image, self.color_type, self.channel_order)
+                if img is None:
+                    raise ValueError(f'Fail to read {image}')
+                imgs.append(img)
 
-        results['img'] = img
+            results['img'] = imgs
+        else:
+            img = mmcv.imread(image_file, self.color_type, self.channel_order)
+
+            if img is None:
+                raise ValueError(f'Fail to read {image_file}')
+            results['img'] = img
+
         return results

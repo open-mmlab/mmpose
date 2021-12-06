@@ -79,6 +79,8 @@ def imshow_bboxes(img,
         assert len(labels) == len(bboxes)
 
         for bbox, label, color in zip(bboxes, labels, colors):
+            if label is None:
+                continue
             bbox_int = bbox[0, :4].astype(np.int32)
             # roughly estimate the proper font size
             text_size, text_baseline = cv2.getTextSize(label,

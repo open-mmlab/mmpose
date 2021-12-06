@@ -100,8 +100,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         print(f'=> load {len(self.db)} samples')
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
-        """Evaluate coco keypoint results. The pose prediction results will be
-        saved in `${res_folder}/result_keypoints.json`.
+        """Evaluate posetrack keypoint results. The pose prediction results
+        will be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
             num_keypoints: K

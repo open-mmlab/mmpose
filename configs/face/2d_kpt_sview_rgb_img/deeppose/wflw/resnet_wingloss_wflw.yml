@@ -1,22 +1,20 @@
 Collections:
-- Metadata:
-    Architecture:
-    - DeepPose
-    - ResNet
-    - Wingloss
-  Name: face--2d_kpt_sview_rgb_img--deeppose--wflw--resnet_wingloss_wflw [DeepPose+ResNet+Wingloss@WFLW]
+- Name: Wingloss
   Paper:
     Title: Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural
       Networks
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
-  README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
-  In Collection: face--2d_kpt_sview_rgb_img--deeppose--wflw--resnet_wingloss_wflw
-    [DeepPose+ResNet+Wingloss@WFLW]
+  In Collection: Wingloss
   Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    - Wingloss
     Training Data: WFLW
   Name: deeppose_res50_wflw_256x256_wingloss
+  README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
   Results:
   - Dataset: WFLW
     Metrics:

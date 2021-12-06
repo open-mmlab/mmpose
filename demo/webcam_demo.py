@@ -32,13 +32,15 @@ def parse_args():
     parser.add_argument(
         '--det-config',
         type=str,
-        default='demo/mmdetection_cfg/yolov3_d53_320_273e_coco.py',
+        default='demo/mmdetection_cfg/'
+        'ssdlite_mobilenetv2_scratch_600e_coco.py',
         help='Config file for detection')
     parser.add_argument(
         '--det-checkpoint',
         type=str,
-        default='https://download.openmmlab.com/mmdetection/v2.0/yolo/'
-        'yolov3_d53_320_273e_coco/yolov3_d53_320_273e_coco-421362b6.pth',
+        default='https://download.openmmlab.com/mmdetection/v2.0/ssd/'
+        'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
+        'scratch_600e_coco_20210629_110627-974d9307.pth',
         help='Checkpoint file for detection')
     parser.add_argument(
         '--enable-human-pose',
@@ -48,19 +50,20 @@ def parse_args():
     parser.add_argument(
         '--enable-animal-pose',
         type=int,
-        default=1,
+        default=0,
         help='Enable animal pose estimation')
     parser.add_argument(
         '--human-pose-config',
         type=str,
-        default='configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/'
-        'hrnet_w48_coco_256x192.py',
+        default='configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/'
+        'coco-wholebody/vipnas_res50_coco_wholebody_256x192_dark.py',
         help='Config file for human pose')
     parser.add_argument(
         '--human-pose-checkpoint',
         type=str,
-        default='https://download.openmmlab.com/mmpose/top_down/hrnet/'
-        'hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth',
+        default='https://openmmlab-share.oss-cn-hangzhou.aliyuncs.com/'
+        'mmpose/top_down/vipnas/'
+        'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
         help='Checkpoint file for human pose')
     parser.add_argument(
         '--human-det-ids',
@@ -99,12 +102,10 @@ def parse_args():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='bbox score threshold')
     parser.add_argument(
-        '--show-pose',
-        type=lambda s: s != 'False',
-        default=True,
-        choices=['True', 'False'],
-        help='Show pose estimation results. Set False to disable the pose'
-        'visualization. Default: True')
+        '--vis-mode',
+        type=int,
+        default=2,
+        help='0-none. 1-detection only. 2-detection and pose.')
     parser.add_argument(
         '--sunglasses', action='store_true', help='Apply `sunglasses` effect.')
     parser.add_argument(
@@ -363,7 +364,17 @@ def display():
                     dataset_name = pose_model.cfg.data['test']['type']
 
                     # show pose results
-                    if args.show_pose:
+                    if args.vis_mode == 1:
+                        img = vis_pose_result(
+                            pose_model,
+                            img,
+                            pose_results,
+                            radius=4,
+                            thickness=2,
+                            dataset=dataset_name,
+                            kpt_score_thr=1e7,
+                            bbox_color=bbox_color)
+                    elif args.vis_mode == 2:
                         img = vis_pose_result(
                             pose_model,
                             img,
@@ -376,7 +387,10 @@ def display():
 
                     # sunglasses effect
                     if args.sunglasses:
-                        if dataset_name == 'TopDownCocoDataset':
+                        if dataset_name in {
+                                'TopDownCocoDataset',
+                                'TopDownCocoWholeBodyDataset'
+                        }:
                             left_eye_idx = 1
                             right_eye_idx = 2
                         elif dataset_name == 'AnimalPoseDataset':
@@ -398,7 +412,10 @@ def display():
                                                       right_eye_idx)
                     # bug-eye effect
                     if args.bugeye:
-                        if dataset_name == 'TopDownCocoDataset':
+                        if dataset_name in {
+                                'TopDownCocoDataset',
+                                'TopDownCocoWholeBodyDataset'
+                        }:
                             left_eye_idx = 1
                             right_eye_idx = 2
                         elif dataset_name == 'AnimalPoseDataset':
@@ -461,7 +478,7 @@ def display():
             elif keyboard_input == ord('b'):
                 args.bugeye = not args.bugeye
             elif keyboard_input == ord('v'):
-                args.show_pose = not args.show_pose
+                args.vis_mode = (args.vis_mode + 1) % 3
 
     cv2.destroyAllWindows()
     if vid_out is not None:

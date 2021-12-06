@@ -28,7 +28,11 @@ class ToTensor:
     """
 
     def __call__(self, results):
-        results['img'] = F.to_tensor(results['img'])
+        if isinstance(results['img'], (list, tuple)):
+            results['img'] = [F.to_tensor(img) for img in results['img']]
+        else:
+            results['img'] = F.to_tensor(results['img'])
+
         return results
 
 
@@ -48,8 +52,15 @@ class NormalizeTensor:
         self.std = std
 
     def __call__(self, results):
-        results['img'] = F.normalize(
-            results['img'], mean=self.mean, std=self.std)
+        if isinstance(results['img'], (list, tuple)):
+            results['img'] = [
+                F.normalize(img, mean=self.mean, std=self.std)
+                for img in results['img']
+            ]
+        else:
+            results['img'] = F.normalize(
+                results['img'], mean=self.mean, std=self.std)
+
         return results
 
 

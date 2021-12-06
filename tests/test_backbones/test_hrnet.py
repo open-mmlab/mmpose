@@ -96,3 +96,34 @@ def test_hrnet_backbone():
     feat = model(imgs)
     assert len(feat) == 1
     assert feat[0].shape == torch.Size([2, 32, 56, 56])
+
+    # Test HRNet with the first three stages frozen
+    frozen_stages = 3
+    model = HRNet(extra, in_channels=3, frozen_stages=frozen_stages)
+    model.init_weights()
+    model.train()
+    if frozen_stages >= 0:
+        assert model.norm1.training is False
+        assert model.norm2.training is False
+        for layer in [model.conv1, model.norm1, model.conv2, model.norm2]:
+            for param in layer.parameters():
+                assert param.requires_grad is False
+
+    for i in range(1, frozen_stages + 1):
+        if i == 1:
+            layer = getattr(model, 'layer1')
+        else:
+            layer = getattr(model, f'stage{i}')
+        for mod in layer.modules():
+            if isinstance(mod, _BatchNorm):
+                assert mod.training is False
+        for param in layer.parameters():
+            assert param.requires_grad is False
+
+        if i < 4:
+            layer = getattr(model, f'transition{i}')
+        for mod in layer.modules():
+            if isinstance(mod, _BatchNorm):
+                assert mod.training is False
+        for param in layer.parameters():
+            assert param.requires_grad is False

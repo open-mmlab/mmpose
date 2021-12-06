@@ -1,21 +1,18 @@
 Collections:
-- Metadata:
-    Architecture:
-    - Associative Embedding
-    - HourglassAENet
-  Name: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hourglass_ae_coco
-    [Associative Embedding+HourglassAENet@COCO]
+- Name: Associative Embedding
   Paper:
     Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
     URL: https://arxiv.org/abs/1611.05424
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py
-  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hourglass_ae_coco
-    [Associative Embedding+HourglassAENet@COCO]
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: &id001
+    - Associative Embedding
+    - HourglassAENet
     Training Data: COCO
   Name: associative_embedding_hourglass_ae_coco_512x512
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -25,13 +22,14 @@ Models:
       AR: 0.659
       AR@0.5: 0.85
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco_512x512.py
-  In Collection: body--2d_kpt_sview_rgb_img--associative_embedding--coco--hourglass_ae_coco
-    [Associative Embedding+HourglassAENet@COCO]
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_hourglass_ae_coco_512x512
+  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hourglass_ae_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -41,4 +39,4 @@ Models:
       AR: 0.707
       AR@0.5: 0.877
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/face/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/hourglass_ae/hourglass_ae_coco_512x512-90af499f_20210920.pth
