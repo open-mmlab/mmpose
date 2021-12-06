@@ -4,13 +4,18 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
                       normal_init)
-from mmcv.ops import DeformConv2d
 from mmcv.utils import digit_version
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.models.utils.ops import resize
 from ..backbones.resnet import BasicBlock, Bottleneck
 from ..builder import NECKS
+
+try:
+    from mmcv.ops import DeformConv2d
+    has_mmcv_full = True
+except (ImportError, ModuleNotFoundError):
+    has_mmcv_full = False
 
 
 @NECKS.register_module()
@@ -173,18 +178,23 @@ class PoseWarperNeck(nn.Module):
             f'https://github.com/open-mmlab/mmcv/issues/1440, ' \
             f'Please install the latest MMCV.'
 
-        deform_conv_layers = [
-            DeformConv2d(
-                in_channels=out_channels,
-                out_channels=out_channels,
-                kernel_size=deform_conv_kernel,
-                stride=1,
-                padding=int(deform_conv_kernel / 2) * dilations[i],
-                dilation=dilations[i],
-                deform_groups=deform_groups,
-                im2col_step=self.im2col_step,
-            ) for i in range(self.num_offset_layers)
-        ]
+        if has_mmcv_full:
+            deform_conv_layers = [
+                DeformConv2d(
+                    in_channels=out_channels,
+                    out_channels=out_channels,
+                    kernel_size=deform_conv_kernel,
+                    stride=1,
+                    padding=int(deform_conv_kernel / 2) * dilations[i],
+                    dilation=dilations[i],
+                    deform_groups=deform_groups,
+                    im2col_step=self.im2col_step,
+                ) for i in range(self.num_offset_layers)
+            ]
+        else:
+            raise ImportError('Please install the full version of mmcv '
+                              'to use `DeformConv2d`.')
+
         self.deform_conv_layers = nn.ModuleList(deform_conv_layers)
 
         self.freeze_layers()
