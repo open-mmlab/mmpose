@@ -9,7 +9,7 @@ on:
       - master
     paths-ignore:
       - 'README.md'
-      - 'README_zh-CN.md'
+      - 'README_CN.md'
       - 'docs/**'
       - 'docs_zh-CN/**'
       - 'examples/**'
@@ -18,7 +18,7 @@ on:
   pull_request:
     paths-ignore:
       - 'README.md'
-      - 'README_zh-CN.md'
+      - 'README_CN.md'
       - 'docs/**'
       - 'docs_zh-CN/**'
       - 'examples/**'
