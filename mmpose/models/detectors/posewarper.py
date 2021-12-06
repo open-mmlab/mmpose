@@ -21,7 +21,7 @@ class PoseWarper(TopDown):
     ref: Bertasius, Gedas, et al. "Learning temporal pose estimation from
     sparsely-labeled videos." arXiv preprint:1906.04016 (2019).
 
-    <`https://arxiv.org/abs/1906.04016`>
+    <``https://arxiv.org/abs/1906.04016``>
 
     A child class of TopDown detector. The main difference between PoseWarper
     and TopDown lies in that the former takes a list of tensors as input image
@@ -37,7 +37,7 @@ class PoseWarper(TopDown):
         loss_pose (None): Deprecated arguments. Please use
             `loss_keypoint` for heads instead.
         concat_tensors (bool): Whether to concat the tensors on the batch dim,
-            which can speed up, Default: False
+            which can speed up, Default: True
     """
 
     def __init__(self,

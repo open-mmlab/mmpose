@@ -19,7 +19,7 @@ class PoseWarperNeck(nn.Module):
     pose estimation from sparsely-labeled videos." arXiv preprint
     arXiv:1906.04016 (2019).
 
-    <`https://arxiv.org/abs/1906.04016`>
+    <``https://arxiv.org/abs/1906.04016``>
 
     Args:
         in_channels (int): Number of input channels from backbone
@@ -47,7 +47,7 @@ class PoseWarperNeck(nn.Module):
             None: Only one select feature map is allowed.
             Default: None.
         freeze_trans_layer (bool): Whether to freeze the transition layer
-            (stop grad and set eval mode). Default: False.
+            (stop grad and set eval mode). Default: True.
         norm_eval (bool): Whether to set norm layers to eval mode, namely,
             freeze running stats (mean and var). Note: Effect on Batch Norm
             and its variants only. Default: False.
@@ -69,7 +69,7 @@ class PoseWarperNeck(nn.Module):
                  deform_conv_kernel=3,
                  in_index=0,
                  input_transform=None,
-                 freeze_trans_layer=False,
+                 freeze_trans_layer=True,
                  norm_eval=False,
                  im2col_step=80):
         super().__init__()
