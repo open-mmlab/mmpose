@@ -71,7 +71,7 @@ class TopDown(BasePose):
 
     @property
     def with_neck(self):
-        """Check if has keypoint_head."""
+        """Check if has neck."""
         return hasattr(self, 'neck')
 
     @property
@@ -130,8 +130,8 @@ class TopDown(BasePose):
 
         Returns:
             dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes, image paths
-                  and heatmaps.
+                Otherwise, return predicted poses, boxes, image paths
+                and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
