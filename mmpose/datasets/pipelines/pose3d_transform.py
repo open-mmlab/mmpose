@@ -552,7 +552,7 @@ class GenerateVoxel3DHeatmapTarget:
     Args:
         sigma: Sigma of heatmap gaussian (mm).
         joint_indices (list): Indices of joints used for heatmap generation.
-        If None (default) is given, all joints will be used.
+            If None (default) is given, all joints will be used.
     """
 
     def __init__(self, sigma=200.0, joint_indices=None):

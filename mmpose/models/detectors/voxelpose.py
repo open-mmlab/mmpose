@@ -270,7 +270,7 @@ class VoxelPose(BasePose):
             masks (list(torch.Tensor[NxHxW])):
                 Multi-camera masks of the input to the 2D model.
             targets_3d (torch.Tensor[NxcubeLxcubeWXcubeH]):
-                Groundtruth 3D heatmap of human centers.
+                Ground-truth 3D heatmap of human centers.
             input_heatmaps (list(torch.Tensor[NxKxHxW])):
                 Multi-camera heatmaps when the 2D model is not available.
                  Default: None.
@@ -281,131 +281,11 @@ class VoxelPose(BasePose):
               Otherwise, return predicted poses, human centers and sample_id
 
         """
-        if self.backbone is None:
-            assert input_heatmaps is not None
-            heatmaps = []
-            for input_heatmap in input_heatmaps:
-                heatmaps.append(input_heatmap[0])
-        else:
-            heatmaps = []
-            assert isinstance(img, list)
-            for img_ in img:
-                heatmaps.append(self.backbone.forward_dummy(img_)[0])
-        initial_cubes, _ = self.project_layer(heatmaps, img_metas,
-                                              self.space_size,
-                                              [self.space_center],
-                                              self.cube_size)
-        center_heatmaps_3d = self.root_net(initial_cubes)
-        num_joints = initial_cubes.shape[1]
-        center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
-        center_candidates = self.center_head(center_heatmaps_3d)
-
-        device = center_candidates.device
         if return_loss:
-            gt_centers = torch.stack([
-                torch.tensor(img_meta['roots_3d'], device=device)
-                for img_meta in img_metas
-            ])
-            gt_num_persons = torch.stack([
-                torch.tensor(img_meta['num_persons'], device=device)
-                for img_meta in img_metas
-            ])
-            center_candidates = self.assign2gt(center_candidates, gt_centers,
-                                               gt_num_persons)
-            gt_3d = torch.stack([
-                torch.tensor(img_meta['joints_3d'], device=device)
-                for img_meta in img_metas
-            ])
-            gt_3d_vis = torch.stack([
-                torch.tensor(img_meta['joints_3d_visible'], device=device)
-                for img_meta in img_metas
-            ])
-            valid_preds = []
-            valid_targets = []
-            valid_weights = []
-
+            return self.forward_train(img, img_metas, targets, masks,
+                                      targets_3d, input_heatmaps)
         else:
-            center_candidates[..., 3] = \
-                (center_candidates[..., 4] >
-                 self.test_cfg['center_threshold']).float() - 1.0
-
-        batch_size, num_candidates, _ = center_candidates.shape
-        pred = center_candidates.new_zeros(batch_size, num_candidates,
-                                           self.num_joints, 5)
-        pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]
-
-        for n in range(num_candidates):
-            index = pred[:, n, 0, 3] >= 0
-            num_valid = index.sum()
-            if num_valid > 0:
-                pose_input_cube, coordinates \
-                    = self.project_layer(heatmaps,
-                                         img_metas,
-                                         self.sub_space_size,
-                                         center_candidates[:, n, :3],
-                                         self.sub_cube_size)
-                pose_heatmaps_3d = self.pose_net(pose_input_cube)
-                pose_3d = self.pose_head(pose_heatmaps_3d[index],
-                                         coordinates[index])
-
-                pred[index, n, :, 0:3] = pose_3d.detach()
-
-                if return_loss:
-                    valid_targets.append(gt_3d[index, pred[index, n, 0,
-                                                           3].long()])
-                    valid_weights.append(gt_3d_vis[index, pred[index, n, 0,
-                                                               3].long(), :,
-                                                   0:1].float())
-                    valid_preds.append(pose_3d)
-
-        if return_loss:
-            losses = dict()
-            losses.update(
-                self.center_head.get_loss(center_heatmaps_3d, targets_3d))
-            if len(valid_preds) > 0:
-                valid_targets = torch.cat(valid_targets, dim=0)
-                valid_weights = torch.cat(valid_weights, dim=0)
-                valid_preds = torch.cat(valid_preds, dim=0)
-                losses.update(
-                    self.pose_head.get_loss(valid_preds, valid_targets,
-                                            valid_weights))
-            else:
-                pose_input_cube = initial_cubes.new_zeros(
-                    batch_size, num_joints, *self.sub_cube_size)
-                coordinates = initial_cubes.new_zeros(batch_size,
-                                                      *self.sub_cube_size,
-                                                      3).view(
-                                                          batch_size, -1, 3)
-                pseudo_targets = initial_cubes.new_zeros(
-                    batch_size, num_joints, 3)
-                pseudo_weights = initial_cubes.new_zeros(
-                    batch_size, num_joints, 1)
-                pose_heatmaps_3d = self.pose_net(pose_input_cube)
-                pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
-                losses.update(
-                    self.pose_head.get_loss(pose_3d, pseudo_targets,
-                                            pseudo_weights))
-
-            if not self.freeze_2d:
-                losses_2d = {}
-                heatmaps_tensor = torch.cat(heatmaps, dim=0)
-                targets_tensor = torch.cat(targets, dim=0)
-                masks_tensor = torch.cat(masks, dim=0)
-                losses_2d_ = self.backbone.get_loss(heatmaps_tensor,
-                                                    targets_tensor,
-                                                    masks_tensor)
-                for k, v in losses_2d_.items():
-                    losses_2d[k + '_2d'] = v
-                losses.update(losses_2d)
-
-            return losses
-
-        result = {}
-        result['pose_3d'] = pred.cpu().numpy()
-        result['center_3d'] = center_candidates.cpu().numpy()
-        result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
-
-        return result
+            return self.forward_test(img, img_metas, input_heatmaps)
 
     def train_step(self, data_batch, optimizer, **kwargs):
         """The iteration step during training.
@@ -462,14 +342,198 @@ class VoxelPose(BasePose):
 
         return center_candidates
 
-    def forward_train(self, img, img_metas, **kwargs):
+    def forward_train(self,
+                      img,
+                      img_metas,
+                      targets=None,
+                      masks=None,
+                      targets_3d=None,
+                      input_heatmaps=None):
         """Defines the computation performed at training."""
-        raise NotImplementedError
+        if self.backbone is None:
+            assert input_heatmaps is not None
+            heatmaps = []
+            for input_heatmap in input_heatmaps:
+                heatmaps.append(input_heatmap[0])
+        else:
+            heatmaps = []
+            assert isinstance(img, list)
+            for img_ in img:
+                heatmaps.append(self.backbone.forward_dummy(img_)[0])
+        initial_cubes, _ = self.project_layer(heatmaps, img_metas,
+                                              self.space_size,
+                                              [self.space_center],
+                                              self.cube_size)
+        center_heatmaps_3d = self.root_net(initial_cubes)
+        num_joints = initial_cubes.shape[1]
+        center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
+        center_candidates = self.center_head(center_heatmaps_3d)
 
-    def forward_test(self, img, img_metas, **kwargs):
+        device = center_candidates.device
+
+        gt_centers = torch.stack([
+            torch.tensor(img_meta['roots_3d'], device=device)
+            for img_meta in img_metas
+        ])
+        gt_num_persons = torch.stack([
+            torch.tensor(img_meta['num_persons'], device=device)
+            for img_meta in img_metas
+        ])
+        center_candidates = self.assign2gt(center_candidates, gt_centers,
+                                           gt_num_persons)
+        gt_3d = torch.stack([
+            torch.tensor(img_meta['joints_3d'], device=device)
+            for img_meta in img_metas
+        ])
+        gt_3d_vis = torch.stack([
+            torch.tensor(img_meta['joints_3d_visible'], device=device)
+            for img_meta in img_metas
+        ])
+        valid_preds = []
+        valid_targets = []
+        valid_weights = []
+
+        batch_size, num_candidates, _ = center_candidates.shape
+        pred = center_candidates.new_zeros(batch_size, num_candidates,
+                                           self.num_joints, 5)
+        pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]
+
+        for n in range(num_candidates):
+            index = pred[:, n, 0, 3] >= 0
+            num_valid = index.sum()
+            if num_valid > 0:
+                pose_input_cube, coordinates \
+                    = self.project_layer(heatmaps,
+                                         img_metas,
+                                         self.sub_space_size,
+                                         center_candidates[:, n, :3],
+                                         self.sub_cube_size)
+                pose_heatmaps_3d = self.pose_net(pose_input_cube)
+                pose_3d = self.pose_head(pose_heatmaps_3d[index],
+                                         coordinates[index])
+
+                pred[index, n, :, 0:3] = pose_3d.detach()
+                valid_targets.append(gt_3d[index, pred[index, n, 0, 3].long()])
+                valid_weights.append(gt_3d_vis[index, pred[index, n, 0,
+                                                           3].long(), :,
+                                               0:1].float())
+                valid_preds.append(pose_3d)
+
+        losses = dict()
+        losses.update(
+            self.center_head.get_loss(center_heatmaps_3d, targets_3d))
+        if len(valid_preds) > 0:
+            valid_targets = torch.cat(valid_targets, dim=0)
+            valid_weights = torch.cat(valid_weights, dim=0)
+            valid_preds = torch.cat(valid_preds, dim=0)
+            losses.update(
+                self.pose_head.get_loss(valid_preds, valid_targets,
+                                        valid_weights))
+        else:
+            pose_input_cube = initial_cubes.new_zeros(batch_size, num_joints,
+                                                      *self.sub_cube_size)
+            coordinates = initial_cubes.new_zeros(batch_size,
+                                                  *self.sub_cube_size,
+                                                  3).view(batch_size, -1, 3)
+            pseudo_targets = initial_cubes.new_zeros(batch_size, num_joints, 3)
+            pseudo_weights = initial_cubes.new_zeros(batch_size, num_joints, 1)
+            pose_heatmaps_3d = self.pose_net(pose_input_cube)
+            pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
+            losses.update(
+                self.pose_head.get_loss(pose_3d, pseudo_targets,
+                                        pseudo_weights))
+
+        if not self.freeze_2d:
+            losses_2d = {}
+            heatmaps_tensor = torch.cat(heatmaps, dim=0)
+            targets_tensor = torch.cat(targets, dim=0)
+            masks_tensor = torch.cat(masks, dim=0)
+            losses_2d_ = self.backbone.get_loss(heatmaps_tensor,
+                                                targets_tensor, masks_tensor)
+            for k, v in losses_2d_.items():
+                losses_2d[k + '_2d'] = v
+            losses.update(losses_2d)
+
+        return losses
+
+    def forward_test(
+        self,
+        img,
+        img_metas,
+        input_heatmaps=None,
+    ):
         """Defines the computation performed at testing."""
-        raise NotImplementedError
+        if self.backbone is None:
+            assert input_heatmaps is not None
+            heatmaps = []
+            for input_heatmap in input_heatmaps:
+                heatmaps.append(input_heatmap[0])
+        else:
+            heatmaps = []
+            assert isinstance(img, list)
+            for img_ in img:
+                heatmaps.append(self.backbone.forward_dummy(img_)[0])
+        initial_cubes, _ = self.project_layer(heatmaps, img_metas,
+                                              self.space_size,
+                                              [self.space_center],
+                                              self.cube_size)
+        center_heatmaps_3d = self.root_net(initial_cubes)
+        center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
+        center_candidates = self.center_head(center_heatmaps_3d)
+
+        center_candidates[..., 3] = \
+            (center_candidates[..., 4] >
+             self.test_cfg['center_threshold']).float() - 1.0
+
+        batch_size, num_candidates, _ = center_candidates.shape
+        pred = center_candidates.new_zeros(batch_size, num_candidates,
+                                           self.num_joints, 5)
+        pred[:, :, :, 3:] = center_candidates[:, :, None, 3:]
+
+        for n in range(num_candidates):
+            index = pred[:, n, 0, 3] >= 0
+            num_valid = index.sum()
+            if num_valid > 0:
+                pose_input_cube, coordinates \
+                    = self.project_layer(heatmaps,
+                                         img_metas,
+                                         self.sub_space_size,
+                                         center_candidates[:, n, :3],
+                                         self.sub_cube_size)
+                pose_heatmaps_3d = self.pose_net(pose_input_cube)
+                pose_3d = self.pose_head(pose_heatmaps_3d[index],
+                                         coordinates[index])
+
+                pred[index, n, :, 0:3] = pose_3d.detach()
+
+        result = {}
+        result['pose_3d'] = pred.cpu().numpy()
+        result['center_3d'] = center_candidates.cpu().numpy()
+        result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
+
+        return result
 
     def show_result(self, **kwargs):
         """Visualize the results."""
         raise NotImplementedError
+
+    def forward_dummy(self, img, input_heatmaps=None, num_candidates=5):
+        """Used for computing network FLOPs."""
+        if self.backbone is None:
+            assert input_heatmaps is not None
+            heatmaps = []
+            for input_heatmap in input_heatmaps:
+                heatmaps.append(input_heatmap[0])
+        else:
+            heatmaps = []
+            assert isinstance(img, list)
+            for img_ in img:
+                heatmaps.append(self.backbone.forward_dummy(img_)[0])
+        batch_size, num_channels, _, _ = heatmaps[0].shape
+        initial_cubes = heatmaps[0].new_zeros(batch_size, num_channels,
+                                              *self.cube_size)
+        _ = self.root_net(initial_cubes)
+        pose_input_cube = heatmaps[0].new_zeros(batch_size, num_channels,
+                                                *self.sub_cube_size)
+        for n in range(num_candidates):
+            _ = self.pose_net(pose_input_cube)

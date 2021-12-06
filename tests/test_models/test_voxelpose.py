@@ -41,7 +41,7 @@ def test_voxelpose_forward():
                     type='BottomUpGenerateTarget', sigma=3, max_num_people=30)
             ]),
         dict(
-            type='MultiItemDeduplicate',
+            type='DiscardDuplicatedItems',
             keys_list=[
                 'joints_3d', 'joints_3d_visible', 'ann_info', 'roots_3d',
                 'num_persons', 'sample_id'

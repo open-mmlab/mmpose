@@ -11,7 +11,7 @@ Models:
     - VoxelPose
     Training Data: CMU Panoptic
   Name: voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5
-  README: configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/prn64x64x64_cpn80x80x20_panoptic_cam5.md
+  README: configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.md
   Results:
   - Dataset: CMU Panoptic
     Metrics:

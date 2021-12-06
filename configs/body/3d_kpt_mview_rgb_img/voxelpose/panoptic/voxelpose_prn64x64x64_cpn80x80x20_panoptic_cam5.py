@@ -147,7 +147,7 @@ train_pipeline = [
                 std=[0.229, 0.224, 0.225]),
         ]),
     dict(
-        type='MultiItemDeduplicate',
+        type='DiscardDuplicatedItems',
         keys_list=[
             'joints_3d', 'joints_3d_visible', 'ann_info', 'roots_3d',
             'num_persons', 'sample_id'
@@ -180,7 +180,7 @@ val_pipeline = [
                 std=[0.229, 0.224, 0.225]),
         ]),
     dict(
-        type='MultiItemDeduplicate',
+        type='DiscardDuplicatedItems',
         keys_list=[
             'joints_3d', 'joints_3d_visible', 'ann_info', 'roots_3d',
             'num_persons', 'sample_id'

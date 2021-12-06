@@ -14,7 +14,6 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
     """Base class for keypoint 3D top-down pose estimation with multi-view RGB
     images as the input.
 
-    All fashion datasets should subclass it.
     All subclasses should overwrite:
         Methods:`_get_db`, 'evaluate'
 
@@ -25,8 +24,6 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
         data_cfg (dict): config
         pipeline (list[dict | callable]): A sequence of data transforms.
         dataset_info (DatasetInfo): A class containing all dataset info.
-        coco_style (bool): Whether the annotation json is coco-style.
-            Default: True
         test_mode (bool): Store True when building test or
             validation dataset. Default: False.
     """

@@ -13,7 +13,9 @@ from ..builder import HEADS
 
 @HEADS.register_module()
 class CuboidCenterHead(nn.Module):
-    """Get results from the 3D human center heatmap.
+    """Get results from the 3D human center heatmap. In this module, human 3D
+    centers are local maximums obtained from the 3D heatmap via NMS (max-
+    pooling).
 
     Args:
         cfg (dict):
@@ -26,9 +28,11 @@ class CuboidCenterHead(nn.Module):
 
     def __init__(self, cfg):
         super(CuboidCenterHead, self).__init__()
-        self.grid_size = torch.tensor(cfg['space_size'])
-        self.cube_size = torch.tensor(cfg['cube_size'])
-        self.grid_center = torch.tensor(cfg['space_center'])
+        # use register_buffer
+        self.register_buffer('grid_size', torch.tensor(cfg['space_size']))
+        self.register_buffer('cube_size', torch.tensor(cfg['cube_size']))
+        self.register_buffer('grid_center', torch.tensor(cfg['space_center']))
+
         self.num_candidates = cfg['max_num']
         self.max_pool_kernel = cfg['max_pool_kernel']
         self.loss = nn.MSELoss()
@@ -42,12 +46,9 @@ class CuboidCenterHead(nn.Module):
             real_locations (torch.Tensor(NXPx3)): Locations of points
                 in the world coordinate system
         """
-        device = indices.device
-        cube_size = self.cube_size.to(device=device, dtype=torch.float)
-        grid_size = self.grid_size.to(device=device)
-        grid_center = self.grid_center.to(device=device)
         real_locations = indices.float() / (
-            cube_size - 1) * grid_size + grid_center - grid_size / 2.0
+                self.cube_size - 1) * self.grid_size + \
+            self.grid_center - self.grid_size / 2.0
         return real_locations
 
     def _nms_by_max_pool(self, heatmap_volumes):
@@ -123,7 +124,11 @@ class CuboidCenterHead(nn.Module):
 class CuboidPoseHead(nn.Module):
 
     def __init__(self, beta):
-        """Get results from the 3D human pose heatmap.
+        """Get results from the 3D human pose heatmap. Instead of obtaining
+        maximums on the heatmap, this module regresses the coordinates of
+        keypoints via integral pose regression. Refer to `paper.
+
+        <https://arxiv.org/abs/2004.06239>` for more details.
 
         Args:
             beta: Constant to adjust the magnification of soft-maxed heatmap.

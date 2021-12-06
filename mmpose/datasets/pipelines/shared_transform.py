@@ -442,7 +442,7 @@ class MultiItemProcess:
 
 
 @PIPELINES.register_module()
-class MultiItemDeduplicate:
+class DiscardDuplicatedItems:
 
     def __init__(self, keys_list):
         """Discard duplicated single-item results.
