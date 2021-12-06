@@ -130,7 +130,7 @@ html_theme_options = {
                 'description': '生成模型工具箱'
             }, {
                 'name': 'MMFlow',
-                'url': 'https://mmflow.readthedocs.io/zh_CN/latest/',
+                'url': 'https://mmflow.readthedocs.io/en/latest/',
                 'description': '光流估计工具箱与测试基准'
             }, {
                 'name': 'MMFewShot',
@@ -138,7 +138,7 @@ html_theme_options = {
                 'description': '少样本学习工具箱与测试基准'
             }, {
                 'name': 'MMHuman3D',
-                'url': 'https://mmhuman3d.readthedocs.io/zh_CN/latest/',
+                'url': 'https://mmhuman3d.readthedocs.io/en/latest/',
                 'description': 'OpenMMLab 人体参数化模型工具箱与测试基准.'
             }]
         },
