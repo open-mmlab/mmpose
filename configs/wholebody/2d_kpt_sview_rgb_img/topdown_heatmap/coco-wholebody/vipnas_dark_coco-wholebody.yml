@@ -17,7 +17,7 @@ Models:
   - Dataset: COCO-WholeBody
     Metrics:
       Body AP: 0.632
-      Body AR: 0.710
+      Body AR: 0.71
       Face AP: 0.672
       Face AR: 0.771
       Foot AP: 0.53
