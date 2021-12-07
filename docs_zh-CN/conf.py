@@ -126,7 +126,7 @@ html_theme_options = {
                 'description': '一体化视频目标感知平台'
             }, {
                 'name': 'MMGeneration',
-                'url': 'https://mmgeneration.readthedocs.io/zh_CN/latest/',
+                'url': 'https://mmgeneration.readthedocs.io/en/latest/',
                 'description': '生成模型工具箱'
             }, {
                 'name': 'MMFlow',
