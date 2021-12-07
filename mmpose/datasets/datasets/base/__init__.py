@@ -11,7 +11,7 @@ from .kpt_3d_sview_rgb_img_top_down_dataset import \
     Kpt3dSviewRgbImgTopDownDataset
 
 __all__ = [
-    'Kpt3dMviewRgbImgDirectDataset', 'Kpt2dSviewRgbImgTopDownDataset', 'Kpt3dSviewRgbImgTopDownDataset',
-    'Kpt2dSviewRgbImgBottomUpDataset', 'Kpt3dSviewKpt2dDataset',
-    'Kpt2dSviewRgbVidTopDownDataset'
+    'Kpt3dMviewRgbImgDirectDataset', 'Kpt2dSviewRgbImgTopDownDataset',
+    'Kpt3dSviewRgbImgTopDownDataset', 'Kpt2dSviewRgbImgBottomUpDataset',
+    'Kpt3dSviewKpt2dDataset', 'Kpt2dSviewRgbVidTopDownDataset'
 ]

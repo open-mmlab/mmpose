@@ -40,5 +40,6 @@ __all__ = [
     'Body3DH36MDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
     'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset',
     'AnimalATRWDataset', 'AnimalPoseDataset', 'TopDownH36MDataset',
-    'TopDownHalpeDataset', 'TopDownPoseTrack18VideoDataset', 'Body3DMviewDirectPanopticDataset'
+    'TopDownHalpeDataset', 'TopDownPoseTrack18VideoDataset',
+    'Body3DMviewDirectPanopticDataset'
 ]
