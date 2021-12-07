@@ -140,10 +140,10 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             else:
                 loss_func = self.loss
             loss_i = loss_func(output[i], target_i, target_weight_i)
-            if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i
+            if 'heatmap_loss' not in losses:
+                losses['heatmap_loss'] = loss_i
             else:
-                losses['mse_loss'] += loss_i
+                losses['heatmap_loss'] += loss_i
 
         return losses
 

@@ -159,7 +159,7 @@ class TopdownHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 4 and target_weight.dim() == 3
-        losses['mse_loss'] = self.loss(output, target, target_weight)
+        losses['heatmap_loss'] = self.loss(output, target, target_weight)
 
         return losses
 

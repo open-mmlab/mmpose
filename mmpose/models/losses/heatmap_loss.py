@@ -43,6 +43,7 @@ class AdaptiveWingLoss(nn.Module):
             pred (torch.Tensor[NxKxHxW]): Predicted heatmaps.
             target (torch.Tensor[NxKxHxW]): Target heatmaps.
         """
+        H, W = pred.shape[2:4]
         delta = (target - pred).abs()
 
         A = self.omega * (
@@ -60,7 +61,7 @@ class AdaptiveWingLoss(nn.Module):
                       torch.pow(delta / self.epsilon, self.alpha - target)),
             A * delta - C)
 
-        return torch.mean(torch.sum(losses, dim=[1, 2, 3]), dim=0)
+        return torch.mean(losses)
 
     def forward(self, output, target, target_weight):
         """Forward function.
