@@ -40,10 +40,8 @@ class AdaptiveWingLoss(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
+            pred (torch.Tensor[NxKxHxW]): Predicted heatmaps.
             target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
-                Weights across different joint types.
         """
         delta = (target - pred).abs()
 
@@ -78,8 +76,8 @@ class AdaptiveWingLoss(nn.Module):
                 Weights across different joint types.
         """
         if self.use_target_weight:
-            loss = self.criterion(output * target_weight,
-                                  target * target_weight)
+            loss = self.criterion(output * target_weight.unsqueeze(-1),
+                                  target * target_weight.unsqueeze(-1))
         else:
             loss = self.criterion(output, target)
 
