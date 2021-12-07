@@ -40,13 +40,13 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained=None,
-    backbone=dict(type='AlexNet', num_classes=-1),
+    pretrained='torchvision://resnet50',
+    backbone=dict(type='ResNet', depth=50),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=256,
+        in_channels=2048,
         out_channels=channel_cfg['num_output_channels'],
-        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
+        loss_keypoint=dict(type='AdaptiveWingLoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
         flip_test=True,
@@ -56,7 +56,7 @@ model = dict(
 
 data_cfg = dict(
     image_size=[192, 256],
-    heatmap_size=[40, 56],
+    heatmap_size=[48, 64],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
