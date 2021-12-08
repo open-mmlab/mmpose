@@ -1,8 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
-from mmcv.cnn import (ConvModule, build_conv_layer, constant_init,
-                      kaiming_init)
+from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from ..builder import BACKBONES
@@ -18,10 +17,7 @@ class Init_LSTM(nn.Module):
         hidden_channels (int): Number of channels of hidden state. Default: 48.
     """
 
-    def __init__(self,
-                 out_channels=17,
-                 stem_channels=32,
-                 hidden_channels=48):
+    def __init__(self, out_channels=17, stem_channels=32, hidden_channels=48):
 
         self.conv_gx = build_conv_layer(
             cfg=dict(type='Conv2d'),
@@ -67,7 +63,7 @@ class Init_LSTM(nn.Module):
 
 
 class LSTM(nn.Module):
-    """LSTM (Long Short-Term Memory) for LSTM Pose Mechine.
+    """LSTM (Long Short-Term Memory) for LSTM Pose Machine.
 
     Args:
         out_channels (int):  Number of output channels. Default: 17.
@@ -75,10 +71,7 @@ class LSTM(nn.Module):
         hidden_channels (int): Number of channels of hidden state. Default: 48.
     """
 
-    def __init__(self,
-                 out_channels=17,
-                 stem_channels=32,
-                 hidden_channels=48):
+    def __init__(self, out_channels=17, stem_channels=32, hidden_channels=48):
 
         self.conv_fx = build_conv_layer(
             cfg=dict(type='Conv2d'),
@@ -180,38 +173,39 @@ class LSTM(nn.Module):
 
         return cell_t, hidden_t
 
+
 @BACKBONES.register_module()
 class LSTM_PM(BaseBackbone):
-    """LSTM Pose Mechine backbone.
+    """LSTM Pose Machine backbone.
 
-        `LSTM Pose Machines
-        <https://arxiv.org/abs/1712.06316>`__
+    `LSTM Pose Machines
+    <https://arxiv.org/abs/1712.06316>`__
 
-        Args:
-            in_channels (int): Number of input image channels. Default: 3.
-            out_channels (int):  Number of output channels. Default: 17.
-            stem_channels (int): Number of channels of stem features. Default: 32.
-            hidden_channels (int): Number of channels of hidden state. Default: 48.
-            num_stages (int): Numerber of stages for propogation. Default: 9.
-            conv_cfg (dict | None): The config dict for conv layers. Default: None.
-            norm_cfg (dict | None): The config dict for norm layers. Default: None.
+    Args:
+        in_channels (int): Number of input image channels. Default: 3.
+        out_channels (int):  Number of output channels. Default: 17.
+        stem_channels (int): Number of channels of stem features. Default: 32.
+        hidden_channels (int): Number of channels of hidden state. Default: 48.
+        num_stages (int): Numerber of stages for propagation. Default: 9.
+        conv_cfg (dict | None): The config dict for conv layers. Default: None.
+        norm_cfg (dict | None): The config dict for norm layers. Default: None.
 
-        TODO: check it after the format of inputs is decided.
-        Example:
-            >>> from mmpose.models import LSTM_PM
-            >>> import torch
-            >>> self = LSTM_PM(num_stages=3)
-            >>> self.eval()
-            >>> images = torch.rand(1, 21, 368, 368)
-            >>> centermap = torch.rand(1, 1, 368, 368)
-            >>> heatmaps = self.forward(images, centermap)
-            >>> for heatmap in heatmaps:
-            ...     print(tuple(heatmap.shape))
-            (1, 32, 46, 46)
-            (1, 32, 46, 46)
-            (1, 32, 46, 46)
-            (1, 32, 46, 46)
-        """
+    TODO: check it after the format of inputs is decided.
+    Example:
+        >>> from mmpose.models import LSTM_PM
+        >>> import torch
+        >>> self = LSTM_PM(num_stages=3)
+        >>> self.eval()
+        >>> images = torch.rand(1, 21, 368, 368)
+        >>> centermap = torch.rand(1, 1, 368, 368)
+        >>> heatmaps = self.forward(images, centermap)
+        >>> for heatmap in heatmaps:
+        ...     print(tuple(heatmap.shape))
+        (1, 32, 46, 46)
+        (1, 32, 46, 46)
+        (1, 32, 46, 46)
+        (1, 32, 46, 46)
+    """
 
     def __init__(self,
                  in_channels=3,
@@ -234,8 +228,10 @@ class LSTM_PM(BaseBackbone):
         self.convnet1 = self._make_convnet1(self.in_channels)
         self.convnet2 = self._make_convnet2(self.in_channels)
         self.convnet3 = self._make_convnet3()
-        self.init_lstm = Init_LSTM(self.out_channels, self.stem_channels, self.hidden_channels)
-        self.lstm = LSTM(self.out_channels, self.stem_channels, self.hidden_channels)
+        self.init_lstm = Init_LSTM(self.out_channels, self.stem_channels,
+                                   self.hidden_channels)
+        self.lstm = LSTM(self.out_channels, self.stem_channels,
+                         self.hidden_channels)
 
         # TODO: May be generated in dataset as the last channel of target
         self.pool_centermap = nn.AvgPool2d(kernel_size=9, stride=8)
@@ -397,7 +393,8 @@ class LSTM_PM(BaseBackbone):
         """Forward function of the propagation stages."""
         features = self.convnet2(image)
         centermap = self.pool_centermap(cmap)
-        cell_t, hidden_t = self.lstm(heatmap, features, centermap, hidden_t_1, cell_t_1)
+        cell_t, hidden_t = self.lstm(heatmap, features, centermap, hidden_t_1,
+                                     cell_t_1)
         current_heatmap = self.convnet3(hidden_t)
         return current_heatmap, cell_t, hidden_t
 
@@ -421,7 +418,9 @@ class LSTM_PM(BaseBackbone):
         heatmaps.append(heatmap)
 
         for i in range(1, self.num_stages):
-            image = images[:, self.in_channels * i: self.in_channels * (i + 1), :, :]
-            heatmap, cell, hidden = self.stage2(image, centermap, heatmap, cell, hidden)
+            image = images[:, self.in_channels * i:self.in_channels *
+                           (i + 1), :, :]
+            heatmap, cell, hidden = self.stage2(image, centermap, heatmap,
+                                                cell, hidden)
             heatmaps.append(heatmap)
         return heatmaps
