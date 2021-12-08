@@ -4,8 +4,8 @@ from .cpm import CPM
 from .hourglass import HourglassNet
 from .hourglass_ae import HourglassAENet
 from .hrnet import HRNet
-from .lstm_pm import LSTM_PM
 from .litehrnet import LiteHRNet
+from .lstm_pm import LSTM_PM
 from .mobilenet_v2 import MobileNetV2
 from .mobilenet_v3 import MobileNetV3
 from .mspn import MSPN
