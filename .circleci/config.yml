@@ -122,7 +122,7 @@ jobs:
       - run:
           name: Run unittests
           command: |
-            pytest tests/
+            pytest -m pytest tests/
 
 workflows:
   unit_tests:
