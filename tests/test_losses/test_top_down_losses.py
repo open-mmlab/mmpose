@@ -19,13 +19,9 @@ def test_adaptive_wing_loss():
     loss = build_loss(loss_cfg)
 
     fake_pred = torch.ones((1, 3, 64, 64))
-    fake_label = torch.zeros((1, 3, 64, 64))
+    fake_label = torch.ones((1, 3, 64, 64))
     assert torch.allclose(
-        loss(fake_pred, fake_label, torch.ones_like(fake_label)),
-        torch.tensor(0.))
-
-
-test_adaptive_wing_loss()
+        loss(fake_pred, fake_label, torch.ones([1, 3, 1])), torch.tensor(0.))
 
 
 def test_mse_loss():
