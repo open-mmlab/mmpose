@@ -85,7 +85,7 @@ jobs:
             coverage run --branch --source mmpose -m pytest tests/
             coverage xml
             coverage report -m
-build_cu101:
+  build_cu101:
     machine:
       image: ubuntu-1604-cuda-10.1:201909-23
     resource_class: gpu.nvidia.small
