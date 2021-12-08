@@ -82,9 +82,10 @@ jobs:
       - run:
           name: Run unittests
           command: |
-            coverage run --branch --source mmpose -m pytest tests/
-            coverage xml
-            coverage report -m
+            # coverage run --branch --source mmpose -m pytest tests/
+            # coverage xml
+            # coverage report -m
+            python -m pytest tests/
   build_cu101:
     machine:
       image: ubuntu-1604-cuda-10.1:201909-23
