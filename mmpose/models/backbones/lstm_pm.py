@@ -1,15 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import copy
-
+import torch
 import torch.nn as nn
-from mmcv.cnn import (ConvModule, build_conv_layer, build_norm_layer,\
-                      constant_init, normal_init)
+from mmcv.cnn import (ConvModule, build_conv_layer, constant_init,
+                      kaiming_init)
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.utils import get_root_logger
 from ..builder import BACKBONES
-from .resnet import BasicBlock, Bottleneck, get_expansion
-from .utils import load_checkpoint
+from .base_backbone import BaseBackbone
 
 
 class Init_LSTM(nn.Module):
@@ -184,7 +181,7 @@ class LSTM(nn.Module):
         return cell_t, hidden_t
 
 @BACKBONES.register_module()
-class LSTM_PM(nn.Module):
+class LSTM_PM(BaseBackbone):
     """LSTM Pose Mechine backbone.
 
         `LSTM Pose Machines
@@ -404,6 +401,16 @@ class LSTM_PM(nn.Module):
         current_heatmap = self.convnet3(hidden_t)
         return current_heatmap, cell_t, hidden_t
 
+    def init_weights(self, pretrained=None):
+        """Initialize the weights in backbone."""
+        super().init_weights(pretrained)
+        if pretrained is None:
+            for m in self.modules():
+                if isinstance(m, nn.Conv2d):
+                    kaiming_init(m)
+                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
+                    constant_init(m, 1)
+
     def forward(self, images, centermap):
         """Forward function."""
         heatmaps = []
@@ -416,5 +423,5 @@ class LSTM_PM(nn.Module):
         for i in range(1, self.num_stages):
             image = images[:, self.in_channels * i: self.in_channels * (i + 1), :, :]
             heatmap, cell, hidden = self.stage2(image, centermap, heatmap, cell, hidden)
-            heat_maps.append(heatmap)
+            heatmaps.append(heatmap)
         return heatmaps
