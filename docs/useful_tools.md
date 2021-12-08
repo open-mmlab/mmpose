@@ -31,7 +31,7 @@ Examples:
 - Plot the mse loss of some run.
 
   ```shell
-  python tools/analysis/analyze_logs.py plot_curve log.json --keys mse_loss --legend mse_loss
+  python tools/analysis/analyze_logs.py plot_curve log.json --keys loss --legend loss
   ```
 
 - Plot the acc of some run, and save the figure to a pdf.
