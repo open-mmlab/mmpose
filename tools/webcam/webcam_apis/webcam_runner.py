@@ -5,7 +5,7 @@ from threading import Thread
 import cv2
 
 from .nodes import NODES
-from .webcam_utils import BufferManager, EventManager, FrameMessage
+from .utils import BufferManager, EventManager, FrameMessage, limit_max_fps
 
 
 class WebcamRunner():
@@ -45,31 +45,34 @@ class WebcamRunner():
 
         cfg = self.cfg
         camera_id = cfg.camera_id
+        fps = self.cfg.get('camera_fps', None)
 
         self.vcap = cv2.VideoCapture(camera_id)
+
         if not self.vcap.isOpened():
             self.logger.warn(f'Cannot open camera (ID={camera_id})')
             exit()
 
         while not self.event_manager.is_set('exit'):
-            # capture a camera frame
-            ret_val, frame = self.vcap.read()
-            if ret_val:
-                # Put frame message (for display) into buffer
-                frame_msg = FrameMessage(frame)
-                self.buffer_manager.put('_frame_', frame_msg)
+            with limit_max_fps(fps):
+                # capture a camera frame
+                ret_val, frame = self.vcap.read()
+                if ret_val:
+                    # Put frame message (for display) into buffer
+                    frame_msg = FrameMessage(frame)
+                    self.buffer_manager.put('_frame_', frame_msg)
 
-                # Put input message (for model inference or other usage)
-                # into buffer
-                input_msg = FrameMessage(frame)
-                input_msg.update_route_info(
-                    node_name='Camera Info',
-                    node_type='dummy',
-                    info=self.get_camera_info())
-                self.buffer_manager.put('_input_', input_msg)
+                    # Put input message (for model inference or other usage)
+                    # into buffer
+                    input_msg = FrameMessage(frame)
+                    input_msg.update_route_info(
+                        node_name='Camera Info',
+                        node_type='dummy',
+                        info=self.get_camera_info())
+                    self.buffer_manager.put('_input_', input_msg)
 
-            else:
-                self.buffer_manager.put('_frame_', None)
+                else:
+                    self.buffer_manager.put('_frame_', None)
 
         self.vcap.release()
 

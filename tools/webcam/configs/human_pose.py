@@ -2,6 +2,7 @@
 runner = dict(
     name='Debug CamRunner',
     camera_id=0,
+    camera_fps=20,
     display_delay=0,
     frame_buffer_size=20,
     user_buffers=[('det_result', 2), ('pose_result', 2), ('visualization', 2)],

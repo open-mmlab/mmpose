@@ -4,7 +4,7 @@ from typing import Optional
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model)
-from ..webcam_utils import Message
+from ..utils import Message
 from .builder import NODES
 from .node import Node
 

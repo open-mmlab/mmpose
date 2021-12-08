@@ -9,7 +9,7 @@ from typing import Optional, Union
 from mmcv.utils.misc import is_method_overridden
 
 from mmpose.utils import StopWatch
-from ..webcam_utils import Message, limit_max_fps
+from ..utils import Message, limit_max_fps
 
 
 class Node(Thread, metaclass=ABCMeta):
