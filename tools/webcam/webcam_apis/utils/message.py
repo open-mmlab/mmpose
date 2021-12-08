@@ -4,6 +4,8 @@ import uuid
 import warnings
 from typing import Optional
 
+import numpy as np
+
 
 class Message():
 
@@ -30,8 +32,12 @@ class Message():
         node_info = {'node': node_name, 'node_type': node_type, 'info': info}
         self.route_info.append(node_info)
 
-    def set_route_info(self, route_info):
+    def set_route_info(self, route_info: list):
         self.route_info = route_info
+
+    def merge_route_info(self, route_info: list):
+        self.route_info += route_info
+        self.route_info.sort(key=lambda x: x.get('timestamp', np.inf))
 
     def get_route_info(self) -> list:
         return self.route_info.copy()

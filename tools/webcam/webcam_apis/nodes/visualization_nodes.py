@@ -99,7 +99,7 @@ class PoseVisualizerNode(Node):
             img = self._show_results(img,
                                      self.last_result_msg.get_pose_result())
             frame_msg.set_image(img)
-            frame_msg.set_route_info(self.last_result_msg.get_route_info())
+            frame_msg.merge_route_info(self.last_result_msg.get_route_info())
 
         return frame_msg
 
@@ -116,6 +116,8 @@ class PoseVisualizerNode(Node):
 @NODES.register_module()
 class MonitorNode(Node):
 
+    _default_ignore_items = ['timestamp']
+
     def __init__(self,
                  name: str,
                  enable_key=None,
@@ -126,6 +128,7 @@ class MonitorNode(Node):
                  background_color=(255, 183, 0),
                  text_scale=0.4,
                  style='simple',
+                 ignore_items: Optional[list[str]] = None,
                  input_buffer: str = 'input',
                  output_buffer: str = '_display_'):
         super().__init__(name=name, enable_key=enable_key)
@@ -137,6 +140,10 @@ class MonitorNode(Node):
         self.background_color = color_val(background_color)
         self.text_scale = text_scale
         self.style = style
+        if ignore_items is None:
+            self.ignore_items = self._default_ignore_items
+        else:
+            self.ignore_items = ignore_items
 
         self.register_input_buffer(input_buffer, 'input', essential=True)
         self.register_output_buffer(output_buffer)
@@ -191,6 +198,8 @@ class MonitorNode(Node):
             title = f'{node_info["node"]}({node_info["node_type"]})'
             _put_line(title)
             for k, v in node_info['info'].items():
+                if k in self.ignore_items:
+                    continue
                 if isinstance(v, float):
                     v = f'{v:.1f}'
                 _put_line(f'    {k}: {v}')
@@ -216,6 +225,8 @@ class MonitorNode(Node):
             title = f'{node_info["node"]}({node_info["node_type"]})'
             _put_line(title)
             for k, v in node_info['info'].items():
+                if k in self.ignore_items:
+                    continue
                 if isinstance(v, float):
                     v = f'{v:.1f}'
                 _put_line(f'    {k}: {v}')
