@@ -121,7 +121,7 @@ class Node(Thread, metaclass=ABCMeta):
         raise NotImplementedError
 
     def get_node_info(self):
-        info = {'fps': self._timer.report('_FPS_')}
+        info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
     def run(self):
