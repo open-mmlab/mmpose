@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, run tests with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: build
@@ -27,25 +27,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Install pre-commit hook
-        run: |
-          pip install pre-commit
-          pre-commit install
-      - name: Linting
-        run: pre-commit run --all-files
-      - name: Check docstring coverage
-        run: |
-          pip install interrogate
-          interrogate -v --ignore-init-method --ignore-module --ignore-nested-functions --ignore-regex "__repr__" --fail-under 80 mmpose
-
   build_cpu:
     runs-on: ubuntu-18.04
     strategy:

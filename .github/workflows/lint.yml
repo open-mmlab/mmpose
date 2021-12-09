@@ -1,0 +1,34 @@
+
+# This workflow will run lint
+
+name: lint
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install pre-commit hook
+        run: |
+          # markdownlint requires ruby >= 2.7
+          sudo apt-add-repository ppa:brightbox/ruby-ng -y
+          sudo apt-get update
+          sudo apt-get install -y ruby2.7
+          pip install pre-commit
+          pre-commit install
+      - name: Linting
+        run: pre-commit run --all-files
+      - name: Check docstring coverage
+        run: |
+          pip install interrogate
+          interrogate -v --ignore-init-method --ignore-module --ignore-nested-functions --ignore-regex "__repr__" --fail-under 80 mmpose
