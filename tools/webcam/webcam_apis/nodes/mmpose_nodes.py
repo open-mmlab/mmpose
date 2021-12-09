@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import time
 import weakref
 from typing import Optional
 
@@ -34,7 +35,11 @@ class TopDownPoseEstimatorNode(Node):
         self.bbox_thr = bbox_thr
 
         # Store history for pose tracking
-        self.track_info = {'next_id': 0, 'last_pose_preds': []}
+        self.track_info = {
+            'next_id': 0,
+            'last_pose_preds': [],
+            'last_time': None
+        }
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', essential=True)
@@ -79,6 +84,12 @@ class TopDownPoseEstimatorNode(Node):
             format='xyxy')
 
         # Pose tracking
+        current_time = time.time()
+        if self.track_info['last_time'] is None:
+            fps = None
+        else:
+            fps = 1.0 / (current_time - self.track_info['last_time'])
+
         pose_preds, next_id = get_track_id(
             pose_preds,
             self.track_info['last_pose_preds'],
@@ -86,10 +97,11 @@ class TopDownPoseEstimatorNode(Node):
             use_oks=False,
             tracking_thr=0.3,
             use_one_euro=True,
-            fps=None)
+            fps=fps)
 
         self.track_info['next_id'] = next_id
         self.track_info['last_pose_preds'] = pose_preds.copy()
+        self.track_info['last_time'] = current_time
 
         pose_result = {
             'preds': pose_preds,
