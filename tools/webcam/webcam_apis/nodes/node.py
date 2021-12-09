@@ -17,7 +17,8 @@ class Node(Thread, metaclass=ABCMeta):
     def __init__(self,
                  name: Optional[str] = None,
                  enable_key: Optional[Union[str, int]] = None,
-                 max_fps: Optional[float] = 30):
+                 max_fps: Optional[float] = 30,
+                 input_check_interval: float = 0.001):
         super().__init__(name=name, daemon=True)
         self._runner = None
         self._enabled = True
@@ -25,6 +26,7 @@ class Node(Thread, metaclass=ABCMeta):
         self.input_buffers = []
         self.output_buffers = []
         self.max_fps = max_fps
+        self.input_check_interval = input_check_interval
 
         # If the node allows toggling enable, it should override the `bypass`
         # method to define the node behavior when disabled.
@@ -100,7 +102,12 @@ class Node(Thread, metaclass=ABCMeta):
                     buffer_info['buffer_name']):
                 return False, None
 
-        result = {}
+        # Default input
+        result = {
+            buffer_info['input_name']: None
+            for buffer_info in self.input_buffers
+        }
+
         for buffer_info in self.input_buffers:
             try:
                 data = buffer_manager.get(buffer_info['buffer_name'])
@@ -131,7 +138,7 @@ class Node(Thread, metaclass=ABCMeta):
             # Check if input is ready
             input_status, input_msgs = self.get_input()
             if not input_status:
-                time.sleep(0.001)
+                time.sleep(self.input_check_interval)
                 continue
 
             # Check if enabled
