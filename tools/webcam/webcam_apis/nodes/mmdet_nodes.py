@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import weakref
+from typing import Optional, Union
 
 from .builder import NODES
 from .node import Node
@@ -18,10 +19,10 @@ class DetectorNode(Node):
                  name: str,
                  model_config: str,
                  model_checkpoint: str,
-                 device: str = 'cuda:0',
-                 enable_key=None,
-                 input_buffer: str = 'input',
-                 output_buffer: str = 'output'):
+                 input_buffer: str,
+                 output_buffer: str,
+                 enable_key: Optional[Union[str, int]] = None,
+                 device: str = 'cuda:0'):
         # Check mmdetection is installed
         assert has_mmdet, 'Please install mmdet to run the demo.'
         super().__init__(name=name, enable_key=enable_key)

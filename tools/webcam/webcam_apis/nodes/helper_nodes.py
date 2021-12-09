@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 from mmcv import color_val
 
-from mmpose.apis import vis_pose_result
 from mmpose.utils.timer import RunningAverage
 from .builder import NODES
 from .node import Node
@@ -18,25 +17,13 @@ except (ImportError, ModuleNotFoundError):
 
 
 @NODES.register_module()
-class PoseVisualizerNode(Node):
+class ModelResultBindingNode(Node):
 
-    def __init__(self,
-                 name: str,
-                 enable_key=None,
-                 kpt_thr: float = 0.3,
-                 radius: int = 4,
-                 thickness: int = 2,
-                 bbox_color: Union[str, tuple] = 'green',
-                 frame_buffer: str = '_frame_',
-                 result_buffer: Optional[str] = None,
-                 output_buffer: str = '_output_'):
-        super().__init__(name=name, enable_key=enable_key)
+    def __init__(self, name: str, frame_buffer: str, result_buffer: str,
+                 output_buffer: str):
+        super().__init__(name=name)
 
-        self.kpt_thr = kpt_thr
-        self.radius = radius
-        self.thickness = thickness
-        self.bbox_color = color_val(bbox_color)
-
+        # Cache the latest model result
         self.last_result_msg = None
 
         # Inference speed analysis
@@ -45,28 +32,8 @@ class PoseVisualizerNode(Node):
 
         # Register buffers
         self.register_input_buffer(frame_buffer, 'frame', essential=True)
-        if result_buffer is None:
-            self.show_result = False
-        else:
-            self.register_input_buffer(result_buffer, 'result')
-            self.show_result = True
+        self.register_input_buffer(result_buffer, 'result')
         self.register_output_buffer(output_buffer)
-
-    def _show_results(self, img, results):
-
-        for pose_result in results:
-            model = pose_result['model_ref']()
-            preds = pose_result['preds']
-            img = vis_pose_result(
-                model,
-                img,
-                result=preds,
-                radius=self.radius,
-                thickness=self.thickness,
-                kpt_score_thr=self.kpt_thr,
-                bbox_color=self.bbox_color)
-
-        return img
 
     def process(self, input_msgs):
         frame_msg = input_msgs['frame']
@@ -76,10 +43,7 @@ class PoseVisualizerNode(Node):
         if frame_msg is None:
             return frame_msg
 
-        # Show raw frame
-        if not self.show_result:
-            return frame_msg
-
+        # Update last result
         if result_msg is not None:
             # Update result FPS
             if self.last_result_msg is not None:
@@ -94,17 +58,12 @@ class PoseVisualizerNode(Node):
             # Update last inference result
             self.last_result_msg = result_msg
 
+        # Bind result to frame
         if self.last_result_msg:
-            img = frame_msg.get_image()
-            img = self._show_results(img,
-                                     self.last_result_msg.get_pose_result())
-            frame_msg.set_image(img)
+            frame_msg.set_full_results(self.last_result_msg.get_full_results())
             frame_msg.merge_route_info(self.last_result_msg.get_route_info())
 
         return frame_msg
-
-    def bypass(self, input_msgs):
-        return input_msgs['frame']
 
     def get_node_info(self):
         info = super().get_node_info()
@@ -120,7 +79,9 @@ class MonitorNode(Node):
 
     def __init__(self,
                  name: str,
-                 enable_key=None,
+                 input_buffer: str,
+                 output_buffer: str,
+                 enable_key: Optional[Union[str, int]] = None,
                  x_offset=20,
                  y_offset=20,
                  y_delta=15,
@@ -128,9 +89,7 @@ class MonitorNode(Node):
                  background_color=(255, 183, 0),
                  text_scale=0.4,
                  style='simple',
-                 ignore_items: Optional[list[str]] = None,
-                 input_buffer: str = 'input',
-                 output_buffer: str = '_display_'):
+                 ignore_items: Optional[list[str]] = None):
         super().__init__(name=name, enable_key=enable_key)
 
         self.x_offset = x_offset
@@ -145,30 +104,30 @@ class MonitorNode(Node):
         else:
             self.ignore_items = ignore_items
 
-        self.register_input_buffer(input_buffer, 'input', essential=True)
+        self.register_input_buffer(input_buffer, 'frame', essential=True)
         self.register_output_buffer(output_buffer)
 
         # Set disabled as default
         self._enabled = False
 
     def process(self, input_msgs):
-        input_msg = input_msgs['input']
+        frame_msg = input_msgs['frame']
 
         # Video ending signal
-        if input_msg is None:
-            return input_msg
+        if frame_msg is None:
+            return frame_msg
 
-        input_msg.update_route_info(
+        frame_msg.update_route_info(
             node_name='System Info',
             node_type='dummy',
             info=self._get_system_info())
 
-        img = input_msg.get_image()
-        route_info = input_msg.get_route_info()
+        img = frame_msg.get_image()
+        route_info = frame_msg.get_route_info()
         img = self._show_route_info(img, route_info)
 
-        input_msg.set_image(img)
-        return input_msg
+        frame_msg.set_image(img)
+        return frame_msg
 
     def _get_system_info(self):
         sys_info = {}
@@ -243,4 +202,4 @@ class MonitorNode(Node):
         return img
 
     def bypass(self, input_msgs):
-        return input_msgs['input']
+        return input_msgs['frame']
