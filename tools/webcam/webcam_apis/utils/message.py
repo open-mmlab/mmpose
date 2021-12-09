@@ -59,7 +59,7 @@ class FrameMessage(Message):
             self.data['detection_results'] = []
         self.data['detection_results'].append((tag, result))
 
-    def get_detection_result(self, tag=None):
+    def get_detection_results(self, tag=None):
         if 'detection_results' not in self.data:
             return None
         if tag is None:
@@ -76,7 +76,7 @@ class FrameMessage(Message):
             self.data['pose_results'] = []
         self.data['pose_results'].append((tag, result))
 
-    def get_pose_result(self, tag=None):
+    def get_pose_results(self, tag=None):
         if 'pose_results' not in self.data:
             return None
         if tag is None:
@@ -86,3 +86,12 @@ class FrameMessage(Message):
                 res for _tag, res in self.data['pose_results'] if _tag == tag
             ]
         return results
+
+    def get_full_results(self):
+        results = {}
+        results.update(self.get_detection_results())
+        results.update(self.get_pose_results())
+        return results
+
+    def set_full_results(self, results):
+        self.data.update(results)

@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
 import weakref
-from typing import Optional
+from typing import Optional, Union
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model)
@@ -17,13 +17,13 @@ class TopDownPoseEstimatorNode(Node):
                  name: str,
                  model_config: str,
                  model_checkpoint: str,
+                 input_buffer: str,
+                 output_buffer: str,
+                 enable_key: Optional[Union[str, int]] = None,
                  device: str = 'cuda:0',
                  cls_ids: Optional[list] = None,
                  cls_names: Optional[list] = None,
-                 bbox_thr: float = 0.5,
-                 enable_key=None,
-                 input_buffer: str = 'input',
-                 output_buffer: str = 'output'):
+                 bbox_thr: float = 0.5):
         super().__init__(name=name, enable_key=enable_key)
 
         # Init model
@@ -52,7 +52,7 @@ class TopDownPoseEstimatorNode(Node):
 
         input_msg = input_msgs['input']
         img = input_msg.get_image()
-        det_results = input_msg.get_detection_result()
+        det_results = input_msg.get_detection_results()
 
         if det_results is None:
             raise ValueError(
