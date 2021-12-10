@@ -3,8 +3,7 @@ runner = dict(
     name='Human Pose and Effects',
     camera_id=0,
     camera_fps=30,
-    display_delay=0,
-    frame_buffer_size=20,
+    ms_display_delay=0,
     user_buffers=[
         ('det_result', 2),
         ('pose_result', 2),
