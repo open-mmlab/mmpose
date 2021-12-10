@@ -40,9 +40,9 @@ class WebcamRunner():
         self.vcap = None  # Video Capture
 
         # Register default buffers
-        self.buffer_manager.add_buffer('_frame_', maxlen=20)
-        self.buffer_manager.add_buffer('_input_')
-        self.buffer_manager.add_buffer('_display_')
+        self.buffer_manager.add_buffer('_frame_', 2)
+        self.buffer_manager.add_buffer('_input_', 2)
+        self.buffer_manager.add_buffer('_display_', 2)
 
         # Register user defined buffers
         if user_buffers:
@@ -152,15 +152,16 @@ class WebcamRunner():
         return cam_info
 
     def run(self):
-        print('run')
         try:
+            # Create a thread to read video frames
             t_read = Thread(target=self._read_camera, args=())
             t_read.start()
 
+            # Start node threads
             for node in self.node_list:
                 node.start()
 
-            # run display in the main thread
+            # Run display in the main thread
             self._display()
 
             # joint non-daemon threads

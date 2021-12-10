@@ -61,7 +61,7 @@ def _get_eye_keypoint_ids(model_cfg: Config) -> tuple[int, int]:
     return left_eye_idx, right_eye_idx
 
 
-class BaseFrameEffectNodes(Node):
+class BaseFrameEffectNode(Node):
 
     def __init__(self,
                  name: str,
@@ -97,7 +97,7 @@ class BaseFrameEffectNodes(Node):
 
 
 @NODES.register_module()
-class PoseVisualizerNode(BaseFrameEffectNodes):
+class PoseVisualizerNode(BaseFrameEffectNode):
 
     def __init__(self,
                  name: str,
@@ -137,7 +137,7 @@ class PoseVisualizerNode(BaseFrameEffectNodes):
 
 
 @NODES.register_module()
-class SunglassesNode(BaseFrameEffectNodes):
+class SunglassesNode(BaseFrameEffectNode):
 
     def __init__(self,
                  name: str,
@@ -171,7 +171,7 @@ class SunglassesNode(BaseFrameEffectNodes):
 
 
 @NODES.register_module()
-class BugEyeNode(BaseFrameEffectNodes):
+class BugEyeNode(BaseFrameEffectNode):
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
