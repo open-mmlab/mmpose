@@ -88,9 +88,10 @@ class FrameMessage(Message):
         return results
 
     def get_full_results(self):
-        results = {}
-        results.update(self.get_detection_results())
-        results.update(self.get_pose_results())
+        results = {
+            'detection_results': self.get_detection_results(),
+            'pose_results': self.get_pose_results()
+        }
         return results
 
     def set_full_results(self, results):

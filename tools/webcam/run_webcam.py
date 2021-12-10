@@ -9,14 +9,14 @@ from webcam_apis import WebcamRunner
 def parse_args():
     parser = ArgumentParser('Lauch webcam runner')
     parser.add_argument(
-        '--cfg', type=str, default='tools/webcam/configs/human_pose.py')
+        '--config', type=str, default='tools/webcam/configs/human_pose.py')
 
     return parser.parse_args()
 
 
 def launch():
     args = parse_args()
-    cfg = mmcv.Config.fromfile(args.cfg)
+    cfg = mmcv.Config.fromfile(args.config)
 
     runner = WebcamRunner(cfg.runner)
     runner.run()
