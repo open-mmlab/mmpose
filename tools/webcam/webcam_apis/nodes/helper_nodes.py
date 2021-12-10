@@ -59,7 +59,7 @@ class ModelResultBindingNode(Node):
             self.last_result_msg = result_msg
 
         # Bind result to frame
-        if self.last_result_msg:
+        if self.last_result_msg is not None:
             frame_msg.set_full_results(self.last_result_msg.get_full_results())
             frame_msg.merge_route_info(self.last_result_msg.get_route_info())
 

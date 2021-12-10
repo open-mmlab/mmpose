@@ -23,8 +23,9 @@ class WebcamRunner():
         self.buffer_manager.add_buffer('_display_')
 
         # register user defined buffers
-        for buffer_name, buffer_size in cfg.user_buffers:
-            self.buffer_manager.add_buffer(buffer_name, buffer_size)
+        if 'user_buffers' in cfg:
+            for buffer_name, buffer_size in cfg.user_buffers:
+                self.buffer_manager.add_buffer(buffer_name, buffer_size)
 
         # register nodes
         for node_cfg in cfg.nodes:
