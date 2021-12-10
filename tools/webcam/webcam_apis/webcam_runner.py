@@ -1,7 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import time
 from threading import Thread
-from typing import Optional
+from typing import Optional, Union
 
 import cv2
 
@@ -10,10 +11,18 @@ from .utils import BufferManager, EventManager, FrameMessage, limit_max_fps
 
 
 class WebcamRunner():
+    """An interface for building webcam application from config.
+
+    Args:
+        name (str): Runner name.
+        camera_id (int|str): Webcam ID. Optionally a path can be given
+            as the camere_id to load videos from a local file. Default: 0
+        camera_fps (int): Video reading maximum FPS. Default: 30
+    """
 
     def __init__(self,
                  name: str = 'Default Webcam Runner',
-                 camera_id: int = 0,
+                 camera_id: Union[int, str] = 0,
                  camera_fps: int = 30,
                  ms_display_delay: int = 0,
                  user_buffers: Optional[list[tuple[str, int]]] = None,
@@ -30,17 +39,17 @@ class WebcamRunner():
         self.node_list = []
         self.vcap = None  # Video Capture
 
-        # register default buffers
+        # Register default buffers
         self.buffer_manager.add_buffer('_frame_', maxlen=20)
         self.buffer_manager.add_buffer('_input_')
         self.buffer_manager.add_buffer('_display_')
 
-        # register user defined buffers
+        # Register user defined buffers
         if user_buffers:
             for buffer_name, buffer_size in user_buffers:
                 self.buffer_manager.add_buffer(buffer_name, buffer_size)
 
-        # register nodes
+        # Register nodes
         if not nodes:
             raise ValueError('No node is registered to the runner.')
         for node_cfg in nodes:
@@ -55,9 +64,10 @@ class WebcamRunner():
 
             self.node_list.append(node)
 
-    def _read_camera(self):
+        # Logger
+        self.logger = logging.getLogger(self.name)
 
-        print('read_camera thread starts')
+    def _read_camera(self):
 
         camera_id = self.camera_id
         fps = self.camera_fps
@@ -93,8 +103,6 @@ class WebcamRunner():
 
     def _display(self):
 
-        print('display thread starts')
-
         output_msg = None
         vwriter = None
 
@@ -111,13 +119,6 @@ class WebcamRunner():
                 break
 
             img = output_msg.get_image()
-
-            # delay control
-            if self.ms_display_delay > 0:
-                t_sleep = self.ms_display_delay * 0.001 - (
-                    time.time() - output_msg.timestamp)
-                if t_sleep > 0:
-                    time.sleep(t_sleep)
 
             # show in a window
             cv2.imshow(self.name, img)
