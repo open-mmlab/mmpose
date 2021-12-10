@@ -83,7 +83,7 @@ class BaseFrameEffectNodes(Node):
             return frame_msg
 
         # Draw
-        img = self.draw(input_msgs)
+        img = self.draw(frame_msg)
         frame_msg.set_image(img)
 
         return frame_msg
@@ -118,6 +118,9 @@ class PoseVisualizerNode(BaseFrameEffectNodes):
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
         for pose_result in frame_msg.get_pose_results():
             model = pose_result['model_ref']()
             preds = pose_result['preds']
@@ -154,7 +157,10 @@ class SunglassesNode(BaseFrameEffectNodes):
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
-        for pose_result in frame_msg.get_pose_results():
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
             model = pose_result['model_ref']()
             preds = pose_result['preds']
             left_eye_idx, right_eye_idx = self._get_eye_keypoint_ids(model.cfg)
@@ -169,7 +175,10 @@ class BugEyeNode(BaseFrameEffectNodes):
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
-        for pose_result in frame_msg.get_pose_results():
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
             model = pose_result['model_ref']()
             preds = pose_result['preds']
             left_eye_idx, right_eye_idx = self._get_eye_keypoint_ids(model.cfg)
