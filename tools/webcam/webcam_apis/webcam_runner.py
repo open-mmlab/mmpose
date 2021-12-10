@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
 from threading import Thread
+from typing import Optional
 
 import cv2
 
@@ -10,25 +11,39 @@ from .utils import BufferManager, EventManager, FrameMessage, limit_max_fps
 
 class WebcamRunner():
 
-    def __init__(self, cfg):
-        self.cfg = cfg
+    def __init__(self,
+                 name: str = 'Default Webcam Runner',
+                 camera_id: int = 0,
+                 camera_fps: int = 30,
+                 ms_display_delay: int = 0,
+                 user_buffers: Optional[list[tuple[str, int]]] = None,
+                 nodes: Optional[list[dict]] = None):
+
+        # Collect arguments
+        self.name = name
+        self.camera_id = camera_id
+        self.camera_fps = camera_fps
+        self.ms_display_delay = ms_display_delay
+
         self.buffer_manager = BufferManager()
         self.event_manager = EventManager()
         self.node_list = []
         self.vcap = None  # Video Capture
 
         # register default buffers
-        self.buffer_manager.add_buffer('_frame_', maxlen=cfg.frame_buffer_size)
+        self.buffer_manager.add_buffer('_frame_', maxlen=20)
         self.buffer_manager.add_buffer('_input_')
         self.buffer_manager.add_buffer('_display_')
 
         # register user defined buffers
-        if 'user_buffers' in cfg:
-            for buffer_name, buffer_size in cfg.user_buffers:
+        if user_buffers:
+            for buffer_name, buffer_size in user_buffers:
                 self.buffer_manager.add_buffer(buffer_name, buffer_size)
 
         # register nodes
-        for node_cfg in cfg.nodes:
+        if not nodes:
+            raise ValueError('No node is registered to the runner.')
+        for node_cfg in nodes:
             node = NODES.build(node_cfg)
             node.set_runner(self)
             for buffer_info in node.input_buffers:
@@ -44,9 +59,8 @@ class WebcamRunner():
 
         print('read_camera thread starts')
 
-        cfg = self.cfg
-        camera_id = cfg.camera_id
-        fps = self.cfg.get('camera_fps', None)
+        camera_id = self.camera_id
+        fps = self.camera_fps
 
         self.vcap = cv2.VideoCapture(camera_id)
 
@@ -99,14 +113,14 @@ class WebcamRunner():
             img = output_msg.get_image()
 
             # delay control
-            if self.cfg.display_delay > 0:
-                t_sleep = self.cfg.display_delay * 0.001 - (
+            if self.ms_display_delay > 0:
+                t_sleep = self.ms_display_delay * 0.001 - (
                     time.time() - output_msg.timestamp)
                 if t_sleep > 0:
                     time.sleep(t_sleep)
 
             # show in a window
-            cv2.imshow(self.cfg.name, img)
+            cv2.imshow(self.name, img)
 
             # handle keyboard input
             key = cv2.waitKey(1)
@@ -129,7 +143,7 @@ class WebcamRunner():
         frame_rate = self.vcap.get(cv2.CAP_PROP_FPS)
 
         cam_info = {
-            'Camera ID': self.cfg.camera_id,
+            'Camera ID': self.camera_id,
             'Frame size': f'{frame_width}x{frame_height}',
             'Frame rate': frame_rate,
         }

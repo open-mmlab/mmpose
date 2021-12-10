@@ -18,7 +18,7 @@ def launch():
     args = parse_args()
     cfg = mmcv.Config.fromfile(args.config)
 
-    runner = WebcamRunner(cfg.runner)
+    runner = WebcamRunner(**cfg.runner)
     runner.run()
 
 
