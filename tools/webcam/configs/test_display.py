@@ -3,7 +3,6 @@ runner = dict(
     name='Debug CamRunner',
     camera_id=0,
     camera_fps=30,
-    ms_display_delay=0,
     user_buffer=[],
     nodes=[
         dict(
