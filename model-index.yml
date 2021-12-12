@@ -95,6 +95,7 @@ Import:
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/resnet_coco_wholebody_face.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/scnet_coco_wholebody_face.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.yml
+- configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_awing_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_dark_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.yml
 - configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/resnet_deepfashion.yml
