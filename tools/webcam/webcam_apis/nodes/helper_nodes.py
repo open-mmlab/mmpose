@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from queue import Queue
+from threading import Thread
 from typing import Optional, Union
 
 import cv2
@@ -207,11 +209,67 @@ class MonitorNode(Node):
 
 @NODES.register_module()
 class RecorderNode(Node):
+    """Record the frames into a local file."""
 
     def __init__(
         self,
         name: str,
-        input_buffer: str,
+        frame_buffer: str,
         output_buffer: Union[str, list[str]],
+        out_video_file: str,
+        out_video_fps: int = 30,
+        out_video_codec: str = 'mp4v',
+        buffer_size: int = 30,
     ):
         super().__init__(name=name, enable_key=None)
+
+        self.queue = Queue(maxsize=buffer_size)
+        self.out_video_file = out_video_file
+        self.out_video_fps = out_video_fps
+        self.out_video_codec = out_video_codec
+        self.vwriter = None
+
+        # Register buffers
+        self.register_input_buffer(frame_buffer, 'frame', essential=True)
+        self.register_output_buffer(output_buffer)
+
+        # Start a new thread to write frame
+        self.t_record = Thread(target=self._record, args=(), daemon=True)
+        self.t_record.start()
+
+    def __del__(self):
+        if self.vwriter is not None:
+            self.vwriter.release()
+
+    def process(self, input_msgs):
+
+        frame_msg = input_msgs['frame']
+
+        if frame_msg is None:
+            self.queue.put(None)
+        else:
+            img = frame_msg.get_image()
+            self.queue.put(img)
+
+        return frame_msg
+
+    def _record(self):
+
+        while True:
+
+            img = self.queue.get()
+
+            if img is None:
+                if self.vwriter is not None:
+                    self.vwriter.release()
+                break
+
+            if self.vwriter is None:
+                fourcc = cv2.VideoWriter_fourcc(*self.out_video_codec)
+                fps = self.out_video_fps
+                frame_size = (img.shape[1], img.shape[0])
+                self.vwriter = cv2.VideoCapture(self.out_video_file, fourcc,
+                                                fps, frame_size)
+                assert self.vwriter.isOpened()
+
+            self.vwriter.write(img)
