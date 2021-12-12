@@ -48,7 +48,7 @@ class TopDownPoseEstimatorNode(Node):
     def bypass(self, input_msgs):
         return input_msgs['input']
 
-    def process(self, input_msgs: dict[str, Message]) -> Message:
+    def process(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
 
         input_msg = input_msgs['input']
         img = input_msg.get_image()
