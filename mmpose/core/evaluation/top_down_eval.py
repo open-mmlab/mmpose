@@ -3,6 +3,7 @@ import warnings
 
 import cv2
 import numpy as np
+import math
 
 from mmpose.core.post_processing import transform_preds
 
