@@ -368,7 +368,7 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     batch_heatmaps = np.transpose(batch_heatmaps,
                                   (2, 3, 0, 1)).reshape(H, W, -1)
 
-    # cv2.copyMakeBorder will report an error when input channel is greater than 512
+    # cv2.copyMakeBorder will report an error when input dimension exceeds 512
     batch_heatmaps_channel = batch_heatmaps.shape[2]
     if batch_heatmaps_channel > 512:
         total_group_number = math.ceil(batch_heatmaps_channel / 512)
