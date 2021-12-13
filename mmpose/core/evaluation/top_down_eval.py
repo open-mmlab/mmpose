@@ -366,8 +366,22 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     np.log(batch_heatmaps, batch_heatmaps)
     batch_heatmaps = np.transpose(batch_heatmaps,
                                   (2, 3, 0, 1)).reshape(H, W, -1)
-    batch_heatmaps_pad = cv2.copyMakeBorder(
-        batch_heatmaps, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
+
+    # cv2.copyMakeBorder will report an error when input channel is greater than 512
+    batch_heatmaps_channel = batch_heatmaps.shape[2]
+    if batch_heatmaps_channel > 512:
+        total_group_number = math.ceil(batch_heatmaps_channel / 512)
+        splited_batch_heatmaps = []
+        for group_idx in range(total_group_number):
+            splited_batch_heatmap = batch_heatmaps[...,
+                                    group_idx * 512:min(batch_heatmaps_channel, (group_idx + 1) * 512)]
+            batch_heatmap_pad = cv2.copyMakeBorder(splited_batch_heatmap, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
+            splited_batch_heatmaps.append(batch_heatmap_pad)
+        batch_heatmaps_pad = np.concatenate(splited_batch_heatmaps, axis=2)
+    else:
+        batch_heatmaps_pad = cv2.copyMakeBorder(
+            batch_heatmaps, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
+
     batch_heatmaps_pad = np.transpose(
         batch_heatmaps_pad.reshape(H + 2, W + 2, B, K),
         (2, 3, 0, 1)).flatten()
