@@ -13,11 +13,29 @@ from ..utils import Message, limit_max_fps
 
 
 class Node(Thread, metaclass=ABCMeta):
+    """Base interface of functional module.
+
+    Args:
+        name (str, optional): The node name (also thread name).
+        enable_key (str|int, optional): Set a hot-key to toggle enable/disable
+            of the node. If an int value is given, it will be treated as an
+            ascii code of a key. Please note:
+                1. If enable_key is set, the bypass method need to be
+                    overridden to define the node behavior when disabled
+                2. Some hot-key has been use for particular use. For example:
+                    'q', 'Q' and 27 are used for quit
+            Default: None
+        max_fps (int): Maximum FPS of the node. This is to avoid the node
+            running unrestrictedly and causing large resource consuming.
+            Default: 30
+        input_check_interval (float): Minimum interval (in millisecond) between
+            checking if input is ready. Default: 0.001
+    """
 
     def __init__(self,
                  name: Optional[str] = None,
                  enable_key: Optional[Union[str, int]] = None,
-                 max_fps: Optional[float] = 30,
+                 max_fps: float = 30,
                  input_check_interval: float = 0.001):
         super().__init__(name=name, daemon=True)
         self._runner = None
@@ -40,7 +58,29 @@ class Node(Thread, metaclass=ABCMeta):
         # A timer to calculate node FPS
         self._timer = StopWatch(window=10)
 
-    def register_input_buffer(self, buffer_name, input_name, essential=False):
+    def register_input_buffer(self,
+                              buffer_name: str,
+                              input_name: str,
+                              essential: bool = False):
+        """Register an input buffer, so that Node can automatically check if
+        data is ready, fetch data from the buffers and format the inputs to
+        feed into `process` method.
+
+        This method can be invoked multiple times to register multiple input
+        buffers.
+
+        The subclass of Node should invoke `register_input_buffer` in its
+        `__init__` method.
+
+        Args:
+            buffer_name (str): The name of the buffer
+            input_name (str): The name of the fetched message from the
+                corresponding buffer
+            essential (bool): An essential input means the node will wait
+                until the input is ready before processing. Otherwise, an
+                inessential input will not block the processing, instead
+                a None will be fetched if the buffer is not ready.
+        """
         buffer_info = {
             'buffer_name': buffer_name,
             'input_name': input_name,
