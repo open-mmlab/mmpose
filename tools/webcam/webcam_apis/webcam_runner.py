@@ -111,7 +111,7 @@ class WebcamRunner():
                     input_msg.update_route_info(
                         node_name='Camera Info',
                         node_type='dummy',
-                        info=self.get_camera_info())
+                        info=self._get_camera_info())
                     self.buffer_manager.put('_input_', input_msg)
 
                 else:
@@ -145,11 +145,11 @@ class WebcamRunner():
             # handle keyboard input
             key = cv2.waitKey(1)
             if key != -1:
-                self.on_keyboard_input(key)
+                self._on_keyboard_input(key)
 
         cv2.destroyAllWindows()
 
-    def on_keyboard_input(self, key):
+    def _on_keyboard_input(self, key):
         """Handle the keyboard input."""
 
         self.logger.info(f'Keyboard event captured: {key}')
@@ -158,7 +158,7 @@ class WebcamRunner():
         else:
             self.event_manager.set_keyboard(key)
 
-    def get_camera_info(self):
+    def _get_camera_info(self):
         """Return the camera information in a dict."""
 
         frame_width = self.vcap.get(cv2.CAP_PROP_FRAME_WIDTH)
