@@ -11,14 +11,9 @@ runner = dict(
     #   - '_frame_': reserved buffer that stores input video frames
     #   - '_input_': reserved buffer that stores video frames for model input
     #   - '_display_': reserved buffer that stores output frames for display
-    user_buffers=[
-        ('det_result', 2),
-        ('pose_result', 2),
-        ('frame', 2),
-        ('vis_pose', 2),
-        ('vis_sunglasses', 2),
-        ('vis_bugeye', 2),
-    ],
+    user_buffers=[('det_result', 2), ('pose_result', 2), ('frame', 2),
+                  ('vis_pose', 2), ('vis_sunglasses', 2), ('vis_bugeye', 2),
+                  ('vis', 2)],
 
     # Define nodes.
     #
@@ -97,6 +92,24 @@ runner = dict(
             enable_key='b',
             frame_buffer='vis_sunglasses',
             output_buffer='vis_bugeye'),
+        # 'BillboardNode':
+        # This node show a billboard with given content, e.g. help
+        # information.
+        dict(
+            type='BillboardNode',
+            name='Help Information',
+            enable_key='h',
+            frame_buffer='vis_bugeye',
+            output_buffer='vis',
+            content_lines=[
+                'This is a demo for pose visualization and simple image '
+                'effects. Have fun!', '', 'Hot-keys:',
+                '"v": Pose estimation result visualization',
+                '"s": Sunglasses effect B-)', '"b": Bug-eye effect 0_0',
+                '"h": Show help information',
+                '"m": Show diagnostic information', '"q": Exit'
+            ],
+        ),
         # 'MonitorNode':
         # This node show diagnostic information in the frame image. It can
         # be used for debugging or monitoring system resource status.
@@ -105,6 +118,6 @@ runner = dict(
             name='Monitor',
             enable_key='m',
             style='fancy',
-            input_buffer='vis_pose',
+            frame_buffer='vis',
             output_buffer='_display_')  # `_frame_` is a runner-reserved buffer
     ])
