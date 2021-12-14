@@ -35,7 +35,7 @@ class Node(Thread, metaclass=ABCMeta):
     def __init__(self,
                  name: Optional[str] = None,
                  enable_key: Optional[Union[str, int]] = None,
-                 max_fps: float = 30,
+                 max_fps: int = 30,
                  input_check_interval: float = 0.001):
         super().__init__(name=name, daemon=True)
         self._runner = None
@@ -88,9 +88,23 @@ class Node(Thread, metaclass=ABCMeta):
         }
         self.input_buffers.append(buffer_info)
 
-    def register_output_buffer(self, buffer_name):
-        buffer_info = {'buffer_name': buffer_name}
-        self.output_buffers.append(buffer_info)
+    def register_output_buffer(self, buffer_name: Union[str, list[str]]):
+        """Register one or multiple output buffers, so that the Node can
+        automatically send the output of the `process` method to these buffers.
+
+        The subclass of Node should invoke `register_output_buffer` in its
+        `__init__` method.
+
+        Args:
+            buffer_name (str|list): The name(s) of the output buffer(s).
+        """
+
+        if not isinstance(buffer_name, list):
+            buffer_name = [buffer_name]
+
+        for name in buffer_name:
+            buffer_info = {'buffer_name': name}
+            self.output_buffers.append(buffer_info)
 
     @property
     def runner(self):
@@ -109,7 +123,8 @@ class Node(Thread, metaclass=ABCMeta):
 
         self._runner = weakref.ref(runner)
 
-    def check_enabled(self):
+    def _check_enabled(self):
+        """Check if the Node is enabled."""
         # Always enabled if there is no toggle key
         if self.enable_key is None:
             return True
@@ -120,7 +135,7 @@ class Node(Thread, metaclass=ABCMeta):
 
         return self._enabled
 
-    def get_input(self) -> tuple[bool, Optional[dict]]:
+    def _get_input_from_buffer(self) -> tuple[bool, Optional[dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
         of a status flag and a packed data dictionary. If input_buffer is
         ready, the status flag will be True, and the packed data is a dict
@@ -162,27 +177,62 @@ class Node(Thread, metaclass=ABCMeta):
 
     @abstractmethod
     def process(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
-        ...
+        """The core method that implement the function of the node. This method
+        will be invoked when the node is enabled and the input data is ready.
+
+        All subclasses of Node should override this method.
+
+        Args:
+            input_msgs (dict): The input data collected from the buffers. For
+                each item, the key is the `input_name` of the registered input
+                buffer, while the value is a Message instance fetched from the
+                buffer (or None if the buffer is unessential and not ready).
+
+        Returns:
+            Message: The output message of the node. It will be send to all
+                registered output buffers.
+        """
 
     def bypass(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+        """The method that defines the node behavior when disabled. Note that
+        if the node has an `enable_key`, this method should be override.
+
+        The method input/output is same as it of `process` method.
+
+        Args:
+            input_msgs (dict): The input data collected from the buffers. For
+                each item, the key is the `input_name` of the registered input
+                buffer, while the value is a Message instance fetched from the
+                buffer (or None if the buffer is unessential and not ready).
+
+        Returns:
+            Message: The output message of the node. It will be send to all
+                registered output buffers.
+        """
         raise NotImplementedError
 
-    def get_node_info(self):
+    def _get_node_info(self):
+        """Get route information of the node."""
         info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
     def run(self):
+        """Method representing the Node's activity.
+
+        This method override the standard run() method of Thread. Users should
+        not override this method in subclasses.
+        """
 
         while True:
 
             # Check if input is ready
-            input_status, input_msgs = self.get_input()
+            input_status, input_msgs = self._get_input_from_buffer()
             if not input_status:
                 time.sleep(self.input_check_interval)
                 continue
 
             # Check if enabled
-            enabled = self.check_enabled()
+            enabled = self._check_enabled()
             if not enabled:
                 # Override bypass method to define node behavior when disabled
                 output_msg = self.bypass(input_msgs)
@@ -194,7 +244,7 @@ class Node(Thread, metaclass=ABCMeta):
 
                 if output_msg:
                     # Update route information
-                    node_info = self.get_node_info()
+                    node_info = self._get_node_info()
                     output_msg.update_route_info(node=self, info=node_info)
 
             # Dispatch output message

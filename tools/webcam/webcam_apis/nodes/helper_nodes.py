@@ -20,7 +20,7 @@ except (ImportError, ModuleNotFoundError):
 class ModelResultBindingNode(Node):
 
     def __init__(self, name: str, frame_buffer: str, result_buffer: str,
-                 output_buffer: str):
+                 output_buffer: Union[str, list[str]]):
         super().__init__(name=name)
 
         # Cache the latest model result
@@ -65,8 +65,8 @@ class ModelResultBindingNode(Node):
 
         return frame_msg
 
-    def get_node_info(self):
-        info = super().get_node_info()
+    def _get_node_info(self):
+        info = super()._get_node_info()
         info['result_fps'] = self.result_fps.average()
         info['result_lag (ms)'] = self.result_lag.average() * 1000
         return info
@@ -79,8 +79,8 @@ class MonitorNode(Node):
 
     def __init__(self,
                  name: str,
-                 input_buffer: str,
-                 output_buffer: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, list[str]],
                  enable_key: Optional[Union[str, int]] = None,
                  x_offset=20,
                  y_offset=20,
@@ -104,7 +104,7 @@ class MonitorNode(Node):
         else:
             self.ignore_items = ignore_items
 
-        self.register_input_buffer(input_buffer, 'frame', essential=True)
+        self.register_input_buffer(frame_buffer, 'frame', essential=True)
         self.register_output_buffer(output_buffer)
 
         # Set disabled as default
@@ -203,3 +203,15 @@ class MonitorNode(Node):
 
     def bypass(self, input_msgs):
         return input_msgs['frame']
+
+
+@NODES.register_module()
+class RecorderNode(Node):
+
+    def __init__(
+        self,
+        name: str,
+        input_buffer: str,
+        output_buffer: Union[str, list[str]],
+    ):
+        super().__init__(name=name, enable_key=None)
