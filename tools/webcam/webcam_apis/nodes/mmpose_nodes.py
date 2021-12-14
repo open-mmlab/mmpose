@@ -18,7 +18,7 @@ class TopDownPoseEstimatorNode(Node):
                  model_config: str,
                  model_checkpoint: str,
                  input_buffer: str,
-                 output_buffer: str,
+                 output_buffer: Union[str, list[str]],
                  enable_key: Optional[Union[str, int]] = None,
                  device: str = 'cuda:0',
                  cls_ids: Optional[list] = None,
