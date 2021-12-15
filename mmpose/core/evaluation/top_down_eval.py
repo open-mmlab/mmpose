@@ -3,7 +3,6 @@ import warnings
 
 import cv2
 import numpy as np
-import math
 
 from mmpose.core.post_processing import transform_preds
 
@@ -371,12 +370,13 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     # cv2.copyMakeBorder will report an error when input dimension exceeds 512
     batch_heatmaps_channel = batch_heatmaps.shape[2]
     if batch_heatmaps_channel > 512:
-        total_group_number = math.ceil(batch_heatmaps_channel / 512)
+        total_group_number = int(np.ceil(batch_heatmaps_channel / 512))
         splited_batch_heatmaps = []
         for group_idx in range(total_group_number):
             splited_batch_heatmap = batch_heatmaps[...,
                                     group_idx * 512:min(batch_heatmaps_channel, (group_idx + 1) * 512)]
-            batch_heatmap_pad = cv2.copyMakeBorder(splited_batch_heatmap, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
+            batch_heatmap_pad = cv2.copyMakeBorder(
+                splited_batch_heatmap, 1, 1, 1, 1, borderType=cv2.BORDER_REFLECT)
             splited_batch_heatmaps.append(batch_heatmap_pad)
         batch_heatmaps_pad = np.concatenate(splited_batch_heatmaps, axis=2)
     else:
