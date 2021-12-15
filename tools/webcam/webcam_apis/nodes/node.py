@@ -4,7 +4,7 @@ import warnings
 import weakref
 from abc import ABCMeta, abstractmethod
 from threading import Thread
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from mmcv.utils.misc import is_method_overridden
 
@@ -46,6 +46,12 @@ class Node(Thread, metaclass=ABCMeta):
         self.max_fps = max_fps
         self.input_check_interval = input_check_interval
 
+        # A timer to calculate node FPS
+        self._timer = StopWatch(window=10)
+
+        # Event listener threads
+        self._event2listener = {}
+
         # If the node allows toggling enable, it should override the `bypass`
         # method to define the node behavior when disabled.
         if self.enable_key:
@@ -54,9 +60,6 @@ class Node(Thread, metaclass=ABCMeta):
                     f'The node {self.__class__} does not support toggling'
                     'enable but got argument `enable_key`. To support toggling'
                     'enable, please override the `bypass` method of the node.')
-
-        # A timer to calculate node FPS
-        self._timer = StopWatch(window=10)
 
     def register_input_buffer(self,
                               buffer_name: str,
@@ -106,6 +109,40 @@ class Node(Thread, metaclass=ABCMeta):
             buffer_info = {'buffer_name': name}
             self.output_buffers.append(buffer_info)
 
+    def register_event_handler(self, event_name: str, handler_func: Callable):
+
+        if self.runner is None:
+            raise ValueError(
+                f'Node {self.name} cannot register event handler before '
+                'being registered to a runner.')
+
+        def event_listener():
+            while True:
+                self.runner.event_manager.wait(event_name)
+                handler_func()
+                self.runner.event_manager.clear(event_name)
+
+        t_event_listener = Thread(target=event_listener, args=(), daemon=True)
+        t_event_listener.start()
+        self._event2listener[event_name] = t_event_listener
+
+    def register_hotkey_handler(self, key: Optional[Union[str, int]],
+                                handler_func: Callable):
+        if self.runner is None:
+            raise ValueError(
+                f'Node {self.name} cannot register event handler before '
+                'being registered to a runner.')
+
+        def event_listener():
+            while True:
+                self.runner.event_manager.wait_keyboard(key)
+                handler_func()
+                self.runner.event_manager.clear_keyboard(key)
+
+        t_event_listener = Thread(target=event_listener, args=(), daemon=True)
+        t_event_listener.start()
+        self._event2listener[f'hotkey_{key}'] = t_event_listener
+
     @property
     def runner(self):
         if self._runner is None:
@@ -123,17 +160,14 @@ class Node(Thread, metaclass=ABCMeta):
 
         self._runner = weakref.ref(runner)
 
-    def _check_enabled(self):
-        """Check if the Node is enabled."""
-        # Always enabled if there is no toggle key
-        if self.enable_key is None:
-            return True
+        # Register enable_key
+        if self.enable_key:
 
-        if self.runner.event_manager.is_set_keyboard(self.enable_key):
-            self._enabled = not self._enabled
-            self.runner.event_manager.clear_keyboard(self.enable_key)
+            def _toggle_enable():
+                self._enabled = not self._enabled
 
-        return self._enabled
+            self.register_hotkey_handler(
+                key=self.enable_key, handler_func=_toggle_enable)
 
     def _get_input_from_buffer(self) -> tuple[bool, Optional[dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
@@ -232,8 +266,7 @@ class Node(Thread, metaclass=ABCMeta):
                 continue
 
             # Check if enabled
-            enabled = self._check_enabled()
-            if not enabled:
+            if not self._enabled:
                 # Override bypass method to define node behavior when disabled
                 output_msg = self.bypass(input_msgs)
             else:
