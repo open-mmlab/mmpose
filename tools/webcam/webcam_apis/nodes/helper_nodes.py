@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import time
 from queue import Queue
 from threading import Thread
 from typing import Optional, Union
@@ -21,29 +22,33 @@ except (ImportError, ModuleNotFoundError):
 @NODES.register_module()
 class ModelResultBindingNode(Node):
 
-    def __init__(self, name: str, frame_buffer: str, result_buffer: str,
-                 output_buffer: Union[str, list[str]]):
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 result_buffer: str,
+                 output_buffer: Union[str, list[str]],
+                 synchronous: bool = False):
         super().__init__(name=name)
+        self.synchronous = synchronous
 
         # Cache the latest model result
         self.last_result_msg = None
 
         # Inference speed analysis
         self.result_fps = RunningAverage(window=10)
+        self.frame_lag = RunningAverage(window=10)
         self.result_lag = RunningAverage(window=10)
 
         # Register buffers
-        self.register_input_buffer(frame_buffer, 'frame', essential=True)
-        self.register_input_buffer(result_buffer, 'result')
+        if self.synchronous:
+            self.register_input_buffer(result_buffer, 'result', essential=True)
+        else:
+            self.register_input_buffer(frame_buffer, 'frame', essential=True)
+            self.register_input_buffer(result_buffer, 'result')
         self.register_output_buffer(output_buffer)
 
     def process(self, input_msgs):
-        frame_msg = input_msgs['frame']
         result_msg = input_msgs['result']
-
-        # Video ending signal
-        if frame_msg is None:
-            return frame_msg
 
         # Update last result
         if result_msg is not None:
@@ -52,25 +57,40 @@ class ModelResultBindingNode(Node):
                 fps = 1.0 / (
                     result_msg.timestamp - self.last_result_msg.timestamp)
                 self.result_fps.update(fps)
-
             # Update inference latency
-            lag = frame_msg.timestamp - result_msg.timestamp
-            self.result_lag.update(lag)
-
+            self.result_lag.update(time.time() - result_msg.timestamp)
             # Update last inference result
             self.last_result_msg = result_msg
 
-        # Bind result to frame
-        if self.last_result_msg is not None:
-            frame_msg.set_full_results(self.last_result_msg.get_full_results())
-            frame_msg.merge_route_info(self.last_result_msg.get_route_info())
+        if not self.synchronous:
+            # Asynchronous mode: Bind the latest result with the current frame.
+            frame_msg = input_msgs['frame']
+            # Video ending signal
+            if frame_msg is None:
+                return frame_msg
 
-        return frame_msg
+            self.frame_lag.update(time.time() - frame_msg.timestamp)
+
+            # Bind result to frame
+            if self.last_result_msg is not None:
+                frame_msg.set_full_results(
+                    self.last_result_msg.get_full_results())
+                frame_msg.merge_route_info(
+                    self.last_result_msg.get_route_info())
+
+            return frame_msg
+
+        else:
+            # Synchronous mode: Directly output the frame that the model result
+            # was obtained from.
+            self.frame_lag.update(time.time() - result_msg.timestamp)
+            return result_msg
 
     def _get_node_info(self):
         info = super()._get_node_info()
         info['result_fps'] = self.result_fps.average()
         info['result_lag (ms)'] = self.result_lag.average() * 1000
+        info['frame_lag (ms)'] = self.frame_lag.average() * 1000
         return info
 
 
