@@ -141,12 +141,12 @@ class CuboidPoseHead(nn.Module):
         """
 
         Args:
-            heatmap_volumes (torch.Tensor(NXKxLXWXH)):
+            heatmap_volumes (torch.Tensor(NxKxLxWxH)):
                 3D human pose heatmaps predicted by the network.
-            grid_coordinates (torch.Tensor(Nx(L*W*H)x3)):
+            grid_coordinates (torch.Tensor(Nx(LxWxH)x3)):
                 Coordinates of the grids in the heatmap volumes.
         Returns:
-            human_poses (torch.Tensor(NXKX3)): Coordinates of human poses.
+            human_poses (torch.Tensor(NxKx3)): Coordinates of human poses.
         """
         batch_size = heatmap_volumes.size(0)
         channel = heatmap_volumes.size(1)

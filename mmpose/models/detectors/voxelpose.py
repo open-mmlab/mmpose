@@ -257,6 +257,17 @@ class VoxelPose(BasePose):
                 input_heatmaps=None,
                 **kwargs):
         """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            heatmaps width: W
+            heatmaps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
 
         Args:
             img (list(torch.Tensor[NxCximgHximgW])):
@@ -269,7 +280,7 @@ class VoxelPose(BasePose):
                 Multi-camera target heatmaps of the 2D model.
             masks (list(torch.Tensor[NxHxW])):
                 Multi-camera masks of the input to the 2D model.
-            targets_3d (torch.Tensor[NxcubeLxcubeWXcubeH]):
+            targets_3d (torch.Tensor[NxcubeLxcubeWxcubeH]):
                 Ground-truth 3D heatmap of human centers.
             input_heatmaps (list(torch.Tensor[NxKxHxW])):
                 Multi-camera heatmaps when the 2D model is not available.
@@ -349,7 +360,38 @@ class VoxelPose(BasePose):
                       masks=None,
                       targets_3d=None,
                       input_heatmaps=None):
-        """Defines the computation performed at training."""
+        """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            heatmaps width: W
+            heatmaps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
+
+        Args:
+            img (list(torch.Tensor[NxCximgHximgW])):
+                Multi-camera input images to the 2D model.
+            img_metas (list(dict)):
+                Information about image, 3D groundtruth and camera parameters.
+            targets (list(torch.Tensor[NxKxHxW])):
+                Multi-camera target heatmaps of the 2D model.
+            masks (list(torch.Tensor[NxHxW])):
+                Multi-camera masks of the input to the 2D model.
+            targets_3d (torch.Tensor[NxcubeLxcubeWxcubeH]):
+                Ground-truth 3D heatmap of human centers.
+            input_heatmaps (list(torch.Tensor[NxKxHxW])):
+                Multi-camera heatmaps when the 2D model is not available.
+                 Default: None.
+
+        Returns:
+            dict: losses.
+
+        """
         if self.backbone is None:
             assert input_heatmaps is not None
             heatmaps = []
@@ -462,7 +504,32 @@ class VoxelPose(BasePose):
         img_metas,
         input_heatmaps=None,
     ):
-        """Defines the computation performed at testing."""
+        """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            heatmaps width: W
+            heatmaps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
+
+        Args:
+            img (list(torch.Tensor[NxCximgHximgW])):
+                Multi-camera input images to the 2D model.
+            img_metas (list(dict)):
+                Information about image, 3D groundtruth and camera parameters.
+            input_heatmaps (list(torch.Tensor[NxKxHxW])):
+                Multi-camera heatmaps when the 2D model is not available.
+                 Default: None.
+
+        Returns:
+            dict: predicted poses, human centers and sample_id
+
+        """
         if self.backbone is None:
             assert input_heatmaps is not None
             heatmaps = []
