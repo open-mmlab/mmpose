@@ -4,7 +4,7 @@ import warnings
 import weakref
 from abc import ABCMeta, abstractmethod
 from threading import Thread
-from typing import Callable, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 from mmcv.utils.misc import is_method_overridden
 
@@ -91,7 +91,7 @@ class Node(Thread, metaclass=ABCMeta):
         }
         self.input_buffers.append(buffer_info)
 
-    def register_output_buffer(self, buffer_name: Union[str, list[str]]):
+    def register_output_buffer(self, buffer_name: Union[str, List[str]]):
         """Register one or multiple output buffers, so that the Node can
         automatically send the output of the `process` method to these buffers.
 
@@ -210,7 +210,7 @@ class Node(Thread, metaclass=ABCMeta):
         return True, result
 
     @abstractmethod
-    def process(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+    def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
         """The core method that implement the function of the node. This method
         will be invoked when the node is enabled and the input data is ready.
 
@@ -227,7 +227,7 @@ class Node(Thread, metaclass=ABCMeta):
                 registered output buffers.
         """
 
-    def bypass(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+    def bypass(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
         """The method that defines the node behavior when disabled. Note that
         if the node has an `enable_key`, this method should be override.
 

@@ -2,7 +2,7 @@
 import time
 from queue import Queue
 from threading import Thread
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import cv2
 import numpy as np
@@ -26,7 +26,7 @@ class ModelResultBindingNode(Node):
                  name: str,
                  frame_buffer: str,
                  result_buffer: str,
-                 output_buffer: Union[str, list[str]],
+                 output_buffer: Union[str, List[str]],
                  synchronous: bool = False):
         super().__init__(name=name)
         self.synchronous = synchronous
@@ -102,7 +102,7 @@ class MonitorNode(Node):
     def __init__(self,
                  name: str,
                  frame_buffer: str,
-                 output_buffer: Union[str, list[str]],
+                 output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
                  x_offset=20,
                  y_offset=20,
@@ -111,7 +111,7 @@ class MonitorNode(Node):
                  background_color=(255, 183, 0),
                  text_scale=0.4,
                  style='simple',
-                 ignore_items: Optional[list[str]] = None):
+                 ignore_items: Optional[List[str]] = None):
         super().__init__(name=name, enable_key=enable_key)
 
         self.x_offset = x_offset
@@ -235,7 +235,7 @@ class RecorderNode(Node):
         self,
         name: str,
         frame_buffer: str,
-        output_buffer: Union[str, list[str]],
+        output_buffer: Union[str, List[str]],
         out_video_file: str,
         out_video_fps: int = 30,
         out_video_codec: str = 'mp4v',
