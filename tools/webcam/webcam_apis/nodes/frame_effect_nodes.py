@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import abstractmethod
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 
 import cv2
 import numpy as np
@@ -81,7 +81,7 @@ class BaseFrameEffectNode(Node):
     def __init__(self,
                  name: str,
                  frame_buffer: str,
-                 output_buffer: Union[str, list[str]],
+                 output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None):
 
         super().__init__(name=name, enable_key=enable_key)
@@ -92,7 +92,7 @@ class BaseFrameEffectNode(Node):
 
         self._enabled = False
 
-    def process(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+    def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
         frame_msg = input_msgs['frame']
 
         # Video ending signal
@@ -105,7 +105,7 @@ class BaseFrameEffectNode(Node):
 
         return frame_msg
 
-    def bypass(self, input_msgs: dict[str, Message]) -> Union[Message, None]:
+    def bypass(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
         return input_msgs['frame']
 
     @abstractmethod
@@ -127,7 +127,7 @@ class PoseVisualizerNode(BaseFrameEffectNode):
     def __init__(self,
                  name: str,
                  frame_buffer: str,
-                 output_buffer: Union[str, list[str]],
+                 output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
                  kpt_thr: float = 0.3,
                  radius: int = 4,
@@ -169,7 +169,7 @@ class SunglassesNode(BaseFrameEffectNode):
     def __init__(self,
                  name: str,
                  frame_buffer: str,
-                 output_buffer: Union[str, list[str]],
+                 output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
                  src_img_path: Optional[str] = None):
 
@@ -224,9 +224,9 @@ class BillboardNode(BaseFrameEffectNode):
         self,
         name: str,
         frame_buffer: str,
-        output_buffer: Union[str, list[str]],
+        output_buffer: Union[str, List[str]],
         enable_key: Optional[Union[str, int]] = None,
-        content_lines: Optional[list[str]] = None,
+        content_lines: Optional[List[str]] = None,
         x_offset: int = 20,
         y_offset: int = 20,
         y_delta: int = 15,
