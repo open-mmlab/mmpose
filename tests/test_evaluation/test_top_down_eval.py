@@ -63,8 +63,7 @@ def test_keypoints_from_heatmaps():
         udp_scale,
         post_process='default',
         target_type='GaussianHeatMap',
-        use_udp=True
-    )
+        use_udp=True)
     assert_array_almost_equal(preds, np.tile([76, 76], (32, 17, 1)), decimal=0)
     assert_array_almost_equal(maxvals, np.tile([2], (32, 17, 1)), decimal=4)
     assert isinstance(preds, np.ndarray)
