@@ -36,6 +36,7 @@ You can change the documentation language at the lower-left corner of the page.
    modelzoo.md
    topics/animal.md
    topics/body(2d,kpt,img).md
+   topics/body(2d,kpt,vid).md
    topics/body(3d,kpt,img).md
    topics/body(3d,kpt,vid).md
    topics/body(3d,mesh,img).md
