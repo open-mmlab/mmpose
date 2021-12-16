@@ -13,15 +13,15 @@ def compute_similarity_transform(source_points, target_points):
     transformed 3D points source_points_hat (N x 3). i.e. solves the orthogonal
     Procrutes problem.
 
-    Notes:
+    Note:
         Points number: N
 
     Args:
-        source_points (np.ndarray([N, 3])): Source point set.
-        target_points (np.ndarray([N, 3])): Target point set.
+        source_points (np.ndarray): Source point set with shape [N, 3].
+        target_points (np.ndarray): Target point set with shape [N, 3].
 
     Returns:
-        source_points_hat (np.ndarray([N, 3])): Transformed source point set.
+        np.ndarray: Transformed source point set with shape [N, 3].
     """
 
     assert target_points.shape[0] == source_points.shape[0]

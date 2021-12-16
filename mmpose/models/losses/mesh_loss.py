@@ -10,7 +10,7 @@ def perspective_projection(points, rotation, translation, focal_length,
                            camera_center):
     """This function computes the perspective projection of a set of 3D points.
 
-    Notes:
+    Note:
         batch size: B
         point number: N
 
@@ -149,7 +149,7 @@ class MeshLoss(nn.Module):
         """Perform orthographic projection of 3D points using the camera
         parameters, return projected 2D points in image plane.
 
-        Notes:
+        Note:
             batch size: B
             point number: N
 

@@ -203,7 +203,7 @@ class HeatmapParser:
             heatmaps (torch.Tensor[NxKxHxW])
             tags (torch.Tensor[NxKxHxWxL])
 
-        Return:
+        Returns:
             dict: A dict containing top_k values.
 
             - tag_k (np.ndarray[NxKxMxL]):

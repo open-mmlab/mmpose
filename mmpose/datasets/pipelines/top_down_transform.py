@@ -693,7 +693,7 @@ class TopDownRandomTranslation:
 
     Required key: 'scale' and 'center'. Modifies key: 'center'.
 
-    Notes:
+    Note:
         bbox height: H
         bbox width: W
 

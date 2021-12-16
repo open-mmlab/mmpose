@@ -678,7 +678,7 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
 
 def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
     """Get multi-label classification accuracy.
-    Notes:
+    Note:
         batch size: N
         label number: L
 

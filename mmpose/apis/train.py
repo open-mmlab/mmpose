@@ -27,10 +27,12 @@ def init_random_seed(seed=None, device='cuda'):
 
     If the seed is not set, the seed will be automatically randomized,
     and then broadcast to all processes to prevent some potential bugs.
+
     Args:
         seed (int, Optional): The seed. Default to None.
         device (str): The device where the seed will be put on.
             Default to 'cuda'.
+
     Returns:
         int: Seed to be used.
     """

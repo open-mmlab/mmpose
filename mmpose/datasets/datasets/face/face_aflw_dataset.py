@@ -123,7 +123,7 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             box_sizes (np.ndarray[N, 1]): box size
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
 

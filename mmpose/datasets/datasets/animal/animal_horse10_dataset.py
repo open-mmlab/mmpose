@@ -137,7 +137,7 @@ class AnimalHorse10Dataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
 
