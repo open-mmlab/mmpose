@@ -4,7 +4,7 @@ import sys
 import time
 import warnings
 from threading import Thread
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import cv2
 
@@ -32,8 +32,8 @@ class WebcamRunner():
                  name: str = 'Default Webcam Runner',
                  camera_id: Union[int, str] = 0,
                  camera_fps: int = 30,
-                 user_buffers: Optional[list[tuple[str, int]]] = None,
-                 nodes: Optional[list[dict]] = None):
+                 user_buffers: Optional[List[tuple[str, int]]] = None,
+                 nodes: Optional[List[dict]] = None):
 
         # Basic parameters
         self.name = name
