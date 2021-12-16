@@ -237,15 +237,15 @@ class JointsEncoder:
     def __call__(self, joints):
         """
         Note:
-            number of people in image: N
-            number of keypoints: K
-            max number of people in an image: M
+            - number of people in image: N
+            - number of keypoints: K
+            - max number of people in an image: M
 
         Args:
-            joints (np.ndarray[NxKx3])
+            joints (np.ndarray[N,K,3])
 
         Returns:
-            visible_kpts (np.ndarray[MxKx2]).
+            visible_kpts (np.ndarray[M,K,2]).
         """
         visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
                                 dtype=np.float32)
@@ -290,12 +290,12 @@ class PAFGenerator:
         """Accumulate part affinity fields between two given joints.
 
         Args:
-            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:x axis and
+            pafs (np.ndarray[2,H,W]): paf maps (2 dimensions:x axis and
                 y axis) for a certain limb connection. This argument will
                 be modified inplace.
             src (np.ndarray[2,]): coordinates of the source joint.
             dst (np.ndarray[2,]): coordinates of the destination joint.
-            count (np.ndarray[HxW]): count map that preserves the number
+            count (np.ndarray[H,W]): count map that preserves the number
                 of non-zero vectors at each point. This argument will be
                 modified inplace.
         """

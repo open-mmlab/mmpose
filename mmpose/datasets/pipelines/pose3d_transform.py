@@ -30,6 +30,7 @@ class GetRootCenteredPose:
 
     Required keys:
         item
+
     Modified keys:
         item, visible_item, root_name
     """
@@ -89,8 +90,10 @@ class NormalizeJointCoordinate:
         std (array): Std values of joint coordinates in shape [K, C].
         norm_param_file (str): Optionally load a dict containing `mean` and
             `std` from a file using `mmcv.load`.
+
     Required keys:
         item
+
     Modified keys:
         item
     """
@@ -131,8 +134,10 @@ class ImageCoordinateNormalization:
             class definition for more details. If None is given, the camera
             parameter will be obtained during processing of each data sample
             with the key "camera_param".
+
     Required keys:
         item
+
     Modified keys:
         item (, camera_param)
     """
@@ -190,6 +195,7 @@ class CollectCameraIntrinsics:
 
     Required keys:
         camera_param (if camera parameters are not given in initialization)
+
     Modified keys:
         intrinsics
     """
@@ -229,6 +235,7 @@ class CameraProjection:
     Args:
         item (str): The name of the pose to apply camera projection.
         mode (str): The type of camera projection, supported options are
+
             - world_to_camera
             - world_to_pixel
             - camera_to_world
@@ -243,8 +250,10 @@ class CameraProjection:
             with the key "camera_param".
 
     Required keys:
-        item
-        camera_param (if camera parameters are not given in initialization)
+
+        - item
+        - camera_param (if camera parameters are not given in initialization)
+
     Modified keys:
         output_name
     """
@@ -316,6 +325,7 @@ class RelativeJointRandomFlip:
         item (str|list[str]): The name of the pose to flip.
         flip_cfg (dict|list[dict]): Configurations of the fliplr_regression
             function. It should contain the following arguments:
+
                 - `center_mode`: The mode to set the center location on the
                     x-axis to flip around.
                 -`center_x` or `center_index`: Set the x-axis location or the
@@ -333,6 +343,7 @@ class RelativeJointRandomFlip:
 
     Required keys:
         item
+
     Modified keys:
         item (, camera_param)
     """
@@ -422,13 +433,14 @@ class PoseSequenceToTensor:
 
     The original pose sequence should have a shape of [T,K,C] or [K,C], where
     T is the sequence length, K and C are keypoint number and dimension. The
-    converted pose sequence will have a shape of [K*C, T].
+    converted pose sequence will have a shape of [KxC, T].
 
     Args:
         item (str): The name of the pose sequence
 
     Required keys:
         item
+
     Modified keys:
         item
     """

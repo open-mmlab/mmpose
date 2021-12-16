@@ -14,7 +14,7 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class FaceCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
     """CocoWholeBodyDataset for face keypoint localization.
 
-    `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
+    `Whole-Body Human Pose Estimation in the Wild', ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/abs/2007.11858>`__ .
 
@@ -126,21 +126,22 @@ class FaceCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
         results will be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+            outputs (list[dict]): Outputs containing the following items.
+
+                - preds (np.ndarray[1,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
-                    'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
-                    '1', '8', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+                - boxes (np.ndarray[1,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_path (list[str]): For example, ['3', '0', '0', 'W', \
+                    '/', 'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', \
+                    '_', '0', '1', '8', '.', 'j', 'p', 'g']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'NME'.

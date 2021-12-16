@@ -12,6 +12,7 @@ class HandRandomFlip(TopDownRandomFlip):
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center',
     'hand_type', 'rel_root_depth' and 'ann_info'.
+
     Modifies key: 'img', 'joints_3d', 'joints_3d_visible', 'center',
     'hand_type', 'rel_root_depth'.
 
@@ -40,8 +41,9 @@ class HandRandomFlip(TopDownRandomFlip):
 class HandGenerateRelDepthTarget:
     """Generate the target relative root depth.
 
-    Required keys: 'rel_root_depth', 'rel_root_valid', 'ann_info'. Modified
-    keys: 'target', 'target_weight'.
+    Required keys: 'rel_root_depth', 'rel_root_valid', 'ann_info'.
+
+    Modified keys: 'target', 'target_weight'.
     """
 
     def __init__(self):

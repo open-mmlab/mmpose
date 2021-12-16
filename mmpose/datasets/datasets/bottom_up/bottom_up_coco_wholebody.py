@@ -13,7 +13,7 @@ from .bottom_up_coco import BottomUpCocoDataset
 class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
     """CocoWholeBodyDataset dataset for bottom-up pose estimation.
 
-    `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
+    `Whole-Body Human Pose Estimation in the Wild', ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/abs/2007.11858>`__ .
 

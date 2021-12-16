@@ -19,8 +19,8 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
         joints_3d (np.ndarray([K, 3])): Coordinates of keypoints.
         joints_3d_visible (np.ndarray([K, 1])): Visibility of keypoints.
         img_width (int): Image width.
-        flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
-            (for example, left ear -- right ear).
+        flip_pairs (list[tuple]): Pairs of keypoints which are mirrored
+            (for example, left ear and right ear).
 
     Returns:
         tuple: Flipped human joints.
