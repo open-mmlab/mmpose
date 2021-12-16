@@ -145,12 +145,12 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             outputs (list[dict]): Outputs containing the following items.
 
-                - preds (np.ndarray[N,K,3]): The first two dimensions are
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                - image_paths (list[str]): For example, ['hand_labels/'
-                    'manual_test/000648952_02_l.jpg']
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['hand_labels/\
+                    manual_test/000648952_02_l.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.

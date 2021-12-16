@@ -264,15 +264,15 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         Args:
             outputs (list[dict]): Outputs containing the following items.
 
-                - preds (np.ndarray[N,K,3]): The first two dimensions are
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                - hand_type (np.ndarray[N, 4]): The first two dimensions are
+                - hand_type (np.ndarray[N, 4]): The first two dimensions are \
                     hand type, scores is the last two dimensions.
-                - rel_root_depth (np.ndarray[N]): The relative depth of left
+                - rel_root_depth (np.ndarray[N]): The relative depth of left \
                     wrist and right wrist.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0],
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
                     scale[1],area, score]
-                - image_paths (list[str]): For example, ['Capture6/
+                - image_paths (list[str]): For example, ['Capture6/\
                     0012_aokay_upright/cam410061/image4996.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.

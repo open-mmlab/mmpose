@@ -242,16 +242,12 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             outputs (list[dict]): Outputs containing the following items.
 
-                - preds (np.ndarray[N,K,3]): The first two dimensions are
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                - image_paths (list[str]): For example, ['C', 'a', 'p', 't',
-                    'u', 'r', 'e', '1', '2', '/', '0', '3', '9', '0', '_',
-                    'd', 'h', '_', 't', 'o', 'u', 'c', 'h', 'R', 'O', 'M',
-                    '/', 'c', 'a', 'm', '4', '1', '0', '2', '0', '9', '/',
-                    'i', 'm', 'a', 'g', 'e', '6', '2', '4', '3', '4', '.',
-                    'j', 'p', 'g']
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['Capture12/\
+                    0390_dh_touchROM/cam410209/image62434.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.

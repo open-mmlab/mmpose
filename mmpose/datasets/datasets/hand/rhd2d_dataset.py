@@ -142,10 +142,10 @@ class Rhd2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             outputs (list[dict]): Outputs containing the following items.
 
-                - preds (np.ndarray[N,K,3]): The first two dimensions are
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0],
-                    scale[1],area, score]
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1], area, score]
                 - image_paths (list[str]): For example,
                     ['training/rgb/00031426.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
