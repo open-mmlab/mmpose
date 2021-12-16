@@ -7,6 +7,7 @@ from threading import Thread
 from typing import Callable, Dict, List, Optional, Union
 
 from mmcv.utils.misc import is_method_overridden
+from tools.webcam.webcam_apis.utils.message import VideoEndingMessage
 
 from mmpose.utils import StopWatch
 from ..utils import Message, limit_max_fps
@@ -36,8 +37,9 @@ class Node(Thread, metaclass=ABCMeta):
                  name: Optional[str] = None,
                  enable_key: Optional[Union[str, int]] = None,
                  max_fps: int = 30,
-                 input_check_interval: float = 0.001):
-        super().__init__(name=name, daemon=True)
+                 input_check_interval: float = 0.001,
+                 daemon=True):
+        super().__init__(name=name, daemon=daemon)
         self._runner = None
         self._enabled = True
         self.enable_key = enable_key
@@ -147,8 +149,8 @@ class Node(Thread, metaclass=ABCMeta):
     def runner(self):
         if self._runner is None:
             warnings.warn(
-                f'Node {self.name} has not been registered to a runner.',
-                RuntimeWarning)
+                f'Node {self.name} has not been registered to a runner, '
+                'or the runner has been destroyed.', RuntimeWarning)
             return None
         return self._runner()
 
@@ -183,6 +185,10 @@ class Node(Thread, metaclass=ABCMeta):
                 name and the value is the Message got from the corresponding
                 buffer.
         """
+
+        if self.runner is None:
+            raise ValueError(f'{self.name}: Runner does not exist!')
+
         buffer_manager = self.runner.buffer_manager
 
         # Check that essential buffers are ready
@@ -208,6 +214,12 @@ class Node(Thread, metaclass=ABCMeta):
             result[buffer_info['input_name']] = data
 
         return True, result
+
+    def _send_output_to_buffers(self, output_msg):
+        """Send output of the process method to registered output buffers."""
+        for buffer_info in self.output_buffers:
+            buffer_name = buffer_info['buffer_name']
+            self.runner.buffer_manager.put(buffer_name, output_msg)
 
     @abstractmethod
     def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
@@ -250,6 +262,13 @@ class Node(Thread, metaclass=ABCMeta):
         info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
+    def _on_exit(self):
+        """This method will be invoked on event `_exit_`.
+
+        Subclasses should override this method to specifying the exiting
+        behavior.
+        """
+
     def run(self):
         """Method representing the Node's activity.
 
@@ -258,12 +277,25 @@ class Node(Thread, metaclass=ABCMeta):
         """
 
         while True:
+            # Exit
+            if self.runner.event_manager.is_set('_exit_'):
+                self._on_exit()
+                break
 
             # Check if input is ready
             input_status, input_msgs = self._get_input_from_buffer()
+
+            # Input is not ready
             if not input_status:
                 time.sleep(self.input_check_interval)
                 continue
+
+            # If a VideoEndingMessage is received, broadcast the signal
+            # without invoking process() or bypass()
+            for _, msg in input_msgs.items():
+                if isinstance(msg, VideoEndingMessage):
+                    self._send_output_to_buffers(msg)
+                    continue
 
             # Check if enabled
             if not self._enabled:
@@ -280,8 +312,6 @@ class Node(Thread, metaclass=ABCMeta):
                     node_info = self._get_node_info()
                     output_msg.update_route_info(node=self, info=node_info)
 
-            # Dispatch output message
-            if output_msg:
-                for buffer_info in self.output_buffers:
-                    buffer_name = buffer_info['buffer_name']
-                    self.runner.buffer_manager.put(buffer_name, output_msg)
+            # Send output message
+            if output_msg is not None:
+                self._send_output_to_buffers(output_msg)

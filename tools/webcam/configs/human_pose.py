@@ -5,15 +5,18 @@ runner = dict(
     camera_id=0,
     camera_fps=30,
 
-    # Define user buffers in (buffer_name, buffer_size)
+    # Define user buffers
+    # Each user buffer is defined by buffer_name (str) or
+    # Tuple[buffer_name (str), buffer_size(int)]
     # Note that there are also runner-reserved buffers which are not listed
     # here. You can find them in the node configs below. For example:
     #   - '_frame_': reserved buffer that stores input video frames
     #   - '_input_': reserved buffer that stores video frames for model input
     #   - '_display_': reserved buffer that stores output frames for display
-    user_buffers=[('det_result', 2), ('pose_result', 2), ('frame', 2),
-                  ('vis_pose', 2), ('vis_sunglasses', 2), ('vis_bugeye', 2),
-                  ('vis', 2)],
+    user_buffers=[
+        'det_result', 'pose_result', 'frame', 'vis_pose', 'vis_sunglasses',
+        'vis_bugeye', 'vis'
+    ],
 
     # Define nodes.
     #
