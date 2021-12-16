@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
-from queue import Queue
+from queue import Full, Queue
 from threading import Thread
 from typing import List, Optional, Union
 
@@ -65,9 +65,6 @@ class ModelResultBindingNode(Node):
         if not self.synchronous:
             # Asynchronous mode: Bind the latest result with the current frame.
             frame_msg = input_msgs['frame']
-            # Video ending signal
-            if frame_msg is None:
-                return frame_msg
 
             self.frame_lag.update(time.time() - frame_msg.timestamp)
 
@@ -78,13 +75,15 @@ class ModelResultBindingNode(Node):
                 frame_msg.merge_route_info(
                     self.last_result_msg.get_route_info())
 
-            return frame_msg
+            output_msg = frame_msg
 
         else:
             # Synchronous mode: Directly output the frame that the model result
             # was obtained from.
             self.frame_lag.update(time.time() - result_msg.timestamp)
-            return result_msg
+            output_msg = result_msg
+
+        return output_msg
 
     def _get_node_info(self):
         info = super()._get_node_info()
@@ -134,10 +133,6 @@ class MonitorNode(Node):
 
     def process(self, input_msgs):
         frame_msg = input_msgs['frame']
-
-        # Video ending signal
-        if frame_msg is None:
-            return frame_msg
 
         frame_msg.update_route_info(
             node_name='System Info',
@@ -241,7 +236,7 @@ class RecorderNode(Node):
         out_video_codec: str = 'mp4v',
         buffer_size: int = 30,
     ):
-        super().__init__(name=name, enable_key=None)
+        super().__init__(name=name, enable_key=None, daemon=False)
 
         self.queue = Queue(maxsize=buffer_size)
         self.out_video_file = out_video_file
@@ -257,19 +252,19 @@ class RecorderNode(Node):
         self.t_record = Thread(target=self._record, args=(), daemon=True)
         self.t_record.start()
 
-    def __del__(self):
-        if self.vwriter is not None:
-            self.vwriter.release()
-
     def process(self, input_msgs):
 
         frame_msg = input_msgs['frame']
+        img = frame_msg.get_image() if frame_msg is not None else None
+        img_queued = False
 
-        if frame_msg is None:
-            self.queue.put(None)
-        else:
-            img = frame_msg.get_image()
-            self.queue.put(img)
+        while not img_queued:
+            try:
+                self.queue.put(img, timeout=1)
+                img_queued = True
+                self.runner.logger.warn('Video recorder received one frame!')
+            except Full:
+                self.runner.logger.warn('Video recorder jamed!')
 
         return frame_msg
 
@@ -280,16 +275,33 @@ class RecorderNode(Node):
             img = self.queue.get()
 
             if img is None:
-                if self.vwriter is not None:
-                    self.vwriter.release()
                 break
 
             if self.vwriter is None:
                 fourcc = cv2.VideoWriter_fourcc(*self.out_video_codec)
                 fps = self.out_video_fps
                 frame_size = (img.shape[1], img.shape[0])
-                self.vwriter = cv2.VideoCapture(self.out_video_file, fourcc,
-                                                fps, frame_size)
+                self.vwriter = cv2.VideoWriter(self.out_video_file, fourcc,
+                                               fps, frame_size)
                 assert self.vwriter.isOpened()
 
             self.vwriter.write(img)
+
+        self.runner.logger.warn('Video recorder released!')
+        if self.vwriter is not None:
+            self.vwriter.release()
+
+    def _on_exit(self):
+        try:
+            # Try putting a None into the output queue so the self.vwriter will
+            # be released after all queue frames have been written to file.
+            self.queue.put(None, timeout=1)
+            self.t_record.join(timeout=1)
+        except Full:
+            pass
+
+        if self.t_record.is_alive():
+            # Force to release self.vwriter
+            self.runner.logger.warn('Video recorder forced release!')
+            if self.vwriter is not None:
+                self.vwriter.release()
