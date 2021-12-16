@@ -23,14 +23,14 @@
 MMPose 支持各种不同的任务。请根据需要，查阅对应的数据集准备教程。
 
 - [2D 人体关键点检测](/docs/zh_cn/tasks/2d_body_keypoint.md)
-- [3D 人体关键点检测](/docs/en/tasks/3d_body_keypoint.md)
-- [3D 人体形状恢复](/docs/en/tasks/3d_body_mesh.md)
-- [2D 人手关键点检测](/docs/en/tasks/2d_hand_keypoint.md)
-- [3D 人手关键点检测](/docs/en/tasks/3d_hand_keypoint.md)
-- [2D 人脸关键点检测](/docs/en/tasks/2d_face_keypoint.md)
-- [2D 全身人体关键点检测](/docs/en/tasks/2d_wholebody_keypoint.md)
-- [2D 服饰关键点检测](/docs/en/tasks/2d_fashion_landmark.md)
-- [2D 动物关键点检测](/docs/en/tasks/2d_animal_keypoint.md)
+- [3D 人体关键点检测](/docs/zh_cn/tasks/3d_body_keypoint.md)
+- [3D 人体形状恢复](/docs/zh_cn/tasks/3d_body_mesh.md)
+- [2D 人手关键点检测](/docs/zh_cn/tasks/2d_hand_keypoint.md)
+- [3D 人手关键点检测](/docs/zh_cn/tasks/3d_hand_keypoint.md)
+- [2D 人脸关键点检测](/docs/zh_cn/tasks/2d_face_keypoint.md)
+- [2D 全身人体关键点检测](/docs/zh_cn/tasks/2d_wholebody_keypoint.md)
+- [2D 服饰关键点检测](/docs/zh_cn/tasks/2d_fashion_landmark.md)
+- [2D 动物关键点检测](/docs/zh_cn/tasks/2d_animal_keypoint.md)
 
 ## 使用预训练模型进行推理
 
