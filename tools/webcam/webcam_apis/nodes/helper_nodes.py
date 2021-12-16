@@ -291,7 +291,7 @@ class RecorderNode(Node):
         if self.vwriter is not None:
             self.vwriter.release()
 
-    def _on_exit(self):
+    def on_exit(self):
         try:
             # Try putting a None into the output queue so the self.vwriter will
             # be released after all queue frames have been written to file.
