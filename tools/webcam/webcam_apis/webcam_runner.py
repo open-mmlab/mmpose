@@ -9,7 +9,8 @@ from typing import List, Optional, Union
 import cv2
 
 from .nodes import NODES
-from .utils import BufferManager, EventManager, FrameMessage, limit_max_fps
+from .utils import (BufferManager, EventManager, FrameMessage,
+                    VideoEndingMessage, limit_max_fps)
 
 
 class WebcamRunner():
@@ -59,7 +60,11 @@ class WebcamRunner():
 
         # Register user-defined buffers
         if user_buffers:
-            for buffer_name, buffer_size in user_buffers:
+            for buffer in user_buffers:
+                if isinstance(buffer, tuple):
+                    buffer_name, buffer_size = buffer
+                else:
+                    buffer_name, buffer_size = buffer, 2
                 self.logger.info(
                     f'Create user buffer: {buffer_name}({buffer_size})')
                 self.buffer_manager.add_buffer(buffer_name, buffer_size)
@@ -96,7 +101,7 @@ class WebcamRunner():
             sys.exit()
 
         # Read video frames in a loop
-        while not self.event_manager.is_set('exit'):
+        while not self.event_manager.is_set('_exit_'):
             with limit_max_fps(fps):
                 # Read a frame
                 ret_val, frame = self.vcap.read()
@@ -116,7 +121,7 @@ class WebcamRunner():
 
                 else:
                     # Put a video ending signal
-                    self.buffer_manager.put('_frame_', None)
+                    self.buffer_manager.put('_frame_', VideoEndingMessage())
 
         self.vcap.release()
 
@@ -125,7 +130,7 @@ class WebcamRunner():
 
         output_msg = None
 
-        while not self.event_manager.is_set('exit'):
+        while not self.event_manager.is_set('_exit_'):
             while self.buffer_manager.is_empty('_display_'):
                 time.sleep(0.001)
 
@@ -133,8 +138,8 @@ class WebcamRunner():
             output_msg = self.buffer_manager.get('_display_')
 
             # None indicates input stream ends
-            if output_msg is None:
-                self.event_manager.set('exit')
+            if isinstance(output_msg, VideoEndingMessage):
+                self.event_manager.set('_exit_')
                 break
 
             img = output_msg.get_image()
@@ -154,7 +159,7 @@ class WebcamRunner():
 
         self.logger.info(f'Keyboard event captured: {key}')
         if key in (27, ord('q'), ord('Q')):
-            self.event_manager.set('exit')
+            self.event_manager.set('_exit_')
         else:
             self.event_manager.set_keyboard(key)
 
@@ -184,14 +189,19 @@ class WebcamRunner():
             t_read.start()
 
             # Start node threads
+            non_daemon_nodes = []
             for node in self.node_list:
                 node.start()
+                if not node.daemon:
+                    non_daemon_nodes.append(node)
 
             # Run display in the main thread
             self._display()
 
             # joint non-daemon threads
             t_read.join()
+            for node in non_daemon_nodes:
+                node.join()
 
         except KeyboardInterrupt:
             pass

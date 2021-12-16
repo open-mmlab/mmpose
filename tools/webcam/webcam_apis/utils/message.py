@@ -8,6 +8,10 @@ import numpy as np
 
 
 class Message():
+    """Message base class.
+
+    All message class should inherit this class
+    """
 
     def __init__(self, msg: str = '', data: Optional[dict] = None):
         self.msg = msg
@@ -43,7 +47,12 @@ class Message():
         return self.route_info.copy()
 
 
+class VideoEndingMessage(Message):
+    """A special message to indicate the input video is ending."""
+
+
 class FrameMessage(Message):
+    """The message to store information of a video frame."""
 
     def __init__(self, img):
         super().__init__(data=dict(image=img))

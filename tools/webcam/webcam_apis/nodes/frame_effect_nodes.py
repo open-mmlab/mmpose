@@ -95,11 +95,6 @@ class BaseFrameEffectNode(Node):
     def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
         frame_msg = input_msgs['frame']
 
-        # Video ending signal
-        if frame_msg is None:
-            return frame_msg
-
-        # Draw
         img = self.draw(frame_msg)
         frame_msg.set_image(img)
 

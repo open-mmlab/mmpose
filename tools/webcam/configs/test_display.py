@@ -3,13 +3,19 @@ runner = dict(
     name='Debug CamRunner',
     camera_id=0,
     camera_fps=30,
-    user_buffer=[],
+    user_buffers=['display'],
     nodes=[
         dict(
             type='MonitorNode',
             name='Monitor',
             enable_key='m',
             style='fancy',
-            input_buffer='_frame_',
+            frame_buffer='_frame_',
+            output_buffer='display'),
+        dict(
+            type='RecorderNode',
+            name='Recorder',
+            out_video_file='webcam_output.mp4',
+            frame_buffer='display',
             output_buffer='_display_')
     ])
