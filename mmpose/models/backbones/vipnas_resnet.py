@@ -343,9 +343,9 @@ class ViPNAS_ResLayer(nn.Sequential):
 class ViPNAS_ResNet(BaseBackbone):
     """ViPNAS_ResNet backbone.
 
-    ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search.
+    "ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search"
     More details can be found in the `paper
-    <https://arxiv.org/abs/2105.10154>`__.
+    <https://arxiv.org/abs/2105.10154>`__ .
 
     Args:
         depth (int): Network depth, from {18, 34, 50, 101, 152}.
@@ -546,7 +546,7 @@ class ViPNAS_ResNet(BaseBackbone):
                 param.requires_grad = False
 
     def init_weights(self, pretrained=None):
-
+        """Initialize model weights."""
         super().init_weights(pretrained)
         if pretrained is None:
             for m in self.modules():

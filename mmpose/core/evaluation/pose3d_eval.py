@@ -60,7 +60,7 @@ def keypoint_3d_pck(pred, gt, mask, alignment='none', threshold=0.15):
     alignment.
 
     Paper ref: `Monocular 3D Human Pose Estimation In The Wild Using Improved
-    CNN Supervision' 3DV'2017. <https://arxiv.org/pdf/1611.09813>`_.
+    CNN Supervision' 3DV'2017. <https://arxiv.org/pdf/1611.09813>`__ .
 
     Note:
         - batch_size: N
@@ -116,7 +116,7 @@ def keypoint_3d_auc(pred, gt, mask, alignment='none'):
     thresholds.
 
     Paper ref: `Monocular 3D Human Pose Estimation In The Wild Using Improved
-    CNN Supervision' 3DV'2017. <https://arxiv.org/pdf/1611.09813>`_.
+    CNN Supervision' 3DV'2017. <https://arxiv.org/pdf/1611.09813>`__ .
     This implementation is derived from mpii_compute_3d_pck.m, which is
     provided as part of the MPI-INF-3DHP test data release.
 

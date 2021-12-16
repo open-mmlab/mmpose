@@ -708,7 +708,7 @@ class TopDownRandomTranslation:
 
     Args:
         trans_factor (float): Translating center to
-        ``[-trans_factor, trans_factor] * [W, H] + center``.
+            ``[-trans_factor, trans_factor] * [W, H] + center``.
         trans_prob (float): Probability of random translation.
     """
 

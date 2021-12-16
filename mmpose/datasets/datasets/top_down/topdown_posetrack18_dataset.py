@@ -26,7 +26,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
     "Posetrack: A benchmark for human pose estimation and tracking", CVPR'2018.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1710.10000>`_ .
+    <https://arxiv.org/abs/1710.10000>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -102,7 +102,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate posetrack keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
             - num_keypoints: K

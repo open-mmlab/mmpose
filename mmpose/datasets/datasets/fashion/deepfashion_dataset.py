@@ -14,9 +14,9 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
-    `DeepFashion: Powering Robust Clothes Recognition
-    and Retrieval with Rich Annotations' CVPR'2016 and
-    `Fashion Landmark Detection in the Wild' ECCV'2016
+    "DeepFashion: Powering Robust Clothes Recognition
+    and Retrieval with Rich Annotations", CVPR'2016.
+    "Fashion Landmark Detection in the Wild", ECCV'2016.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -152,7 +152,7 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
             - batch_size: N

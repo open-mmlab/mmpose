@@ -22,8 +22,7 @@ except (ImportError, ModuleNotFoundError):
 class PoseWarperNeck(nn.Module):
     """PoseWarper neck.
 
-    Paper ref: Bertasius, Gedas, et al. `"Learning temporal
-    pose estimation from sparsely-labeled videos"
+    `"Learning temporal pose estimation from sparsely-labeled videos"
     <https://arxiv.org/abs/1906.04016>`_.
 
     Args:

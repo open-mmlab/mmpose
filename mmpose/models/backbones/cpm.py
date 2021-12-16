@@ -56,7 +56,7 @@ class CPM(BaseBackbone):
 
     Convolutional Pose Machines.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1602.00134>`_.
+    <https://arxiv.org/abs/1602.00134>`__ .
 
     Args:
         in_channels (int): The input channels of the CPM.

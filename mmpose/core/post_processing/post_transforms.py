@@ -64,6 +64,7 @@ def fliplr_regression(regression,
     Args:
         regression (np.ndarray([..., K, C])): Coordinates of keypoints, where K
             is the joint number and C is the dimension. Example shapes are:
+
             - [N, K, C]: a batch of keypoints where N is the batch size.
             - [N, T, K, C]: a batch of pose sequences, where T is the frame
                 number.
@@ -71,6 +72,7 @@ def fliplr_regression(regression,
             (for example, left ear -- right ear).
         center_mode (str): The mode to set the center location on the x-axis
             to flip around. Options are:
+
             - static: use a static x value (see center_x also)
             - root: use a root joint (see center_index also)
         center_x (float): Set the x-axis location of the flip center. Only used

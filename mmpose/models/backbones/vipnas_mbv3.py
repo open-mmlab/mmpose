@@ -15,7 +15,7 @@ from .utils import InvertedResidual, load_checkpoint
 class ViPNAS_MobileNetV3(BaseBackbone):
     """ViPNAS_MobileNetV3 backbone.
 
-    ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search.
+    "ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search"
     More details can be found in the `paper
     <https://arxiv.org/abs/2105.10154>`__ .
 

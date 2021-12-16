@@ -253,7 +253,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='MPJPE', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
             - batch_size: N

@@ -326,10 +326,11 @@ class RelativeJointRandomFlip:
         flip_cfg (dict|list[dict]): Configurations of the fliplr_regression
             function. It should contain the following arguments:
 
-                - `center_mode`: The mode to set the center location on the
-                    x-axis to flip around.
-                -`center_x` or `center_index`: Set the x-axis location or the
-                    root joint's index to define the flip center.
+            - ``center_mode``: The mode to set the center location on the \
+                x-axis to flip around.
+            - ``center_x`` or ``center_index``: Set the x-axis location or \
+                the root joint's index to define the flip center.
+
             Please refer to the docstring of the fliplr_regression function for
             more details.
         visible_item (str|list[str]): The name of the visibility item which
@@ -475,7 +476,7 @@ class Generate3DHeatmapTarget:
     Args:
         sigma: Sigma of heatmap gaussian.
         joint_indices (list): Indices of joints used for heatmap generation.
-        If None (default) is given, all joints will be used.
+            If None (default) is given, all joints will be used.
         max_bound (float): The maximal value of heatmap.
     """
 

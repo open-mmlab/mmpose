@@ -60,7 +60,7 @@ class OneEuroFilter:
         """Compute the filtered signal.
 
         Hyper-parameters (cutoff, beta) are from `VNect
-        <http://gvv.mpi-inf.mpg.de/projects/VNect/>`_.
+        <http://gvv.mpi-inf.mpg.de/projects/VNect/>`__ .
 
         Realtime Camera fps (d_cutoff) default 30.0
 

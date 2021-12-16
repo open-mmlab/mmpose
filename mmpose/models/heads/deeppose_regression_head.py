@@ -13,8 +13,7 @@ from mmpose.models.builder import HEADS, build_loss
 class DeepposeRegressionHead(nn.Module):
     """Deeppose regression head with fully connected layers.
 
-    paper ref: Alexander Toshev and Christian Szegedy,
-    ``DeepPose: Human Pose Estimation via Deep Neural Networks.''.
+    "DeepPose: Human Pose Estimation via Deep Neural Networks".
 
     Args:
         in_channels (int): Number of input channels
