@@ -23,6 +23,7 @@ class Body3DMpiInf3dhpDataset(Kpt3dSviewKpt2dDataset):
     <https://arxiv.org/pdf/1611.09813>`__.
 
     MPI-INF-3DHP keypoint indexes:
+
         0: 'head_top',
         1: 'neck',
         2: 'right_shoulder',

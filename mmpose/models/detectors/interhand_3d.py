@@ -124,6 +124,7 @@ class Interhand3D(TopDown):
 
         Args:
             result (list[dict]): The pose estimation results containing:
+
                 - "keypoints_3d" ([K,4]): 3D keypoints
                 - "keypoints" ([K,3] or [T,K,3]): Optional for visualizing
                     2D inputs. If a sequence is given, only the last frame

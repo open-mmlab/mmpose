@@ -32,6 +32,7 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
     to return a dict containing the image tensors and other information.
 
     PoseTrack2018 keypoint indexes::
+
         0: 'nose',
         1: 'head_bottom',
         2: 'head_top',

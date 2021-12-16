@@ -22,6 +22,7 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
     <http://vision.imar.ro/human3.6m/pami-h36m.pdf>`__.
 
     Human3.6M keypoint indexes::
+
         0: 'root (pelvis)',
         1: 'right_hip',
         2: 'right_knee',

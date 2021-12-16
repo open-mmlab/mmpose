@@ -20,6 +20,7 @@ class BottomUpAicDataset(BottomUpCocoDataset):
     to return a dict containing the image tensors and other information.
 
     AIC keypoint indexes::
+
         0: "right_shoulder",
         1: "right_elbow",
         2: "right_wrist",

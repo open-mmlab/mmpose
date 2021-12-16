@@ -17,7 +17,7 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
     """CocoDataset dataset for top-down pose estimation.
 
-    `Microsoft COCO: Common Objects in Context' ECCV'2014
+    "Microsoft COCO: Common Objects in Context" ECCV'2014.
     More details can be found in the `paper
     <https://arxiv.org/abs/1405.0312>`__ .
 

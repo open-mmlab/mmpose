@@ -23,9 +23,10 @@ class BottomUpCocoWholeBodyDataset(BottomUpCocoDataset):
     In total, we have 133 keypoints for wholebody pose estimation.
 
     COCO-WholeBody keypoint indexes::
-        0-16: 17 body keypoints
-        17-22: 6 foot keypoints
-        23-90: 68 face keypoints
+
+        0-16: 17 body keypoints,
+        17-22: 6 foot keypoints,
+        23-90: 68 face keypoints,
         91-132: 42 hand keypoints
 
     Args:

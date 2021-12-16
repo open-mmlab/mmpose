@@ -399,7 +399,7 @@ class Interhand3DHead(nn.Module):
             heatmaps, relative root depth and hand type.
 
         Args:
-            x (torch.Tensor[NxKxHxW]): Input features.
+            x (torch.Tensor[N,K,H,W]): Input features.
             flip_pairs (None | list[tuple()):
                 Pairs of keypoints which are mirrored.
         """
@@ -453,9 +453,9 @@ class Interhand3DHead(nn.Module):
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
                 - "heatmap3d_depth_bound": depth bound of hand keypoint
-                 3D heatmap
+                    3D heatmap
                 - "root_depth_bound": depth bound of relative root depth
-                 1D heatmap
+                    1D heatmap
             output (list[np.ndarray]): model predicted 3D heatmaps, relative
                 root depth and hand type.
         """

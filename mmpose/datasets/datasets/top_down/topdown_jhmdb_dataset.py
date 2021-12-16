@@ -24,6 +24,7 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
     to return a dict containing the image tensors and other information.
 
     sub-JHMDB keypoint indexes::
+
         0: "neck",
         1: "belly",
         2: "head",
