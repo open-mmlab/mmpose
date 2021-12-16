@@ -13,7 +13,7 @@ def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     """Flip human joints horizontally.
 
     Note:
-        num_keypoints: K
+        - num_keypoints: K
 
     Args:
         joints_3d (np.ndarray([K, 3])): Coordinates of keypoints.
@@ -58,8 +58,9 @@ def fliplr_regression(regression,
     """Flip human joints horizontally.
 
     Note:
-        batch_size: N
-        num_keypoint: K
+        - batch_size: N
+        - num_keypoint: K
+
     Args:
         regression (np.ndarray([..., K, C])): Coordinates of keypoints, where K
             is the joint number and C is the dimension. Example shapes are:
@@ -78,9 +79,7 @@ def fliplr_regression(regression,
             will be used as the flip center. Only used when center_mode=root.
 
     Returns:
-        tuple: Flipped human joints.
-
-        - regression_flipped (np.ndarray([..., K, C])): Flipped joints.
+        np.ndarray([..., K, C]): Flipped joints.
     """
     assert regression.ndim >= 2, f'Invalid pose shape {regression.shape}'
 
@@ -109,10 +108,10 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatmap'):
     """Flip the flipped heatmaps back to the original form.
 
     Note:
-        batch_size: N
-        num_keypoints: K
-        heatmap height: H
-        heatmap width: W
+        - batch_size: N
+        - num_keypoints: K
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         output_flipped (np.ndarray[N, K, H, W]): The output heatmaps obtained
@@ -319,7 +318,7 @@ def get_warp_matrix(theta, size_input, size_dst, size_target):
         size_target (np.ndarray): Size of ROI in input plane [w, h].
 
     Returns:
-        matrix (np.ndarray): A matrix for transformation.
+        np.ndarray: A matrix for transformation.
     """
     theta = np.deg2rad(theta)
     matrix = np.zeros((2, 3), dtype=np.float32)
@@ -347,7 +346,7 @@ def warp_affine_joints(joints, mat):
         mat (np.ndarray[3, 2]): The affine matrix.
 
     Returns:
-        matrix (np.ndarray[..., 2]): Result coordinate of joints.
+        np.ndarray[..., 2]: Result coordinate of joints.
     """
     joints = np.array(joints)
     shape = joints.shape

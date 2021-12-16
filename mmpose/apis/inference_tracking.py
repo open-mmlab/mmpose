@@ -244,7 +244,7 @@ def vis_pose_tracking_result(model,
         radius (int): Radius of circles.
         thickness (int): Thickness of lines.
         kpt_score_thr (float): The threshold to visualize the keypoints.
-        skeleton (list[tuple()]): Default None.
+        skeleton (list[tuple]): Default None.
         show (bool):  Whether to show the image. Default True.
         out_file (str|None): The filename of the output visualization image.
     """

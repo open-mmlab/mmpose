@@ -353,37 +353,37 @@ def inference_top_down_pose_model(model,
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str| np.ndarray): Image filename or loaded image.
-        person_results (List(dict), optional): a list of detected persons that
-            contains following items:
+        person_results (list(dict), optional): a list of detected persons that
+            contains ``bbox`` and/or ``track_id``:
 
-            - 'bbox' and/or 'track_id'.
-            - 'bbox' (4, ) or (5, ): The person bounding box, which contains
+            - ``bbox`` (4, ) or (5, ): The person bounding box, which contains
                 4 box coordinates (and score).
-            - 'track_id' (int): The unique id for each human instance. If
+            - ``track_id`` (int): The unique id for each human instance. If
                 not provided, a dummy person result with a bbox covering
                 the entire image will be used. Default: None.
+        bbox_thr (float | None): Threshold for bounding boxes. Only bboxes
+            with higher scores will be fed into the pose detector.
+            If bbox_thr is None, all boxes will be used.
+        format (str): bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
 
-        bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
-            will be fed into the pose detector. If bbox_thr is None, ignore it.
-        format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
-
-            - 'xyxy' means (left, top, right, bottom),
-            - 'xywh' means (left, top, width, height).
-
+            - `xyxy` means (left, top, right, bottom),
+            - `xywh` means (left, top, width, height).
         dataset (str): Dataset name, e.g. 'TopDownCocoDataset'.
             It is deprecated. Please use dataset_info instead.
         dataset_info (DatasetInfo): A class containing all dataset info.
         return_heatmap (bool) : Flag to return heatmap, default: False
         outputs (list(str) | tuple(str)) : Names of layers whose outputs
-            need to be returned, default: None
+            need to be returned. Default: None.
 
     Returns:
-        list[dict]: The bbox & pose info,
-            Each item in the list is a dictionary,
-            containing the bbox: (left, top, right, bottom, [score])
-            and the pose (ndarray[Kx3]): x, y, score
-        list[dict[np.ndarray[N, K, H, W] | torch.Tensor[N, K, H, W]]]:
-            Output feature maps from layers specified in `outputs`.
+        tuple:
+        - pose_results (list[dict]): The bbox & pose info. \
+            Each item in the list is a dictionary, \
+            containing the bbox: (left, top, right, bottom, [score]) \
+            and the pose (ndarray[Kx3]): x, y, score.
+        - returned_outputs (list[dict[np.ndarray[N, K, H, W] | \
+            torch.Tensor[N, K, H, W]]]): \
+            Output feature maps from layers specified in `outputs`. \
             Includes 'heatmap' if `return_heatmap` is True.
     """
     # get dataset info
@@ -493,11 +493,11 @@ def inference_bottom_up_pose_model(model,
         tuple:
         - pose_results (list[np.ndarray]): The predicted pose info. \
             The length of the list is the number of people (P). \
-            Each item in the list is a ndarray, containing each person's
-            pose (np.ndarray[Kx3]): x, y, score.
+            Each item in the list is a ndarray, containing each \
+            person's pose (np.ndarray[Kx3]): x, y, score.
         - returned_outputs (list[dict[np.ndarray[N, K, H, W] | \
             torch.Tensor[N, K, H, W]]]): \
-            Output feature maps from layers specified in `outputs`.
+            Output feature maps from layers specified in `outputs`. \
             Includes 'heatmap' if `return_heatmap` is True.
     """
     # get dataset info
@@ -850,6 +850,7 @@ def process_mmdet_results(mmdet_results, cat_id=1):
     Args:
         mmdet_results (list|tuple): mmdet results.
         cat_id (int): category id (default: 1 for human)
+
     Returns:
         person_results (list): a list of detected bounding boxes
     """

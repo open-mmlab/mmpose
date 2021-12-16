@@ -86,9 +86,10 @@ class ParametricMesh(BasePose):
 
         In this function, the detector will finish the train step following
         the pipeline:
-        1. get fake and real SMPL parameters
-        2. optimize discriminator (if have)
-        3. optimize generator
+
+            1. get fake and real SMPL parameters
+            2. optimize discriminator (if have)
+            3. optimize generator
 
         If `self.train_cfg.disc_step > 1`, the train step will contain multiple
         iterations for optimizing discriminator with different input data and
@@ -290,15 +291,16 @@ class ParametricMesh(BasePose):
         return_loss=True.
 
         Note:
-            batch_size: N
-            num_img_channel: C (Default: 3)
-            img height: imgH
-            img width: imgW
+            - batch_size: N
+            - num_img_channel: C (Default: 3)
+            - img height: imgH
+            - img width: imgW
 
         Args:
             img (torch.Tensor[N x C x imgH x imgW]): Input images.
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox
@@ -329,6 +331,7 @@ class ParametricMesh(BasePose):
 
         Args:
             result (list[dict]): The mesh estimation results containing:
+
                - "bbox" (ndarray[4]): instance bounding bbox
                - "center" (ndarray[2]): bbox center
                - "scale" (ndarray[2]): bbox scale
@@ -339,8 +342,7 @@ class ParametricMesh(BasePose):
             img (str or Tensor): Optional. The image to visualize 2D inputs on.
             win_name (str): The window name.
             show (bool): Whether to show the image. Default: False.
-            wait_time (int): Value of waitKey param.
-                Default: 0.
+            wait_time (int): Value of waitKey param. Default: 0.
             out_file (str or None): The filename to write the image.
                 Default: None.
             bbox_color (str or tuple or :obj:`Color`): Color of bbox lines.

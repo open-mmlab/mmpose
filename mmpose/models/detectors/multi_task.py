@@ -11,8 +11,8 @@ class MultiTask(nn.Module):
 
     Args:
         backbone (dict): Backbone modules to extract feature.
-        heads (List[dict]): heads to output predictions.
-        necks (List[dict] | None): necks to process feature.
+        heads (list[dict]): heads to output predictions.
+        necks (list[dict] | None): necks to process feature.
         head2neck (dict{int:int}): head index to neck index.
         pretrained (str): Path to the pretrained models.
     """
@@ -81,20 +81,21 @@ class MultiTask(nn.Module):
         the outer list indicating test time augmentations.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_img_channel: C (Default: 3)
-            img height: imgH
-            img weight: imgW
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - num_img_channel: C (Default: 3)
+            - img height: imgH
+            - img weight: imgW
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            img (torch.Tensor[NxCximgHximgW]): Input images.
-            target (List[torch.Tensor]): Targets.
+            img (torch.Tensor[N,C,imgH,imgW]): Input images.
+            target (list[torch.Tensor]): Targets.
             target_weight (List[torch.Tensor]): Weights.
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox
@@ -104,9 +105,9 @@ class MultiTask(nn.Module):
                 for training, `return loss=False` for validation & test.
 
         Returns:
-            dict|tuple: if `return loss` is true, then return losses.
-              Otherwise, return predicted poses, boxes, image paths
-                  and heatmaps.
+            dict|tuple: if `return loss` is true, then return losses. \
+                Otherwise, return predicted poses, boxes, image paths \
+                and heatmaps.
         """
         if return_loss:
             return self.forward_train(img, target, target_weight, img_metas,
@@ -176,7 +177,7 @@ class MultiTask(nn.Module):
             img (torch.Tensor): Input image.
 
         Returns:
-            List[Tensor]: Outputs.
+            list[Tensor]: Outputs.
         """
         features = self.backbone(img)
         outputs = []

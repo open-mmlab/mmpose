@@ -739,10 +739,9 @@ class LiteHRNet(nn.Module):
     """Lite-HRNet backbone.
 
     `Lite-HRNet: A Lightweight High-Resolution Network
-    <https://arxiv.org/abs/2104.06403>`__
+    <https://arxiv.org/abs/2104.06403>`_.
 
-    Code adapted from 'https://github.com/HRNet/Lite-HRNet/'
-    'blob/hrnet/models/backbones/litehrnet.py'
+    Code adapted from 'https://github.com/HRNet/Lite-HRNet'.
 
     Args:
         extra (dict): detailed configuration for each stage of HRNet.

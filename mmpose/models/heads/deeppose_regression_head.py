@@ -50,8 +50,8 @@ class DeepposeRegressionHead(nn.Module):
         """Calculate top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 2]): Output keypoints.
@@ -71,8 +71,8 @@ class DeepposeRegressionHead(nn.Module):
         """Calculate accuracy for top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 2]): Output keypoints.
@@ -121,6 +121,7 @@ class DeepposeRegressionHead(nn.Module):
         Args:
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox

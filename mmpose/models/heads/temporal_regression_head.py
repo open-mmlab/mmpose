@@ -65,7 +65,7 @@ class TemporalRegressionHead(nn.Module):
         """Transform inputs for decoder.
 
         Args:
-            inputs (tuple/list of Tensor | Tensor): multi-level features.
+            inputs (tuple or list of Tensor | Tensor): multi-level features.
 
         Returns:
             Tensor: The transformed inputs
@@ -91,8 +91,8 @@ class TemporalRegressionHead(nn.Module):
         """Calculate keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 3]): Output keypoints.
@@ -130,8 +130,8 @@ class TemporalRegressionHead(nn.Module):
         """Calculate accuracy for keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 3]): Output keypoints.

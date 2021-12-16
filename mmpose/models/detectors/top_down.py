@@ -104,13 +104,13 @@ class TopDown(BasePose):
         the outer list indicating test time augmentations.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_img_channel: C (Default: 3)
-            img height: imgH
-            img width: imgW
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - num_img_channel: C (Default: 3)
+            - img height: imgH
+            - img width: imgW
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
             img (torch.Tensor[NxCximgHximgW]): Input images.
@@ -119,6 +119,7 @@ class TopDown(BasePose):
                 different joint types.
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox
@@ -129,8 +130,8 @@ class TopDown(BasePose):
             return_heatmap (bool) : Option to return heatmap.
 
         Returns:
-            dict|tuple: if `return loss` is true, then return losses.
-                Otherwise, return predicted poses, boxes, image paths
+            dict|tuple: if `return loss` is true, then return losses. \
+                Otherwise, return predicted poses, boxes, image paths \
                 and heatmaps.
         """
         if return_loss:

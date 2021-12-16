@@ -20,10 +20,11 @@ except (ImportError, ModuleNotFoundError):
 
 @NECKS.register_module()
 class PoseWarperNeck(nn.Module):
-    """PoseWarper neck. Paper ref: Bertasius, Gedas, et al. "Learning temporal
-    pose estimation from sparsely-labeled videos.".
+    """PoseWarper neck.
 
-    <https://arxiv.org/abs/1906.04016>_.
+    Paper ref: Bertasius, Gedas, et al. `"Learning temporal
+    pose estimation from sparsely-labeled videos"
+    <https://arxiv.org/abs/1906.04016>`_.
 
     Args:
         in_channels (int): Number of input channels from backbone
@@ -37,8 +38,8 @@ class PoseWarperNeck(nn.Module):
             use the default values. If not None, it should contain the
             following keys:
 
-                - block (str): the type of residual block, Default: 'BASIC'
-                - num_blocks (int):  the number of blocks, Default: 20
+            - block (str): the type of residual block, Default: 'BASIC'.
+            - num_blocks (int):  the number of blocks, Default: 20.
 
         offsets_kernel (int): the kernel of offset conv layer.
         deform_conv_kernel (int): the kernel of defomrable conv layer.
@@ -47,10 +48,10 @@ class PoseWarperNeck(nn.Module):
             Options: 'resize_concat', 'multiple_select', None.
             Default: None.
 
-            - 'resize_concat': Multiple feature maps will be resize to the
-                same size as first one and than concat together.
+            - 'resize_concat': Multiple feature maps will be resize to \
+                the same size as first one and than concat together. \
                 Usually used in FCN head of HRNet.
-            - 'multiple_select': Multiple feature maps will be bundle into
+            - 'multiple_select': Multiple feature maps will be bundle into \
                 a list and passed into decode head.
             - None: Only one select feature map is allowed.
 

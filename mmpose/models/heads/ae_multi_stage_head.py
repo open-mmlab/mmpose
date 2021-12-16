@@ -96,10 +96,10 @@ class AEMultiStageHead(nn.Module):
         """Calculate bottom-up keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
             output (List(torch.Tensor[NxKxHxW])): Output heatmaps.
