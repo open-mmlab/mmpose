@@ -31,12 +31,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 - **Higher efficiency and higher accuracy**
 
   MMPose implements multiple state-of-the-art (SOTA) deep learning models, including both top-down & bottom-up approaches. We achieve faster training speed and higher accuracy than other popular codebases, such as [HRNet](https://github.com/leoxiaobin/deep-high-resolution-net.pytorch).
-  See [benchmark.md](docs/benchmark.md) for more information.
+  See [benchmark.md](docs/en/benchmark.md) for more information.
 
 - **Support for various datasets**
 
   The toolbox directly supports multiple popular and representative datasets, COCO, AIC, MPII, MPII-TRB, OCHuman etc.
-  See [data_preparation.md](docs/data_preparation.md) for more information.
+  See [data_preparation.md](docs/en/data_preparation.md) for more information.
 
 - **Well designed, tested and documented**
 
@@ -163,38 +163,38 @@ We demonstrate the superiority of our MMPose framework in terms of speed and acc
 | hrnet_w48  | 256x192  | **0.66** | 1.55 | **0.756** | 0.751 |
 | hrnet_w48  | 384x288  | **1.23** | 2.20 | **0.767** | 0.763 |
 
-More details about the benchmark are available on [benchmark.md](docs/benchmark.md).
+More details about the benchmark are available on [benchmark.md](docs/en/benchmark.md).
 
 ## Inference Speed
 
 We summarize the model complexity and inference speed of major models in MMPose, including FLOPs, parameter counts and inference speeds on both CPU and GPU devices with different batch sizes.
 
-Please refer to [inference_speed_summary.md](docs/inference_speed_summary.md) for more details.
+Please refer to [inference_speed_summary.md](docs/en/inference_speed_summary.md) for more details.
 
 ## Installation
 
-Please refer to [install.md](docs/install.md) for installation.
+Please refer to [install.md](docs/en/install.md) for installation.
 
 ## Data Preparation
 
-Please refer to [data_preparation.md](docs/data_preparation.md) for a general knowledge of data preparation.
+Please refer to [data_preparation.md](docs/en/data_preparation.md) for a general knowledge of data preparation.
 
 ## Get Started
 
-Please see [getting_started.md](docs/getting_started.md) for the basic usage of MMPose.
+Please see [getting_started.md](docs/en/getting_started.md) for the basic usage of MMPose.
 There are also tutorials:
 
-- [learn about configs](docs/tutorials/0_config.md)
-- [finetune model](docs/tutorials/1_finetune.md)
-- [add new dataset](docs/tutorials/2_new_dataset.md)
-- [customize data pipelines](docs/tutorials/3_data_pipeline.md)
-- [add new modules](docs/tutorials/4_new_modules.md)
-- [export a model to ONNX](docs/tutorials/5_export_model.md)
-- [customize runtime settings](docs/tutorials/6_customize_runtime.md)
+- [learn about configs](docs/en/tutorials/0_config.md)
+- [finetune model](docs/en/tutorials/1_finetune.md)
+- [add new dataset](docs/en/tutorials/2_new_dataset.md)
+- [customize data pipelines](docs/en/tutorials/3_data_pipeline.md)
+- [add new modules](docs/en/tutorials/4_new_modules.md)
+- [export a model to ONNX](docs/en/tutorials/5_export_model.md)
+- [customize runtime settings](docs/en/tutorials/6_customize_runtime.md)
 
 ## FAQ
 
-Please refer to [FAQ](docs/faq.md) for frequently asked questions.
+Please refer to [FAQ](docs/en/faq.md) for frequently asked questions.
 
 ## License
 

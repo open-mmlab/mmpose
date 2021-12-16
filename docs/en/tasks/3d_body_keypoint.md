@@ -72,4 +72,4 @@ mmpose
             `── S11
 ```
 
-Please note that Human3.6M dataset is also used in the [3D_body_mesh](/docs/tasks/3d_body_mesh.md) task, where different schemes for data preprocessing and organizing are adopted.
+Please note that Human3.6M dataset is also used in the [3D_body_mesh](/docs/en/tasks/3d_body_mesh.md) task, where different schemes for data preprocessing and organizing are adopted.

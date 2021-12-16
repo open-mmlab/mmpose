@@ -17,7 +17,7 @@ import sys
 
 import pytorch_sphinx_theme
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -26,7 +26,7 @@ copyright = '2020-2021, OpenMMLab'
 author = 'MMPose Authors'
 
 # The full version, including alpha/beta/rc tags
-version_file = '../mmpose/version.py'
+version_file = '../../mmpose/version.py'
 
 
 def get_version():

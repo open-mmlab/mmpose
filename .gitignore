@@ -65,8 +65,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
-docs_zh-CN/_build/
+docs/en/_build
+docs/zh_cn/_build
 
 # PyBuilder
 target/
@@ -116,14 +116,10 @@ mmpose/.mim
 *.log.json
 *.npy
 work_dirs/
-docs/topics/
-docs/papers/*.md
-docs/datasets.md
-docs/modelzoo.md
-docs_zh-CN/topics/
-docs_zh-CN/papers/*.md
-docs_zh-CN/datasets.md
-docs_zh-CN/modelzoo.md
+docs/**/topics/
+docs/**/papers/*.md
+docs/**/datasets.md
+docs/**/modelzoo.md
 
 !tests/data/**/*.pkl
 !tests/data/**/*.pkl.json
