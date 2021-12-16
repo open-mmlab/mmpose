@@ -262,7 +262,7 @@ class Node(Thread, metaclass=ABCMeta):
         info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
-    def _on_exit(self):
+    def on_exit(self):
         """This method will be invoked on event `_exit_`.
 
         Subclasses should override this method to specifying the exiting
