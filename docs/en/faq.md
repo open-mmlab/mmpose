@@ -35,6 +35,17 @@ If the contents here do not cover your issue, please create an issue using the [
 
 ## Data
 
+- **How to convert my 2d keypoint dataset to coco-type?**
+
+  You may refer to this conversion [tool](https://github.com/open-mmlab/mmpose/blob/master/tools/dataset/parse_macaquepose_dataset.py) to prepare your data.
+  Here is an [example](https://github.com/open-mmlab/mmpose/blob/master/tests/data/macaque/test_macaque.json) of the coco-type json.
+  In the coco-type json, we need "categories", "annotations" and "images". "categories" contain some basic information of the dataset, e.g. class name and keypoint names.
+  "images" contain image-level information. We need "id", "file_name", "height", "width". Others are optional.
+  Note: (1) It is okay that "id"s are not continuous or not sorted (e.g. 1000, 40, 352, 333 ...).
+
+  "annotations" contain instance-level information. We need "image_id", "id", "keypoints", "num_keypoints", "bbox", "iscrowd", "area", "category_id". Others are optional.
+  Note: (1) "num_keypoints" means the number of visible keypoints. (2) By default, please set "iscrowd: 0". (3) "area" can be calculated using the bbox (area = w * h) (4) Simply set "category_id: 1". (5) The "image_id" in "annotations" should match the "id" in "images".
+
 - **What if my custom dataset does not have bounding box label?**
 
   We can estimate the bounding box of a person as the minimal box that tightly bounds all the keypoints.
@@ -92,6 +103,9 @@ If the contents here do not cover your issue, please create an issue using the [
 - **How to evaluate on MPII test dataset?**
   Since we do not have the ground-truth for test dataset, we cannot evaluate it 'locally'.
   If you would like to evaluate the performance on test set, you have to upload the pred.mat (which is generated during testing) to the official server via email, according to [the MPII guideline](http://human-pose.mpi-inf.mpg.de/#evaluation).
+
+- **For top-down 2d pose estimation, why predicted joint coordinates can be out of the bounding box (bbox)?**
+  We do not directly use the bbox to crop the image. bbox will be first transformed to center & scale, and the scale will be multiplied by a factor (1.25) to include some context. If the ratio of width/height is different from that of model input (possibly 192/256), we will adjust the bbox.
 
 ## Inference
 
