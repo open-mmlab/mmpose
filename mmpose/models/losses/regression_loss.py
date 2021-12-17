@@ -10,7 +10,7 @@ from ..builder import LOSSES
 
 @LOSSES.register_module()
 class SmoothL1Loss(nn.Module):
-    """SmoothL1Loss loss .
+    """SmoothL1Loss loss.
 
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
@@ -50,8 +50,8 @@ class SmoothL1Loss(nn.Module):
 
 @LOSSES.register_module()
 class WingLoss(nn.Module):
-    """Wing Loss 'Wing Loss for Robust Facial Landmark Localisation with
-    Convolutional Neural Networks' Feng et al. CVPR'2018.
+    """Wing Loss. paper ref: 'Wing Loss for Robust Facial Landmark Localisation
+    with Convolutional Neural Networks' Feng et al. CVPR'2018.
 
     Args:
         omega (float): Also referred to as width.

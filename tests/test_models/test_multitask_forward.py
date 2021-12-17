@@ -67,7 +67,7 @@ def test_multitask_forward():
 
     # Test forward train
     losses = model(inputs, target, target_weight, return_loss=True)
-    assert 'mse_loss' in losses and 'acc_pose' in losses
+    assert 'heatmap_loss' in losses and 'acc_pose' in losses
 
     # Test forward test
     outputs = model(inputs, img_metas=img_metas, return_loss=False)
