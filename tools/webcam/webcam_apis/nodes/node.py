@@ -4,7 +4,7 @@ import warnings
 import weakref
 from abc import ABCMeta, abstractmethod
 from threading import Thread
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from mmcv.utils.misc import is_method_overridden
 from tools.webcam.webcam_apis.utils.message import VideoEndingMessage
@@ -171,7 +171,7 @@ class Node(Thread, metaclass=ABCMeta):
             self.register_hotkey_handler(
                 key=self.enable_key, handler_func=_toggle_enable)
 
-    def _get_input_from_buffer(self) -> tuple[bool, Optional[dict]]:
+    def _get_input_from_buffer(self) -> Tuple[bool, Optional[dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
         of a status flag and a packed data dictionary. If input_buffer is
         ready, the status flag will be True, and the packed data is a dict
