@@ -7,6 +7,7 @@ import math
 
 import cv2
 import numpy as np
+import torch
 
 
 def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
@@ -355,3 +356,10 @@ def warp_affine_joints(joints, mat):
     return np.dot(
         np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
         mat.T).reshape(shape)
+
+
+def affine_transform_torch(pts, t):
+    npts = pts.shape[0]
+    pts_homo = torch.cat([pts, torch.ones(npts, 1, device=pts.device)], dim=1)
+    out = torch.mm(t, torch.t(pts_homo))
+    return torch.t(out[:2, :])
