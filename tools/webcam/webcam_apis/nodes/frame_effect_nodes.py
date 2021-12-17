@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import abstractmethod
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -20,7 +20,7 @@ except (ImportError, ModuleNotFoundError):
     psutil_proc = None
 
 
-def _get_eye_keypoint_ids(model_cfg: Config) -> tuple[int, int]:
+def _get_eye_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
     """A helpfer function to get the keypoint indices of left and right eyes
     from the model config.
 
@@ -225,8 +225,8 @@ class BillboardNode(BaseFrameEffectNode):
         x_offset: int = 20,
         y_offset: int = 20,
         y_delta: int = 15,
-        text_color: Union[str, tuple[int, int, int]] = 'black',
-        background_color: Union[str, tuple[int, int, int]] = (255, 183, 0),
+        text_color: Union[str, Tuple[int, int, int]] = 'black',
+        background_color: Union[str, Tuple[int, int, int]] = (255, 183, 0),
         text_scale: float = 0.4,
     ):
         super().__init__(
