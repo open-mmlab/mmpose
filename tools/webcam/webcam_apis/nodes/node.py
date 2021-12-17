@@ -51,8 +51,10 @@ class Node(Thread, metaclass=ABCMeta):
         # A timer to calculate node FPS
         self._timer = StopWatch(window=10)
 
-        # Event listener threads
-        self._event2listener = {}
+        # Event listener
+        # The key is the event name, and the value contains handler function
+        # and corresponding thread
+        self._registered_event_handler = {}
 
         # If the node allows toggling enable, it should override the `bypass`
         # method to define the node behavior when disabled.
@@ -112,38 +114,37 @@ class Node(Thread, metaclass=ABCMeta):
             self.output_buffers.append(buffer_info)
 
     def register_event_handler(self, event_name: str, handler_func: Callable):
+        """Register an event handler. A thread will be create to listen and
+        handle the event after the runner is set.
 
-        if self.runner is None:
-            raise ValueError(
-                f'Node {self.name} cannot register event handler before '
-                'being registered to a runner.')
+        Args:
+            event_name(str): The event name.
+            handler_func(callable): The event handler function, which should be
+                a collable object with no arguments or return values.
+        """
 
-        def event_listener():
-            while True:
-                self.runner.event_manager.wait(event_name)
-                handler_func()
-                self.runner.event_manager.clear(event_name)
+        self._registered_event_handler[event_name] = {
+            'handler_func': handler_func,
+            'keyboard': False,
+            'thread': None,
+        }
 
-        t_event_listener = Thread(target=event_listener, args=(), daemon=True)
-        t_event_listener.start()
-        self._event2listener[event_name] = t_event_listener
+    def register_keyboard_handler(self, key: Optional[Union[str, int]],
+                                  handler_func: Callable):
+        """Register an keyboard event handler. A thread will be create to
+        listen and handle the event after the runner is set.
 
-    def register_hotkey_handler(self, key: Optional[Union[str, int]],
-                                handler_func: Callable):
-        if self.runner is None:
-            raise ValueError(
-                f'Node {self.name} cannot register event handler before '
-                'being registered to a runner.')
+        Args:
+            key(str|int): .
+            handler_func(callable): The event handler function, which should be
+                a collable object with no arguments or return values.
+        """
 
-        def event_listener():
-            while True:
-                self.runner.event_manager.wait_keyboard(key)
-                handler_func()
-                self.runner.event_manager.clear_keyboard(key)
-
-        t_event_listener = Thread(target=event_listener, args=(), daemon=True)
-        t_event_listener.start()
-        self._event2listener[f'hotkey_{key}'] = t_event_listener
+        self._registered_event_handler[key] = {
+            'handler_func': handler_func,
+            'keyboard': True,
+            'thread': None,
+        }
 
     @property
     def runner(self):
@@ -168,8 +169,30 @@ class Node(Thread, metaclass=ABCMeta):
             def _toggle_enable():
                 self._enabled = not self._enabled
 
-            self.register_hotkey_handler(
+            self.register_keyboard_handler(
                 key=self.enable_key, handler_func=_toggle_enable)
+
+        # Register all event handler
+        for event, info in self._registered_event_handler.items():
+            is_keyboard = info['keyboard']
+            handler_func = info['handler_func']
+            event_manager = self.runner.event_manager
+
+            def event_listener():
+                while True:
+                    if is_keyboard:
+                        event_manager.wait_keyboard(event)
+                        handler_func()
+                        event_manager.clear_keyboard(event)
+                    else:
+                        event_manager.wait_keyboard(event)
+                        handler_func()
+                        event_manager.clear_keyboard(event)
+
+            t_event_listener = Thread(
+                target=event_listener, args=(), daemon=True)
+            t_event_listener.start()
+            info['thread'] = t_event_listener
 
     def _get_input_from_buffer(self) -> Tuple[bool, Optional[dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
@@ -279,7 +302,7 @@ class Node(Thread, metaclass=ABCMeta):
         while True:
             # Exit
             if self.runner.event_manager.is_set('_exit_'):
-                self._on_exit()
+                self.on_exit()
                 break
 
             # Check if input is ready

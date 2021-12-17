@@ -51,10 +51,10 @@ runner = dict(
             name='TopDown Pose Estimator',
             model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
             'topdown_heatmap/coco-wholebody/'
-            'vipnas_res50_coco_wholebody_256x192_dark.py',
-            model_checkpoint='https://openmmlab-share.oss-cn-hangzhou'
-            '.aliyuncs.com/mmpose/top_down/vipnas/'
-            'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
+            'vipnas_mbv3_coco_wholebody_256x192_dark.py',
+            model_checkpoint='https://openmmlab-share.oss-cn-hangz'
+            'hou.aliyuncs.com/mmpose/top_down/vipnas/vipnas_mbv3_co'
+            'co_wholebody_256x192_dark-e2158108_20211205.pth',
             cls_names=['person'],
             input_buffer='det_result',
             output_buffer='pose_result'),
