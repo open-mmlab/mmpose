@@ -82,6 +82,7 @@ Import:
 - configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.yml
 - configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.yml
 - configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.yml
+- configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_softwingloss_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/300w/hrnetv2_300w.yml
