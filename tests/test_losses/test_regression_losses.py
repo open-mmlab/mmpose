@@ -64,8 +64,37 @@ def test_wing_loss():
         torch.tensor(.5))
 
 
-def test_mse_regression_loss():
+def test_soft_wing_loss():
+    # test SoftWingLoss without target weight(default None)
+    loss_cfg = dict(type='SoftWingLoss')
+    loss = build_loss(loss_cfg)
 
+    fake_pred = torch.zeros((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.allclose(loss(fake_pred, fake_label), torch.tensor(0.))
+
+    fake_pred = torch.ones((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.gt(loss(fake_pred, fake_label), torch.tensor(.5))
+
+    # test SoftWingLoss with target weight
+    loss_cfg = dict(type='SoftWingLoss', use_target_weight=True)
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.allclose(
+        loss(fake_pred, fake_label, torch.ones_like(fake_label)),
+        torch.tensor(0.))
+
+    fake_pred = torch.ones((1, 3, 2))
+    fake_label = torch.zeros((1, 3, 2))
+    assert torch.gt(
+        loss(fake_pred, fake_label, torch.ones_like(fake_label)),
+        torch.tensor(.5))
+
+
+def test_mse_regression_loss():
     # w/o target weight(default None)
     loss_cfg = dict(type='MSELoss')
     loss = build_loss(loss_cfg)
