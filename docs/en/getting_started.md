@@ -23,15 +23,15 @@ For installation instructions, please see [install.md](install.md).
 
 MMPose supports multiple tasks. Please follow the corresponding guidelines for data preparation.
 
-- [2D Body Keypoint Detection](/docs/tasks/2d_body_keypoint.md)
-- [3D Body Keypoint Detection](/docs/tasks/3d_body_keypoint.md)
-- [3D Body Mesh Recovery](/docs/tasks/3d_body_mesh.md)
-- [2D Hand Keypoint Detection](/docs/tasks/2d_hand_keypoint.md)
-- [3D Hand Keypoint Detection](/docs/tasks/3d_hand_keypoint.md)
-- [2D Face Keypoint Detection](/docs/tasks/2d_face_keypoint.md)
-- [2D WholeBody Keypoint Detection](/docs/tasks/2d_wholebody_keypoint.md)
-- [2D Fashion Landmark Detection](/docs/tasks/2d_fashion_landmark.md)
-- [2D Animal Keypoint Detection](/docs/tasks/2d_animal_keypoint.md)
+- [2D Body Keypoint Detection](/docs/en/tasks/2d_body_keypoint.md)
+- [3D Body Keypoint Detection](/docs/en/tasks/3d_body_keypoint.md)
+- [3D Body Mesh Recovery](/docs/en/tasks/3d_body_mesh.md)
+- [2D Hand Keypoint Detection](/docs/en/tasks/2d_hand_keypoint.md)
+- [3D Hand Keypoint Detection](/docs/en/tasks/3d_hand_keypoint.md)
+- [2D Face Keypoint Detection](/docs/en/tasks/2d_face_keypoint.md)
+- [2D WholeBody Keypoint Detection](/docs/en/tasks/2d_wholebody_keypoint.md)
+- [2D Fashion Landmark Detection](/docs/en/tasks/2d_fashion_landmark.md)
+- [2D Animal Keypoint Detection](/docs/en/tasks/2d_animal_keypoint.md)
 
 ## Inference with Pre-trained Models
 
@@ -205,7 +205,7 @@ GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 config
 You can check [slurm_train.sh](/tools/slurm_train.sh) for full arguments and environment variables.
 
 If you have just multiple machines connected with ethernet, you can refer to
-pytorch [launch utility](https://pytorch.org/docs/stable/distributed_deprecated.html#launch-utility).
+pytorch [launch utility](https://pytorch.org/docs/en/stable/distributed_deprecated.html#launch-utility).
 Usually it is slow if you do not have high speed networking like InfiniBand.
 
 ### Launch multiple jobs on a single machine

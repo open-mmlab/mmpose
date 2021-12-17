@@ -4,4 +4,4 @@
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_fashion_landmark.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/2d_fashion_landmark.md) to prepare data.

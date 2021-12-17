@@ -8,4 +8,4 @@ For single-person 3D pose estimation from a monocular camera, existing works can
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/3d_body_keypoint.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/3d_body_keypoint.md) to prepare data.

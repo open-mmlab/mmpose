@@ -91,7 +91,7 @@ For top-down models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
 1. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L52).
-1. use faster human detector or human tracker, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html) or [MMTracking](https://github.com/open-mmlab/mmtracking/blob/master/docs/model_zoo.md).
+1. use faster human detector or human tracker, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html) or [MMTracking](https://mmtracking.readthedocs.io/en/latest/model_zoo.html).
 
 For bottom-up models, try to edit the config file. For example,
 
