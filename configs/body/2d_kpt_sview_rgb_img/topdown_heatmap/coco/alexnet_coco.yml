@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Imagenet classification with deep convolutional neural networks
     URL: https://proceedings.neurips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/alexnet.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco_256x192.py
   In Collection: AlexNet
@@ -11,7 +12,6 @@ Models:
     - AlexNet
     Training Data: COCO
   Name: topdown_heatmap_alexnet_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

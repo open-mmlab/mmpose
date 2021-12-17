@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Very deep convolutional networks for large-scale image recognition
     URL: https://arxiv.org/abs/1409.1556
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/vgg.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg16_bn_coco_256x192.py
   In Collection: VGG
@@ -11,7 +12,6 @@ Models:
     - VGG
     Training Data: COCO
   Name: topdown_heatmap_vgg16_bn_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.md
   Results:
   - Dataset: COCO
     Metrics:

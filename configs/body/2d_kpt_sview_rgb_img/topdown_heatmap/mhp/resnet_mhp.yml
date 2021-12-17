@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/res50_mhp_256x192.py
   In Collection: SimpleBaseline2D
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: MHP
   Name: topdown_heatmap_res50_mhp_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mhp/resnet_mhp.md
   Results:
   - Dataset: MHP
     Metrics:

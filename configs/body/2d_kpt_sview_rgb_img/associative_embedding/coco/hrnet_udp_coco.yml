@@ -4,6 +4,7 @@ Collections:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/udp.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_w32_coco_512x512_udp.py
   In Collection: UDP
@@ -14,7 +15,6 @@ Models:
     - UDP
     Training Data: COCO
   Name: associative_embedding_hrnet_w32_coco_512x512_udp
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_udp_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -31,7 +31,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_hrnet_w48_coco_512x512_udp
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/hrnet_udp_coco.md
   Results:
   - Dataset: COCO
     Metrics:

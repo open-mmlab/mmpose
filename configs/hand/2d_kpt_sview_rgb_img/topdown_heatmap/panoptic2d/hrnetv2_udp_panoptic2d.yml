@@ -4,6 +4,7 @@ Collections:
     Title: 'The Devil Is in the Details: Delving Into Unbiased Data Processing for
       Human Pose Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Huang_The_Devil_Is_in_the_Details_Delving_Into_Unbiased_Data_CVPR_2020_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/udp.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic_256x256_udp.py
   In Collection: UDP
@@ -13,7 +14,6 @@ Models:
     - UDP
     Training Data: CMU Panoptic HandDB
   Name: topdown_heatmap_hrnetv2_w18_panoptic_256x256_udp
-  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_udp_panoptic2d.md
   Results:
   - Dataset: CMU Panoptic HandDB
     Metrics:

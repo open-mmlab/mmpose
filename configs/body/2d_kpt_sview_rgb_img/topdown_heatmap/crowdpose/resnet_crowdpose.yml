@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/res50_crowdpose_256x192.py
   In Collection: SimpleBaseline2D
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: CrowdPose
   Name: topdown_heatmap_res50_crowdpose_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -30,7 +30,6 @@ Models:
     Architecture: *id001
     Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -48,7 +47,6 @@ Models:
     Architecture: *id001
     Training Data: CrowdPose
   Name: topdown_heatmap_res101_crowdpose_320x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:
@@ -66,7 +64,6 @@ Models:
     Architecture: *id001
     Training Data: CrowdPose
   Name: topdown_heatmap_res152_crowdpose_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/resnet_crowdpose.md
   Results:
   - Dataset: CrowdPose
     Metrics:

@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Deep residual learning for image recognition
     URL: http://openaccess.thecvf.com/content_cvpr_2016/html/He_Deep_Residual_Learning_CVPR_2016_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/resnet.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256.py
   In Collection: ResNet
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: WFLW
   Name: deeppose_res50_wflw_256x256
-  README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wflw.md
   Results:
   - Dataset: WFLW
     Metrics:
