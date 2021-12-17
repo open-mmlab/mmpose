@@ -273,3 +273,85 @@ def test_body3d_mpi_inf_3dhp_dataset():
             np.testing.assert_almost_equal(infos['P-3DPCK'], 100.)
             np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
             np.testing.assert_almost_equal(infos['P-3DAUC'], 30 / 31 * 100)
+
+
+def test_body3dmview_direct_panoptic_dataset():
+    # Test Mview-Panoptic dataset
+    dataset = 'Body3DMviewDirectPanopticDataset'
+    dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/panoptic_body3d.py').dataset_info
+    space_size = [8000, 8000, 2000]
+    space_center = [0, -500, 800]
+    cube_size = [80, 80, 20]
+    train_data_cfg = dict(
+        image_size=[960, 512],
+        heatmap_size=[[240, 128]],
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        num_joints=15,
+        seq_list=['160906_band1', '160906_band2'],
+        cam_list=[(0, 12), (0, 6)],
+        num_cameras=2,
+        seq_frame_interval=1,
+        subset='train',
+        need_2d_label=True,
+        need_camera_param=True,
+        root_id=2)
+
+    test_data_cfg = dict(
+        image_size=[960, 512],
+        heatmap_size=[[240, 128]],
+        num_joints=15,
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        seq_list=['160906_band1', '160906_band2'],
+        cam_list=[(0, 12), (0, 6)],
+        num_cameras=2,
+        seq_frame_interval=1,
+        subset='validation',
+        need_2d_label=True,
+        need_camera_param=True,
+        root_id=2)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _ = dataset_class(
+            ann_file=tmpdir + '/tmp_train.pkl',
+            img_prefix='tests/data/panoptic_body3d/',
+            data_cfg=train_data_cfg,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=False)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        test_dataset = dataset_class(
+            ann_file=tmpdir + '/tmp_validation.pkl',
+            img_prefix='tests/data/panoptic_body3d',
+            data_cfg=test_data_cfg,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=False)
+
+    import copy
+    gt_num = test_dataset.db_size // test_dataset.num_cameras
+    preds = []
+    for i in range(gt_num):
+        index = test_dataset.num_cameras * i
+        db_rec = copy.deepcopy(test_dataset.db[index])
+        joints_3d = db_rec['joints_3d']
+        joints_3d_vis = db_rec['joints_3d_visible']
+        num_gts = len(joints_3d)
+        gt_pose = -np.ones((1, 10, test_dataset.num_joints, 5))
+
+        if num_gts > 0:
+            gt_pose[0, :num_gts, :, :3] = np.array(joints_3d)
+            gt_pose[0, :num_gts, :, 3] = np.array(joints_3d_vis)[:, :, 0] - 1.0
+            gt_pose[0, :num_gts, :, 4] = 1.0
+
+        preds.append(dict(pose_3d=gt_pose, sample_id=[i]))
+    print('test evaluate')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        results = test_dataset.evaluate(
+            preds, res_folder=tmpdir, metric=['mAP', 'mpjpe'])
+    print(results)
