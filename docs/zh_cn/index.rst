@@ -1,9 +1,9 @@
-Welcome to MMPose's documentation!
+欢迎来到 MMPose 中文文档!
 ==================================
 
-You can change the documentation language at the lower-left corner of the page.
-
 您可以在页面左下角切换文档语言。
+
+You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
@@ -16,7 +16,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Datasets
+   :caption: 数据集
 
    datasets.md
    tasks/2d_body_keypoint.md
@@ -31,11 +31,12 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo
+   :caption: 模型池
 
    modelzoo.md
    topics/animal.md
    topics/body(2d,kpt,img).md
+   topics/body(2d,kpt,vid).md
    topics/body(3d,kpt,img).md
    topics/body(3d,kpt,vid).md
    topics/body(3d,mesh,img).md
@@ -47,7 +48,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo (by paper)
+   :caption: 模型池（按论文整理）
 
    papers/algorithms.md
    papers/backbones.md
@@ -56,7 +57,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials
+   :caption: 教程
 
    tutorials/0_config.md
    tutorials/1_finetune.md
@@ -68,7 +69,7 @@ You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Useful Tools and Scripts
+   :caption: 常用工具
 
    useful_tools.md
 
@@ -76,19 +77,17 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 2
    :caption: Notes
 
-   changelog.md
    faq.md
 
 .. toctree::
-   :caption: API Reference
+   :caption: API文档
 
    api.rst
 
 .. toctree::
-   :caption: Languages
+   :caption: 语言
 
-   language.md
-
+   Language.md
 
 Indices and tables
 ==================

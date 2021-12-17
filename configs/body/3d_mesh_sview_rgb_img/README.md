@@ -11,7 +11,7 @@ The preparation for human mesh recovery mainly includes:
 - Annotations
 - SMPL Model
 
-Please follow [DATA Preparation](/docs/tasks/3d_body_mesh.md) to prepare them.
+Please follow [DATA Preparation](/docs/en/tasks/3d_body_mesh.md) to prepare them.
 
 ## Prepare Pretrained Models
 
