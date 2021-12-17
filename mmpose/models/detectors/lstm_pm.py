@@ -16,8 +16,8 @@ except ImportError:
 
 
 @POSENETS.register_module()
-class LSTM_PM(TopDown):
-    """Top-down pose detectors for LSTM Pose Mechine.
+class LSTMPoseMachine(TopDown):
+    """Top-down pose detectors for LSTM Pose Machine.
     Paper ref: Luo, Yue, et al. "Lstm pose machines." Proceedings of the IEEE
     conference on computer vision and pattern recognition (2018).
 
