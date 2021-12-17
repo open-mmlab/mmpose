@@ -94,26 +94,6 @@ def test_soft_wing_loss():
         torch.tensor(.5))
 
 
-def test_adaptive_wing_loss():
-    # test Adaptive WingLoss without target weight
-    loss_cfg = dict(type='AdaptiveWingLoss')
-    loss = build_loss(loss_cfg)
-
-    fake_pred = torch.zeros((1, 3, 2))
-    fake_label = torch.zeros((1, 3, 2))
-    assert torch.allclose(loss(fake_pred, fake_label, None), torch.tensor(0.))
-
-    # test WingLoss with target weight
-    loss_cfg = dict(type='AdaptiveWingLoss', use_target_weight=True)
-    loss = build_loss(loss_cfg)
-
-    fake_pred = torch.zeros((1, 3, 2))
-    fake_label = torch.zeros((1, 3, 2))
-    assert torch.allclose(
-        loss(fake_pred, fake_label, torch.ones_like(fake_label)),
-        torch.tensor(0.))
-
-
 def test_mse_regression_loss():
     # w/o target weight(default None)
     loss_cfg = dict(type='MSELoss')
