@@ -80,10 +80,10 @@ Supported techniques:
 - [x] [FP16](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
 - [x] [Wingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
 - [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
-- [x] [SoftWingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 - [x] [DarkPose](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#darkpose-cvpr-2020) (CVPR'2020)
 - [x] [UDP](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
 - [x] [Albumentations](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#albumentations-information-2020) (Information'2020)
+- [x] [SoftWingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 
 </details>
 
