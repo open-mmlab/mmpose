@@ -2,7 +2,7 @@
 import time
 import uuid
 import warnings
-from typing import Optional
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -13,7 +13,7 @@ class Message():
     All message class should inherit this class
     """
 
-    def __init__(self, msg: str = '', data: Optional[dict] = None):
+    def __init__(self, msg: str = '', data: Optional[Dict] = None):
         self.msg = msg
         self.data = data if data else {}
         self.route_info = []
@@ -24,7 +24,7 @@ class Message():
                           node=None,
                           node_name=None,
                           node_type=None,
-                          info: Optional[dict] = None):
+                          info: Optional[Dict] = None):
         if node is not None:
             if node_name is not None or node_type is not None:
                 warnings.warn(
@@ -36,14 +36,14 @@ class Message():
         node_info = {'node': node_name, 'node_type': node_type, 'info': info}
         self.route_info.append(node_info)
 
-    def set_route_info(self, route_info: list):
+    def set_route_info(self, route_info: List):
         self.route_info = route_info
 
-    def merge_route_info(self, route_info: list):
+    def merge_route_info(self, route_info: List):
         self.route_info += route_info
         self.route_info.sort(key=lambda x: x.get('timestamp', np.inf))
 
-    def get_route_info(self) -> list:
+    def get_route_info(self) -> List:
         return self.route_info.copy()
 
 
