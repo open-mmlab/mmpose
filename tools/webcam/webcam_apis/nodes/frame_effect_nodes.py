@@ -127,7 +127,7 @@ class PoseVisualizerNode(BaseFrameEffectNode):
                  kpt_thr: float = 0.3,
                  radius: int = 4,
                  thickness: int = 2,
-                 bbox_color: Union[str, tuple] = 'green'):
+                 bbox_color: Union[str, Tuple] = 'green'):
 
         super().__init__(name, frame_buffer, output_buffer, enable_key)
 
