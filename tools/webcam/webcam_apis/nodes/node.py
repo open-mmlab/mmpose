@@ -194,7 +194,7 @@ class Node(Thread, metaclass=ABCMeta):
             t_event_listener.start()
             info['thread'] = t_event_listener
 
-    def _get_input_from_buffer(self) -> Tuple[bool, Optional[dict]]:
+    def _get_input_from_buffer(self) -> Tuple[bool, Optional[Dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
         of a status flag and a packed data dictionary. If input_buffer is
         ready, the status flag will be True, and the packed data is a dict
