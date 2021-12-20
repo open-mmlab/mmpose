@@ -112,7 +112,7 @@ class WebcamRunner():
         # This step is performed after node building when the runner has
         # create full buffer/event managers and can
         for node in self.node_list:
-            logging.info(f'Set runner for node: {node.name})')
+            logging.info(f'Set runner for node: {node.name}')
             node.set_runner(self)
 
     def _read_camera(self):

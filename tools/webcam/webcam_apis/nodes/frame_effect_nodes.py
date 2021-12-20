@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import time
 from abc import abstractmethod
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -70,7 +71,6 @@ def _get_nose_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
 
     Args:
         model_cfg (Config): pose model config.
-
     Returns:
         int: nose keypoint index.
     """
@@ -99,13 +99,49 @@ def _get_nose_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
     return nose_idx
 
 
+def _get_ear_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of left and right ears
+    from the model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+    Returns:
+        int: left ear keypoint index.
+        int: right ear keypoint index.
+    """
+
+    # try obtaining eye point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+
+        left_ear_idx = dataset_info.keypoint_name2id.get('left_ear', None)
+        right_ear_idx = dataset_info.keypoint_name2id.get('right_ear', None)
+
+    except AttributeError:
+        left_ear_idx = None
+        right_ear_idx = None
+
+    if left_ear_idx is None or right_ear_idx is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {
+                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
+        }:
+            left_ear_idx = 3
+            right_ear_idx = 4
+        else:
+            raise ValueError('Can not determine the eye keypoint id of '
+                             f'{dataset_name}')
+
+    return left_ear_idx, right_ear_idx
+
+
 def _get_face_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
     """A helpfer function to get the keypoint indices of the face from the
     model config.
 
     Args:
         model_cfg (Config): pose model config.
-
     Returns:
         list[int]: face keypoint index.
     """
@@ -172,6 +208,137 @@ def _get_wrist_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
                              f'{dataset_name}')
 
     return left_wrist_idx, right_wrist_idx
+
+
+def _get_hand_keypoint_ids(model_cfg: Config) -> List[int]:
+    """A helpfer function to get the keypoint indices of left and right hand
+    from the model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+    Returns:
+        list[int]: hand keypoint indices.
+    """
+    # try obtaining hand keypoint ids from dataset_info
+    try:
+        hand_indices = []
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+
+        hand_indices.append(
+            dataset_info.keypoint_name2id.get('left_hand_root', None))
+
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'left_thumb{id}', None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'left_forefinger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'left_middle_finger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'left_ring_finger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'left_pinky_finger{id}',
+                                                  None))
+
+        hand_indices.append(
+            dataset_info.keypoint_name2id.get('right_hand_root', None))
+
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'right_thumb{id}', None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'right_forefinger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'right_middle_finger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'right_ring_finger{id}',
+                                                  None))
+        for id in range(1, 5):
+            hand_indices.append(
+                dataset_info.keypoint_name2id.get(f'right_pinky_finger{id}',
+                                                  None))
+
+    except AttributeError:
+        hand_indices = None
+
+    if hand_indices is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
+            hand_indices = list(range(91, 133))
+        else:
+            raise ValueError('Can not determine the hand id of '
+                             f'{dataset_name}')
+
+    return hand_indices
+
+
+def modify_dataset_info(dataset_info: DatasetInfo) -> DatasetInfo:
+    # remove skeleton above face
+    for i in range(12, 17):
+        dataset_info.skeleton_info.pop(i)
+
+    # connect 17 face keypoints
+    for i in range(65, 65 + 16):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-65}', f'face-{i-64}'), id=i, color=[255, 255, 255])
+    # connect above eyebow keypoints
+    for i in range(81, 81 + 4):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-64}', f'face-{i-63}'), id=i, color=[255, 255, 255])
+    for i in range(85, 85 + 4):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-63}', f'face-{i-62}'), id=i, color=[255, 255, 255])
+    # connect nose keypoints
+    for i in range(89, 89 + 3):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-62}', f'face-{i-61}'), id=i, color=[255, 255, 255])
+    for i in range(92, 92 + 4):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-61}', f'face-{i-60}'), id=i, color=[255, 255, 255])
+    # connect eye keypoints
+    for i in range(96, 96 + 5):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-60}', f'face-{i-59}'), id=i, color=[255, 255, 255])
+    dataset_info.skeleton_info[101] = dict(
+        link=('face-36', 'face-41'), id=101, color=[255, 255, 255])
+    for i in range(102, 102 + 5):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-60}', f'face-{i-59}'), id=i, color=[255, 255, 255])
+    dataset_info.skeleton_info[107] = dict(
+        link=('face-42', 'face-47'), id=107, color=[255, 255, 255])
+    # connect mouth keypoints
+    for i in range(108, 108 + 11):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-60}', f'face-{i-59}'), id=i, color=[255, 255, 255])
+    dataset_info.skeleton_info[119] = dict(
+        link=('face-48', 'face-59'), id=119, color=[255, 255, 255])
+    for i in range(120, 120 + 7):
+        dataset_info.skeleton_info[i] = dict(
+            link=(f'face-{i-60}', f'face-{i-59}'), id=i, color=[255, 255, 255])
+
+    return dataset_info
+
+
+def is_person_visible(pred: Dict[str, np.ndarray], kpts_indices: Tuple[int],
+                      kpt_thr: float) -> bool:
+    for i in kpts_indices:
+        if pred['keypoints'][i][2] < kpt_thr:
+            return False
+
+    return True
 
 
 class BaseFrameEffectNode(Node):
@@ -340,6 +507,298 @@ class PoseVisualizerNode(BaseFrameEffectNode):
                     pose_link_color=dataset_info.pose_link_color,
                     radius=self.radius,
                     thickness=self.thickness)
+
+        return canvas
+
+
+@NODES.register_module()
+class MatchStickMenNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 background_color: Union[str, Tuple[int, int,
+                                                    int]] = (0, 0, 0),
+                 kpt_thr: float = 0.3,
+                 radius: int = 2,
+                 thickness: int = 2,
+                 angle_thr: float = 90.0,
+                 heartbeat_duration: float = 2.0,
+                 largest_heart: Tuple[int, int] = (256, 256),
+                 src_img_path: Optional[str] = None,
+                 dis_thr: float = 200.0,
+                 essential_kpts_indices: Tuple[int] = (0, 1, 2)):
+
+        super().__init__(
+            name, frame_buffer, output_buffer, enable_key=enable_key)
+
+        if src_img_path is None:
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '87690686/149731850-ea946766-a4e8-4efa-82f5'\
+                           '-e2f0515db8ae.png'
+        self.src_img = load_image_from_disk_or_url(src_img_path)
+
+        self.background_color = background_color
+        self.kpt_thr = kpt_thr
+        self.radius = radius
+        self.thickness = thickness
+
+        self.angle_thr = angle_thr
+        self.dis_thr = dis_thr
+        self.heartbeat_duration = heartbeat_duration
+        self.largest_heart = largest_heart
+
+        # record the heart_effect start time for each person
+        self._heart_start_time = {}
+        self._heart_pos = {}
+        self.dataset_info = None
+
+        self.essential_kpts_indices = essential_kpts_indices
+
+    def _cal_distance(self, keypoints: np.ndarray,
+                      hand_indices: List[str]) -> np.float64:
+        # 20, 41
+        p1 = keypoints[hand_indices[20]][:2]
+        p2 = keypoints[hand_indices[41]][:2]
+
+        return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+    def _cal_angle(self, keypoints: np.ndarray, hand_indices: List[int],
+                   finger_indices: List[int]) -> np.float64:
+
+        p1 = keypoints[hand_indices[finger_indices[3]]][:2]
+        p2 = keypoints[hand_indices[finger_indices[2]]][:2]
+
+        p3 = keypoints[hand_indices[finger_indices[1]]][:2]
+        p4 = keypoints[hand_indices[finger_indices[0]]][:2]
+
+        v1 = p2 - p1
+        v2 = p4 - p3
+
+        vector_prod = v1[0] * v2[0] + v1[1] * v2[1]
+        length_prod = np.sqrt(pow(v1[0], 2) + pow(v1[1], 2)) * np.sqrt(
+            pow(v2[0], 2) + pow(v2[1], 2))
+        cos = vector_prod * 1.0 / (length_prod * 1.0 + 1e-6)
+
+        return (np.arccos(cos) / np.pi) * 180
+
+    def _check_heart(self, pred: Dict[str, np.ndarray],
+                     hand_indices: List[int]) -> bool:
+        """Check if a person is posing a 'hand heart' gesture.
+
+        Args:
+            pred(dict): The pose estimation results containing:
+                - "keypoints" (np.ndarray[K,3]): keypoint detection result
+                                                 in [x, y, score]
+            hand_indices(list[int]): hand keypoint indices.
+
+        Returns:
+            Boolean: whether the person is posing a "hand heart" gesture
+        """
+        keypoints = pred['keypoints']
+
+        # note: these indices are corresoponding to the following keypoints:
+        # left_hand_root, left_pinky_finger1,
+        # left_pinky_finger3, left_pinky_finger4,
+        # right_hand_root, right_pinky_finger1
+        # right_pinky_finger3, right_pinky_finger4
+        for i in [0, 17, 19, 20, 21, 38, 40, 41]:
+            if keypoints[hand_indices[i]][2] < self.kpt_thr:
+                return False
+
+        left_indices = [0, 17, 19, 20]
+        left_angle = self._cal_angle(keypoints, hand_indices, left_indices)
+
+        right_indices = [21, 38, 40, 41]
+        right_angle = self._cal_angle(keypoints, hand_indices, right_indices)
+
+        dis = self._cal_distance(keypoints, hand_indices)
+
+        if left_angle < self.angle_thr and right_angle < self.angle_thr \
+           and dis < self.dis_thr:
+            return True
+
+        return False
+
+    def _draw_heart(self, canvas: np.ndarray, heart_pos: Tuple[int, int],
+                    t_pass: float) -> np.ndarray:
+        scale = t_pass / self.heartbeat_duration
+        hm, wm = self.largest_heart
+        new_h, new_w = int(hm * scale), int(wm * scale)
+
+        max_h, max_w = canvas.shape[:2]
+
+        x, y = heart_pos
+        y1 = max(0, y - int(new_h / 2))
+        y2 = min(max_h - 1, y + int(new_h / 2))
+
+        x1 = max(0, x - int(new_w / 2))
+        x2 = min(max_w - 1, x + int(new_w / 2))
+
+        target = canvas[y1:y2 + 1, x1:x2 + 1].copy()
+        new_h, new_w = target.shape[:2]
+
+        if new_h == 0 or new_w == 0:
+            return canvas
+
+        patch = self.src_img.copy()
+        patch = cv2.resize(patch, (new_w, new_h))
+        mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+        mask = (mask < 100)[..., None].astype(np.float32) * 0.8
+
+        canvas[y1:y2 + 1, x1:x2 + 1] = patch * mask + target * (1 - mask)
+
+        return canvas
+
+    def _get_heart_pos(self, pred: Dict[str, np.ndarray],
+                       hand_indices: List[int]) -> Tuple[int, int]:
+        keypoints = pred['keypoints']
+        p1 = keypoints[hand_indices[20]][:2]
+        p2 = keypoints[hand_indices[41]][:2]
+
+        x, y = (p1 + p2) / 2
+        # the mid point of two fingers
+        return int(x), int(y)
+
+    def draw(self, frame_msg: FrameMessage) -> np.ndarray:
+        canvas = frame_msg.get_image()
+        canvas[:] = self.background_color
+
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in frame_msg.get_pose_results():
+            pose_preds = []
+            preds = [pred.copy() for pred in pose_result['preds']]
+            for pred in preds:
+                if is_person_visible(pred, self.essential_kpts_indices,
+                                     self.kpt_thr):
+                    pose_preds.append(pred['keypoints'])
+
+            model_cfg = pose_result['model_cfg']
+
+            if self.dataset_info is None:
+                dataset_info = model_cfg.data.test.dataset_info.copy()
+                dataset_info = modify_dataset_info(dataset_info)
+                self.dataset_info = DatasetInfo(dataset_info)
+
+            if pose_preds:
+                imshow_keypoints(
+                    canvas,
+                    pose_preds,
+                    skeleton=self.dataset_info.skeleton,
+                    kpt_score_thr=0.3,
+                    pose_kpt_color=self.dataset_info.pose_kpt_color,
+                    pose_link_color=self.dataset_info.pose_link_color,
+                    radius=self.radius,
+                    thickness=self.thickness)
+
+            for pred in preds:
+                id = pred['track_id']
+                if self._heart_start_time.get(id, None) is not None:
+                    t_pass = time.time() - self._heart_start_time[id]
+                    if t_pass < self.heartbeat_duration:
+                        canvas = self._draw_heart(canvas, self._heart_pos[id],
+                                                  t_pass)
+                    else:
+                        self._heart_start_time[id] = None
+                        self._heart_pos[id] = None
+                else:
+                    hand_indices = _get_hand_keypoint_ids(model_cfg)
+                    if self._check_heart(pred, hand_indices):
+                        self._heart_start_time[id] = time.time()
+                        self._heart_pos[id] = self._get_heart_pos(
+                            pred, hand_indices)
+
+        return canvas
+
+
+@NODES.register_module()
+class ELkHornNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None,
+                 kpt_thr: float = 0.3,
+                 anchor_points_indices=[23, 39, 29, 33]):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        if src_img_path is None:
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '87690686/149731877-1a7ff0f3-fc5a-4fd5-b330'\
+                           '-7f35e2930f02.jpg'
+
+        self.src_img = load_image_from_disk_or_url(src_img_path)
+        # The score threshold of required keypoints.
+        self.kpt_thr = kpt_thr
+        self.anchor_points_indices = anchor_points_indices
+
+    def draw(self, frame_msg: FrameMessage) -> np.ndarray:
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            for pred in pose_result['preds']:
+                if is_person_visible(pred, self.anchor_points_indices,
+                                     self.kpt_thr):
+                    canvas = self.apply_elk_horn_effect(canvas, pred)
+        return canvas
+
+    def apply_elk_horn_effect(self, canvas: np.ndarray,
+                              pose: Dict[str, np.ndarray]) -> np.ndarray:
+        """Apply elk_horn effect.
+
+        Args:
+            canvas (np.ndarray): Image data.
+            pose(dict): The pose estimation results containing:
+                - "keypoints" (np.ndarray[K,3]): keypoint detection result
+                                                 in [x, y, score]
+        """
+        # anchor points in the elk horn mask
+        pts_src = np.array([[260, 580], [680, 580], [260, 900], [680, 900]],
+                           dtype=np.float32)
+
+        for i in self.anchor_points_indices:
+            if pose['keypoints'][i][2] < self.kpt_thr:
+                continue
+        # choose 4 anchor points, the keypoint indices can be found under
+        # 'configs/_base_/datasets/coco_wholebody.py'
+        # 23: Keypoint index of 'face-0'
+        # 39: Keypoint index of 'face-16'
+        # 29: Keypoint index of 'face-6'
+        # 33: Keypoint index of 'face-10'
+
+        kpt_0 = pose['keypoints'][23][:2]
+        kpt_16 = pose['keypoints'][39][:2]
+        # orthogonal vector
+        # decide whether need to reverse the order
+        if kpt_0[0] < kpt_16[0]:
+            vo = (kpt_0 - kpt_16)[::-1] * [1, -1]
+        else:
+            vo = (kpt_0 - kpt_16)[::-1] * [-1, 1]
+
+        # anchor points in the image by eye positions
+        pts_tar = np.vstack([kpt_0, kpt_16, kpt_0 + vo, kpt_16 + vo])
+
+        # pts_tar = pose['keypoints'][self.anchor_points_indices]
+
+        h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+        patch = cv2.warpPerspective(
+            self.src_img,
+            h_mat,
+            dsize=(canvas.shape[1], canvas.shape[0]),
+            borderValue=(255, 255, 255))
+        #  mask the white background area in the patch with a threshold 200
+        mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+        mask = (mask < 200).astype(np.uint8)
+        canvas = cv2.copyTo(patch, mask, canvas)
 
         return canvas
 

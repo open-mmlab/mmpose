@@ -13,7 +13,7 @@ Look! Where is my face?:eyes: And whose face is it?:laughing:
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/face_swap/face_swap.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/face_swap/face_swap.py
 ```
 
 ### Hotkeys

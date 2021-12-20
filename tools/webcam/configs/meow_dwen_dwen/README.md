@@ -25,7 +25,7 @@ You are a dog fan? Hold on, here comes Woof Dwen Dwen.
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/face_swap/meow_dwen_dwen.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/meow_dwen_dwen/meow_dwen_dwen.py
 ```
 
 ### Hotkeys

@@ -47,7 +47,7 @@ dict(
     output_buffer='det_result'),
 ```
 
-- **Choose a or more pose models**
+- **Choose one or more pose models**
 
 In this demo we use two [top-down](https://github.com/open-mmlab/mmpose/tree/master/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap) pose estimation models for humans and animals respectively. Users can choose models from the [MMPose Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html). To apply different pose models on different instance types, you can add multiple pose estimator nodes with `cls_names` set accordingly.
 
@@ -92,5 +92,5 @@ dict(
 You can launch the webcam runner with a debug config:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/examples/test_camera.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/examples/test_camera.py
 ```

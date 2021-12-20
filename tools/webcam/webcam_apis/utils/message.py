@@ -179,7 +179,7 @@ class FrameMessage(Message):
             ]
         return results
 
-    def get_full_results(self):
+    def get_full_results(self, has_det_results=True):
         """Get all model predictions of the message.
 
         See set_full_results() for inference.
@@ -189,7 +189,10 @@ class FrameMessage(Message):
                 - detection_results
                 - pose_results
         """
-        result_keys = ['detection_results', 'pose_results']
+        result_keys = ['pose_results']
+        if has_det_results:
+            result_keys.append('detection_results')
+
         results = {k: self.data[k] for k in result_keys}
         return results
 

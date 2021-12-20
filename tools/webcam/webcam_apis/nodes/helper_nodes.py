@@ -23,10 +23,18 @@ except (ImportError, ModuleNotFoundError):
 @NODES.register_module()
 class ModelResultBindingNode(Node):
 
-    def __init__(self, name: str, frame_buffer: str, result_buffer: str,
-                 output_buffer: Union[str, List[str]]):
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 result_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 synchronous: bool = False,
+                 has_det_results=True):
         super().__init__(name=name, enable=True)
         self.synchronous = None
+
+        # Whether has the det_results
+        self.has_det_results = has_det_results
 
         # Cache the latest model result
         self.last_result_msg = None
@@ -85,7 +93,8 @@ class ModelResultBindingNode(Node):
             # Bind result to frame
             if self.last_result_msg is not None:
                 frame_msg.set_full_results(
-                    self.last_result_msg.get_full_results())
+                    self.last_result_msg.get_full_results(
+                        self.has_det_results))
                 frame_msg.merge_route_info(
                     self.last_result_msg.get_route_info())
 
