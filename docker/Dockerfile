@@ -21,14 +21,14 @@ RUN pip install mmcv-full==latest+torch1.6.0+cu101 -f https://download.openmmlab
 
 # Install MMPose
 RUN conda clean --all
-RUN git clone https://github.com/open-mmlab/mmpose.git /mmpose
+RUN git clone https://github.com/logivations/mmpose /mmpose
 WORKDIR /mmpose
 RUN mkdir -p /mmpose/data
 ENV FORCE_CUDA="1"
 RUN pip install -r requirements/build.txt
 RUN pip install --no-cache-dir -e .
 
-RUN pip install torch==1.9.0 torchvision==0.10.0
+RUN pip install --upgrade torch==1.9.0 torchvision==0.10.0
 RUN pip install -r requirements.txt
 RUN pip install --upgrade numpy
 RUN pip uninstall -y mmcv-full
