@@ -14,6 +14,7 @@ class TopDownRandomFlip:
 
     Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
     'ann_info'.
+
     Modifies key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
     'flipped'.
 
@@ -67,6 +68,7 @@ class TopDownHalfBodyTransform:
     the lower body at random.
 
     Required keys: 'joints_3d', 'joints_3d_visible', and 'ann_info'.
+
     Modifies key: 'scale' and 'center'.
 
     Args:
@@ -145,7 +147,9 @@ class TopDownHalfBodyTransform:
 class TopDownGetRandomScaleRotation:
     """Data augmentation with random scaling & rotating.
 
-    Required key: 'scale'. Modifies key: 'scale' and 'rotation'.
+    Required key: 'scale'.
+
+    Modifies key: 'scale' and 'rotation'.
 
     Args:
         rot_factor (int): Rotating to ``[-2*rot_factor, 2*rot_factor]``.
@@ -182,8 +186,9 @@ class TopDownAffine:
     """Affine transform the image to make input.
 
     Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
-    'rotation' and 'center'. Modified keys:'img', 'joints_3d', and
-    'joints_3d_visible'.
+    'rotation' and 'center'.
+
+    Modified keys:'img', 'joints_3d', and 'joints_3d_visible'.
 
     Args:
         use_udp (bool): To use unbiased data processing.
@@ -253,6 +258,7 @@ class TopDownGenerateTarget:
     """Generate the target heatmap.
 
     Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+
     Modified keys: 'target', and 'target_weight'.
 
     Args:
@@ -261,7 +267,6 @@ class TopDownGenerateTarget:
         encoding (str): Approach to generate target heatmaps.
             Currently supported approaches: 'MSRA', 'Megvii', 'UDP'.
             Default:'MSRA'
-
         unbiased_encoding (bool): Option to use unbiased
             encoding methods.
             Paper ref: Zhang et al. Distribution-Aware Coordinate
@@ -387,6 +392,7 @@ class TopDownGenerateTarget:
             joints_3d: np.ndarray ([num_joints, 3])
             joints_3d_visible: np.ndarray ([num_joints, 3])
             kernel: Kernel of heatmap gaussian
+
         Returns:
             tuple: A tuple containing targets.
 
@@ -429,12 +435,12 @@ class TopDownGenerateTarget:
         for Human Pose Estimation (CVPR 2020).
 
         Note:
-            num keypoints: K
-            heatmap height: H
-            heatmap width: W
-            num target channels: C
-            C = K if target_type=='GaussianHeatmap'
-            C = 3*K if target_type=='CombinedTarget'
+            - num keypoints: K
+            - heatmap height: H
+            - heatmap width: W
+            - num target channels: C
+            - C = K if target_type=='GaussianHeatmap'
+            - C = 3*K if target_type=='CombinedTarget'
 
         Args:
             cfg (dict): data config
@@ -651,6 +657,7 @@ class TopDownGenerateTargetRegression:
             cfg (dict): data config
             joints_3d: np.ndarray([num_joints, 3])
             joints_3d_visible: np.ndarray([num_joints, 3])
+
         Returns:
              target, target_weight(1: visible, 0: invisible)
         """
@@ -691,15 +698,17 @@ class TopDownGenerateTargetRegression:
 class TopDownRandomTranslation:
     """Data augmentation with random translation.
 
-    Required key: 'scale' and 'center'. Modifies key: 'center'.
+    Required key: 'scale' and 'center'.
 
-    Notes:
-        bbox height: H
-        bbox width: W
+    Modifies key: 'center'.
+
+    Note:
+        - bbox height: H
+        - bbox width: W
 
     Args:
         trans_factor (float): Translating center to
-        ``[-trans_factor, trans_factor] * [W, H] + center``.
+            ``[-trans_factor, trans_factor] * [W, H] + center``.
         trans_prob (float): Probability of random translation.
     """
 

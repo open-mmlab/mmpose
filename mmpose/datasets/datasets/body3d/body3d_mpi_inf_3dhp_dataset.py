@@ -17,12 +17,13 @@ from ...builder import DATASETS
 class Body3DMpiInf3dhpDataset(Kpt3dSviewKpt2dDataset):
     """MPI-INF-3DHP dataset for 3D human pose estimation.
 
-    `Monocular 3D Human Pose Estimation In The Wild Using Improved CNN
-    Supervision` 3DV'2017
+    "Monocular 3D Human Pose Estimation In The Wild Using Improved CNN
+    Supervision", 3DV'2017.
     More details can be found in the `paper
     <https://arxiv.org/pdf/1611.09813>`__.
 
     MPI-INF-3DHP keypoint indexes:
+
         0: 'head_top',
         1: 'neck',
         2: 'right_shoulder',
@@ -366,6 +367,7 @@ class Body3DMpiInf3dhpDataset(Kpt3dSviewKpt2dDataset):
             keypoint_results (list): Keypoint predictions. See
                 'Body3DMpiInf3dhpDataset.evaluate' for details.
             mode (str): Specify mpjpe variants. Supported options are:
+
                 - ``'3dauc'``: Standard 3DAUC.
                 - ``'p-3dauc'``: 3DAUC after aligning prediction to
                     groundtruth via a rigid transformation (scale, rotation and

@@ -14,25 +14,26 @@ def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
     fixed length.
 
     Args:
-        pose_results (List[List[Dict]]): Multi-frame pose detection results
+        pose_results (list[list[dict]]): Multi-frame pose detection results
             stored in a nested list. Each element of the outer list is the
             pose detection results of a single frame, and each element of the
             inner list is the pose information of one person, which contains:
-                keypoints (ndarray[K, 2 or 3]): x, y, [score]
-                track_id (int): unique id of each person, required when
-                    ``with_track_id==True```
-                bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+
+                - keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                - track_id (int): unique id of each person, required \
+                    when ``with_track_id==True``.
+                - bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+
         frame_idx (int): The index of the frame in the original video.
         causal (bool): If True, the target frame is the last frame in
-            a sequence. Otherwise, the target frame is in the middle of a
-            sequence.
+            a sequence. Otherwise, the target frame is in the middle of
+            a sequence.
         seq_len (int): The number of frames in the input sequence.
         step (int): Step size to extract frames from the video.
 
     Returns:
-        List[List[Dict]]: Multi-frame pose detection results stored in a
-            nested list with a length of seq_len.
-        int: The target frame index in the padded sequence.
+        list[list[dict]]: Multi-frame pose detection results stored \
+            in a nested list with a length of seq_len.
     """
 
     if causal:
@@ -60,21 +61,23 @@ def _gather_pose_lifter_inputs(pose_results,
                                norm_pose_2d=False):
     """Gather input data (keypoints and track_id) for pose lifter model.
 
-    Notes:
-        T: The temporal length of the pose detection results
-        N: The number of the person instances
-        K: The number of the keypoints
-        C: The channel number of each keypoint
+    Note:
+        - The temporal length of the pose detection results: T
+        - The number of the person instances: N
+        - The number of the keypoints: K
+        - The channel number of each keypoint: C
 
     Args:
         pose_results (List[List[Dict]]): Multi-frame pose detection results
             stored in a nested list. Each element of the outer list is the
             pose detection results of a single frame, and each element of the
             inner list is the pose information of one person, which contains:
-                keypoints (ndarray[K, 2 or 3]): x, y, [score]
-                track_id (int): unique id of each person, required when
+
+                - keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                - track_id (int): unique id of each person, required when
                     ``with_track_id==True```
-                bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+                - bbox ((4, ) or (5, )): left, right, top, bottom, [score]
+
         bbox_center (ndarray[1, 2]): x, y. The average center coordinate of the
             bboxes in the dataset.
         bbox_scale (int|float): The average scale of the bboxes in the dataset.
@@ -83,13 +86,14 @@ def _gather_pose_lifter_inputs(pose_results,
             bbox_center. Default: False.
 
     Returns:
-        List[List[dict]]: Multi-frame pose detection results
+        list[list[dict]]: Multi-frame pose detection results
             stored in a nested list. Each element of the outer list is the
             pose detection results of a single frame, and each element of the
             inner list is the pose information of one person, which contains:
-                keypoints (ndarray[K, 2 or 3]): x, y, [score]
-                track_id (int): unique id of each person, required when
-                    ``with_track_id==True```
+
+                - keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                - track_id (int): unique id of each person, required when
+                    ``with_track_id==True``
     """
     sequence_inputs = []
     for frame in pose_results:
@@ -122,20 +126,22 @@ def _collate_pose_sequence(pose_results, with_track_id=True, target_frame=-1):
     """Reorganize multi-frame pose detection results into individual pose
     sequences.
 
-    Notes:
-        T: The temporal length of the pose detection results
-        N: The number of the person instances
-        K: The number of the keypoints
-        C: The channel number of each keypoint
+    Note:
+        - The temporal length of the pose detection results: T
+        - The number of the person instances: N
+        - The number of the keypoints: K
+        - The channel number of each keypoint: C
 
     Args:
         pose_results (List[List[Dict]]): Multi-frame pose detection results
             stored in a nested list. Each element of the outer list is the
             pose detection results of a single frame, and each element of the
             inner list is the pose information of one person, which contains:
-                keypoints (ndarray[K, 2 or 3]): x, y, [score]
-                track_id (int): unique id of each person, required when
+
+                - keypoints (ndarray[K, 2 or 3]): x, y, [score]
+                - track_id (int): unique id of each person, required when
                     ``with_track_id==True```
+
         with_track_id (bool): If True, the element in pose_results is expected
             to contain "track_id", which will be used to gather the pose
             sequence of a person from multiple frames. Otherwise, the pose
@@ -214,32 +220,35 @@ def inference_pose_lifter_model(model,
 
     Args:
         model (nn.Module): The loaded pose lifter model
-        pose_results_2d (List[List[dict]]): The 2D pose sequences stored in a
+        pose_results_2d (list[list[dict]]): The 2D pose sequences stored in a
             nested list. Each element of the outer list is the 2D pose results
             of a single frame, and each element of the inner list is the 2D
             pose of one person, which contains:
-                - "keypoints" (ndarray[K, 2 or 3]): x, y, [score]
-                - "track_id" (int)
+
+            - "keypoints" (ndarray[K, 2 or 3]): x, y, [score]
+            - "track_id" (int)
         dataset (str): Dataset name, e.g. 'Body3DH36MDataset'
         with_track_id: If True, the element in pose_results_2d is expected to
             contain "track_id", which will be used to gather the pose sequence
             of a person from multiple frames. Otherwise, the pose results in
             each frame are expected to have a consistent number and order of
             identities. Default is True.
-        image_size (Tuple|List): image width, image height. If None, image size
+        image_size (tuple|list): image width, image height. If None, image size
             will not be contained in dict ``data``.
         norm_pose_2d (bool): If True, scale the bbox (along with the 2D
             pose) to the average bbox scale of the dataset, and move the bbox
             (along with the 2D pose) to the average bbox center of the dataset.
 
     Returns:
-        List[dict]: 3D pose inference results. Each element is the result of
+        list[dict]: 3D pose inference results. Each element is the result of \
             an instance, which contains:
-            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
-            - "keypoints" (ndarray[K, 2 or 3]): from the last frame in
+
+            - "keypoints_3d" (ndarray[K, 3]): predicted 3D keypoints
+            - "keypoints" (ndarray[K, 2 or 3]): from the last frame in \
                 ``pose_results_2d``.
-            - "track_id" (int): from the last frame in ``pose_results_2d``.
-            If there is no valid instance, an empty list will be returned.
+            - "track_id" (int): from the last frame in ``pose_results_2d``. \
+                If there is no valid instance, an empty list will be \
+                returned.
     """
     cfg = model.cfg
     test_pipeline = Compose(cfg.test_pipeline)
@@ -465,27 +474,27 @@ def inference_interhand_3d_model(model,
                                  dataset='InterHand3DDataset'):
     """Inference a single image with a list of hand bounding boxes.
 
-    num_bboxes: N
-    num_keypoints: K
+    Note:
+        - num_bboxes: N
+        - num_keypoints: K
 
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str | np.ndarray): Image filename or loaded image.
-        det_results (List[dict]): The 2D bbox sequences stored in a list.
-            Each each element of the list is the bbox of one person, which
-            contains:
-                - "bbox" (ndarray[4 or 5]): The person bounding box,
-                which contains 4 box coordinates (and score).
+        det_results (list[dict]): The 2D bbox sequences stored in a list.
+            Each each element of the list is the bbox of one person, whose
+            shape is (ndarray[4 or 5]), containing 4 box coordinates
+            (and score).
         dataset (str): Dataset name.
         format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
             'xyxy' means (left, top, right, bottom),
             'xywh' means (left, top, width, height).
 
     Returns:
-        List[dict]: 3D pose inference results. Each element is the result of
-            an instance, which contains:
-            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
-            If there is no valid instance, an empty list will be returned.
+        list[dict]: 3D pose inference results. Each element is the result \
+            of an instance, which contains the predicted 3D keypoints with \
+            shape (ndarray[K,3]). If there is no valid instance, an \
+            empty list will be returned.
     """
 
     assert format in ['xyxy', 'xywh']
@@ -621,35 +630,43 @@ def inference_mesh_model(model,
                          format='xywh',
                          dataset='MeshH36MDataset'):
     """Inference a single image with a list of bounding boxes.
-    num_bboxes: N
-    num_keypoints: K
-    num_vertices: V
-    num_faces: F
+
+    Note:
+        - num_bboxes: N
+        - num_keypoints: K
+        - num_vertices: V
+        - num_faces: F
+
     Args:
         model (nn.Module): The loaded pose model.
         img_or_path (str | np.ndarray): Image filename or loaded image.
-        det_results (List[dict]): The 2D bbox sequences stored in a list.
-            Each each element of the list is the bbox of one person, which
-            contains:
-                - "bbox" (ndarray[4 or 5]): The person bounding box,
-                which contains 4 box coordinates (and score).
-        bbox_thr: Threshold for bounding boxes. Only bboxes with higher scores
-            will be fed into the pose detector. If bbox_thr is None, ignore it.
-        format: bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
-            'xyxy' means (left, top, right, bottom),
-            'xywh' means (left, top, width, height).
+        det_results (list[dict]): The 2D bbox sequences stored in a list.
+            Each element of the list is the bbox of one person.
+            "bbox" (ndarray[4 or 5]): The person bounding box,
+            which contains 4 box coordinates (and score).
+        bbox_thr (float | None): Threshold for bounding boxes.
+            Only bboxes with higher scores will be fed into the pose
+            detector. If bbox_thr is None, all boxes will be used.
+        format (str): bbox format ('xyxy' | 'xywh'). Default: 'xywh'.
+
+            - 'xyxy' means (left, top, right, bottom),
+            - 'xywh' means (left, top, width, height).
         dataset (str): Dataset name.
+
     Returns:
-        List[dict]: 3D pose inference results. Each element is the result of
-            an instance, which contains:
-            - "bbox" (ndarray[4]): instance bounding bbox
-            - "center" (ndarray[2]): bbox center
-            - "scale" (ndarray[2]): bbox scale
-            - "keypoints_3d" (ndarray[K,3]): predicted 3D keypoints
-            - "camera" (ndarray[3]): camera parameters
-            - "vertices" (ndarray[V, 3]): predicted 3D vertices
-            - "faces" (ndarray[F, 3]): mesh faces
-            If there is no valid instance, an empty list will be returned.
+        list[dict]: 3D pose inference results. Each element \
+            is the result of an instance, which contains:
+
+            - 'bbox' (ndarray[4]): instance bounding bbox
+            - 'center' (ndarray[2]): bbox center
+            - 'scale' (ndarray[2]): bbox scale
+            - 'keypoints_3d' (ndarray[K,3]): predicted 3D keypoints
+            - 'camera' (ndarray[3]): camera parameters
+            - 'vertices' (ndarray[V, 3]): predicted 3D vertices
+            - 'faces' (ndarray[F, 3]): mesh faces
+
+            If there is no valid instance, an empty list
+            will be returned.
     """
 
     assert format in ['xyxy', 'xywh']
@@ -777,7 +794,7 @@ def vis_3d_mesh_result(model, result, img=None, show=False, out_file=None):
 
     Args:
         model (nn.Module): The loaded model.
-        result (list[dict])
+        result (list[dict]): 3D mesh estimation results.
     """
     if hasattr(model, 'module'):
         model = model.module

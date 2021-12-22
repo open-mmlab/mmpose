@@ -108,8 +108,7 @@ class ShapeDiscriminator(BaseDiscriminator):
     """Discriminator for SMPL shape parameters, the inputs is (batch_size x 10)
 
     Args:
-        fc_layers (Tuple): Tuple of neuron count,
-         such as (10, 5, 1)
+        fc_layers (Tuple): Tuple of neuron count, such as (10, 5, 1)
         use_dropout (Tuple): Tuple of bool define use dropout or
             not for each layer, such as (True, True, False)
         drop_prob (Tuple): Tuple of float defined the drop prob,
@@ -170,7 +169,7 @@ class PoseDiscriminator(nn.Module):
     def forward(self, inputs):
         """Forward function.
 
-        The input is (batch_size x joint_count x 9)
+        The input is (batch_size x joint_count x 9).
         """
         # shape: batch_size x 9 x 1 x joint_count
         inputs = inputs.transpose(1, 2).unsqueeze(2).contiguous()
@@ -197,13 +196,13 @@ class FullPoseDiscriminator(BaseDiscriminator):
 
     Args:
         fc_layers (Tuple): Tuple of neuron count,
-         such as (736, 1024, 1024, 1)
+            such as (736, 1024, 1024, 1)
         use_dropout (Tuple): Tuple of bool define use dropout or not
-         for each layer, such as (True, True, False)
+            for each layer, such as (True, True, False)
         drop_prob (Tuple): Tuple of float defined the drop prob,
-         such as (0.5, 0.5, 0)
+            such as (0.5, 0.5, 0)
         use_activation(Tuple): Tuple of bool define use active
-         function or not, such as (True, True, False)
+            function or not, such as (True, True, False)
     """
 
     def __init__(self, fc_layers, use_dropout, drop_prob, use_activation):

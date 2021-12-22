@@ -11,7 +11,7 @@ from .topdown_coco_dataset import TopDownCocoDataset
 class TopDownOCHumanDataset(TopDownCocoDataset):
     """OChuman dataset for top-down pose estimation.
 
-    `Pose2Seg: Detection Free Human Instance Segmentation' CVPR'2019
+    "Pose2Seg: Detection Free Human Instance Segmentation", CVPR'2019.
     More details can be found in the `paper
     <https://arxiv.org/abs/1803.10683>`__ .
 

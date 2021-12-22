@@ -59,8 +59,9 @@ class OneEuroFilter:
     def __call__(self, x, t_e=1.0):
         """Compute the filtered signal.
 
-        parameter (cutoff, beta) from VNect
-        (http://gvv.mpi-inf.mpg.de/projects/VNect/)
+        Hyper-parameters (cutoff, beta) are from `VNect
+        <http://gvv.mpi-inf.mpg.de/projects/VNect/>`__ .
+
         Realtime Camera fps (d_cutoff) default 30.0
 
         Args:

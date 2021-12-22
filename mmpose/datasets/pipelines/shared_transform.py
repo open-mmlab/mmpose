@@ -190,7 +190,9 @@ class Albumentation:
     to get more information about pixel-level transforms.
 
     An example of ``transforms`` is as followed:
-    .. code-block::
+
+    .. code-block:: python
+
         [
             dict(
                 type='RandomBrightnessContrast',
@@ -206,6 +208,7 @@ class Albumentation:
                 ],
                 p=0.1),
         ]
+
     Args:
         transforms (list[dict]): A list of Albumentation transformations
         keymap (dict): Contains {'input key':'albumentation-style key'},
@@ -234,8 +237,10 @@ class Albumentation:
         """Import a module from albumentations.
 
         It resembles some of :func:`build_from_cfg` logic.
+
         Args:
             cfg (dict): Config dict. It should at least contain the key "type".
+
         Returns:
             obj: The constructed object.
         """
@@ -267,9 +272,11 @@ class Albumentation:
         """Dictionary mapper.
 
         Renames keys according to keymap provided.
+
         Args:
             d (dict): old dict
             keymap (dict): {'old_key':'new_key'}
+
         Returns:
             dict: new dict.
         """
@@ -503,9 +510,9 @@ class RenameKeys:
     """Rename the keys.
 
     Args:
-    key_pairs (Sequence[tuple]): Required keys to be renamed. If a tuple
-    (key_src, key_tgt) is given as an element, the item retrieved by key_src
-    will be renamed as key_tgt.
+        key_pairs (Sequence[tuple]): Required keys to be renamed.
+            If a tuple (key_src, key_tgt) is given as an element,
+            the item retrieved by key_src will be renamed as key_tgt.
     """
 
     def __init__(self, key_pairs):

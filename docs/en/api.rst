@@ -70,9 +70,11 @@ datasets
 ^^^^^^^^^^^
 .. automodule:: mmpose.datasets.datasets.top_down
     :members:
+    :noindex:
 
 .. automodule:: mmpose.datasets.datasets.bottom_up
     :members:
+    :noindex:
 
 pipelines
 ^^^^^^^^^^^
@@ -101,7 +103,7 @@ samplers
 ^^^^^^^^^^^
 .. automodule:: mmpose.datasets.samplers
     :members:
-
+    :noindex:
 
 mmpose.utils
 ---------------
