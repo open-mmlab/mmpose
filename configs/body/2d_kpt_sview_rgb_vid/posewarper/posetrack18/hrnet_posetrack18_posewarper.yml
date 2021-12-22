@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Learning Temporal Pose Estimation from Sparsely Labeled Videos
     URL: https://arxiv.org/abs/1906.04016
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/posewarper.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py
   In Collection: PoseWarper
@@ -12,7 +13,6 @@ Models:
     - HRNet
     Training Data: COCO
   Name: posewarper_hrnet_w48_posetrack18_384x288_posewarper_stage2
-  README: configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_posetrack18_posewarper.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -32,7 +32,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: posewarper_hrnet_w48_posetrack18_384x288_posewarper_stage2
-  README: configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_posetrack18_posewarper.md
   Results:
   - Dataset: COCO
     Metrics:

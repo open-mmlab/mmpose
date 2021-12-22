@@ -4,6 +4,7 @@ Collections:
     Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
       training
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/videopose3d.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_27frames_fullconv_supervised.py
   In Collection: VideoPose3D
@@ -12,7 +13,6 @@ Models:
     - VideoPose3D
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_supervised
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -26,7 +26,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_81frames_fullconv_supervised
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -40,7 +39,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -54,7 +52,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_1frame_fullconv_supervised_cpn_ft
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -68,7 +65,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_243frames_fullconv_supervised_cpn_ft
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -82,7 +78,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:
@@ -97,7 +92,6 @@ Models:
     Architecture: *id001
     Training Data: Human3.6M
   Name: video_pose_lift_videopose3d_h36m_27frames_fullconv_semi-supervised_cpn_ft
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.md
   Results:
   - Dataset: Human3.6M
     Metrics:

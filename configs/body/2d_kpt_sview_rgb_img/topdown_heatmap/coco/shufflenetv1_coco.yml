@@ -4,6 +4,7 @@ Collections:
     Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
       devices'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/shufflenetv1.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_256x192.py
   In Collection: ShufflenetV1
@@ -12,7 +13,6 @@ Models:
     - ShufflenetV1
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv1_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -29,7 +29,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv1_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.md
   Results:
   - Dataset: COCO
     Metrics:

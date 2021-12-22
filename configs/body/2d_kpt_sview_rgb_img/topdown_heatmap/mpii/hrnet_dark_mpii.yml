@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/dark.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_w32_mpii_256x256_dark.py
   In Collection: DarkPose
@@ -12,7 +13,6 @@ Models:
     - DarkPose
     Training Data: MPII
   Name: topdown_heatmap_hrnet_w32_mpii_256x256_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_dark_mpii.md
   Results:
   - Dataset: MPII
     Metrics:
@@ -26,7 +26,6 @@ Models:
     Architecture: *id001
     Training Data: MPII
   Name: topdown_heatmap_hrnet_w48_mpii_256x256_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hrnet_dark_mpii.md
   Results:
   - Dataset: MPII
     Metrics:

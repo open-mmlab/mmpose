@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/res50_mpii_trb_256x256.py
   In Collection: SimpleBaseline2D
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: MPII-TRB
   Name: topdown_heatmap_res50_mpii_trb_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:
@@ -27,7 +27,6 @@ Models:
     Architecture: *id001
     Training Data: MPII-TRB
   Name: topdown_heatmap_res101_mpii_trb_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:
@@ -42,7 +41,6 @@ Models:
     Architecture: *id001
     Training Data: MPII-TRB
   Name: topdown_heatmap_res152_mpii_trb_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii_trb/resnet_mpii_trb.md
   Results:
   - Dataset: MPII-TRB
     Metrics:
