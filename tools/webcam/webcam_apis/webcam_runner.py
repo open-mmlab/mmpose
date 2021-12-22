@@ -12,6 +12,11 @@ from .nodes import NODES
 from .utils import (BufferManager, EventManager, FrameMessage,
                     VideoEndingMessage, limit_max_fps)
 
+FRAME_BUFFER_SIZE = 30
+INPUT_BUFFER_SIZE = 30
+DISPLAY_BUFFER_SIZE = 0
+DEFAULT_USER_BUFFER_SIZE = 0
+
 
 class WebcamRunner():
     """An interface for building webcam application from config.
@@ -54,9 +59,9 @@ class WebcamRunner():
         self.logger = logging.getLogger(self.name)
 
         # Register default buffers
-        self.buffer_manager.add_buffer('_frame_', 2)
-        self.buffer_manager.add_buffer('_input_', 2)
-        self.buffer_manager.add_buffer('_display_', 2)
+        self.buffer_manager.register_buffer('_frame_', FRAME_BUFFER_SIZE)
+        self.buffer_manager.register_buffer('_input_', INPUT_BUFFER_SIZE)
+        self.buffer_manager.register_buffer('_display_', DISPLAY_BUFFER_SIZE)
 
         # Register user-defined buffers
         if user_buffers:
@@ -64,29 +69,34 @@ class WebcamRunner():
                 if isinstance(buffer, tuple):
                     buffer_name, buffer_size = buffer
                 else:
-                    buffer_name, buffer_size = buffer, 2
-                self.logger.info(
+                    buffer_name, buffer_size = buffer, DEFAULT_USER_BUFFER_SIZE
+                logging.info(
                     f'Create user buffer: {buffer_name}({buffer_size})')
-                self.buffer_manager.add_buffer(buffer_name, buffer_size)
+                self.buffer_manager.register_buffer(buffer_name, buffer_size)
+        
+        # Register runner events
+        self.event_manager.register_event('_exit_', is_keyboard=False)
 
         # Register nodes
         if not nodes:
             raise ValueError('No node is registered to the runner.')
+
+        # Build all nodes:
         for node_cfg in nodes:
-            self.logger.info(f'Create node: {node_cfg.name}({node_cfg.type})')
-
+            logging.info(f'Create node: {node_cfg.name}({node_cfg.type})')
             node = NODES.build(node_cfg)
-            node.set_runner(self)
-
-            # Check buffers required by the node
-            for buffer_info in node.input_buffers:
-                assert self.buffer_manager.has_buffer(
-                    buffer_info['buffer_name'])
-            for buffer_info in node.output_buffers:
-                assert self.buffer_manager.has_buffer(
-                    buffer_info['buffer_name'])
-
             self.node_list.append(node)
+
+            for buffer_info in node.input_buffers + node.output_buffers:
+                assert buffer_info.buffer_name in self.buffer_manager
+            for handler_info in node.registered_event_handlers:
+                self.event_manager.register_event(event_name=handler_info.event_name, is_keyboard=handler_info.is_keyboard)
+
+        # Register runner for all nodes
+        for node in self.node_list:
+            logging.info(
+                f'Register runner for node: {node_cfg.name}({node_cfg.type})')
+            node.set_runner(self)
 
     def _read_camera(self):
         """Continually read video frames and put them into buffers."""
@@ -117,7 +127,7 @@ class WebcamRunner():
                         node_name='Camera Info',
                         node_type='dummy',
                         info=self._get_camera_info())
-                    self.buffer_manager.put('_input_', input_msg)
+                    self.buffer_manager.try_put('_input_', input_msg)
 
                 else:
                     # Put a video ending signal
@@ -157,11 +167,12 @@ class WebcamRunner():
     def _on_keyboard_input(self, key):
         """Handle the keyboard input."""
 
-        self.logger.info(f'Keyboard event captured: {key}')
+        logging.info(f'Keyboard event captured: {key}')
         if key in (27, ord('q'), ord('Q')):
             self.event_manager.set('_exit_')
         else:
-            self.event_manager.set_keyboard(key)
+            logging.warn(f'Set keyboard {key}')
+            self.event_manager.set(key, is_keyboard=True)
 
     def _get_camera_info(self):
         """Return the camera information in a dict."""
@@ -184,21 +195,21 @@ class WebcamRunner():
         This method starts all nodes as well as video I/O in separate threads.
         """
         try:
-            # Create a thread to read video frames
-            t_read = Thread(target=self._read_camera, args=())
-            t_read.start()
-
             # Start node threads
             non_daemon_nodes = []
             for node in self.node_list:
                 node.start()
                 if not node.daemon:
                     non_daemon_nodes.append(node)
+            
+            # Create a thread to read video frames
+            t_read = Thread(target=self._read_camera, args=())
+            t_read.start()
 
             # Run display in the main thread
             self._display()
 
-            # joint non-daemon threads
+            # joint non-daemon nodes and runner threads
             t_read.join()
             for node in non_daemon_nodes:
                 node.join()

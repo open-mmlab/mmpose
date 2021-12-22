@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
-import weakref
 from typing import Dict, List, Optional, Union
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
@@ -20,11 +19,12 @@ class TopDownPoseEstimatorNode(Node):
                  input_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  device: str = 'cuda:0',
                  cls_ids: Optional[List] = None,
                  cls_names: Optional[List] = None,
                  bbox_thr: float = 0.5):
-        super().__init__(name=name, enable_key=enable_key)
+        super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         # Init model
         self.model = init_pose_model(
@@ -105,7 +105,7 @@ class TopDownPoseEstimatorNode(Node):
 
         pose_result = {
             'preds': pose_preds,
-            'model_ref': weakref.ref(self.model)
+            'model_cfg': self.model.cfg.copy(),
         }
 
         input_msg.add_pose_result(pose_result, tag=self.name)
