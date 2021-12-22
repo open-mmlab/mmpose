@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Stacked hourglass networks for human pose estimation
     URL: https://link.springer.com/chapter/10.1007/978-3-319-46484-8_29
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/hourglass.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass52_mpii_256x256.py
   In Collection: Hourglass
@@ -11,7 +12,6 @@ Models:
     - Hourglass
     Training Data: MPII
   Name: topdown_heatmap_hourglass52_mpii_256x256
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass_mpii.md
   Results:
   - Dataset: MPII
     Metrics:
@@ -25,7 +25,6 @@ Models:
     Architecture: *id001
     Training Data: MPII
   Name: topdown_heatmap_hourglass52_mpii_384x384
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/hourglass_mpii.md
   Results:
   - Dataset: MPII
     Metrics:

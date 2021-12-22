@@ -4,6 +4,7 @@ Collections:
     Title: 'InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose Estimation
       from a Single RGB Image'
     URL: https://link.springer.com/content/pdf/10.1007/978-3-030-58565-5_33.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/internet.md
 Models:
 - Config: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/res50_interhand3d_all_256x256.py
   In Collection: InterNet
@@ -13,7 +14,6 @@ Models:
     - ResNet
     Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
-  README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
   Results:
   - Dataset: InterHand2.6M
     Metrics:
@@ -29,7 +29,6 @@ Models:
     Architecture: *id001
     Training Data: InterHand2.6M
   Name: internet_res50_interhand3d_all_256x256
-  README: configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.md
   Results:
   - Dataset: InterHand2.6M
     Metrics:

@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/res50_coco_wholebody_256x192.py
   In Collection: SimpleBaseline2D
@@ -11,7 +12,6 @@ Models:
     - SimpleBaseline2D
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_256x192
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -33,7 +33,6 @@ Models:
     Architecture: *id001
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res50_coco_wholebody_384x288
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -55,7 +54,6 @@ Models:
     Architecture: *id001
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_256x192
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -77,7 +75,6 @@ Models:
     Architecture: *id001
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res101_coco_wholebody_384x288
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -99,7 +96,6 @@ Models:
     Architecture: *id001
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_256x192
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:
@@ -121,7 +117,6 @@ Models:
     Architecture: *id001
     Training Data: COCO-WholeBody
   Name: topdown_heatmap_res152_coco_wholebody_384x288
-  README: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.md
   Results:
   - Dataset: COCO-WholeBody
     Metrics:

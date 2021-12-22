@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Deep High-Resolution Representation Learning for Visual Recognition
     URL: https://ieeexplore.ieee.org/abstract/document/9052469/
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/hrnetv2.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_w18_wflw_256x256.py
   In Collection: HRNetv2
@@ -11,7 +12,6 @@ Models:
     - HRNetv2
     Training Data: WFLW
   Name: topdown_heatmap_hrnetv2_w18_wflw_256x256
-  README: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.md
   Results:
   - Dataset: WFLW
     Metrics:

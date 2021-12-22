@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Aggregated residual transformations for deep neural networks
     URL: http://openaccess.thecvf.com/content_cvpr_2017/html/Xie_Aggregated_Residual_Transformations_CVPR_2017_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/resnext.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_256x192.py
   In Collection: ResNext
@@ -11,7 +12,6 @@ Models:
     - ResNext
     Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -28,7 +28,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -45,7 +44,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -62,7 +60,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -79,7 +76,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -96,7 +92,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
   Results:
   - Dataset: COCO
     Metrics:

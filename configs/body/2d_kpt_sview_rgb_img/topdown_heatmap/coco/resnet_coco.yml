@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py
   In Collection: SimpleBaseline2D
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -29,7 +29,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -46,7 +45,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -63,7 +61,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -80,7 +77,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_256x192
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -97,7 +93,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_384x288
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:

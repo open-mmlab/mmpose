@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: End-to-end Recovery of Human Shape and Pose
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/hmr.md
 Models:
 - Config: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/res50_mixed_224x224.py
   In Collection: HMR
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: Human3.6M
   Name: hmr_res50_mixed_224x224
-  README: configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.md
   Results:
   - Dataset: Human3.6M
     Metrics:

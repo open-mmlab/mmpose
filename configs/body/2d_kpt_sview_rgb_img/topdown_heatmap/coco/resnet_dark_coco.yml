@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Distribution-aware coordinate representation for human pose estimation
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Zhang_Distribution-Aware_Coordinate_Representation_for_Human_Pose_Estimation_CVPR_2020_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/dark.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_dark.py
   In Collection: DarkPose
@@ -13,7 +14,6 @@ Models:
     - DarkPose
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_256x192_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -30,7 +30,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res50_coco_384x288_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -47,7 +46,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_256x192_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -64,7 +62,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res101_coco_384x288_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -81,7 +78,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_256x192_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -98,7 +94,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_res152_coco_384x288_dark
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.md
   Results:
   - Dataset: COCO
     Metrics:
