@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import weakref
 from typing import List, Optional, Union
 
 from .builder import NODES
@@ -25,7 +24,7 @@ class DetectorNode(Node):
                  device: str = 'cuda:0'):
         # Check mmdetection is installed
         assert has_mmdet, 'Please install mmdet to run the demo.'
-        super().__init__(name=name, enable_key=enable_key)
+        super().__init__(name=name, enable_key=enable_key, enable=True)
 
         # Init model
         self.model = init_detector(
@@ -54,7 +53,7 @@ class DetectorNode(Node):
             preds = preds[0]
 
         assert len(preds) == len(self.model.CLASSES)
-        result = {'preds': [], 'model_ref': weakref.ref(self.model)}
+        result = {'preds': [], 'model_cfg': self.model.cfg.copy()}
 
         for i, (cls_name, bboxes) in enumerate(zip(self.model.CLASSES, preds)):
             preds_i = [{

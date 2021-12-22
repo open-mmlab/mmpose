@@ -1,8 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
-import warnings
-import weakref
 from abc import ABCMeta, abstractmethod
+from multiprocessing import Process, queues
 from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
@@ -13,7 +12,33 @@ from mmpose.utils import StopWatch
 from ..utils import Message, limit_max_fps
 
 
-class Node(Thread, metaclass=ABCMeta):
+class BufferInfo():
+    """Dataclass for buffer information."""
+
+    def __init__(self,
+                 buffer_name: str,
+                 input_name: Optional[str] = None,
+                 essential: str = False):
+        self.buffer_name = buffer_name
+        self.input_name = input_name
+        self.essential = essential
+
+
+class EventHandlerInfo():
+    """Dataclass for event handler information."""
+
+    def __init__(self,
+                 event_name: str,
+                 handler_func: Callable,
+                 is_keyboard: bool = False,
+                 thread: Optional[Thread] = None):
+        self.event_name = event_name
+        self.handler_func = handler_func
+        self.is_keyboard = is_keyboard
+        self.thread = thread
+
+
+class Node(Process, metaclass=ABCMeta):
     """Base interface of functional module.
 
     Args:
@@ -31,6 +56,8 @@ class Node(Thread, metaclass=ABCMeta):
             Default: 30
         input_check_interval (float): Minimum interval (in millisecond) between
             checking if input is ready. Default: 0.001
+        enable (bool): Default enable/disable status. Default: True.
+        daemon (bool): Whether node is a daemon. Default: True.
     """
 
     def __init__(self,
@@ -38,32 +65,53 @@ class Node(Thread, metaclass=ABCMeta):
                  enable_key: Optional[Union[str, int]] = None,
                  max_fps: int = 30,
                  input_check_interval: float = 0.001,
+                 enable: bool = True,
                  daemon=True):
         super().__init__(name=name, daemon=daemon)
         self._runner = None
-        self._enabled = True
+        self._enabled = enable
         self.enable_key = enable_key
-        self.input_buffers = []
-        self.output_buffers = []
         self.max_fps = max_fps
         self.input_check_interval = input_check_interval
+
+        # A partitioned buffer manager the runner's buffer manager that
+        # only accesses the buffers related to the node
+        self._buffer_manager = None
+
+        # input/output buffers are a list of registered buffers' information
+        self.input_buffers = []
+        self.output_buffers = []
+
+        # Event manager is a copy of assigned runner's event manager
+        self._event_manager = None
+
+        # Event handlers is a list of registered event handler.
+        # See register_event_handler() and set_runner() for more
+        # information.
+        # Note that we recommend to handle events in nodes by registering
+        # handlers, but one can still access the raw event by _event_manager
+        self.registered_event_handlers = []
 
         # A timer to calculate node FPS
         self._timer = StopWatch(window=10)
 
-        # Event listener
-        # The key is the event name, and the value contains handler function
-        # and corresponding thread
-        self._registered_event_handler = {}
-
-        # If the node allows toggling enable, it should override the `bypass`
-        # method to define the node behavior when disabled.
+        # Register enable toggle key
         if self.enable_key:
+            # If the node allows toggling enable, it should override the
+            # `bypass` method to define the node behavior when disabled.
             if not is_method_overridden('bypass', Node, self.__class__):
                 raise NotImplementedError(
                     f'The node {self.__class__} does not support toggling'
                     'enable but got argument `enable_key`. To support toggling'
                     'enable, please override the `bypass` method of the node.')
+            
+            self.register_event_handler(
+                event_name=self.enable_key,
+                handler_func=self._toggle_enable,
+                is_keyboard=True)
+
+    def _toggle_enable(self):
+        self._enabled = not self._enabled
 
     def register_input_buffer(self,
                               buffer_name: str,
@@ -88,11 +136,7 @@ class Node(Thread, metaclass=ABCMeta):
                 inessential input will not block the processing, instead
                 a None will be fetched if the buffer is not ready.
         """
-        buffer_info = {
-            'buffer_name': buffer_name,
-            'input_name': input_name,
-            'essential': essential
-        }
+        buffer_info = BufferInfo(buffer_name, input_name, essential)
         self.input_buffers.append(buffer_info)
 
     def register_output_buffer(self, buffer_name: Union[str, List[str]]):
@@ -110,89 +154,41 @@ class Node(Thread, metaclass=ABCMeta):
             buffer_name = [buffer_name]
 
         for name in buffer_name:
-            buffer_info = {'buffer_name': name}
+            buffer_info = BufferInfo(name)
             self.output_buffers.append(buffer_info)
 
-    def register_event_handler(self, event_name: str, handler_func: Callable):
+    def register_event_handler(self,
+                               event_name,
+                               handler_func: Callable,
+                               is_keyboard=False):
         """Register an event handler. A thread will be create to listen and
         handle the event after the runner is set.
 
         Args:
-            event_name(str): The event name.
-            handler_func(callable): The event handler function, which should be
-                a collable object with no arguments or return values.
+            Args:
+            event_name (str|int): The event name. If is_keyboard==True,
+                event_name should be a str (as char) or an int (as ascii)
+            handler_func (callable): The event handler function, which should
+                be a collable object with no arguments or return values.
+            is_keyboard (bool, optional): Indicate whether it is an keyboard
+                event. If True, the argument event_name will be regarded as a
+                key indicator.
         """
-
-        self._registered_event_handler[event_name] = {
-            'handler_func': handler_func,
-            'keyboard': False,
-            'thread': None,
-        }
-
-    def register_keyboard_handler(self, key: Optional[Union[str, int]],
-                                  handler_func: Callable):
-        """Register an keyboard event handler. A thread will be create to
-        listen and handle the event after the runner is set.
-
-        Args:
-            key(str|int): .
-            handler_func(callable): The event handler function, which should be
-                a collable object with no arguments or return values.
-        """
-
-        self._registered_event_handler[key] = {
-            'handler_func': handler_func,
-            'keyboard': True,
-            'thread': None,
-        }
-
-    @property
-    def runner(self):
-        if self._runner is None:
-            warnings.warn(
-                f'Node {self.name} has not been registered to a runner, '
-                'or the runner has been destroyed.', RuntimeWarning)
-            return None
-        return self._runner()
+        handler_info = EventHandlerInfo(
+            event_name, handler_func, is_keyboard, thread=None)
+        self.registered_event_handlers.append(handler_info)
 
     def set_runner(self, runner):
-        if self._runner is not None:
-            raise RuntimeError(
-                f'Node {self.name} has been registered to a runner. '
-                'Re-registering is not allowed.')
+        # Get partitioned buffer manager
+        buffer_names = [
+            buffer.buffer_name
+            for buffer in self.input_buffers + self.output_buffers
+        ]
+        self._buffer_manager = runner.buffer_manager.get_sub_manager(
+            buffer_names)
 
-        self._runner = weakref.ref(runner)
-
-        # Register enable_key
-        if self.enable_key:
-
-            def _toggle_enable():
-                self._enabled = not self._enabled
-
-            self.register_keyboard_handler(
-                key=self.enable_key, handler_func=_toggle_enable)
-
-        # Register all event handler
-        for event, info in self._registered_event_handler.items():
-            is_keyboard = info['keyboard']
-            handler_func = info['handler_func']
-            event_manager = self.runner.event_manager
-
-            def event_listener():
-                while True:
-                    if is_keyboard:
-                        event_manager.wait_keyboard(event)
-                        handler_func()
-                        event_manager.clear_keyboard(event)
-                    else:
-                        event_manager.wait_keyboard(event)
-                        handler_func()
-                        event_manager.clear_keyboard(event)
-
-            t_event_listener = Thread(
-                target=event_listener, args=(), daemon=True)
-            t_event_listener.start()
-            info['thread'] = t_event_listener
+        # Get event manager
+        self._event_manager = runner.event_manager
 
     def _get_input_from_buffer(self) -> Tuple[bool, Optional[Dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
@@ -208,41 +204,49 @@ class Node(Thread, metaclass=ABCMeta):
                 name and the value is the Message got from the corresponding
                 buffer.
         """
+        buffer_manager = self._buffer_manager
 
-        if self.runner is None:
-            raise ValueError(f'{self.name}: Runner does not exist!')
-
-        buffer_manager = self.runner.buffer_manager
+        if buffer_manager is None:
+            raise ValueError(f'{self.name}: Runner not set!')
 
         # Check that essential buffers are ready
         for buffer_info in self.input_buffers:
-            if buffer_info['essential'] and buffer_manager.is_empty(
-                    buffer_info['buffer_name']):
+            if buffer_info.essential and buffer_manager.is_empty(
+                    buffer_info.buffer_name):
                 return False, None
 
         # Default input
         result = {
-            buffer_info['input_name']: None
+            buffer_info.input_name: None
             for buffer_info in self.input_buffers
         }
 
         for buffer_info in self.input_buffers:
             try:
-                data = buffer_manager.get(buffer_info['buffer_name'])
-            except (IndexError, KeyError):
-                if buffer_info['essential']:
+                result[buffer_info.input_name] = buffer_manager.get(
+                    buffer_info.buffer_name, block=False)
+            except queues.Empty:
+                if buffer_info.essential:
+                    # Return unsuccessful flag if any
+                    # essential input is unready
                     return False, None
-                data = None
-
-            result[buffer_info['input_name']] = data
 
         return True, result
 
-    def _send_output_to_buffers(self, output_msg):
-        """Send output of the process method to registered output buffers."""
+    def _send_output_to_buffers(self, output_msg, force=False):
+        """Send output of the process method to registered output buffers.
+
+        Args:
+            output_msg (Message): output message
+            force (bool, optional): If True, block until the output message
+                has been put into all output buffers. Default: False
+        """
         for buffer_info in self.output_buffers:
-            buffer_name = buffer_info['buffer_name']
-            self.runner.buffer_manager.put(buffer_name, output_msg)
+            buffer_name = buffer_info.buffer_name
+            if force:
+                self._buffer_manager.put(buffer_name, output_msg)
+            else:
+                self._buffer_manager.try_put(buffer_name, output_msg)
 
     @abstractmethod
     def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
@@ -299,9 +303,23 @@ class Node(Thread, metaclass=ABCMeta):
         not override this method in subclasses.
         """
 
+        # Create event listener threads
+        for handler_info in self.registered_event_handlers:
+
+            def event_listener():
+                while True:
+                    with self._event_manager.wait_and_handle(
+                            handler_info.event_name, handler_info.is_keyboard):
+                        handler_info.handler_func()
+
+            t_listener = Thread(target=event_listener, args=(), daemon=True)
+            t_listener.start()
+            handler_info.thread = t_listener
+
+        # Loop
         while True:
             # Exit
-            if self.runner.event_manager.is_set('_exit_'):
+            if self._event_manager.is_set('_exit_'):
                 self.on_exit()
                 break
 
@@ -317,7 +335,7 @@ class Node(Thread, metaclass=ABCMeta):
             # without invoking process() or bypass()
             for _, msg in input_msgs.items():
                 if isinstance(msg, VideoEndingMessage):
-                    self._send_output_to_buffers(msg)
+                    self._send_output_to_buffers(msg, force=True)
                     continue
 
             # Check if enabled
