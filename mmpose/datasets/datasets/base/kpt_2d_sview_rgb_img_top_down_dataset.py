@@ -164,7 +164,7 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
         Args:
             gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
         return np.ones([gts.shape[0], 2], dtype=np.float32)

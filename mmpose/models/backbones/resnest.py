@@ -260,8 +260,8 @@ class Bottleneck(_Bottleneck):
 class ResNeSt(ResNetV1d):
     """ResNeSt backbone.
 
-    Please refer to the `paper <https://arxiv.org/pdf/2004.08955.pdf>`_ for
-    details.
+    Please refer to the `paper <https://arxiv.org/pdf/2004.08955.pdf>`__
+    for details.
 
     Args:
         depth (int): Network depth, from {50, 101, 152, 200}.

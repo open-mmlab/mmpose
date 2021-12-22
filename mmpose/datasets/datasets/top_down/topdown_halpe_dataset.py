@@ -16,13 +16,14 @@ class TopDownHalpeDataset(TopDownCocoDataset):
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    In total, we have 136 keypoints for wholebody pose estimation.
-
     Halpe keypoint indexes::
-        0-19: 20 body keypoints
-        20-25: 6 foot keypoints
-        26-93: 68 face keypoints
+
+        0-19: 20 body keypoints,
+        20-25: 6 foot keypoints,
+        26-93: 68 face keypoints,
         94-135: 42 hand keypoints
+
+        In total, we have 136 keypoints for wholebody pose estimation.
 
     Args:
         ann_file (str): Path to the annotation file.

@@ -14,20 +14,21 @@ from .topdown_coco_dataset import TopDownCocoDataset
 class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
     """CocoWholeBodyDataset dataset for top-down pose estimation.
 
-    `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
+    "Whole-Body Human Pose Estimation in the Wild", ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/abs/2007.11858>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
-    In total, we have 133 keypoints for wholebody pose estimation.
-
     COCO-WholeBody keypoint indexes::
-        0-16: 17 body keypoints
-        17-22: 6 foot keypoints
-        23-90: 68 face keypoints
+
+        0-16: 17 body keypoints,
+        17-22: 6 foot keypoints,
+        23-90: 68 face keypoints,
         91-132: 42 hand keypoints
+
+        In total, we have 133 keypoints for wholebody pose estimation.
 
     Args:
         ann_file (str): Path to the annotation file.

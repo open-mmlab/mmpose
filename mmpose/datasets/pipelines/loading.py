@@ -9,7 +9,9 @@ from ..builder import PIPELINES
 class LoadImageFromFile:
     """Loading image(s) from file.
 
-    Required key is "image_file". Added key is "img".
+    Required key: "image_file".
+
+    Added key: "img".
 
     Args:
         to_float32 (bool): Whether to convert the loaded image to a float32

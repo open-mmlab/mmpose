@@ -10,8 +10,8 @@ from ..utils.geometry import rot6d_to_rotmat
 
 @HEADS.register_module()
 class HMRMeshHead(nn.Module):
-    """SMPL parameters regressor head of simple baseline paper
-    ref: Angjoo Kanazawa. ``End-to-end Recovery of Human Shape and Pose''.
+    """SMPL parameters regressor head of simple baseline. "End-to-end Recovery
+    of Human Shape and Pose", CVPR'2018.
 
     Args:
         in_channels (int): Number of input channels

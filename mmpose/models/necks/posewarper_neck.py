@@ -20,11 +20,10 @@ except (ImportError, ModuleNotFoundError):
 
 @NECKS.register_module()
 class PoseWarperNeck(nn.Module):
-    """PoseWarper neck. Paper ref: Bertasius, Gedas, et al. "Learning temporal
-    pose estimation from sparsely-labeled videos." arXiv preprint
-    arXiv:1906.04016 (2019).
+    """PoseWarper neck.
 
-    <``https://arxiv.org/abs/1906.04016``>
+    `"Learning temporal pose estimation from sparsely-labeled videos"
+    <https://arxiv.org/abs/1906.04016>`_.
 
     Args:
         in_channels (int): Number of input channels from backbone
@@ -34,23 +33,27 @@ class PoseWarperNeck(nn.Module):
         dilations (list|tuple): different dilations of the offset conv layers
         trans_conv_kernel (int): the kernel of the trans conv layer, which is
             used to get heatmap from the output of backbone. Default: 1
-        res_blocks_cfg (dict|None): config of residual blocks. It should
-            contain the following keys:
-                - block (str): the type of residual block, Default: 'BASIC'
-                - num_blocks (int):  the number of blocks, Default: 20
-            If None, use the default values.
+        res_blocks_cfg (dict|None): config of residual blocks. If None,
+            use the default values. If not None, it should contain the
+            following keys:
+
+            - block (str): the type of residual block, Default: 'BASIC'.
+            - num_blocks (int):  the number of blocks, Default: 20.
+
         offsets_kernel (int): the kernel of offset conv layer.
         deform_conv_kernel (int): the kernel of defomrable conv layer.
         in_index (int|Sequence[int]): Input feature index. Default: 0
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
-            'resize_concat': Multiple feature maps will be resize to the
-                same size as first one and than concat together.
-                Usually used in FCN head of HRNet.
-            'multiple_select': Multiple feature maps will be bundle into
-                a list and passed into decode head.
-            None: Only one select feature map is allowed.
             Default: None.
+
+            - 'resize_concat': Multiple feature maps will be resize to \
+                the same size as first one and than concat together. \
+                Usually used in FCN head of HRNet.
+            - 'multiple_select': Multiple feature maps will be bundle into \
+                a list and passed into decode head.
+            - None: Only one select feature map is allowed.
+
         freeze_trans_layer (bool): Whether to freeze the transition layer
             (stop grad and set eval mode). Default: True.
         norm_eval (bool): Whether to set norm layers to eval mode, namely,

@@ -17,11 +17,10 @@ except ImportError:
 
 @POSENETS.register_module()
 class PoseWarper(TopDown):
-    """Top-down pose detectors for multi-frame settings for video inputs. Paper
-    ref: Bertasius, Gedas, et al. "Learning temporal pose estimation from
-    sparsely-labeled videos." arXiv preprint:1906.04016 (2019).
+    """Top-down pose detectors for multi-frame settings for video inputs.
 
-    <``https://arxiv.org/abs/1906.04016``>
+    `"Learning temporal pose estimation from sparsely-labeled videos"
+    <https://arxiv.org/abs/1906.04016>`_.
 
     A child class of TopDown detector. The main difference between PoseWarper
     and TopDown lies in that the former takes a list of tensors as input image
@@ -76,22 +75,23 @@ class PoseWarper(TopDown):
         the outer list indicating test time augmentations.
 
         Note:
-            number of frames: F
-            batch_size: N
-            num_keypoints: K
-            num_img_channel: C (Default: 3)
-            img height: imgH
-            img width: imgW
-            heatmaps height: H
-            heatmaps weight: W
+            - number of frames: F
+            - batch_size: N
+            - num_keypoints: K
+            - num_img_channel: C (Default: 3)
+            - img height: imgH
+            - img width: imgW
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-            target (torch.Tensor[NxKxHxW]): Target heatmaps for one frame.
-            target_weight (torch.Tensor[NxKx1]): Weights across
+            imgs (list[F,torch.Tensor[N,C,imgH,imgW]]): multiple input frames
+            target (torch.Tensor[N,K,H,W]): Target heatmaps for one frame.
+            target_weight (torch.Tensor[N,K,1]): Weights across
                 different joint types.
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: paths to multiple video frames
                 - "center": center of the bbox
                 - "scale": scale of the bbox
@@ -102,8 +102,8 @@ class PoseWarper(TopDown):
             return_heatmap (bool) : Option to return heatmap.
 
         Returns:
-            dict|tuple: if `return loss` is true, then return losses.
-                Otherwise, return predicted poses, boxes, image paths
+            dict|tuple: if `return loss` is true, then return losses. \
+                Otherwise, return predicted poses, boxes, image paths \
                 and heatmaps.
         """
         if return_loss:
@@ -214,8 +214,8 @@ class PoseWarper(TopDown):
         See ``tools/get_flops.py``.
 
         Args:
-            img (torch.Tensor[NxCximgHximgW], or list/tuple of tensors):
-                multiple input frames, N >= 2
+            img (torch.Tensor[N,C,imgH,imgW], or list|tuple of tensors):
+                multiple input frames, N >= 2.
 
         Returns:
             Tensor: Output heatmaps.

@@ -16,8 +16,8 @@ from ..base import Kpt3dSviewRgbImgTopDownDataset
 class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
     """InterHand2.6M 3D dataset for top-down hand pose estimation.
 
-    `InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
-    Estimation from a Single RGB Image' Moon, Gyeongsik etal. ECCV'2020
+    "InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
+    Estimation from a Single RGB Image", ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/pdf/2008.09309.pdf>`__ .
 
@@ -147,7 +147,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         """Load dataset.
 
         Adapted from 'https://github.com/facebookresearch/InterHand2.6M/'
-                        'blob/master/data/InterHand2.6M/dataset.py'
+            'blob/master/data/InterHand2.6M/dataset.py'
         Copyright (c) FaceBook Research, under CC-BY-NC 4.0 license.
         """
         with open(self.camera_file, 'r') as f:
@@ -253,28 +253,28 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='MPJPE', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(dict))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :hand_type (np.ndarray[N, 4]): The first two dimensions are
-                    hand type, scores is the last two dimensions.
-                :rel_root_depth (np.ndarray[N]): The relative depth of left
-                    wrist and right wrist.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['Capture6/
-                    0012_aokay_upright/cam410061/image4996.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - hand_type (np.ndarray[N, 4]): The first two dimensions are \
+                    hand type, scores is the last two dimensions.
+                - rel_root_depth (np.ndarray[N]): The relative depth of left \
+                    wrist and right wrist.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['Capture6/\
+                    0012_aokay_upright/cam410061/image4996.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'MRRPE', 'MPJPE', 'Handedness_acc'.
@@ -343,8 +343,8 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         """Get accuracy of multi-label classification.
 
         Note:
-            batch_size: N
-            label_num: C
+            - batch_size: N
+            - label_num: C
 
         Args:
             outputs (np.array[N, C]): predicted multi-label.
@@ -353,7 +353,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
                 accuracy calculation.
 
         Returns:
-            accuracy (float)
+            float: mean accuracy
         """
         acc = (outputs == gts).all(axis=1)
         return np.mean(acc[masks])
@@ -367,7 +367,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
                 Options: 'MRRPE', 'MPJPE', 'Handedness_acc'.
 
         Returns:
-            List: Evaluation results for evaluation metric.
+            list: Evaluation results for evaluation metric.
         """
         info_str = []
 

@@ -141,21 +141,21 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
-        saved in `${res_folder}/result_keypoints.json`.
+        saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            num_people: P
-            num_keypoints: K
+            - num_people: P
+            - num_keypoints: K
 
         Args:
-            outputs (list(preds, scores, image_path, heatmap)):
+            outputs (list[dict]): Outputs containing the following items.
 
-                * preds (list[np.ndarray(P, K, 3+tag_num)]):
-                  Pose predictions for all people in images.
-                * scores (list[P]):
-                * image_path (list[str]): For example, ['coco/images/
-                val2017/000000397133.jpg']
-                * heatmap (np.ndarray[N, K, H, W]): model outputs.
+                - preds (list[np.ndarray(P, K, 3+tag_num)]): \
+                    Pose predictions for all people in images.
+                - scores (list[P]): List of person scores.
+                - image_path (list[str]): For example, ['coco/images/\
+                    val2017/000000397133.jpg']
+                - heatmap (np.ndarray[N, K, H, W]): model outputs.
 
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
