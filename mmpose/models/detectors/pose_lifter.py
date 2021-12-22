@@ -149,16 +149,13 @@ class PoseLifter(BasePose):
         return_loss=True.
 
         Note:
-            Note:
-            batch_size: N
-            num_input_keypoints: Ki
-            input_keypoint_dim: Ci
-            input_sequence_len: Ti
-            num_output_keypoints: Ko
-            output_keypoint_dim: Co
-            input_sequence_len: To
-
-
+            - batch_size: N
+            - num_input_keypoints: Ki
+            - input_keypoint_dim: Ci
+            - input_sequence_len: Ti
+            - num_output_keypoints: Ko
+            - output_keypoint_dim: Co
+            - input_sequence_len: To
 
         Args:
             input (torch.Tensor[NxKixCixTi]): Input keypoint coordinates.
@@ -169,9 +166,10 @@ class PoseLifter(BasePose):
             metas (list(dict)): Information about data augmentation
             return_loss (bool): Option to `return loss`. `return loss=True`
                 for training, `return loss=False` for validation & test.
+
         Returns:
-            dict|Tensor: if `reutrn_loss` is true, return losses. Otherwise
-                return predicted poses
+            dict|Tensor: If `reutrn_loss` is true, return losses. \
+                Otherwise return predicted poses.
         """
         if return_loss:
             return self.forward_train(input, target, target_weight, metas,
@@ -304,6 +302,7 @@ class PoseLifter(BasePose):
 
         Args:
             result (list[dict]): The pose estimation results containing:
+
                 - "keypoints_3d" ([K,4]): 3D keypoints
                 - "keypoints" ([K,3] or [T,K,3]): Optional for visualizing
                     2D inputs. If a sequence is given, only the last frame

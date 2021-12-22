@@ -21,7 +21,7 @@ class AEHigherResolutionHead(nn.Module):
         tag_per_joint (bool): If tag_per_joint is True,
             the dimension of tags equals to num_joints,
             else the dimension of tags is 1. Default: True
-        extra:
+        extra (dict): Configs for extra conv layers. Default: None
         num_deconv_layers (int): Number of deconv layers.
             num_deconv_layers should >= 0. Note that 0 means
             no deconv layers.
@@ -176,18 +176,18 @@ class AEHigherResolutionHead(nn.Module):
         """Calculate bottom-up keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_outputs: O
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - num_outputs: O
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            outputs (List(torch.Tensor[NxKxHxW])): Multi-scale output heatmaps.
-            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            outputs (list(torch.Tensor[N,K,H,W])): Multi-scale output heatmaps.
+            targets (List(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[N,H,W])): Masks of multi-scale target
                 heatmaps
-            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[N,M,K,2])): Joints of multi-scale target
                 heatmaps for ae loss
         """
 

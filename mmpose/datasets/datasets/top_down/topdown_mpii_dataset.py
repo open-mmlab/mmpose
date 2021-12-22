@@ -16,8 +16,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MPII Dataset for top-down pose estimation.
 
-    `2D Human Pose Estimation: New Benchmark and State of the Art Analysis'
-    CVPR'2014. More details can be found in the `paper
+    "2D Human Pose Estimation: New Benchmark and State of the Art Analysis"
+    ,CVPR'2014. More details can be found in the `paper
     <http://human-pose.mpi-inf.mpg.de/contents/andriluka14cvpr.pdf>`__ .
 
     The dataset loads raw features and apply specified transforms
@@ -144,22 +144,21 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
         Copyright (c) Microsoft, under the MIT License.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs(list(preds, boxes, image_path, heatmap)):
+            outputs (list[dict]): Outputs containing the following items.
 
-                * preds (np.ndarray[N,K,3]): The first two dimensions are
-                  coordinates, score is the third dimension of the array.
-                * boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                  , scale[1],area, score]
-                * image_paths (list[str]): For example, ['/val2017/000000
-                  397133.jpg']
-                * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
-
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['/val2017/000000\
+                    397133.jpg']
+                - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.

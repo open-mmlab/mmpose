@@ -24,14 +24,15 @@ except (ImportError, ModuleNotFoundError):
 class TopDownPoseTrack18Dataset(TopDownCocoDataset):
     """PoseTrack18 dataset for top-down pose estimation.
 
-    `Posetrack: A benchmark for human pose estimation and tracking' CVPR'2018
+    "Posetrack: A benchmark for human pose estimation and tracking", CVPR'2018.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1710.10000>`_ .
+    <https://arxiv.org/abs/1710.10000>`__ .
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
     PoseTrack2018 keypoint indexes::
+
         0: 'nose',
         1: 'head_bottom',
         2: 'head_top',
@@ -101,21 +102,22 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate posetrack keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            num_keypoints: K
+            - num_keypoints: K
 
         Args:
-            outputs (list(preds, boxes, image_paths))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
+            outputs (list[dict]): Outputs containing the following items.
+
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['val/010016_mpii_test
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['val/010016_mpii_test\
                     /000024.jpg']
-                :heatmap (np.ndarray[N, K, H, W]): model output heatmap.
-                :bbox_id (list(int))
+                - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                - bbox_id (list(int))
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 

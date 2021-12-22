@@ -35,7 +35,7 @@ class AssociativeEmbedding(BasePose):
         test_cfg (dict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained models.
         loss_pose (None): Deprecated arguments. Please use
-            `loss_keypoint` for heads instead.
+            ``loss_keypoint`` for heads instead.
     """
 
     def __init__(self,
@@ -90,24 +90,27 @@ class AssociativeEmbedding(BasePose):
                 **kwargs):
         """Calls either forward_train or forward_test depending on whether
         return_loss is True.
+
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_img_channel: C
-            img_width: imgW
-            img_height: imgH
-            heatmaps weight: W
-            heatmaps height: H
-            max_num_people: M
+            - batch_size: N
+            - num_keypoints: K
+            - num_img_channel: C
+            - img_width: imgW
+            - img_height: imgH
+            - heatmaps weight: W
+            - heatmaps height: H
+            - max_num_people: M
+
         Args:
-            img (torch.Tensor[NxCximgHximgW]): Input image.
-            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
-                                              heatmaps
-            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
-                                                 heatmaps for ae loss
-            img_metas(dict):Information about val&test
-                By default this includes:
+            img (torch.Tensor[N,C,imgH,imgW]): Input image.
+            targets (list(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
+            masks (list(torch.Tensor[N,H,W])): Masks of multi-scale target
+                heatmaps
+            joints (list(torch.Tensor[N,M,K,2])): Joints of multi-scale target
+                heatmaps for ae loss
+            img_metas (dict): Information about val & test.
+                By default it includes:
+
                 - "image_file": image path
                 - "aug_data": input
                 - "test_scale_factor": test scale factor
@@ -115,15 +118,14 @@ class AssociativeEmbedding(BasePose):
                 - "center": center of image
                 - "scale": scale of image
                 - "flip_index": flip index of keypoints
-
-            return loss(bool): Option to 'return_loss'. 'return_loss=True' for
-                training, 'return_loss=False' for validation & test
+            return loss (bool): ``return_loss=True`` for training,
+                ``return_loss=False`` for validation & test.
             return_heatmap (bool) : Option to return heatmap.
 
         Returns:
-            dict|tuple: if 'return_loss' is true, then return losses.
-              Otherwise, return predicted poses, scores, image
-              paths and heatmaps.
+            dict|tuple: if 'return_loss' is true, then return losses. \
+                Otherwise, return predicted poses, scores, image \
+                paths and heatmaps.
         """
 
         if return_loss:
@@ -146,11 +148,11 @@ class AssociativeEmbedding(BasePose):
             max_num_people: M
 
         Args:
-            img (torch.Tensor[NxCximgHximgW]): Input image.
-            targets (List(torch.Tensor[NxKxHxW])): Multi-scale target heatmaps.
-            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale target
+            img (torch.Tensor[N,C,imgH,imgW]): Input image.
+            targets (List(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[N,H,W])): Masks of multi-scale target
                                               heatmaps
-            joints (List(torch.Tensor[NxMxKx2])): Joints of multi-scale target
+            joints (List(torch.Tensor[N,M,K,2])): Joints of multi-scale target
                                                  heatmaps for ae loss
             img_metas (dict):Information about val&test
                 By default this includes:
@@ -200,10 +202,10 @@ class AssociativeEmbedding(BasePose):
         """Inference the bottom-up model.
 
         Note:
-            Batchsize = N (currently support batchsize = 1)
-            num_img_channel: C
-            img_width: imgW
-            img_height: imgH
+            - Batchsize: N (currently support batchsize = 1)
+            - num_img_channel: C
+            - img_width: imgW
+            - img_height: imgH
 
         Args:
             flip_index (List(int)):

@@ -14,8 +14,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class OneHand10KDataset(Kpt2dSviewRgbImgTopDownDataset):
     """OneHand10K dataset for top-down hand pose estimation.
 
-    `Mask-pose Cascaded CNN for 2D Hand Pose Estimation from
-    Single Color Images' TCSVT'2019
+    "Mask-pose Cascaded CNN for 2D Hand Pose Estimation from
+    Single Color Images", TCSVT'2019.
     More details can be found in the `paper
     <https://www.yangangwang.com/papers/WANG-MCC-2018-10.pdf>`__ .
 
@@ -132,23 +132,23 @@ class OneHand10KDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate onehand10k keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['Test/source/0.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['Test/source/0.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.

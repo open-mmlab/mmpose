@@ -13,7 +13,7 @@ class StopWatch:
         window (int): The sliding window size to calculate the running average
             of the time consuming.
 
-    Example::
+    Example:
         >>> from mmpose.utils import StopWatch
         >>> import time
         >>> stop_watch = StopWatch(window=10)
@@ -61,8 +61,8 @@ class StopWatch:
         """Report timing information.
 
         Returns:
-            dict: The key is the timer name and the value is the corresponding
-                average time consuming.
+            dict: The key is the timer name and the value is the \
+                corresponding average time consuming.
         """
         result = {
             name: np.mean(vals) * 1000.
@@ -74,10 +74,10 @@ class StopWatch:
         """Report timing information in texture strings.
 
         Returns:
-            list(str): Each element is the information string of a timed event,
-                in format of '{timer_name}: {time_in_ms}'. Specially, if
-                timer_name is '_FPS_', the result will be converted to
-                fps.
+            list(str): Each element is the information string of a timed \
+                event, in format of '{timer_name}: {time_in_ms}'. \
+                Specially, if timer_name is '_FPS_', the result will \
+                be converted to fps.
         """
         result = self.report()
         strings = []

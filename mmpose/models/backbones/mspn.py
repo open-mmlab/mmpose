@@ -131,7 +131,7 @@ class UpsampleUnit(nn.Module):
             hourglass-like module. Default:False
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
-        out_channels (in): Number of channels of feature output by upsample
+        out_channels (int): Number of channels of feature output by upsample
             module. Must equal to in_channels of downsample module. Default:64
     """
 
@@ -391,7 +391,7 @@ class MSPN(BaseBackbone):
         unit_channels (int): Number of Channels in an upsample unit.
             Default: 256
         num_stages (int): Number of stages in a multi-stage MSPN. Default: 4
-        num_units (int): NUmber of downsample/upsample units in a single-stage
+        num_units (int): Number of downsample/upsample units in a single-stage
             network. Default: 4
             Note: Make sure num_units == len(self.num_blocks)
         num_blocks (list): Number of bottlenecks in each

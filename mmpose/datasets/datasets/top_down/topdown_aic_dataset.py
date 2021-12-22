@@ -12,13 +12,16 @@ from .topdown_coco_dataset import TopDownCocoDataset
 class TopDownAicDataset(TopDownCocoDataset):
     """AicDataset dataset for top-down pose estimation.
 
-    `AI Challenger : A Large-scale Dataset for Going Deeper
-    in Image Understanding <https://arxiv.org/abs/1711.06475>`__
+    "AI Challenger : A Large-scale Dataset for Going Deeper
+    in Image Understanding", arXiv'2017.
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1711.06475>`__
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
     AIC keypoint indexes::
+
         0: "right_shoulder",
         1: "right_elbow",
         2: "right_wrist",

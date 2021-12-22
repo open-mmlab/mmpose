@@ -11,17 +11,19 @@ def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae,
     """Split multi-stage outputs into heatmaps & tags.
 
     Args:
-        outputs (list(torch.Tensor)): Outputs of network
+        outputs (list(Tensor)): Outputs of network
         num_joints (int): Number of joints
         with_heatmaps (list[bool]): Option to output
             heatmaps for different stages.
         with_ae (list[bool]): Option to output
             ae tags for different stages.
         select_output_index (list[int]): Output keep the selected index
+
     Returns:
         tuple: A tuple containing multi-stage outputs.
-        - heatmaps (list(torch.Tensor)): multi-stage heatmaps.
-        - tags (list(torch.Tensor)): multi-stage tags.
+
+        - list[Tensor]: multi-stage heatmaps.
+        - list[Tensor]: multi-stage tags.
     """
 
     heatmaps = []
@@ -44,12 +46,13 @@ def split_ae_outputs(outputs, num_joints, with_heatmaps, with_ae,
 def flip_feature_maps(feature_maps, flip_index=None):
     """Flip the feature maps and swap the channels.
 
-     Args:
-        feature_maps (list(torch.Tensor)): Feature maps.
-        flip_index (list(int) | None): Channel-flip indexes. If None,
-            do not flip channels.
+    Args:
+        feature_maps (list[Tensor]): Feature maps.
+        flip_index (list[int] | None): Channel-flip indexes.
+            If None, do not flip channels.
+
     Returns:
-        flipped_feature_maps (list(torch.Tensor)): Flipped feature_maps.
+        list[Tensor]: Flipped feature_maps.
     """
     flipped_feature_maps = []
     for feature_map in feature_maps:
@@ -65,15 +68,16 @@ def flip_feature_maps(feature_maps, flip_index=None):
 def _resize_average(feature_maps, align_corners, index=-1, resize_size=None):
     """Resize the feature maps and compute the average.
 
-     Args:
-        feature_maps (list(torch.Tensor)): Feature maps.
+    Args:
+        feature_maps (list[Tensor]): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size ([w, h]): The target size.
+        resize_size (list[int, int]): The target size [w, h].
+
     Returns:
-        feature_maps_avg (list(torch.Tensor)): Averaged feature_maps.
+        list[Tensor]: Averaged feature_maps.
     """
 
     if feature_maps is None:
@@ -95,15 +99,16 @@ def _resize_unsqueeze_concat(feature_maps,
                              resize_size=None):
     """Resize, unsqueeze and concatenate the feature_maps.
 
-     Args:
-        feature_maps (list(torch.Tensor)): Feature maps.
+    Args:
+        feature_maps (list[Tensor]): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size ([w, h]): The target size.
+        resize_size (list[int, int]): The target size [w, h].
+
     Returns:
-        output_feature_maps (list(torch.Tensor)): Averaged feature_maps.
+        list[Tensor]: Averaged feature_maps.
     """
     if feature_maps is None:
         return None
@@ -120,15 +125,16 @@ def _resize_unsqueeze_concat(feature_maps,
 def _resize_concate(feature_maps, align_corners, index=-1, resize_size=None):
     """Resize and concatenate the feature_maps.
 
-     Args:
-        feature_maps (list(torch.Tensor)): Feature maps.
+    Args:
+        feature_maps (list[Tensor]): Feature maps.
         align_corners (bool): Align corners when performing interpolation.
         index (int): Only used when `resize_size' is None.
             If `resize_size' is None, the target size is the size
             of the indexed feature maps.
-        resize_size ([w, h]): The target size.
+        resize_size (list[int, int]): The target size [w, h].
+
     Returns:
-        feature_map_list (list(torch.Tensor)): Averaged feature_maps.
+        list[Tensor]: Averaged feature_maps.
     """
     if feature_maps is None:
         return None
@@ -168,31 +174,30 @@ def aggregate_stage_flip(feature_maps,
     resize them to base sizes.
 
     Args:
-        feature_maps (list(torch.Tensor)): feature_maps can be heatmaps,
+        feature_maps (list[Tensor]): feature_maps can be heatmaps,
             tags, and pafs.
-        feature_maps_flip (list(torch.Tensor) | None): flipped feature_maps.
+        feature_maps_flip (list[Tensor] | None): flipped feature_maps.
             feature maps can be heatmaps, tags, and pafs.
         project2image (bool): Option to resize to base scale.
-        size_projected ([w, h]): Base size of heatmaps.
+        size_projected (list[int, int]): Base size of heatmaps [w, h].
         align_corners (bool): Align corners when performing interpolation.
         aggregate_stage (str): Methods to aggregate multi-stage feature maps.
-            Options: 'concat', 'average'.
-            'concat': Concatenate the original and the flipped feature maps.
-            'average': Get the average of the original and the flipped
-                feature maps..
-            Default: 'concat.
+            Options: 'concat', 'average'. Default: 'concat.
+
+            - 'concat': Concatenate the original and the flipped feature maps.
+            - 'average': Get the average of the original and the flipped
+                feature maps.
         aggregate_flip (str): Methods to aggregate the original and
-            the flipped feature maps.
-            Options: 'concat', 'average', 'none'.
-            'concat': Concatenate the original and the flipped feature maps.
-            'average': Get the average of the original and the flipped
-                feature maps..
-            'none': no flipped feature maps.
+            the flipped feature maps. Options: 'concat', 'average', 'none'.
             Default: 'average.
 
+            - 'concat': Concatenate the original and the flipped feature maps.
+            - 'average': Get the average of the original and the flipped
+                feature maps..
+            - 'none': no flipped feature maps.
+
     Returns:
-        - output_feature_maps (List(torch.Tensor[NxKxWxH])):
-            Aggregated feature maps.
+        list[Tensor]: Aggregated feature maps with shape [NxKxWxH].
     """
 
     if feature_maps_flip is None:
@@ -258,17 +263,18 @@ def aggregate_scale(feature_maps_list,
         heatmap height: H
 
     Args:
-        feature_maps_list (list(torch.Tensor)): Aggregated feature maps.
+        feature_maps_list (list[Tensor]): Aggregated feature maps.
         project2image (bool): Option to resize to base scale.
         align_corners (bool): Align corners when performing interpolation.
         aggregate_scale (str): Methods to aggregate multi-scale feature maps.
             Options: 'average', 'unsqueeze_concat'.
-            'average': Get the average of the feature maps.
-            'unsqueeze_concat': Concatenate the feature maps along new axis.
-            Default: 'average.
 
-    Return:
-        - output_feature_maps (torch.Tensor): Aggregated feature maps.
+            - 'average': Get the average of the feature maps.
+            - 'unsqueeze_concat': Concatenate the feature maps along new axis.
+                Default: 'average.
+
+    Returns:
+        Tensor: Aggregated feature maps.
     """
 
     if aggregate_scale == 'average':
@@ -299,7 +305,7 @@ def get_group_preds(grouped_joints,
         heatmap_size (np.ndarray[2, ]): Size of the destination heatmaps.
         use_udp (bool): Unbiased data processing.
              Paper ref: Huang et al. The Devil is in the Details: Delving into
-             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+             Unbiased Data Processing for Human Pose Estimation (CVPR'2020).
 
     Returns:
         list: List of the pose result for each person.
