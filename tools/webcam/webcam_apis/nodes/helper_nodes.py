@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import time
 from queue import Full, Queue
 from threading import Thread
@@ -28,7 +29,7 @@ class ModelResultBindingNode(Node):
                  result_buffer: str,
                  output_buffer: Union[str, List[str]],
                  synchronous: bool = False):
-        super().__init__(name=name)
+        super().__init__(name=name, enable=True)
         self.synchronous = synchronous
 
         # Cache the latest model result
@@ -103,6 +104,7 @@ class MonitorNode(Node):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = False,
                  x_offset=20,
                  y_offset=20,
                  y_delta=15,
@@ -111,7 +113,7 @@ class MonitorNode(Node):
                  text_scale=0.4,
                  style='simple',
                  ignore_items: Optional[List[str]] = None):
-        super().__init__(name=name, enable_key=enable_key)
+        super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         self.x_offset = x_offset
         self.y_offset = y_offset
@@ -127,9 +129,6 @@ class MonitorNode(Node):
 
         self.register_input_buffer(frame_buffer, 'frame', essential=True)
         self.register_output_buffer(output_buffer)
-
-        # Set disabled as default
-        self._enabled = False
 
     def process(self, input_msgs):
         frame_msg = input_msgs['frame']
@@ -236,7 +235,7 @@ class RecorderNode(Node):
         out_video_codec: str = 'mp4v',
         buffer_size: int = 30,
     ):
-        super().__init__(name=name, enable_key=None, daemon=False)
+        super().__init__(name=name, enable_key=None, enable=True, daemon=False)
 
         self.queue = Queue(maxsize=buffer_size)
         self.out_video_file = out_video_file
@@ -262,9 +261,9 @@ class RecorderNode(Node):
             try:
                 self.queue.put(img, timeout=1)
                 img_queued = True
-                self.runner.logger.warn('Video recorder received one frame!')
+                logging.info('Video recorder received one frame!')
             except Full:
-                self.runner.logger.warn('Video recorder jamed!')
+                logging.warn('Video recorder jamed!')
 
         return frame_msg
 
@@ -287,7 +286,7 @@ class RecorderNode(Node):
 
             self.vwriter.write(img)
 
-        self.runner.logger.warn('Video recorder released!')
+        logging.warn('Video recorder released!')
         if self.vwriter is not None:
             self.vwriter.release()
 
@@ -302,6 +301,6 @@ class RecorderNode(Node):
 
         if self.t_record.is_alive():
             # Force to release self.vwriter
-            self.runner.logger.warn('Video recorder forced release!')
+            logging.warn('Video recorder forced release!')
             if self.vwriter is not None:
                 self.vwriter.release()

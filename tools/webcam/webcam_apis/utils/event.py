@@ -1,39 +1,57 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import defaultdict
-from threading import Event
+from contextlib import contextmanager
+from multiprocessing import Event
+from typing import Optional
 
 
 class EventManager():
 
     def __init__(self):
-        self._events = defaultdict(Event)
+        self._events = {}
+    
+    def register_event(self, event_name: str = None, is_keyboard: bool = False):
+        if is_keyboard:
+            event_name = self._get_keyboard_event_name(event_name)
+        self._events[event_name] = Event()
 
-    def set(self, name):
-        return self._events[name].set()
+    def set(self, event_name: str = None, is_keyboard: bool = False):
+        if is_keyboard:
+            event_name = self._get_keyboard_event_name(event_name)
+        return self._events[event_name].set()
 
-    def wait(self, name):
-        return self._events[name].wait()
+    def wait(self,
+             event_name: str = None,
+             is_keyboard: Optional[bool] = False,
+             timeout: Optional[float] = None):
+        if is_keyboard:
+            event_name = self._get_keyboard_event_name(event_name)
+        return self._events[event_name].wait(timeout)
 
-    def is_set(self, name):
-        return self._events[name].is_set()
+    def is_set(self,
+               event_name: str = None,
+               is_keyboard: Optional[bool] = False):
+        if is_keyboard:
+            event_name = self._get_keyboard_event_name(event_name)
+        return self._events[event_name].is_set()
 
-    def clear(self, name):
-        return self._events[name].clear()
+    def clear(self,
+              event_name: str = None,
+              is_keyboard: Optional[bool] = False):
+        if is_keyboard:
+            event_name = self._get_keyboard_event_name(event_name)
+        return self._events[event_name].clear()
 
     @staticmethod
-    def _get_keyboard_event(key):
-        key = ord(key) if isinstance(key, str) else key
-        event = f'keyboard_{key}'
-        return event
+    def _get_keyboard_event_name(key):
+        return f'_keyboard_{chr(key) if isinstance(key,int) else key}'
 
-    def set_keyboard(self, key):
-        return self.set(self._get_keyboard_event(key))
-
-    def wait_keyboard(self, key):
-        return self.wait(self._get_keyboard_event(key))
-
-    def is_set_keyboard(self, key):
-        return self.is_set(self._get_keyboard_event(key))
-
-    def clear_keyboard(self, key):
-        return self.clear(self._get_keyboard_event(key))
+    @contextmanager
+    def wait_and_handle(self,
+                        event_name: str = None,
+                        is_keyboard: Optional[bool] = False):
+        self.wait(event_name, is_keyboard)
+        try:
+            yield
+        finally:
+            self.clear(event_name, is_keyboard)
