@@ -285,16 +285,16 @@ class Interhand3DHead(nn.Module):
 
     Args:
         keypoint_head_cfg (dict): Configs of Heatmap3DHead for hand
-        keypoint estimation.
+            keypoint estimation.
         root_head_cfg (dict): Configs of Heatmap1DHead for relative
-        hand root depth estimation.
+            hand root depth estimation.
         hand_type_head_cfg (dict): Configs of MultilabelClassificationHead
-        for hand type classification.
+            for hand type classification.
         loss_keypoint (dict): Config for keypoint loss. Default: None.
         loss_root_depth (dict): Config for relative root depth loss.
-        Default: None.
+            Default: None.
         loss_hand_type (dict): Config for hand type classification
-        loss. Default: None.
+            loss. Default: None.
     """
 
     def __init__(self,
@@ -338,7 +338,7 @@ class Interhand3DHead(nn.Module):
             output (list[Tensor]): a list of outputs from multiple heads.
             target (list[Tensor]): a list of targets for multiple heads.
             target_weight (list[Tensor]): a list of targets weight for
-            multiple heads.
+                multiple heads.
         """
         losses = dict()
 
@@ -369,7 +369,7 @@ class Interhand3DHead(nn.Module):
             output (list[Tensor]): a list of outputs from multiple heads.
             target (list[Tensor]): a list of targets for multiple heads.
             target_weight (list[Tensor]): a list of targets weight for
-            multiple heads.
+                multiple heads.
         """
         accuracy = dict()
         avg_acc = multilabel_classification_accuracy(
@@ -399,7 +399,7 @@ class Interhand3DHead(nn.Module):
             heatmaps, relative root depth and hand type.
 
         Args:
-            x (torch.Tensor[NxKxHxW]): Input features.
+            x (torch.Tensor[N,K,H,W]): Input features.
             flip_pairs (None | list[tuple()):
                 Pairs of keypoints which are mirrored.
         """
@@ -446,18 +446,18 @@ class Interhand3DHead(nn.Module):
         Args:
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
                 - "heatmap3d_depth_bound": depth bound of hand keypoint
-                 3D heatmap
+                    3D heatmap
                 - "root_depth_bound": depth bound of relative root depth
-                 1D heatmap
-
+                    1D heatmap
             output (list[np.ndarray]): model predicted 3D heatmaps, relative
-            root depth and hand type.
+                root depth and hand type.
         """
 
         batch_size = len(img_metas)

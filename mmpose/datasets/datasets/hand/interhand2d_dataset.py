@@ -15,8 +15,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
     """InterHand2.6M 2D dataset for top-down hand pose estimation.
 
-    `InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
-    Estimation from a Single RGB Image' Moon, Gyeongsik etal. ECCV'2020
+    "InterHand2.6M: A Dataset and Baseline for 3D Interacting Hand Pose
+    Estimation from a Single RGB Image", ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/pdf/2008.09309.pdf>`__ .
 
@@ -100,7 +100,7 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         coordinates.
 
         Note:
-            N: number of joints
+            - N: number of joints
 
         Args:
             cam_coord (ndarray[N, 3]): 3D joints coordinates
@@ -124,7 +124,7 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         coordinates.
 
         Note:
-            N: number of joints
+            - N: number of joints
 
         Args:
             world_coord (ndarray[3, N]): 3D joints coordinates
@@ -143,7 +143,7 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         """Load dataset.
 
         Adapted from 'https://github.com/facebookresearch/InterHand2.6M/'
-                        'blob/master/data/InterHand2.6M/dataset.py'
+            'blob/master/data/InterHand2.6M/dataset.py'
         Copyright (c) FaceBook Research, under CC-BY-NC 4.0 license.
         """
         with open(self.camera_file, 'r') as f:
@@ -231,28 +231,24 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
-        will be saved in `${res_folder}/result_keypoints.json`.
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['C', 'a', 'p', 't',
-                    'u', 'r', 'e', '1', '2', '/', '0', '3', '9', '0', '_',
-                    'd', 'h', '_', 't', 'o', 'u', 'c', 'h', 'R', 'O', 'M',
-                    '/', 'c', 'a', 'm', '4', '1', '0', '2', '0', '9', '/',
-                    'i', 'm', 'a', 'g', 'e', '6', '2', '4', '3', '4', '.',
-                    'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['Capture12/\
+                    0390_dh_touchROM/cam410209/image62434.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.

@@ -43,6 +43,7 @@ class TopdownHeatmapBaseHead(nn.Module):
         Args:
             img_metas (list(dict)): Information about data augmentation
                 By default this includes:
+
                 - "image_file: path to the image file
                 - "center": center of the bbox
                 - "scale": scale of the bbox

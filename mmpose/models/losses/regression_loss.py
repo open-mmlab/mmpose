@@ -28,9 +28,9 @@ class SmoothL1Loss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            dimension of keypoints: D (D=2 or D=3)
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
 
         Args:
             output (torch.Tensor[N, K, D]): Output regression.
@@ -80,9 +80,9 @@ class WingLoss(nn.Module):
         """Criterion of wingloss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            dimension of keypoints: D (D=2 or D=3)
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
 
         Args:
             pred (torch.Tensor[N, K, D]): Output regression.
@@ -98,14 +98,14 @@ class WingLoss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            dimension of keypoints: D (D=2 or D=3)
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
 
         Args:
             output (torch.Tensor[N, K, D]): Output regression.
             target (torch.Tensor[N, K, D]): Target regression.
-            target_weight (torch.Tensor[N, K, D]):
+            target_weight (torch.Tensor[N,K,D]):
                 Weights across different joint types.
         """
         if self.use_target_weight:
@@ -215,14 +215,14 @@ class MPJPELoss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            dimension of keypoints: D (D=2 or D=3)
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
 
         Args:
             output (torch.Tensor[N, K, D]): Output regression.
             target (torch.Tensor[N, K, D]): Target regression.
-            target_weight (torch.Tensor[N, K, D]):
+            target_weight (torch.Tensor[N,K,D]):
                 Weights across different joint types.
         """
 
@@ -250,8 +250,8 @@ class L1Loss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 2]): Output regression.
@@ -283,8 +283,8 @@ class MSELoss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 2]): Output regression.
@@ -328,9 +328,9 @@ class BoneLoss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            dimension of keypoints: D (D=2 or D=3)
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
 
         Args:
             output (torch.Tensor[N, K, D]): Output regression.
@@ -361,8 +361,8 @@ class SemiSupervisionLoss(nn.Module):
     """Semi-supervision loss for unlabeled data. It is composed of projection
     loss and bone loss.
 
-     Paper ref: `3D human pose estimation in video with temporal convolutions
-     and semi-supervised training` Dario Pavllo et al. CVPR'2019.
+    Paper ref: `3D human pose estimation in video with temporal convolutions
+    and semi-supervised training` Dario Pavllo et al. CVPR'2019.
 
     Args:
         joint_parents (list): Indices of each joint's parent joint.

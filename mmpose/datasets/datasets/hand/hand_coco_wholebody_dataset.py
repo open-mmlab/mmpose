@@ -14,7 +14,7 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class HandCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
     """CocoWholeBodyDataset for top-down hand pose estimation.
 
-    `Whole-Body Human Pose Estimation in the Wild' ECCV'2020
+    "Whole-Body Human Pose Estimation in the Wild", ECCV'2020.
     More details can be found in the `paper
     <https://arxiv.org/abs/2007.11858>`__ .
 
@@ -137,23 +137,23 @@ class HandCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate COCO-WholeBody Hand keypoint results. The pose prediction
-        results will be saved in `${res_folder}/result_keypoints.json`.
+        results will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['Test/source/0.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['Test/source/0.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.

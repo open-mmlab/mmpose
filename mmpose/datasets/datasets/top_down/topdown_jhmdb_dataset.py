@@ -16,14 +16,16 @@ from .topdown_coco_dataset import TopDownCocoDataset
 class TopDownJhmdbDataset(TopDownCocoDataset):
     """JhmdbDataset dataset for top-down pose estimation.
 
-    `Towards understanding action recognition
-     <https://openaccess.thecvf.com/content_iccv_2013/papers/
-     Jhuang_Towards_Understanding_Action_2013_ICCV_paper.pdf>`__
+    "Towards understanding action recognition", ICCV'2013.
+    More details can be found in the `paper
+    <https://openaccess.thecvf.com/content_iccv_2013/papers/\
+    Jhuang_Towards_Understanding_Action_2013_ICCV_paper.pdf>`__
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 
     sub-JHMDB keypoint indexes::
+
         0: "neck",
         1: "belly",
         2: "head",
@@ -273,20 +275,20 @@ class TopDownJhmdbDataset(TopDownCocoDataset):
         will be saved in `${res_folder}/result_keypoints.json`.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_path (list[str])
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_path (list[str])
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'tPCK'.

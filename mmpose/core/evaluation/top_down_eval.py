@@ -24,8 +24,8 @@ def _calc_distances(preds, targets, mask, normalize):
         normalize (np.ndarray[N, D]): Typical value is heatmap_size
 
     Returns:
-        np.ndarray[K, N]: The normalized distances.
-          If target keypoints are missing, the distance is -1.
+        np.ndarray[K, N]: The normalized distances. \
+            If target keypoints are missing, the distance is -1.
     """
     N, K, _ = preds.shape
     # set mask=0 when normalize==0
@@ -50,8 +50,8 @@ def _distance_acc(distances, thr=0.5):
         thr (float): Threshold of the distances.
 
     Returns:
-        float: Percentage of distances below the threshold.
-          If all target keypoints are missing, return -1.
+        float: Percentage of distances below the threshold. \
+            If all target keypoints are missing, return -1.
     """
     distance_valid = distances != -1
     num_distance_valid = distance_valid.sum()
@@ -110,6 +110,7 @@ def _get_max_preds_3d(heatmaps):
 
     Returns:
         tuple: A tuple containing aggregated results.
+
         - preds (np.ndarray[N, K, 3]): Predicted keypoint location.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
@@ -143,10 +144,10 @@ def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
         The threshold (thr) of the normalized distance is commonly set
         as 0.05, 0.1 or 0.2 etc.
 
-        batch_size: N
-        num_keypoints: K
-        heatmap height: H
-        heatmap width: W
+        - batch_size: N
+        - num_keypoints: K
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         output (np.ndarray[N, K, H, W]): Model output heatmaps.
@@ -186,8 +187,8 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
         The threshold (thr) of the normalized distance is commonly set
         as 0.05, 0.1 or 0.2 etc.
 
-        batch_size: N
-        num_keypoints: K
+        - batch_size: N
+        - num_keypoints: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -219,8 +220,8 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
     averaged accuracy across all keypoints for coordinates.
 
     Note:
-        batch_size: N
-        num_keypoints: K
+        - batch_size: N
+        - num_keypoints: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -250,8 +251,8 @@ def keypoint_nme(pred, gt, mask, normalize_factor):
     """Calculate the normalized mean error (NME).
 
     Note:
-        batch_size: N
-        num_keypoints: K
+        - batch_size: N
+        - num_keypoints: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -273,8 +274,8 @@ def keypoint_epe(pred, gt, mask):
     """Calculate the end-point error.
 
     Note:
-        batch_size: N
-        num_keypoints: K
+        - batch_size: N
+        - num_keypoints: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -298,8 +299,8 @@ def _taylor(heatmap, coord):
     """Distribution aware coordinate decoding method.
 
     Note:
-        heatmap height: H
-        heatmap width: W
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         heatmap (np.ndarray[H, W]): Heatmap of a particular joint type.
@@ -338,11 +339,12 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     Representation for Human Pose Estimation (CVPR 2020).
 
     Note:
-        batch size: B
-        num keypoints: K
-        num persons: N
-        height of heatmaps: H
-        width of heatmaps: W
+        - batch size: B
+        - num keypoints: K
+        - num persons: N
+        - height of heatmaps: H
+        - width of heatmaps: W
+
         B=1 for bottom_up paradigm where all persons share the same heatmap.
         B=N for top_down paradigm where each person has its own heatmaps.
 
@@ -352,7 +354,7 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
         kernel (int): Gaussian kernel size (K) for modulation.
 
     Returns:
-        res (np.ndarray[N, K, 2]): Refined coordinates.
+        np.ndarray([N, K, 2]): Refined coordinates.
     """
     if not isinstance(batch_heatmaps, np.ndarray):
         batch_heatmaps = batch_heatmaps.cpu().numpy()
@@ -427,10 +429,10 @@ def _gaussian_blur(heatmaps, kernel=11):
      sigma~=1 if k=3;
 
     Note:
-        batch_size: N
-        num_keypoints: K
-        heatmap height: H
-        heatmap width: W
+        - batch_size: N
+        - num_keypoints: K
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         heatmaps (np.ndarray[N, K, H, W]): model predicted heatmaps.
@@ -439,7 +441,7 @@ def _gaussian_blur(heatmaps, kernel=11):
             K=17 for sigma=3 and k=11 for sigma=2.
 
     Returns:
-        np.ndarray[N, K, H, W]: Modulated heatmap distribution.
+        np.ndarray ([N, K, H, W]): Modulated heatmap distribution.
     """
     assert kernel % 2 == 1
 
@@ -465,8 +467,8 @@ def keypoints_from_regression(regression_preds, center, scale, img_size):
     them back to the image.
 
     Note:
-        batch_size: N
-        num_keypoints: K
+        - batch_size: N
+        - num_keypoints: K
 
     Args:
         regression_preds (np.ndarray[N, K, 2]): model prediction.
@@ -475,10 +477,11 @@ def keypoints_from_regression(regression_preds, center, scale, img_size):
             wrt height/width.
         img_size (list(img_width, img_height)): model input image size.
 
-
     Returns:
-        preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
-        maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+        tuple:
+
+        - preds (np.ndarray[N, K, 2]): Predicted keypoint location in images.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
     N, K, _ = regression_preds.shape
     preds, maxvals = regression_preds, np.ones((N, K, 1), dtype=np.float32)
@@ -505,10 +508,10 @@ def keypoints_from_heatmaps(heatmaps,
     the image.
 
     Note:
-        batch size: N
-        num keypoints: K
-        heatmap height: H
-        heatmap width: W
+        - batch size: N
+        - num keypoints: K
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         heatmaps (np.ndarray[N, K, H, W]): model predicted heatmaps.
@@ -648,11 +651,11 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
     to the image.
 
     Note:
-        batch size: N
-        num keypoints: K
-        heatmap depth size: D
-        heatmap height: H
-        heatmap width: W
+        - batch size: N
+        - num keypoints: K
+        - heatmap depth size: D
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         heatmaps (np.ndarray[N, K, D, H, W]): model predicted heatmaps.
@@ -663,8 +666,8 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
     Returns:
         tuple: A tuple containing keypoint predictions and scores.
 
-        - preds (np.ndarray[N, K, 3]): Predicted 3d keypoint location
-        in images.
+        - preds (np.ndarray[N, K, 3]): Predicted 3d keypoint location \
+            in images.
         - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
     """
     N, K, D, H, W = heatmaps.shape
@@ -678,9 +681,10 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
 
 def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
     """Get multi-label classification accuracy.
-    Notes:
-        batch size: N
-        label number: L
+
+    Note:
+        - batch size: N
+        - label number: L
 
     Args:
         pred (np.ndarray[N, L, 2]): model predicted labels.
@@ -689,7 +693,7 @@ def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
         ground-truth labels.
 
     Returns:
-        acc (float): multi-label classification accuracy.
+        float: multi-label classification accuracy.
     """
     # we only compute accuracy on the samples with ground-truth of all labels.
     valid = (mask > 0).min(axis=1) if mask.ndim == 2 else (mask > 0)
