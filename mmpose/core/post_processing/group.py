@@ -278,6 +278,84 @@ class HeatmapParser:
         return results
 
     @staticmethod
+    def refine_torch(heatmap, tag, keypoints, use_udp=False):
+        """Given initial keypoint predictions, we identify missing joints.
+
+        Note:
+            number of keypoints: K
+            heatmap height: H
+            heatmap width: W
+            dim of tags: L
+                If use flip testing, L=2; else L=1.
+
+        Args:
+            heatmap: torch.Tensor(K, H, W).
+            tag: torch.Tensor(K, H, W) |  torch.Tensor(K, H, W, L)
+            keypoints: np.ndarray of size (K, 3 + L)
+                        last dim is (x, y, score, tag).
+            use_udp: bool-unbiased data processing
+
+        Returns:
+            np.ndarray: The refined keypoints.
+        """
+        K, H, W = heatmap.shape
+        if len(tag.shape) == 3:
+            tag = tag[..., None]
+        
+        tags = []
+        for i in range(K):
+            if keypoints[i, 2] > 0:
+                # save tag value of detected keypoint
+                x, y = keypoints[i][:2].astype(int)
+                x = np.clip(x, 0, W - 1)
+                y = np.clip(y, 0, H - 1)
+                tags.append(tag[i, y, x].cpu().numpy())
+        
+        # mean tag of current detected people
+        prev_tag = np.mean(tags, axis = 0)
+        results = []
+
+        for _heatmap, _tag in zip(heatmap, tag):
+            # distance of all tag values with mean tag of
+            # current detected people
+            distance_tag = (((_tag -
+                              torch.Tensor(prev_tag[None, None, :]).to(_tag.device))**2).sum(2)**0.5)
+            norm_heatmap = _heatmap - torch.round(distance_tag)
+
+            # find maximum position
+            y, x = np.unravel_index(torch.argmax(norm_heatmap).cpu().numpy(), _heatmap.shape)
+            xx = x.copy()
+            yy = y.copy()
+            # detection score at maximum position
+            val = _heatmap[y, x].cpu().numpy()
+            if not use_udp:
+                # offset by 0.5
+                x += 0.5
+                y += 0.5
+
+            # add a quarter offset
+            if _heatmap[yy, min(W - 1, xx + 1)] > _heatmap[yy, max(0, xx - 1)]:
+                x += 0.25
+            else:
+                x -= 0.25
+
+            if _heatmap[min(H - 1, yy + 1), xx] > _heatmap[max(0, yy - 1), xx]:
+                y += 0.25
+            else:
+                y -= 0.25
+
+            results.append((x, y, val))
+        results = np.array(results)
+
+        if results is not None:
+            for i in range(K):
+                # add keypoint if it is not detected
+                if results[i, 2] > 0 and keypoints[i, 2] == 0:
+                    keypoints[i, :3] = results[i, :3]
+
+        return keypoints
+
+    @staticmethod
     def refine(heatmap, tag, keypoints, use_udp=False):
         """Given initial keypoint predictions, we identify missing joints.
 
@@ -390,17 +468,30 @@ class HeatmapParser:
 
         scores = [i[:, 2].mean() for i in results[0]]
 
+        '''
         if refine:
             results = results[0]
             # for every detected person
             heatmap_numpy = heatmaps[0].cpu().numpy()
             tag_numpy = tags[0].cpu().numpy()
+            if not self.tag_per_joint:
+                tag_numpy = np.tile(tag_numpy,
+                                    (self.params.num_joints, 1, 1, 1))
             for i in range(len(results)):
-                if not self.tag_per_joint:
-                    tag_numpy = np.tile(tag_numpy,
-                                        (self.params.num_joints, 1, 1, 1))
                 results[i] = self.refine(
                     heatmap_numpy, tag_numpy, results[i], use_udp=self.use_udp)
             results = [results]
+        '''
+
+        if refine:
+            results = results[0]
+            heatmap = heatmaps[0]
+            tag = tags[0]
+            if not self.tag_per_joint:
+                tag = torch.tile(tag, (self.params.num_joints, 1, 1, 1))
+            for i in range(len(results)):
+                results[i] = self.refine_torch(
+                    heatmap, tag, results[i], use_udp=self.use_udp)
+            results = [results] 
 
         return results, scores
