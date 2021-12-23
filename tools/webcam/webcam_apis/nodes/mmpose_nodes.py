@@ -27,8 +27,9 @@ class TopDownPoseEstimatorNode(Node):
         super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         # Init model
-        self.model = init_pose_model(
-            model_config, model_checkpoint, device=device.lower())
+        self.model_config = model_config
+        self.model_checkpoint = model_checkpoint
+        self.device = device.lower()
 
         self.cls_ids = cls_ids
         self.cls_names = cls_names
@@ -44,6 +45,12 @@ class TopDownPoseEstimatorNode(Node):
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', essential=True)
         self.register_output_buffer(output_buffer)
+
+    def on_start(self):
+        self.model = init_pose_model(
+            self.model_config,
+            self.model_checkpoint,
+            device=self.device.lower())
 
     def bypass(self, input_msgs):
         return input_msgs['input']

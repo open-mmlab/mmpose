@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 import time
 from abc import ABCMeta, abstractmethod
 from multiprocessing import Process, queues
@@ -24,18 +25,16 @@ class BufferInfo():
         self.essential = essential
 
 
-class EventHandlerInfo():
+class EventInfo():
     """Dataclass for event handler information."""
 
     def __init__(self,
                  event_name: str,
                  handler_func: Callable,
-                 is_keyboard: bool = False,
-                 thread: Optional[Thread] = None):
+                 is_keyboard: bool = False):
         self.event_name = event_name
         self.handler_func = handler_func
         self.is_keyboard = is_keyboard
-        self.thread = thread
 
 
 class Node(Process, metaclass=ABCMeta):
@@ -78,19 +77,22 @@ class Node(Process, metaclass=ABCMeta):
         # only accesses the buffers related to the node
         self._buffer_manager = None
 
-        # input/output buffers are a list of registered buffers' information
-        self.input_buffers = []
-        self.output_buffers = []
+        # Input/output buffers are a list of registered buffers' information
+        self._input_buffers = []
+        self._output_buffers = []
 
         # Event manager is a copy of assigned runner's event manager
         self._event_manager = None
 
-        # Event handlers is a list of registered event handler.
-        # See register_event_handler() and set_runner() for more
-        # information.
+        # A list of registered event information
+        # See register_event() for more information
         # Note that we recommend to handle events in nodes by registering
         # handlers, but one can still access the raw event by _event_manager
-        self.registered_event_handlers = []
+        self._registered_events = []
+
+        # A list of (listener_threads, event_info)
+        # See set_runner() for more information
+        self._event_listener_threads = []
 
         # A timer to calculate node FPS
         self._timer = StopWatch(window=10)
@@ -104,11 +106,19 @@ class Node(Process, metaclass=ABCMeta):
                     f'The node {self.__class__} does not support toggling'
                     'enable but got argument `enable_key`. To support toggling'
                     'enable, please override the `bypass` method of the node.')
-            
-            self.register_event_handler(
+
+            self.register_event(
                 event_name=self.enable_key,
                 handler_func=self._toggle_enable,
                 is_keyboard=True)
+
+    @property
+    def registered_buffers(self):
+        return self._input_buffers + self._output_buffers
+
+    @property
+    def registered_events(self):
+        return self._registered_events.copy()
 
     def _toggle_enable(self):
         self._enabled = not self._enabled
@@ -137,7 +147,7 @@ class Node(Process, metaclass=ABCMeta):
                 a None will be fetched if the buffer is not ready.
         """
         buffer_info = BufferInfo(buffer_name, input_name, essential)
-        self.input_buffers.append(buffer_info)
+        self._input_buffers.append(buffer_info)
 
     def register_output_buffer(self, buffer_name: Union[str, List[str]]):
         """Register one or multiple output buffers, so that the Node can
@@ -155,14 +165,15 @@ class Node(Process, metaclass=ABCMeta):
 
         for name in buffer_name:
             buffer_info = BufferInfo(name)
-            self.output_buffers.append(buffer_info)
+            self._output_buffers.append(buffer_info)
 
-    def register_event_handler(self,
-                               event_name,
-                               handler_func: Callable,
-                               is_keyboard=False):
-        """Register an event handler. A thread will be create to listen and
-        handle the event after the runner is set.
+    def register_event(self,
+                       event_name,
+                       handler_func: Callable,
+                       is_keyboard=False):
+        """Register an event. All events used in the node need to be registered
+        in __init__(). If a callable handler is given, a thread will be create
+        to listen and handle the event when the node starts.
 
         Args:
             Args:
@@ -174,15 +185,14 @@ class Node(Process, metaclass=ABCMeta):
                 event. If True, the argument event_name will be regarded as a
                 key indicator.
         """
-        handler_info = EventHandlerInfo(
-            event_name, handler_func, is_keyboard, thread=None)
-        self.registered_event_handlers.append(handler_info)
+        event_info = EventInfo(event_name, handler_func, is_keyboard)
+        self._registered_events.append(event_info)
 
     def set_runner(self, runner):
         # Get partitioned buffer manager
         buffer_names = [
             buffer.buffer_name
-            for buffer in self.input_buffers + self.output_buffers
+            for buffer in self._input_buffers + self._output_buffers
         ]
         self._buffer_manager = runner.buffer_manager.get_sub_manager(
             buffer_names)
@@ -210,7 +220,7 @@ class Node(Process, metaclass=ABCMeta):
             raise ValueError(f'{self.name}: Runner not set!')
 
         # Check that essential buffers are ready
-        for buffer_info in self.input_buffers:
+        for buffer_info in self._input_buffers:
             if buffer_info.essential and buffer_manager.is_empty(
                     buffer_info.buffer_name):
                 return False, None
@@ -218,10 +228,10 @@ class Node(Process, metaclass=ABCMeta):
         # Default input
         result = {
             buffer_info.input_name: None
-            for buffer_info in self.input_buffers
+            for buffer_info in self._input_buffers
         }
 
-        for buffer_info in self.input_buffers:
+        for buffer_info in self._input_buffers:
             try:
                 result[buffer_info.input_name] = buffer_manager.get(
                     buffer_info.buffer_name, block=False)
@@ -241,7 +251,7 @@ class Node(Process, metaclass=ABCMeta):
             force (bool, optional): If True, block until the output message
                 has been put into all output buffers. Default: False
         """
-        for buffer_info in self.output_buffers:
+        for buffer_info in self._output_buffers:
             buffer_name = buffer_info.buffer_name
             if force:
                 self._buffer_manager.put(buffer_name, output_msg)
@@ -289,6 +299,13 @@ class Node(Process, metaclass=ABCMeta):
         info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
+    def on_start(self):
+        """This method will be invoked when the node starts.
+
+        Subclasses should override this method to perform special operations on
+        starting (e.g. start child process/thread)
+        """
+
     def on_exit(self):
         """This method will be invoked on event `_exit_`.
 
@@ -303,18 +320,22 @@ class Node(Process, metaclass=ABCMeta):
         not override this method in subclasses.
         """
 
+        logging.warn(f'Node {self.name} starts')
+        # On start
+        self.on_start()
+
         # Create event listener threads
-        for handler_info in self.registered_event_handlers:
+        for event_info in self._registered_events:
 
             def event_listener():
                 while True:
                     with self._event_manager.wait_and_handle(
-                            handler_info.event_name, handler_info.is_keyboard):
-                        handler_info.handler_func()
+                            event_info.event_name, event_info.is_keyboard):
+                        event_info.handler_func()
 
             t_listener = Thread(target=event_listener, args=(), daemon=True)
             t_listener.start()
-            handler_info.thread = t_listener
+            self._event_listener_threads.append(t_listener)
 
         # Loop
         while True:
@@ -356,3 +377,5 @@ class Node(Process, metaclass=ABCMeta):
             # Send output message
             if output_msg is not None:
                 self._send_output_to_buffers(output_msg)
+
+        logging.warn(f'{self.name}: process ending.')

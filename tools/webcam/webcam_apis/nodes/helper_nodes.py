@@ -247,6 +247,7 @@ class RecorderNode(Node):
         self.register_input_buffer(frame_buffer, 'frame', essential=True)
         self.register_output_buffer(output_buffer)
 
+    def on_start(self):
         # Start a new thread to write frame
         self.t_record = Thread(target=self._record, args=(), daemon=True)
         self.t_record.start()
@@ -261,9 +262,9 @@ class RecorderNode(Node):
             try:
                 self.queue.put(img, timeout=1)
                 img_queued = True
-                logging.info('Video recorder received one frame!')
+                logging.info(f'{self.name}: recorder received one frame!')
             except Full:
-                logging.warn('Video recorder jamed!')
+                logging.warn(f'{self.name}: recorder jamed!')
 
         return frame_msg
 
