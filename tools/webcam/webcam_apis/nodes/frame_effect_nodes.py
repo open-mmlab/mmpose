@@ -7,7 +7,9 @@ import numpy as np
 from mmcv import Config, color_val
 
 from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
-                         imshow_bboxes, imshow_keypoints)
+                         imshow_bboxes, apply_moustache_effect,
+                         apply_saiyan_effect, imshow_keypoints)
+
 from mmpose.datasets import DatasetInfo
 from ..utils import FrameMessage, Message
 from .builder import NODES
@@ -59,6 +61,74 @@ def _get_eye_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
                              f'{dataset_name}')
 
     return left_eye_idx, right_eye_idx
+
+
+def _get_nose_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of the nose from the
+    model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+
+    Returns:
+        int: nose keypoint index.
+    """
+    nose_idx = None
+
+    # try obtaining nose point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+        nose_idx = dataset_info.keypoint_name2id.get('nose', None)
+    except AttributeError:
+        nose_idx = None
+
+    if nose_idx is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {
+                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
+        }:
+            nose_idx = 0
+        elif dataset_name in {'AnimalPoseDataset', 'AnimalAP10KDataset'}:
+            nose_idx = 2
+        else:
+            raise ValueError('Can not determine the nose id of '
+                             f'{dataset_name}')
+
+    return nose_idx
+
+
+def _get_face_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of the face from the
+    model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+
+    Returns:
+        list[int]: face keypoint index.
+    """
+    face_indices = None
+
+    # try obtaining nose point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+        for id in range(68):
+            face_indices.append(
+                dataset_info.keypoint_name2id.get(f'face_{id}', None))
+    except AttributeError:
+        face_indices = None
+
+    if face_indices is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
+            face_indices = list(range(23, 91))
+        else:
+            raise ValueError('Can not determine the face id of '
+                             f'{dataset_name}')
+
+    return face_indices
 
 
 class BaseFrameEffectNode(Node):
@@ -263,6 +333,66 @@ class SunglassesNode(BaseFrameEffectNode):
 
             canvas = apply_sunglasses_effect(canvas, preds, self.src_img,
                                              left_eye_idx, right_eye_idx)
+        return canvas
+
+
+@NODES.register_module()
+class SaiyanNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        if src_img_path is None:
+            src_img_path = 'demo/resources/saiyan.png'
+        self.src_img = cv2.imread(src_img_path)
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            model = pose_result['model_ref']()
+            preds = pose_result['preds']
+            face_indices = _get_face_keypoint_ids(model.cfg)
+            canvas = apply_saiyan_effect(canvas, preds, self.src_img,
+                                         face_indices)
+        return canvas
+
+
+@NODES.register_module()
+class MoustacheNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        if src_img_path is None:
+            src_img_path = 'demo/resources/moustache.jpeg'
+        self.src_img = cv2.imread(src_img_path)
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            model = pose_result['model_ref']()
+            preds = pose_result['preds']
+            face_indices = _get_face_keypoint_ids(model.cfg)
+            canvas = apply_moustache_effect(canvas, preds, self.src_img,
+                                            face_indices)
         return canvas
 
 

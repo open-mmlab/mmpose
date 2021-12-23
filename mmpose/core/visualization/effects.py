@@ -109,3 +109,108 @@ def apply_sunglasses_effect(img,
         img = cv2.copyTo(patch, mask, img)
 
     return img
+
+
+def apply_moustache_effect(img,
+                           pose_results,
+                           moustache_img,
+                           face_indices,
+                           kpt_thr=0.5):
+    """Apply moustache effect.
+
+    Args:
+        img (np.ndarray): Image data.
+        pose_results (list[dict]): The pose estimation results containing:
+            - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
+        moustache_img (np.ndarray): Moustache image with white background.
+        left_eye_index (int): Keypoint index of left eye
+        right_eye_index (int): Keypoint index of right eye
+        kpt_thr (float): The score threshold of required keypoints.
+    """
+
+    hm, wm = moustache_img.shape[:2]
+    # anchor points in the moustache mask
+    pts_src = np.array([[1164, 741], [1729, 741], [1164, 1244], [1729, 1244]],
+                       dtype=np.float32)
+
+    for pose in pose_results:
+        kpts = pose['keypoints']
+        if kpts[face_indices[32], 2] < kpt_thr \
+                or kpts[face_indices[34], 2] < kpt_thr \
+                or kpts[face_indices[61], 2] < kpt_thr \
+                or kpts[face_indices[63], 2] < kpt_thr:
+            continue
+
+        kpt_32 = kpts[face_indices[32], :2]
+        kpt_34 = kpts[face_indices[34], :2]
+        kpt_61 = kpts[face_indices[61], :2]
+        kpt_63 = kpts[face_indices[63], :2]
+        # anchor points in the image by eye positions
+        pts_tar = np.vstack([kpt_32, kpt_34, kpt_61, kpt_63])
+
+        h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+        patch = cv2.warpPerspective(
+            moustache_img,
+            h_mat,
+            dsize=(img.shape[1], img.shape[0]),
+            borderValue=(255, 255, 255))
+        #  mask the white background area in the patch with a threshold 200
+        mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+        mask = (mask < 200).astype(np.uint8)
+        img = cv2.copyTo(patch, mask, img)
+
+    return img
+
+
+def apply_saiyan_effect(img,
+                        pose_results,
+                        saiyan_img,
+                        face_indices,
+                        kpt_thr=0.5):
+    """Apply saiyan hair effect.
+
+    Args:
+        img (np.ndarray): Image data.
+        pose_results (list[dict]): The pose estimation results containing:
+            - "keypoints" ([K,3]): keypoint detection result in [x, y, score]
+        saiyan_img (np.ndarray): Saiyan image with transparent background.
+        face_indices (int): Keypoint index of the face
+        kpt_thr (float): The score threshold of required keypoints.
+    """
+
+    hm, wm = saiyan_img.shape[:2]
+    # anchor points in the mask
+    pts_src = np.array(
+        [
+            [84, 398],  # face kpt 0
+            [331, 393],  # face kpt 16
+            [84, 145],
+            [331, 140]
+        ],
+        dtype=np.float32)
+
+    for pose in pose_results:
+        kpts = pose['keypoints']
+        if kpts[face_indices[0], 2] < kpt_thr or kpts[face_indices[16],
+                                                      2] < kpt_thr:
+            continue
+
+        kpt_0 = kpts[face_indices[0], :2]
+        kpt_16 = kpts[face_indices[16], :2]
+        # orthogonal vector
+        vo = (kpt_0 - kpt_16)[::-1] * [-1, 1]
+
+        # anchor points in the image by eye positions
+        pts_tar = np.vstack([kpt_0, kpt_16, kpt_0 + vo, kpt_16 + vo])
+
+        h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+        patch = cv2.warpPerspective(
+            saiyan_img,
+            h_mat,
+            dsize=(img.shape[1], img.shape[0]),
+            borderValue=(0, 0, 0))
+        mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+        mask = (mask > 1).astype(np.uint8)
+        img = cv2.copyTo(patch, mask, img)
+
+    return img
