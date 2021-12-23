@@ -8,9 +8,11 @@ from typing import Optional
 class EventManager():
 
     def __init__(self):
-        self._events = {}
-    
-    def register_event(self, event_name: str = None, is_keyboard: bool = False):
+        self._events = defaultdict(Event)
+
+    def register_event(self,
+                       event_name: str = None,
+                       is_keyboard: bool = False):
         if is_keyboard:
             event_name = self._get_keyboard_event_name(event_name)
         self._events[event_name] = Event()

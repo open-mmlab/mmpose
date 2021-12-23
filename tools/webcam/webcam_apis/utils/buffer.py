@@ -5,7 +5,7 @@ from multiprocessing import Queue, queues
 from typing import Dict, List, Optional
 
 
-def check_buffer_exist(exist=True):
+def check_buffer_registered(exist=True):
 
     def wrapper(func):
 
@@ -41,15 +41,15 @@ class BufferManager():
     def __contains__(self, name):
         return name in self._buffers
 
-    @check_buffer_exist(False)
+    @check_buffer_registered(False)
     def register_buffer(self, name, maxsize=0):
         self._buffers[name] = Queue(maxsize=maxsize)
 
-    @check_buffer_exist()
+    @check_buffer_registered()
     def put(self, name, item, block=True, timeout=None):
         self._buffers[name].put(item, block, timeout)
 
-    @check_buffer_exist()
+    @check_buffer_registered()
     def try_put(self, name, item):
         try:
             self._buffers[name].put_nowait(item)
@@ -57,15 +57,15 @@ class BufferManager():
         except queue.Full:
             return False
 
-    @check_buffer_exist()
+    @check_buffer_registered()
     def get(self, name, block=True, timeout=None):
         return self._buffers[name].get(block, timeout)
 
-    @check_buffer_exist()
+    @check_buffer_registered()
     def is_empty(self, name):
         return self._buffers[name].empty()
 
-    @check_buffer_exist()
+    @check_buffer_registered()
     def is_full(self, name):
         return self._buffers[name].full()
 
