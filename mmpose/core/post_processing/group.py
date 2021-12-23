@@ -393,9 +393,9 @@ class HeatmapParser:
         if refine:
             results = results[0]
             # for every detected person
+            heatmap_numpy = heatmaps[0].cpu().numpy()
+            tag_numpy = tags[0].cpu().numpy()
             for i in range(len(results)):
-                heatmap_numpy = heatmaps[0].cpu().numpy()
-                tag_numpy = tags[0].cpu().numpy()
                 if not self.tag_per_joint:
                     tag_numpy = np.tile(tag_numpy,
                                         (self.params.num_joints, 1, 1, 1))
