@@ -565,7 +565,11 @@ def inference_bottom_up_pose_model(model,
             })
 
         # pose nms
-        keep = oks_nms(pose_results, pose_nms_thr, sigmas=None)
+        try:
+            sigmas = np.array(model.cfg.data.test.dataset_info.sigmas)
+        except KeyError:
+            sigmas = None
+        keep = oks_nms(pose_results, pose_nms_thr, sigmas=sigmas)
         pose_results = [pose_results[_keep] for _keep in keep]
 
     return pose_results, returned_outputs
