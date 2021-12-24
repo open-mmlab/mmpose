@@ -394,7 +394,7 @@ class HeatmapParser:
             heatmap = heatmaps[0]
             tag = tags[0]
             if not self.tag_per_joint:
-                tag = torch.tile(tag, (self.params.num_joints, 1, 1, 1))
+                tag = tag.repeat(self.params.num_joints, 1, 1, 1)
             for i in range(len(results)):
                 results[i] = self.refine(
                     heatmap, tag, results[i], use_udp=self.use_udp)
