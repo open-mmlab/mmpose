@@ -63,7 +63,7 @@ class Node(Process, metaclass=ABCMeta):
                  name: Optional[str] = None,
                  enable_key: Optional[Union[str, int]] = None,
                  max_fps: int = 30,
-                 input_check_interval: float = 0.001,
+                 input_check_interval: float = 0.01,
                  enable: bool = True,
                  daemon=True):
         super().__init__(name=name, daemon=daemon)

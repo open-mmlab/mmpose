@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import logging
+import multiprocessing
 import sys
 import time
 import warnings
@@ -15,10 +16,10 @@ from .utils import (BufferManager, EventManager, FrameMessage,
 
 signal(SIGPIPE, SIG_DFL)
 
-DEFAULT_FRAME_BUFFER_SIZE = 30
-DEFAULT_INPUT_BUFFER_SIZE = 30
+DEFAULT_FRAME_BUFFER_SIZE = 1
+DEFAULT_INPUT_BUFFER_SIZE = 1
 DEFAULT_DISPLAY_BUFFER_SIZE = 0
-DEFAULT_USER_BUFFER_SIZE = 0
+DEFAULT_USER_BUFFER_SIZE = 1
 
 
 class WebcamRunner():
@@ -41,6 +42,8 @@ class WebcamRunner():
                  camera_fps: int = 30,
                  buffer_sizes: Optional[Dict[str, int]] = None,
                  nodes: Optional[List[Dict]] = None):
+
+        multiprocessing.set_start_method('spawn')
 
         # Basic parameters
         self.name = name
@@ -205,6 +208,7 @@ class WebcamRunner():
 
         This method starts all nodes as well as video I/O in separate threads.
         """
+
         try:
             # Start node threads
             non_daemon_nodes = []
