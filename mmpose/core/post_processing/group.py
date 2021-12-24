@@ -301,7 +301,7 @@ class HeatmapParser:
         K, H, W = heatmap.shape
         if len(tag.shape) == 3:
             tag = tag[..., None]
-        
+
         tags = []
         for i in range(K):
             if keypoints[i, 2] > 0:
@@ -310,20 +310,22 @@ class HeatmapParser:
                 x = np.clip(x, 0, W - 1)
                 y = np.clip(y, 0, H - 1)
                 tags.append(tag[i, y, x].cpu().numpy())
-        
+
         # mean tag of current detected people
-        prev_tag = np.mean(tags, axis = 0)
+        prev_tag = np.mean(tags, axis=0)
         results = []
 
         for _heatmap, _tag in zip(heatmap, tag):
             # distance of all tag values with mean tag of
             # current detected people
-            distance_tag = (((_tag -
-                              torch.Tensor(prev_tag[None, None, :]).to(_tag.device))**2).sum(2)**0.5)
+            prev_tag_tensor = torch.Tensor(prev_tag[None, None, :])
+            prev_tag_tensor = prev_tag_tensor.to(_tag.device)
+            distance_tag = (((_tag - prev_tag_tensor)**2).sum(2)**0.5)
             norm_heatmap = _heatmap - torch.round(distance_tag)
 
             # find maximum position
-            y, x = np.unravel_index(torch.argmax(norm_heatmap).cpu().numpy(), _heatmap.shape)
+            y, x = np.unravel_index(
+                torch.argmax(norm_heatmap).cpu().numpy(), _heatmap.shape)
             xx = x.copy()
             yy = y.copy()
             # detection score at maximum position
@@ -398,6 +400,6 @@ class HeatmapParser:
             for i in range(len(results)):
                 results[i] = self.refine(
                     heatmap, tag, results[i], use_udp=self.use_udp)
-            results = [results] 
+            results = [results]
 
         return results, scores
