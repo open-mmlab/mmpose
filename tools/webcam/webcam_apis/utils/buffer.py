@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import queue
 from functools import wraps
-from multiprocessing import Queue
+from queue import Queue
 from typing import List
+
+__all__ = ['BufferManager']
 
 
 def check_buffer_registered(exist=True):
@@ -28,29 +29,45 @@ def check_buffer_registered(exist=True):
     return wrapper
 
 
+class Buffer(Queue):
+
+    def put_force(self, item):
+        """Force to put an item into the buffer.
+
+        If the buffer is already full, the earliest item in the buffer will be
+        remove to make room for the incoming item.
+        """
+        with self.mutex:
+            if self.maxsize > 0:
+                while self._qsize() >= self.maxsize:
+                    _ = self._get()
+                    self.unfinished_tasks -= 1
+
+            self._put(item)
+            self.unfinished_tasks += 1
+            self.not_empty.notify()
+
+
 class BufferManager():
 
-    def __init__(self):
+    def __init__(self, buffer_type=Buffer):
         self._buffers = {}
+        self.buffer_type = buffer_type
 
     def __contains__(self, name):
         return name in self._buffers
 
     @check_buffer_registered(False)
     def register_buffer(self, name, maxsize=0):
-        self._buffers[name] = Queue(maxsize=maxsize)
+        self._buffers[name] = self.buffer_type(maxsize)
 
     @check_buffer_registered()
     def put(self, name, item, block=True, timeout=None):
         self._buffers[name].put(item, block, timeout)
 
     @check_buffer_registered()
-    def try_put(self, name, item):
-        try:
-            self._buffers[name].put_nowait(item)
-            return True
-        except queue.Full:
-            return False
+    def put_force(self, name, item):
+        self._buffers[name].put_force(item)
 
     @check_buffer_registered()
     def get(self, name, block=True, timeout=None):
@@ -69,8 +86,10 @@ class BufferManager():
         return BufferManager(buffers)
 
     def get_info(self):
-        buffer_info = {
-            name: buffer.qsize()
-            for name, buffer in self._buffers.items()
-        }
+        buffer_info = {}
+        for name, buffer in self._buffers.items():
+            buffer_info[name] = {
+                'size': buffer.size,
+                'maxsize': buffer.maxsize
+            }
         return buffer_info
