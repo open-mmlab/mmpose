@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import queue
 from functools import wraps
-from multiprocessing import Queue, queues
-from typing import Dict, List, Optional
+from multiprocessing import Queue
+from typing import List
 
 
 def check_buffer_registered(exist=True):
@@ -30,13 +30,8 @@ def check_buffer_registered(exist=True):
 
 class BufferManager():
 
-    def __init__(self, buffers: Optional[Dict] = None):
-        if buffers is None:
-            self._buffers = {}
-        else:
-            for v in buffers.values():
-                assert isinstance(v, queues.Queue)
-            self._buffers = buffers.copy()
+    def __init__(self):
+        self._buffers = {}
 
     def __contains__(self, name):
         return name in self._buffers
