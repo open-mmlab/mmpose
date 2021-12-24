@@ -141,7 +141,7 @@ class WebcamRunner():
                         node_name='Camera Info',
                         node_type='dummy',
                         info=self._get_camera_info())
-                    self.buffer_manager.try_put('_input_', input_msg)
+                    self.buffer_manager.put_force('_input_', input_msg)
 
                 else:
                     # Put a video ending signal

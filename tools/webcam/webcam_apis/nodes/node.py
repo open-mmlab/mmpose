@@ -243,7 +243,7 @@ class Node(Process, metaclass=ABCMeta):
 
         return True, result
 
-    def _send_output_to_buffers(self, output_msg, force=False):
+    def _send_output_to_buffers(self, output_msg):
         """Send output of the process method to registered output buffers.
 
         Args:
@@ -253,10 +253,7 @@ class Node(Process, metaclass=ABCMeta):
         """
         for buffer_info in self._output_buffers:
             buffer_name = buffer_info.buffer_name
-            if force:
-                self._buffer_manager.put(buffer_name, output_msg)
-            else:
-                self._buffer_manager.try_put(buffer_name, output_msg)
+            self._buffer_manager.put_force(buffer_name, output_msg)
 
     @abstractmethod
     def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
