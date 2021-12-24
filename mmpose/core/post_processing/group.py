@@ -289,8 +289,8 @@ class HeatmapParser:
                 If use flip testing, L=2; else L=1.
 
         Args:
-            heatmap: np.ndarray(K, H, W).
-            tag: np.ndarray(K, H, W) |  np.ndarray(K, H, W, L)
+            heatmap: torch.Tensor(K, H, W).
+            tag: torch.Tensor(K, H, W) |  torch.Tensor(K, H, W, L)
             keypoints: np.ndarray of size (K, 3 + L)
                         last dim is (x, y, score, tag).
             use_udp: bool-unbiased data processing
@@ -298,7 +298,6 @@ class HeatmapParser:
         Returns:
             np.ndarray: The refined keypoints.
         """
-
         K, H, W = heatmap.shape
         if len(tag.shape) == 3:
             tag = tag[..., None]
@@ -310,7 +309,7 @@ class HeatmapParser:
                 x, y = keypoints[i][:2].astype(int)
                 x = np.clip(x, 0, W - 1)
                 y = np.clip(y, 0, H - 1)
-                tags.append(tag[i, y, x])
+                tags.append(tag[i, y, x].cpu().numpy())
 
         # mean tag of current detected people
         prev_tag = np.mean(tags, axis=0)
@@ -319,16 +318,18 @@ class HeatmapParser:
         for _heatmap, _tag in zip(heatmap, tag):
             # distance of all tag values with mean tag of
             # current detected people
-            distance_tag = (((_tag -
-                              prev_tag[None, None, :])**2).sum(axis=2)**0.5)
-            norm_heatmap = _heatmap - np.round(distance_tag)
+            prev_tag_tensor = torch.Tensor(prev_tag[None, None, :])
+            prev_tag_tensor = prev_tag_tensor.to(_tag.device)
+            distance_tag = (((_tag - prev_tag_tensor)**2).sum(2)**0.5)
+            norm_heatmap = _heatmap - torch.round(distance_tag)
 
             # find maximum position
-            y, x = np.unravel_index(np.argmax(norm_heatmap), _heatmap.shape)
+            y, x = np.unravel_index(
+                torch.argmax(norm_heatmap).cpu().numpy(), _heatmap.shape)
             xx = x.copy()
             yy = y.copy()
             # detection score at maximum position
-            val = _heatmap[y, x]
+            val = _heatmap[y, x].cpu().numpy()
             if not use_udp:
                 # offset by 0.5
                 x += 0.5
@@ -392,15 +393,13 @@ class HeatmapParser:
 
         if refine:
             results = results[0]
-            # for every detected person
+            heatmap = heatmaps[0]
+            tag = tags[0]
+            if not self.tag_per_joint:
+                tag = tag.repeat(self.params.num_joints, 1, 1, 1)
             for i in range(len(results)):
-                heatmap_numpy = heatmaps[0].cpu().numpy()
-                tag_numpy = tags[0].cpu().numpy()
-                if not self.tag_per_joint:
-                    tag_numpy = np.tile(tag_numpy,
-                                        (self.params.num_joints, 1, 1, 1))
                 results[i] = self.refine(
-                    heatmap_numpy, tag_numpy, results[i], use_udp=self.use_udp)
+                    heatmap, tag, results[i], use_udp=self.use_udp)
             results = [results]
 
         return results, scores
