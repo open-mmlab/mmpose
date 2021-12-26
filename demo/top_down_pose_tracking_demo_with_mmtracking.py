@@ -169,7 +169,7 @@ def main():
         if save_out_video:
             videoWriter.write(vis_img)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
         frame_id += 1
@@ -177,7 +177,8 @@ def main():
     cap.release()
     if save_out_video:
         videoWriter.release()
-    cv2.destroyAllWindows()
+    if args.show:
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
