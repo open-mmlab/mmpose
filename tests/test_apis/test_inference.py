@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
+
 import numpy as np
 
 from mmpose.apis import (inference_bottom_up_pose_model,
@@ -177,6 +179,13 @@ def test_bottom_up_demo():
     # show the results
     vis_pose_result(
         pose_model, image_name, pose_results, dataset_info=dataset_info)
+
+    # test dataset_info without sigmas
+    pose_model_copy = copy.deepcopy(pose_model)
+
+    pose_model_copy.cfg.data.test.dataset_info.pop('sigmas')
+    pose_results, _ = inference_bottom_up_pose_model(
+        pose_model_copy, image_name, dataset_info=dataset_info)
 
 
 def test_process_mmdet_results():
