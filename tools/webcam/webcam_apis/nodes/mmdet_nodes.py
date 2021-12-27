@@ -60,7 +60,7 @@ class DetectorNode(Node):
             segms = preds[1]
         else:
             dets = preds
-            segms = [None] * len(dets)
+            segms = [[None]] * len(dets)
 
         assert len(preds) == len(self.model.CLASSES)
         result = {'preds': [], 'model_cfg': self.model.cfg.copy()}

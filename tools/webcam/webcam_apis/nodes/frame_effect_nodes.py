@@ -353,12 +353,7 @@ class BackgroundNode(BaseFrameEffectNode):
         self.cls_ids = cls_ids
         self.cls_names = cls_names
 
-        self.loc = [100, 50, 450, 300]  # x, y, w, h
-
         if src_img_path is None:
-            # The image attributes to:
-            # https://www.vecteezy.com/free-vector/glass
-            # Glass Vectors by Vecteezy
             src_img_path = 'demo/resources/background.jpg'
         self.src_img = cv2.imread(src_img_path)
 
@@ -400,25 +395,49 @@ class SaiyanNode(BaseFrameEffectNode):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
-                 src_img_path: Optional[str] = None):
+                 hair_img_path: Optional[str] = None,
+                 light_video_path: Optional[str] = None,
+                 cls_ids: Optional[List] = None,
+                 cls_names: Optional[List] = None):
 
         super().__init__(name, frame_buffer, output_buffer, enable_key)
 
-        if src_img_path is None:
-            src_img_path = 'demo/resources/saiyan.png'
-        self.src_img = cv2.imread(src_img_path)
+        self.cls_ids = cls_ids
+        self.cls_names = cls_names
+
+        if hair_img_path is None:
+            hair_img_path = 'demo/resources/saiyan.png'
+        self.hair_img = cv2.imread(hair_img_path)
+
+        if light_video_path is None:
+            light_video_path = 'demo/resources/part1.mp4'
+        self.light_video_path = light_video_path
+        self.light_video = cv2.VideoCapture(self.light_video_path)
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
+
+        det_results = frame_msg.get_detection_results()
+        if not det_results:
+            return canvas
+
         pose_results = frame_msg.get_pose_results()
         if not pose_results:
             return canvas
+
         for pose_result in pose_results:
             model = pose_result['model_ref']()
             preds = pose_result['preds']
             face_indices = _get_face_keypoint_ids(model.cfg)
-            canvas = apply_saiyan_effect(canvas, preds, self.src_img,
+
+            ret, frame = self.light_video.read()
+            if not ret:
+                self.light_video = cv2.VideoCapture(self.light_video_path)
+                ret, frame = self.light_video.read()
+
+            canvas = apply_saiyan_effect(canvas, preds, self.hair_img, frame,
                                          face_indices)
+
         return canvas
 
 

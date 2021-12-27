@@ -35,12 +35,11 @@ runner = dict(
         dict(
             type='DetectorNode',
             name='Detector',
-            model_config='demo/mmdetection_cfg/'
-            'ssdlite_mobilenetv2_scratch_600e_coco.py',
-            model_checkpoint='https://download.openmmlab.com'
-            '/mmdetection/v2.0/ssd/'
-            'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
-            'scratch_600e_coco_20210629_110627-974d9307.pth',
+            model_config='demo/mmdetection_cfg/mask_rcnn_r50_fpn_2x_coco.py',
+            model_checkpoint='https://download.openmmlab.com/'
+            'mmdetection/v2.0/mask_rcnn/mask_rcnn_r50_fpn_2x_coco/'
+            'mask_rcnn_r50_fpn_2x_coco_bbox_mAP-0.392'
+            '__segm_mAP-0.354_20200505_003907-3e542a40.pth',
             input_buffer='_input_',  # `_input_` is a runner-reserved buffer
             output_buffer='det_result'),
         # 'TopDownPoseEstimatorNode':
@@ -85,17 +84,9 @@ runner = dict(
             type='SaiyanNode',
             name='Visualizer',
             enable_key='s',
+            cls_names=['person'],
             frame_buffer='vis_pose',
             output_buffer='vis_saiyan'),
-        # 'MoustacheNode':
-        # This node draw the moustache effect in the frame image.
-        # Pose results is needed.
-        dict(
-            type='MoustacheNode',
-            name='Visualizer',
-            enable_key='c',
-            frame_buffer='vis_saiyan',
-            output_buffer='vis_moustache'),
         # 'BillboardNode':
         # This node show a billboard with given content, e.g. help
         # information.
@@ -103,7 +94,7 @@ runner = dict(
             type='BillboardNode',
             name='Help Information',
             enable_key='h',
-            frame_buffer='vis_moustache',
+            frame_buffer='vis_saiyan',
             output_buffer='vis',
             content_lines=[
                 'This is a demo for pose visualization and simple image '
