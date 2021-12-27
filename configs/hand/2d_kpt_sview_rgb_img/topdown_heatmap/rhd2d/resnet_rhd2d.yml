@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: Simple baselines for human pose estimation and tracking
     URL: http://openaccess.thecvf.com/content_ECCV_2018/html/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/simplebaseline2d.md
 Models:
 - Config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/res50_rhd2d_256x256.py
   In Collection: SimpleBaseline2D
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: RHD
   Name: topdown_heatmap_res50_rhd2d_256x256
-  README: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/resnet_rhd2d.md
   Results:
   - Dataset: RHD
     Metrics:

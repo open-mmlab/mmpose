@@ -4,6 +4,7 @@ Collections:
     Title: Wing Loss for Robust Facial Landmark Localisation with Convolutional Neural
       Networks
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Feng_Wing_Loss_for_CVPR_2018_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/wingloss.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
   In Collection: Wingloss
@@ -14,7 +15,6 @@ Models:
     - Wingloss
     Training Data: WFLW
   Name: deeppose_res50_wflw_256x256_wingloss
-  README: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.md
   Results:
   - Dataset: WFLW
     Metrics:

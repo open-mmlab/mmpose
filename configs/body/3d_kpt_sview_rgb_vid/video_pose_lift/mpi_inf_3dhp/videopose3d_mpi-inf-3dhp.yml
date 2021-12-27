@@ -4,6 +4,7 @@ Collections:
     Title: 3d human pose estimation in video with temporal convolutions and semi-supervised
       training
     URL: http://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/videopose3d.md
 Models:
 - Config: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py
   In Collection: VideoPose3D
@@ -12,7 +13,6 @@ Models:
     - VideoPose3D
     Training Data: MPI-INF-3DHP
   Name: video_pose_lift_videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt
-  README: configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.md
   Results:
   - Dataset: MPI-INF-3DHP
     Metrics:

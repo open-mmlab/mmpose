@@ -3,6 +3,7 @@ Collections:
   Paper:
     Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
     URL: https://arxiv.org/abs/1611.05424
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/associative_embedding.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
   In Collection: Associative Embedding
@@ -12,7 +13,6 @@ Models:
     - ResNet
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -29,7 +29,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -46,7 +45,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -63,7 +61,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -80,7 +77,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -97,7 +93,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -114,7 +109,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
@@ -131,7 +125,6 @@ Models:
     Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
   Results:
   - Dataset: COCO
     Metrics:
