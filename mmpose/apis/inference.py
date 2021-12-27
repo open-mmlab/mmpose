@@ -499,6 +499,7 @@ def inference_bottom_up_pose_model(model,
     if dataset_info is not None:
         dataset_name = dataset_info.dataset_name
         flip_index = dataset_info.flip_index
+        sigmas = getattr(dataset_info, 'sigmas', None)
     else:
         warnings.warn(
             'dataset is deprecated.'
@@ -508,6 +509,7 @@ def inference_bottom_up_pose_model(model,
         assert (dataset == 'BottomUpCocoDataset')
         dataset_name = dataset
         flip_index = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+        sigmas = None
 
     pose_results = []
     returned_outputs = []
@@ -565,7 +567,7 @@ def inference_bottom_up_pose_model(model,
             })
 
         # pose nms
-        keep = oks_nms(pose_results, pose_nms_thr, sigmas=None)
+        keep = oks_nms(pose_results, pose_nms_thr, sigmas)
         pose_results = [pose_results[_keep] for _keep in keep]
 
     return pose_results, returned_outputs

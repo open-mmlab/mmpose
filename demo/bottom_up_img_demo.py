@@ -106,7 +106,7 @@ def main():
         else:
             os.makedirs(args.out_img_root, exist_ok=True)
             out_file = os.path.join(args.out_img_root,
-                                    f'vis_{osp.basename(image_name)}.jpg')
+                                    f'vis_{osp.splitext(osp.basename(image_name))[0]}.jpg')
 
         # show the results
         vis_pose_result(
