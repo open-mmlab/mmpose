@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from mmcv import Config, color_val
 
-from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
+from mmpose.core import (apply_background_effect, apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_bboxes, apply_moustache_effect,
                          apply_saiyan_effect, imshow_keypoints)
 
@@ -333,6 +333,62 @@ class SunglassesNode(BaseFrameEffectNode):
 
             canvas = apply_sunglasses_effect(canvas, preds, self.src_img,
                                              left_eye_idx, right_eye_idx)
+        return canvas
+
+
+@NODES.register_module()
+class BackgroundNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None,
+                 cls_ids: Optional[List] = None,
+                 cls_names: Optional[List] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        self.cls_ids = cls_ids
+        self.cls_names = cls_names
+
+        self.loc = [100, 50, 450, 300]  # x, y, w, h
+
+        if src_img_path is None:
+            # The image attributes to:
+            # https://www.vecteezy.com/free-vector/glass
+            # Glass Vectors by Vecteezy
+            src_img_path = 'demo/resources/background.jpg'
+        self.src_img = cv2.imread(src_img_path)
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        if canvas.shape != self.src_img.shape:
+            self.src_img = cv2.resize(self.src_img, canvas.shape[:2])
+        det_results = frame_msg.get_detection_results()
+        if not det_results:
+            return canvas
+
+        full_preds = []
+        for det_result in det_results:
+            preds = det_result['preds']
+            if self.cls_ids:
+                # Filter results by class ID
+                filtered_preds = [
+                    p for p in preds if p['cls_id'] in self.cls_ids
+                ]
+            elif self.cls_names:
+                # Filter results by class name
+                filtered_preds = [
+                    p for p in preds if p['label'] in self.cls_names
+                ]
+            else:
+                filtered_preds = preds
+            full_preds.extend(filtered_preds)
+
+        canvas = apply_background_effect(canvas, full_preds, self.src_img)
+
         return canvas
 
 

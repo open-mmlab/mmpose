@@ -214,3 +214,63 @@ def apply_saiyan_effect(img,
         img = cv2.copyTo(patch, mask, img)
 
     return img
+
+
+def apply_background_effect(img,
+                            det_results,
+                            background_img,
+                            effect_region=(0.2, 0.2, 0.8, 0.8),
+                            bbox_thr=0.5):
+    """Change background.
+
+    Args:
+        img (np.ndarray): Image data.
+        det_results (list[dict]): The detection results containing:
+
+            - "cls_id" (int): Class index.
+            - "label" (str): Class label (e.g. 'person').
+            - "bbox" (ndarray:(5, )): bounding box result [x, y, w, h, score].
+            - "mask" (ndarray:(w, h)): instance segmentation result.
+        effect_region (tuple(4, )): The region to apply mask, the coordinates
+            are normalized (x1, y1, x2, y2).
+        background_img (np.ndarray): Background image.
+    """
+    background_img = background_img.copy()
+    background_h, background_w = background_img.shape[:2]
+    region_h = (effect_region[3] - effect_region[1]) * background_h
+    region_w = (effect_region[2] - effect_region[0]) * background_w
+    region_aspect_ratio = region_w / region_h
+
+    for det_result in det_results:
+
+        bbox = det_result['bbox']
+        instance_w = bbox[2] - bbox[0]
+        instance_h = bbox[3] - bbox[1]
+
+        if bbox[-1] > bbox_thr and instance_h > 20 and instance_w > 20:
+            aspect_ratio = instance_w / instance_h
+            if region_aspect_ratio > aspect_ratio:
+                resize_rate = region_h / instance_h
+            else:
+                resize_rate = region_w / instance_w
+
+            mask = det_result['mask'].astype(np.uint8)
+            mask_inst = mask[int(bbox[0]):int(bbox[2]),
+                             int(bbox[1]):int(bbox[3])]
+            img_inst = img[int(bbox[0]):int(bbox[2]),
+                           int(bbox[1]):int(bbox[3])]
+            img_inst = cv2.resize(img_inst, (int(
+                resize_rate * instance_w), int(resize_rate * instance_h)))
+            mask_inst = cv2.resize(
+                mask_inst,
+                (int(resize_rate * instance_w), int(resize_rate * instance_h)),
+                interpolation=cv2.INTER_NEAREST)
+
+            mask_ids = list(np.where(mask_inst == 1))
+            mask_ids[0] += int(effect_region[0] * background_w)
+            mask_ids[1] += int(effect_region[1] * background_h)
+
+            background_img[tuple(mask_ids)] = img_inst[np.where(
+                mask_inst == 1)]
+
+    return background_img
