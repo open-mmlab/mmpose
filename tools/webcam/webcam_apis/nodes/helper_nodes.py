@@ -235,7 +235,7 @@ class RecorderNode(Node):
         out_video_codec: str = 'mp4v',
         buffer_size: int = 30,
     ):
-        super().__init__(name=name, enable_key=None, enable=True, daemon=False)
+        super().__init__(name=name, enable_key=None, enable=True)
 
         self.queue = Queue(maxsize=buffer_size)
         self.out_video_file = out_video_file

@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import defaultdict
 from contextlib import contextmanager
-from multiprocessing import Event
+from threading import Event
 from typing import Optional
 
 
