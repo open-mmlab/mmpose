@@ -30,15 +30,15 @@ class DetectorNode(Node):
         self.model_checkpoint = model_checkpoint
         self.device = device.lower()
 
-        # Register buffers
-        self.register_input_buffer(input_buffer, 'input', essential=True)
-        self.register_output_buffer(output_buffer)
-
-    def on_start(self):
+        # Init model
         self.model = init_detector(
             self.model_config,
             self.model_checkpoint,
             device=self.device.lower())
+
+        # Register buffers
+        self.register_input_buffer(input_buffer, 'input', essential=True)
+        self.register_output_buffer(output_buffer)
 
     def bypass(self, input_msgs):
         return input_msgs['input']

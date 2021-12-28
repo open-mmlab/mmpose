@@ -35,6 +35,12 @@ class TopDownPoseEstimatorNode(Node):
         self.cls_names = cls_names
         self.bbox_thr = bbox_thr
 
+        # Init model
+        self.model = init_pose_model(
+            self.model_config,
+            self.model_checkpoint,
+            device=self.device.lower())
+
         # Store history for pose tracking
         self.track_info = {
             'next_id': 0,
@@ -45,12 +51,6 @@ class TopDownPoseEstimatorNode(Node):
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', essential=True)
         self.register_output_buffer(output_buffer)
-
-    def on_start(self):
-        self.model = init_pose_model(
-            self.model_config,
-            self.model_checkpoint,
-            device=self.device.lower())
 
     def bypass(self, input_msgs):
         return input_msgs['input']
