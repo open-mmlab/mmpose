@@ -8,10 +8,9 @@ from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from mmcv.utils.misc import is_method_overridden
-from tools.webcam.webcam_apis.utils.message import VideoEndingMessage
 
 from mmpose.utils import StopWatch
-from ..utils import Message, limit_max_fps
+from ..utils import Message, VideoEndingMessage, limit_max_fps
 
 
 @dataclass
@@ -58,7 +57,7 @@ class Node(Thread, metaclass=ABCMeta):
                  max_fps: int = 30,
                  input_check_interval: float = 0.01,
                  enable: bool = True,
-                 daemon=True):
+                 daemon=False):
         super().__init__(name=name, daemon=daemon)
         self._runner = None
         self._enabled = enable
@@ -335,10 +334,16 @@ class Node(Thread, metaclass=ABCMeta):
 
             # If a VideoEndingMessage is received, broadcast the signal
             # without invoking process() or bypass()
+            video_ending = False
             for _, msg in input_msgs.items():
                 if isinstance(msg, VideoEndingMessage):
-                    self._send_output_to_buffers(msg, force=True)
-                    continue
+                    self._send_output_to_buffers(msg)
+                    video_ending = True
+                    break
+
+            if video_ending:
+                self.on_exit()
+                break
 
             # Check if enabled
             if not self._enabled:

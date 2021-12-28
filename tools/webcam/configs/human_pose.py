@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Human Pose and Effects',
-    camera_id=0,
+    camera_id=1,
     camera_fps=30,
 
     # Define nodes.
@@ -87,7 +87,7 @@ runner = dict(
         # information.
         dict(
             type='BillboardNode',
-            name='Help Information',
+            name='Helper',
             enable_key='h',
             frame_buffer='vis_bugeye',
             output_buffer='vis',
