@@ -1,7 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from functools import wraps
 from queue import Queue
-from typing import List
+from typing import Dict, List, Optional
+
+from mmcv import is_seq_of
 
 __all__ = ['BufferManager']
 
@@ -50,9 +52,18 @@ class Buffer(Queue):
 
 class BufferManager():
 
-    def __init__(self, buffer_type=Buffer):
-        self._buffers = {}
+    def __init__(self,
+                 buffer_type: type = Buffer,
+                 buffers: Optional[Dict] = None):
         self.buffer_type = buffer_type
+        if buffers is None:
+            self._buffers = {}
+        else:
+            if is_seq_of(list(buffers.values()), buffer_type):
+                self._buffers = buffers.copy()
+            else:
+                raise ValueError('The values of buffers should be instance '
+                                 f'of {buffer_type}')
 
     def __contains__(self, name):
         return name in self._buffers
@@ -83,7 +94,7 @@ class BufferManager():
 
     def get_sub_manager(self, buffer_names: List[str]):
         buffers = {name: self._buffers[name] for name in buffer_names}
-        return BufferManager(buffers)
+        return BufferManager(self.buffer_type, buffers)
 
     def get_info(self):
         buffer_info = {}

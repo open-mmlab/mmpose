@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import logging
-import multiprocessing
 import sys
 import time
 import warnings
@@ -42,8 +41,6 @@ class WebcamRunner():
                  camera_fps: int = 30,
                  buffer_sizes: Optional[Dict[str, int]] = None,
                  nodes: Optional[List[Dict]] = None):
-
-        multiprocessing.set_start_method('spawn')
 
         # Basic parameters
         self.name = name
@@ -223,14 +220,14 @@ class WebcamRunner():
 
             # Run display in the main thread
             self._display()
-            logging.info('Display shut down')
+            logging.warning('Display shut down')
 
             # joint non-daemon nodes and runner threads
-            logging.info('Camera reading about to join')
+            logging.warning('Camera reading about to join')
             t_read.join()
 
             for node in non_daemon_nodes:
-                logging.info(f'Node {node.name} about to join')
+                logging.warning(f'Node {node.name} about to join')
                 node.join()
 
         except KeyboardInterrupt:
