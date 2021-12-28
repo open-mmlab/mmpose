@@ -247,7 +247,6 @@ class RecorderNode(Node):
         self.register_input_buffer(frame_buffer, 'frame', essential=True)
         self.register_output_buffer(output_buffer)
 
-    def on_start(self):
         # Start a new thread to write frame
         self.t_record = Thread(target=self._record, args=(), daemon=True)
         self.t_record.start()
