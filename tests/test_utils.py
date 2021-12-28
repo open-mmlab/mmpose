@@ -38,6 +38,6 @@ def test_stopwatch():
     _ = stop_watch.report_strings()
 
     np.testing.assert_allclose(
-        report['_FPS_'], outer_time + inner_time, rtol=0.01)
+        report['_FPS_'], outer_time + inner_time, rtol=0.05)
 
-    np.testing.assert_allclose(report['inner'], inner_time, rtol=0.01)
+    np.testing.assert_allclose(report['inner'], inner_time, rtol=0.05)
