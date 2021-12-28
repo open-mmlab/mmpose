@@ -2,7 +2,8 @@
 import logging
 import time
 from abc import ABCMeta, abstractmethod
-from multiprocessing import Process, queues
+from dataclasses import dataclass
+from queue import Empty
 from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
@@ -13,31 +14,23 @@ from mmpose.utils import StopWatch
 from ..utils import Message, limit_max_fps
 
 
+@dataclass
 class BufferInfo():
     """Dataclass for buffer information."""
-
-    def __init__(self,
-                 buffer_name: str,
-                 input_name: Optional[str] = None,
-                 essential: str = False):
-        self.buffer_name = buffer_name
-        self.input_name = input_name
-        self.essential = essential
+    buffer_name: str
+    input_name: Optional[str] = None
+    essential: bool = False
 
 
+@dataclass
 class EventInfo():
     """Dataclass for event handler information."""
-
-    def __init__(self,
-                 event_name: str,
-                 handler_func: Callable,
-                 is_keyboard: bool = False):
-        self.event_name = event_name
-        self.handler_func = handler_func
-        self.is_keyboard = is_keyboard
+    event_name: str
+    handler_func: Callable
+    is_keyboard: bool = False
 
 
-class Node(Process, metaclass=ABCMeta):
+class Node(Thread, metaclass=ABCMeta):
     """Base interface of functional module.
 
     Args:
@@ -235,7 +228,7 @@ class Node(Process, metaclass=ABCMeta):
             try:
                 result[buffer_info.input_name] = buffer_manager.get(
                     buffer_info.buffer_name, block=False)
-            except queues.Empty:
+            except Empty:
                 if buffer_info.essential:
                     # Return unsuccessful flag if any
                     # essential input is unready
@@ -296,13 +289,6 @@ class Node(Process, metaclass=ABCMeta):
         info = {'fps': self._timer.report('_FPS_'), 'timestamp': time.time()}
         return info
 
-    def on_start(self):
-        """This method will be invoked when the node starts.
-
-        Subclasses should override this method to perform special operations on
-        starting (e.g. start child process/thread)
-        """
-
     def on_exit(self):
         """This method will be invoked on event `_exit_`.
 
@@ -318,8 +304,6 @@ class Node(Process, metaclass=ABCMeta):
         """
 
         logging.warn(f'Node {self.name} starts')
-        # On start
-        self.on_start()
 
         # Create event listener threads
         for event_info in self._registered_events:
