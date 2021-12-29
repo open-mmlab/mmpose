@@ -5,19 +5,6 @@ runner = dict(
     camera_id=0,
     camera_fps=30,
 
-    # Define user buffers
-    # Each user buffer is defined by buffer_name (str) or
-    # Tuple[buffer_name (str), buffer_size(int)]
-    # Note that there are also runner-reserved buffers which are not listed
-    # here. You can find them in the node configs below. For example:
-    #   - '_frame_': reserved buffer that stores input video frames
-    #   - '_input_': reserved buffer that stores video frames for model input
-    #   - '_display_': reserved buffer that stores output frames for display
-    user_buffers=[
-        'det_result', 'pose_result', 'frame', 'vis_pose', 'vis_moustache',
-        'vis_saiyan', 'vis'
-    ],
-
     # Define nodes.
     #
     # The configuration of a node usually includes:
@@ -85,6 +72,7 @@ runner = dict(
             name='Visualizer',
             enable_key='s',
             cls_names=['person'],
+            enable=False,
             frame_buffer='vis_pose',
             output_buffer='vis_saiyan'),
         # 'BillboardNode':
@@ -100,8 +88,7 @@ runner = dict(
                 'This is a demo for pose visualization and simple image '
                 'effects. Have fun!', '', 'Hot-keys:',
                 '"v": Pose estimation result visualization',
-                '"s": Saiyan effect', '"c": Moustache effect',
-                '"h": Show help information',
+                '"s": Saiyan effect', '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],
         ),

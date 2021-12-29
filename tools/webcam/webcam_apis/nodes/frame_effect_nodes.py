@@ -344,11 +344,12 @@ class BackgroundNode(BaseFrameEffectNode):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  src_img_path: Optional[str] = None,
                  cls_ids: Optional[List] = None,
                  cls_names: Optional[List] = None):
 
-        super().__init__(name, frame_buffer, output_buffer, enable_key)
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
 
         self.cls_ids = cls_ids
         self.cls_names = cls_names
@@ -395,12 +396,13 @@ class SaiyanNode(BaseFrameEffectNode):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  hair_img_path: Optional[str] = None,
                  light_video_path: Optional[str] = None,
                  cls_ids: Optional[List] = None,
                  cls_names: Optional[List] = None):
 
-        super().__init__(name, frame_buffer, output_buffer, enable_key)
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
 
         self.cls_ids = cls_ids
         self.cls_names = cls_names
@@ -426,9 +428,9 @@ class SaiyanNode(BaseFrameEffectNode):
             return canvas
 
         for pose_result in pose_results:
-            model = pose_result['model_ref']()
+            model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            face_indices = _get_face_keypoint_ids(model.cfg)
+            face_indices = _get_face_keypoint_ids(model_cfg)
 
             ret, frame = self.light_video.read()
             if not ret:
@@ -449,9 +451,10 @@ class MoustacheNode(BaseFrameEffectNode):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  src_img_path: Optional[str] = None):
 
-        super().__init__(name, frame_buffer, output_buffer, enable_key)
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
 
         if src_img_path is None:
             src_img_path = 'demo/resources/moustache.jpeg'
@@ -463,9 +466,9 @@ class MoustacheNode(BaseFrameEffectNode):
         if not pose_results:
             return canvas
         for pose_result in pose_results:
-            model = pose_result['model_ref']()
+            model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            face_indices = _get_face_keypoint_ids(model.cfg)
+            face_indices = _get_face_keypoint_ids(model_cfg)
             canvas = apply_moustache_effect(canvas, preds, self.src_img,
                                             face_indices)
         return canvas
