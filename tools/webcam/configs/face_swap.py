@@ -1,16 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     name='FaceSwap',
-    camera_id=0,
+    camera_id=1,
     camera_fps=30,
-    user_buffers=[
-        'det_result',
-        'pose_result',
-        'frame',
-        'face_swap',
-        'pose_vis',
-        'display',
-    ],
     nodes=[
         dict(
             type='DetectorNode',

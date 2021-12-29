@@ -24,11 +24,11 @@ class FaceSwapNode(BaseFrameEffectNode):
                  frame_buffer: str,
                  output_buffer: Union[str, List[str]],
                  mode_key: Optional[Union[str, int]] = None):
-        super().__init__(name, frame_buffer, output_buffer)
+        super().__init__(name, frame_buffer, output_buffer, enable=True)
 
         self.mode_key = mode_key
         self.mode_index = 0
-        self.register_keyboard_handler(self.mode_key, self.switch_mode)
+        self.register_event(self.mode_key, self.switch_mode, is_keyboard=True)
         self.history = dict(mode=None)
         self._enabled = True
         self._mode = Mode.NONE
@@ -148,7 +148,7 @@ class FaceSwapNode(BaseFrameEffectNode):
     @staticmethod
     def _get_face_info(pose_pred):
         keypoints = pose_pred['keypoints'][:, :2]
-        model_cfg = pose_pred['model_ref']().cfg
+        model_cfg = pose_pred['model_cfg']
         dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
 
         face_info = {
@@ -236,11 +236,11 @@ class FaceSwapNode(BaseFrameEffectNode):
     def _merge_pose_results(pose_results):
         preds = []
         for prefix, pose_result in enumerate(pose_results):
-            model_ref = pose_result['model_ref']
+            model_cfg = pose_result['model_cfg']
             for idx, _pred in enumerate(pose_result['preds']):
                 pred = _pred.copy()
                 pred['id'] = f'{prefix}.{_pred.get("track_id", str(idx))}'
-                pred['model_ref'] = model_ref
+                pred['model_cfg'] = model_cfg
                 preds.append(pred)
         return preds
 
