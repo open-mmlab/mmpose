@@ -28,7 +28,8 @@ class FaceSwapNode(BaseFrameEffectNode):
 
         self.mode_key = mode_key
         self.mode_index = 0
-        self.register_event(self.mode_key, self.switch_mode, is_keyboard=True)
+        self.register_event(
+            self.mode_key, is_keyboard=True, handler_func=self.switch_mode)
         self.history = dict(mode=None)
         self._enabled = True
         self._mode = Mode.NONE
