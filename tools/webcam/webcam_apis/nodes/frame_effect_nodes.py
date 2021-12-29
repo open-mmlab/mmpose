@@ -6,10 +6,10 @@ import cv2
 import numpy as np
 from mmcv import Config, color_val
 
-from mmpose.core import (apply_background_effect, apply_bugeye_effect, apply_sunglasses_effect,
-                         imshow_bboxes, apply_moustache_effect,
-                         apply_saiyan_effect, imshow_keypoints)
-
+from mmpose.core import (apply_background_effect, apply_bugeye_effect,
+                         apply_moustache_effect, apply_saiyan_effect,
+                         apply_sunglasses_effect, imshow_bboxes,
+                         imshow_keypoints)
 from mmpose.datasets import DatasetInfo
 from ..utils import FrameMessage, Message
 from .builder import NODES
