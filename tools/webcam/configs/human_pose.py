@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Human Pose and Effects',
-    camera_id=1,
+    camera_id=0,
     camera_fps=30,
 
     # Define nodes.
@@ -72,6 +72,7 @@ runner = dict(
             name='Visualizer',
             enable_key='s',
             frame_buffer='vis_pose',
+            enable=False,
             output_buffer='vis_sunglasses'),
         # 'BugEyeNode':
         # This node draw the bug-eye effetc in the frame image.
@@ -81,6 +82,7 @@ runner = dict(
             name='Visualizer',
             enable_key='b',
             frame_buffer='vis_sunglasses',
+            enable=False,
             output_buffer='vis_bugeye'),
         # 'BillboardNode':
         # This node show a billboard with given content, e.g. help
