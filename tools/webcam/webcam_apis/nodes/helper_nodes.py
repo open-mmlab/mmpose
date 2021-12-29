@@ -263,7 +263,7 @@ class RecorderNode(Node):
                 img_queued = True
                 logging.info(f'{self.name}: recorder received one frame!')
             except Full:
-                logging.warn(f'{self.name}: recorder jamed!')
+                logging.info(f'{self.name}: recorder jamed!')
 
         return frame_msg
 
@@ -286,7 +286,7 @@ class RecorderNode(Node):
 
             self.vwriter.write(img)
 
-        logging.warn('Video recorder released!')
+        logging.info('Video recorder released!')
         if self.vwriter is not None:
             self.vwriter.release()
 
@@ -301,6 +301,6 @@ class RecorderNode(Node):
 
         if self.t_record.is_alive():
             # Force to release self.vwriter
-            logging.warn('Video recorder forced release!')
+            logging.info('Video recorder forced release!')
             if self.vwriter is not None:
                 self.vwriter.release()
