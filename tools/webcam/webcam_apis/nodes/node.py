@@ -32,7 +32,7 @@ class EventInfo():
 class Node(Thread, metaclass=ABCMeta):
     """Base interface of functional module.
 
-    Args:
+    Parameters:
         name (str, optional): The node name (also thread name).
         enable_key (str|int, optional): Set a hot-key to toggle enable/disable
             of the node. If an int value is given, it will be treated as an
@@ -302,7 +302,7 @@ class Node(Thread, metaclass=ABCMeta):
         not override this method in subclasses.
         """
 
-        logging.warn(f'Node {self.name} starts')
+        logging.info(f'Node {self.name} starts')
 
         # Create event listener threads
         for event_info in self._registered_events:
@@ -364,4 +364,4 @@ class Node(Thread, metaclass=ABCMeta):
             if output_msg is not None:
                 self._send_output_to_buffers(output_msg)
 
-        logging.warn(f'{self.name}: process ending.')
+        logging.info(f'{self.name}: process ending.')

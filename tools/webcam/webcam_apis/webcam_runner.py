@@ -24,7 +24,7 @@ DEFAULT_USER_BUFFER_SIZE = 1
 class WebcamRunner():
     """An interface for building webcam application from config.
 
-    Args:
+    Parameters:
         name (str): Runner name.
         camera_id (int|str): Webcam ID. Optionally a path can be given
             as the camere_id to load videos from a local file. Default: 0
@@ -220,14 +220,14 @@ class WebcamRunner():
 
             # Run display in the main thread
             self._display()
-            logging.warning('Display shut down')
+            logging.info('Display shut down')
 
             # joint non-daemon nodes and runner threads
-            logging.warning('Camera reading about to join')
+            logging.info('Camera reading about to join')
             t_read.join()
 
             for node in non_daemon_nodes:
-                logging.warning(f'Node {node.name} about to join')
+                logging.info(f'Node {node.name} about to join')
                 node.join()
 
         except KeyboardInterrupt:
