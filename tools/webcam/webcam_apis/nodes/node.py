@@ -25,8 +25,8 @@ class BufferInfo():
 class EventInfo():
     """Dataclass for event handler information."""
     event_name: str
-    handler_func: Callable
     is_keyboard: bool = False
+    handler_func: Optional[Callable] = None
 
 
 class Node(Thread, metaclass=ABCMeta):
@@ -101,8 +101,9 @@ class Node(Thread, metaclass=ABCMeta):
 
             self.register_event(
                 event_name=self.enable_key,
+                is_keyboard=True,
                 handler_func=self._toggle_enable,
-                is_keyboard=True)
+            )
 
     @property
     def registered_buffers(self):
@@ -160,9 +161,9 @@ class Node(Thread, metaclass=ABCMeta):
             self._output_buffers.append(buffer_info)
 
     def register_event(self,
-                       event_name,
-                       handler_func: Callable,
-                       is_keyboard=False):
+                       event_name: str,
+                       is_keyboard: bool = False,
+                       handler_func: Optional[Callable] = None):
         """Register an event. All events used in the node need to be registered
         in __init__(). If a callable handler is given, a thread will be create
         to listen and handle the event when the node starts.
@@ -171,13 +172,14 @@ class Node(Thread, metaclass=ABCMeta):
             Args:
             event_name (str|int): The event name. If is_keyboard==True,
                 event_name should be a str (as char) or an int (as ascii)
-            handler_func (callable): The event handler function, which should
-                be a collable object with no arguments or return values.
-            is_keyboard (bool, optional): Indicate whether it is an keyboard
+            is_keyboard (bool): Indicate whether it is an keyboard
                 event. If True, the argument event_name will be regarded as a
                 key indicator.
+            handler_func (callable, optional): The event handler function,
+                which should be a collable object with no arguments or
+                return values. Default: None.
         """
-        event_info = EventInfo(event_name, handler_func, is_keyboard)
+        event_info = EventInfo(event_name, is_keyboard, handler_func)
         self._registered_events.append(event_info)
 
     def set_runner(self, runner):
@@ -306,6 +308,9 @@ class Node(Thread, metaclass=ABCMeta):
 
         # Create event listener threads
         for event_info in self._registered_events:
+
+            if event_info.handler_func is None:
+                continue
 
             def event_listener():
                 while True:
