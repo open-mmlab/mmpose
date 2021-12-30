@@ -35,13 +35,15 @@ class AsyncCPUTopDownPoseEstimatorNode(AsyncNode):
                  cls_names: Optional[List] = None,
                  bbox_thr: float = 0.5,
                  num_workers: Optional[int] = None,
-                 worker_timeout: Optional[float] = None):
+                 worker_timeout: Optional[float] = None,
+                 backend: str = 'thread'):
         super().__init__(
             name=name,
             enable_key=enable_key,
             enable=enable,
             num_workers=num_workers,
-            worker_timeout=worker_timeout)
+            worker_timeout=worker_timeout,
+            backend=backend)
 
         # Init model
         self.model_config = model_config

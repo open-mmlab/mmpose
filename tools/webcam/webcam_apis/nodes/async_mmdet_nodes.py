@@ -25,7 +25,8 @@ class AsyncCPUDetectorNode(AsyncNode):
                  enable_key: Optional[Union[str, int]] = None,
                  enable: bool = True,
                  num_workers: Optional[int] = None,
-                 worker_timeout: Optional[float] = None):
+                 worker_timeout: Optional[float] = None,
+                 backend: str = 'thread'):
         # Check mmdetection is installed
         assert has_mmdet, 'Please install mmdet to run the demo.'
         super().__init__(
@@ -33,7 +34,8 @@ class AsyncCPUDetectorNode(AsyncNode):
             enable_key=enable_key,
             enable=enable,
             num_workers=num_workers,
-            worker_timeout=worker_timeout)
+            worker_timeout=worker_timeout,
+            backend=backend)
 
         self.model_config = model_config
         self.model_checkpoint = model_checkpoint
