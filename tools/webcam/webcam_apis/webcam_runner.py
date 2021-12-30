@@ -3,7 +3,6 @@ import logging
 import sys
 import time
 import warnings
-from signal import SIG_DFL, SIGPIPE, signal
 from threading import Thread
 from typing import Dict, List, Optional, Union
 
@@ -12,8 +11,6 @@ import cv2
 from .nodes import NODES
 from .utils import (BufferManager, EventManager, FrameMessage,
                     VideoEndingMessage, limit_max_fps)
-
-signal(SIGPIPE, SIG_DFL)
 
 DEFAULT_FRAME_BUFFER_SIZE = 1
 DEFAULT_INPUT_BUFFER_SIZE = 1

@@ -18,46 +18,25 @@ runner = dict(
         # 'DetectorNode':
         # This node performs object detection from the frame image using an
         # MMDetection model.
-        # dict(
-        #     type='AsyncCPUDetectorNode',
-        #     name='Detector',
-        #     model_config='demo/mmdetection_cfg/'
-        #     'ssdlite_mobilenetv2_scratch_600e_coco.py',
-        #     model_checkpoint='https://download.openmmlab.com'
-        #     '/mmdetection/v2.0/ssd/'
-        #     'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
-        #     'scratch_600e_coco_20210629_110627-974d9307.pth',
-        #     input_buffer='_input_',  # `_input_` is a runner-reserved buffer
-        #     output_buffer='det_result',
-        #     num_workers=2),
         dict(
-            type='DetectorNode',
-            name='Detector',
-            model_config='demo/mmdetection_cfg/'
+            type='AsyncTwoStageKeypointDetectorNode',
+            name='KeypointDetector',
+            det_config='demo/mmdetection_cfg/'
             'ssdlite_mobilenetv2_scratch_600e_coco.py',
-            model_checkpoint='https://download.openmmlab.com'
+            det_checkpoint='https://download.openmmlab.com'
             '/mmdetection/v2.0/ssd/'
             'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
             'scratch_600e_coco_20210629_110627-974d9307.pth',
-            input_buffer='_input_',  # `_input_` is a runner-reserved buffer
-            output_buffer='det_result',
-            device='cpu'),
-        # 'TopDownPoseEstimatorNode':
-        # This node performs keypoint detection from the frame image using an
-        # MMPose top-down model. Detection results is needed.
-        dict(
-            type='AsyncCPUTopDownPoseEstimatorNode',
-            name='TopDown Pose Estimator',
-            model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
+            pose_config='configs/wholebody/2d_kpt_sview_rgb_img/'
             'topdown_heatmap/coco-wholebody/'
             'vipnas_mbv3_coco_wholebody_256x192_dark.py',
-            model_checkpoint='https://openmmlab-share.oss-cn-hangz'
+            pose_checkpoint='https://openmmlab-share.oss-cn-hangz'
             'hou.aliyuncs.com/mmpose/top_down/vipnas/vipnas_mbv3_co'
             'co_wholebody_256x192_dark-e2158108_20211205.pth',
             cls_names=['person'],
-            input_buffer='det_result',
+            input_buffer='_input_',
             output_buffer='pose_result',
-            num_workers=2,
+            num_workers=1,
             backend='thread'),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
