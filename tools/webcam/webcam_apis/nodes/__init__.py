@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .async_mmdet_nodes import AsyncCPUDetectorNode
+from .async_mmpose_nodes import AsyncCPUTopDownPoseEstimatorNode
 from .builder import NODES
 from .frame_effect_nodes import (BillboardNode, BugEyeNode, PoseVisualizerNode,
                                  SunglassesNode)
@@ -9,5 +11,6 @@ from .mmpose_nodes import TopDownPoseEstimatorNode
 __all__ = [
     'NODES', 'PoseVisualizerNode', 'DetectorNode', 'TopDownPoseEstimatorNode',
     'MonitorNode', 'BugEyeNode', 'SunglassesNode', 'ModelResultBindingNode',
-    'BillboardNode', 'RecorderNode'
+    'BillboardNode', 'RecorderNode', 'AsyncCPUDetectorNode',
+    'AsyncCPUTopDownPoseEstimatorNode'
 ]

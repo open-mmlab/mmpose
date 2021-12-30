@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+
 from typing import List, Optional, Union
 
 from .builder import NODES
@@ -21,10 +22,11 @@ class DetectorNode(Node):
                  input_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  device: str = 'cuda:0'):
         # Check mmdetection is installed
         assert has_mmdet, 'Please install mmdet to run the demo.'
-        super().__init__(name=name, enable_key=enable_key, enable=True)
+        super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         self.model_config = model_config
         self.model_checkpoint = model_checkpoint

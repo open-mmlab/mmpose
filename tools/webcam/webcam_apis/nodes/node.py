@@ -14,7 +14,7 @@ from ..utils import Message, VideoEndingMessage, limit_max_fps
 
 
 @dataclass
-class BufferInfo():
+class BufferInfo:
     """Dataclass for buffer information."""
     buffer_name: str
     input_name: Optional[str] = None
@@ -22,7 +22,7 @@ class BufferInfo():
 
 
 @dataclass
-class EventInfo():
+class EventInfo:
     """Dataclass for event handler information."""
     event_name: str
     is_keyboard: bool = False
@@ -57,7 +57,7 @@ class Node(Thread, metaclass=ABCMeta):
                  max_fps: int = 30,
                  input_check_interval: float = 0.01,
                  enable: bool = True,
-                 daemon=False):
+                 daemon: bool = False):
         super().__init__(name=name, daemon=daemon)
         self._runner = None
         self._enabled = enable
@@ -318,7 +318,7 @@ class Node(Thread, metaclass=ABCMeta):
                             event_info.event_name, event_info.is_keyboard):
                         event_info.handler_func()
 
-            t_listener = Thread(target=event_listener, args=(), daemon=True)
+            t_listener = Thread(target=event_listener, daemon=True)
             t_listener.start()
             self._event_listener_threads.append(t_listener)
 
@@ -366,7 +366,7 @@ class Node(Thread, metaclass=ABCMeta):
                     output_msg.update_route_info(node=self, info=node_info)
 
             # Send output message
-            if output_msg is not None:
+            if output_msg:
                 self._send_output_to_buffers(output_msg)
 
         logging.info(f'{self.name}: process ending.')

@@ -94,7 +94,7 @@ class StopWatch:
 
         if key is None:
             return result
-        return result[key]
+        return result.get(key, np.nan)
 
     def report_strings(self):
         """Report timing information in texture strings.

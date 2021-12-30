@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import time
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
@@ -7,6 +8,14 @@ from mmpose.apis import (get_track_id, inference_top_down_pose_model,
 from ..utils import Message
 from .builder import NODES
 from .node import Node
+
+
+@dataclass
+class TrackInfo:
+    """Dataclass for pose tracking information."""
+    next_id: int = 0
+    last_pose_preds: Optional[List] = None
+    last_time: Optional[float] = None
 
 
 @NODES.register_module()
@@ -42,11 +51,7 @@ class TopDownPoseEstimatorNode(Node):
             device=self.device.lower())
 
         # Store history for pose tracking
-        self.track_info = {
-            'next_id': 0,
-            'last_pose_preds': [],
-            'last_time': None
-        }
+        self.track_info = TrackInfo(0, [], None)
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', essential=True)
@@ -92,23 +97,23 @@ class TopDownPoseEstimatorNode(Node):
 
         # Pose tracking
         current_time = time.time()
-        if self.track_info['last_time'] is None:
+        if self.track_info.last_time is None:
             fps = None
         else:
-            fps = 1.0 / (current_time - self.track_info['last_time'])
+            fps = 1.0 / (current_time - self.track_info.last_time)
 
         pose_preds, next_id = get_track_id(
             pose_preds,
-            self.track_info['last_pose_preds'],
-            self.track_info['next_id'],
+            self.track_info.last_pose_preds,
+            self.track_info.next_id,
             use_oks=False,
             tracking_thr=0.3,
             use_one_euro=True,
             fps=fps)
 
-        self.track_info['next_id'] = next_id
-        self.track_info['last_pose_preds'] = pose_preds.copy()
-        self.track_info['last_time'] = current_time
+        self.track_info.next_id = next_id
+        self.track_info.last_pose_preds = pose_preds.copy()
+        self.track_info.last_time = current_time
 
         pose_result = {
             'preds': pose_preds,
