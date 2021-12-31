@@ -13,6 +13,34 @@ from tools.webcam.webcam_apis.utils.message import Message
 from ..utils import VideoEndingMessage, limit_max_fps
 from .node import Node
 
+__all__ = ['AsyncNode']
+
+
+class DummyPool:
+
+    def __init__(self, num_worker, initializer, initargs):
+        assert num_worker == 0
+        initializer(*initargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        pass
+
+    def apply_async(self, func, func_args, *args, **kwargs):
+        res = func(*func_args)
+        return DummyResult(res)
+
+
+class DummyResult:
+
+    def __init__(self, res):
+        self.res = res
+
+    def get(self, *args, **kwargs):
+        return self.res
+
 
 class AsyncNode(Node):
 
@@ -39,7 +67,7 @@ class AsyncNode(Node):
         self.backend = backend
 
         # Create a queue to store outputs of the worker pool
-        self.res_queue = Queue(maxsize=self.num_workers)
+        self.res_queue = Queue(maxsize=1)
 
     def run(self):
         logging.info(f'Node {self.name} starts')
@@ -61,7 +89,7 @@ class AsyncNode(Node):
             self._event_listener_threads.append(t_listener)
 
         # Create collection thread
-        t_collect = Thread(target=self.collect, daemon=True)
+        t_collect = Thread(target=self.collect, daemon=False)
         t_collect.start()
 
         # Build Pool
@@ -71,7 +99,9 @@ class AsyncNode(Node):
         else:
             initargs = ()
 
-        if self.backend == 'thread':
+        if self.num_workers == 0:
+            _Pool = DummyPool
+        elif self.backend == 'thread':
             _Pool = ThreadPool
         elif self.backend == 'process':
             _Pool = Pool
@@ -111,24 +141,32 @@ class AsyncNode(Node):
                 if not self._enabled:
                     # Override bypass method to define node behavior when
                     # disabled
-                    res = pool.apply_async(self.get_pool_bypass_func(),
-                                           (input_msgs, ))
+                    pool.apply_async(
+                        self.get_pool_bypass_func(), (input_msgs, ),
+                        callback=self.res_queue.put)
                 else:
                     with limit_max_fps(self.max_fps):
                         # Process
-                        res = pool.apply_async(self.get_pool_process_func(),
-                                               (input_msgs, ))
+                        pool.apply_async(
+                            self.get_pool_process_func(), (input_msgs, ),
+                            callback=self.res_queue.put)
 
-                self.res_queue.put(res)
+                # self.res_queue.put(res)
 
-    def process_pool_output(self, res: AsyncResult) -> Optional[Message]:
+            self.res_queue.put(None)
+            t_collect.join()
+
+    def process_pool_output(self,
+                            res: Union[AsyncResult,
+                                       DummyResult]) -> Optional[Message]:
         """This method is for processing the output of the worker pool.
 
         The output of the pool is an AsyncResult instance. The default behavior
         is to get the actual result by AsyncResult.get() with a timeout limit.
         """
         try:
-            return res.get(self.worker_timeout)
+            # return res.get(self.worker_timeout)
+            return res
         except TimeoutError:
             logging.warn(f'{self.name}: timeout when getting result. '
                          'Please consider setting a larger'
@@ -140,6 +178,10 @@ class AsyncNode(Node):
         while True:
             with self._timer.timeit():
                 res = self.res_queue.get()
+
+                if res is None:
+                    break
+
                 output_msg = self.process_pool_output(res)
 
                 if output_msg:
