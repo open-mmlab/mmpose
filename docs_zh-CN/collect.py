@@ -11,7 +11,7 @@ os.makedirs('papers', exist_ok=True)
 
 # Step 1: get subtopics: a mix of topic and task
 minisections = [
-    x.split('/')[-2:] for x in glob('../../configs/*/*') if '_base_' not in x
+    x.split('/')[-2:] for x in glob('../configs/*/*') if '_base_' not in x
 ]
 alltopics = sorted(list(set(x[0] for x in minisections)))
 subtopics = []
@@ -36,11 +36,11 @@ for subtopic, topic, task in sorted(subtopics):
         list(
             set(
                 x.split('/')[-2]
-                for x in glob(f'../../configs/{topic}/{task}/*/*/'))))
+                for x in glob(f'../configs/{topic}/{task}/*/*/'))))
     contents[subtopic] = {d: {} for d in datasets}
     for dataset in datasets:
         # Step 3: get all settings: algorithm + backbone + trick
-        for file in glob(f'../../configs/{topic}/{task}/*/{dataset}/*.md'):
+        for file in glob(f'../configs/{topic}/{task}/*/{dataset}/*.md'):
             keywords = (file.split('/')[-3],
                         *file.split('/')[-1].split('_')[:-1])
             with open(file, 'r') as f:
@@ -67,13 +67,13 @@ for subtopic, datasets in contents.items():
         f.write('\n'.join(lines))
 
 # Step 5: write files by paper
-allfiles = [x.split('/')[-2:] for x in glob('../en/papers/*/*.md')]
+allfiles = [x.split('/')[-2:] for x in glob('../docs/papers/*/*.md')]
 sections = sorted(list(set(x[0] for x in allfiles)))
 for section in sections:
     lines = [f'# {titlecase(section)}', '']
     files = [f for s, f in allfiles if s == section]
     for file in files:
-        with open(f'../en/papers/{section}/{file}', 'r') as f:
+        with open(f'../docs/papers/{section}/{file}', 'r') as f:
             keyline = [
                 line for line in f.readlines() if line.startswith('<summary')
             ][0]

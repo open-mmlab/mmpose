@@ -11,6 +11,7 @@ on:
       - 'README.md'
       - 'README_CN.md'
       - 'docs/**'
+      - 'docs_zh-CN/**'
       - 'examples/**'
       - '.dev_scripts/**'
 
@@ -19,6 +20,7 @@ on:
       - 'README.md'
       - 'README_CN.md'
       - 'docs/**'
+      - 'docs_zh-CN/**'
       - 'examples/**'
       - '.dev_scripts/**'
 

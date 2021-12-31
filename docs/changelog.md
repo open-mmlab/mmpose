@@ -6,7 +6,7 @@
 
 - Support ["Learning Temporal Pose Estimation from Sparsely-Labeled Videos"](https://arxiv.org/abs/1906.04016), NeurIPS'2019 ([\#932](https://github.com/open-mmlab/mmpose/pull/932), [\#1006](https://github.com/open-mmlab/mmpose/pull/1006), [\#1036](https://github.com/open-mmlab/mmpose/pull/1036), [\#1060](https://github.com/open-mmlab/mmpose/pull/1060)) @liqikai9
 - Add ViPNAS-MobileNetV3 models ([\#1025](https://github.com/open-mmlab/mmpose/pull/1025)) @luminxu, @jin-s13
-- Add [inference speed benchmark](/docs/en/inference_speed_summary.md) ([\#1028](https://github.com/open-mmlab/mmpose/pull/1028), [\#1034](https://github.com/open-mmlab/mmpose/pull/1034), [\#1044](https://github.com/open-mmlab/mmpose/pull/1044)) @liqikai9
+- Add [inference speed benchmark](/docs/inference_speed_summary.md) ([\#1028](https://github.com/open-mmlab/mmpose/pull/1028), [\#1034](https://github.com/open-mmlab/mmpose/pull/1034), [\#1044](https://github.com/open-mmlab/mmpose/pull/1044)) @liqikai9
 
 **New Features**
 
@@ -17,7 +17,7 @@
 
 **Improvements**
 
-- Add [inference speed benchmark](/docs/en/inference_speed_summary.md) ([\#1028](https://github.com/open-mmlab/mmpose/pull/1028), [\#1034](https://github.com/open-mmlab/mmpose/pull/1034), [\#1044](https://github.com/open-mmlab/mmpose/pull/1044)) @liqikai9
+- Add [inference speed benchmark](/docs/inference_speed_summary.md) ([\#1028](https://github.com/open-mmlab/mmpose/pull/1028), [\#1034](https://github.com/open-mmlab/mmpose/pull/1034), [\#1044](https://github.com/open-mmlab/mmpose/pull/1044)) @liqikai9
 - Update model metafile format ([\#1001](https://github.com/open-mmlab/mmpose/pull/1001)) @ly015
 - Support minus output feature index in mobilenet_v3 ([\#1005](https://github.com/open-mmlab/mmpose/pull/1005)) @luminxu
 - Improve documentation quality ([\#1018](https://github.com/open-mmlab/mmpose/pull/1018), [\#1026](https://github.com/open-mmlab/mmpose/pull/1026), [\#1027](https://github.com/open-mmlab/mmpose/pull/1027), [\#1031](https://github.com/open-mmlab/mmpose/pull/1031), [\#1038](https://github.com/open-mmlab/mmpose/pull/1038), [\#1046](https://github.com/open-mmlab/mmpose/pull/1046), [\#1056](https://github.com/open-mmlab/mmpose/pull/1056), [\#1057](https://github.com/open-mmlab/mmpose/pull/1057)) @edybk, @luminxu, @ly015, @jin-s13

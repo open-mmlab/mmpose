@@ -73,7 +73,7 @@ If the contents here do not cover your issue, please create an issue using the [
 
 - **How to use trained models for backbone pre-training ?**
 
-  Refer to [Use Pre-Trained Model](/docs/en/tutorials/1_finetune.md#use-pre-trained-model),
+  Refer to [Use Pre-Trained Model](https://github.com/open-mmlab/mmpose/blob/master/docs/tutorials/1_finetune.md#use-pre-trained-model),
   in order to use the pre-trained model for the whole network (backbone + head), the new config adds the link of pre-trained models in the `load_from`.
 
   And to use backbone for pre-training, you can change `pretrained` value in the backbone dict of config files to the checkpoint path / url.

@@ -22,15 +22,15 @@
 
 MMPose 支持各种不同的任务。请根据需要，查阅对应的数据集准备教程。
 
-- [2D 人体关键点检测](/docs/zh_cn/tasks/2d_body_keypoint.md)
-- [3D 人体关键点检测](/docs/zh_cn/tasks/3d_body_keypoint.md)
-- [3D 人体形状恢复](/docs/zh_cn/tasks/3d_body_mesh.md)
-- [2D 人手关键点检测](/docs/zh_cn/tasks/2d_hand_keypoint.md)
-- [3D 人手关键点检测](/docs/zh_cn/tasks/3d_hand_keypoint.md)
-- [2D 人脸关键点检测](/docs/zh_cn/tasks/2d_face_keypoint.md)
-- [2D 全身人体关键点检测](/docs/zh_cn/tasks/2d_wholebody_keypoint.md)
-- [2D 服饰关键点检测](/docs/zh_cn/tasks/2d_fashion_landmark.md)
-- [2D 动物关键点检测](/docs/zh_cn/tasks/2d_animal_keypoint.md)
+- [2D 人体关键点检测](/docs/tasks/2d_body_keypoint.md)
+- [3D 人体关键点检测](/docs/tasks/3d_body_keypoint.md)
+- [3D 人体形状恢复](/docs/tasks/3d_body_mesh.md)
+- [2D 人手关键点检测](/docs/tasks/2d_hand_keypoint.md)
+- [3D 人手关键点检测](/docs/tasks/3d_hand_keypoint.md)
+- [2D 人脸关键点检测](/docs/tasks/2d_face_keypoint.md)
+- [2D 全身人体关键点检测](/docs/tasks/2d_wholebody_keypoint.md)
+- [2D 服饰关键点检测](/docs/tasks/2d_fashion_landmark.md)
+- [2D 动物关键点检测](/docs/tasks/2d_animal_keypoint.md)
 
 ## 使用预训练模型进行推理
 
@@ -202,7 +202,7 @@ GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 config
 
 用户可以查看 [slurm_train.sh](/tools/slurm_train.sh) 文件来检查完整的参数和环境变量。
 
-如果用户的多台机器通过 Ethernet 连接，则可以参考 pytorch [launch utility](https://pytorch.org/docs/en/stable/distributed.html#launch-utility)。如果用户没有高速网络，如 InfiniBand，速度将会非常慢。
+如果用户的多台机器通过 Ethernet 连接，则可以参考 pytorch [launch utility](https://pytorch.org/docs/stable/distributed.html#launch-utility)。如果用户没有高速网络，如 InfiniBand，速度将会非常慢。
 
 ### 使用单台机器启动多个任务
 
