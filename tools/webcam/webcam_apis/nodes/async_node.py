@@ -3,15 +3,15 @@ import logging
 import time
 from abc import abstractmethod
 from functools import partial
-from multiprocessing import Pool, TimeoutError
-from multiprocessing.pool import AsyncResult, ThreadPool
+from multiprocessing import Condition, Pool, Value
+from multiprocessing.dummy import Condition as ThreadCondition
+from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.dummy import Value as ThreadValue
 from queue import Queue
-from threading import Condition, Thread
+from threading import Thread
 from typing import Callable, Optional, Tuple, Union
 
-from tools.webcam.webcam_apis.utils.message import Message
-
-from ..utils import VideoEndingMessage, limit_max_fps
+from ..utils import Message, VideoEndingMessage, limit_max_fps
 from .node import Node
 
 __all__ = ['AsyncNode']
@@ -29,8 +29,10 @@ class DummyPool:
     def __exit__(self, type, value, traceback):
         pass
 
-    def apply_async(self, func, func_args, callback, **kwargs):
+    def apply_async(self, func, func_args, callback=None, **kwargs):
         res = func(*func_args)
+        if callback:
+            res = callback(res)
         return DummyResult(res)
 
 
@@ -43,7 +45,7 @@ class DummyResult:
         return self.res
 
 
-num_available_workers = 0
+num_available_workers = None
 
 
 class AsyncNode(Node):
@@ -65,17 +67,21 @@ class AsyncNode(Node):
             input_check_interval=input_check_interval,
             enable=enable,
             daemon=daemon)
+        global num_available_workers
 
         self.num_workers = num_workers if backend != 'dummy' else 1
         self.worker_timeout = worker_timeout
         self.backend = backend
 
-        global num_available_workers
-        num_available_workers = self.num_workers
-        self.has_available_worker = Condition()
+        if self.backend == 'process':
+            num_available_workers = Value('i', self.num_workers)
+            self.has_available_worker = Condition()
+        else:
+            num_available_workers = ThreadValue('i', self.num_workers)
+            self.has_available_worker = ThreadCondition()
 
         # Create a queue to store outputs of the worker pool
-        self.res_queue = Queue(maxsize=self.num_workers)
+        self.res_queue = Queue(maxsize=1)
 
     def run(self):
         global num_available_workers
@@ -149,7 +155,6 @@ class AsyncNode(Node):
                     break
 
                 # Check if enabled
-
                 if not self._enabled:
                     # Override bypass method to define node behavior when
                     # disabled
@@ -162,34 +167,19 @@ class AsyncNode(Node):
                         pool.apply_async(
                             self.get_pool_process_func(), (input_msgs, ),
                             callback=callback)
-                num_available_workers -= 1
+                num_available_workers.value -= 1
 
                 # Block until a worker is available
                 with self.has_available_worker:
-                    while num_available_workers < 0:
+                    while num_available_workers.value < 0:
                         self.has_available_worker.wait()
-
-                # self.res_queue.put(res)
 
             self.res_queue.put(None)
             t_collect.join()
 
-    def process_pool_output(self,
-                            res: Union[AsyncResult,
-                                       DummyResult]) -> Optional[Message]:
-        """This method is for processing the output of the worker pool.
-
-        The output of the pool is an AsyncResult instance. The default behavior
-        is to get the actual result by AsyncResult.get() with a timeout limit.
-        """
-        try:
-            # return res.get(self.worker_timeout)
-            return res
-        except TimeoutError:
-            logging.warn(f'{self.name}: timeout when getting result. '
-                         'Please consider setting a larger'
-                         ' `worker_timeout`.')
-        return None
+    def process_pool_output(self, res) -> Optional[Message]:
+        """This method is for processing the output of the worker pool."""
+        return res
 
     def collect(self):
 
@@ -231,7 +221,7 @@ class AsyncNode(Node):
             global num_available_workers
             res_queue.put(res)
             with has_available_workers:
-                num_available_workers += 1
+                num_available_workers.value += 1
                 has_available_workers.notify()
 
         return partial(
