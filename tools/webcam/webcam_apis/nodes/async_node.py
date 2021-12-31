@@ -2,10 +2,11 @@
 import logging
 import time
 from abc import abstractmethod
+from functools import partial
 from multiprocessing import Pool, TimeoutError
 from multiprocessing.pool import AsyncResult, ThreadPool
 from queue import Queue
-from threading import Thread
+from threading import Condition, Thread
 from typing import Callable, Optional, Tuple, Union
 
 from tools.webcam.webcam_apis.utils.message import Message
@@ -18,8 +19,8 @@ __all__ = ['AsyncNode']
 
 class DummyPool:
 
-    def __init__(self, num_worker, initializer, initargs):
-        assert num_worker == 0
+    def __init__(self, processes, initializer, initargs):
+        self.processes = processes
         initializer(*initargs)
 
     def __enter__(self):
@@ -28,7 +29,7 @@ class DummyPool:
     def __exit__(self, type, value, traceback):
         pass
 
-    def apply_async(self, func, func_args, *args, **kwargs):
+    def apply_async(self, func, func_args, callback, **kwargs):
         res = func(*func_args)
         return DummyResult(res)
 
@@ -40,6 +41,9 @@ class DummyResult:
 
     def get(self, *args, **kwargs):
         return self.res
+
+
+num_available_workers = 0
 
 
 class AsyncNode(Node):
@@ -62,14 +66,20 @@ class AsyncNode(Node):
             enable=enable,
             daemon=daemon)
 
-        self.num_workers = num_workers
+        self.num_workers = num_workers if backend != 'dummy' else 1
         self.worker_timeout = worker_timeout
         self.backend = backend
 
+        global num_available_workers
+        num_available_workers = self.num_workers
+        self.has_available_worker = Condition()
+
         # Create a queue to store outputs of the worker pool
-        self.res_queue = Queue(maxsize=1)
+        self.res_queue = Queue(maxsize=self.num_workers)
 
     def run(self):
+        global num_available_workers
+
         logging.info(f'Node {self.name} starts')
 
         # Create event listener threads
@@ -94,12 +104,13 @@ class AsyncNode(Node):
 
         # Build Pool
         initializer = self.get_pool_initializer()
+        callback = self.get_callback_func()
         if initializer is not None:
             initargs = self.get_pool_initargs()
         else:
             initargs = ()
 
-        if self.num_workers == 0:
+        if self.backend == 'dummy':
             _Pool = DummyPool
         elif self.backend == 'thread':
             _Pool = ThreadPool
@@ -138,18 +149,25 @@ class AsyncNode(Node):
                     break
 
                 # Check if enabled
+
                 if not self._enabled:
                     # Override bypass method to define node behavior when
                     # disabled
                     pool.apply_async(
                         self.get_pool_bypass_func(), (input_msgs, ),
-                        callback=self.res_queue.put)
+                        callback=callback)
                 else:
                     with limit_max_fps(self.max_fps):
                         # Process
                         pool.apply_async(
                             self.get_pool_process_func(), (input_msgs, ),
-                            callback=self.res_queue.put)
+                            callback=callback)
+                num_available_workers -= 1
+
+                # Block until a worker is available
+                with self.has_available_worker:
+                    while num_available_workers < 0:
+                        self.has_available_worker.wait()
 
                 # self.res_queue.put(res)
 
@@ -206,6 +224,20 @@ class AsyncNode(Node):
     def get_pool_initargs(self) -> Tuple:
         """Get the initializer arguments."""
         return ()
+
+    def get_callback_func(self) -> Callable:
+
+        def _callback(res, res_queue, has_available_workers):
+            global num_available_workers
+            res_queue.put(res)
+            with has_available_workers:
+                num_available_workers += 1
+                has_available_workers.notify()
+
+        return partial(
+            _callback,
+            res_queue=self.res_queue,
+            has_available_workers=self.has_available_worker)
 
     # Implement a dummy process() to avoid TypeError caused by abstractmethod
     def process(self, input_msgs):

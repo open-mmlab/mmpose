@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Human Pose and Effects',
-    camera_id=1,
+    camera_id=0,
     camera_fps=20,
 
     # Define nodes.
@@ -36,7 +36,7 @@ runner = dict(
             cls_names=['person'],
             input_buffer='_input_',
             output_buffer='pose_result',
-            num_workers=2,
+            num_workers=4,
             backend='thread'),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
