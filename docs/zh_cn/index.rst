@@ -35,11 +35,12 @@ You can change the documentation language at the lower-left corner of the page.
 
    modelzoo.md
    topics/animal.md
-   topics/body(2d,kpt,img).md
-   topics/body(2d,kpt,vid).md
-   topics/body(3d,kpt,img).md
-   topics/body(3d,kpt,vid).md
-   topics/body(3d,mesh,img).md
+   topics/body(2d,kpt,sview,img).md
+   topics/body(2d,kpt,sview,vid).md
+   topics/body(3d,kpt,sview,img).md
+   topics/body(3d,kpt,sview,vid).md
+   topics/body(3d,kpt,mview,img).md
+   topics/body(3d,mesh,sview,img).md
    topics/face.md
    topics/fashion.md
    topics/hand(2d).md
