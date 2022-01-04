@@ -61,7 +61,7 @@ def parse_args():
     parser.add_argument(
         '--human-pose-checkpoint',
         type=str,
-        default='https://openmmlab-share.oss-cn-hangzhou.aliyuncs.com/'
+        default='https://download.openmmlab.com/'
         'mmpose/top_down/vipnas/'
         'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
         help='Checkpoint file for human pose')
