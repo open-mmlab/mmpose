@@ -26,5 +26,5 @@ In this paper, we propose a structure-coherent deep feature learning method for 
 <!-- [IMAGE] -->
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/15977946/148014510-93149a98-f462-49e7-bc92-7dd50fd90a45.png">
+<img src="https://user-images.githubusercontent.com/15977946/148036579-b128fb21-3a2d-4894-bb54-4223a4cdf856.png">
 </div>
