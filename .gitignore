@@ -125,8 +125,14 @@ docs_zh-CN/topics/
 docs_zh-CN/papers/*.md
 docs_zh-CN/datasets.md
 docs_zh-CN/modelzoo.md
-
+mmcv/
+mmdetection/
+aist_data/
+demo/run_aist.py
+run_aist.py
 # Pytorch
 *.pth
 
 *.DS_Store
+
+
