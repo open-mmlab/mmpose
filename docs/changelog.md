@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.22.0 (04/01/2022)
+
+**Highlights**
+
+- Support VoxelPose ["VoxelPose: Towards Multi-Camera 3D Human Pose Estimation in Wild Environment"](https://arxiv.org/abs/2004.06239), ECCV'2020 ([\#1050](https://github.com/open-mmlab/mmpose/pull/1050)) @wusize
+- Support Soft Wing loss ["Structure-Coherent Deep Feature Learning for Robust Face Alignment"](https://linchunze.github.io/papers/TIP21_Structure_coherent_FA.pdf), TIP'2021 ([\#1077](https://github.com/open-mmlab/mmpose/pull/1077)) @jin-s13
+- Support Adaptive Wing loss ["Adaptive Wing Loss for Robust Face Alignment via Heatmap Regression"](https://arxiv.org/abs/1904.07399), ICCV'2019 ([\#1072](https://github.com/open-mmlab/mmpose/pull/1072)) @jin-s13
+
+**New Features**
+
+- Support VoxelPose ["VoxelPose: Towards Multi-Camera 3D Human Pose Estimation in Wild Environment"](https://arxiv.org/abs/2004.06239), ECCV'2020 ([\#1050](https://github.com/open-mmlab/mmpose/pull/1050)) @wusize
+- Support Soft Wing loss ["Structure-Coherent Deep Feature Learning for Robust Face Alignment"](https://linchunze.github.io/papers/TIP21_Structure_coherent_FA.pdf), TIP'2021 ([\#1077](https://github.com/open-mmlab/mmpose/pull/1077)) @jin-s13
+- Support Adaptive Wing loss ["Adaptive Wing Loss for Robust Face Alignment via Heatmap Regression"](https://arxiv.org/abs/1904.07399), ICCV'2019 ([\#1072](https://github.com/open-mmlab/mmpose/pull/1072)) @jin-s13
+- Add LiteHRNet-18 Checkpoints trained on COCO. ([\#1120](https://github.com/open-mmlab/mmpose/pull/1120)) @jin-s13
+
+**Improvements**
+
+- Improve documentation quality ([\#1115](https://github.com/open-mmlab/mmpose/pull/1115), [\#1111](https://github.com/open-mmlab/mmpose/pull/1111), [\#1105](https://github.com/open-mmlab/mmpose/pull/1105), [\#1087](https://github.com/open-mmlab/mmpose/pull/1087), [\#1086](https://github.com/open-mmlab/mmpose/pull/1086), [\#1085](https://github.com/open-mmlab/mmpose/pull/1085), [\#1084](https://github.com/open-mmlab/mmpose/pull/1084), [\#1083](https://github.com/open-mmlab/mmpose/pull/1083), [\#1124](https://github.com/open-mmlab/mmpose/pull/1124), [\#1070](https://github.com/open-mmlab/mmpose/pull/1070), [\#1068](https://github.com/open-mmlab/mmpose/pull/1068)) @jin-s13, @liqikai9, @ly015
+- Support CircleCI ([\#1074](https://github.com/open-mmlab/mmpose/pull/1074)) @ly015
+- Skip unit tests in CI when only document files were changed ([\#1074](https://github.com/open-mmlab/mmpose/pull/1074), [\#1041](https://github.com/open-mmlab/mmpose/pull/1041)) @QwQ2000, @ly015
+- Support file_client_args in LoadImageFromFile ([\#1076](https://github.com/open-mmlab/mmpose/pull/1076)) @jin-s13
+
+**Bug Fixes**
+
+- Fix a bug in Dark UDP postprocessing that causes error when the channel number is large. ([\#1079](https://github.com/open-mmlab/mmpose/pull/1079), [\#1116](https://github.com/open-mmlab/mmpose/pull/1116)) @X00123, @jin-s13
+- Fix hard-coded `sigmas` in bottom-up image demo ([\#1107](https://github.com/open-mmlab/mmpose/pull/1107), [\#1101](https://github.com/open-mmlab/mmpose/pull/1101)) @chenxinfeng4, @liqikai9
+- Fix unstable checks in unit tests ([\#1112](https://github.com/open-mmlab/mmpose/pull/1112)) @ly015
+- Do not destroy NULL windows if `args.show==False` in demo scripts ([\#1104](https://github.com/open-mmlab/mmpose/pull/1104)) @bladrome
+
 ## v0.21.0 (06/12/2021)
 
 **Highlights**
