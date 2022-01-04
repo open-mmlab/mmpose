@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .nms import oks_iou, oks_nms, soft_oks_nms
-#from .one_euro_filter import OneEuroFilter
 from .builder import build_filter
 from .gaus1d_filter import Gaus1dFilter
 from .oneeuro_filter import OneEuroFilter
