@@ -8,8 +8,8 @@ from scipy.ndimage.filters import gaussian_filter1d
 from .builder import FILTERS
 
 
-@FILTERS.register_module(name=['Gaus1dFilter', 'gaus1d'])
-class Gaus1dFilter:
+@FILTERS.register_module(name=['Gauss1dFilter', 'gauss1d'])
+class Gauss1dFilter:
     """Applies median filter and then gaussian filter. code from:
     https://github.com/akanazawa/human_dynamics/blob/mas
     ter/src/util/smooth_bbox.py.
@@ -22,7 +22,7 @@ class Gaus1dFilter:
     """
 
     def __init__(self, window_size=11, sigma=4):
-        super(Gaus1dFilter, self).__init__()
+        super(Gauss1dFilter, self).__init__()
 
         self.window_size = window_size
         self.sigma = sigma
