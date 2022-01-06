@@ -32,7 +32,7 @@ class DummyPool:
     def apply_async(self, func, func_args, callback=None, **kwargs):
         res = func(*func_args)
         if callback:
-            res = callback(res)
+            callback(res)
         return DummyResult(res)
 
 
@@ -126,12 +126,16 @@ class AsyncNode(Node):
             raise ValueError(f'{self.name}: Invalid backend {self.backend}')
 
         with _Pool(self.num_workers, initializer, initargs) as pool:
-
             while True:
                 # Exit
                 if self._event_manager.is_set('_exit_'):
                     self.on_exit()
                     break
+
+                # Block until a worker is available
+                with self.has_available_worker:
+                    while num_available_workers.value < 0:
+                        self.has_available_worker.wait()
 
                 # Check if input is ready
                 input_status, input_msgs = self._get_input_from_buffer()
@@ -158,28 +162,26 @@ class AsyncNode(Node):
                 if not self._enabled:
                     # Override bypass method to define node behavior when
                     # disabled
-                    pool.apply_async(
+                    res = pool.apply_async(
                         self.get_pool_bypass_func(), (input_msgs, ),
                         callback=callback)
+                    num_available_workers.value -= 1
                 else:
                     with limit_max_fps(self.max_fps):
                         # Process
-                        pool.apply_async(
+                        res = pool.apply_async(
                             self.get_pool_process_func(), (input_msgs, ),
                             callback=callback)
-                num_available_workers.value -= 1
+                        num_available_workers.value -= 1
 
-                # Block until a worker is available
-                with self.has_available_worker:
-                    while num_available_workers.value < 0:
-                        self.has_available_worker.wait()
+                self.res_queue.put(res)
 
             self.res_queue.put(None)
             t_collect.join()
 
     def process_pool_output(self, res) -> Optional[Message]:
         """This method is for processing the output of the worker pool."""
-        return res
+        return res.get()
 
     def collect(self):
 
@@ -217,17 +219,14 @@ class AsyncNode(Node):
 
     def get_callback_func(self) -> Callable:
 
-        def _callback(res, res_queue, has_available_workers):
+        def _callback(res, has_available_workers):
             global num_available_workers
-            res_queue.put(res)
             with has_available_workers:
                 num_available_workers.value += 1
                 has_available_workers.notify()
 
         return partial(
-            _callback,
-            res_queue=self.res_queue,
-            has_available_workers=self.has_available_worker)
+            _callback, has_available_workers=self.has_available_worker)
 
     # Implement a dummy process() to avoid TypeError caused by abstractmethod
     def process(self, input_msgs):

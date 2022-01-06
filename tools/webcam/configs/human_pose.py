@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Human Pose and Effects',
-    camera_id=0,
+    camera_id=1,
     camera_fps=30,
 
     # Define nodes.

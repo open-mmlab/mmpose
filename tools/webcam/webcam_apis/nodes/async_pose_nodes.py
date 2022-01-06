@@ -48,6 +48,7 @@ class AsyncTwoStageKeypointDetectorNode(AsyncNode):
                  backend: str = 'thread'):
         # Check mmdetection is installed
         assert has_mmdet, 'Please install mmdet to run the demo.'
+
         super().__init__(
             name=name,
             enable_key=enable_key,
@@ -60,7 +61,6 @@ class AsyncTwoStageKeypointDetectorNode(AsyncNode):
         self.det_checkpoint = det_checkpoint
         self.pose_config = pose_config
         self.pose_checkpoint = pose_checkpoint
-
         self.cls_ids = cls_ids
         self.cls_names = cls_names
         self.bbox_thr = bbox_thr

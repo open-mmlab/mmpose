@@ -57,45 +57,7 @@ runner = dict(
             name='Visualizer',
             enable_key='v',
             frame_buffer='frame',
-            output_buffer='vis_pose'),
-        # 'SunglassesNode':
-        # This node draw the sunglasses effetc in the frame image.
-        # Pose results is needed.
-        dict(
-            type='SunglassesNode',
-            name='Visualizer',
-            enable_key='s',
-            frame_buffer='vis_pose',
-            enable=False,
-            output_buffer='vis_sunglasses'),
-        # 'BugEyeNode':
-        # This node draw the bug-eye effetc in the frame image.
-        # Pose results is needed.
-        dict(
-            type='BugEyeNode',
-            name='Visualizer',
-            enable_key='b',
-            frame_buffer='vis_sunglasses',
-            enable=False,
-            output_buffer='vis_bugeye'),
-        # 'BillboardNode':
-        # This node show a billboard with given content, e.g. help
-        # information.
-        dict(
-            type='BillboardNode',
-            name='Helper',
-            enable_key='h',
-            frame_buffer='vis_bugeye',
-            output_buffer='vis',
-            content_lines=[
-                'This is a demo for pose visualization and simple image '
-                'effects. Have fun!', '', 'Hot-keys:',
-                '"v": Pose estimation result visualization',
-                '"s": Sunglasses effect B-)', '"b": Bug-eye effect 0_0',
-                '"h": Show help information',
-                '"m": Show diagnostic information', '"q": Exit'
-            ],
-        ),
+            output_buffer='vis'),
         # 'MonitorNode':
         # This node show diagnostic information in the frame image. It can
         # be used for debugging or monitoring system resource status.
@@ -104,6 +66,7 @@ runner = dict(
             name='Monitor',
             enable_key='m',
             style='fancy',
+            enable=True,
             frame_buffer='vis',
             output_buffer='_display_')  # `_frame_` is a runner-reserved buffer
     ])
