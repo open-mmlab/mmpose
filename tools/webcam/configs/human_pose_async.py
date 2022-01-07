@@ -37,7 +37,8 @@ runner = dict(
             input_buffer='_input_',
             output_buffer='pose_result',
             num_workers=2,
-            backend='dummy'),
+            backend='dummy',  # Options: dummy, thread and process
+        ),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
