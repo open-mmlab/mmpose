@@ -1,9 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     # Basic configurations of the runner
-    name='Human Pose and Effects',
+    name='Eye Effects',
     camera_id=0,
-    camera_fps=30,
+    camera_fps=20,
 
     # Define nodes.
     # The configuration of a node usually includes:
@@ -55,15 +55,6 @@ runner = dict(
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
             result_buffer='pose_result',
             output_buffer='frame'),
-        # 'PoseVisualizerNode':
-        # This node draw the pose visualization result in the frame image.
-        # Pose results is needed.
-        dict(
-            type='PoseVisualizerNode',
-            name='Visualizer',
-            enable_key='v',
-            frame_buffer='frame',
-            output_buffer='vis_pose'),
         # 'SunglassesNode':
         # This node draw the sunglasses effetc in the frame image.
         # Pose results is needed.
@@ -71,8 +62,8 @@ runner = dict(
             type='SunglassesNode',
             name='Visualizer',
             enable_key='s',
-            frame_buffer='vis_pose',
-            enable=False,
+            enable=True,
+            frame_buffer='frame',
             output_buffer='vis_sunglasses'),
         # 'BugEyeNode':
         # This node draw the bug-eye effetc in the frame image.
@@ -81,14 +72,14 @@ runner = dict(
             type='BugEyeNode',
             name='Visualizer',
             enable_key='b',
-            frame_buffer='vis_sunglasses',
             enable=False,
+            frame_buffer='vis_sunglasses',
             output_buffer='vis_bugeye'),
-        # 'BillboardNode':
-        # This node show a billboard with given content, e.g. help
+        # 'NoticeBoardNode':
+        # This node show a notice board with given content, e.g. help
         # information.
         dict(
-            type='BillboardNode',
+            type='NoticeBoardNode',
             name='Helper',
             enable_key='h',
             frame_buffer='vis_bugeye',
@@ -96,7 +87,6 @@ runner = dict(
             content_lines=[
                 'This is a demo for pose visualization and simple image '
                 'effects. Have fun!', '', 'Hot-keys:',
-                '"v": Pose estimation result visualization',
                 '"s": Sunglasses effect B-)', '"b": Bug-eye effect 0_0',
                 '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
@@ -109,7 +99,7 @@ runner = dict(
             type='MonitorNode',
             name='Monitor',
             enable_key='m',
-            style='fancy',
+            enable=False,
             frame_buffer='vis',
             output_buffer='_display_')  # `_frame_` is a runner-reserved buffer
     ])

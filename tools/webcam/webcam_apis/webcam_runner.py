@@ -194,8 +194,8 @@ class WebcamRunner():
 
         cam_info = {
             'Camera ID': self.camera_id,
-            'Frame size': f'{frame_width}x{frame_height}',
-            'Frame rate': frame_rate,
+            'Source resolution': f'{frame_width}x{frame_height}',
+            'Source FPS': frame_rate,
         }
 
         return cam_info
