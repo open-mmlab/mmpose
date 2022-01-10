@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
 import numpy as np
@@ -10,6 +11,7 @@ from .builder import FILTERS
 @FILTERS.register_module(name=['SGFilter', 'savgol'])
 class SGFilter:
     """savgol_filter lib is from:
+
     https://docs.scipy.org/doc/scipy/reference/generated/
     scipy.signal.savgol_filter.html.
     Args:

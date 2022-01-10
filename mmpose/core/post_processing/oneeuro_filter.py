@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import math
 import warnings
 
@@ -60,6 +61,7 @@ class OneEuro:
 class OneEuroFilter:
     """Oneeuro filter, source code: https://github.com/mkocabas/VIBE/blob/c0
     c3f77d587351c806e901221a9dc05d1ffade4b/lib/utils/smooth_pose.py.
+
     Args:
         min_cutoff (float, optional):
         Decreasing the minimum cutoff frequency decreases slow speed jitter

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
 import numpy as np
@@ -10,7 +11,9 @@ from .builder import FILTERS
 
 @FILTERS.register_module(name=['Gauss1dFilter', 'gauss1d'])
 class Gauss1dFilter:
-    """Applies median filter and then gaussian filter. code from:
+    """Applies median filter and then gaussian filter.
+
+    code from:
     https://github.com/akanazawa/human_dynamics/blob/mas
     ter/src/util/smooth_bbox.py.
     Args:
