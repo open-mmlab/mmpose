@@ -242,9 +242,9 @@ class BugEyeNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class BillboardNode(BaseFrameEffectNode):
+class NoticeBoardNode(BaseFrameEffectNode):
 
-    default_content_lines = ['This is a billboard!']
+    default_content_lines = ['This is a notice board!']
 
     def __init__(
         self,

@@ -34,10 +34,12 @@ class ModelResultBindingNode(Node):
 
         # Cache the latest model result
         self.last_result_msg = None
+        self.last_output_msg = None
 
         # Inference speed analysis
-        self.result_fps = RunningAverage(window=10)
+        self.frame_fps = RunningAverage(window=10)
         self.frame_lag = RunningAverage(window=10)
+        self.result_fps = RunningAverage(window=10)
         self.result_lag = RunningAverage(window=10)
 
         # Register buffers
@@ -55,9 +57,9 @@ class ModelResultBindingNode(Node):
         if result_msg is not None:
             # Update result FPS
             if self.last_result_msg is not None:
-                fps = 1.0 / (
-                    result_msg.timestamp - self.last_result_msg.timestamp)
-                self.result_fps.update(fps)
+                self.result_fps.update(
+                    1.0 /
+                    (result_msg.timestamp - self.last_result_msg.timestamp))
             # Update inference latency
             self.result_lag.update(time.time() - result_msg.timestamp)
             # Update last inference result
@@ -84,12 +86,20 @@ class ModelResultBindingNode(Node):
             self.frame_lag.update(time.time() - result_msg.timestamp)
             output_msg = result_msg
 
+        # Update frame fps and lag
+        if self.last_output_msg is not None:
+            self.frame_lag.update(time.time() - output_msg.timestamp)
+            self.frame_fps.update(
+                1.0 / (output_msg.timestamp - self.last_output_msg.timestamp))
+        self.last_output_msg = output_msg
+
         return output_msg
 
     def _get_node_info(self):
         info = super()._get_node_info()
         info['result_fps'] = self.result_fps.average()
         info['result_lag (ms)'] = self.result_lag.average() * 1000
+        info['frame_fps'] = self.frame_fps.average()
         info['frame_lag (ms)'] = self.frame_lag.average() * 1000
         return info
 
@@ -111,7 +121,6 @@ class MonitorNode(Node):
                  text_color='black',
                  background_color=(255, 183, 0),
                  text_scale=0.4,
-                 style='simple',
                  ignore_items: Optional[List[str]] = None):
         super().__init__(name=name, enable_key=enable_key, enable=enable)
 
@@ -121,7 +130,6 @@ class MonitorNode(Node):
         self.text_color = color_val(text_color)
         self.background_color = color_val(background_color)
         self.text_scale = text_scale
-        self.style = style
         if ignore_items is None:
             self.ignore_items = self._default_ignore_items
         else:
@@ -153,35 +161,6 @@ class MonitorNode(Node):
         return sys_info
 
     def _show_route_info(self, img, route_info):
-        if self.style == 'fancy':
-            return self._show_route_info_fancy(img, route_info)
-        else:
-            return self._show_route_info_simple(img, route_info)
-
-    def _show_route_info_simple(self, img, route_info):
-
-        x = self.x_offset
-        y = self.y_offset
-
-        def _put_line(line=''):
-            nonlocal y
-            cv2.putText(img, line, (x, y), cv2.FONT_HERSHEY_DUPLEX,
-                        self.text_scale, self.text_color, 1)
-            y += self.y_delta
-
-        for node_info in route_info:
-            title = f'{node_info["node"]}({node_info["node_type"]})'
-            _put_line(title)
-            for k, v in node_info['info'].items():
-                if k in self.ignore_items:
-                    continue
-                if isinstance(v, float):
-                    v = f'{v:.1f}'
-                _put_line(f'    {k}: {v}')
-
-        return img
-
-    def _show_route_info_fancy(self, img, route_info):
         canvas = np.full(img.shape, self.background_color, dtype=img.dtype)
 
         x = self.x_offset
