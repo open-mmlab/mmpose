@@ -98,7 +98,8 @@ class ViPNAS_MobileNetV3(BaseBackbone):
                 se_cfg = dict(
                     channels=mid_channels,
                     ratio=4,
-                    act_cfg=(dict(type='ReLU'), dict(type='HSigmoid')))
+                    act_cfg=(dict(type='ReLU'),
+                             dict(type='HSigmoid', bias=1.0, divisor=2.0)))
             else:
                 se_cfg = None
 
