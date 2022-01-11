@@ -34,7 +34,7 @@ runner = dict(
         # MMPose top-down model. Detection results is needed.
         dict(
             type='TopDownPoseEstimatorNode',
-            name='TopDown Pose Estimator',
+            name='Human Pose Estimator',
             model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
             'topdown_heatmap/coco-wholebody/'
             'vipnas_mbv3_coco_wholebody_256x192_dark.py',
@@ -43,7 +43,17 @@ runner = dict(
             'co_wholebody_256x192_dark-e2158108_20211205.pth',
             cls_names=['person'],
             input_buffer='det_result',
-            output_buffer='pose_result'),
+            output_buffer='human_pose'),
+        dict(
+            type='TopDownPoseEstimatorNode',
+            name='Animal Pose Estimator',
+            model_config='configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap'
+            '/animalpose/hrnet_w32_animalpose_256x256.py',
+            model_checkpoint='https://download.openmmlab.com/mmpose/animal/'
+            'hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth',
+            cls_names=['cat', 'dog', 'horse', 'sheep', 'cow'],
+            input_buffer='human_pose',
+            output_buffer='animal_pose'),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
@@ -53,7 +63,7 @@ runner = dict(
             name='ResultBinder',
             synchronous=False,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-            result_buffer='pose_result',
+            result_buffer='animal_pose',
             output_buffer='frame'),
         # 'PoseVisualizerNode':
         # This node draw the pose visualization result in the frame image.
@@ -92,5 +102,15 @@ runner = dict(
             enable_key='m',
             enable=False,
             frame_buffer='vis_notice',
-            output_buffer='_display_')  # `_frame_` is a runner-reserved buffer
+            output_buffer='display'),
+        # 'RecorderNode':
+        # This node save the output video into a file.
+        dict(
+            type='RecorderNode',
+            name='Recorder',
+            out_video_file='pose_estimation.mp4',
+            frame_buffer='display',
+            output_buffer='_display_'
+            # `_display_` is a runner-reserved buffer
+        )
     ])
