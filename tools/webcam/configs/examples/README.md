@@ -3,7 +3,7 @@
 This demo performs human bounding box and keypoint detection, and visualizes results.
 
 <div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
+    <img src="https://user-images.githubusercontent.com/15977946/148911749-57b263c0-1075-4a65-af53-b51fc815da68.gif" width="600px" alt><br>
 </div>
 
 ## Instruction
