@@ -4,7 +4,7 @@ Collections:
     Title: 'HigherHRNet: Scale-Aware Representation Learning for Bottom-Up Human Pose
       Estimation'
     URL: http://openaccess.thecvf.com/content_CVPR_2020/html/Cheng_HigherHRNet_Scale-Aware_Representation_Learning_for_Bottom-Up_Human_Pose_Estimation_CVPR_2020_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/higherhrnet.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/higherhrnet.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512.py
   In Collection: HigherHRNet

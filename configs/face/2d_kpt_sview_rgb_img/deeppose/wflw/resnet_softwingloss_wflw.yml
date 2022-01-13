@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: Structure-Coherent Deep Feature Learning for Robust Face Alignment
     URL: https://ieeexplore.ieee.org/document/9442331/
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/softwingloss.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/softwingloss.md
 Models:
 - Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_softwingloss.py
   In Collection: SoftWingloss
