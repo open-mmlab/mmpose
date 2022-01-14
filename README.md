@@ -77,7 +77,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   * Support VoxelPose (ECCV'2020)
   * Support Soft Wing Loss (TIP'2021)
   * Support Adaptive Wing Loss (ICCV'2019)
-* OpenMMLab Open Platform is online! Try our pose estimation demo [here](https://platform.openmmlab.com/web-demo/demo/poseestimation).
+* 2OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## Installation
 
@@ -195,7 +195,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 
 ### Model Request
 
-We will keep up with the latest progress of the community, and support more popular algorithms and frameworks. If you have any feature requests, please feel free to leave a comment in [Issues](https://github.com/open-mmlab/mmpose/issues/9).
+We will keep up with the latest progress of the community, and support more popular algorithms and frameworks. If you have any feature requests, please feel free to leave a comment in [MMPose Roadmap](https://github.com/open-mmlab/mmpose/issues/9).
 
 ### Benchmark
 
