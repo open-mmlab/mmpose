@@ -1,5 +1,37 @@
 <div align="center">
-    <img src="resources/mmpose-logo.png" width="400"/>
+  <img src="resources/mmpose-logo.png" width="450"/>
+  <div>&nbsp;</div>
+  <div align="center">
+    <b><font size="5">OpenMMLab 官网</font></b>
+    <sup>
+      <a href="https://openmmlab.com">
+        <i><font size="4">HOT</font></i>
+      </a>
+    </sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <b><font size="5">OpenMMLab 开放平台</font></b>
+    <sup>
+      <a href="https://platform.openmmlab.com">
+        <i><font size="4">TRY IT OUT</font></i>
+      </a>
+    </sup>
+  </div>
+  <div>&nbsp;</div>
+
+[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
+[![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
+[![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
+[![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
+[![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
+
+[📘文档](https://mmpose.readthedocs.io/en/v0.22.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/en/v0.22.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/en/v0.22.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/en/v0.22.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.22.0/changelog.html) |
+[🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
 ## Introduction
