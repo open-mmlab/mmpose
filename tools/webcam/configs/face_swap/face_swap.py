@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     name='FaceSwap',
-    camera_id=1,
-    camera_fps=30,
+    camera_id=0,
+    camera_fps=20,
+    synchronous=True,
     nodes=[
         dict(
             type='DetectorNode',
@@ -13,6 +14,7 @@ runner = dict(
             '/mmdetection/v2.0/ssd/'
             'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
             'scratch_600e_coco_20210629_110627-974d9307.pth',
+            device='cpu',
             input_buffer='_input_',  # `_input_` is a runner-reserved buffer
             output_buffer='det_result'),
         dict(
@@ -24,6 +26,7 @@ runner = dict(
             model_checkpoint='https://openmmlab-share.oss-cn-hangzhou'
             '.aliyuncs.com/mmpose/top_down/vipnas/'
             'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
+            device='cpu',
             cls_names=['person'],
             input_buffer='det_result',
             output_buffer='pose_result'),
@@ -47,7 +50,7 @@ runner = dict(
             frame_buffer='face_swap',
             output_buffer='pose_vis'),
         dict(
-            type='BillboardNode',
+            type='NoticeBoardNode',
             name='Help Information',
             enable_key='h',
             content_lines=[

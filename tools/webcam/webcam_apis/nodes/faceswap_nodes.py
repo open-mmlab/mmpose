@@ -31,8 +31,7 @@ class FaceSwapNode(BaseFrameEffectNode):
         self.register_event(
             self.mode_key, is_keyboard=True, handler_func=self.switch_mode)
         self.history = dict(mode=None)
-        self._enabled = True
-        self._mode = Mode.NONE
+        self._mode = Mode.SWAP
 
     @property
     def mode(self):
@@ -56,33 +55,33 @@ class FaceSwapNode(BaseFrameEffectNode):
         pose_preds = self._merge_pose_results(frame_msg.get_pose_results())
         num_target = len(pose_preds)
 
-        # Skip if target number is less than 2
-        if num_target < 2:
-            return frame_msg.get_image()
-
-        # Generate new mapping if target number changes
-        if num_target != len(self.history['target_map']):
-            if self.mode == Mode.SWAP:
-                self.history['target_map'] = self._get_swap_map(num_target)
-            else:
-                self.history['target_map'] = np.repeat(
-                    np.random.choice(num_target), num_target)
-
-        # # Draw on canvas
+        # Show mode
         img = frame_msg.get_image()
         canvas = img.copy()
-        for tar_idx, src_idx in enumerate(self.history['target_map']):
-            face_src = self._get_face_info(pose_preds[src_idx])
-            face_tar = self._get_face_info(pose_preds[tar_idx])
-            canvas = self._swap_face(img, canvas, face_src, face_tar)
-
-        # Show mode name
         if self.mode == Mode.SWAP:
             mode_txt = 'Swap Mode'
         else:
             mode_txt = 'Clone Mode'
+
         cv2.putText(canvas, mode_txt, (10, 50), cv2.FONT_HERSHEY_DUPLEX, 0.8,
                     (255, 126, 0), 1)
+
+        # Skip if target number is less than 2
+        if num_target >= 2:
+            # Generate new mapping if target number changes
+            if num_target != len(self.history['target_map']):
+                if self.mode == Mode.SWAP:
+                    self.history['target_map'] = self._get_swap_map(num_target)
+                else:
+                    self.history['target_map'] = np.repeat(
+                        np.random.choice(num_target), num_target)
+
+            # # Draw on canvas
+            for tar_idx, src_idx in enumerate(self.history['target_map']):
+                face_src = self._get_face_info(pose_preds[src_idx])
+                face_tar = self._get_face_info(pose_preds[tar_idx])
+                canvas = self._swap_face(img, canvas, face_src, face_tar)
+
         return canvas
 
     def _crop_face_by_contour(self, img, contour):
