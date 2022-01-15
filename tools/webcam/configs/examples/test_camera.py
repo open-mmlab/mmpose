@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     name='Debug CamRunner',
-    camera_id=1,
+    camera_id=0,
     camera_fps=20,
     nodes=[
         dict(
