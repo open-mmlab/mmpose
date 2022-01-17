@@ -20,7 +20,7 @@ python tools/webcam/run_webcam.py --config tools/webcam/config/examples/pose_est
 
 | Hotkey | Function |
 | -- | -- |
-| v | Toggle the visualization on/off. |
+| v | Toggle the pose visualization on/off. |
 | h | Toggle the instruction on/off. |
 | m | Show the monitoring information. |
 | q | Exit. |

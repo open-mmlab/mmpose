@@ -3,7 +3,6 @@ runner = dict(
     name='FaceSwap',
     camera_id=0,
     camera_fps=20,
-    synchronous=True,
     nodes=[
         dict(
             type='DetectorNode',
@@ -33,14 +32,14 @@ runner = dict(
         dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
-            synchronous=False,
+            synchronous=True,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
             result_buffer='pose_result',
             output_buffer='frame'),
         dict(
             type='FaceSwapNode',
             name='FaceSwapper',
-            mode_key='m',
+            mode_key='s',
             frame_buffer='frame',
             output_buffer='face_swap'),
         dict(
@@ -48,7 +47,7 @@ runner = dict(
             name='Visualizer',
             enable_key='v',
             frame_buffer='face_swap',
-            output_buffer='pose_vis'),
+            output_buffer='vis_pose'),
         dict(
             type='NoticeBoardNode',
             name='Help Information',
@@ -56,12 +55,20 @@ runner = dict(
             content_lines=[
                 'Swap your faces! ',
                 'Hot-keys:',
-                '"v": Pose estimation result visualization',
-                '"m": Switch face swap mode amoug None, Swap and Clone',
+                '"v": Toggle the pose visualization on/off.',
+                '"s": Switch between modes: Shuffle, Clone and None',
                 '"h": Show help information',
+                '"m": Show diagnostic information',
                 '"q": Exit',
             ],
-            frame_buffer='pose_vis',
+            frame_buffer='vis_pose',
+            output_buffer='vis_notice'),
+        dict(
+            type='MonitorNode',
+            name='Monitor',
+            enable_key='m',
+            enable=False,
+            frame_buffer='vis_notice',
             output_buffer='display'),
         dict(
             type='RecorderNode',

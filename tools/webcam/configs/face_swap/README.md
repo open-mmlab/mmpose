@@ -1,9 +1,9 @@
 # Sunglasses and Bug-eye Effects
 
-We can apply fun effects on videos with pose estimation results, like adding sunglasses on the face, or make the eyes look bigger.
+Look! Where is my face?:eyes: And whose face is it?:laughing:
 
 <div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
+    <img src="https://user-images.githubusercontent.com/15977946/149705000-8818d55c-9264-409f-b995-77718cc6c822.gif" width="600px" alt><br>
 </div>
 
 ## Instruction
@@ -13,17 +13,17 @@ We can apply fun effects on videos with pose estimation results, like adding sun
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/examples/pose_estimation.py
+python tools/webcam/run_webcam.py --config tools/webcam/config/face_swap/face_swap.py
 ```
 
 ### Hotkeys
 
 | Hotkey | Function |
 | -- | -- |
-| s | Toggle the sunglasses effect on/off. |
-| b | Toggle the bug-eye effect on/off. |
+| s | Switch between modes <ul><li>Shuffle: Randomly shuffle all faces</li><li>Clone: Choose one face and clone it for everyone</li><li>None: Nothing happens and everyone is safe :)</li></ul>|
+| v | Toggle the pose visualization on/off. |
 | h | Toggle the instruction on/off. |
-| m | Show the monitoring information. |
+| m | Show diagnostic information. |
 | q | Exit. |
 
 ### Configuration

@@ -12,7 +12,7 @@ from .frame_effect_nodes import BaseFrameEffectNode
 
 class Mode(IntEnum):
     NONE = 0,
-    SWAP = 1,
+    SHUFFLE = 1,
     CLONE = 2
 
 
@@ -31,7 +31,7 @@ class FaceSwapNode(BaseFrameEffectNode):
         self.register_event(
             self.mode_key, is_keyboard=True, handler_func=self.switch_mode)
         self.history = dict(mode=None)
-        self._mode = Mode.SWAP
+        self._mode = Mode.SHUFFLE
 
     @property
     def mode(self):
@@ -58,10 +58,10 @@ class FaceSwapNode(BaseFrameEffectNode):
         # Show mode
         img = frame_msg.get_image()
         canvas = img.copy()
-        if self.mode == Mode.SWAP:
-            mode_txt = 'Swap Mode'
+        if self.mode == Mode.SHUFFLE:
+            mode_txt = 'Shuffle'
         else:
-            mode_txt = 'Clone Mode'
+            mode_txt = 'Clone'
 
         cv2.putText(canvas, mode_txt, (10, 50), cv2.FONT_HERSHEY_DUPLEX, 0.8,
                     (255, 126, 0), 1)
@@ -70,7 +70,7 @@ class FaceSwapNode(BaseFrameEffectNode):
         if num_target >= 2:
             # Generate new mapping if target number changes
             if num_target != len(self.history['target_map']):
-                if self.mode == Mode.SWAP:
+                if self.mode == Mode.SHUFFLE:
                     self.history['target_map'] = self._get_swap_map(num_target)
                 else:
                     self.history['target_map'] = np.repeat(
@@ -235,13 +235,14 @@ class FaceSwapNode(BaseFrameEffectNode):
     @staticmethod
     def _merge_pose_results(pose_results):
         preds = []
-        for prefix, pose_result in enumerate(pose_results):
-            model_cfg = pose_result['model_cfg']
-            for idx, _pred in enumerate(pose_result['preds']):
-                pred = _pred.copy()
-                pred['id'] = f'{prefix}.{_pred.get("track_id", str(idx))}'
-                pred['model_cfg'] = model_cfg
-                preds.append(pred)
+        if pose_results is not None:
+            for prefix, pose_result in enumerate(pose_results):
+                model_cfg = pose_result['model_cfg']
+                for idx, _pred in enumerate(pose_result['preds']):
+                    pred = _pred.copy()
+                    pred['id'] = f'{prefix}.{_pred.get("track_id", str(idx))}'
+                    pred['model_cfg'] = model_cfg
+                    preds.append(pred)
         return preds
 
     @staticmethod
