@@ -65,7 +65,7 @@ runner = dict(
             result_buffer='animal_pose',
             output_buffer='frame'),
         # 'SunglassesNode':
-        # This node draw the sunglasses effetc in the frame image.
+        # This node draw the sunglasses effect in the frame image.
         # Pose results is needed.
         dict(
             type='SunglassesNode',
