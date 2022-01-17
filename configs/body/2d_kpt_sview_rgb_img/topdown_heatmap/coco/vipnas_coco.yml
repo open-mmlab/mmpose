@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search'
     URL: https://arxiv.org/abs/2105.10154
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/vipnas.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/vipnas.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_mbv3_coco_256x192.py
   In Collection: ViPNAS

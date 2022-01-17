@@ -105,6 +105,7 @@ def collect_paper_readme():
     link_prefix = 'https://github.com/open-mmlab/mmpose/blob/master/'
 
     readme_files = glob.glob(osp.join('docs/en/papers/*/*.md'))
+    readme_files.sort()
     collection2readme = {}
 
     for readme_file in readme_files:
