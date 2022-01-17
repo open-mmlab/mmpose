@@ -4,7 +4,6 @@ runner = dict(
     name='Eye Effects',
     camera_id=0,
     camera_fps=20,
-
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name

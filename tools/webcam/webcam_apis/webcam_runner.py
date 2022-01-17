@@ -3,7 +3,6 @@ import logging
 import sys
 import time
 import warnings
-from signal import SIG_DFL, SIGPIPE, signal
 from threading import Thread
 from typing import Dict, List, Optional, Union
 
@@ -12,8 +11,6 @@ import cv2
 from .nodes import NODES
 from .utils import (BufferManager, EventManager, FrameMessage,
                     VideoEndingMessage, limit_max_fps)
-
-signal(SIGPIPE, SIG_DFL)
 
 DEFAULT_FRAME_BUFFER_SIZE = 1
 DEFAULT_INPUT_BUFFER_SIZE = 1
@@ -39,6 +36,7 @@ class WebcamRunner():
                  name: str = 'Default Webcam Runner',
                  camera_id: Union[int, str] = 0,
                  camera_fps: int = 30,
+                 synchronous: bool = False,
                  buffer_sizes: Optional[Dict[str, int]] = None,
                  nodes: Optional[List[Dict]] = None):
 
@@ -46,6 +44,7 @@ class WebcamRunner():
         self.name = name
         self.camera_id = camera_id
         self.camera_fps = camera_fps
+        self.synchronous = synchronous
 
         # self.buffer_manager manages data flow between runner and nodes
         self.buffer_manager = BufferManager()
@@ -59,6 +58,9 @@ class WebcamRunner():
 
         # Register runner events
         self.event_manager.register_event('_exit_', is_keyboard=False)
+        if self.synchronous:
+            self.event_manager.register_event('_idle_', is_keyboard=False)
+            self.event_manager.set('_idle_')
 
         # Register nodes
         if not nodes:
@@ -123,7 +125,14 @@ class WebcamRunner():
 
         # Read video frames in a loop
         while not self.event_manager.is_set('_exit_'):
-            with limit_max_fps(fps):
+            if self.synchronous:
+                # Read a new frame until the last frame has been processed
+                cm = self.event_manager.wait_and_handle('_idle_')
+            else:
+                # Read frames with a maximum FPS
+                cm = limit_max_fps(fps)
+
+            with cm:
                 # Read a frame
                 ret_val, frame = self.vcap.read()
                 if ret_val:
@@ -154,6 +163,10 @@ class WebcamRunner():
         while not self.event_manager.is_set('_exit_'):
             while self.buffer_manager.is_empty('_display_'):
                 time.sleep(0.001)
+
+            # Set _idle_ to allow reading next frame
+            if self.synchronous:
+                self.event_manager.set('_idle_')
 
             # acquire output from buffer
             output_msg = self.buffer_manager.get('_display_')
