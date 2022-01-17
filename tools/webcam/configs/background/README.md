@@ -1,6 +1,6 @@
-# Super Saiyan Effects
+# Matting Effects
 
-We can apply fun effects on videos with pose estimation results, like Super Saiyan transformation.
+We can apply background matting to the videos.
 
 <div align="center">
     <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
@@ -13,14 +13,14 @@ We can apply fun effects on videos with pose estimation results, like Super Saiy
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/configs/supersaiyan/saiyan.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/background/background.py
 ```
 
 ### Hotkeys
 
 | Hotkey | Function |
 | -- | -- |
-| s | Toggle the Super Saiyan effect on/off. |
+| b | Toggle the background matting effect on/off. |
 | h | Toggle the instruction on/off. |
 | m | Show the monitoring information. |
 | q | Exit. |
@@ -32,6 +32,7 @@ Note that the demo will automatically save the output video into a file `pose_es
 - **Choose a detection model**
 
 Users can choose detection models from the [MMDetection Model Zoo](https://mmdetection.readthedocs.io/en/v2.20.0/model_zoo.html). Just set the `model_config` and `model_checkpoint` in the detector node accordingly, and the model will be automatically downloaded and loaded.
+Note that in order to perform background matting, the model should be able to produce segmentation masks.
 
 ```python
 # 'DetectorNode':
@@ -47,28 +48,6 @@ dict(
     '__segm_mAP-0.354_20200505_003907-3e542a40.pth',
     input_buffer='_input_',  # `_input_` is a runner-reserved buffer
     output_buffer='det_result'),
-```
-
-- **Choose a or more pose models**
-
-In this demo we use two [top-down](https://github.com/open-mmlab/mmpose/tree/master/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap) pose estimation models for humans and animals respectively. Users can choose models from the [MMPose Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html). To apply different pose models on different instance types, you can add multiple pose estimator nodes with `cls_names` set accordingly.
-
-```python
-# 'TopDownPoseEstimatorNode':
-# This node performs keypoint detection from the frame image using an
-# MMPose top-down model. Detection results is needed.
-dict(
-    type='TopDownPoseEstimatorNode',
-    name='Human Pose Estimator',
-    model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
-    'topdown_heatmap/coco-wholebody/'
-    'vipnas_mbv3_coco_wholebody_256x192_dark.py',
-    model_checkpoint='https://openmmlab-share.oss-cn-hangz'
-    'hou.aliyuncs.com/mmpose/top_down/vipnas/vipnas_mbv3_co'
-    'co_wholebody_256x192_dark-e2158108_20211205.pth',
-    cls_names=['person'],
-    input_buffer='det_result',
-    output_buffer='human_pose')
 ```
 
 - **Run the demo without GPU**

@@ -445,9 +445,12 @@ def apply_background_effect(img,
         effect_region (tuple(4, )): The region to apply mask, the coordinates
             are normalized (x1, y1, x2, y2).
     """
-    # Choose the one with the highest score.
-    det_result = det_results[0]
-    bbox = det_result['bbox']
-    mask = det_result['mask'].astype(np.uint8)
-    img = copy_and_paste(img, background_img, mask, bbox, effect_region)
-    return img
+    if len(det_results) > 0:
+        # Choose the one with the highest score.
+        det_result = det_results[0]
+        bbox = det_result['bbox']
+        mask = det_result['mask'].astype(np.uint8)
+        img = copy_and_paste(img, background_img, mask, bbox, effect_region)
+        return img
+    else:
+        return background_img

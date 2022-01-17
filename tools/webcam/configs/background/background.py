@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     # Basic configurations of the runner
-    name='Human Pose and Effects',
+    name='Matting Effects',
     camera_id=0,
     camera_fps=30,
 
     # Define nodes.
-    #
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
     #   2. 'name': Node name
@@ -34,7 +33,7 @@ runner = dict(
         # MMPose top-down model. Detection results is needed.
         dict(
             type='TopDownPoseEstimatorNode',
-            name='TopDown Pose Estimator',
+            name='Human Pose Estimator',
             model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
             'topdown_heatmap/coco-wholebody/'
             'vipnas_mbv3_coco_wholebody_256x192_dark.py',
@@ -43,7 +42,7 @@ runner = dict(
             'co_wholebody_256x192_dark-e2158108_20211205.pth',
             cls_names=['person'],
             input_buffer='det_result',
-            output_buffer='pose_result'),
+            output_buffer='human_pose'),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
@@ -53,17 +52,8 @@ runner = dict(
             name='ResultBinder',
             synchronous=False,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-            result_buffer='pose_result',
+            result_buffer='human_pose',
             output_buffer='frame'),
-        # 'PoseVisualizerNode':
-        # This node draw the pose visualization result in the frame image.
-        # Pose results is needed.
-        dict(
-            type='PoseVisualizerNode',
-            name='Visualizer',
-            enable_key='v',
-            frame_buffer='frame',
-            output_buffer='vis_pose'),
         # 'MattingNode':
         # This node draw the matting visualization result in the frame image.
         # mask results is needed.
@@ -71,23 +61,22 @@ runner = dict(
             type='BackgroundNode',
             name='Visualizer',
             enable_key='b',
-            enable=False,
-            frame_buffer='vis_pose',
+            enable=True,
+            frame_buffer='frame',
             output_buffer='vis_bg',
             cls_names=['person']),
-        # 'BillboardNode':
-        # This node show a billboard with given content, e.g. help
+        # 'NoticeBoardNode':
+        # This node show a notice board with given content, e.g. help
         # information.
         dict(
-            type='BillboardNode',
-            name='Help Information',
+            type='NoticeBoardNode',
+            name='Helper',
             enable_key='h',
             frame_buffer='vis_bg',
             output_buffer='vis',
             content_lines=[
                 'This is a demo for pose visualization and simple image '
                 'effects. Have fun!', '', 'Hot-keys:',
-                '"v": Pose estimation result visualization',
                 '"b": Change background', '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],
@@ -99,7 +88,7 @@ runner = dict(
             type='MonitorNode',
             name='Monitor',
             enable_key='m',
-            style='fancy',
+            enable=False,
             frame_buffer='vis',
             output_buffer='_display_')  # `_frame_` is a runner-reserved buffer
     ])
