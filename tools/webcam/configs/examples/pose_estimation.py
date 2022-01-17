@@ -4,7 +4,6 @@ runner = dict(
     name='Pose Estimation',
     camera_id=0,
     camera_fps=20,
-
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -38,9 +37,9 @@ runner = dict(
             model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
             'topdown_heatmap/coco-wholebody/'
             'vipnas_mbv3_coco_wholebody_256x192_dark.py',
-            model_checkpoint='https://openmmlab-share.oss-cn-hangz'
-            'hou.aliyuncs.com/mmpose/top_down/vipnas/vipnas_mbv3_co'
-            'co_wholebody_256x192_dark-e2158108_20211205.pth',
+            model_checkpoint='https://download.openmmlab.com/mmpose/top_down/'
+            'vipnas/vipnas_mbv3_coco_wholebody_256x192_dark'
+            '-e2158108_20211205.pth',
             cls_names=['person'],
             input_buffer='det_result',
             output_buffer='human_pose'),
