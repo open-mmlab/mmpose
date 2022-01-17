@@ -394,7 +394,9 @@ class BackgroundNode(BaseFrameEffectNode):
         self.cls_names = cls_names
 
         if src_img_path is None:
-            src_img_path = 'demo/resources/background.jpg'
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '11788150/149731957-abd5c908-9c7f-45b2-b7bf-'\
+                           '821ab30c6a3e.jpg'
         self.src_img = _load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
@@ -447,11 +449,15 @@ class SaiyanNode(BaseFrameEffectNode):
         self.cls_names = cls_names
 
         if hair_img_path is None:
-            hair_img_path = 'demo/resources/saiyan.png'
+            hair_img_path = 'https://user-images.githubusercontent.com/'\
+                            '11788150/149732117-fcd2d804-dc2c-426c-bee7-'\
+                            '94be6146e05c.png'
         self.hair_img = _load_image_from_disk_or_url(hair_img_path)
 
         if light_video_path is None:
-            light_video_path = 'demo/resources/part1.mp4'
+            light_video_path = 'https://user-images.githubusercontent.com/'\
+                               '11788150/149732080-ea6cfeda-0dc5-4bbb-892a-'\
+                               '3831e5580520.mp4'
         self.light_video_path = light_video_path
         self.light_video = cv2.VideoCapture(self.light_video_path)
 
@@ -496,7 +502,9 @@ class MoustacheNode(BaseFrameEffectNode):
         super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
 
         if src_img_path is None:
-            src_img_path = 'demo/resources/moustache.jpeg'
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '11788150/149732141-3afbab55-252a-428c-b6d8'\
+                           '-0e352f432651.jpeg'
         self.src_img = _load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
