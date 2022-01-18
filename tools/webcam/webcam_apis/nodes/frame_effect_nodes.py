@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import abstractmethod
 from typing import Dict, List, Optional, Tuple, Union
-from urllib.request import urlopen
 
 import cv2
 import numpy as np
@@ -12,7 +11,7 @@ from mmpose.core import (apply_background_effect, apply_bugeye_effect,
                          apply_sunglasses_effect, imshow_bboxes,
                          imshow_keypoints)
 from mmpose.datasets import DatasetInfo
-from ..utils import FrameMessage, Message
+from ..utils import FrameMessage, Message, load_image_from_disk_or_url
 from .builder import NODES
 from .node import Node
 
@@ -21,44 +20,6 @@ try:
     psutil_proc = psutil.Process()
 except (ImportError, ModuleNotFoundError):
     psutil_proc = None
-
-
-def is_url(filename):
-    """Check if the file is a url link.
-
-    Args:
-        filename (str): the file name or url link.
-
-    Returns:
-        bool: is url or not.
-    """
-    prefixes = ['http://', 'https://']
-    for p in prefixes:
-        if filename.startswith(p):
-            return True
-    return False
-
-
-def _load_image_from_disk_or_url(filename, readFlag=cv2.IMREAD_COLOR):
-    """Load an image file, from disk or url.
-
-    Args:
-        filename (str): file name on the disk or url link.
-        readFlag (int): readFlag for imdecode.
-
-    Returns:
-        np.ndarray: A loaded image
-    """
-    if is_url(filename):
-        # download the image, convert it to a NumPy array, and then read
-        # it into OpenCV format
-        resp = urlopen(filename)
-        image = np.asarray(bytearray(resp.read()), dtype='uint8')
-        image = cv2.imdecode(image, readFlag)
-        return image
-    else:
-        image = cv2.imread(filename)
-        return image
 
 
 def _get_eye_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
@@ -358,7 +319,7 @@ class SunglassesNode(BaseFrameEffectNode):
             # https://www.vecteezy.com/free-vector/glass
             # Glass Vectors by Vecteezy
             src_img_path = 'demo/resources/sunglasses.jpg'
-        self.src_img = _load_image_from_disk_or_url(src_img_path)
+        self.src_img = load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
@@ -397,7 +358,7 @@ class BackgroundNode(BaseFrameEffectNode):
             src_img_path = 'https://user-images.githubusercontent.com/'\
                            '11788150/149731957-abd5c908-9c7f-45b2-b7bf-'\
                            '821ab30c6a3e.jpg'
-        self.src_img = _load_image_from_disk_or_url(src_img_path)
+        self.src_img = load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
@@ -452,7 +413,7 @@ class SaiyanNode(BaseFrameEffectNode):
             hair_img_path = 'https://user-images.githubusercontent.com/'\
                             '11788150/149732117-fcd2d804-dc2c-426c-bee7-'\
                             '94be6146e05c.png'
-        self.hair_img = _load_image_from_disk_or_url(hair_img_path)
+        self.hair_img = load_image_from_disk_or_url(hair_img_path)
 
         if light_video_path is None:
             light_video_path = 'https://user-images.githubusercontent.com/'\
@@ -505,7 +466,7 @@ class MoustacheNode(BaseFrameEffectNode):
             src_img_path = 'https://user-images.githubusercontent.com/'\
                            '11788150/149732141-3afbab55-252a-428c-b6d8'\
                            '-0e352f432651.jpeg'
-        self.src_img = _load_image_from_disk_or_url(src_img_path)
+        self.src_img = load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
