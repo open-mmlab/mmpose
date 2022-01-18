@@ -192,7 +192,7 @@ class LSTM_PM(BaseBackbone):
 
         self.conv1 = self._make_conv1(self.in_channels)
         self.conv2 = self._make_conv2(self.in_channels)
-        self.conv3 = self._make_conv3()
+        self.conv3 = self._make_conv3(self.hidden_channels)
         self.lstm = LSTM(self.out_channels, self.stem_channels,
                          self.hidden_channels)
 
@@ -287,12 +287,12 @@ class LSTM_PM(BaseBackbone):
         layers = self._make_stem_layers(in_channels)
         return nn.Sequential(*layers)
 
-    def _make_conv3(self):
+    def _make_conv3(self, in_channels):
         """Make conv3 for output."""
         layers = []
         layers.append(
             ConvModule(
-                self.hidden_channels,
+                in_channels,
                 128,
                 kernel_size=11,
                 stride=1,
