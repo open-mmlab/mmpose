@@ -77,7 +77,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   * 支持了 VoxelPose (ECCV'2020)
   * 支持了 Soft Wing Loss (TIP'2021)
   * 支持了 Adaptive Wing Loss (ICCV'2019)
-* OpenMMLab 开放平台已经正式上线! 欢迎尝试基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
+* 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装
 
