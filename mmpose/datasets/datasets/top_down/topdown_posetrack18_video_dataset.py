@@ -187,9 +187,8 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                                           self.id2name[img_id])
             image_files.append(cur_image_file)
 
-            # "images/val/012834_mpii_test/000000.jpg" -->> "000000.jpg"
-            cur_image_name = file_name.split('/')[-1]
-            ref_idx = int(cur_image_name.replace('.jpg', ''))
+            # "images/val/012834_mpii_test/000000.jpg" --> 0
+            ref_idx = int(osp.splitext(osp.basename(file_name))[0])
 
             # select the frame indices
             if not self.test_mode and self.frame_indices_train is not None:
@@ -206,11 +205,11 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 # the supporting frame index
                 support_idx = ref_idx + index
                 support_idx = np.clip(support_idx, 0, nframes - 1)
-                sup_image_file = cur_image_file.replace(
-                    cur_image_name,
+                sup_image_file = osp.join(
+                    osp.dirname(cur_image_file),
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
-                if os.path.exists(sup_image_file):
+                if osp.exists(sup_image_file):
                     image_files.append(sup_image_file)
                 else:
                     warnings.warn(f'{sup_image_file} does not exist, '
