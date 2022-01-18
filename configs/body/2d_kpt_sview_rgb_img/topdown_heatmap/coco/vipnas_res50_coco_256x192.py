@@ -1,9 +1,7 @@
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/coco.py'
+]
 evaluation = dict(interval=10, metric='mAP', key_indicator='AP')
 
 optimizer = dict(
@@ -19,13 +17,6 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[170, 200])
 total_epochs = 210
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
@@ -126,17 +117,20 @@ data = dict(
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=test_pipeline,
+        dataset_info={{_base_.dataset_info}}),
 )
