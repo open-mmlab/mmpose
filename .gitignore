@@ -124,6 +124,7 @@ docs_zh-CN/topics/
 docs_zh-CN/papers/*.md
 docs_zh-CN/datasets.md
 docs_zh-CN/modelzoo.md
+webcam_resources/
 
 !tests/data/**/*.pkl
 !tests/data/**/*.pkl.json

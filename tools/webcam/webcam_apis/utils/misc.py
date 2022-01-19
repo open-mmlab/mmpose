@@ -100,7 +100,7 @@ def get_local_path_given_url(url,
             from ``url`` will be used if not set. Default: None.
     """
     if save_dir is None:
-        save_dir = os.path.join('resources')
+        save_dir = os.path.join('webcam_resources')
 
     mkdir_or_exist(save_dir)
 
