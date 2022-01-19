@@ -2,10 +2,6 @@
 
 We can apply background matting to the videos.
 
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
-</div>
-
 ## Instruction
 
 ### Get started
