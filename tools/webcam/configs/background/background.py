@@ -3,7 +3,7 @@ runner = dict(
     # Basic configurations of the runner
     name='Matting Effects',
     camera_id=0,
-    camera_fps=30,
+    camera_fps=10,
 
     # Define nodes.
     # The configuration of a node usually includes:
@@ -75,9 +75,9 @@ runner = dict(
             frame_buffer='vis_bg',
             output_buffer='vis',
             content_lines=[
-                'This is a demo for pose visualization and simple image '
-                'effects. Have fun!', '', 'Hot-keys:',
-                '"b": Change background', '"h": Show help information',
+                'This is a demo for background changing effects. Have fun!',
+                '', 'Hot-keys:', '"b": Change background',
+                '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],
         ),
