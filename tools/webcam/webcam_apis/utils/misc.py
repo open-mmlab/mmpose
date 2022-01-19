@@ -71,11 +71,11 @@ def mkdir_or_exist(dir_name, mode=0o777):
     os.makedirs(dir_name, mode=mode, exist_ok=True)
 
 
-def get_local_path_given_url(url,
-                             save_dir=None,
-                             progress=True,
-                             check_hash=False,
-                             file_name=None):
+def get_cached_file_path(url,
+                         save_dir=None,
+                         progress=True,
+                         check_hash=False,
+                         file_name=None):
     r"""Loads the Torch serialized object at the given URL.
 
     If downloaded file is a zip file, it will be automatically decompressed
