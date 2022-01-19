@@ -11,5 +11,6 @@ from .mmpose_nodes import TopDownPoseEstimatorNode
 __all__ = [
     'NODES', 'PoseVisualizerNode', 'DetectorNode', 'TopDownPoseEstimatorNode',
     'MonitorNode', 'BugEyeNode', 'SunglassesNode', 'ModelResultBindingNode',
-    'NoticeBoardNode', 'RecorderNode', 'FaceSwapNode', 'MoustacheNode', 'SaiyanNode', 'BackgroundNode'
+    'NoticeBoardNode', 'RecorderNode', 'FaceSwapNode', 'MoustacheNode',
+    'SaiyanNode', 'BackgroundNode'
 ]
