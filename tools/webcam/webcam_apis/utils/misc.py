@@ -1,11 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
+import os.path as osp
+import sys
 import time
 from contextlib import contextmanager
 from typing import Optional
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import cv2
 import numpy as np
+from torch.hub import HASH_REGEX, download_url_to_file
 
 
 @contextmanager
@@ -57,6 +62,61 @@ def load_image_from_disk_or_url(filename, readFlag=cv2.IMREAD_COLOR):
     else:
         image = cv2.imread(filename)
         return image
+
+
+def mkdir_or_exist(dir_name, mode=0o777):
+    if dir_name == '':
+        return
+    dir_name = osp.expanduser(dir_name)
+    os.makedirs(dir_name, mode=mode, exist_ok=True)
+
+
+def get_local_path_given_url(url,
+                             save_dir=None,
+                             progress=True,
+                             check_hash=False,
+                             file_name=None):
+    r"""Loads the Torch serialized object at the given URL.
+
+    If downloaded file is a zip file, it will be automatically decompressed
+
+    If the object is already present in `model_dir`, it's deserialized and
+    returned.
+    The default value of ``model_dir`` is ``<hub_dir>/checkpoints`` where
+    ``hub_dir`` is the directory returned by :func:`~torch.hub.get_dir`.
+
+    Args:
+        url (str): URL of the object to download
+        save_dir (str, optional): directory in which to save the object
+        progress (bool, optional): whether or not to display a progress bar
+            to stderr. Default: True
+        check_hash(bool, optional): If True, the filename part of the URL
+            should follow the naming convention ``filename-<sha256>.ext``
+            where ``<sha256>`` is the first eight or more digits of the
+            SHA256 hash of the contents of the file. The hash is used to
+            ensure unique names and to verify the contents of the file.
+            Default: False
+        file_name (str, optional): name for the downloaded file. Filename
+            from ``url`` will be used if not set. Default: None.
+    """
+    if save_dir is None:
+        save_dir = os.path.join('resources')
+
+    mkdir_or_exist(save_dir)
+
+    parts = urlparse(url)
+    filename = os.path.basename(parts.path)
+    if file_name is not None:
+        filename = file_name
+    cached_file = os.path.join(save_dir, filename)
+    if not os.path.exists(cached_file):
+        sys.stderr.write('Downloading: "{}" to {}\n'.format(url, cached_file))
+        hash_prefix = None
+        if check_hash:
+            r = HASH_REGEX.search(filename)  # r is Optional[Match[str]]
+            hash_prefix = r.group(1) if r else None
+        download_url_to_file(url, cached_file, hash_prefix, progress=progress)
+    return cached_file
 
 
 def screen_matting(img, color_low=None, color_high=None, color=None):

@@ -10,7 +10,8 @@ from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_bboxes, imshow_keypoints)
 from mmpose.datasets import DatasetInfo
 from ..utils import (FrameMessage, Message, copy_and_paste, expand_and_clamp,
-                     load_image_from_disk_or_url, screen_matting)
+                     get_local_path_given_url, load_image_from_disk_or_url,
+                     screen_matting)
 from .builder import NODES
 from .node import Node
 
@@ -446,9 +447,10 @@ class SaiyanNode(BaseFrameEffectNode):
         self.hair_img = load_image_from_disk_or_url(hair_img_path)
 
         if light_video_path is None:
-            light_video_path = 'https://user-images.githubusercontent.com/'\
-                               '11788150/149732080-ea6cfeda-0dc5-4bbb-892a-'\
-                               '3831e5580520.mp4'
+            light_video_path = get_local_path_given_url(
+                'https://'
+                'user-images.githubusercontent.com/11788150/149732080'
+                '-ea6cfeda-0dc5-4bbb-892a-3831e5580520.mp4')
         self.light_video_path = light_video_path
         self.light_video = cv2.VideoCapture(self.light_video_path)
 
