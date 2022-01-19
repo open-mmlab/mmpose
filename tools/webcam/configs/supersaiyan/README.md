@@ -2,9 +2,7 @@
 
 We can apply fun effects on videos with pose estimation results, like Super Saiyan transformation.
 
-<div align="center">
-    <img src="https://user-images.githubusercontent.com/15977946/124059525-ce20c580-da5d-11eb-8e4a-2d96cd31fe9f.gif" width="600px" alt><br>
-</div>
+https://user-images.githubusercontent.com/11788150/150138076-2192079f-068a-4d43-bf27-2f1fd708cabc.mp4
 
 ## Instruction
 

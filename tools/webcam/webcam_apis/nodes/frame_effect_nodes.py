@@ -499,7 +499,7 @@ class SaiyanNode(BaseFrameEffectNode):
             # cache
             fg = img[np.where(mask_inst)]
 
-            bbox = expand_and_clamp(bbox[:4], im_shape, s=1.4)
+            bbox = expand_and_clamp(bbox[:4], im_shape, s=3.0)
             # Apply light effects between fg and bg
             img = copy_and_paste(
                 light_frame,
