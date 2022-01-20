@@ -9,7 +9,9 @@ from mmcv import Config, color_val
 from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_bboxes, imshow_keypoints)
 from mmpose.datasets import DatasetInfo
-from ..utils import FrameMessage, Message
+from ..utils import (FrameMessage, Message, copy_and_paste, expand_and_clamp,
+                     get_cached_file_path, load_image_from_disk_or_url,
+                     screen_matting)
 from .builder import NODES
 from .node import Node
 
@@ -59,6 +61,74 @@ def _get_eye_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
                              f'{dataset_name}')
 
     return left_eye_idx, right_eye_idx
+
+
+def _get_nose_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of the nose from the
+    model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+
+    Returns:
+        int: nose keypoint index.
+    """
+    nose_idx = None
+
+    # try obtaining nose point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+        nose_idx = dataset_info.keypoint_name2id.get('nose', None)
+    except AttributeError:
+        nose_idx = None
+
+    if nose_idx is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {
+                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
+        }:
+            nose_idx = 0
+        elif dataset_name in {'AnimalPoseDataset', 'AnimalAP10KDataset'}:
+            nose_idx = 2
+        else:
+            raise ValueError('Can not determine the nose id of '
+                             f'{dataset_name}')
+
+    return nose_idx
+
+
+def _get_face_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of the face from the
+    model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+
+    Returns:
+        list[int]: face keypoint index.
+    """
+    face_indices = None
+
+    # try obtaining nose point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+        for id in range(68):
+            face_indices.append(
+                dataset_info.keypoint_name2id.get(f'face_{id}', None))
+    except AttributeError:
+        face_indices = None
+
+    if face_indices is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
+            face_indices = list(range(23, 91))
+        else:
+            raise ValueError('Can not determine the face id of '
+                             f'{dataset_name}')
+
+    return face_indices
 
 
 class BaseFrameEffectNode(Node):
@@ -249,7 +319,7 @@ class SunglassesNode(BaseFrameEffectNode):
             # https://www.vecteezy.com/free-vector/glass
             # Glass Vectors by Vecteezy
             src_img_path = 'demo/resources/sunglasses.jpg'
-        self.src_img = cv2.imread(src_img_path)
+        self.src_img = load_image_from_disk_or_url(src_img_path)
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
@@ -263,6 +333,319 @@ class SunglassesNode(BaseFrameEffectNode):
 
             canvas = apply_sunglasses_effect(canvas, preds, self.src_img,
                                              left_eye_idx, right_eye_idx)
+        return canvas
+
+
+@NODES.register_module()
+class BackgroundNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 src_img_path: Optional[str] = None,
+                 cls_ids: Optional[List] = None,
+                 cls_names: Optional[List] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
+
+        self.cls_ids = cls_ids
+        self.cls_names = cls_names
+
+        if src_img_path is None:
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '11788150/149731957-abd5c908-9c7f-45b2-b7bf-'\
+                           '821ab30c6a3e.jpg'
+        self.src_img = load_image_from_disk_or_url(src_img_path)
+
+    def apply_background_effect(self,
+                                img,
+                                det_results,
+                                background_img,
+                                effect_region=(0.2, 0.2, 0.8, 0.8)):
+        """Change background.
+
+        Args:
+            img (np.ndarray): Image data.
+            det_results (list[dict]): The detection results containing:
+
+                - "cls_id" (int): Class index.
+                - "label" (str): Class label (e.g. 'person').
+                - "bbox" (ndarray:(5, )): bounding box result
+                    [x, y, w, h, score].
+                - "mask" (ndarray:(w, h)): instance segmentation result.
+            background_img (np.ndarray): Background image.
+            effect_region (tuple(4, )): The region to apply mask,
+                the coordinates are normalized (x1, y1, x2, y2).
+        """
+        if len(det_results) > 0:
+            # Choose the one with the highest score.
+            det_result = det_results[0]
+            bbox = det_result['bbox']
+            mask = det_result['mask'].astype(np.uint8)
+            img = copy_and_paste(img, background_img, mask, bbox,
+                                 effect_region)
+            return img
+        else:
+            return background_img
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        if canvas.shape != self.src_img.shape:
+            self.src_img = cv2.resize(self.src_img, canvas.shape[:2])
+        det_results = frame_msg.get_detection_results()
+        if not det_results:
+            return canvas
+
+        full_preds = []
+        for det_result in det_results:
+            preds = det_result['preds']
+            if self.cls_ids:
+                # Filter results by class ID
+                filtered_preds = [
+                    p for p in preds if p['cls_id'] in self.cls_ids
+                ]
+            elif self.cls_names:
+                # Filter results by class name
+                filtered_preds = [
+                    p for p in preds if p['label'] in self.cls_names
+                ]
+            else:
+                filtered_preds = preds
+            full_preds.extend(filtered_preds)
+
+        canvas = self.apply_background_effect(canvas, full_preds, self.src_img)
+
+        return canvas
+
+
+@NODES.register_module()
+class SaiyanNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 hair_img_path: Optional[str] = None,
+                 light_video_path: Optional[str] = None,
+                 cls_ids: Optional[List] = None,
+                 cls_names: Optional[List] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
+
+        self.cls_ids = cls_ids
+        self.cls_names = cls_names
+
+        if hair_img_path is None:
+            hair_img_path = 'https://user-images.githubusercontent.com/'\
+                            '11788150/149732117-fcd2d804-dc2c-426c-bee7-'\
+                            '94be6146e05c.png'
+        self.hair_img = load_image_from_disk_or_url(hair_img_path)
+
+        if light_video_path is None:
+            light_video_path = get_cached_file_path(
+                'https://'
+                'user-images.githubusercontent.com/11788150/149732080'
+                '-ea6cfeda-0dc5-4bbb-892a-3831e5580520.mp4')
+        self.light_video_path = light_video_path
+        self.light_video = cv2.VideoCapture(self.light_video_path)
+
+    def apply_saiyan_effect(self,
+                            img,
+                            pose_results,
+                            saiyan_img,
+                            light_frame,
+                            face_indices,
+                            bbox_thr=0.3,
+                            kpt_thr=0.5):
+        """Apply saiyan hair effect.
+
+        Args:
+            img (np.ndarray): Image data.
+            pose_results (list[dict]): The pose estimation results containing:
+                - "keypoints" ([K,3]): keypoint detection result
+                    in [x, y, score]
+            saiyan_img (np.ndarray): Saiyan image with transparent background.
+            light_frame (np.ndarray): Light image with green screen.
+            face_indices (int): Keypoint index of the face
+            kpt_thr (float): The score threshold of required keypoints.
+        """
+        img = img.copy()
+        im_shape = img.shape
+        # Apply lightning effects.
+        light_mask = screen_matting(light_frame, color='green')
+
+        # anchor points in the mask
+        pts_src = np.array(
+            [
+                [84, 398],  # face kpt 0
+                [331, 393],  # face kpt 16
+                [84, 145],
+                [331, 140]
+            ],
+            dtype=np.float32)
+
+        for pose in pose_results:
+            bbox = pose['bbox']
+
+            if bbox[-1] < bbox_thr:
+                continue
+
+            mask_inst = pose['mask']
+            # cache
+            fg = img[np.where(mask_inst)]
+
+            bbox = expand_and_clamp(bbox[:4], im_shape, s=3.0)
+            # Apply light effects between fg and bg
+            img = copy_and_paste(
+                light_frame,
+                img,
+                light_mask,
+                effect_region=(bbox[0] / im_shape[1], bbox[1] / im_shape[0],
+                               bbox[2] / im_shape[1], bbox[3] / im_shape[0]))
+            # pop
+            img[np.where(mask_inst)] = fg
+
+            # Apply Saiyan hair effects
+            kpts = pose['keypoints']
+            if kpts[face_indices[0], 2] < kpt_thr or kpts[face_indices[16],
+                                                          2] < kpt_thr:
+                continue
+
+            kpt_0 = kpts[face_indices[0], :2]
+            kpt_16 = kpts[face_indices[16], :2]
+            # orthogonal vector
+            vo = (kpt_0 - kpt_16)[::-1] * [-1, 1]
+
+            # anchor points in the image by eye positions
+            pts_tar = np.vstack([kpt_0, kpt_16, kpt_0 + vo, kpt_16 + vo])
+
+            h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+            patch = cv2.warpPerspective(
+                saiyan_img,
+                h_mat,
+                dsize=(img.shape[1], img.shape[0]),
+                borderValue=(0, 0, 0))
+            mask_patch = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+            mask_patch = (mask_patch > 1).astype(np.uint8)
+            img = cv2.copyTo(patch, mask_patch, img)
+
+        return img
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+
+        det_results = frame_msg.get_detection_results()
+        if not det_results:
+            return canvas
+
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+
+        for pose_result in pose_results:
+            model_cfg = pose_result['model_cfg']
+            preds = pose_result['preds']
+            face_indices = _get_face_keypoint_ids(model_cfg)
+
+            ret, frame = self.light_video.read()
+            if not ret:
+                self.light_video = cv2.VideoCapture(self.light_video_path)
+                ret, frame = self.light_video.read()
+
+            canvas = self.apply_saiyan_effect(canvas, preds, self.hair_img,
+                                              frame, face_indices)
+
+        return canvas
+
+
+@NODES.register_module()
+class MoustacheNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
+
+        if src_img_path is None:
+            src_img_path = 'https://user-images.githubusercontent.com/'\
+                           '11788150/149732141-3afbab55-252a-428c-b6d8'\
+                           '-0e352f432651.jpeg'
+        self.src_img = load_image_from_disk_or_url(src_img_path)
+
+    def apply_moustache_effect(self,
+                               img,
+                               pose_results,
+                               moustache_img,
+                               face_indices,
+                               kpt_thr=0.5):
+        """Apply moustache effect.
+
+        Args:
+            img (np.ndarray): Image data.
+            pose_results (list[dict]): The pose estimation results containing:
+                - "keypoints" ([K,3]): keypoint detection result
+                    in [x, y, score]
+            moustache_img (np.ndarray): Moustache image with white background.
+            left_eye_index (int): Keypoint index of left eye
+            right_eye_index (int): Keypoint index of right eye
+            kpt_thr (float): The score threshold of required keypoints.
+        """
+
+        hm, wm = moustache_img.shape[:2]
+        # anchor points in the moustache mask
+        pts_src = np.array([[1164, 741], [1729, 741], [1164, 1244],
+                            [1729, 1244]],
+                           dtype=np.float32)
+
+        for pose in pose_results:
+            kpts = pose['keypoints']
+            if kpts[face_indices[32], 2] < kpt_thr \
+                    or kpts[face_indices[34], 2] < kpt_thr \
+                    or kpts[face_indices[61], 2] < kpt_thr \
+                    or kpts[face_indices[63], 2] < kpt_thr:
+                continue
+
+            kpt_32 = kpts[face_indices[32], :2]
+            kpt_34 = kpts[face_indices[34], :2]
+            kpt_61 = kpts[face_indices[61], :2]
+            kpt_63 = kpts[face_indices[63], :2]
+            # anchor points in the image by eye positions
+            pts_tar = np.vstack([kpt_32, kpt_34, kpt_61, kpt_63])
+
+            h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+            patch = cv2.warpPerspective(
+                moustache_img,
+                h_mat,
+                dsize=(img.shape[1], img.shape[0]),
+                borderValue=(255, 255, 255))
+            #  mask the white background area in the patch with a threshold 200
+            mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+            mask = (mask < 200).astype(np.uint8)
+            img = cv2.copyTo(patch, mask, img)
+
+        return img
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            model_cfg = pose_result['model_cfg']
+            preds = pose_result['preds']
+            face_indices = _get_face_keypoint_ids(model_cfg)
+            canvas = self.apply_moustache_effect(canvas, preds, self.src_img,
+                                                 face_indices)
         return canvas
 
 
