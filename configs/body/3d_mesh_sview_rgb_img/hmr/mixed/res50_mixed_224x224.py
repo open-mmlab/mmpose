@@ -1,10 +1,4 @@
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
-
+_base_ = ['../../../../_base_/default_runtime.py']
 use_adversarial_train = True
 
 optimizer = dict(
@@ -16,13 +10,6 @@ optimizer_config = None
 lr_config = dict(policy='Fixed', by_epoch=False)
 
 total_epochs = 100
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 img_res = 224
 
 # model settings
