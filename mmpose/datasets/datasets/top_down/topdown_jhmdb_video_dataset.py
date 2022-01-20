@@ -80,29 +80,28 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
         self.use_gt_bbox = data_cfg['use_gt_bbox']
         self.bbox_file = data_cfg['bbox_file']
         self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
-        self.use_nms = data_cfg.get('use_nms', True)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
-        self.frame_weight_train = data_cfg['frame_weight_train']
-        self.frame_weight_test = data_cfg['frame_weight_test']
-        self.frame_weight = self.frame_weight_test \
-            if self.test_mode else self.frame_weight_train
 
         self.ph_fill_len = ph_fill_len
 
         # select the frame indices
-        self.frame_index_rand = data_cfg.get('frame_index_rand', True)
-        self.frame_index_range = data_cfg.get('frame_index_range', [-2, 2])
-        self.num_adj_frames = data_cfg.get('num_adj_frames', 1)
-        self.frame_indices_train = data_cfg.get('frame_indices_train', None)
-        self.frame_indices_test = data_cfg.get('frame_indices_test',
-                                               [-2, -1, 0, 1, 2])
+        frame_indices_train = data_cfg.get('frame_indices_train',
+                                           [0, 1, 2, 3, 4])
+        frame_indices_test = data_cfg.get('frame_indices_test',
+                                          [0, 1, 2, 3, 4])
+        self.frame_indices = frame_indices_test if self.test_mode \
+            else frame_indices_train
+        self.frame_indices.sort()
+        assert 0 in self.frame_indices
 
-        if self.frame_indices_train is not None:
-            self.frame_indices_train.sort()
-        self.frame_indices_test.sort()
+        frame_interval_train = data_cfg.get('frame_interval_train', 1)
+        frame_interval_test = data_cfg.get('frame_interval_test', 5)
+        self.frame_interval = frame_interval_train if self.test_mode \
+            else frame_interval_test
+        assert self.frame_interval > 0
 
         self.db = self._get_db()
 
@@ -116,125 +115,132 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
         return gt_db
 
     def _load_coco_keypoint_annotations(self):
-        """Ground truth bbox and keypoints."""
-        gt_db = []
-        for img_id in self.img_ids:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernel(img_id))
+        """Load ground truth image annotations and group them into clips."""
+        self._load_coco_keypoint_image_annotations()
+        gt_db = self._form_clip_annotations()
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernel(self, img_id):
-        """load annotation from COCOAPI.
+    def _load_coco_keypoint_image_annotations(self):
+        """load image annotations from COCOAPI."""
+        lookup_db = {}
+        image_db = []
 
-        Note:
-            bbox:[x1, y1, w, h]
-        Args:
-            img_id: coco image id
-        Returns:
-            dict: db entry
-        """
-        img_ann = self.coco.loadImgs(img_id)[0]
-        width = img_ann['width']
-        height = img_ann['height']
-        num_joints = self.ann_info['num_joints']
+        for img_id in self.img_ids:
+            img_ann = self.coco.loadImgs(img_id)[0]
+            width = img_ann['width']
+            height = img_ann['height']
+            num_joints = self.ann_info['num_joints']
 
-        file_name = img_ann['file_name']
-        nframes = int(img_ann['nframes'])
-        frame_id = int(img_ann['frame_id'])
+            nframes = int(img_ann['nframes'])
+            vid_id = int(img_ann['vid_id'])
+            frame_id = int(int(img_ann['frame_id']) % 10000)
 
-        ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
-        objs = self.coco.loadAnns(ann_ids)
+            if vid_id not in lookup_db.keys():
+                lookup_db[vid_id] = {}
+                lookup_db[vid_id]['nframes'] = nframes
+            if frame_id not in lookup_db[vid_id].keys():
+                lookup_db[vid_id][frame_id] = {}
 
-        # sanitize bboxes
-        valid_objs = []
-        for obj in objs:
-            if 'bbox' not in obj:
-                continue
-            x, y, w, h = obj['bbox']
-            # JHMDB uses matlab format, index is 1-based,
-            # we should first convert to 0-based index
-            x -= 1
-            y -= 1
-            x1 = max(0, x)
-            y1 = max(0, y)
-            x2 = min(width - 1, x1 + max(0, w - 1))
-            y2 = min(height - 1, y1 + max(0, h - 1))
-            if ('area' not in obj or obj['area'] > 0) and x2 > x1 and y2 > y1:
-                obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
-                valid_objs.append(obj)
-        objs = valid_objs
+            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
+            objs = self.coco.loadAnns(ann_ids)
 
-        bbox_id = 0
-        rec = []
-        for obj in objs:
-            if 'keypoints' not in obj:
-                continue
-            if max(obj['keypoints']) == 0:
-                continue
-            if 'num_keypoints' in obj and obj['num_keypoints'] == 0:
-                continue
-            joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-            joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
-
-            keypoints = np.array(obj['keypoints']).reshape(-1, 3)
-
-            # JHMDB uses matlab format, index is 1-based,
-            # we should first convert to 0-based index
-            joints_3d[:, :2] = keypoints[:, :2] - 1
-            joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
-
-            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-
-            image_files = []
-            cur_image_file = os.path.join(self.img_prefix,
-                                          self.id2name[img_id])
-            image_files.append(cur_image_file)
-
-            # "images/val/012834_mpii_test/000000.jpg" --> 0
-            ref_idx = int(osp.splitext(osp.basename(file_name))[0])
-
-            # select the frame indices
-            if not self.test_mode and self.frame_indices_train is not None:
-                indices = self.frame_indices_train
-            elif not self.test_mode and self.frame_index_rand:
-                low, high = self.frame_index_range
-                indices = np.random.randint(low, high + 1, self.num_adj_frames)
-            else:
-                indices = self.frame_indices_test
-
-            for index in indices:
-                if self.test_mode and index == 0:
+            # sanitize bboxes
+            valid_objs = []
+            for obj in objs:
+                if 'bbox' not in obj:
                     continue
-                # the supporting frame index
-                support_idx = ref_idx + index
-                support_idx = np.clip(support_idx, 0, nframes - 1)
-                sup_image_file = osp.join(
-                    osp.dirname(cur_image_file),
-                    str(support_idx).zfill(self.ph_fill_len) + '.jpg')
+                x, y, w, h = obj['bbox']
+                # JHMDB uses matlab format, index is 1-based,
+                # we should first convert to 0-based index
+                x -= 1
+                y -= 1
+                x1 = max(0, x)
+                y1 = max(0, y)
+                x2 = min(width - 1, x1 + max(0, w - 1))
+                y2 = min(height - 1, y1 + max(0, h - 1))
+                if ('area' not in obj or obj['area'] > 0) and x2 > x1 and y2 > y1:
+                    obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
+                    valid_objs.append(obj)
+            objs = valid_objs
 
-                if osp.exists(sup_image_file):
-                    image_files.append(sup_image_file)
-                else:
-                    warnings.warn(f'{sup_image_file} does not exist, '
-                                  f'use {cur_image_file} instead.')
-                    image_files.append(cur_image_file)
-            rec.append({
-                'image_file': image_files,
-                'center': center,
-                'scale': scale,
-                'bbox': obj['clean_bbox'][:4],
-                'rotation': 0,
-                'joints_3d': joints_3d,
-                'joints_3d_visible': joints_3d_visible,
-                'dataset': self.dataset_name,
-                'bbox_score': 1,
-                'bbox_id': f'{img_id}_{bbox_id:03}',
-                'nframes': nframes,
-                'frame_id': frame_id,
-                'frame_weight': self.frame_weight
-            })
-            bbox_id = bbox_id + 1
+            bbox_id = 0
+            for obj in objs:
+                if 'keypoints' not in obj:
+                    continue
+                if max(obj['keypoints']) == 0:
+                    continue
+                if 'num_keypoints' in obj and obj['num_keypoints'] == 0:
+                    continue
+                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
+                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
 
-        return rec
+                keypoints = np.array(obj['keypoints']).reshape(-1, 3)
+
+                # JHMDB uses matlab format, index is 1-based,
+                # we should first convert to 0-based index
+                joints_3d[:, :2] = keypoints[:, :2] - 1
+                joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
+
+                center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+
+                image_file = os.path.join(self.img_prefix, self.id2name[img_id])
+                track_id = obj['track_id']
+                rec = {
+                    'image_file': image_file,
+                    'center': center,
+                    'scale': scale,
+                    'bbox': obj['clean_bbox'][:4],
+                    'rotation': 0,
+                    'joints_3d': joints_3d,
+                    'joints_3d_visible': joints_3d_visible,
+                    'dataset': self.dataset_name,
+                    'bbox_score': 1,
+                    'bbox_id': f'{img_id}_{bbox_id:03}',
+                    'nframes': nframes,
+                    'vid_id': vid_id,
+                    'frame_id': frame_id,
+                    'track_id': track_id
+                }
+                bbox_id = bbox_id + 1
+
+                rec_id = len(image_db)
+                lookup_db[vid_id][frame_id][track_id] = rec_id
+                image_db.append(rec)
+
+        self.lookup_db = lookup_db
+        self.image_db = image_db
+
+    def _form_clip_annotations(self):
+        """Group image annotations into clips."""
+        gt_db = []
+
+        for vid_id, vid_info in self.lookup_db.items():
+            nframes = vid_info['nframes']
+            # frame_id start from 1
+            cur_frame_id = 1
+            for clip_id in range(int(np.ceil(nframes / self.frame_interval))):
+                cur_frame_id += clip_id * self.frame_interval
+                track_ids = vid_info[cur_frame_id].keys()
+
+                for track_id in track_ids:
+                    rec_list = []
+                    for index in self.frame_indices:
+                        frame_id = np.clip(cur_frame_id + index, 1, nframes)
+                        if track_id not in vid_info[frame_id]:
+                            break
+                        else:
+                            rec_id = vid_info[frame_id][track_id]
+                            rec = self.image_db[rec_id]
+                            rec_list.append(rec)
+
+                    if len(rec_list) == len(self.frame_indices):
+                        clip = {}
+                        for key in rec_list[0].keys():
+                            clip[key] = []
+                            for rec in rec_list:
+                                clip[key].append(rec[key])
+                        gt_db.append(clip)
+        return gt_db
 
     def _write_keypoint_results(self, keypoints, res_file):
         """Write results into a json file."""
