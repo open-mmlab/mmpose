@@ -1,10 +1,7 @@
-_base_ = ['../../../../_base_/datasets/freihand2d.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/freihand2d.py'
+]
 evaluation = dict(
     interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
 

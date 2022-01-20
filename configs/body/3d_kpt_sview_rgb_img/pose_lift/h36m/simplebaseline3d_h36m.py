@@ -1,10 +1,7 @@
-_base_ = ['../../../../_base_/datasets/h36m.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/h36m.py'
+]
 evaluation = dict(interval=10, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
 
 # optimizer settings
@@ -22,13 +19,6 @@ lr_config = dict(
 )
 
 total_epochs = 200
-
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
 
 channel_cfg = dict(
     num_output_channels=17,
