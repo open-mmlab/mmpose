@@ -1,9 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 runner = dict(
     # Basic configurations of the runner
-    name='Eye Effects',
+    name='Matting Effects',
     camera_id=0,
-    camera_fps=20,
+    camera_fps=10,
+
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -20,12 +21,11 @@ runner = dict(
         dict(
             type='DetectorNode',
             name='Detector',
-            model_config='demo/mmdetection_cfg/'
-            'ssdlite_mobilenetv2_scratch_600e_coco.py',
-            model_checkpoint='https://download.openmmlab.com'
-            '/mmdetection/v2.0/ssd/'
-            'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
-            'scratch_600e_coco_20210629_110627-974d9307.pth',
+            model_config='demo/mmdetection_cfg/mask_rcnn_r50_fpn_2x_coco.py',
+            model_checkpoint='https://download.openmmlab.com/'
+            'mmdetection/v2.0/mask_rcnn/mask_rcnn_r50_fpn_2x_coco/'
+            'mask_rcnn_r50_fpn_2x_coco_bbox_mAP-0.392'
+            '__segm_mAP-0.354_20200505_003907-3e542a40.pth',
             input_buffer='_input_',  # `_input_` is a runner-reserved buffer
             output_buffer='det_result'),
         # 'TopDownPoseEstimatorNode':
@@ -43,16 +43,6 @@ runner = dict(
             cls_names=['person'],
             input_buffer='det_result',
             output_buffer='human_pose'),
-        dict(
-            type='TopDownPoseEstimatorNode',
-            name='Animal Pose Estimator',
-            model_config='configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap'
-            '/animalpose/hrnet_w32_animalpose_256x256.py',
-            model_checkpoint='https://download.openmmlab.com/mmpose/animal/'
-            'hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth',
-            cls_names=['cat', 'dog', 'horse', 'sheep', 'cow'],
-            input_buffer='human_pose',
-            output_buffer='animal_pose'),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
@@ -62,28 +52,19 @@ runner = dict(
             name='ResultBinder',
             synchronous=False,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-            result_buffer='animal_pose',
+            result_buffer='human_pose',
             output_buffer='frame'),
-        # 'SunglassesNode':
-        # This node draw the sunglasses effect in the frame image.
-        # Pose results is needed.
+        # 'MattingNode':
+        # This node draw the matting visualization result in the frame image.
+        # mask results is needed.
         dict(
-            type='SunglassesNode',
-            name='Visualizer',
-            enable_key='s',
-            enable=True,
-            frame_buffer='frame',
-            output_buffer='vis_sunglasses'),
-        # 'BugEyeNode':
-        # This node draw the bug-eye effetc in the frame image.
-        # Pose results is needed.
-        dict(
-            type='BugEyeNode',
+            type='BackgroundNode',
             name='Visualizer',
             enable_key='b',
-            enable=False,
-            frame_buffer='vis_sunglasses',
-            output_buffer='vis_bugeye'),
+            enable=True,
+            frame_buffer='frame',
+            output_buffer='vis_bg',
+            cls_names=['person']),
         # 'NoticeBoardNode':
         # This node show a notice board with given content, e.g. help
         # information.
@@ -91,12 +72,11 @@ runner = dict(
             type='NoticeBoardNode',
             name='Helper',
             enable_key='h',
-            frame_buffer='vis_bugeye',
+            frame_buffer='vis_bg',
             output_buffer='vis',
             content_lines=[
-                'This is a demo for pose visualization and simple image '
-                'effects. Have fun!', '', 'Hot-keys:',
-                '"s": Sunglasses effect B-)', '"b": Bug-eye effect 0_0',
+                'This is a demo for background changing effects. Have fun!',
+                '', 'Hot-keys:', '"b": Change background',
                 '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],

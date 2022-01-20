@@ -56,17 +56,24 @@ class DetectorNode(Node):
 
     def _post_process(self, preds):
         if isinstance(preds, tuple):
-            preds = preds[0]
+            dets = preds[0]
+            segms = preds[1]
+        else:
+            dets = preds
+            segms = [[None]] * len(dets)
 
-        assert len(preds) == len(self.model.CLASSES)
+        assert len(dets) == len(self.model.CLASSES)
+        assert len(segms) == len(self.model.CLASSES)
         result = {'preds': [], 'model_cfg': self.model.cfg.copy()}
 
-        for i, (cls_name, bboxes) in enumerate(zip(self.model.CLASSES, preds)):
+        for i, (cls_name, bboxes,
+                masks) in enumerate(zip(self.model.CLASSES, dets, segms)):
             preds_i = [{
                 'cls_id': i,
                 'label': cls_name,
-                'bbox': bbox
-            } for bbox in bboxes]
+                'bbox': bbox,
+                'mask': mask,
+            } for (bbox, mask) in zip(bboxes, masks)]
             result['preds'].extend(preds_i)
 
         return result
