@@ -109,9 +109,9 @@ class LSTM(nn.Module):
 
         return cell_1, hidden_1
 
-    def forward(self, heatmap, feature, centermap, hidden_t, cell_t):
+    def forward(self, heatmap, feature, hidden_t, cell_t):
         """Forward function."""
-        x_t = torch.cat([heatmap, feature, centermap], dim=1)
+        x_t = torch.cat([heatmap, feature], dim=1)
 
         fx = self.conv_fx(x_t)
         fh = self.conv_fh(hidden_t)
@@ -161,9 +161,8 @@ class LSTM_PM(BaseBackbone):
         >>> import torch
         >>> self = LSTM_PM(num_stages=3)
         >>> self.eval()
-        >>> images = torch.rand(1, 21, 368, 368)
-        >>> centermap = torch.rand(1, 1, 368, 368)
-        >>> heatmaps = self.forward(images, centermap)
+        >>> images = torch.rand(1, 12, 368, 368)
+        >>> heatmaps = self.forward(images)
         >>> for heatmap in heatmaps:
         ...     print(tuple(heatmap.shape))
         (1, 32, 46, 46)
@@ -195,9 +194,6 @@ class LSTM_PM(BaseBackbone):
         self.conv3 = self._make_conv3(self.hidden_channels)
         self.lstm = LSTM(self.out_channels, self.stem_channels,
                          self.hidden_channels)
-
-        # TODO: May be generated in dataset as the last channel of target
-        self.pool_centermap = nn.AvgPool2d(kernel_size=9, stride=8)
 
     def _make_stem_layers(self, in_channels):
         """Make stem layers."""
@@ -351,30 +347,28 @@ class LSTM_PM(BaseBackbone):
                 elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
                     constant_init(m, 1)
 
-    def forward(self, images, centermap):
+    def forward(self, images):
         """Forward function."""
         heatmaps = []
 
-        image = images[:, :self.in_channels, :, :]
         # Stage1
+        image = images[:, :self.in_channels, :, :]
         initial_heatmap = self.conv1(image)
         feature = self.conv2(image)
-        centermap = self.pool_centermap(centermap)
 
-        x = torch.cat([initial_heatmap, feature, centermap], dim=1)
+        x = torch.cat([initial_heatmap, feature], dim=1)
         cell, hidden = self.lstm.init_forward(x)
         heatmap = self.conv3(hidden)
 
         heatmaps.append(initial_heatmap)
         heatmaps.append(heatmap)
 
+        # Stage2
         for i in range(1, self.num_stages):
             image = images[:, self.in_channels * i:self.in_channels *
                            (i + 1), :, :]
             features = self.conv2(image)
-            centermap = self.pool_centermap(centermap)
-            cell, hidden = self.lstm(heatmap, features, centermap, hidden,
-                                     cell)
+            cell, hidden = self.lstm(heatmap, features, hidden, cell)
             heatmap = self.conv3(hidden)
 
             heatmaps.append(heatmap)
