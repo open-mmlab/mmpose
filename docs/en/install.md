@@ -164,10 +164,10 @@ conda install -c pytorch pytorch torchvision -y
 pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
 
 # install mmpose
-git clone git@github.com:open-mmlab/mmpose.git
+git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
 pip install -r requirements.txt
-python setup.py develop
+pip install -v -e .
 
 mkdir data
 ln -s $COCO_ROOT data/coco
