@@ -26,7 +26,7 @@ class LoadImageFromFile:
         """Loading image(s) from file."""
         image_file = results['image_file']
 
-        if isinstance(image_file, (list, tuple)):
+        if isinstance(image_file, list):
             imgs = []
             for image in image_file:
                 img = mmcv.imread(image, self.color_type, self.channel_order)
