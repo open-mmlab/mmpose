@@ -641,20 +641,50 @@ class TopDownGenerateTarget:
                 num_joints = cfg['num_joints']
                 heatmap_size = cfg['heatmap_size']
 
-                target = np.empty(
-                    (0, num_joints, heatmap_size[1], heatmap_size[0]),
-                    dtype=np.float32)
-                target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
-                for i in range(num_sigmas):
-                    target_i, target_weight_i = self._msra_generate_target(
-                        cfg, joints_3d, joints_3d_visible, self.sigma[i])
-                    target = np.concatenate([target, target_i[None]], axis=0)
-                    target_weight = np.concatenate(
-                        [target_weight, target_weight_i[None]], axis=0)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t = np.empty(
+                            (0, num_joints, heatmap_size[1], heatmap_size[0]),
+                            dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                        for i in range(num_sigmas):
+                            t_i, t_weight_i = self._msra_generate_target(
+                                cfg, j, j_vis, self.sigma[i])
+                            t = np.concatenate([t, t_i[None]], axis=0)
+                            t_weight = np.concatenate(
+                                [t_weight, t_weight_i[None]], axis=0)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target = np.empty(
+                        (0, num_joints, heatmap_size[1], heatmap_size[0]),
+                        dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    for i in range(num_sigmas):
+                        target_i, target_weight_i = self._msra_generate_target(
+                            cfg, joints_3d, joints_3d_visible, self.sigma[i])
+                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target_weight = np.concatenate(
+                            [target_weight, target_weight_i[None]], axis=0)
+
             else:
-                target, target_weight = self._msra_generate_target(
-                    results['ann_info'], joints_3d, joints_3d_visible,
-                    self.sigma)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t, t_weight = self._msra_generate_target(
+                            results['ann_info'], j, j_vis,
+                            self.sigma)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target, target_weight = self._msra_generate_target(
+                        results['ann_info'], joints_3d, joints_3d_visible,
+                        self.sigma)
 
         elif self.encoding == 'Megvii':
             if isinstance(self.kernel, list):
@@ -663,18 +693,46 @@ class TopDownGenerateTarget:
                 num_joints = cfg['num_joints']
                 W, H = cfg['heatmap_size']
 
-                target = np.empty((0, num_joints, H, W), dtype=np.float32)
-                target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
-                for i in range(num_kernels):
-                    target_i, target_weight_i = self._megvii_generate_target(
-                        cfg, joints_3d, joints_3d_visible, self.kernel[i])
-                    target = np.concatenate([target, target_i[None]], axis=0)
-                    target_weight = np.concatenate(
-                        [target_weight, target_weight_i[None]], axis=0)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t = np.empty((0, num_joints, H, W), dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                        for i in range(num_kernels):
+                            t_i, t_weight_i = self._megvii_generate_target(
+                                cfg, j, j_vis, self.kernel[i])
+                            t = np.concatenate([t, t_i[None]], axis=0)
+                            t_weight = np.concatenate(
+                                [t_weight, t_weight_i[None]], axis=0)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target = np.empty((0, num_joints, H, W), dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    for i in range(num_kernels):
+                        target_i, target_weight_i = self._megvii_generate_target(
+                            cfg, joints_3d, joints_3d_visible, self.kernel[i])
+                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target_weight = np.concatenate(
+                            [target_weight, target_weight_i[None]], axis=0)
+
             else:
-                target, target_weight = self._megvii_generate_target(
-                    results['ann_info'], joints_3d, joints_3d_visible,
-                    self.kernel)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t, t_weight = self._megvii_generate_target(
+                            results['ann_info'], j, j_vis,
+                            self.kernel)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target, target_weight = self._megvii_generate_target(
+                        results['ann_info'], joints_3d, joints_3d_visible,
+                        self.kernel)
 
         elif self.encoding == 'UDP':
             if self.target_type.lower() == 'CombinedTarget'.lower():
@@ -692,20 +750,50 @@ class TopDownGenerateTarget:
                 num_joints = cfg['num_joints']
                 W, H = cfg['heatmap_size']
 
-                target = np.empty((0, channel_factor * num_joints, H, W),
-                                  dtype=np.float32)
-                target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
-                for i in range(num_factors):
-                    target_i, target_weight_i = self._udp_generate_target(
-                        cfg, joints_3d, joints_3d_visible, factors[i],
-                        self.target_type)
-                    target = np.concatenate([target, target_i[None]], axis=0)
-                    target_weight = np.concatenate(
-                        [target_weight, target_weight_i[None]], axis=0)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t = np.empty((0, channel_factor * num_joints, H, W),
+                                          dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                        for i in range(num_factors):
+                            t_i, t_weight_i = self._udp_generate_target(
+                                cfg, j, j_vis, factors[i],
+                                self.target_type)
+                            t = np.concatenate([t, t_i[None]], axis=0)
+                            t_weight = np.concatenate(
+                                [t_weight, t_weight_i[None]], axis=0)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target = np.empty((0, channel_factor * num_joints, H, W),
+                                      dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    for i in range(num_factors):
+                        target_i, target_weight_i = self._udp_generate_target(
+                            cfg, joints_3d, joints_3d_visible, factors[i],
+                            self.target_type)
+                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target_weight = np.concatenate(
+                            [target_weight, target_weight_i[None]], axis=0)
+
             else:
-                target, target_weight = self._udp_generate_target(
-                    results['ann_info'], joints_3d, joints_3d_visible, factors,
-                    self.target_type)
+                if isinstance(joints_3d, list):
+                    assert isinstance(joints_3d_visible, list)
+                    target = []
+                    target_weight = []
+                    for j, j_vis in zip(joints_3d, joints_3d_visible):
+                        t, t_weight = self._udp_generate_target(
+                            results['ann_info'], j, j_vis, factors,
+                            self.target_type)
+                        target.append(t)
+                        target_weight.append(t_weight)
+                else:
+                    target, target_weight = self._udp_generate_target(
+                        results['ann_info'], joints_3d, joints_3d_visible, factors,
+                        self.target_type)
         else:
             raise ValueError(
                 f'Encoding approach {self.encoding} is not supported!')
