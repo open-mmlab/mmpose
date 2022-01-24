@@ -42,13 +42,13 @@ def _track_by_iou(res, results_last, thr):
     Args:
         res (dict): The bbox & pose results of the person instance.
         results_last (list[dict]): The bbox & pose & track_id info of the
-                last frame (bbox_result, pose_result, track_id).
+            last frame (bbox_result, pose_result, track_id).
         thr (float): The threshold for iou tracking.
 
     Returns:
         int: The track id for the new person instance.
         list[dict]: The bbox & pose & track_id info of the persons
-                that have not been matched on the last frame.
+            that have not been matched on the last frame.
         dict: The matched person instance on the last frame.
     """
 
@@ -81,13 +81,13 @@ def _track_by_oks(res, results_last, thr):
     Args:
         res (dict): The pose results of the person instance.
         results_last (list[dict]): The pose & track_id info of the
-                last frame (pose_result, track_id).
+            last frame (pose_result, track_id).
         thr (float): The threshold for oks tracking.
 
     Returns:
         int: The track id for the new person instance.
         list[dict]: The pose & track_id info of the persons
-                that have not been matched on the last frame.
+            that have not been matched on the last frame.
         dict: The matched person instance on the last frame.
     """
     pose = res['keypoints'].reshape((-1))
@@ -121,10 +121,10 @@ def _get_area(results):
 
     Args:
         results (list[dict]): The pose results of the current frame
-                (pose_result).
+            (pose_result).
     Returns:
         list[dict]: The bbox & pose info of the current frame
-                (bbox_result, pose_result, area).
+            (bbox_result, pose_result, area).
     """
     for result in results:
         if 'bbox' in result:
@@ -152,7 +152,7 @@ def _temporal_refine(result, match_result, fps=None):
                 (pose_result).
         match_result (dict): The pose results of the last frame
                 (match_result)
-    return:
+    Returns:
         (array): The person keypoints after refine.
     """
     if 'one_euro' in match_result:
@@ -176,22 +176,23 @@ def get_track_id(results,
 
     Args:
         results (list[dict]): The bbox & pose results of the current frame
-                (bbox_result, pose_result).
+            (bbox_result, pose_result).
         results_last (list[dict]): The bbox & pose & track_id info of the
-                last frame (bbox_result, pose_result, track_id).
+            last frame (bbox_result, pose_result, track_id).
         next_id (int): The track id for the new person instance.
         min_keypoints (int): Minimum number of keypoints recognized as person.
-                            default: 3.
+            default: 3.
         use_oks (bool): Flag to using oks tracking. default: False.
         tracking_thr (float): The threshold for tracking.
         use_one_euro (bool): Option to use one-euro-filter. default: False.
         fps (optional): Parameters that d_cutoff
-                        when one-euro-filter is used as a video input
+            when one-euro-filter is used as a video input
 
     Returns:
-        list[dict]: The bbox & pose & track_id info of the
-                current frame (bbox_result, pose_result, track_id).
-        int: The track id for the new person instance.
+        tuple:
+        - results (list[dict]): The bbox & pose & track_id info of the \
+            current frame (bbox_result, pose_result, track_id).
+        - next_id (int): The track id for the new person instance.
     """
     results = _get_area(results)
 
@@ -239,11 +240,11 @@ def vis_pose_tracking_result(model,
         model (nn.Module): The loaded detector.
         img (str | np.ndarray): Image filename or loaded image.
         result (list[dict]): The results to draw over `img`
-                (bbox_result, pose_result).
+            (bbox_result, pose_result).
         radius (int): Radius of circles.
         thickness (int): Thickness of lines.
         kpt_score_thr (float): The threshold to visualize the keypoints.
-        skeleton (list[tuple()]): Default None.
+        skeleton (list[tuple]): Default None.
         show (bool):  Whether to show the image. Default True.
         out_file (str|None): The filename of the output visualization image.
     """

@@ -75,11 +75,14 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/ochuman/resnet_ochuman.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/hrnet_posetrack18.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/posetrack18/resnet_posetrack18.yml
+- configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_posetrack18_posewarper.yml
+- configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.yml
 - configs/body/3d_kpt_sview_rgb_img/pose_lift/h36m/simplebaseline3d_h36m.yml
 - configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.yml
 - configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m.yml
 - configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp.yml
 - configs/body/3d_mesh_sview_rgb_img/hmr/mixed/resnet_mixed.yml
+- configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_softwingloss_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/resnet_wingloss_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/300w/hrnetv2_300w.yml
@@ -92,6 +95,7 @@ Import:
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/resnet_coco_wholebody_face.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/scnet_coco_wholebody_face.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/cofw/hrnetv2_cofw.yml
+- configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_awing_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_dark_wflw.yml
 - configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/wflw/hrnetv2_wflw.yml
 - configs/fashion/2d_kpt_sview_rgb_img/deeppose/deepfashion/resnet_deepfashion.yml
@@ -129,4 +133,6 @@ Import:
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_dark_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.yml
+- configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_coco-wholebody.yml
+- configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_dark_halpe.yml

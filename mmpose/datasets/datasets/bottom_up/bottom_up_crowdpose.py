@@ -13,6 +13,11 @@ from .bottom_up_coco import BottomUpCocoDataset
 class BottomUpCrowdPoseDataset(BottomUpCocoDataset):
     """CrowdPose dataset for bottom-up pose estimation.
 
+    "CrowdPose: Efficient Crowded Scenes Pose Estimation and
+    A New Benchmark", CVPR'2019.
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1812.00324>`__.
+
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
 

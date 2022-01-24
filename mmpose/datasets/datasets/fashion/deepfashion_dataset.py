@@ -14,9 +14,9 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
-    `DeepFashion: Powering Robust Clothes Recognition
-    and Retrieval with Rich Annotations' CVPR'2016 and
-    `Fashion Landmark Detection in the Wild' ECCV'2016
+    "DeepFashion: Powering Robust Clothes Recognition
+    and Retrieval with Rich Annotations", CVPR'2016.
+    "Fashion Landmark Detection in the Wild", ECCV'2016.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -152,23 +152,23 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, [ 'img_00000001.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['img_00000001.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.

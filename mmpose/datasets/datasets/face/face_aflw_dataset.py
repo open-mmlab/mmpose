@@ -14,10 +14,10 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Face AFLW dataset for top-down face keypoint localization.
 
-    `Annotated Facial Landmarks in the Wild: A Large-scale,
-    Real-world Database for Facial Landmark Localization.
+    "Annotated Facial Landmarks in the Wild: A Large-scale,
+    Real-world Database for Facial Landmark Localization".
     In Proc. First IEEE International Workshop on Benchmarking
-    Facial Image Analysis Technologies, 2011`
+    Facial Image Analysis Technologies, 2011.
 
     The dataset loads raw images and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -123,7 +123,7 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             box_sizes (np.ndarray[N, 1]): box size
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
 
@@ -131,24 +131,24 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+            outputs (list[dict]): Outputs containing the following items.
+
+                - preds (np.ndarray[1,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
-                    'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
-                    '1', '8', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+                - boxes (np.ndarray[1,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_path (list[str]): For example, ['300W/ibug/\
+                    image_018.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'NME'.

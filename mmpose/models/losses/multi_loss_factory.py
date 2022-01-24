@@ -39,17 +39,19 @@ class HeatmapLoss(nn.Module):
         self.supervise_empty = supervise_empty
 
     def forward(self, pred, gt, mask):
-        """
+        """Forward function.
+
         Note:
-            batch_size: N
-            heatmaps weight: W
-            heatmaps height: H
-            max_num_people: M
-            num_keypoints: K
+            - batch_size: N
+            - heatmaps weight: W
+            - heatmaps height: H
+            - max_num_people: M
+            - num_keypoints: K
+
         Args:
-            pred (torch.Tensor[NxKxHxW]):heatmap of output.
-            gt (torch.Tensor[NxKxHxW]): target heatmap.
-            mask (torch.Tensor[NxHxW]): mask of target.
+            pred (torch.Tensor[N,K,H,W]):heatmap of output.
+            gt (torch.Tensor[N,K,H,W]): target heatmap.
+            mask (torch.Tensor[N,H,W]): mask of target.
         """
         assert pred.size() == gt.size(
         ), f'pred.size() is {pred.size()}, gt.size() is {gt.size()}'
@@ -69,7 +71,7 @@ class AELoss(nn.Module):
     """Associative Embedding loss.
 
     `Associative Embedding: End-to-End Learning for Joint Detection and
-    Grouping <https://arxiv.org/abs/1611.05424v2>`
+    Grouping <https://arxiv.org/abs/1611.05424v2>`_.
     """
 
     def __init__(self, loss_type):
@@ -80,14 +82,14 @@ class AELoss(nn.Module):
         """Associative embedding loss for one image.
 
         Note:
-            heatmaps weight: W
-            heatmaps height: H
-            max_num_people: M
-            num_keypoints: K
+            - heatmaps weight: W
+            - heatmaps height: H
+            - max_num_people: M
+            - num_keypoints: K
 
         Args:
-            pred_tag (torch.Tensor[(KxHxW)x1]): tag of output for one image.
-            joints (torch.Tensor[MxKx2]): joints information for one image.
+            pred_tag (torch.Tensor[KxHxW,1]): tag of output for one image.
+            joints (torch.Tensor[M,K,2]): joints information for one image.
         """
         tags = []
         pull = 0
@@ -138,15 +140,15 @@ class AELoss(nn.Module):
         """Accumulate the tag loss for each image in the batch.
 
         Note:
-            batch_size: N
-            heatmaps weight: W
-            heatmaps height: H
-            max_num_people: M
-            num_keypoints: K
+            - batch_size: N
+            - heatmaps weight: W
+            - heatmaps height: H
+            - max_num_people: M
+            - num_keypoints: K
 
         Args:
-            tags (torch.Tensor[Nx(KxHxW)x1]): tag channels of output.
-            joints (torch.Tensor[NxMxKx2]): joints information.
+            tags (torch.Tensor[N,KxHxW,1]): tag channels of output.
+            joints (torch.Tensor[N,M,K,2]): joints information.
         """
         pushes, pulls = [], []
         joints = joints.cpu().data.numpy()
@@ -231,18 +233,18 @@ class MultiLossFactory(nn.Module):
         """Forward function to calculate losses.
 
         Note:
-            batch_size: N
-            heatmaps weight: W
-            heatmaps height: H
-            max_num_people: M
-            num_keypoints: K
-            output_channel: C C=2K if use ae loss else K
+            - batch_size: N
+            - heatmaps weight: W
+            - heatmaps height: H
+            - max_num_people: M
+            - num_keypoints: K
+            - output_channel: C C=2K if use ae loss else K
 
         Args:
-            outputs (List(torch.Tensor[NxCxHxW])): outputs of stages.
-            heatmaps (List(torch.Tensor[NxKxHxW])): target of heatmaps.
-            masks (List(torch.Tensor[NxHxW])): masks of heatmaps.
-            joints (List(torch.Tensor[NxMxKx2])): joints of ae loss.
+            outputs (list(torch.Tensor[N,C,H,W])): outputs of stages.
+            heatmaps (list(torch.Tensor[N,K,H,W])): target of heatmaps.
+            masks (list(torch.Tensor[N,H,W])): masks of heatmaps.
+            joints (list(torch.Tensor[N,M,K,2])): joints of ae loss.
         """
         heatmaps_losses = []
         push_losses = []

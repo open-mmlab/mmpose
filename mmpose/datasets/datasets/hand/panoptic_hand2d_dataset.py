@@ -14,8 +14,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Panoptic dataset for top-down hand pose estimation.
 
-    `Hand Keypoint Detection in Single Images using Multiview
-    Bootstrapping' CVPR'2017
+    "Hand Keypoint Detection in Single Images using Multiview
+    Bootstrapping", CVPR'2017.
     More details can be found in the `paper
     <https://arxiv.org/abs/1704.07809>`__ .
 
@@ -134,24 +134,24 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
         """Evaluate panoptic keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['hand_labels/'
-                    'manual_test/000648952_02_l.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            outputs (list[dict]): Outputs containing the following items.
 
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['hand_labels/\
+                    manual_test/000648952_02_l.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCKh', 'AUC', 'EPE'.

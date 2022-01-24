@@ -7,20 +7,21 @@ import math
 
 import cv2
 import numpy as np
+import torch
 
 
 def fliplr_joints(joints_3d, joints_3d_visible, img_width, flip_pairs):
     """Flip human joints horizontally.
 
     Note:
-        num_keypoints: K
+        - num_keypoints: K
 
     Args:
         joints_3d (np.ndarray([K, 3])): Coordinates of keypoints.
         joints_3d_visible (np.ndarray([K, 1])): Visibility of keypoints.
         img_width (int): Image width.
-        flip_pairs (list[tuple()]): Pairs of keypoints which are mirrored
-            (for example, left ear -- right ear).
+        flip_pairs (list[tuple]): Pairs of keypoints which are mirrored
+            (for example, left ear and right ear).
 
     Returns:
         tuple: Flipped human joints.
@@ -58,11 +59,13 @@ def fliplr_regression(regression,
     """Flip human joints horizontally.
 
     Note:
-        batch_size: N
-        num_keypoint: K
+        - batch_size: N
+        - num_keypoint: K
+
     Args:
         regression (np.ndarray([..., K, C])): Coordinates of keypoints, where K
             is the joint number and C is the dimension. Example shapes are:
+
             - [N, K, C]: a batch of keypoints where N is the batch size.
             - [N, T, K, C]: a batch of pose sequences, where T is the frame
                 number.
@@ -70,6 +73,7 @@ def fliplr_regression(regression,
             (for example, left ear -- right ear).
         center_mode (str): The mode to set the center location on the x-axis
             to flip around. Options are:
+
             - static: use a static x value (see center_x also)
             - root: use a root joint (see center_index also)
         center_x (float): Set the x-axis location of the flip center. Only used
@@ -78,9 +82,7 @@ def fliplr_regression(regression,
             will be used as the flip center. Only used when center_mode=root.
 
     Returns:
-        tuple: Flipped human joints.
-
-        - regression_flipped (np.ndarray([..., K, C])): Flipped joints.
+        np.ndarray([..., K, C]): Flipped joints.
     """
     assert regression.ndim >= 2, f'Invalid pose shape {regression.shape}'
 
@@ -109,10 +111,10 @@ def flip_back(output_flipped, flip_pairs, target_type='GaussianHeatmap'):
     """Flip the flipped heatmaps back to the original form.
 
     Note:
-        batch_size: N
-        num_keypoints: K
-        heatmap height: H
-        heatmap width: W
+        - batch_size: N
+        - num_keypoints: K
+        - heatmap height: H
+        - heatmap width: W
 
     Args:
         output_flipped (np.ndarray[N, K, H, W]): The output heatmaps obtained
@@ -319,7 +321,7 @@ def get_warp_matrix(theta, size_input, size_dst, size_target):
         size_target (np.ndarray): Size of ROI in input plane [w, h].
 
     Returns:
-        matrix (np.ndarray): A matrix for transformation.
+        np.ndarray: A matrix for transformation.
     """
     theta = np.deg2rad(theta)
     matrix = np.zeros((2, 3), dtype=np.float32)
@@ -347,7 +349,7 @@ def warp_affine_joints(joints, mat):
         mat (np.ndarray[3, 2]): The affine matrix.
 
     Returns:
-        matrix (np.ndarray[..., 2]): Result coordinate of joints.
+        np.ndarray[..., 2]: Result coordinate of joints.
     """
     joints = np.array(joints)
     shape = joints.shape
@@ -355,3 +357,10 @@ def warp_affine_joints(joints, mat):
     return np.dot(
         np.concatenate((joints, joints[:, 0:1] * 0 + 1), axis=1),
         mat.T).reshape(shape)
+
+
+def affine_transform_torch(pts, t):
+    npts = pts.shape[0]
+    pts_homo = torch.cat([pts, torch.ones(npts, 1, device=pts.device)], dim=1)
+    out = torch.mm(t, torch.t(pts_homo))
+    return torch.t(out[:2, :])

@@ -24,7 +24,14 @@ def process_mmtracking_results(mmtracking_results):
     :return: a list of tracked bounding boxes
     """
     person_results = []
-    for track in mmtracking_results['track_results'][0]:
+    # 'track_results' is changed to 'track_bboxes'
+    # in https://github.com/open-mmlab/mmtracking/pull/300
+    if 'track_bboxes' in mmtracking_results:
+        tracking_results = mmtracking_results['track_bboxes'][0]
+    elif 'track_results' in mmtracking_results:
+        tracking_results = mmtracking_results['track_results'][0]
+
+    for track in tracking_results:
         person = {}
         person['track_id'] = int(track[0])
         person['bbox'] = track[1:]
@@ -162,7 +169,7 @@ def main():
         if save_out_video:
             videoWriter.write(vis_img)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
         frame_id += 1
@@ -170,7 +177,8 @@ def main():
     cap.release()
     if save_out_video:
         videoWriter.release()
-    cv2.destroyAllWindows()
+    if args.show:
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

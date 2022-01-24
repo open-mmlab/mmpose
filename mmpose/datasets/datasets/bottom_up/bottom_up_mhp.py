@@ -13,11 +13,10 @@ from .bottom_up_coco import BottomUpCocoDataset
 class BottomUpMhpDataset(BottomUpCocoDataset):
     """MHPv2.0 dataset for top-down pose estimation.
 
-    `The Multi-Human Parsing project of Learning and Vision (LV) Group,
-    National University of Singapore (NUS) is proposed to push the frontiers
-    of fine-grained visual understanding of humans in crowd scene.
-    <https://lv-mhp.github.io/>`
-
+    "Understanding Humans in Crowded Scenes: Deep Nested Adversarial
+    Learning and A New Benchmark for Multi-Human Parsing", ACM MM'2018.
+    More details can be found in the `paper
+    <https://arxiv.org/abs/1804.03287>`__
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.

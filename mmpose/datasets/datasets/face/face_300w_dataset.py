@@ -14,8 +14,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Face300W dataset for top-down face keypoint localization.
 
-    `300 faces In-the-wild challenge: Database and results.
-    Image and Vision Computing (IMAVIS) 2019`.
+    "300 faces In-the-wild challenge: Database and results",
+    Image and Vision Computing (IMAVIS) 2019.
 
     The dataset loads raw images and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -115,7 +115,7 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             gts (np.ndarray[N, K, 2]): Groundtruth keypoint location.
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
 
@@ -125,24 +125,24 @@ class Face300WDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+            outputs (list[dict]): Outputs containing the following items.
+
+                - preds (np.ndarray[1,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
-                    'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
-                    '1', '8', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+                - boxes (np.ndarray[1,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_path (list[str]): For example, ['300W/ibug/\
+                    image_018.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed.
                 Options: 'NME'.

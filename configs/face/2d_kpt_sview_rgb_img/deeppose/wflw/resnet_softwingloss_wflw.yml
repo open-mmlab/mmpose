@@ -1,0 +1,28 @@
+Collections:
+- Name: SoftWingloss
+  Paper:
+    Title: Structure-Coherent Deep Feature Learning for Robust Face Alignment
+    URL: https://ieeexplore.ieee.org/document/9442331/
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/softwingloss.md
+Models:
+- Config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_softwingloss.py
+  In Collection: SoftWingloss
+  Metadata:
+    Architecture:
+    - DeepPose
+    - ResNet
+    - SoftWingloss
+    Training Data: WFLW
+  Name: deeppose_res50_wflw_256x256_softwingloss
+  Results:
+  - Dataset: WFLW
+    Metrics:
+      NME blur: 5.01
+      NME expression: 4.7
+      NME illumination: 4.37
+      NME makeup: 4.36
+      NME occlusion: 5.27
+      NME pose: 7.77
+      NME test: 4.41
+    Task: Face 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss-4d34f22a_20211212.pth

@@ -7,7 +7,7 @@
 We provide a demo script to test a single image, given gt json file.
 
 *Pose Model Preparation:*
-The pre-trained pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/animal_models.html#).
+The pre-trained pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/topics/animal.html).
 Take [macaque model](https://download.openmmlab.com/mmpose/animal/resnet/res50_macaque_256x192-98f1dd3a_20210407.pth) as an example:
 
 ```shell
@@ -109,7 +109,7 @@ python demo/top_down_video_demo_with_mmdet.py \
 **Other Animals**
 
 For other animals, we have also provided some pre-trained animal detection models (1-class models). Supported models can be found in [det model zoo](/demo/docs/mmdet_modelzoo.md).
-The pre-trained animal pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/animal_models.html#).
+The pre-trained animal pose estimation model can be found in [pose model zoo](https://mmpose.readthedocs.io/en/latest/topics/animal.html).
 
 ```shell
 python demo/top_down_video_demo_with_mmdet.py \

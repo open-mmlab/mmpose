@@ -237,15 +237,15 @@ class JointsEncoder:
     def __call__(self, joints):
         """
         Note:
-            number of people in image: N
-            number of keypoints: K
-            max number of people in an image: M
+            - number of people in image: N
+            - number of keypoints: K
+            - max number of people in an image: M
 
         Args:
-            joints (np.ndarray[NxKx3])
+            joints (np.ndarray[N,K,3])
 
         Returns:
-            visible_kpts (np.ndarray[MxKx2]).
+            visible_kpts (np.ndarray[M,K,2]).
         """
         visible_kpts = np.zeros((self.max_num_people, self.num_joints, 2),
                                 dtype=np.float32)
@@ -290,12 +290,12 @@ class PAFGenerator:
         """Accumulate part affinity fields between two given joints.
 
         Args:
-            pafs (np.ndarray[2xHxW]): paf maps (2 dimensions:x axis and
+            pafs (np.ndarray[2,H,W]): paf maps (2 dimensions:x axis and
                 y axis) for a certain limb connection. This argument will
                 be modified inplace.
             src (np.ndarray[2,]): coordinates of the source joint.
             dst (np.ndarray[2,]): coordinates of the destination joint.
-            count (np.ndarray[HxW]): count map that preserves the number
+            count (np.ndarray[H,W]): count map that preserves the number
                 of non-zero vectors at each point. This argument will be
                 modified inplace.
         """
@@ -565,8 +565,6 @@ class BottomUpRandomAffine:
         results['img'], results['mask'], results[
             'joints'] = image, mask, joints
 
-        results['center'], results['scale'] = center, scale
-
         return results
 
 
@@ -645,8 +643,7 @@ class BottomUpGenerateTarget:
             self._generate(results['ann_info']['num_joints'],
                            results['ann_info']['heatmap_size'])
         target_list = list()
-        img, mask_list, joints_list = results['img'], results['mask'], results[
-            'joints']
+        mask_list, joints_list = results['mask'], results['joints']
 
         for scale_id in range(results['ann_info']['num_scales']):
             target_t = heatmap_generator[scale_id](joints_list[scale_id])
@@ -656,8 +653,7 @@ class BottomUpGenerateTarget:
             mask_list[scale_id] = mask_list[scale_id].astype(np.float32)
             joints_list[scale_id] = joints_t.astype(np.int32)
 
-        results['img'], results['masks'], results[
-            'joints'] = img, mask_list, joints_list
+        results['masks'], results['joints'] = mask_list, joints_list
         results['targets'] = target_list
 
         return results

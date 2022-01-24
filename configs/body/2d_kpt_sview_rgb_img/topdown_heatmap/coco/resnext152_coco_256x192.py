@@ -40,7 +40,7 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='mmcls://resnext152',
+    pretrained='mmcls://resnext152_32x4d',
     backbone=dict(type='ResNeXt', depth=152),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',

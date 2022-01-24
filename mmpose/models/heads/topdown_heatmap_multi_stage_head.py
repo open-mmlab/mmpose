@@ -110,18 +110,18 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
         """Calculate top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_outputs: O
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - num_outputs: O
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]):
+            output (torch.Tensor[N,K,H,W]):
                 Output heatmaps.
-            target (torch.Tensor[NxKxHxW]):
+            target (torch.Tensor[N,K,H,W]):
                 Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            target_weight (torch.Tensor[N,K,1]):
                 Weights across different joint types.
         """
 
@@ -140,10 +140,10 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             else:
                 loss_func = self.loss
             loss_i = loss_func(output[i], target_i, target_weight_i)
-            if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i
+            if 'heatmap_loss' not in losses:
+                losses['heatmap_loss'] = loss_i
             else:
-                losses['mse_loss'] += loss_i
+                losses['heatmap_loss'] += loss_i
 
         return losses
 
@@ -151,15 +151,15 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
         """Calculate accuracy for top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[N,K,H,W]): Output heatmaps.
+            target (torch.Tensor[N,K,H,W]): Target heatmaps.
+            target_weight (torch.Tensor[N,K,1]):
                 Weights across different joint types.
         """
 
@@ -320,8 +320,9 @@ class PredictHeatmap(nn.Module):
 class PRM(nn.Module):
     """Pose Refine Machine.
 
-    For more details about PRM, refer to Learning Delicate
-    Local Representations for Multi-Person Pose Estimation (ECCV 2020).
+    Please refer to "Learning Delicate Local Representations
+    for Multi-Person Pose Estimation" (ECCV 2020).
+
     Args:
         out_channels (int): Channel number of the output. Equals to
             the number of key points.
@@ -446,16 +447,16 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
         """Calculate top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            num_outputs: O
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - num_outputs: O
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxOxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxOxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxOxKx1]):
+            output (torch.Tensor[N,O,K,H,W]): Output heatmaps.
+            target (torch.Tensor[N,O,K,H,W]): Target heatmaps.
+            target_weight (torch.Tensor[N,O,K,1]):
                 Weights across different joint types.
         """
 
@@ -477,10 +478,10 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
                 loss_func = self.loss
 
             loss_i = loss_func(output[i], target_i, target_weight_i)
-            if 'mse_loss' not in losses:
-                losses['mse_loss'] = loss_i
+            if 'heatmap_loss' not in losses:
+                losses['heatmap_loss'] = loss_i
             else:
-                losses['mse_loss'] += loss_i
+                losses['heatmap_loss'] += loss_i
 
         return losses
 
@@ -488,15 +489,15 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
         """Calculate accuracy for top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[N,K,H,W]): Output heatmaps.
+            target (torch.Tensor[N,K,H,W]): Target heatmaps.
+            target_weight (torch.Tensor[N,K,1]):
                 Weights across different joint types.
         """
 
@@ -541,8 +542,8 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
             output_heatmap (np.ndarray): Output heatmaps.
 
         Args:
-            x (List[torch.Tensor[NxKxHxW]]): Input features.
-            flip_pairs (None | list[tuple()):
+            x (list[torch.Tensor[N,K,H,W]]): Input features.
+            flip_pairs (None | list[tuple]):
                 Pairs of keypoints which are mirrored.
         """
         output = self.forward(x)
@@ -562,7 +563,6 @@ class TopdownHeatmapMSMUHead(TopdownHeatmapBaseHead):
 
     def init_weights(self):
         """Initialize model weights."""
-
         for m in self.predict_layers.modules():
             if isinstance(m, nn.Conv2d):
                 kaiming_init(m)

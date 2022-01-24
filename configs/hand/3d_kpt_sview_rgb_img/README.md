@@ -4,4 +4,4 @@
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/3d_hand_keypoint.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/3d_hand_keypoint.md) to prepare data.
