@@ -16,12 +16,13 @@ from ...builder import DATASETS
 class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
     """Human3.6M dataset for 3D human pose estimation.
 
-    `Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human
-    Sensing in Natural Environments' TPAMI`2014
+    "Human3.6M: Large Scale Datasets and Predictive Methods for 3D Human
+    Sensing in Natural Environments", TPAMI`2014.
     More details can be found in the `paper
     <http://vision.imar.ro/human3.6m/pami-h36m.pdf>`__.
 
     Human3.6M keypoint indexes::
+
         0: 'root (pelvis)',
         1: 'right_hip',
         2: 'right_knee',
@@ -274,6 +275,7 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
             keypoint_results (list): Keypoint predictions. See
                 'Body3DH36MDataset.evaluate' for details.
             mode (str): Specify mpjpe variants. Supported options are:
+
                 - ``'mpjpe'``: Standard MPJPE.
                 - ``'p-mpjpe'``: MPJPE after aligning prediction to groundtruth
                     via a rigid transformation (scale, rotation and

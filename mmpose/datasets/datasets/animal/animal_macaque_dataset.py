@@ -17,8 +17,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class AnimalMacaqueDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MacaquePose dataset for animal pose estimation.
 
-    `MacaquePose: A novel ‘in the wild’ macaque monkey pose dataset
-    for markerless motion capture' bioRxiv'2020
+    "MacaquePose: A novel ‘in the wild’ macaque monkey pose dataset
+    for markerless motion capture" bioRxiv'2020.
     More details can be found in the `paper
     <https://www.biorxiv.org/content/10.1101/2020.07.30.229989v1>`__ .
 
@@ -178,7 +178,7 @@ class AnimalMacaqueDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
-        saved in `${res_folder}/result_keypoints.json`.
+        saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
             batch_size: N
@@ -187,15 +187,16 @@ class AnimalMacaqueDataset(Kpt2dSviewRgbImgTopDownDataset):
             heatmap width: W
 
         Args:
-            outputs (list(dict))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
+            outputs (list[dict]): Outputs containing the following items.
+
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, ['data/coco/val2017
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['data/coco/val2017\
                     /000000393226.jpg']
-                :heatmap (np.ndarray[N, K, H, W]): model output heatmap
-                :bbox_id (list(int)).
+                - heatmap (np.ndarray[N, K, H, W]): model output heatmap
+                - bbox_id (list(int)).
             res_folder (str): Path of directory to save the results.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 

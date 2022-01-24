@@ -19,8 +19,8 @@ class BCELoss(nn.Module):
         """Forward function.
 
         Note:
-            batch_size: N
-            num_labels: K
+            - batch_size: N
+            - num_labels: K
 
         Args:
             output (torch.Tensor[N, K]): Output classification.

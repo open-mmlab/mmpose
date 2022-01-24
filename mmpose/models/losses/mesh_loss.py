@@ -10,9 +10,9 @@ def perspective_projection(points, rotation, translation, focal_length,
                            camera_center):
     """This function computes the perspective projection of a set of 3D points.
 
-    Notes:
-        batch size: B
-        point number: N
+    Note:
+        - batch size: B
+        - point number: N
 
     Args:
         points (Tensor([B, N, 3])): A set of 3D points
@@ -149,9 +149,9 @@ class MeshLoss(nn.Module):
         """Perform orthographic projection of 3D points using the camera
         parameters, return projected 2D points in image plane.
 
-        Notes:
-            batch size: B
-            point number: N
+        Note:
+            - batch size: B
+            - point number: N
 
         Args:
             points_3d (Tensor([B, N, 3])): 3D points.
@@ -159,7 +159,7 @@ class MeshLoss(nn.Module):
                 3 channel as (scale, translation_x, translation_y)
 
         Returns:
-            points_2d (Tensor([B, N, 2])): projected 2D points
+            Tensor([B, N, 2]): projected 2D points \
                 in image space.
         """
         batch_size = points_3d.shape[0]
@@ -194,7 +194,7 @@ class MeshLoss(nn.Module):
                 'has_smpl'
 
         Returns:
-            losses (dict): dict of losses.
+            dict: dict of losses.
         """
         losses = {}
 
@@ -304,8 +304,8 @@ class GANLoss(nn.Module):
             target_is_real (bool): Whether the target is real or fake.
 
         Returns:
-            (bool | Tensor): Target tensor. Return bool for wgan, otherwise,
-                return Tensor.
+            (bool | Tensor): Target tensor. Return bool for wgan, \
+                otherwise, return Tensor.
         """
 
         if self.gan_type == 'wgan':

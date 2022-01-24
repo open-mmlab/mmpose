@@ -1,0 +1,22 @@
+Collections:
+- Name: VoxelPose
+  Paper:
+    Title: 'VoxelPose: Towards Multi-Camera 3D Human Pose Estimation in Wild Environment'
+    URL: https://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123460188.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/voxelpose.md
+Models:
+- Config: configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.py
+  In Collection: VoxelPose
+  Metadata:
+    Architecture:
+    - VoxelPose
+    Training Data: CMU Panoptic
+  Name: voxelpose_voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5
+  Results:
+  - Dataset: CMU Panoptic
+    Metrics:
+      MPJPE: 17.57
+      mAP: 97.31
+      mAR: 97.99
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-545c150e_20211103.pth

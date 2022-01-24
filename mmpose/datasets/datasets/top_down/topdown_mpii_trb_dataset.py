@@ -17,8 +17,8 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
     """MPII-TRB Dataset dataset for top-down pose estimation.
 
-    `TRB: A Novel Triplet Representation for Understanding 2D Human Body`
-    ICCV'2019 More details can be found in the `paper
+    "TRB: A Novel Triplet Representation for Understanding 2D Human Body",
+    ICCV'2019. More details can be found in the `paper
     <https://arxiv.org/abs/1910.11535>`__ .
 
     The dataset loads raw features and apply specified transforms
@@ -190,22 +190,22 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
         """Evaluate PCKh for MPII-TRB dataset.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs(list(preds, boxes, image_paths, heatmap)):
+            outputs (list[dict]): Outputs containing the following items.
 
-                * preds (np.ndarray[N,K,3]): The first two dimensions are
-                  coordinates, score is the third dimension of the array.
-                * boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                  , scale[1],area, score]
-                * image_paths (list[str]): For example, ['/val2017/000000
-                  397133.jpg']
-                * heatmap (np.ndarray[N, K, H, W]): model output heatmap.
-                * bbox_ids (list[str]): For example, ['27407']
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['/val2017/\
+                    000000397133.jpg']
+                - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
+                - bbox_ids (list[str]): For example, ['27407'].
             res_folder(str): Path of directory to save the results.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.

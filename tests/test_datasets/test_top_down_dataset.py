@@ -205,14 +205,15 @@ def test_top_down_PoseTrack18_dataset():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.0,
-        bbox_file='tests/data/posetrack18/'
+        bbox_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_human_detections.json',
     )
     # Test det bbox
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
     _ = dataset_class(
-        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg_copy,
         pipeline=[],
@@ -220,7 +221,8 @@ def test_top_down_PoseTrack18_dataset():
         test_mode=True)
 
     _ = dataset_class(
-        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg_copy,
         pipeline=[],
@@ -229,7 +231,8 @@ def test_top_down_PoseTrack18_dataset():
 
     # Test gt bbox
     custom_dataset = dataset_class(
-        ann_file='tests/data/posetrack18/test_posetrack18.json',
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
         img_prefix='tests/data/posetrack18/',
         data_cfg=data_cfg,
         pipeline=[],
@@ -242,7 +245,190 @@ def test_top_down_PoseTrack18_dataset():
     image_id = 10128340000
     assert image_id in custom_dataset.img_ids
     assert len(custom_dataset.img_ids) == 3
+    assert len(custom_dataset) == 14
     _ = custom_dataset[0]
+
+    # Test evaluate function, use gt bbox
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['Total AP'], 100)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+    # Test evaluate function, use det bbox
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['use_gt_bbox'] = False
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert len(custom_dataset) == 278
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        # since the det box input assume each keypoint position to be (0,0)
+        # the Total AP will be zero.
+        assert_almost_equal(infos['Total AP'], 0.)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+
+def test_top_down_PoseTrack18Video_dataset():
+    dataset = 'TopDownPoseTrack18VideoDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/posetrack18.py').dataset_info
+    # test PoseTrack18Video dataset
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=17,
+        dataset_joints=17,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        ],
+        inference_channel=[
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+        ])
+
+    data_cfg = dict(
+        image_size=[288, 384],
+        heatmap_size=[72, 96],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        use_nms=True,
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        use_gt_bbox=True,
+        det_bbox_thr=0.0,
+        bbox_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_human_detections.json',
+        # frame-related arguments
+        frame_index_rand=True,
+        frame_index_range=[-2, 2],
+        num_adj_frames=1,
+        frame_indices_test=[-2, 2, -1, 1, 0],
+        frame_weight_train=(0.0, 1.0),
+        frame_weight_test=(0.3, 0.1, 0.25, 0.25, 0.1),
+    )
+
+    # Test value of dataset_info
+    with pytest.raises(ValueError):
+        _ = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg,
+            pipeline=[],
+            dataset_info=None,
+            test_mode=False)
+
+    # Test train mode (must use gt bbox)
+    _ = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    # Test gt bbox + test mode
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'posetrack18'
+    assert custom_dataset.ph_fill_len == 6
+
+    image_id = 10128340000
+    assert image_id in custom_dataset.img_ids
+    assert len(custom_dataset.img_ids) == 3
+    assert len(custom_dataset) == 14
+    _ = custom_dataset[0]
+
+    # Test det bbox + test mode
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['use_gt_bbox'] = False
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert custom_dataset.frame_indices_test == [-2, -1, 0, 1, 2]
+    assert len(custom_dataset) == 278
+
+    # Test non-random index
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['frame_index_rand'] = False
+    data_cfg_copy['frame_indices_train'] = [0, -1]
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    assert custom_dataset.frame_indices_train == [-1, 0]
+
+    # Test evaluate function, use gt bbox
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        assert_almost_equal(infos['Total AP'], 100)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+
+    # Test evaluate function, use det bbox
+    data_cfg_copy = copy.deepcopy(data_cfg)
+    data_cfg_copy['use_gt_bbox'] = False
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    outputs = convert_db_to_output(custom_dataset.db)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        # since the det box input assume each keypoint position to be (0,0),
+        # the Total AP will be zero.
+        assert_almost_equal(infos['Total AP'], 0)
+
+        with pytest.raises(KeyError):
+            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
 
 
 def test_top_down_CrowdPose_dataset():
