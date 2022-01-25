@@ -3,6 +3,7 @@ import warnings
 
 import numpy as np
 import torch
+import copy
 
 from ..builder import POSENETS
 from .top_down import TopDown
@@ -118,10 +119,6 @@ class LSTMPoseMachine(TopDown):
         if self.with_keypoint:
             output = self.keypoint_head(output)
 
-        output = torch.cat(output, 0)
-        target = torch.cat(target, 0)
-        target_weight = torch.cat(target_weight, 0)
-
         # if return loss
         losses = dict()
         if self.with_keypoint:
@@ -159,19 +156,33 @@ class LSTMPoseMachine(TopDown):
             if self.with_keypoint:
                 output_flipped_heatmap = self.keypoint_head.inference_model(
                     features_flipped, img_metas[0]['flip_pairs'])
-                output_heatmap = (output_heatmap +
-                                  output_flipped_heatmap) * 0.5
-
-        output_heatmap = torch.cat(output_heatmap, 0)
+                for i in range(len(output_heatmap)):
+                    output_heatmap[i] = (output_heatmap[i] +
+                                         output_flipped_heatmap[i]) * 0.5
 
         if self.with_keypoint:
-            keypoint_result = self.keypoint_head.decode(
-                img_metas, output_heatmap, img_size=[img_width, img_height])
-            result.update(keypoint_result)
+            meta_keys = ['image_file', 'center', 'scale', 'bbox_score', 'bbox_id']
+            batch_size = len(img_metas)
+            num_frame = len(img_metas[0]['image_file'])
+            for f in range(num_frame):
+                test_metas = copy.deepcopy(img_metas)
+                for i in range(batch_size):
+                    for key in meta_keys:
+                        test_metas[i][key] = img_metas[i][key][f]
+                keypoint_result = self.keypoint_head.decode(
+                    test_metas, output_heatmap[f], img_size=[img_width, img_height])
+
+                if result == {}:
+                    result.update(keypoint_result)
+                else:
+                    for key in result.keys():
+                        result[key] = np.concatenate((result[key],
+                                                      keypoint_result[key]), axis=0)
 
             if not return_heatmap:
                 output_heatmap = None
-
+            else:
+                output_heatmap = np.concatenate(output_heatmap, axis=0)
             result['output_heatmap'] = output_heatmap
 
         return result
