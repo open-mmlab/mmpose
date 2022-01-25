@@ -32,7 +32,6 @@ runner = dict(
         dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
-            synchronous=True,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
             result_buffer='pose_result',
             output_buffer='frame'),
