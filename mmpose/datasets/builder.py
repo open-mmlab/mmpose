@@ -7,7 +7,7 @@ from functools import partial
 import numpy as np
 from mmcv.parallel import collate
 from mmcv.runner import get_dist_info
-from mmcv.utils import Registry, build_from_cfg
+from mmcv.utils import Registry, build_from_cfg, is_seq_of
 from mmcv.utils.parrots_wrapper import _get_dataloader
 from torch.utils.data.dataset import ConcatDataset
 
@@ -50,7 +50,8 @@ def _concat_dataset(cfg, default_args=None):
 
         if isinstance(num_joints, (list, tuple)):
             cfg_copy['data_cfg']['num_joints'] = num_joints[i]
-        if isinstance(dataset_channel, (list, tuple)):
+
+        if is_seq_of(dataset_channel, list):
             cfg_copy['data_cfg']['dataset_channel'] = dataset_channel[i]
 
         datasets.append(build_dataset(cfg_copy, default_args))
@@ -73,6 +74,9 @@ def build_dataset(cfg, default_args=None):
 
     if isinstance(cfg, (list, tuple)):
         dataset = ConcatDataset([build_dataset(c, default_args) for c in cfg])
+    elif cfg['type'] == 'ConcatDataset':
+        dataset = ConcatDataset(
+            [build_dataset(c, default_args) for c in cfg['datasets']])
     elif cfg['type'] == 'RepeatDataset':
         dataset = RepeatDataset(
             build_dataset(cfg['dataset'], default_args), cfg['times'])
