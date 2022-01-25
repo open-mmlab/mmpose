@@ -6,7 +6,8 @@ import cv2
 import numpy as np
 from mmcv import Config, color_val
 
-from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
+from mmpose.core import (apply_bugeye_effect, apply_firecracker_effect,
+                         apply_hat_effect, apply_sunglasses_effect,
                          imshow_bboxes, imshow_keypoints)
 from mmpose.datasets import DatasetInfo
 from ..utils import (FrameMessage, Message, copy_and_paste, expand_and_clamp,
@@ -129,6 +130,48 @@ def _get_face_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
                              f'{dataset_name}')
 
     return face_indices
+
+
+def _get_wrist_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
+    """A helpfer function to get the keypoint indices of left and right wrist
+    from the model config.
+
+    Args:
+        model_cfg (Config): pose model config.
+    Returns:
+        int: left wrist keypoint index.
+        int: right wrist keypoint index.
+    """
+
+    # try obtaining eye point ids from dataset_info
+    try:
+        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
+        left_wrist_idx = dataset_info.keypoint_name2id.get('left_wrist', None)
+        right_wrist_idx = dataset_info.keypoint_name2id.get(
+            'right_wrist', None)
+    except AttributeError:
+        left_wrist_idx = None
+        right_wrist_idx = None
+
+    if left_wrist_idx is None or right_wrist_idx is None:
+        # Fall back to hard coded keypoint id
+        dataset_name = model_cfg.data.test.type
+        if dataset_name in {
+                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
+        }:
+            left_wrist_idx = 9
+            right_wrist_idx = 10
+        elif dataset_name == 'AnimalPoseDataset':
+            left_wrist_idx = 16
+            right_wrist_idx = 17
+        elif dataset_name == 'AnimalAP10KDataset':
+            left_wrist_idx = 7
+            right_wrist_idx = 10
+        else:
+            raise ValueError('Can not determine the eye keypoint id of '
+                             f'{dataset_name}')
+
+    return left_wrist_idx, right_wrist_idx
 
 
 class BaseFrameEffectNode(Node):
@@ -731,3 +774,87 @@ class NoticeBoardNode(BaseFrameEffectNode):
         img[y1:y2, x1:x2] = cv2.addWeighted(src1, 0.5, src2, 0.5, 0)
 
         return img
+
+
+@NODES.register_module()
+class HatNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        if src_img_path is None:
+            # The image attributes to:
+            # http://616pic.com/sucai/1m9i70p52.html
+            src_img_path = 'https://user-images.githubusercontent.' \
+                           'com/28900607/149766271-2f591c19-9b67-4' \
+                           'd92-8f94-c272396ca141.png'
+        self.src_img = load_image_from_disk_or_url(src_img_path,
+                                                   cv2.IMREAD_UNCHANGED)
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            model_cfg = pose_result['model_cfg']
+            preds = pose_result['preds']
+            left_eye_idx, right_eye_idx = _get_eye_keypoint_ids(model_cfg)
+
+            canvas = apply_hat_effect(canvas, preds, self.src_img,
+                                      left_eye_idx, right_eye_idx)
+        return canvas
+
+
+@NODES.register_module()
+class FirecrackerNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key)
+
+        if src_img_path is None:
+            self.src_img_path = 'https://user-images.githubusercontent' \
+                                '.com/28900607/149766281-6376055c-ed8b' \
+                                '-472b-991f-60e6ae6ee1da.gif'
+        src_img = cv2.VideoCapture(self.src_img_path)
+
+        self.frame_list = []
+        ret, frame = src_img.read()
+        while frame is not None:
+            self.frame_list.append(frame)
+            ret, frame = src_img.read()
+        self.num_frames = len(self.frame_list)
+        self.frame_idx = 0
+        self.frame_period = 4  # each frame in gif lasts for 4 frames in video
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+
+        frame = self.frame_list[self.frame_idx // self.frame_period]
+        for pose_result in pose_results:
+            model_cfg = pose_result['model_cfg']
+            preds = pose_result['preds']
+            left_wrist_idx, right_wrist_idx = _get_wrist_keypoint_ids(
+                model_cfg)
+
+            canvas = apply_firecracker_effect(canvas, preds, frame,
+                                              left_wrist_idx, right_wrist_idx)
+        self.frame_idx = (self.frame_idx + 1) % (
+            self.num_frames * self.frame_period)
+
+        return canvas
