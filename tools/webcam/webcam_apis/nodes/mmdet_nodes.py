@@ -60,7 +60,7 @@ class DetectorNode(Node):
             segms = preds[1]
         else:
             dets = preds
-            segms = [[None]] * len(dets)
+            segms = [None] * len(dets)
 
         assert len(dets) == len(self.model.CLASSES)
         assert len(segms) == len(self.model.CLASSES)
@@ -68,6 +68,11 @@ class DetectorNode(Node):
 
         for i, (cls_name, bboxes,
                 masks) in enumerate(zip(self.model.CLASSES, dets, segms)):
+            if masks is None:
+                masks = [None] * len(bboxes)
+            else:
+                assert len(masks) == len(bboxes)
+
             preds_i = [{
                 'cls_id': i,
                 'label': cls_name,
