@@ -14,6 +14,7 @@ from mmcv.runner import get_dist_info, init_dist, load_checkpoint
 from mmpose.apis import multi_gpu_test, single_gpu_test
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
+from mmpose.utils import setup_multi_processes
 
 try:
     from mmcv.runner import wrap_fp16_model
@@ -84,6 +85,9 @@ def main():
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    # set multi-process settings
+    setup_multi_processes(cfg)
 
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
