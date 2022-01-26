@@ -36,6 +36,12 @@ def parse_args():
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
     parser.add_argument(
+        '--gpu-id',
+        type=int,
+        default=0,
+        help='id of gpu to use '
+        '(only applicable to non-distributed testing)')
+    parser.add_argument(
         '--eval',
         default=None,
         nargs='+',
@@ -146,7 +152,7 @@ def main():
         model = fuse_conv_bn(model)
 
     if not distributed:
-        model = MMDataParallel(model, device_ids=[0])
+        model = MMDataParallel(model, device_ids=[args.gpu_id])
         outputs = single_gpu_test(model, data_loader)
     else:
         model = MMDistributedDataParallel(
