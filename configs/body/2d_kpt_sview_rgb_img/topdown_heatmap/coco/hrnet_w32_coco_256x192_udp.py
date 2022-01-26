@@ -41,8 +41,9 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/hrnet_w32-36af842e.pth',
+    pretrained='/mnt/lustre/share_data/'
+    'PAT/datasets/mmpose/'
+    'pretrain/hrnet_w32-36af842e.pth',
     backbone=dict(
         type='HRNet',
         in_channels=3,
@@ -101,7 +102,9 @@ data_cfg = dict(
     vis_thr=0.2,
     use_gt_bbox=False,
     det_bbox_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
+    bbox_file='/mnt/lustre/share_data/'
+    'PAT/datasets/'
+    'mscoco2017/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
 
@@ -153,7 +156,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/mnt/lustre/share_data/PAT/datasets/mscoco2017'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,

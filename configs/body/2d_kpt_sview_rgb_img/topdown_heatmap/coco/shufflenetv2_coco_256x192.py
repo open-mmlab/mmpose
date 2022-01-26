@@ -40,7 +40,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='mmcls://shufflenet_v2',
+    pretrained='/mnt/lustre/share_data/PAT/datasets/pretrain/'
+    'mmcv/shufflenet_v2_batch1024_imagenet_20200812-5bf4721e.pth',
     backbone=dict(type='ShuffleNetV2', widen_factor=1.0),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
@@ -67,7 +68,9 @@ data_cfg = dict(
     vis_thr=0.2,
     use_gt_bbox=False,
     det_bbox_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
+    bbox_file='/mnt/lustre/share_data/'
+    'PAT/datasets/'
+    'mscoco2017/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
 )
 
@@ -115,7 +118,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/mnt/lustre/share_data/PAT/datasets/mscoco2017'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,

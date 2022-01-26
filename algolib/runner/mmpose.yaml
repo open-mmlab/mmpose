@@ -1,0 +1,21 @@
+global_configs:
+    reader: MemcachedReader
+    maxstep: None
+    benchmark: None
+    seed: None
+    pavi: None
+
+env_version:
+    pat : 0.16
+    pyt : pt1.5v4
+    mmcv: 1.4.2
+
+global_model_strategy:
+  dummydataset: None
+  dummydataloader: Parrots
+
+models:
+  - shufflenetv2_coco_256x192
+  - hrnet_w32_coco_256x192_udp
+  - res50_wflw_256x256
+

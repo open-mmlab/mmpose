@@ -38,7 +38,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
+    pretrained='/mnt/lustre/share_data/PAT/datasets/'
+               'pretrain/torchvision/resnet50-0676ba61.pth',
     backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
@@ -95,7 +96,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/wflw'
+data_root = '/mnt/lustre/share_data/PAT/datasets/mmpose/wflw'
 data = dict(
     samples_per_gpu=64,
     workers_per_gpu=2,
