@@ -131,3 +131,8 @@ docs/**/modelzoo.md
 *.pth
 
 *.DS_Store
+
+# user
+algolib_gen/
+workdir/
+algolib/configs

@@ -185,6 +185,9 @@ def train_model(model,
         eval_hook = DistEvalHook if distributed else EvalHook
         runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
 
+    for hook in getattr(torch, '_algolib_hooks', []):
+        runner.register_hook(hook, priority='HIGHEST')
+
     if cfg.resume_from:
         runner.resume(cfg.resume_from)
     elif cfg.load_from:
