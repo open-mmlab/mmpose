@@ -380,6 +380,131 @@ class SunglassesNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
+class SpriteNode(BaseFrameEffectNode):
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 src_img_path: Optional[str] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
+
+        if src_img_path is None:
+            # Sprites of Touhou characters :)
+            # Come from https://www.deviantart.com/shadowbendy/art/Touhou-rpg-maker-vx-Sprite-1-812746920  # noqa: E501
+            src_img_path = (
+                'https://user-images.githubusercontent.com/'
+                '26739999/151532276-33f968d9-917f-45e3-8a99-ebde60be83bb.png')
+        self.src_img = load_image_from_disk_or_url(
+            src_img_path, cv2.IMREAD_UNCHANGED)[:144, :108]
+        tmp = np.array(np.split(self.src_img, range(36, 144, 36), axis=0))
+        tmp = np.array(np.split(tmp, range(36, 108, 36), axis=2))
+        self.sprites = tmp
+        self.pos = None
+        self.anime_frame = 0
+
+    def apply_sprite_effect(self,
+                            img,
+                            pose_results,
+                            left_hand_index,
+                            right_hand_index,
+                            kpt_thr=0.5):
+        """Apply sprite effect.
+
+        Args:
+            img (np.ndarray): Image data.
+            pose_results (list[dict]): The pose estimation results containing:
+                - "keypoints" ([K,3]): detection result in [x, y, score]
+            left_hand_index (int): Keypoint index of left hand
+            right_hand_index (int): Keypoint index of right hand
+            kpt_thr (float): The score threshold of required keypoints.
+        """
+
+        hm, wm = self.sprites.shape[2:4]
+        # anchor points in the sunglasses mask
+        if self.pos is None:
+            self.pos = [img.shape[0] // 2, img.shape[1] // 2]
+
+        if len(pose_results) == 0:
+            return img
+
+        kpts = pose_results[0]['keypoints']
+
+        if kpts[left_hand_index, 2] < kpt_thr and kpts[right_hand_index,
+                                                       2] < kpt_thr:
+            aim = self.pos
+        else:
+            kpt_lhand = kpts[left_hand_index, :2][::-1]
+            kpt_rhand = kpts[right_hand_index, :2][::-1]
+
+            def distance(a, b):
+                return (a[0] - b[0])**2 + (a[1] - b[1])**2
+
+            # Go to the nearest hand
+            if distance(kpt_lhand, self.pos) < distance(kpt_rhand, self.pos):
+                aim = kpt_lhand
+            else:
+                aim = kpt_rhand
+
+        pos_thr = 15
+        if aim[0] < self.pos[0] - pos_thr:
+            # Go down
+            sprite = self.sprites[self.anime_frame][3]
+            self.pos[0] -= 1
+        elif aim[0] > self.pos[0] + pos_thr:
+            # Go up
+            sprite = self.sprites[self.anime_frame][0]
+            self.pos[0] += 1
+        elif aim[1] < self.pos[1] - pos_thr:
+            # Go right
+            sprite = self.sprites[self.anime_frame][1]
+            self.pos[1] -= 1
+        elif aim[1] > self.pos[1] + pos_thr:
+            # Go left
+            sprite = self.sprites[self.anime_frame][2]
+            self.pos[1] += 1
+        else:
+            # Stay
+            self.anime_frame = 0
+            sprite = self.sprites[self.anime_frame][0]
+
+        if self.anime_frame < 2:
+            self.anime_frame += 1
+        else:
+            self.anime_frame = 0
+
+        x = self.pos[0] - hm // 2
+        y = self.pos[1] - wm // 2
+        x = max(0, min(x, img.shape[0] - hm))
+        y = max(0, min(y, img.shape[0] - wm))
+
+        # Overlay image with transparent
+        img[x:x + hm, y:y +
+            wm] = (img[x:x + hm, y:y + wm] * (1 - sprite[:, :, 3:] / 255) +
+                   sprite[:, :, :3] * (sprite[:, :, 3:] / 255)).astype('uint8')
+
+        return img
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+        if not pose_results:
+            return canvas
+        for pose_result in pose_results:
+            model_cfg = pose_result['model_cfg']
+            preds = pose_result['preds']
+            # left_hand_idx, right_hand_idx = _get_wrist_keypoint_ids(model_cfg)  # noqa: E501
+            left_hand_idx, right_hand_idx = _get_eye_keypoint_ids(model_cfg)
+
+            canvas = self.apply_sprite_effect(canvas, preds, left_hand_idx,
+                                              right_hand_idx)
+        return canvas
+
+
+@NODES.register_module()
 class BackgroundNode(BaseFrameEffectNode):
 
     def __init__(self,
