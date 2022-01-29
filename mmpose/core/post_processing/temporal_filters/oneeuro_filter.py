@@ -1,4 +1,7 @@
-# Copyright (c) OpenMMLab. All rights reserved.
+# ------------------------------------------------------------------------------
+# Adapted from https://github.com/HoBeom/OneEuroFilter-Numpy
+# Original licence: Copyright (c)  HoBeom Jeon, under the MIT License.
+# ------------------------------------------------------------------------------
 import math
 import warnings
 
@@ -6,6 +9,7 @@ import numpy as np
 import torch
 
 from .builder import FILTERS
+from .filter import TemporalFilter
 
 
 def smoothing_factor(t_e, cutoff):
@@ -58,7 +62,7 @@ class OneEuro:
 
 
 @FILTERS.register_module(name=['OneEuroFilter', 'oneeuro'])
-class OneEuroFilter:
+class OneEuroFilter(TemporalFilter):
     """Oneeuro filter, source code: https://github.com/mkocabas/VIBE/blob/c0
     c3f77d587351c806e901221a9dc05d1ffade4b/lib/utils/smooth_pose.py.
 
@@ -72,13 +76,15 @@ class OneEuroFilter:
     """
 
     def __init__(self, min_cutoff=0.004, beta=0.7):
-        super(OneEuroFilter, self).__init__()
-
+        # OneEuroFilter has Markov Property and maintains status variables
+        # within the class, thus has a windows_size of 1
+        super(OneEuroFilter, self).__init__(window_size=1)
         self.min_cutoff = min_cutoff
         self.beta = beta
 
+        self._one_euro = None
+
     def __call__(self, x=None):
-        # x (np.ndarray): input poses.
         if len(x.shape) != 3:
             warnings.warn('x should be a tensor or numpy of [T*M,K,C]')
         assert len(x.shape) == 3
@@ -89,12 +95,13 @@ class OneEuroFilter:
             else:
                 x = x.numpy()
 
-        one_euro_filter = OneEuro(
-            np.zeros_like(x[0]),
-            x[0],
-            min_cutoff=self.min_cutoff,
-            beta=self.beta,
-        )
+        if self._one_euro is None:
+            self._one_euro = OneEuro(
+                np.zeros_like(x[0]),
+                x[0],
+                min_cutoff=self.min_cutoff,
+                beta=self.beta,
+            )
 
         pred_pose_hat = np.zeros_like(x)
 
@@ -104,7 +111,7 @@ class OneEuroFilter:
         for idx, pose in enumerate(x[1:]):
             idx += 1
             t = np.ones_like(pose) * idx
-            pose = one_euro_filter(t, pose)
+            pose = self._one_euro(t, pose)
             pred_pose_hat[idx] = pose
 
         if isinstance(x_type, torch.Tensor):

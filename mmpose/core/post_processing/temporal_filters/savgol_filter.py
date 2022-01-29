@@ -6,10 +6,11 @@ import scipy.signal as signal
 import torch
 
 from .builder import FILTERS
+from .filter import TemporalFilter
 
 
 @FILTERS.register_module(name=['SGFilter', 'savgol'])
-class SGFilter:
+class SGFilter(TemporalFilter):
     """savgol_filter lib is from:
 
     https://docs.scipy.org/doc/scipy/reference/generated/
@@ -27,13 +28,13 @@ class SGFilter:
     """
 
     def __init__(self, window_size=11, polyorder=2):
-        super(SGFilter, self).__init__()
+        super(SGFilter, self).__init__(window_size)
 
         # 1-D Savitzky-Golay filter
         self.window_size = window_size
         self.polyorder = polyorder
 
-    def __call__(self, x=None):
+    def __call__(self, x):
         # x.shape: [t,k,c]
         if self.window_size % 2 == 0:
             window_size = self.window_size - 1

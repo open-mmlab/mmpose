@@ -7,10 +7,11 @@ import torch
 from scipy.ndimage.filters import gaussian_filter1d
 
 from .builder import FILTERS
+from .filter import TemporalFilter
 
 
-@FILTERS.register_module(name=['Gauss1dFilter', 'gauss1d'])
-class Gauss1dFilter:
+@FILTERS.register_module(name=['GaussianFilter', 'gaussian'])
+class GaussianFilter(TemporalFilter):
     """Applies median filter and then gaussian filter.
 
     code from:
@@ -25,18 +26,17 @@ class Gauss1dFilter:
     """
 
     def __init__(self, window_size=11, sigma=4):
-        super(Gauss1dFilter, self).__init__()
-
-        self.window_size = window_size
+        super(GaussianFilter, self).__init__(window_size)
+        assert window_size % 2 == 1, (
+            'The window size of GaussianFilter should'
+            f'be odd, but got {window_size}')
         self.sigma = sigma
 
-    def __call__(self, x=None):
-        if self.window_size % 2 == 0:
-            window_size = self.window_size - 1
-        else:
-            window_size = self.window_size
+    def __call__(self, x):
+        window_size = self.window_size
         if window_size > x.shape[0]:
-            window_size = x.shape[0]
+            window_size = x.shape[0] if x.shape[0] % 2 == 1 else x.shape[0] - 1
+
         if len(x.shape) != 3:
             warnings.warn('x should be a tensor or numpy of [T*M,K,C]')
         assert len(x.shape) == 3

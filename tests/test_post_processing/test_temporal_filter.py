@@ -2,7 +2,7 @@
 import numpy as np
 import torch
 
-from mmpose.core.post_processing.builder import build_filter
+from mmpose.core.post_processing.temporal_filters import build_filter
 
 
 #  test different data type
@@ -11,9 +11,9 @@ def test_data_type_torch():
     cfg = dict(type='OneEuroFilter', min_cutoff=0.004, beta=0.7)
     oneeuro = build_filter(cfg)
     out_g = oneeuro(noisy_input)
-    cfg = dict(type='Gauss1dFilter', window_size=11, sigma=4)
-    gauss1d = build_filter(cfg)
-    out_s = gauss1d(noisy_input)
+    cfg = dict(type='GaussianFilter', window_size=11, sigma=4)
+    gaussian = build_filter(cfg)
+    out_s = gaussian(noisy_input)
     cfg = dict(type='SGFilter', window_size=11, polyorder=2)
     savgol = build_filter(cfg)
     out_o = savgol(noisy_input)
@@ -34,9 +34,9 @@ def test_data_type_torch_zero():
     cfg = dict(type='OneEuroFilter', min_cutoff=0.004, beta=0.7)
     oneeuro = build_filter(cfg)
     out_g = oneeuro(noisy_input)
-    cfg = dict(type='Gauss1dFilter', window_size=11, sigma=4)
-    gauss1d = build_filter(cfg)
-    out_s = gauss1d(noisy_input)
+    cfg = dict(type='GaussianFilter', window_size=11, sigma=4)
+    gaussian = build_filter(cfg)
+    out_s = gaussian(noisy_input)
     cfg = dict(type='SGFilter', window_size=11, polyorder=2)
     savgol = build_filter(cfg)
     out_o = savgol(noisy_input)
@@ -58,9 +58,9 @@ def test_data_type_torch_cuda():
     cfg = dict(type='OneEuroFilter', min_cutoff=0.0004, beta=0.7)
     oneeuro = build_filter(cfg)
     out_g = oneeuro(noisy_input)
-    cfg = dict(type='Gauss1dFilter', window_size=6, sigma=1)
-    gauss1d = build_filter(cfg)
-    out_s = gauss1d(noisy_input)
+    cfg = dict(type='GaussianFilter', window_size=6, sigma=1)
+    gaussian = build_filter(cfg)
+    out_s = gaussian(noisy_input)
     cfg = dict(type='SGFilter', window_size=7, polyorder=2)
     savgol = build_filter(cfg)
     out_o = savgol(noisy_input)
@@ -72,9 +72,9 @@ def test_data_type_np():
     cfg = dict(type='OneEuroFilter', min_cutoff=0.004, beta=0.1)
     oneeuro = build_filter(cfg)
     out_g = oneeuro(noisy_input)
-    cfg = dict(type='Gauss1dFilter', window_size=5, sigma=2)
-    gauss1d = build_filter(cfg)
-    out_s = gauss1d(noisy_input)
+    cfg = dict(type='GaussianFilter', window_size=5, sigma=2)
+    gaussian = build_filter(cfg)
+    out_s = gaussian(noisy_input)
     cfg = dict(type='SGFilter', window_size=5, polyorder=2)
     savgol = build_filter(cfg)
     out_o = savgol(noisy_input)
