@@ -376,7 +376,7 @@ class HeatmapParser:
             tuple: A tuple containing keypoint grouping results.
 
             - results (list(np.ndarray)): Pose results.
-            - scores (list): Score of people.
+            - scores (list/list(np.ndarray)): Score of people.
         """
         results = self.match(**self.top_k(heatmaps, tags))
 

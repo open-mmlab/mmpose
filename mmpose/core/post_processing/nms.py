@@ -94,6 +94,7 @@ def oks_nms(kpts_db, thr, sigmas=None, vis_thr=None, score_per_joint=False):
         thr: Retain overlap < thr.
         sigmas: standard deviation of keypoint labelling.
         vis_thr: threshold of the keypoint visibility.
+        score_per_joint: the input scores (in kpts_db) are per joint scores
 
     Returns:
         np.ndarray: indexes to keep.
@@ -164,6 +165,7 @@ def soft_oks_nms(kpts_db,
         thr: retain oks overlap < thr.
         max_dets: max number of detections to keep.
         sigmas: Keypoint labelling uncertainty.
+        score_per_joint: the input scores (in kpts_db) are per joint scores
 
     Returns:
         np.ndarray: indexes to keep.
