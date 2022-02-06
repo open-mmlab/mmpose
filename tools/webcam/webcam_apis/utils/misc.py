@@ -301,3 +301,43 @@ def copy_and_paste(img,
         background_img[tuple(mask_ids)] = img_inst[np.where(mask_inst == 1)]
 
     return background_img
+
+
+def is_image_file(path):
+    if isinstance(path, str):
+        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp')):
+            return True
+    return False
+
+
+class ImageCapture:
+    """A mock-up version of cv2.VideoCapture that always return a const image.
+
+    Args:
+        image (str | ndarray): The image or image path
+    """
+
+    def __init__(self, image):
+        if isinstance(image, str):
+            self.image = cv2.imread(image)
+        else:
+            self.image = image
+
+    def isOpened(self):
+        return (self.image is not None)
+
+    def read(self):
+        return True, self.image.copy()
+
+    def release(self):
+        pass
+
+    def get(self, propId):
+        if propId == cv2.CAP_PROP_FRAME_WIDTH:
+            return self.image.shape[1]
+        elif propId == cv2.CAP_PROP_FRAME_HEIGHT:
+            return self.image.shape[0]
+        elif propId == cv2.CAP_PROP_FPS:
+            return 30
+        else:
+            raise NotImplementedError()

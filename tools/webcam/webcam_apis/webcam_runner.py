@@ -9,8 +9,8 @@ from typing import Dict, List, Optional, Union
 import cv2
 
 from .nodes import NODES
-from .utils import (BufferManager, EventManager, FrameMessage,
-                    VideoEndingMessage, limit_max_fps)
+from .utils import (BufferManager, EventManager, FrameMessage, ImageCapture,
+                    VideoEndingMessage, is_image_file, limit_max_fps)
 
 DEFAULT_FRAME_BUFFER_SIZE = 1
 DEFAULT_INPUT_BUFFER_SIZE = 1
@@ -118,7 +118,11 @@ class WebcamRunner():
         fps = self.camera_fps
 
         # Build video capture
-        self.vcap = cv2.VideoCapture(camera_id)
+        if is_image_file(camera_id):
+            self.vcap = ImageCapture(camera_id)
+        else:
+            self.vcap = cv2.VideoCapture(camera_id)
+
         if not self.vcap.isOpened():
             warnings.warn(f'Cannot open camera (ID={camera_id})')
             sys.exit()
