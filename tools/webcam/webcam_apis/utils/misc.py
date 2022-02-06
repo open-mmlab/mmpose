@@ -60,7 +60,7 @@ def load_image_from_disk_or_url(filename, readFlag=cv2.IMREAD_COLOR):
         image = cv2.imdecode(image, readFlag)
         return image
     else:
-        image = cv2.imread(filename)
+        image = cv2.imread(filename, readFlag)
         return image
 
 
