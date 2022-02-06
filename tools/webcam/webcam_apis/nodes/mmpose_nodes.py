@@ -94,6 +94,8 @@ class TopDownPoseEstimatorNode(Node):
         current_time = time.time()
         if self.track_info['last_time'] is None:
             fps = None
+        elif self.track_info['last_time'] >= current_time:
+            fps = None
         else:
             fps = 1.0 / (current_time - self.track_info['last_time'])
 
