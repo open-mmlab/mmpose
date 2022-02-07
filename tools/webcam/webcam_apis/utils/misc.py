@@ -319,7 +319,7 @@ class ImageCapture:
 
     def __init__(self, image):
         if isinstance(image, str):
-            self.image = cv2.imread(image)
+            self.image = load_image_from_disk_or_url(image)
         else:
             self.image = image
 
@@ -338,6 +338,6 @@ class ImageCapture:
         elif propId == cv2.CAP_PROP_FRAME_HEIGHT:
             return self.image.shape[0]
         elif propId == cv2.CAP_PROP_FPS:
-            return 30
+            return np.nan
         else:
             raise NotImplementedError()
