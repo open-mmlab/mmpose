@@ -22,7 +22,7 @@ python tools/webcam/run_webcam.py --config tools/webcam/config/newyear/new_year.
 | -- | -- |
 | t | Toggle the hat effect on/off. |
 | f | Toggle the firecracker effect on/off. |
-| h | Toggle the instruction on/off. |
+| h | Show help information. |
 | m | Show the monitoring information. |
 | q | Exit. |
 

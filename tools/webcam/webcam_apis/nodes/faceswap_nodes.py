@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from enum import IntEnum
-from typing import List, Optional, Union
+from typing import List, Union
 
 import cv2
 import numpy as np
@@ -19,11 +19,13 @@ class Mode(IntEnum):
 @NODES.register_module()
 class FaceSwapNode(BaseFrameEffectNode):
 
-    def __init__(self,
-                 name: str,
-                 frame_buffer: str,
-                 output_buffer: Union[str, List[str]],
-                 mode_key: Optional[Union[str, int]] = None):
+    def __init__(
+        self,
+        name: str,
+        frame_buffer: str,
+        output_buffer: Union[str, List[str]],
+        mode_key: Union[str, int],
+    ):
         super().__init__(name, frame_buffer, output_buffer, enable=True)
 
         self.mode_key = mode_key
@@ -100,7 +102,7 @@ class FaceSwapNode(BaseFrameEffectNode):
 
     def _swap_face(self, img_src, img_tar, face_src, face_tar):
 
-        if face_src['type'] == face_tar['type']:
+        if face_src['dataset'] == face_tar['dataset']:
             # Use full keypoints for face alignment
             kpts_src = face_src['contour']
             kpts_tar = face_tar['contour']
@@ -121,7 +123,7 @@ class FaceSwapNode(BaseFrameEffectNode):
         kpts_src = kpts_src - bbox_src[:2]
         kpts_tar = kpts_tar - bbox_tar[:2]
 
-        # Compute perception transformation matrix
+        # Compute affine transformation matrix
         trans_mat, _ = cv2.estimateAffine2D(
             kpts_src.astype(np.float32), kpts_tar.astype(np.float32))
         patch_warp = cv2.warpAffine(
@@ -152,7 +154,7 @@ class FaceSwapNode(BaseFrameEffectNode):
         dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
 
         face_info = {
-            'type': dataset_info.dataset_name,
+            'dataset': dataset_info.dataset_name,
             'landmarks': None,  # For alignment
             'contour': None,  # For mask generation
             'bbox': None  # For image warping
@@ -160,14 +162,14 @@ class FaceSwapNode(BaseFrameEffectNode):
 
         # Fall back to hard coded keypoint id
 
-        if face_info['type'] == 'coco':
+        if face_info['dataset'] == 'coco':
             face_info['landmarks'] = np.stack([
                 keypoints[1],  # left eye
                 keypoints[2],  # right eye
                 keypoints[0],  # nose
                 0.5 * (keypoints[5] + keypoints[6]),  # neck (shoulder center)
             ])
-        elif face_info['type'] == 'coco_wholebody':
+        elif face_info['dataset'] == 'coco_wholebody':
             face_info['landmarks'] = np.stack([
                 keypoints[1],  # left eye
                 keypoints[2],  # right eye
@@ -176,21 +178,21 @@ class FaceSwapNode(BaseFrameEffectNode):
             ])
             contour_ids = list(range(23, 40)) + list(range(40, 50))[::-1]
             face_info['contour'] = keypoints[contour_ids]
-        elif face_info['type'] == 'ap10k':
+        elif face_info['dataset'] == 'ap10k':
             face_info['landmarks'] = np.stack([
                 keypoints[0],  # left eye
                 keypoints[1],  # right eye
                 keypoints[2],  # nose
                 keypoints[3],  # neck
             ])
-        elif face_info['type'] == 'animalpose':
+        elif face_info['dataset'] == 'animalpose':
             face_info['landmarks'] = np.stack([
                 keypoints[0],  # left eye
                 keypoints[1],  # right eye
                 keypoints[4],  # nose
                 keypoints[5],  # throat
             ])
-        elif face_info['type'] == 'wflw':
+        elif face_info['dataset'] == 'wflw':
             face_info['landmarks'] = np.stack([
                 keypoints[97],  # left eye
                 keypoints[96],  # right eye
