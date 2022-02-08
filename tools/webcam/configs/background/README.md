@@ -17,7 +17,7 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/background/backg
 | Hotkey | Function |
 | -- | -- |
 | b | Toggle the background matting effect on/off. |
-| h | Toggle the instruction on/off. |
+| h | Show help information. |
 | m | Show the monitoring information. |
 | q | Exit. |
 

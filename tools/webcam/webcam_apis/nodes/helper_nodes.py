@@ -23,14 +23,10 @@ except (ImportError, ModuleNotFoundError):
 @NODES.register_module()
 class ModelResultBindingNode(Node):
 
-    def __init__(self,
-                 name: str,
-                 frame_buffer: str,
-                 result_buffer: str,
-                 output_buffer: Union[str, List[str]],
-                 synchronous: bool = False):
+    def __init__(self, name: str, frame_buffer: str, result_buffer: str,
+                 output_buffer: Union[str, List[str]]):
         super().__init__(name=name, enable=True)
-        self.synchronous = synchronous
+        self.synchronous = None
 
         # Cache the latest model result
         self.last_result_msg = None
@@ -43,12 +39,27 @@ class ModelResultBindingNode(Node):
         self.result_lag = RunningAverage(window=10)
 
         # Register buffers
-        if self.synchronous:
-            self.register_input_buffer(result_buffer, 'result', essential=True)
-        else:
-            self.register_input_buffer(frame_buffer, 'frame', essential=True)
-            self.register_input_buffer(result_buffer, 'result')
+        # Note that essential buffers will be set in set_runner() because
+        # it depends on the runner.synchronous attribute.
+        self.register_input_buffer(result_buffer, 'result', essential=False)
+        self.register_input_buffer(frame_buffer, 'frame', essential=False)
         self.register_output_buffer(output_buffer)
+
+    def set_runner(self, runner):
+        super().set_runner(runner)
+
+        # Set synchronous according to the runner
+        if runner.synchronous:
+            self.synchronous = True
+            essential_input = 'result'
+        else:
+            self.synchronous = False
+            essential_input = 'frame'
+
+        # Set essential input buffer according to the synchronous setting
+        for buffer_info in self._input_buffers:
+            if buffer_info.input_name == essential_input:
+                buffer_info.essential = True
 
     def process(self, input_msgs):
         result_msg = input_msgs['result']

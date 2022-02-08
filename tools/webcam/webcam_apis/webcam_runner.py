@@ -3,14 +3,15 @@ import logging
 import sys
 import time
 import warnings
+from contextlib import nullcontext
 from threading import Thread
 from typing import Dict, List, Optional, Union
 
 import cv2
 
 from .nodes import NODES
-from .utils import (BufferManager, EventManager, FrameMessage,
-                    VideoEndingMessage, limit_max_fps)
+from .utils import (BufferManager, EventManager, FrameMessage, ImageCapture,
+                    VideoEndingMessage, is_image_file, limit_max_fps)
 
 DEFAULT_FRAME_BUFFER_SIZE = 1
 DEFAULT_INPUT_BUFFER_SIZE = 1
@@ -60,7 +61,6 @@ class WebcamRunner():
         self.event_manager.register_event('_exit_', is_keyboard=False)
         if self.synchronous:
             self.event_manager.register_event('_idle_', is_keyboard=False)
-            self.event_manager.set('_idle_')
 
         # Register nodes
         if not nodes:
@@ -86,6 +86,8 @@ class WebcamRunner():
         for node_cfg in nodes:
             logging.info(f'Create node: {node_cfg.name}({node_cfg.type})')
             node = NODES.build(node_cfg)
+
+            # Register node
             self.node_list.append(node)
 
             # Register buffers
@@ -106,7 +108,9 @@ class WebcamRunner():
                     is_keyboard=event_info.is_keyboard)
                 logging.info(f'Register event: {event_info.event_name}')
 
-        # Register runner for all nodes
+        # Set runner for nodes
+        # This step is performed after node building when the runner has
+        # create full buffer/event managers and can
         for node in self.node_list:
             logging.info(f'Set runner for node: {node.name})')
             node.set_runner(self)
@@ -118,19 +122,29 @@ class WebcamRunner():
         fps = self.camera_fps
 
         # Build video capture
-        self.vcap = cv2.VideoCapture(camera_id)
+        if is_image_file(camera_id):
+            self.vcap = ImageCapture(camera_id)
+        else:
+            self.vcap = cv2.VideoCapture(camera_id)
+
         if not self.vcap.isOpened():
             warnings.warn(f'Cannot open camera (ID={camera_id})')
             sys.exit()
 
         # Read video frames in a loop
+        first_frame = True
         while not self.event_manager.is_set('_exit_'):
             if self.synchronous:
-                # Read a new frame until the last frame has been processed
-                cm = self.event_manager.wait_and_handle('_idle_')
+                if first_frame:
+                    cm = nullcontext()
+                else:
+                    # Read a new frame until the last frame has been processed
+                    cm = self.event_manager.wait_and_handle('_idle_')
             else:
                 # Read frames with a maximum FPS
                 cm = limit_max_fps(fps)
+
+            first_frame = False
 
             with cm:
                 # Read a frame
