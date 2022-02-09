@@ -1,6 +1,6 @@
 # Meow Dwen Dwen
 
-Do you know [Bing DwenDwen (冰墩墩)](https://en.wikipedia.org/wiki/Bing_Dwen_Dwen_and_Shuey_Rhon_Rhon), the super cute mascot of 2022 Beijing Olympic Games?
+Do you know [Bing DwenDwen (冰墩墩)](https://en.wikipedia.org/wiki/Bing_Dwen_Dwen_and_Shuey_Rhon_Rhon), the mascot of 2022 Beijing Olympic Games?
 
 <div align="center">
     <img src="https://user-images.githubusercontent.com/15977946/152742707-c0c51844-e1d0-42d0-9a12-e369002e082f.jpg" width="224px" alt><br>
