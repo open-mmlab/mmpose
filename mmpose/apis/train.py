@@ -130,10 +130,15 @@ def train_model(model,
                 broadcast_buffers=False,
                 find_unused_parameters=find_unused_parameters)
     else:
-        if not torch.cuda.is_available():
-            assert digit_version(mmcv.__version__) >= digit_version('1.4.4'), \
-                'Please use MMCV >= 1.4.4 for CPU training!'
-        model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+        if digit_version(mmcv.__version__) >= digit_version('1.4.4'):
+            model = MMDataParallel(model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        elif torch.cuda.is_available():
+            model = MMDataParallel(model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        elif not torch.cuda.is_available():
+            print('Recommand to use MMCV >= 1.4.4 for CPU training!')
+            print('Now we are using an earlier version for CPU training!')
+            model = model.cpu()
+
 
     # build runner
     optimizer = build_optimizers(model, cfg.optimizer)
