@@ -4,6 +4,7 @@ runner = dict(
     name='Pose Estimation',
     camera_id=1,
     camera_fps=20,
+    synchronous=False,
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -60,7 +61,6 @@ runner = dict(
         dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
-            synchronous=False,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
             result_buffer='animal_pose',
             output_buffer='frame'),

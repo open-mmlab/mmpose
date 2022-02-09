@@ -4,7 +4,7 @@ runner = dict(
     name='Matting Effects',
     camera_id=0,
     camera_fps=10,
-
+    synchronous=False,
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -50,7 +50,6 @@ runner = dict(
         dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
-            synchronous=False,
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
             result_buffer='human_pose',
             output_buffer='frame'),
