@@ -3,6 +3,7 @@ runner = dict(
     name='FaceSwap',
     camera_id=0,
     camera_fps=20,
+    synchronous=False,
     nodes=[
         dict(
             type='DetectorNode',
