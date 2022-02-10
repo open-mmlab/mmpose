@@ -3,15 +3,11 @@ runner = dict(
     # Basic configurations of the runner
     name='Little fans of 2022 Beijing Winter Olympics',
     # Cat image
-    # camera_id='https://user-images.githubusercontent.com/'
-    # '15977946/152932036-b5554cf8-24cf-40d6-a358-35a106013f11.jpeg',
+    camera_id='https://user-images.githubusercontent.com/'
+    '15977946/152932036-b5554cf8-24cf-40d6-a358-35a106013f11.jpeg',
     # Dog image
     # camera_id='https://user-images.githubusercontent.com/'
     # '15977946/152932051-cd280b35-8066-45a0-8f52-657c8631aaba.jpg',
-    # Human image
-    # camera_id=
-    # 'http://cms-bucket.ws.126.net/2019/08/21/c729fc77710a4269ae4aa0f6dcae7324.jpeg',
-    camera_id='C:\\Users\\liyining\\Downloads\\yanzu.jpeg',
     camera_fps=20,
     nodes=[
         dict(
