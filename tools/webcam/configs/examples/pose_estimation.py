@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Pose Estimation',
-    camera_id=1,
+    camera_id=0,
     camera_fps=20,
     synchronous=False,
     # Define nodes.

@@ -3,11 +3,15 @@ runner = dict(
     # Basic configurations of the runner
     name='Little fans of 2022 Beijing Winter Olympics',
     # Cat image
-    camera_id='https://user-images.githubusercontent.com/'
-    '15977946/152932036-b5554cf8-24cf-40d6-a358-35a106013f11.jpeg',
+    # camera_id='https://user-images.githubusercontent.com/'
+    # '15977946/152932036-b5554cf8-24cf-40d6-a358-35a106013f11.jpeg',
     # Dog image
     # camera_id='https://user-images.githubusercontent.com/'
     # '15977946/152932051-cd280b35-8066-45a0-8f52-657c8631aaba.jpg',
+    # Human image
+    # camera_id=
+    # 'http://cms-bucket.ws.126.net/2019/08/21/c729fc77710a4269ae4aa0f6dcae7324.jpeg',
+    camera_id='C:\\Users\\liyining\\Downloads\\yanzu.jpeg',
     camera_fps=20,
     nodes=[
         dict(
@@ -32,10 +36,23 @@ runner = dict(
             input_buffer='det_result',
             output_buffer='animal_pose'),
         dict(
+            type='TopDownPoseEstimatorNode',
+            name='TopDown Pose Estimator',
+            model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
+            'topdown_heatmap/coco-wholebody/'
+            'vipnas_res50_coco_wholebody_256x192_dark.py',
+            model_checkpoint='https://openmmlab-share.oss-cn-hangzhou'
+            '.aliyuncs.com/mmpose/top_down/vipnas/'
+            'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
+            device='cpu',
+            cls_names=['person'],
+            input_buffer='animal_pose',
+            output_buffer='human_pose'),
+        dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-            result_buffer='animal_pose',
+            result_buffer='human_pose',
             output_buffer='frame'),
         dict(
             type='XDwenDwenNode',
