@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
-import warnings
 from dataclasses import dataclass
 from typing import List, Tuple, Union
 
@@ -146,20 +145,20 @@ class XDwenDwenNode(BaseFrameEffectNode):
 
     def draw(self, frame_msg):
 
-        pose_results = frame_msg.get_pose_results()
+        full_pose_results = frame_msg.get_pose_results()
 
         pred = None
-        if pose_results:
-            if len(pose_results) > 1:
-                warnings.warn('Received pose results from multiple model.'
-                              ' Only the first will be used.')
-            if pose_results[0]['preds']:
-                pred = pose_results[0]['preds'][0].copy()
-                pred['dataset'] = DatasetInfo(
-                    pose_results[0]
-                    ['model_cfg'].data.test.dataset_info).dataset_name
+        if full_pose_results:
+            for pose_results in full_pose_results:
+                if not pose_results['preds']:
+                    continue
+
+                pred = pose_results['preds'][0].copy()
+                pred['dataset'] = DatasetInfo(pose_results['model_cfg'].data.
+                                              test.dataset_info).dataset_name
 
                 self.latest_pred = pred
+                break
 
         # Use the latest pose result if there is none available in
         # the current frame.
@@ -175,8 +174,11 @@ class XDwenDwenNode(BaseFrameEffectNode):
 
         if pred is not None:
             if pred['dataset'] == 'ap10k':
-                # left-eye: 0, right-eye: 1, nose: 2
+                # left eye: 0, right eye: 1, nose: 2
                 kpts_src = pred['keypoints'][[0, 1, 2], :2]
+            elif pred['dataset'] == 'coco_wholebody':
+                # left eye: 1, right eye 2, nose: 0
+                kpts_src = pred['keypoints'][[1, 2, 0], :2]
             else:
                 raise ValueError('Can not obtain face landmark information'
                                  f'from dataset: {pred["type"]}')
