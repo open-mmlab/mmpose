@@ -114,7 +114,7 @@ runner = dict(
         dict(
             type='RecorderNode',
             name='Recorder',
-            out_video_file='pose_estimation.mp4',
+            out_video_file='record.mp4',
             frame_buffer='display',
             output_buffer='_display_'
             # `_display_` is a runner-reserved buffer

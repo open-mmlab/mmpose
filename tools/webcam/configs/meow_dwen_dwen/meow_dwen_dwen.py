@@ -44,7 +44,6 @@ runner = dict(
             resource_file='tools/webcam/configs/meow_dwen_dwen/'
             'resource-info.json',
             out_shape=(480, 480),
-            dynamic=True,
             frame_buffer='frame',
             output_buffer='vis'),
         dict(
