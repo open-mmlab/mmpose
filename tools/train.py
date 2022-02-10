@@ -16,7 +16,7 @@ from mmpose import __version__
 from mmpose.apis import init_random_seed, train_model
 from mmpose.datasets import build_dataset
 from mmpose.models import build_posenet
-from mmpose.utils import collect_env, get_root_logger
+from mmpose.utils import collect_env, get_root_logger, setup_multi_processes
 
 
 def parse_args():
@@ -84,6 +84,9 @@ def main():
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    # set multi-process settings
+    setup_multi_processes(cfg)
 
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
