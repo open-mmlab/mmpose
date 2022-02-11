@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.23.0 (04/01/2022)
+
+**Highlights**
+
+- Add [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tools to develop interactive webcam applications with MMPose functions. ([\#1178](https://github.com/open-mmlab/mmpose/pull/1178), [\#1173](https://github.com/open-mmlab/mmpose/pull/1173), [\#1173](https://github.com/open-mmlab/mmpose/pull/1173), [\#1143](https://github.com/open-mmlab/mmpose/pull/1143), [\#1094](https://github.com/open-mmlab/mmpose/pull/1094), [\#1133](https://github.com/open-mmlab/mmpose/pull/1133), [\#1098](https://github.com/open-mmlab/mmpose/pull/1098), [\#1160](https://github.com/open-mmlab/mmpose/pull/1160)) @ly015, @jin-s13, @liqikai9, @wusize, @luminxu, @zengwang430521 @mzr1996
+
+**New Features**
+
+- Add [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tools to develop interactive webcam applications with MMPose functions. ([\#1178](https://github.com/open-mmlab/mmpose/pull/1178), [\#1173](https://github.com/open-mmlab/mmpose/pull/1173), [\#1173](https://github.com/open-mmlab/mmpose/pull/1173), [\#1143](https://github.com/open-mmlab/mmpose/pull/1143), [\#1094](https://github.com/open-mmlab/mmpose/pull/1094), [\#1133](https://github.com/open-mmlab/mmpose/pull/1133), [\#1098](https://github.com/open-mmlab/mmpose/pull/1098), [\#1160](https://github.com/open-mmlab/mmpose/pull/1160)) @ly015, @jin-s13, @liqikai9, @wusize, @luminxu, @zengwang430521 @mzr1996
+- Support ConcatDataset ([\#1139](https://github.com/open-mmlab/mmpose/pull/1139)) @Canwang-sjtu
+- Support CPU training and testing ([\#1157](https://github.com/open-mmlab/mmpose/pull/1157)) @ly015
+
+**Improvements**
+
+- Add multi-processing configurations to speed up distributed training and testing ([\#1146](https://github.com/open-mmlab/mmpose/pull/1146)) @ly015
+- Add default runtime config ([\#1145](https://github.com/open-mmlab/mmpose/pull/1145))
+
+- Upgrade isort in pre-commit hook ([\#1179](https://github.com/open-mmlab/mmpose/pull/1179)) @liqikai9
+- Update README and documents ([\#1171](https://github.com/open-mmlab/mmpose/pull/1171), [\#1167](https://github.com/open-mmlab/mmpose/pull/1167), [\#1153](https://github.com/open-mmlab/mmpose/pull/1153), [\#1149](https://github.com/open-mmlab/mmpose/pull/1149), [\#1148](https://github.com/open-mmlab/mmpose/pull/1148), [\#1147](https://github.com/open-mmlab/mmpose/pull/1147), [\#1140](https://github.com/open-mmlab/mmpose/pull/1140)) @jin-s13, @wusize, @TommyZihao, @ly015
+
+**Bug Fixes**
+
+- Fix undeterministic behavior in pre-commit hooks ([\#1136](https://github.com/open-mmlab/mmpose/pull/1136)) @jin-s13
+- Deprecate the support for "python setup.py test" ([\#1179](https://github.com/open-mmlab/mmpose/pull/1179)) @ly015
+- Fix incompatible settings with MMCV on HSigmoid default parameters ([\#1132](https://github.com/open-mmlab/mmpose/pull/1132)) @ly015
+- Fix albumentation installation ([\#1184](https://github.com/open-mmlab/mmpose/pull/1184)) @BIGWangYuDong
+
 ## v0.22.0 (04/01/2022)
 
 **Highlights**

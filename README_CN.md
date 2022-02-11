@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/en/v0.22.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/en/v0.22.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/en/v0.22.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/en/v0.22.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.22.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/en/v0.23.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/en/v0.23.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/en/v0.23.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/en/v0.23.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.23.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,10 +73,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-* 2022-01-05: MMPose [v0.22.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.22.0) 已经发布. 主要更新包括:
-  * 支持了 VoxelPose (ECCV'2020)
-  * 支持了 Soft Wing Loss (TIP'2021)
-  * 支持了 Adaptive Wing Loss (ICCV'2019)
+* 2022-02-11: MMPose [v0.23.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.23.0) 已经发布. 主要更新包括:
+  * 新增 [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): 用于快速开发基于 MMPose 的简单视频交互应用
+  * 支持 CPU 训练和测试
 * 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装
