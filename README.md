@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 ## News
 
 * 2022-02-11: MMPose [v0.23.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.23.0) was released. Major updates includes:
-  * Release [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tools to develop interactive webcam applications with MMPose functions
+  * Release [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tool to develop interactive webcam applications with MMPose functions
   * Support CPU training and testing
 * 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
