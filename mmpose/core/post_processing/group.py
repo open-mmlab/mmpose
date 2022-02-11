@@ -150,6 +150,7 @@ class HeatmapParser:
         self.pool = torch.nn.MaxPool2d(cfg['nms_kernel'], 1,
                                        cfg['nms_padding'])
         self.use_udp = cfg.get('use_udp', False)
+        self.score_per_joint = cfg.get('score_per_joint', False)
 
     def nms(self, heatmaps):
         """Non-Maximum Suppression for heatmaps.
@@ -375,7 +376,7 @@ class HeatmapParser:
             tuple: A tuple containing keypoint grouping results.
 
             - results (list(np.ndarray)): Pose results.
-            - scores (list): Score of people.
+            - scores (list/list(np.ndarray)): Score of people.
         """
         results = self.match(**self.top_k(heatmaps, tags))
 
@@ -388,7 +389,10 @@ class HeatmapParser:
             else:
                 results = self.adjust(results, heatmaps)
 
-        scores = [i[:, 2].mean() for i in results[0]]
+        if self.score_per_joint:
+            scores = [i[:, 2] for i in results[0]]
+        else:
+            scores = [i[:, 2].mean() for i in results[0]]
 
         if refine:
             results = results[0]
