@@ -25,6 +25,7 @@
 - Fix undeterministic behavior in pre-commit hooks ([\#1136](https://github.com/open-mmlab/mmpose/pull/1136)) @jin-s13
 - Deprecate the support for "python setup.py test" ([\#1179](https://github.com/open-mmlab/mmpose/pull/1179)) @ly015
 - Fix incompatible settings with MMCV on HSigmoid default parameters ([\#1132](https://github.com/open-mmlab/mmpose/pull/1132)) @ly015
+- Fix albumentation installation ([\#1184](https://github.com/open-mmlab/mmpose/pull/1184)) @BIGWangYuDong
 
 ## v0.22.0 (04/01/2022)
 
