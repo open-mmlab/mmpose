@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘Documentation](https://mmpose.readthedocs.io/en/v0.22.0/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/v0.22.0/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.22.0/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/v0.22.0/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/v0.22.0/changelog.html) |
+[📘Documentation](https://mmpose.readthedocs.io/en/v0.23.0/) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/v0.23.0/install.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.23.0/modelzoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/v0.23.0/papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/v0.23.0/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,10 +73,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## News
 
-* 2022-01-05: MMPose [v0.22.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.22.0) was released. Major updates includes:
-  * Support VoxelPose (ECCV'2020)
-  * Support Soft Wing Loss (TIP'2021)
-  * Support Adaptive Wing Loss (ICCV'2019)
+* 2022-02-11: MMPose [v0.23.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.23.0) was released. Major updates includes:
+  * Release [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tools to develop interactive webcam applications with MMPose functions
+  * Support CPU training and testing
 * 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## Installation
