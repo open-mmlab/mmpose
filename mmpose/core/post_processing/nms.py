@@ -86,7 +86,7 @@ def oks_iou(g, d, a_g, a_d, sigmas=None, vis_thr=None):
     return ious
 
 
-def oks_nms(kpts_db, thr, sigmas=None, vis_thr=None):
+def oks_nms(kpts_db, thr, sigmas=None, vis_thr=None, score_per_joint=False):
     """OKS NMS implementations.
 
     Args:
@@ -94,6 +94,7 @@ def oks_nms(kpts_db, thr, sigmas=None, vis_thr=None):
         thr: Retain overlap < thr.
         sigmas: standard deviation of keypoint labelling.
         vis_thr: threshold of the keypoint visibility.
+        score_per_joint: the input scores (in kpts_db) are per joint scores
 
     Returns:
         np.ndarray: indexes to keep.
@@ -101,7 +102,11 @@ def oks_nms(kpts_db, thr, sigmas=None, vis_thr=None):
     if len(kpts_db) == 0:
         return []
 
-    scores = np.array([k['score'] for k in kpts_db])
+    if score_per_joint:
+        scores = np.array([k['score'].mean() for k in kpts_db])
+    else:
+        scores = np.array([k['score'] for k in kpts_db])
+
     kpts = np.array([k['keypoints'].flatten() for k in kpts_db])
     areas = np.array([k['area'] for k in kpts_db])
 
@@ -147,7 +152,12 @@ def _rescore(overlap, scores, thr, type='gaussian'):
     return scores
 
 
-def soft_oks_nms(kpts_db, thr, max_dets=20, sigmas=None, vis_thr=None):
+def soft_oks_nms(kpts_db,
+                 thr,
+                 max_dets=20,
+                 sigmas=None,
+                 vis_thr=None,
+                 score_per_joint=False):
     """Soft OKS NMS implementations.
 
     Args:
@@ -155,6 +165,7 @@ def soft_oks_nms(kpts_db, thr, max_dets=20, sigmas=None, vis_thr=None):
         thr: retain oks overlap < thr.
         max_dets: max number of detections to keep.
         sigmas: Keypoint labelling uncertainty.
+        score_per_joint: the input scores (in kpts_db) are per joint scores
 
     Returns:
         np.ndarray: indexes to keep.
@@ -162,7 +173,11 @@ def soft_oks_nms(kpts_db, thr, max_dets=20, sigmas=None, vis_thr=None):
     if len(kpts_db) == 0:
         return []
 
-    scores = np.array([k['score'] for k in kpts_db])
+    if score_per_joint:
+        scores = np.array([k['score'].mean() for k in kpts_db])
+    else:
+        scores = np.array([k['score'] for k in kpts_db])
+
     kpts = np.array([k['keypoints'].flatten() for k in kpts_db])
     areas = np.array([k['area'] for k in kpts_db])
 

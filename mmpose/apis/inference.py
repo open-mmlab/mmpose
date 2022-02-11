@@ -525,6 +525,7 @@ def inference_bottom_up_pose_model(model,
 
     cfg = model.cfg
     device = next(model.parameters()).device
+    score_per_joint = cfg.model.test_cfg.get('score_per_joint', False)
 
     # build the data pipeline
     channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
@@ -576,7 +577,11 @@ def inference_bottom_up_pose_model(model,
             })
 
         # pose nms
-        keep = oks_nms(pose_results, pose_nms_thr, sigmas)
+        keep = oks_nms(
+            pose_results,
+            pose_nms_thr,
+            sigmas,
+            score_per_joint=score_per_joint)
         pose_results = [pose_results[_keep] for _keep in keep]
 
     return pose_results, returned_outputs
