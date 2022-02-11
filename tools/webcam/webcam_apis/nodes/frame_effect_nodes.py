@@ -857,8 +857,6 @@ class NoticeBoardNode(BaseFrameEffectNode):
     ):
         super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
 
-        self._enabled = True
-
         self.x_offset = x_offset
         self.y_offset = y_offset
         self.y_delta = y_delta
