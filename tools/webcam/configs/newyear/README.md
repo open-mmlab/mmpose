@@ -13,7 +13,7 @@ This demo provides new year effects with pose estimation results, like adding ha
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/newyear/new_year.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/newyear/new_year.py
 ```
 
 ### Hotkeys

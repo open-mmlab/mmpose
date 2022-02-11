@@ -92,5 +92,5 @@ dict(
 You can launch the webcam runner with a debug config:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/config/examples/test_camera.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/examples/test_camera.py
 ```
