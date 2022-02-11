@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument(
         '--config',
         type=str,
-        default='tools/webcam/configs/examples/pose_estimation.py')
+        default='tools/webcam/configs/meow_dwen_dwen/meow_dwen_dwen.py')
 
     parser.add_argument(
         '--cfg-options',
