@@ -1,10 +1,9 @@
-_base_ = ['../../../../_base_/datasets/posetrack18.py']
-log_level = 'INFO'
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/posetrack18.py'
+]
 load_from = 'https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage1-08b632aa_20211130.pth'  # noqa: E501
-resume_from = None
-dist_params = dict(backend='nccl')
 cudnn_benchmark = True
-workflow = [('train', 1)]
 checkpoint_config = dict(interval=1)
 evaluation = dict(interval=1, metric='mAP', save_best='Total AP')
 

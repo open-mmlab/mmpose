@@ -1,9 +1,7 @@
-_base_ = ['../../../../_base_/datasets/coco.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/coco.py'
+]
 checkpoint_config = dict(interval=50)
 evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
@@ -20,13 +18,6 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[200, 260])
 total_epochs = 300
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 channel_cfg = dict(
     dataset_joints=17,
     dataset_channel=[
