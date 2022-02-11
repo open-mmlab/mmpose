@@ -1,9 +1,7 @@
-_base_ = ['../../../../_base_/datasets/panoptic_body3d.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/panoptic_body3d.py'
+]
 checkpoint_config = dict(interval=1)
 evaluation = dict(interval=1, metric='mAP', save_best='mAP')
 

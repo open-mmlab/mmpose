@@ -22,7 +22,7 @@ There are two steps to finetune a model on a new dataset.
 
 To finetune on the custom datasets, the users need to modify four parts in the config.
 
-## Modify Model
+## Modify Head
 
 Then the new config needs to modify the model according to the keypoint numbers of the new datasets. By only changing `out_channels` in the keypoint_head.
 For example, we have 133 keypoints for COCO-WholeBody, and we have 17 keypoints for COCO.

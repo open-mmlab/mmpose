@@ -9,9 +9,10 @@
   - [测试某个数据集](#测试某个数据集)
   - [运行演示](#运行演示)
 - [如何训练模型](#如何训练模型)
-  - [使用单个 GPU 进行训练](#使用单个-GPU-进行训练)
-  - [使用多个 GPU 进行训练](#使用多个-GPU-进行训练)
-  - [使用多台机器进行训练](#使用多台机器进行训练)
+  - [使用单个 GPU 训练](#使用单个-GPU-训练)
+  - [使用 CPU 训练](#使用-CPU-训练)
+  - [使用多个 GPU 训练](#使用多个-GPU-训练)
+  - [使用多台机器训练](#使用多台机器训练)
   - [使用单台机器启动多个任务](#使用单台机器启动多个任务)
 - [基准测试](#基准测试)
 - [进阶教程](#进阶教程)
@@ -39,9 +40,10 @@ MMPose 提供了一些测试脚本用于测试数据集上的指标（如 COCO, 
 
 ### 测试某个数据集
 
-- [x] 支持单 GPU
-- [x] 支持单节点，多 GPU
-- [x] 支持多节点
+- [x] 单 GPU 测试
+- [x] CPU 测试
+- [x] 单节点多 GPU 测试
+- [x] 多节点测试
 
 用户可使用以下命令测试数据集
 
@@ -50,6 +52,11 @@ MMPose 提供了一些测试脚本用于测试数据集上的指标（如 COCO, 
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
     [--eval ${EVAL_METRICS}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
+
+# CPU 测试：禁用 GPU 并运行测试脚本
+export CUDA_VISIBLE_DEVICES=-1
+python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] \
+    [--eval ${EVAL_METRICS}]
 
 # 多 GPU 测试
 ./tools/dist_test.sh ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESULT_FILE}] [--eval ${EVAL_METRICS}] \
@@ -147,7 +154,7 @@ evaluation = dict(interval=5)  # 每 5 轮训练进行一次模型评估
 
 根据 [Linear Scaling Rule](https://arxiv.org/abs/1706.02677)，当 GPU 数量或每个 GPU 上的视频批大小改变时，用户可根据批大小按比例地调整学习率，如，当 4 GPUs x 2 video/gpu 时，lr=0.01；当 16 GPUs x 4 video/gpu 时，lr=0.08。
 
-### 使用单个 GPU 进行训练
+### 使用单个 GPU 训练
 
 ```shell
 python tools/train.py ${CONFIG_FILE} [optional arguments]
@@ -155,7 +162,21 @@ python tools/train.py ${CONFIG_FILE} [optional arguments]
 
 如果用户想在命令中指定工作目录，则需要增加参数 `--work-dir ${YOUR_WORK_DIR}`
 
-### 使用多个 GPU 进行训练
+### 使用 CPU 训练
+
+使用 CPU 训练的流程和使用单 GPU 训练的流程一致，我们仅需要在训练流程开始前禁用 GPU。
+
+```shell
+export CUDA_VISIBLE_DEVICES=-1
+```
+
+之后运行单 GPU 训练脚本即可。
+
+**注意**：
+
+我们不推荐用户使用 CPU 进行训练，这太过缓慢。我们支持这个功能是为了方便用户在没有 GPU 的机器上进行调试。
+
+### 使用多个 GPU 训练
 
 ```shell
 ./tools/dist_train.sh ${CONFIG_FILE} ${GPU_NUM} [optional arguments]
@@ -185,9 +206,9 @@ python tools/train.py ${CONFIG_FILE} [optional arguments]
 ./tools/dist_train.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py 8 --resume_from work_dirs/res50_coco_256x192/latest.pth
 ```
 
-### 使用多台机器进行训练
+### 使用多台机器训练
 
-如果用户在 [slurm](https://slurm.schedmd.com/) 集群上运行 MMPose，可使用 `slurm_train.sh` 脚本。（该脚本也支持单台机器上进行训练）
+如果用户在 [slurm](https://slurm.schedmd.com/) 集群上运行 MMPose，可使用 `slurm_train.sh` 脚本。（该脚本也支持单台机器上训练）
 
 ```shell
 [GPUS=${GPUS}] ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} ${CONFIG_FILE} [--work-dir ${WORK_DIR}]

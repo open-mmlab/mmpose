@@ -14,6 +14,7 @@ from mmcv.runner import get_dist_info, init_dist, load_checkpoint
 from mmpose.apis import multi_gpu_test, single_gpu_test
 from mmpose.datasets import build_dataloader, build_dataset
 from mmpose.models import build_posenet
+from mmpose.utils import setup_multi_processes
 
 try:
     from mmcv.runner import wrap_fp16_model
@@ -35,6 +36,12 @@ def parse_args():
         action='store_true',
         help='Whether to fuse conv and bn, this will slightly increase'
         'the inference speed')
+    parser.add_argument(
+        '--gpu-id',
+        type=int,
+        default=0,
+        help='id of gpu to use '
+        '(only applicable to non-distributed testing)')
     parser.add_argument(
         '--eval',
         default=None,
@@ -84,6 +91,9 @@ def main():
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
+
+    # set multi-process settings
+    setup_multi_processes(cfg)
 
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
@@ -146,7 +156,7 @@ def main():
         model = fuse_conv_bn(model)
 
     if not distributed:
-        model = MMDataParallel(model, device_ids=[0])
+        model = MMDataParallel(model, device_ids=[args.gpu_id])
         outputs = single_gpu_test(model, data_loader)
     else:
         model = MMDistributedDataParallel(

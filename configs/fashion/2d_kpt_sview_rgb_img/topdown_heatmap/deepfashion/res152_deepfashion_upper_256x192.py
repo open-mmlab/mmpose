@@ -1,10 +1,7 @@
-_base_ = ['../../../../_base_/datasets/deepfashion_upper.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=10)
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/deepfashion_upper.py'
+]
 evaluation = dict(interval=10, metric='PCK', save_best='PCK')
 
 optimizer = dict(

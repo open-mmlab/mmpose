@@ -11,6 +11,7 @@ For installation instructions, please see [install.md](install.md).
   - [Run demos](#run-demos)
 - [Train a Model](#train-a-model)
   - [Train with a single GPU](#train-with-a-single-gpu)
+  - [Train with CPU](#train-with-cpu)
   - [Train with multiple GPUs](#train-with-multiple-gpus)
   - [Train with multiple machines](#train-with-multiple-machines)
   - [Launch multiple jobs on a single machine](#launch-multiple-jobs-on-a-single-machine)
@@ -41,6 +42,7 @@ and provide some high-level apis for easier integration to other OpenMMLab proje
 ### Test a dataset
 
 - [x] single GPU
+- [x] CPU
 - [x] single node multiple GPUs
 - [x] multiple node
 
@@ -51,6 +53,11 @@ You can use the following commands to test a dataset.
 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
     [--eval ${EVAL_METRICS}] [--gpu_collect] [--tmpdir ${TMPDIR}] [--cfg-options ${CFG_OPTIONS}] \
     [--launcher ${JOB_LAUNCHER}] [--local_rank ${LOCAL_RANK}]
+
+# CPU: disable GPUs and run single-gpu testing script
+export CUDA_VISIBLE_DEVICES=-1
+python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] \
+    [--eval ${EVAL_METRICS}]
 
 # multi-gpu testing
 ./tools/dist_test.sh ${CONFIG_FILE} ${CHECKPOINT_FILE} ${GPU_NUM} [--out ${RESULT_FILE}] [--fuse-conv-bn] \
@@ -155,6 +162,20 @@ python tools/train.py ${CONFIG_FILE} [optional arguments]
 ```
 
 If you want to specify the working directory in the command, you can add an argument `--work-dir ${YOUR_WORK_DIR}`.
+
+### Train with CPU
+
+The process of training on the CPU is consistent with single GPU training. We just need to disable GPUs before the training process.
+
+```shell
+export CUDA_VISIBLE_DEVICES=-1
+```
+
+And then run the script [above](#training-on-a-single-GPU).
+
+**Note**:
+
+We do not recommend users to use CPU for training because it is too slow. We support this feature to allow users to debug on machines without GPU for convenience.
 
 ### Train with multiple GPUs
 
