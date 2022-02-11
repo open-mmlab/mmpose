@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 
-import mmcv
+from mmcv import Config, DictAction
 from webcam_apis import WebcamRunner
 
 
@@ -13,12 +13,22 @@ def parse_args():
         type=str,
         default='tools/webcam/configs/examples/pose_estimation.py')
 
+    parser.add_argument(
+        '--cfg-options',
+        nargs='+',
+        action=DictAction,
+        default={},
+        help='override some settings in the used config, the key-value pair '
+        'in xxx=yyy format will be merged into config file. For example, '
+        "'--cfg-options runner.camera_id=1 runner.synchronous=True'")
+
     return parser.parse_args()
 
 
 def launch():
     args = parse_args()
-    cfg = mmcv.Config.fromfile(args.config)
+    cfg = Config.fromfile(args.config)
+    cfg.merge_from_dict(args.cfg_options)
 
     runner = WebcamRunner(**cfg.runner)
     runner.run()
