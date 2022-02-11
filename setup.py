@@ -20,6 +20,7 @@ def get_version():
     with open(version_file, 'r') as f:
         exec(compile(f.read(), version_file, 'exec'))
     import sys
+
     # return short version for sdist
     if 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
         return locals()['short_version']
@@ -41,9 +42,9 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     CommandLine:
         python -c "import setup; print(setup.parse_requirements())"
     """
+    import re
     import sys
     from os.path import exists
-    import re
     require_fpath = fname
 
     def parse_line(line):

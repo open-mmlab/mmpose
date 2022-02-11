@@ -4,10 +4,10 @@ import tempfile
 
 import numpy as np
 import torch
-from tests.utils.mesh_utils import generate_smpl_weight_file
 
 from mmpose.core.optimizer import build_optimizers
 from mmpose.models.detectors.mesh import ParametricMesh
+from tests.utils.mesh_utils import generate_smpl_weight_file
 
 
 def test_parametric_mesh_forward():

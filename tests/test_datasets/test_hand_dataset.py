@@ -5,9 +5,9 @@ import tempfile
 import pytest
 from mmcv import Config
 from numpy.testing import assert_almost_equal
-from tests.utils.data_utils import convert_db_to_output
 
 from mmpose.datasets import DATASETS
+from tests.utils.data_utils import convert_db_to_output
 
 
 def test_OneHand10K_dataset():

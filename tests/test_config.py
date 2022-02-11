@@ -24,6 +24,7 @@ def test_config_build_detector():
     """Test that all detection models defined in the configs can be
     initialized."""
     from mmcv import Config
+
     from mmpose.models import build_posenet
 
     config_dpath = _get_config_directory()
