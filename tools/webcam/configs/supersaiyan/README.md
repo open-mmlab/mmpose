@@ -23,7 +23,7 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/supersaiyan/saiy
 | m | Show the monitoring information. |
 | q | Exit. |
 
-Note that the demo will automatically save the output video into a file `pose_estimation.mp4`.
+Note that the demo will automatically save the output video into a file `record.mp4`.
 
 ### Configuration
 

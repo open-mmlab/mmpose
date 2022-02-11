@@ -24,8 +24,9 @@ class WebcamRunner():
 
     Parameters:
         name (str): Runner name.
-        camera_id (int|str): Webcam ID. Optionally a path can be given
-            as the camere_id to load videos from a local file. Default: 0
+        camera_id (int | str): The camera ID (usually the ID of the default
+            camera is 0). Alternatively a file path or a URL can be given
+            to load from a video or image file.
         camera_fps (int): Video reading maximum FPS. Default: 30
         buffer_sizes (dict, optional): A dict to specify buffer sizes. The
             key is the buffer name and the value is the buffer size.

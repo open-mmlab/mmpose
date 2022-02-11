@@ -2,7 +2,7 @@
 runner = dict(
     # Basic configurations of the runner
     name='Pose Estimation',
-    camera_id=1,
+    camera_id=0,
     camera_fps=20,
     synchronous=False,
     # Define nodes.
@@ -107,7 +107,7 @@ runner = dict(
         dict(
             type='RecorderNode',
             name='Recorder',
-            out_video_file='pose_estimation.mp4',
+            out_video_file='record.mp4',
             frame_buffer='display',
             output_buffer='_display_'
             # `_display_` is a runner-reserved buffer

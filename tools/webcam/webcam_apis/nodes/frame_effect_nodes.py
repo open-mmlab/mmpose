@@ -180,10 +180,10 @@ class BaseFrameEffectNode(Node):
     Args:
         name (str, optional): The node name (also thread name).
         frame_buffer (str): The name of the input buffer.
-        output_buffer (str|list): The name(s) of the output buffer(s).
-        enable_key (str|int, optional): Set a hot-key to toggle enable/disable
-            of the node. If an int value is given, it will be treated as an
-            ascii code of a key. Please note:
+        output_buffer (str | list): The name(s) of the output buffer(s).
+        enable_key (str | int, optional): Set a hot-key to toggle
+            enable/disable of the node. If an int value is given, it will be
+            treated as an ascii code of a key. Please note:
                 1. If enable_key is set, the bypass method need to be
                     overridden to define the node behavior when disabled
                 2. Some hot-key has been use for particular use. For example:

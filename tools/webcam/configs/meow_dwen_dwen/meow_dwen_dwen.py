@@ -32,10 +32,23 @@ runner = dict(
             input_buffer='det_result',
             output_buffer='animal_pose'),
         dict(
+            type='TopDownPoseEstimatorNode',
+            name='TopDown Pose Estimator',
+            model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
+            'topdown_heatmap/coco-wholebody/'
+            'vipnas_res50_coco_wholebody_256x192_dark.py',
+            model_checkpoint='https://openmmlab-share.oss-cn-hangzhou'
+            '.aliyuncs.com/mmpose/top_down/vipnas/'
+            'vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth',
+            device='cpu',
+            cls_names=['person'],
+            input_buffer='animal_pose',
+            output_buffer='human_pose'),
+        dict(
             type='ModelResultBindingNode',
             name='ResultBinder',
             frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-            result_buffer='animal_pose',
+            result_buffer='human_pose',
             output_buffer='frame'),
         dict(
             type='XDwenDwenNode',
@@ -44,7 +57,6 @@ runner = dict(
             resource_file='tools/webcam/configs/meow_dwen_dwen/'
             'resource-info.json',
             out_shape=(480, 480),
-            dynamic=True,
             frame_buffer='frame',
             output_buffer='vis'),
         dict(
