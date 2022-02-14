@@ -135,23 +135,20 @@ def get_mouth_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
     # try obtaining mouth point ids from dataset_info
     try:
         dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        left_mouth_idx = dataset_info.keypoint_name2id.get('face-0', None)
-        right_mouth_idx = dataset_info.keypoint_name2id.get('face-16', None)
+        mouth_index = dataset_info.keypoint_name2id.get('face-62', None)
     except AttributeError:
-        left_mouth_idx = None
-        right_mouth_idx = None
+        mouth_index = None
 
-    if left_mouth_idx is None or right_mouth_idx is None:
+    if mouth_index is None:
         # Fall back to hard coded keypoint id
         dataset_name = model_cfg.data.test.type
         if dataset_name == 'TopDownCocoWholeBodyDataset':
-            left_mouth_idx = 23
-            right_mouth_idx = 39
+            mouth_index = 85
         else:
             raise ValueError('Can not determine the eye keypoint id of '
                              f'{dataset_name}')
 
-    return left_mouth_idx, right_mouth_idx
+    return mouth_index
 
 
 def get_hand_keypoint_ids(model_cfg: Config) -> List[int]:

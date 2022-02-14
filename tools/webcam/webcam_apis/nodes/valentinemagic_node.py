@@ -36,7 +36,7 @@ class ValentineMagicNode(FrameDrawingNode):
                  hand_heart_img_path: Optional[str] = None,
                  flying_heart_img_path: Optional[str] = None,
                  hand_heart_dis_ratio_thr: float = 1.0,
-                 flying_heart_dis_ratio_thr: float = 3.0,
+                 flying_heart_dis_ratio_thr: float = 3.5,
                  num_persons: int = 2):
 
         super().__init__(
@@ -85,7 +85,7 @@ class ValentineMagicNode(FrameDrawingNode):
 
     def _check_heart(self, pred: Dict[str,
                                       np.ndarray], hand_indices: List[int],
-                     mouth_indices: List[int], eye_indices: List[int]) -> int:
+                     mouth_index: int, eye_indices: List[int]) -> int:
         """Check the type of Valentine Magic based on the pose results and
         keypoint indices of hand, mouth. and eye.
 
@@ -94,7 +94,7 @@ class ValentineMagicNode(FrameDrawingNode):
                 - "keypoints" (np.ndarray[K,3]): keypoint detection result
                                                  in [x, y, score]
             hand_indices(list[int]): keypoint indices of hand
-            mouth_indices(list[int]): keypoint indices of mouth
+            mouth_index(int): keypoint index of mouth
             eye_indices(list[int]): keypoint indices of eyes
 
         Returns:
@@ -104,40 +104,42 @@ class ValentineMagicNode(FrameDrawingNode):
         """
         kpts = pred['keypoints']
 
+        left_eye_idx, right_eye_idx = eye_indices
+        left_eye_pos = kpts[left_eye_idx][:2]
+        right_eye_pos = kpts[right_eye_idx][:2]
+        eye_dis = self._cal_distance(left_eye_pos, right_eye_pos)
+
         # these indices are corresoponding to the following keypoints:
         # left_hand_root, left_pinky_finger1,
         # left_pinky_finger3, left_pinky_finger4,
         # right_hand_root, right_pinky_finger1
         # right_pinky_finger3, right_pinky_finger4
 
+        both_hands_vis = True
         for i in [0, 17, 19, 20, 21, 38, 40, 41]:
             if kpts[hand_indices[i]][2] < self.kpt_vis_thr:
-                return 0
+                both_hands_vis = False
 
-        p1 = kpts[hand_indices[20]][:2]
-        p2 = kpts[hand_indices[19]][:2]
-        p3 = kpts[hand_indices[17]][:2]
-        p4 = kpts[hand_indices[0]][:2]
-        left_angle = self._cal_angle(p1, p2, p3, p4)
+        if both_hands_vis:
+            p1 = kpts[hand_indices[20]][:2]
+            p2 = kpts[hand_indices[19]][:2]
+            p3 = kpts[hand_indices[17]][:2]
+            p4 = kpts[hand_indices[0]][:2]
+            left_angle = self._cal_angle(p1, p2, p3, p4)
 
-        p1 = kpts[hand_indices[41]][:2]
-        p2 = kpts[hand_indices[40]][:2]
-        p3 = kpts[hand_indices[38]][:2]
-        p4 = kpts[hand_indices[21]][:2]
-        right_angle = self._cal_angle(p1, p2, p3, p4)
+            p1 = kpts[hand_indices[41]][:2]
+            p2 = kpts[hand_indices[40]][:2]
+            p3 = kpts[hand_indices[38]][:2]
+            p4 = kpts[hand_indices[21]][:2]
+            right_angle = self._cal_angle(p1, p2, p3, p4)
 
-        left_eye_idx, right_eye_idx = eye_indices
-        left_eye_pos = kpts[left_eye_idx][:2]
-        right_eye_pos = kpts[right_eye_idx][:2]
-        eye_dis = self._cal_distance(left_eye_pos, right_eye_pos)
+            hand_dis = self._cal_distance(kpts[hand_indices[20]][:2],
+                                          kpts[hand_indices[41]][:2])
 
-        hand_dis = self._cal_distance(kpts[hand_indices[20]][:2],
-                                      kpts[hand_indices[41]][:2])
-
-        if left_angle < self.hand_heart_angle_thr and \
-           right_angle < self.hand_heart_angle_thr and \
-           hand_dis / eye_dis < self.hand_heart_dis_ratio_thr:
-            return 1
+            if (left_angle < self.hand_heart_angle_thr
+                    and right_angle < self.hand_heart_angle_thr
+                    and hand_dis / eye_dis < self.hand_heart_dis_ratio_thr):
+                return 1
 
         # these indices are corresoponding to the following keypoints:
         # left_middle_finger1, left_middle_finger4,
@@ -155,16 +157,13 @@ class ValentineMagicNode(FrameDrawingNode):
                 break
 
         mouth_vis = True
-        for i in mouth_indices:
-            if kpts[i][2] < self.kpt_vis_thr:
-                mouth_vis = False
-                break
+        if kpts[mouth_index][2] < self.kpt_vis_thr:
+            mouth_vis = False
 
         if (not left_hand_vis and not right_hand_vis) or not mouth_vis:
             return 0
 
-        left_mouth_idx, right_mouth_idx = mouth_indices
-        mouth_pos = (kpts[left_mouth_idx][:2] + kpts[right_mouth_idx][:2]) / 2
+        mouth_pos = kpts[mouth_index]
 
         left_mid_hand_pos = (kpts[hand_indices[9]][:2] +
                              kpts[hand_indices[12]][:2]) / 2
@@ -175,9 +174,9 @@ class ValentineMagicNode(FrameDrawingNode):
 
         right_mid_hand_pos = (kpts[hand_indices[30]][:2] +
                               kpts[hand_indices[33]][:2]) / 2
-        lefthand_mouth_dis = self._cal_distance(right_mid_hand_pos, mouth_pos)
+        righthand_mouth_dis = self._cal_distance(right_mid_hand_pos, mouth_pos)
 
-        if lefthand_mouth_dis / eye_dis < self.flying_heart_dis_ratio_thr:
+        if righthand_mouth_dis / eye_dis < self.flying_heart_dis_ratio_thr:
             return 3
 
         return 0
@@ -186,7 +185,7 @@ class ValentineMagicNode(FrameDrawingNode):
                                                                np.ndarray],
                          tar_pred: Dict[str,
                                         np.ndarray], hand_indices: List[int],
-                         mouth_indices: List[int]) -> Tuple[int, int]:
+                         mouth_index: int) -> Tuple[int, int]:
         """get the start and end position of the heart, based on two keypoint
         results and keypoint indices of hand and mouth.
 
@@ -200,7 +199,7 @@ class ValentineMagicNode(FrameDrawingNode):
                 - "keypoints" (np.ndarray[K,3]): keypoint detection result
                                                  in [x, y, score]
             hand_indices(list[int]): keypoint indices of hand
-            mouth_indices(list[int]): keypoint indices of mouth
+            mouth_index(int): keypoint index of mouth
 
         Returns:
             tuple(int): the start position of heart
@@ -226,13 +225,7 @@ class ValentineMagicNode(FrameDrawingNode):
         start_pos = (int(cur_x), int(cur_y))
 
         tar_kpts = tar_pred['keypoints']
-        left_mouth_idx, right_mouth_idx = mouth_indices
-
-        p3 = tar_kpts[left_mouth_idx][:2]
-        p4 = tar_kpts[right_mouth_idx][:2]
-        tar_x, tar_y = (p3 + p4) / 2
-        # the mid point of two keypoints
-        end_pos = (int(tar_x), int(tar_y))
+        end_pos = tar_kpts[mouth_index][:2]
 
         return start_pos, end_pos
 
@@ -245,7 +238,7 @@ class ValentineMagicNode(FrameDrawingNode):
         scale = t_pass / self.longest_duration
 
         max_h, max_w = canvas.shape[:2]
-        hm, wm = self.largest_ratio * max_h, self.largest_ratio * max_w
+        hm, wm = self.largest_ratio * max_h, self.largest_ratio * max_h
         new_h, new_w = int(hm * scale), int(wm * scale)
 
         x = int(start_x + scale * (end_x - start_x))
@@ -270,6 +263,8 @@ class ValentineMagicNode(FrameDrawingNode):
             patch = self.hand_heart.copy()
         elif heart_info.heart_type >= 2:  # hand blow kiss
             patch = self.flying_heart.copy()
+            if heart_info.start_pos[0] > heart_info.end_pos[0]:
+                patch = patch[:, ::-1]
 
         patch = cv2.resize(patch, (new_w, new_h))
         mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
@@ -324,20 +319,20 @@ class ValentineMagicNode(FrameDrawingNode):
                         del self.heart_infos[id]
                 else:
                     hand_indices = get_hand_keypoint_ids(model_cfg)
-                    mouth_indices = get_mouth_keypoint_ids(model_cfg)
+                    mouth_index = get_mouth_keypoint_ids(model_cfg)
                     eye_indices = get_eye_keypoint_ids(model_cfg)
 
                     # check the type of Valentine Magic based on pose results
                     # and keypoint indices of hand and mouth
                     heart_type = self._check_heart(preds[i], hand_indices,
-                                                   mouth_indices, eye_indices)
+                                                   mouth_index, eye_indices)
                     # trigger a Valentine Magic effect
                     if heart_type:
                         # get the route of heart
                         start_pos, end_pos = self._get_heart_route(
                             heart_type, preds[i],
                             preds[self.num_persons - 1 - i], hand_indices,
-                            mouth_indices)
+                            mouth_index)
                         start_time = time.time()
                         self.heart_infos[id] = HeartInfo(
                             heart_type, start_time, start_pos, end_pos)
