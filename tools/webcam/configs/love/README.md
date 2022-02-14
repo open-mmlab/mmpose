@@ -1,10 +1,14 @@
 # Love Heart
 
-Do you want to show your **love** to the special one? Express it with your poses with MMPose right away!
+Do you want to show your **love** to your special one? Express it with your pose with MMPose right away!
 
 Try to pose a hand heart gesture, and see what will happen?
 
 Prefer a blow kiss? Here comes your flying love~
+
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/87690686/153837208-8975eda1-17d5-4ee7-8c83-9b535e5ee9d9.gif" width="300px" alt><br>
+</div>
 
 ## Instruction
 

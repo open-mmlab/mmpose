@@ -85,7 +85,7 @@ runner = dict(
             type='NoticeBoardNode',
             name='Helper',
             enable_key='h',
-            enable=True,
+            enable=False,
             frame_buffer='vis_love',
             output_buffer='vis_notice',
             content_lines=[
@@ -105,15 +105,14 @@ runner = dict(
             enable_key='m',
             enable=False,
             frame_buffer='vis_notice',
-            output_buffer='_display_'
-        ),  # `_frame_` is a runner-reserved buffer
+            output_buffer='display'),  # `_frame_` is a runner-reserved buffer
         # 'RecorderNode':
         # This node record the frames into a local file. It can save the
         # visualiztion results. Uncommit the following lines to turn it on.
-        # dict(
-        #     type='RecorderNode',
-        #     name='Recorder',
-        #     out_video_file='webcam_matchstickman.mp4',
-        #     frame_buffer='display',
-        #     output_buffer='_display_')
+        dict(
+            type='RecorderNode',
+            name='Recorder',
+            out_video_file='record.mp4',
+            frame_buffer='display',
+            output_buffer='_display_')
     ])
