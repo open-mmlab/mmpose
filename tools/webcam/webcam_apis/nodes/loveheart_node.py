@@ -37,7 +37,7 @@ class LoveHeartNode(FrameDrawingNode):
                  hand_heart_img_path: Optional[str] = None,
                  flying_heart_img_path: Optional[str] = None,
                  hand_heart_dis_thr: float = 50.0,
-                 flying_heart_dis_thr: float = 50.0):
+                 flying_heart_dis_thr: float = 100.0):
 
         super().__init__(
             name, frame_buffer, output_buffer, enable_key=enable_key)
