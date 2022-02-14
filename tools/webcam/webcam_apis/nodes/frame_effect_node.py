@@ -1,20 +1,19 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from abc import abstractmethod
 from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
-from mmcv import Config, color_val
+from mmcv import color_val
 
-from mmpose.core import (apply_bugeye_effect, apply_firecracker_effect,
-                         apply_hat_effect, apply_sunglasses_effect,
+from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_bboxes, imshow_keypoints)
 from mmpose.datasets import DatasetInfo
-from ..utils import (FrameMessage, Message, copy_and_paste, expand_and_clamp,
-                     get_cached_file_path, load_image_from_disk_or_url,
-                     screen_matting)
+from ..utils import (FrameMessage, copy_and_paste, expand_and_clamp,
+                     get_cached_file_path, get_eye_keypoint_ids,
+                     get_face_keypoint_ids, get_wrist_keypoint_ids,
+                     load_image_from_disk_or_url, screen_matting)
 from .builder import NODES
-from .node import Node
+from .frame_drawing_node import FrameDrawingNode
 
 try:
     import psutil
@@ -23,216 +22,8 @@ except (ImportError, ModuleNotFoundError):
     psutil_proc = None
 
 
-def _get_eye_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right eyes
-    from the model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-
-    Returns:
-        int: left eye keypoint index.
-        int: right eye keypoint index.
-    """
-    left_eye_idx = None
-    right_eye_idx = None
-
-    # try obtaining eye point ids from dataset_info
-    try:
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        left_eye_idx = dataset_info.keypoint_name2id.get('left_eye', None)
-        right_eye_idx = dataset_info.keypoint_name2id.get('right_eye', None)
-    except AttributeError:
-        left_eye_idx = None
-        right_eye_idx = None
-
-    if left_eye_idx is None or right_eye_idx is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {
-                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
-        }:
-            left_eye_idx = 1
-            right_eye_idx = 2
-        elif dataset_name in {'AnimalPoseDataset', 'AnimalAP10KDataset'}:
-            left_eye_idx = 0
-            right_eye_idx = 1
-        else:
-            raise ValueError('Can not determine the eye keypoint id of '
-                             f'{dataset_name}')
-
-    return left_eye_idx, right_eye_idx
-
-
-def _get_nose_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of the nose from the
-    model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-
-    Returns:
-        int: nose keypoint index.
-    """
-    nose_idx = None
-
-    # try obtaining nose point ids from dataset_info
-    try:
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        nose_idx = dataset_info.keypoint_name2id.get('nose', None)
-    except AttributeError:
-        nose_idx = None
-
-    if nose_idx is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {
-                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
-        }:
-            nose_idx = 0
-        elif dataset_name in {'AnimalPoseDataset', 'AnimalAP10KDataset'}:
-            nose_idx = 2
-        else:
-            raise ValueError('Can not determine the nose id of '
-                             f'{dataset_name}')
-
-    return nose_idx
-
-
-def _get_face_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of the face from the
-    model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-
-    Returns:
-        list[int]: face keypoint index.
-    """
-    face_indices = None
-
-    # try obtaining nose point ids from dataset_info
-    try:
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        for id in range(68):
-            face_indices.append(
-                dataset_info.keypoint_name2id.get(f'face_{id}', None))
-    except AttributeError:
-        face_indices = None
-
-    if face_indices is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
-            face_indices = list(range(23, 91))
-        else:
-            raise ValueError('Can not determine the face id of '
-                             f'{dataset_name}')
-
-    return face_indices
-
-
-def _get_wrist_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right wrist
-    from the model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-    Returns:
-        int: left wrist keypoint index.
-        int: right wrist keypoint index.
-    """
-
-    # try obtaining eye point ids from dataset_info
-    try:
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        left_wrist_idx = dataset_info.keypoint_name2id.get('left_wrist', None)
-        right_wrist_idx = dataset_info.keypoint_name2id.get(
-            'right_wrist', None)
-    except AttributeError:
-        left_wrist_idx = None
-        right_wrist_idx = None
-
-    if left_wrist_idx is None or right_wrist_idx is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {
-                'TopDownCocoDataset', 'TopDownCocoWholeBodyDataset'
-        }:
-            left_wrist_idx = 9
-            right_wrist_idx = 10
-        elif dataset_name == 'AnimalPoseDataset':
-            left_wrist_idx = 16
-            right_wrist_idx = 17
-        elif dataset_name == 'AnimalAP10KDataset':
-            left_wrist_idx = 7
-            right_wrist_idx = 10
-        else:
-            raise ValueError('Can not determine the eye keypoint id of '
-                             f'{dataset_name}')
-
-    return left_wrist_idx, right_wrist_idx
-
-
-class BaseFrameEffectNode(Node):
-    """Base class for Node that draw on single frame images.
-
-    Args:
-        name (str, optional): The node name (also thread name).
-        frame_buffer (str): The name of the input buffer.
-        output_buffer (str | list): The name(s) of the output buffer(s).
-        enable_key (str | int, optional): Set a hot-key to toggle
-            enable/disable of the node. If an int value is given, it will be
-            treated as an ascii code of a key. Please note:
-                1. If enable_key is set, the bypass method need to be
-                    overridden to define the node behavior when disabled
-                2. Some hot-key has been use for particular use. For example:
-                    'q', 'Q' and 27 are used for quit
-            Default: None
-        enable (bool): Default enable/disable status. Default: True.
-    """
-
-    def __init__(self,
-                 name: str,
-                 frame_buffer: str,
-                 output_buffer: Union[str, List[str]],
-                 enable_key: Optional[Union[str, int]] = None,
-                 enable: bool = True):
-
-        super().__init__(name=name, enable_key=enable_key)
-
-        # Register buffers
-        self.register_input_buffer(frame_buffer, 'frame', essential=True)
-        self.register_output_buffer(output_buffer)
-
-        self._enabled = enable
-
-    def process(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
-        frame_msg = input_msgs['frame']
-
-        img = self.draw(frame_msg)
-        frame_msg.set_image(img)
-
-        return frame_msg
-
-    def bypass(self, input_msgs: Dict[str, Message]) -> Union[Message, None]:
-        return input_msgs['frame']
-
-    @abstractmethod
-    def draw(self, frame_msg: FrameMessage) -> np.ndarray:
-        """Draw on the frame image with information from the single frame.
-
-        Args:
-            frame_meg (FrameMessage): The frame to get information from and
-                draw on.
-
-        Returns:
-            array: The output image
-        """
-
-
 @NODES.register_module()
-class PoseVisualizerNode(BaseFrameEffectNode):
+class PoseVisualizerNode(FrameDrawingNode):
     """Draw the bbox and keypoint detection results.
 
     Args:
@@ -345,7 +136,7 @@ class PoseVisualizerNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class SunglassesNode(BaseFrameEffectNode):
+class SunglassesNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -372,7 +163,7 @@ class SunglassesNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            left_eye_idx, right_eye_idx = _get_eye_keypoint_ids(model_cfg)
+            left_eye_idx, right_eye_idx = get_eye_keypoint_ids(model_cfg)
 
             canvas = apply_sunglasses_effect(canvas, preds, self.src_img,
                                              left_eye_idx, right_eye_idx)
@@ -380,7 +171,7 @@ class SunglassesNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class SpriteNode(BaseFrameEffectNode):
+class SpriteNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -496,8 +287,8 @@ class SpriteNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            # left_hand_idx, right_hand_idx = _get_wrist_keypoint_ids(model_cfg)  # noqa: E501
-            left_hand_idx, right_hand_idx = _get_eye_keypoint_ids(model_cfg)
+            # left_hand_idx, right_hand_idx = get_wrist_keypoint_ids(model_cfg)  # noqa: E501
+            left_hand_idx, right_hand_idx = get_eye_keypoint_ids(model_cfg)
 
             canvas = self.apply_sprite_effect(canvas, preds, left_hand_idx,
                                               right_hand_idx)
@@ -505,7 +296,7 @@ class SpriteNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class BackgroundNode(BaseFrameEffectNode):
+class BackgroundNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -590,7 +381,7 @@ class BackgroundNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class SaiyanNode(BaseFrameEffectNode):
+class SaiyanNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -718,7 +509,7 @@ class SaiyanNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            face_indices = _get_face_keypoint_ids(model_cfg)
+            face_indices = get_face_keypoint_ids(model_cfg)
 
             ret, frame = self.light_video.read()
             if not ret:
@@ -732,7 +523,7 @@ class SaiyanNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class MoustacheNode(BaseFrameEffectNode):
+class MoustacheNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -811,14 +602,14 @@ class MoustacheNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            face_indices = _get_face_keypoint_ids(model_cfg)
+            face_indices = get_face_keypoint_ids(model_cfg)
             canvas = self.apply_moustache_effect(canvas, preds, self.src_img,
                                                  face_indices)
         return canvas
 
 
 @NODES.register_module()
-class BugEyeNode(BaseFrameEffectNode):
+class BugEyeNode(FrameDrawingNode):
 
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
@@ -828,7 +619,7 @@ class BugEyeNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            left_eye_idx, right_eye_idx = _get_eye_keypoint_ids(model_cfg)
+            left_eye_idx, right_eye_idx = get_eye_keypoint_ids(model_cfg)
 
             canvas = apply_bugeye_effect(canvas, preds, left_eye_idx,
                                          right_eye_idx)
@@ -836,7 +627,7 @@ class BugEyeNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class NoticeBoardNode(BaseFrameEffectNode):
+class NoticeBoardNode(FrameDrawingNode):
 
     default_content_lines = ['This is a notice board!']
 
@@ -900,7 +691,7 @@ class NoticeBoardNode(BaseFrameEffectNode):
 
 
 @NODES.register_module()
-class HatNode(BaseFrameEffectNode):
+class HatNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -920,6 +711,69 @@ class HatNode(BaseFrameEffectNode):
         self.src_img = load_image_from_disk_or_url(src_img_path,
                                                    cv2.IMREAD_UNCHANGED)
 
+    @staticmethod
+    def apply_hat_effect(img,
+                         pose_results,
+                         hat_img,
+                         left_eye_index,
+                         right_eye_index,
+                         kpt_thr=0.5):
+        """Apply hat effect.
+        Args:
+            img (np.ndarray): Image data.
+            pose_results (list[dict]): The pose estimation results containing:
+                - "keypoints" ([K,3]): keypoint detection result in
+                    [x, y, score]
+            hat_img (np.ndarray): Hat image with white alpha channel.
+            left_eye_index (int): Keypoint index of left eye
+            right_eye_index (int): Keypoint index of right eye
+            kpt_thr (float): The score threshold of required keypoints.
+        """
+        img_orig = img.copy()
+
+        img = img_orig.copy()
+        hm, wm = hat_img.shape[:2]
+        # anchor points in the sunglasses mask
+        a = 0.3
+        b = 0.7
+        pts_src = np.array([[a * wm, a * hm], [a * wm, b * hm],
+                            [b * wm, a * hm], [b * wm, b * hm]],
+                           dtype=np.float32)
+
+        for pose in pose_results:
+            kpts = pose['keypoints']
+
+            if kpts[left_eye_index, 2] < kpt_thr or \
+                    kpts[right_eye_index, 2] < kpt_thr:
+                continue
+
+            kpt_leye = kpts[left_eye_index, :2]
+            kpt_reye = kpts[right_eye_index, :2]
+            # orthogonal vector to the left-to-right eyes
+            vo = 0.5 * (kpt_reye - kpt_leye)[::-1] * [-1, 1]
+            veye = 0.5 * (kpt_reye - kpt_leye)
+
+            # anchor points in the image by eye positions
+            pts_tar = np.vstack([
+                kpt_reye + 1 * veye + 5 * vo, kpt_reye + 1 * veye + 1 * vo,
+                kpt_leye - 1 * veye + 5 * vo, kpt_leye - 1 * veye + 1 * vo
+            ])
+
+            h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+            patch = cv2.warpPerspective(
+                hat_img,
+                h_mat,
+                dsize=(img.shape[1], img.shape[0]),
+                borderValue=(255, 255, 255))
+            #  mask the white background area in the patch with a threshold 200
+            mask = (patch[:, :, -1] > 128)
+            patch = patch[:, :, :-1]
+            mask = mask * (cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY) > 30)
+            mask = mask.astype(np.uint8)
+
+            img = cv2.copyTo(patch, mask, img)
+        return img
+
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
         pose_results = frame_msg.get_pose_results()
@@ -928,15 +782,15 @@ class HatNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            left_eye_idx, right_eye_idx = _get_eye_keypoint_ids(model_cfg)
+            left_eye_idx, right_eye_idx = get_eye_keypoint_ids(model_cfg)
 
-            canvas = apply_hat_effect(canvas, preds, self.src_img,
-                                      left_eye_idx, right_eye_idx)
+            canvas = self.apply_hat_effect(canvas, preds, self.src_img,
+                                           left_eye_idx, right_eye_idx)
         return canvas
 
 
 @NODES.register_module()
-class FirecrackerNode(BaseFrameEffectNode):
+class FirecrackerNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -962,6 +816,86 @@ class FirecrackerNode(BaseFrameEffectNode):
         self.frame_idx = 0
         self.frame_period = 4  # each frame in gif lasts for 4 frames in video
 
+    @staticmethod
+    def apply_firecracker_effect(img,
+                                 pose_results,
+                                 firecracker_img,
+                                 left_wrist_idx,
+                                 right_wrist_idx,
+                                 kpt_thr=0.5):
+        """Apply firecracker effect.
+        Args:
+            img (np.ndarray): Image data.
+            pose_results (list[dict]): The pose estimation results containing:
+                - "keypoints" ([K,3]): keypoint detection result in
+                    [x, y, score]
+            firecracker_img (np.ndarray): Firecracker image with white
+                background.
+            left_wrist_idx (int): Keypoint index of left wrist
+            right_wrist_idx (int): Keypoint index of right wrist
+            kpt_thr (float): The score threshold of required keypoints.
+        """
+
+        hm, wm = firecracker_img.shape[:2]
+        # anchor points in the firecracker mask
+        pts_src = np.array([[0. * wm, 0. * hm], [0. * wm, 1. * hm],
+                            [1. * wm, 0. * hm], [1. * wm, 1. * hm]],
+                           dtype=np.float32)
+
+        h, w = img.shape[:2]
+        h_tar = h / 3
+        w_tar = h_tar / hm * wm
+
+        for pose in pose_results:
+            kpts = pose['keypoints']
+
+            if kpts[left_wrist_idx, 2] > kpt_thr:
+                kpt_lwrist = kpts[left_wrist_idx, :2]
+                # anchor points in the image by eye positions
+                pts_tar = np.vstack([
+                    kpt_lwrist - [w_tar / 2, 0],
+                    kpt_lwrist - [w_tar / 2, -h_tar],
+                    kpt_lwrist + [w_tar / 2, 0],
+                    kpt_lwrist + [w_tar / 2, h_tar]
+                ])
+
+                h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+                patch = cv2.warpPerspective(
+                    firecracker_img,
+                    h_mat,
+                    dsize=(img.shape[1], img.shape[0]),
+                    borderValue=(255, 255, 255))
+                #  mask the white background area in the patch with
+                # a threshold 200
+                mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+                mask = (mask < 240).astype(np.uint8)
+                img = cv2.copyTo(patch, mask, img)
+
+            if kpts[right_wrist_idx, 2] > kpt_thr:
+                kpt_rwrist = kpts[right_wrist_idx, :2]
+
+                # anchor points in the image by eye positions
+                pts_tar = np.vstack([
+                    kpt_rwrist - [w_tar / 2, 0],
+                    kpt_rwrist - [w_tar / 2, -h_tar],
+                    kpt_rwrist + [w_tar / 2, 0],
+                    kpt_rwrist + [w_tar / 2, h_tar]
+                ])
+
+                h_mat, _ = cv2.findHomography(pts_src, pts_tar)
+                patch = cv2.warpPerspective(
+                    firecracker_img,
+                    h_mat,
+                    dsize=(img.shape[1], img.shape[0]),
+                    borderValue=(255, 255, 255))
+                #  mask the white background area in the patch with
+                # a threshold 200
+                mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY)
+                mask = (mask < 240).astype(np.uint8)
+                img = cv2.copyTo(patch, mask, img)
+
+        return img
+
     def draw(self, frame_msg):
         canvas = frame_msg.get_image()
         pose_results = frame_msg.get_pose_results()
@@ -972,11 +906,11 @@ class FirecrackerNode(BaseFrameEffectNode):
         for pose_result in pose_results:
             model_cfg = pose_result['model_cfg']
             preds = pose_result['preds']
-            left_wrist_idx, right_wrist_idx = _get_wrist_keypoint_ids(
-                model_cfg)
+            left_wrist_idx, right_wrist_idx = get_wrist_keypoint_ids(model_cfg)
 
-            canvas = apply_firecracker_effect(canvas, preds, frame,
-                                              left_wrist_idx, right_wrist_idx)
+            canvas = self.apply_firecracker_effect(canvas, preds, frame,
+                                                   left_wrist_idx,
+                                                   right_wrist_idx)
         self.frame_idx = (self.frame_idx + 1) % (
             self.num_frames * self.frame_period)
 

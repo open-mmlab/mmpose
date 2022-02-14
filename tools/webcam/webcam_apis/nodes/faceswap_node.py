@@ -7,7 +7,7 @@ import numpy as np
 
 from mmpose.datasets import DatasetInfo
 from .builder import NODES
-from .frame_effect_nodes import BaseFrameEffectNode
+from .frame_drawing_node import FrameDrawingNode
 
 
 class Mode(IntEnum):
@@ -17,7 +17,7 @@ class Mode(IntEnum):
 
 
 @NODES.register_module()
-class FaceSwapNode(BaseFrameEffectNode):
+class FaceSwapNode(FrameDrawingNode):
 
     def __init__(
         self,

@@ -1,13 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .builder import NODES
-from .faceswap_nodes import FaceSwapNode
-from .frame_effect_nodes import (BackgroundNode, BugEyeNode, MoustacheNode,
-                                 NoticeBoardNode, PoseVisualizerNode,
-                                 SaiyanNode, SunglassesNode)
-from .helper_nodes import ModelResultBindingNode, MonitorNode, RecorderNode
-from .mmdet_nodes import DetectorNode
-from .mmpose_nodes import TopDownPoseEstimatorNode
-from .xdwendwen_nodes import XDwenDwenNode
+from .faceswap_node import FaceSwapNode
+from .frame_effect_node import (BackgroundNode, BugEyeNode, MoustacheNode,
+                                NoticeBoardNode, PoseVisualizerNode,
+                                SaiyanNode, SunglassesNode)
+from .helper_node import ModelResultBindingNode, MonitorNode, RecorderNode
+from .mmdet_node import DetectorNode
+from .mmpose_node import TopDownPoseEstimatorNode
+from .xdwendwen_node import XDwenDwenNode
 
 __all__ = [
     'NODES', 'PoseVisualizerNode', 'DetectorNode', 'TopDownPoseEstimatorNode',
