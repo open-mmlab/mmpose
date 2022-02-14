@@ -135,23 +135,20 @@ def get_mouth_keypoint_ids(model_cfg: Config) -> Tuple[int, int]:
     # try obtaining mouth point ids from dataset_info
     try:
         dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-        left_mouth_idx = dataset_info.keypoint_name2id.get('face-0', None)
-        right_mouth_idx = dataset_info.keypoint_name2id.get('face-16', None)
+        mouth_index = dataset_info.keypoint_name2id.get('face-62', None)
     except AttributeError:
-        left_mouth_idx = None
-        right_mouth_idx = None
+        mouth_index = None
 
-    if left_mouth_idx is None or right_mouth_idx is None:
+    if mouth_index is None:
         # Fall back to hard coded keypoint id
         dataset_name = model_cfg.data.test.type
         if dataset_name == 'TopDownCocoWholeBodyDataset':
-            left_mouth_idx = 23
-            right_mouth_idx = 39
+            mouth_index = 85
         else:
             raise ValueError('Can not determine the eye keypoint id of '
                              f'{dataset_name}')
 
-    return left_mouth_idx, right_mouth_idx
+    return mouth_index
 
 
 def get_hand_keypoint_ids(model_cfg: Config) -> List[int]:
@@ -227,86 +224,3 @@ def get_hand_keypoint_ids(model_cfg: Config) -> List[int]:
                              f'{dataset_name}')
 
     return hand_indices
-
-
-def get_hand_heart_keypoint_ids(model_cfg: Config) -> List[int]:
-    """A helpfer function to get the related keypoint indices of hand heart
-    from the model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-    Returns:
-        list[int]: the related keypoint indices of hand heart
-    """
-    # try obtaining hand keypoint ids from dataset_info
-    try:
-        hand_heart_indices = []
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-
-        hand_heart_indices.append(
-            dataset_info.keypoint_name2id.get('left_hand_root', None))
-        for id in [1, 3, 4]:
-            hand_heart_indices.append(
-                dataset_info.keypoint_name2id.get(f'left_pinky_finger{id}',
-                                                  None))
-
-        hand_heart_indices.append(
-            dataset_info.keypoint_name2id.get('right_hand_root', None))
-
-        for id in [1, 3, 4]:
-            hand_heart_indices.append(
-                dataset_info.keypoint_name2id.get(f'right_pinky_finger{id}',
-                                                  None))
-
-    except AttributeError:
-        hand_heart_indices = None
-
-    if hand_heart_indices is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
-            hand_heart_indices = [91, 108, 110, 111, 112, 129, 131, 132]
-        else:
-            raise ValueError('Can not determine the hand id of '
-                             f'{dataset_name}')
-
-    return hand_heart_indices
-
-
-def get_flying_heart_keypoint_ids(model_cfg: Config) -> List[int]:
-    """A helpfer function to get the related keypoint indices of flying heart
-    (blow kiss) from the model config.
-
-    Args:
-        model_cfg (Config): pose model config.
-    Returns:
-        list[int]: the related keypoint indices of flying heart
-    """
-    # try obtaining hand keypoint ids from dataset_info
-    try:
-        flying_heart_indices = []
-        dataset_info = DatasetInfo(model_cfg.data.test.dataset_info)
-
-        for id in [1, 4]:
-            flying_heart_indices.append(
-                dataset_info.keypoint_name2id.get(f'left_middle_finger{id}',
-                                                  None))
-
-        for id in [1, 4]:
-            flying_heart_indices.append(
-                dataset_info.keypoint_name2id.get(f'right_middle_finger{id}',
-                                                  None))
-
-    except AttributeError:
-        flying_heart_indices = None
-
-    if flying_heart_indices is None:
-        # Fall back to hard coded keypoint id
-        dataset_name = model_cfg.data.test.type
-        if dataset_name in {'TopDownCocoWholeBodyDataset'}:
-            flying_heart_indices = [100, 103, 121, 124]
-        else:
-            raise ValueError('Can not determine the hand id of '
-                             f'{dataset_name}')
-
-    return flying_heart_indices
