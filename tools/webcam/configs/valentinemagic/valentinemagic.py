@@ -65,18 +65,18 @@ runner = dict(
             enable=False,
             frame_buffer='frame',
             output_buffer='vis'),
-        # 'LoveHeartNode':
-        # This node draw love heart in the image.
-        # It can launch a dynamically expanding red heart from the middle of
-        # hands of the persons who is posing a "hand heart" gesture.
-        # Only there are two persons in the image can activate this effect.
+        # 'ValentineMagicNode':
+        # This node draw heart in the image.
+        # It can launch dynamically expanding heart from the middle of
+        # hands if the persons pose a "hand heart" gesture or blow a kiss.
+        # Only there are two persons in the image can trigger this effect.
         # Pose results is needed.
         dict(
-            type='LoveHeartNode',
+            type='ValentineMagicNode',
             name='Visualizer',
             enable_key='l',
             frame_buffer='vis',
-            output_buffer='vis_love',
+            output_buffer='vis_heart',
         ),
         # 'NoticeBoardNode':
         # This node show a notice board with given content, e.g. help
@@ -86,7 +86,7 @@ runner = dict(
             name='Helper',
             enable_key='h',
             enable=False,
-            frame_buffer='vis_love',
+            frame_buffer='vis_heart',
             output_buffer='vis_notice',
             content_lines=[
                 'This is a demo for pose visualization and simple image '

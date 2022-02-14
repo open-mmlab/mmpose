@@ -14,8 +14,8 @@ from .frame_drawing_node import FrameDrawingNode
 
 
 @dataclass
-class LoveHeartInfo():
-    """Dataclass for love heart information."""
+class HeartInfo():
+    """Dataclass for heart information."""
     heart_type: int
     start_time: float
     start_pos: List[int]
@@ -23,7 +23,7 @@ class LoveHeartInfo():
 
 
 @NODES.register_module()
-class LoveHeartNode(FrameDrawingNode):
+class ValentineMagicNode(FrameDrawingNode):
 
     def __init__(self,
                  name: str,
@@ -61,7 +61,7 @@ class LoveHeartNode(FrameDrawingNode):
         self.longest_duration = longest_duration
         self.largest_size = largest_size
 
-        # record the love heart infos for each person
+        # record the heart infos for each person
         self.heart_infos = {}
 
     def _cal_distance(self, p1: np.ndarray, p2: np.ndarray) -> np.float64:
@@ -86,8 +86,8 @@ class LoveHeartNode(FrameDrawingNode):
                      hand_heart_indices: List[int],
                      flying_heart_indices: List[int],
                      mouth_indices: List[int]) -> int:
-        """Check the type of love heart based on the pose results and keypoint
-        indices of hand and mouth.
+        """Check the type of Valentine Magic based on the pose results and
+        keypoint indices of hand and mouth.
 
         Args:
             pred(dict): The pose estimation results containing:
@@ -97,7 +97,7 @@ class LoveHeartNode(FrameDrawingNode):
             flying_heart_indices(list[int]): keypoint indices of flying heart
 
         Returns:
-            int: a number representing the type of love heart pose,
+            int: a number representing the type of heart pose,
                  0: None, 1: hand heart, 2: left hand blow kiss,
                  3: right hand blow kiss
         """
@@ -172,8 +172,8 @@ class LoveHeartNode(FrameDrawingNode):
                          hand_heart_indices: List[int],
                          flying_heart_indices: List[int],
                          mouth_indices: List[int]) -> Tuple[int, int]:
-        """get the start and end position of the love heart, based on two
-        keypoint results and keypoint indices of hand and mouth.
+        """get the start and end position of the heart, based on two keypoint
+        results and keypoint indices of hand and mouth.
 
         Args:
             cur_pred(dict): The pose estimation results of current person,
@@ -189,8 +189,8 @@ class LoveHeartNode(FrameDrawingNode):
             mouth_indices(list[int]): keypoint indices of mouth
 
         Returns:
-            tuple(int): the start position of love heart
-            tuple(int): the end position of love heart
+            tuple(int): the start position of heart
+            tuple(int): the end position of heart
         """
         cur_kpts = cur_pred['keypoints']
 
@@ -222,9 +222,9 @@ class LoveHeartNode(FrameDrawingNode):
 
         return start_pos, end_pos
 
-    def _draw_heart(self, canvas: np.ndarray, heart_info: LoveHeartInfo,
+    def _draw_heart(self, canvas: np.ndarray, heart_info: HeartInfo,
                     t_pass: float) -> np.ndarray:
-        """draw the love heart according to heart info and time."""
+        """draw the heart according to heart info and time."""
         start_x, start_y = heart_info.start_pos
         end_x, end_y = heart_info.end_pos
 
@@ -276,7 +276,7 @@ class LoveHeartNode(FrameDrawingNode):
 
             preds = [pred.copy() for pred in pose_result['preds']]
             # if number of persons in the image is less than 2,
-            # no love heart effect will be triggered
+            # no heart effect will be triggered
             if len(preds) < 2:
                 continue
 
@@ -295,11 +295,11 @@ class LoveHeartNode(FrameDrawingNode):
                 id = preds[i]['track_id']
 
                 # if the predicted person in previous heart_infos,
-                # draw the love heart
+                # draw the heart
                 if id in self.heart_infos.copy():
                     t_pass = time.time() - self.heart_infos[id].start_time
 
-                    # the time passed since last love heart pose less than
+                    # the time passed since last heart pose less than
                     # longest_duration, continue to draw the heart
                     if t_pass < self.longest_duration:
                         canvas = self._draw_heart(canvas, self.heart_infos[id],
@@ -326,21 +326,21 @@ class LoveHeartNode(FrameDrawingNode):
                     # hand_indices = get_hand_keypoint_ids(model_cfg)
                     mouth_indices = get_mouth_keypoint_ids(model_cfg)
 
-                    # Check the type of love heart based on the pose results
+                    # check the type of Valentine Magic based on pose results
                     # and keypoint indices of hand and mouth
                     heart_type = self._check_heart(preds[i],
                                                    hand_heart_indices,
                                                    flying_heart_indices,
                                                    mouth_indices)
-                    # trigger a love heart effect
+                    # trigger a Valentine Magic effect
                     if heart_type:
-                        # get the route of love heart
+                        # get the route of heart
                         start_pos, end_pos = self._get_heart_route(
                             heart_type, preds[i], preds[1 - i],
                             hand_heart_indices, flying_heart_indices,
                             mouth_indices)
                         start_time = time.time()
-                        self.heart_infos[id] = LoveHeartInfo(
+                        self.heart_infos[id] = HeartInfo(
                             heart_type, start_time, start_pos, end_pos)
 
         return canvas
