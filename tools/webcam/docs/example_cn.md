@@ -15,7 +15,8 @@
 在 WebcamAPI 中，已经添加了一些实现常用功能的 Node，并提供了对应的 config 示例。利用这些可以减少用户的开发量。例如，我们可以以上面的姿态估计 demo 为基础。它的 config 位于 `tools/webcam/configs/example/pose_estimation.py`。为了更直观，我们把这个 config 中的功能节点表示成以下流程图：
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/15977946/153773127-8bc1739d-c1ca-4139-a73e-5e816ff7957c.png">
+<img src="https://user-images.githubusercontent.com/15977946/153801397-640f2b45-64e7-41b3-8b00-670c16c57df5.png">
+<figcaption>Pose Estimation Config 示意</figcaption>
 </div>
 
 可以看到，这个 config 已经实现了我们设计思路中“1-目标检测”和“2-关键点检测”的功能。我们还需要实现“3-贴素材图”功能，这就需要定义一个新的 Node了。
@@ -92,6 +93,7 @@ class SunglassesNode(FrameDrawingNode):
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153773612-bcf86b91-31a3-47b5-886d-e33577016f85.png">
+<figcaption>太阳镜特效原理示意</figcaption>
 </div>
 
 ### Get Advanced：关于 Node 和 FrameEffectNode
@@ -129,7 +131,8 @@ class SunglassesNode(FrameDrawingNode):
 有了 Step 2 中实现的 SunglassesNode，我们只要把它加入 config 里就可以使用了。比如，我们可以把它放在“Visualizer” node 之后：
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/15977946/153773827-2c3e0d42-987a-4773-b325-7476a5bfa131.png">
+<img src="https://user-images.githubusercontent.com/15977946/153801499-590a7810-b231-4a38-8053-c7d33af1535a.png">
+<figcaption>修改后的 Config，添加了 SunglassesNode 节点</figcaption>
 </div>
 
 具体的写法如下：

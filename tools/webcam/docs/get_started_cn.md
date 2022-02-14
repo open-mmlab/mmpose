@@ -5,7 +5,8 @@
 MMPose WebcamAPI 是一套简单的应用开发接口，可以帮助用户方便的调用 MMPose 以及其他 OpenMMLab 算法库中的算法，实现基于摄像头输入视频的交互式应用。
 
 <div align=center>
-<img src="https://user-images.githubusercontent.com/15977946/153771722-937337d9-aa24-4da4-894c-12778f6153d5.png">
+<img src="https://user-images.githubusercontent.com/15977946/153800450-2522efe8-bc11-457d-9037-d8aee4fc4f36.png">
+<figcaption>MMPose Webcam API 框架概览</figcaption>
 </div>
 
 ## 运行一个 Demo
@@ -28,6 +29,7 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/examples/pose_es
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153772158-a5702193-3d3f-40c8-bd6b-ab186979d1b4.png">
+<figcaption>Pose Estimation Demo 效果</figcaption>
 </div>
 
 ## Demo 里面有什么？
@@ -93,6 +95,7 @@ Runner 和 Node 的关系简单来说如下图所示：
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153772839-104430bd-de0e-4ee5-bd67-dff4e52d784c.png">
+<figcaption>Runner 和 Node 逻辑关系示意</figcaption>
 </div>
 
 ### 数据流
@@ -102,6 +105,7 @@ Runner 和 Node 的关系简单来说如下图所示：
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153772900-9619ae80-3e64-4b40-bc1e-b184405e3d5b.png">
+<figcaption>数据流示意</figcaption>
 </div>
 
 图中的每个 Data Buffer 就是一个用来存放数据的容器。用户不需要关注 buffer 的具体细节，只需要将其简单理解成 Node 输入输出的名字即可。用户在 config 中可以任意定义这些名字，不过要注意有以下几个特殊的名字：
