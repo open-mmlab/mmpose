@@ -1,10 +1,132 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 from mmcv.runner import load_checkpoint
+from mmpose.core.camera import SimpleCameraTorch
+from mmpose.core.post_processing.post_transforms import (
+    affine_transform_torch, get_affine_transform)
+
 
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
+
+
+class ProjectLayer(nn.Module):
+    def __init__(self, cfg):
+        """Project layer to get voxel feature. Adapted from
+        https://github.com/microsoft/voxelpose-
+        pytorch/blob/main/lib/models/project_layer.py.
+
+        Args:
+            cfg (dict):
+                image_size: input size of the 2D model
+                heatmap_size: output size of the 2D model
+        """
+        super(ProjectLayer, self).__init__()
+        self.image_size = cfg['image_size']
+        self.heatmap_size = cfg['heatmap_size']
+        if isinstance(self.image_size, int):
+            self.image_size = [self.image_size, self.image_size]
+        if isinstance(self.heatmap_size, int):
+            self.heatmap_size = [self.heatmap_size, self.heatmap_size]
+
+    def compute_grid(self, box_size, box_center, num_bins, device=None):
+        if isinstance(box_size, int) or isinstance(box_size, float):
+            box_size = [box_size, box_size, box_size]
+        if isinstance(num_bins, int):
+            num_bins = [num_bins, num_bins, num_bins]
+
+        grid_1D_x = torch.linspace(
+            -box_size[0] / 2, box_size[0] / 2, num_bins[0], device=device)
+        grid_1D_y = torch.linspace(
+            -box_size[1] / 2, box_size[1] / 2, num_bins[1], device=device)
+        grid_1D_z = torch.linspace(
+            -box_size[2] / 2, box_size[2] / 2, num_bins[2], device=device)
+        grid_x, grid_y, grid_z = torch.meshgrid(
+            grid_1D_x + box_center[0],
+            grid_1D_y + box_center[1],
+            grid_1D_z + box_center[2],
+        )
+        grid_x = grid_x.contiguous().view(-1, 1)
+        grid_y = grid_y.contiguous().view(-1, 1)
+        grid_z = grid_z.contiguous().view(-1, 1)
+        grid = torch.cat([grid_x, grid_y, grid_z], dim=1)
+
+        return grid
+
+    def get_voxel(self, heatmaps, meta, grid_size, grid_center, cube_size):
+        device = heatmaps[0].device
+        batch_size = heatmaps[0].shape[0]
+        num_joints = heatmaps[0].shape[1]
+        num_bins = cube_size[0] * cube_size[1] * cube_size[2]
+        n = len(heatmaps)
+        cubes = torch.zeros(
+            batch_size, num_joints, 1, num_bins, n, device=device)
+        w, h = self.heatmap_size
+        grids = torch.zeros(batch_size, num_bins, 3, device=device)
+        bounding = torch.zeros(batch_size, 1, 1, num_bins, n, device=device)
+        for i in range(batch_size):
+            if len(grid_center[0]) == 3 or grid_center[i][3] >= 0:
+                if len(grid_center) == 1:
+                    grid = self.compute_grid(
+                        grid_size, grid_center[0], cube_size, device=device)
+                else:
+                    grid = self.compute_grid(
+                        grid_size, grid_center[i], cube_size, device=device)
+                grids[i:i + 1] = grid
+                for c in range(n):
+                    center = meta[i]['center'][c]
+                    scale = meta[i]['scale'][c]
+
+                    width, height = center * 2
+                    trans = torch.as_tensor(
+                        get_affine_transform(center, scale / 200.0, 0,
+                                             self.image_size),
+                        dtype=torch.float,
+                        device=device)
+
+                    cam_param = meta[i]['camera'][c].copy()
+
+                    single_view_camera = SimpleCameraTorch(
+                        param=cam_param, device=device)
+                    xy = single_view_camera.world_to_pixel(grid)
+
+                    bounding[i, 0, 0, :, c] = (xy[:, 0] >= 0) & (
+                        xy[:, 1] >= 0) & (xy[:, 0] < width) & (
+                            xy[:, 1] < height)
+                    xy = torch.clamp(xy, -1.0, max(width, height))
+                    xy = affine_transform_torch(xy, trans)
+                    xy = xy * torch.tensor(
+                        [w, h], dtype=torch.float,
+                        device=device) / torch.tensor(
+                            self.image_size, dtype=torch.float, device=device)
+                    sample_grid = xy / torch.tensor([w - 1, h - 1],
+                                                    dtype=torch.float,
+                                                    device=device) * 2.0 - 1.0
+                    sample_grid = torch.clamp(
+                        sample_grid.view(1, 1, num_bins, 2), -1.1, 1.1)
+
+                    cubes[i:i + 1, :, :, :, c] += F.grid_sample(
+                        heatmaps[c][i:i + 1, :, :, :],
+                        sample_grid,
+                        align_corners=True)
+
+        cubes = torch.sum(
+            torch.mul(cubes, bounding), dim=-1) / (
+                torch.sum(bounding, dim=-1) + 1e-6)
+        cubes[cubes != cubes] = 0.0
+        cubes = cubes.clamp(0.0, 1.0)
+
+        cubes = cubes.view(batch_size, num_joints, cube_size[0], cube_size[1],
+                           cube_size[2])
+        return cubes, grids
+
+    def forward(self, heatmaps, meta, grid_size, grid_center, cube_size):
+        cubes, grids = self.get_voxel(heatmaps, meta, grid_size, grid_center,
+                                      cube_size)
+        return cubes, grids
 
 
 @POSENETS.register_module()
@@ -298,3 +420,118 @@ class DetectAndRegress(BasePose):
 
         _ = self.pose_regressor.forward_dummy(feature_maps,
                                               num_candidates)
+
+
+class SinglePoseRegressor(nn.Module):
+    def __init__(self,
+                 project_layer,
+                 sub_space_size,
+                 sub_cube_size,
+                 num_joints,
+                 pose_net,
+                 pose_head,
+                 train_cfg=None,
+                 test_cfg=None,):
+        super(SinglePoseRegressor, self).__init__()
+        self.project_layer = ProjectLayer(project_layer)
+        self.pose_net = builder.build_backbone(pose_net)
+        self.pose_head = builder.build_head(pose_head)
+
+        self.sub_space_size = sub_space_size
+        self.sub_cube_size = sub_cube_size
+
+        self.num_joints = num_joints
+        self.train_cfg = train_cfg
+        self.test_cfg = test_cfg
+
+    def forward_train(self,
+                      feature_maps,
+                      img_metas,
+                      human_candidates):
+        """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            heatmaps width: W
+            heatmaps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
+
+        Args:
+            feature_maps (list(torch.Tensor[NxCxHxW])):
+                Multi-camera input feature_maps.
+            img_metas (list(dict)):
+                Information about image, 3D groundtruth and camera parameters.
+            human_candidates (torch.Tensor[NxPx5]):
+                Human candidates.
+
+        Returns:
+            dict: losses.
+
+        """
+        batch_size, num_candidates, _ = human_candidates.shape
+        pred = human_candidates.new_zeros(batch_size, num_candidates,
+                                          self.num_joints, 5)
+        pred[:, :, :, 3:] = human_candidates[:, :, None, 3:]
+
+        device = feature_maps.device
+        gt_3d = torch.stack([
+            torch.tensor(img_meta['joints_3d'], device=device)
+            for img_meta in img_metas
+        ])
+        gt_3d_vis = torch.stack([
+            torch.tensor(img_meta['joints_3d_visible'], device=device)
+            for img_meta in img_metas
+        ])
+        valid_preds = []
+        valid_targets = []
+        valid_weights = []
+
+        for n in range(num_candidates):
+            index = pred[:, n, 0, 3] >= 0
+            num_valid = index.sum()
+            if num_valid > 0:
+                pose_input_cube, coordinates \
+                    = self.project_layer(feature_maps,
+                                         img_metas,
+                                         self.sub_space_size,
+                                         human_candidates[:, n, :3],
+                                         self.sub_cube_size)
+                pose_heatmaps_3d = self.pose_net(pose_input_cube)
+                pose_3d = self.pose_head(pose_heatmaps_3d[index],
+                                         coordinates[index])
+
+                pred[index, n, :, 0:3] = pose_3d.detach()
+                valid_targets.append(gt_3d[index, pred[index, n, 0, 3].long()])
+                valid_weights.append(gt_3d_vis[index, pred[index, n, 0,
+                                                           3].long(), :,
+                                     0:1].float())
+                valid_preds.append(pose_3d)
+
+        losses = dict()
+        if len(valid_preds) > 0:
+            valid_targets = torch.cat(valid_targets, dim=0)
+            valid_weights = torch.cat(valid_weights, dim=0)
+            valid_preds = torch.cat(valid_preds, dim=0)
+            losses.update(
+                self.pose_head.get_loss(valid_preds, valid_targets,
+                                        valid_weights))
+        else:
+            pose_input_cube = feature_maps.new_zeros(batch_size, self.num_joints,
+                                                      *self.sub_cube_size)
+            coordinates = feature_maps.new_zeros(batch_size,
+                                                  *self.sub_cube_size,
+                                                  3).view(batch_size, -1, 3)
+            pseudo_targets = feature_maps.new_zeros(batch_size, self.num_joints, 3)
+            pseudo_weights = feature_maps.new_zeros(batch_size, self.num_joints, 1)
+            pose_heatmaps_3d = self.pose_net(pose_input_cube)
+            pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
+            losses.update(
+                self.pose_head.get_loss(pose_3d, pseudo_targets,
+                                        pseudo_weights))
+
+        return losses
