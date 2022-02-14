@@ -5,7 +5,7 @@ import time
 import warnings
 from contextlib import nullcontext
 from threading import Thread
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import cv2
 
@@ -27,6 +27,10 @@ class WebcamRunner():
         camera_id (int | str): The camera ID (usually the ID of the default
             camera is 0). Alternatively a file path or a URL can be given
             to load from a video or image file.
+        camera_frame_shape (tuple, optional): Set the frame shape of the
+            camera in (width, height). If not given, the default frame shape
+            will be used. This argument is only valid when using a camera
+            as the input source. Default: None
         camera_fps (int): Video reading maximum FPS. Default: 30
         buffer_sizes (dict, optional): A dict to specify buffer sizes. The
             key is the buffer name and the value is the buffer size.
@@ -38,6 +42,7 @@ class WebcamRunner():
                  name: str = 'Default Webcam Runner',
                  camera_id: Union[int, str] = 0,
                  camera_fps: int = 30,
+                 camera_frame_shape: Optional[Tuple[int, int]] = None,
                  synchronous: bool = False,
                  buffer_sizes: Optional[Dict[str, int]] = None,
                  nodes: Optional[List[Dict]] = None):
@@ -46,6 +51,7 @@ class WebcamRunner():
         self.name = name
         self.camera_id = camera_id
         self.camera_fps = camera_fps
+        self.camera_frame_shape = camera_frame_shape
         self.synchronous = synchronous
 
         # self.buffer_manager manages data flow between runner and nodes
@@ -127,6 +133,10 @@ class WebcamRunner():
             self.vcap = ImageCapture(camera_id)
         else:
             self.vcap = cv2.VideoCapture(camera_id)
+            if self.camera_frame_shape is not None:
+                width, height = self.camera_frame_shape
+                self.vcap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+                self.vcap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
         if not self.vcap.isOpened():
             warnings.warn(f'Cannot open camera (ID={camera_id})')
