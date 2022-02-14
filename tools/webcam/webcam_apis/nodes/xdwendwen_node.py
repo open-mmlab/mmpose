@@ -9,7 +9,7 @@ import numpy as np
 from mmpose.datasets.dataset_info import DatasetInfo
 from ..utils import load_image_from_disk_or_url
 from .builder import NODES
-from .frame_effect_nodes import BaseFrameEffectNode
+from .frame_drawing_node import FrameDrawingNode
 
 
 @dataclass
@@ -20,7 +20,7 @@ class DynamicInfo:
 
 
 @NODES.register_module()
-class XDwenDwenNode(BaseFrameEffectNode):
+class XDwenDwenNode(FrameDrawingNode):
     """An effect drawing node that captures the face of a cat or dog and blend
     it into a Bing-Dwen-Dwen (the mascot of 2022 Beijing Winter Olympics).
 
