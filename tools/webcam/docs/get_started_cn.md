@@ -114,10 +114,10 @@ Runner 和 Node 的关系简单来说如下图所示：
 - _frame_ ：存放 runner 读入的视频帧，用于可视化
 - _display_：存放经过所以 Node 处理后的结果，用于在屏幕上显示
 
-当一帧视频数据被 runner 读入后，会被放进_input_和_frame_两个 buffer 中，然后按照 config 中定义的 Node 连接关系依次通过各个 Node ，最终到达_display_，并被 runner 读出显示在屏幕上。
+当一帧视频数据被 runner 读入后，会被放进 _input_ 和 _frame_ 两个 buffer 中，然后按照 config 中定义的 Node 连接关系依次通过各个 Node ，最终到达 _display_ ，并被 runner 读出显示在屏幕上。
 
 #### Get Advanced: 关于 buffer
 
-- Buffer 本质是是一个有限长度的队列，在 runner 中会包含一个 BufferManager 实例（见`mmpose/tools/webcam/webcam_api/buffer.py'）来生成和管理所有 buffer。Node 会按照 config 从对应的 buffer 中读出或写入数据。
+- Buffer 本质是一个有限长度的队列，在 runner 中会包含一个 BufferManager 实例（见`mmpose/tools/webcam/webcam_apis/buffer.py'）来生成和管理所有 buffer。Node 会按照 config 从对应的 buffer 中读出或写入数据。
 - 当一个 buffer 已满（达到最大长度）时，写入数据的操作通常不会被 block，而是会将 buffer 中已有的最早一条数据“挤出去”。
 - 为什么有_input_和_frame_两个输入呢？因为有些 Node 的操作较为耗时（如目标检测，姿态估计等需要模型推理的 Node）。为了保证显示的流畅，我们通常用_input_来作为这类耗时较大的操作的输入，而用_frame_来实时绘制可视化的结果。因为各个节点是异步运行的，这样就可以保证可视化的实时和流畅。

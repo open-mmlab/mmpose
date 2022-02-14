@@ -23,6 +23,6 @@ MMPose Webcam API is a handy tool to develop interactive webcam applications wit
 * [Pose Estimation](/tools/webcam/configs/examples/): A simple example to estimate and visualize human/animal pose.
 * [Eye Effects](/tools/webcam/configs/eyes/): Apply sunglasses and bug-eye effects.
 * [Face Swap](/tools/webcam/configs/face_swap/): Everybody gets someone else's face.
-* [Meow Dwen Dwen](/tools/webcam/configs/meow_dwen_dwen/): Dress up your cat in Bing Dwen Dwen custume.
+* [Meow Dwen Dwen](/tools/webcam/configs/meow_dwen_dwen/): Dress up your cat in Bing Dwen Dwen costume.
 * [Super Saiyan](/tools/webcam/configs/supersaiyan/): Super Saiyan transformation!
 * [New Year](/tools/webcam/configs/newyear/): Set off some firecrackers to celebrate Chinese New Year.
