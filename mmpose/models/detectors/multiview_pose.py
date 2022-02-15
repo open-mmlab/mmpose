@@ -3,17 +3,17 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.runner import load_checkpoint
+
 from mmpose.core.camera import SimpleCameraTorch
 from mmpose.core.post_processing.post_transforms import (
     affine_transform_torch, get_affine_transform)
-
-
 from .. import builder
 from ..builder import POSENETS
 from .base import BasePose
 
 
 class ProjectLayer(nn.Module):
+
     def __init__(self, cfg):
         """Project layer to get voxel feature. Adapted from
         https://github.com/microsoft/voxelpose-
@@ -56,14 +56,14 @@ class ProjectLayer(nn.Module):
 
         return grid
 
-    def get_voxel(self, heatmaps, meta, grid_size, grid_center, cube_size):
-        device = heatmaps[0].device
-        batch_size = heatmaps[0].shape[0]
-        num_joints = heatmaps[0].shape[1]
+    def get_voxel(self, feature_maps, meta, grid_size, grid_center, cube_size):
+        device = feature_maps[0].device
+        batch_size = feature_maps[0].shape[0]
+        num_channels = feature_maps[0].shape[1]
         num_bins = cube_size[0] * cube_size[1] * cube_size[2]
-        n = len(heatmaps)
+        n = len(feature_maps)
         cubes = torch.zeros(
-            batch_size, num_joints, 1, num_bins, n, device=device)
+            batch_size, num_channels, 1, num_bins, n, device=device)
         w, h = self.heatmap_size
         grids = torch.zeros(batch_size, num_bins, 3, device=device)
         bounding = torch.zeros(batch_size, 1, 1, num_bins, n, device=device)
@@ -109,7 +109,7 @@ class ProjectLayer(nn.Module):
                         sample_grid.view(1, 1, num_bins, 2), -1.1, 1.1)
 
                     cubes[i:i + 1, :, :, :, c] += F.grid_sample(
-                        heatmaps[c][i:i + 1, :, :, :],
+                        feature_maps[c][i:i + 1, :, :, :],
                         sample_grid,
                         align_corners=True)
 
@@ -119,13 +119,13 @@ class ProjectLayer(nn.Module):
         cubes[cubes != cubes] = 0.0
         cubes = cubes.clamp(0.0, 1.0)
 
-        cubes = cubes.view(batch_size, num_joints, cube_size[0], cube_size[1],
-                           cube_size[2])
+        cubes = cubes.view(batch_size, num_channels, cube_size[0],
+                           cube_size[1], cube_size[2])
         return cubes, grids
 
-    def forward(self, heatmaps, meta, grid_size, grid_center, cube_size):
-        cubes, grids = self.get_voxel(heatmaps, meta, grid_size, grid_center,
-                                      cube_size)
+    def forward(self, feature_maps, meta, grid_size, grid_center, cube_size):
+        cubes, grids = self.get_voxel(feature_maps, meta, grid_size,
+                                      grid_center, cube_size)
         return cubes, grids
 
 
@@ -322,12 +322,16 @@ class DetectAndRegress(BasePose):
                 feature_maps.append(self.backbone.forward_dummy(img_)[0])
 
         losses = dict()
-        human_candidates, human_loss = self.human_detector(feature_maps, img_metas,
-                                                           targets, return_loss=True)
+        human_candidates, human_loss = self.human_detector.forward_train(
+            None, img_metas, feature_maps, targets_3d, return_preds=True)
         losses.update(human_loss)
 
-        _, pose_loss = self.pose_regressor(feature_maps, img_metas, human_candidates,
-                                           return_loss=True)
+        pose_loss = self.pose_regressor(
+            None,
+            img_metas,
+            return_loss=True,
+            feature_maps=feature_maps,
+            human_candidates=human_candidates)
         losses.update(pose_loss)
 
         if not self.freeze_2d:
@@ -386,11 +390,15 @@ class DetectAndRegress(BasePose):
             for img_ in img:
                 feature_maps.append(self.backbone.forward_dummy(img_)[0])
 
-        human_candidates = self.human_detector(feature_maps, img_metas,
-                                               return_loss=False)
+        human_candidates = self.human_detector.forward_test(
+            None, img_metas, feature_maps)
 
-        human_poses = self.pose_regressor(feature_maps, img_metas, human_candidates,
-                                          return_loss=False)
+        human_poses = self.pose_regressor(
+            None,
+            img_metas,
+            return_loss=False,
+            feature_maps=feature_maps,
+            human_candidates=human_candidates)
 
         result = {}
         result['human_pose_3d'] = human_poses.cpu().numpy()
@@ -418,20 +426,23 @@ class DetectAndRegress(BasePose):
 
         _ = self.human_detector.forward_dummy(feature_maps)
 
-        _ = self.pose_regressor.forward_dummy(feature_maps,
-                                              num_candidates)
+        _ = self.pose_regressor.forward_dummy(feature_maps, num_candidates)
 
 
-class SinglePoseRegressor(nn.Module):
-    def __init__(self,
-                 project_layer,
-                 sub_space_size,
-                 sub_cube_size,
-                 num_joints,
-                 pose_net,
-                 pose_head,
-                 train_cfg=None,
-                 test_cfg=None,):
+@POSENETS.register_module()
+class SinglePoseRegressor(BasePose):
+
+    def __init__(
+        self,
+        project_layer,
+        sub_space_size,
+        sub_cube_size,
+        num_joints,
+        pose_net,
+        pose_head,
+        train_cfg=None,
+        test_cfg=None,
+    ):
         super(SinglePoseRegressor, self).__init__()
         self.project_layer = ProjectLayer(project_layer)
         self.pose_net = builder.build_backbone(pose_net)
@@ -444,10 +455,13 @@ class SinglePoseRegressor(nn.Module):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
 
-    def forward_train(self,
-                      feature_maps,
-                      img_metas,
-                      human_candidates):
+    def forward(self,
+                img,
+                img_metas,
+                return_loss=True,
+                feature_maps=None,
+                human_candidates=None,
+                **kwargs):
         """
         Note:
             batch_size: N
@@ -455,8 +469,8 @@ class SinglePoseRegressor(nn.Module):
             num_img_channel: C
             img_width: imgW
             img_height: imgH
-            heatmaps width: W
-            heatmaps height: H
+            feature_maps width: W
+            feature_maps height: H
             volume_length: cubeL
             volume_width: cubeW
             volume_height: cubeH
@@ -468,6 +482,50 @@ class SinglePoseRegressor(nn.Module):
                 Information about image, 3D groundtruth and camera parameters.
             human_candidates (torch.Tensor[NxPx5]):
                 Human candidates.
+            return_loss: Option to `return loss`. `return loss=True`
+                for training, `return loss=False` for validation & test.
+
+        Returns:
+            dict: losses.
+
+        """
+        if return_loss:
+            return self.forward_train(img, img_metas, feature_maps,
+                                      human_candidates)
+        else:
+            return self.forward_test(img, img_metas, feature_maps,
+                                     human_candidates)
+
+    def forward_train(self,
+                      img,
+                      img_metas,
+                      feature_maps=None,
+                      human_candidates=None,
+                      return_preds=False,
+                      **kwargs):
+        """Defines the computation performed at training."""
+        """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            feature_maps width: W
+            feature_maps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
+
+        Args:
+            feature_maps (list(torch.Tensor[NxCxHxW])):
+                Multi-camera input feature_maps.
+            img_metas (list(dict)):
+                Information about image, 3D groundtruth and camera parameters.
+            human_candidates (torch.Tensor[NxPx5]):
+                Human candidates.
+            return_loss: Option to `return loss`. `return loss=True`
+                for training, `return loss=False` for validation & test.
 
         Returns:
             dict: losses.
@@ -509,7 +567,7 @@ class SinglePoseRegressor(nn.Module):
                 valid_targets.append(gt_3d[index, pred[index, n, 0, 3].long()])
                 valid_weights.append(gt_3d_vis[index, pred[index, n, 0,
                                                            3].long(), :,
-                                     0:1].float())
+                                               0:1].float())
                 valid_preds.append(pose_3d)
 
         losses = dict()
@@ -521,17 +579,195 @@ class SinglePoseRegressor(nn.Module):
                 self.pose_head.get_loss(valid_preds, valid_targets,
                                         valid_weights))
         else:
-            pose_input_cube = feature_maps.new_zeros(batch_size, self.num_joints,
-                                                      *self.sub_cube_size)
+            pose_input_cube = feature_maps.new_zeros(batch_size,
+                                                     self.num_joints,
+                                                     *self.sub_cube_size)
             coordinates = feature_maps.new_zeros(batch_size,
-                                                  *self.sub_cube_size,
-                                                  3).view(batch_size, -1, 3)
-            pseudo_targets = feature_maps.new_zeros(batch_size, self.num_joints, 3)
-            pseudo_weights = feature_maps.new_zeros(batch_size, self.num_joints, 1)
+                                                 *self.sub_cube_size,
+                                                 3).view(batch_size, -1, 3)
+            pseudo_targets = feature_maps.new_zeros(batch_size,
+                                                    self.num_joints, 3)
+            pseudo_weights = feature_maps.new_zeros(batch_size,
+                                                    self.num_joints, 1)
             pose_heatmaps_3d = self.pose_net(pose_input_cube)
             pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
             losses.update(
                 self.pose_head.get_loss(pose_3d, pseudo_targets,
                                         pseudo_weights))
+        if return_preds:
+            return pred, losses
+        else:
+            return losses
 
-        return losses
+    def forward_test(self,
+                     img,
+                     img_metas,
+                     feature_maps=None,
+                     human_candidates=None,
+                     **kwargs):
+        """Defines the computation performed at training."""
+        """
+        Note:
+            batch_size: N
+            num_keypoints: K
+            num_img_channel: C
+            img_width: imgW
+            img_height: imgH
+            feature_maps width: W
+            feature_maps height: H
+            volume_length: cubeL
+            volume_width: cubeW
+            volume_height: cubeH
+
+        Args:
+            feature_maps (list(torch.Tensor[NxCxHxW])):
+                Multi-camera input feature_maps.
+            img_metas (list(dict)):
+                Information about image, 3D groundtruth and camera parameters.
+            human_candidates (torch.Tensor[NxPx5]):
+                Human candidates.
+            return_loss: Option to `return loss`. `return loss=True`
+                for training, `return loss=False` for validation & test.
+
+        Returns:
+            dict: predicted poses, human centers and sample_id
+
+        """
+        batch_size, num_candidates, _ = human_candidates.shape
+        pred = human_candidates.new_zeros(batch_size, num_candidates,
+                                          self.num_joints, 5)
+        pred[:, :, :, 3:] = human_candidates[:, :, None, 3:]
+
+        for n in range(num_candidates):
+            index = pred[:, n, 0, 3] >= 0
+            num_valid = index.sum()
+            if num_valid > 0:
+                pose_input_cube, coordinates \
+                    = self.project_layer(feature_maps,
+                                         img_metas,
+                                         self.sub_space_size,
+                                         human_candidates[:, n, :3],
+                                         self.sub_cube_size)
+                pose_heatmaps_3d = self.pose_net(pose_input_cube)
+                pose_3d = self.pose_head(pose_heatmaps_3d[index],
+                                         coordinates[index])
+
+                pred[index, n, :, 0:3] = pose_3d.detach()
+
+        result = {}
+        result['pose_3d'] = pred.cpu().numpy()
+        result['center_3d'] = human_candidates.cpu().numpy()
+        result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
+
+        return result
+
+    def show_result(self, **kwargs):
+        """Visualize the results."""
+        raise NotImplementedError
+
+    def forward_dummy(self, feature_maps, num_candidates=5):
+        """Used for computing network FLOPs."""
+        batch_size, num_channels = feature_maps[0].shape
+        pose_input_cube = feature_maps[0].new_zeros(batch_size, num_channels,
+                                                    *self.sub_cube_size)
+        for n in range(num_candidates):
+            _ = self.pose_net(pose_input_cube)
+
+
+@POSENETS.register_module()
+class CuboidCenterDetector(BasePose):
+
+    def __init__(
+        self,
+        project_layer,
+        space_size,
+        cube_size,
+        space_center,
+        center_net,
+        center_head,
+        train_cfg=None,
+        test_cfg=None,
+    ):
+        super(CuboidCenterDetector, self).__init__()
+        self.project_layer = ProjectLayer(project_layer)
+        self.center_net = builder.build_backbone(center_net)
+        self.center_head = builder.build_head(center_head)
+
+        self.space_size = space_size
+        self.cube_size = cube_size
+        self.space_center = space_center
+
+        self.train_cfg = train_cfg
+        self.test_cfg = test_cfg
+
+    def forward(self,
+                img,
+                img_metas,
+                return_loss=True,
+                feature_maps=None,
+                targets_3d=None):
+        if return_loss:
+            return self.forward_train(img, img_metas, feature_maps, targets_3d)
+        else:
+            return self.forward_test(img, img_metas, feature_maps)
+
+    def forward_train(self,
+                      img,
+                      img_metas,
+                      feature_maps=None,
+                      targets_3d=None,
+                      return_preds=False):
+        initial_cubes, _ = self.project_layer(feature_maps, img_metas,
+                                              self.space_size,
+                                              [self.space_center],
+                                              self.cube_size)
+        center_heatmaps_3d = self.root_net(initial_cubes)
+        center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
+        center_candidates = self.center_head(center_heatmaps_3d)
+
+        device = center_candidates.device
+
+        gt_centers = torch.stack([
+            torch.tensor(img_meta['roots_3d'], device=device)
+            for img_meta in img_metas
+        ])
+        gt_num_persons = torch.stack([
+            torch.tensor(img_meta['num_persons'], device=device)
+            for img_meta in img_metas
+        ])
+        center_candidates = self.assign2gt(center_candidates, gt_centers,
+                                           gt_num_persons)
+
+        losses = dict()
+        losses.update(
+            self.center_head.get_loss(center_heatmaps_3d, targets_3d))
+
+        if return_preds:
+            return center_candidates, losses
+        else:
+            return losses
+
+    def forward_test(self, img, img_metas, feature_maps=None):
+        initial_cubes, _ = self.project_layer(feature_maps, img_metas,
+                                              self.space_size,
+                                              [self.space_center],
+                                              self.cube_size)
+        center_heatmaps_3d = self.root_net(initial_cubes)
+        center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
+        center_candidates = self.center_head(center_heatmaps_3d)
+        center_candidates[..., 3] = \
+            (center_candidates[..., 4] >
+             self.test_cfg['center_threshold']).float() - 1.0
+
+        return center_candidates
+
+    def show_result(self, **kwargs):
+        """Visualize the results."""
+        raise NotImplementedError
+
+    def forward_dummy(self, feature_maps):
+        """Used for computing network FLOPs."""
+        batch_size, num_channels, _, _ = feature_maps[0].shape
+        initial_cubes = feature_maps[0].new_zeros(batch_size, num_channels,
+                                                  *self.cube_size)
+        _ = self.root_net(initial_cubes)
