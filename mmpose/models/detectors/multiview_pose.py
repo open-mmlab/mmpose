@@ -538,7 +538,7 @@ class VoxelSinglePose(BasePose):
                                           self.num_joints, 5)
         pred[:, :, :, 3:] = human_candidates[:, :, None, 3:]
 
-        device = feature_maps.device
+        device = feature_maps[0].device
         gt_3d = torch.stack([
             torch.tensor(img_meta['joints_3d'], device=device)
             for img_meta in img_metas
@@ -656,12 +656,7 @@ class VoxelSinglePose(BasePose):
 
                 pred[index, n, :, 0:3] = pose_3d.detach()
 
-        result = {}
-        result['pose_3d'] = pred.cpu().numpy()
-        result['center_3d'] = human_candidates.cpu().numpy()
-        result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
-
-        return result
+        return pred
 
     def show_result(self, **kwargs):
         """Visualize the results."""
@@ -776,7 +771,7 @@ class VoxelCenterDetector(BasePose):
                                               self.space_size,
                                               [self.space_center],
                                               self.cube_size)
-        center_heatmaps_3d = self.root_net(initial_cubes)
+        center_heatmaps_3d = self.center_net(initial_cubes)
         center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
         center_candidates = self.center_head(center_heatmaps_3d)
         center_candidates[..., 3] = \
@@ -794,4 +789,4 @@ class VoxelCenterDetector(BasePose):
         batch_size, num_channels, _, _ = feature_maps[0].shape
         initial_cubes = feature_maps[0].new_zeros(batch_size, num_channels,
                                                   *self.cube_size)
-        _ = self.root_net(initial_cubes)
+        _ = self.center_net(initial_cubes)

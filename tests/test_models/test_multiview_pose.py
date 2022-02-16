@@ -54,7 +54,7 @@ def test_detect_and_regress_forward():
             keys=['targets_3d', 'input_heatmaps'],
             meta_keys=[
                 'camera', 'center', 'scale', 'joints_3d', 'num_persons',
-                'joints_3d_visible'
+                'joints_3d_visible', 'roots_3d', 'sample_id'
             ]),
     ]
 
