@@ -7,7 +7,7 @@ from mmpose.datasets import DATASETS, build_dataloader
 from mmpose.models import builder
 
 
-def test_voxelpose_forward():
+def test_detect_and_regress_forward():
     dataset = 'Body3DMviewDirectPanopticDataset'
     dataset_class = DATASETS.get(dataset)
     dataset_info = Config.fromfile(
