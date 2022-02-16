@@ -14,19 +14,18 @@ from .base import BasePose
 
 class ProjectLayer(nn.Module):
 
-    def __init__(self, cfg):
+    def __init__(self, image_size, heatmap_size):
         """Project layer to get voxel feature. Adapted from
         https://github.com/microsoft/voxelpose-
         pytorch/blob/main/lib/models/project_layer.py.
 
         Args:
-            cfg (dict):
-                image_size: input size of the 2D model
-                heatmap_size: output size of the 2D model
+            image_size (int or list): input size of the 2D model
+            heatmap_size (int or list): output size of the 2D model
         """
         super(ProjectLayer, self).__init__()
-        self.image_size = cfg['image_size']
-        self.heatmap_size = cfg['heatmap_size']
+        self.image_size = image_size
+        self.heatmap_size = heatmap_size
         if isinstance(self.image_size, int):
             self.image_size = [self.image_size, self.image_size]
         if isinstance(self.heatmap_size, int):
@@ -152,10 +151,12 @@ class DetectAndRegress(BasePose):
                  pretrained=None,
                  freeze_2d=True):
         super(DetectAndRegress, self).__init__()
-
-        self.backbone = builder.build_posenet(detector_2d)
-        if self.training and pretrained is not None:
-            load_checkpoint(self.backbone, pretrained)
+        if detector_2d is not None:
+            self.backbone = builder.build_posenet(detector_2d)
+            if self.training and pretrained is not None:
+                load_checkpoint(self.backbone, pretrained)
+        else:
+            self.backbone = None
 
         self.freeze_2d = freeze_2d
         self.human_detector = builder.MODELS.build(human_detector)
@@ -181,14 +182,14 @@ class DetectAndRegress(BasePose):
             Module: self
         """
         super().train(mode)
-        if mode and self.freeze_2d:
+        if mode and self.freeze_2d and self.backbone is not None:
             self._freeze(self.backbone)
 
         return self
 
     def forward(self,
-                img,
-                img_metas,
+                img=None,
+                img_metas=None,
                 return_loss=True,
                 targets=None,
                 masks=None,
@@ -430,11 +431,12 @@ class DetectAndRegress(BasePose):
 
 
 @POSENETS.register_module()
-class SinglePoseRegressor(BasePose):
+class VoxelSinglePose(BasePose):
 
     def __init__(
         self,
-        project_layer,
+        image_size,
+        heatmap_size,
         sub_space_size,
         sub_cube_size,
         num_joints,
@@ -443,8 +445,8 @@ class SinglePoseRegressor(BasePose):
         train_cfg=None,
         test_cfg=None,
     ):
-        super(SinglePoseRegressor, self).__init__()
-        self.project_layer = ProjectLayer(project_layer)
+        super(VoxelSinglePose, self).__init__()
+        self.project_layer = ProjectLayer(image_size, heatmap_size)
         self.pose_net = builder.build_backbone(pose_net)
         self.pose_head = builder.build_head(pose_head)
 
@@ -675,11 +677,12 @@ class SinglePoseRegressor(BasePose):
 
 
 @POSENETS.register_module()
-class CuboidCenterDetector(BasePose):
+class VoxelCenterDetector(BasePose):
 
     def __init__(
         self,
-        project_layer,
+        image_size,
+        heatmap_size,
         space_size,
         cube_size,
         space_center,
@@ -688,8 +691,8 @@ class CuboidCenterDetector(BasePose):
         train_cfg=None,
         test_cfg=None,
     ):
-        super(CuboidCenterDetector, self).__init__()
-        self.project_layer = ProjectLayer(project_layer)
+        super(VoxelCenterDetector, self).__init__()
+        self.project_layer = ProjectLayer(image_size, heatmap_size)
         self.center_net = builder.build_backbone(center_net)
         self.center_head = builder.build_head(center_head)
 
@@ -699,6 +702,27 @@ class CuboidCenterDetector(BasePose):
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
+
+    def assign2gt(self, center_candidates, gt_centers, gt_num_persons):
+        """"Assign gt id to each valid human center candidate."""
+        det_centers = center_candidates[..., :3]
+        batch_size = center_candidates.shape[0]
+        cand_num = center_candidates.shape[1]
+        cand2gt = torch.zeros(batch_size, cand_num)
+
+        for i in range(batch_size):
+            cand = det_centers[i].view(cand_num, 1, -1)
+            gt = gt_centers[None, i, :gt_num_persons[i]]
+
+            dist = torch.sqrt(torch.sum((cand - gt)**2, dim=-1))
+            min_dist, min_gt = torch.min(dist, dim=-1)
+
+            cand2gt[i] = min_gt
+            cand2gt[i][min_dist > self.train_cfg['dist_threshold']] = -1.0
+
+        center_candidates[:, :, 3] = cand2gt
+
+        return center_candidates
 
     def forward(self,
                 img,
