@@ -745,7 +745,7 @@ class VoxelCenterDetector(BasePose):
                                               self.space_size,
                                               [self.space_center],
                                               self.cube_size)
-        center_heatmaps_3d = self.root_net(initial_cubes)
+        center_heatmaps_3d = self.center_net(initial_cubes)
         center_heatmaps_3d = center_heatmaps_3d.squeeze(1)
         center_candidates = self.center_head(center_heatmaps_3d)
 
