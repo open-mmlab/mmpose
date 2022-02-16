@@ -8,10 +8,9 @@ from .multiview_pose import (DetectAndRegress, VoxelCenterDetector,
 from .pose_lifter import PoseLifter
 from .posewarper import PoseWarper
 from .top_down import TopDown
-from .voxelpose import VoxelPose
 
 __all__ = [
     'TopDown', 'AssociativeEmbedding', 'ParametricMesh', 'MultiTask',
-    'PoseLifter', 'Interhand3D', 'PoseWarper', 'VoxelPose', 'DetectAndRegress',
+    'PoseLifter', 'Interhand3D', 'PoseWarper', 'DetectAndRegress',
     'VoxelCenterDetector', 'VoxelSinglePose'
 ]
