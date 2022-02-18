@@ -128,8 +128,8 @@ def _get_area(results):
     """
     for result in results:
         if 'bbox' in result:
-            result['area'] = np.abs((result['bbox'][1] - result['bbox'][0]) *
-                                    (result['bbox'][2] - result['bbox'][3]))
+            result['area'] = ((result['bbox'][2] - result['bbox'][0]) *
+                              (result['bbox'][3] - result['bbox'][1]))
         else:
             xmin = np.min(
                 result['keypoints'][:, 0][result['keypoints'][:, 0] > 0],
