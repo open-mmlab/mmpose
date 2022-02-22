@@ -1,4 +1,15 @@
 _base_ = ['../../../../_base_/datasets/wflw.py']
+
+file_client_args = dict(
+    backend='petrel',
+    path_mapping=dict({
+        './data/wflw': 'openmmlab:s3://openmmlab/datasets/pose/WFLW',
+    }))
+map_root = './data/wflw'
+
+# file_client_args = dict(backend='disk')
+# map_root = '/mnt/lustre/share_data/PAT/datasets/mmpose/wflw'
+
 log_level = 'INFO'
 load_from = None
 resume_from = None
@@ -59,7 +70,7 @@ data_cfg = dict(
     inference_channel=channel_cfg['inference_channel'])
 
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile', file_client_args=file_client_args),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=30,
@@ -81,7 +92,7 @@ train_pipeline = [
 ]
 
 val_pipeline = [
-    dict(type='LoadImageFromFile'),
+    dict(type='LoadImageFromFile', file_client_args=file_client_args),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -105,21 +116,21 @@ data = dict(
     train=dict(
         type='FaceWFLWDataset',
         ann_file=f'{data_root}/annotations/face_landmarks_wflw_train.json',
-        img_prefix=f'{data_root}/images/',
+        img_prefix=f'{map_root}/images/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='FaceWFLWDataset',
         ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/images/',
+        img_prefix=f'{map_root}/images/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='FaceWFLWDataset',
         ann_file=f'{data_root}/annotations/face_landmarks_wflw_test.json',
-        img_prefix=f'{data_root}/images/',
+        img_prefix=f'{map_root}/images/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
