@@ -157,7 +157,7 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
         """Load dataset."""
 
     @abstractmethod
-    def evaluate(self, outputs, res_folder, metric, *args, **kwargs):
+    def evaluate(self, results, *args, **kwargs):
         """Evaluate keypoint results."""
 
     @staticmethod

@@ -46,20 +46,19 @@ def test_body3d_h36m_dataset():
     assert custom_dataset.test_mode is True
     _ = custom_dataset[0]
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        outputs = []
-        for result in custom_dataset:
-            outputs.append({
-                'preds': result['target'][None, ...],
-                'target_image_paths': [result['target_image_path']],
-            })
+    results = []
+    for result in custom_dataset:
+        results.append({
+            'preds': result['target'][None, ...],
+            'target_image_paths': [result['target_image_path']],
+        })
 
-        metrics = ['mpjpe', 'p-mpjpe', 'n-mpjpe']
-        infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
+    metrics = ['mpjpe', 'p-mpjpe', 'n-mpjpe']
+    infos = custom_dataset.evaluate(results, metric=metrics)
 
-        np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
-        np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
-        np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
 
     # test multi-frame input with joint_2d_src = 'detection'
     data_cfg = dict(
@@ -92,20 +91,19 @@ def test_body3d_h36m_dataset():
     assert custom_dataset.test_mode is True
     _ = custom_dataset[0]
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        outputs = []
-        for result in custom_dataset:
-            outputs.append({
-                'preds': result['target'][None, ...],
-                'target_image_paths': [result['target_image_path']],
-            })
+    results = []
+    for result in custom_dataset:
+        results.append({
+            'preds': result['target'][None, ...],
+            'target_image_paths': [result['target_image_path']],
+        })
 
-        metrics = ['mpjpe', 'p-mpjpe', 'n-mpjpe']
-        infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
+    metrics = ['mpjpe', 'p-mpjpe', 'n-mpjpe']
+    infos = custom_dataset.evaluate(results, metric=metrics)
 
-        np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
-        np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
-        np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
+    np.testing.assert_almost_equal(infos['N-MPJPE'], 0.0)
 
 
 def test_body3d_semi_supervision_dataset():
@@ -253,26 +251,22 @@ def test_body3d_mpi_inf_3dhp_dataset():
         assert custom_dataset.test_mode is True
         _ = custom_dataset[0]
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            outputs = []
-            for result in custom_dataset:
-                outputs.append({
-                    'preds':
-                    result['target'][None, ...],
-                    'target_image_paths': [result['target_image_path']],
-                })
+        results = []
+        for result in custom_dataset:
+            results.append({
+                'preds': result['target'][None, ...],
+                'target_image_paths': [result['target_image_path']],
+            })
 
-            metrics = [
-                'mpjpe', 'p-mpjpe', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc'
-            ]
-            infos = custom_dataset.evaluate(outputs, tmpdir, metrics)
+        metrics = ['mpjpe', 'p-mpjpe', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc']
+        infos = custom_dataset.evaluate(results, metric=metrics)
 
-            np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
-            np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
-            np.testing.assert_almost_equal(infos['3DPCK'], 100.)
-            np.testing.assert_almost_equal(infos['P-3DPCK'], 100.)
-            np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
-            np.testing.assert_almost_equal(infos['P-3DAUC'], 30 / 31 * 100)
+        np.testing.assert_almost_equal(infos['MPJPE'], 0.0)
+        np.testing.assert_almost_equal(infos['P-MPJPE'], 0.0)
+        np.testing.assert_almost_equal(infos['3DPCK'], 100.)
+        np.testing.assert_almost_equal(infos['P-3DPCK'], 100.)
+        np.testing.assert_almost_equal(infos['3DAUC'], 30 / 31 * 100)
+        np.testing.assert_almost_equal(infos['P-3DAUC'], 30 / 31 * 100)
 
 
 def test_body3dmview_direct_panoptic_dataset():
@@ -335,7 +329,7 @@ def test_body3dmview_direct_panoptic_dataset():
 
     import copy
     gt_num = test_dataset.db_size // test_dataset.num_cameras
-    preds = []
+    results = []
     for i in range(gt_num):
         index = test_dataset.num_cameras * i
         db_rec = copy.deepcopy(test_dataset.db[index])
@@ -349,9 +343,5 @@ def test_body3dmview_direct_panoptic_dataset():
             gt_pose[0, :num_gts, :, 3] = np.array(joints_3d_vis)[:, :, 0] - 1.0
             gt_pose[0, :num_gts, :, 4] = 1.0
 
-        preds.append(dict(pose_3d=gt_pose, sample_id=[i]))
-    print('test evaluate')
-    with tempfile.TemporaryDirectory() as tmpdir:
-        results = test_dataset.evaluate(
-            preds, res_folder=tmpdir, metric=['mAP', 'mpjpe'])
-    print(results)
+        results.append(dict(pose_3d=gt_pose, sample_id=[i]))
+    _ = test_dataset.evaluate(results, metric=['mAP', 'mpjpe'])

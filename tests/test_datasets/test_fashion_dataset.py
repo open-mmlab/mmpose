@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import tempfile
 from unittest.mock import MagicMock
 
 import pytest
@@ -61,12 +60,11 @@ def test_deepfashion_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
     assert_almost_equal(infos['PCK'], 1.0)
     assert_almost_equal(infos['AUC'], 0.95)
     assert_almost_equal(infos['EPE'], 0.0)
 
     with pytest.raises(KeyError):
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+        infos = custom_dataset.evaluate(results, metric='mAP')

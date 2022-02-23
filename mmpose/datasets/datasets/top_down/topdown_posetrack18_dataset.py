@@ -1,12 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from ....core.post_processing import oks_nms, soft_oks_nms
 from ...builder import DATASETS
@@ -100,7 +101,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
 
-    def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='mAP', **kwargs):
         """Evaluate posetrack keypoint results. The pose prediction results
         will be saved in ``${res_folder}/result_keypoints.json``.
 
@@ -108,7 +110,8 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             - num_keypoints: K
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
@@ -118,7 +121,9 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                     /000024.jpg']
                 - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
                 - bbox_id (list(int))
-            res_folder (str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
@@ -130,19 +135,23 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        pred_folder = osp.join(res_folder, 'preds')
-        os.makedirs(pred_folder, exist_ok=True)
+        if res_folder is not None:
+            tmp_folder = None
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_folder = tmp_folder.name
+
         gt_folder = osp.join(
             osp.dirname(self.ann_file),
             osp.splitext(self.ann_file.split('_')[-1])[0])
 
         kpts = defaultdict(list)
 
-        for output in outputs:
-            preds = output['preds']
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -188,10 +197,13 @@ class TopDownPoseTrack18Dataset(TopDownCocoDataset):
                 valid_kpts[image_id].append(img_kpts)
 
         self._write_posetrack18_keypoint_results(valid_kpts, gt_folder,
-                                                 pred_folder)
+                                                 res_folder)
 
-        info_str = self._do_python_keypoint_eval(gt_folder, pred_folder)
+        info_str = self._do_python_keypoint_eval(gt_folder, res_folder)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value
 

@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import tempfile
 from unittest.mock import MagicMock
 
 import pytest
@@ -81,13 +80,12 @@ def test_top_down_COCO_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_MHP_dataset():
@@ -164,13 +162,12 @@ def test_top_down_MHP_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_PoseTrack18_dataset():
@@ -249,13 +246,12 @@ def test_top_down_PoseTrack18_dataset():
     _ = custom_dataset[0]
 
     # Test evaluate function, use gt bbox
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['Total AP'], 100)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['Total AP'], 100)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
     # Test evaluate function, use det bbox
     data_cfg_copy = copy.deepcopy(data_cfg)
@@ -272,15 +268,14 @@ def test_top_down_PoseTrack18_dataset():
 
     assert len(custom_dataset) == 278
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        # since the det box input assume each keypoint position to be (0,0)
-        # the Total AP will be zero.
-        assert_almost_equal(infos['Total AP'], 0.)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    # since the det box input assume each keypoint position to be (0,0)
+    # the Total AP will be zero.
+    assert_almost_equal(infos['Total AP'], 0.)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_PoseTrack18Video_dataset():
@@ -339,24 +334,26 @@ def test_top_down_PoseTrack18Video_dataset():
             test_mode=False)
 
     # Test train mode (must use gt bbox)
-    _ = dataset_class(
-        ann_file='tests/data/posetrack18/annotations/'
-        'test_posetrack18_val.json',
-        img_prefix='tests/data/posetrack18/',
-        data_cfg=data_cfg,
-        pipeline=[],
-        dataset_info=dataset_info,
-        test_mode=False)
+    with pytest.warns(UserWarning):
+        _ = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=False)
 
-    # Test gt bbox + test mode
-    custom_dataset = dataset_class(
-        ann_file='tests/data/posetrack18/annotations/'
-        'test_posetrack18_val.json',
-        img_prefix='tests/data/posetrack18/',
-        data_cfg=data_cfg,
-        pipeline=[],
-        dataset_info=dataset_info,
-        test_mode=True)
+    # # Test gt bbox + test mode
+    with pytest.warns(UserWarning):
+        custom_dataset = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=True)
 
     assert custom_dataset.test_mode is True
     assert custom_dataset.dataset_name == 'posetrack18'
@@ -371,14 +368,15 @@ def test_top_down_PoseTrack18Video_dataset():
     # Test det bbox + test mode
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
-    custom_dataset = dataset_class(
-        ann_file='tests/data/posetrack18/annotations/'
-        'test_posetrack18_val.json',
-        img_prefix='tests/data/posetrack18/',
-        data_cfg=data_cfg_copy,
-        pipeline=[],
-        dataset_info=dataset_info,
-        test_mode=True)
+    with pytest.warns(UserWarning):
+        custom_dataset = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg_copy,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=True)
 
     assert custom_dataset.frame_indices_test == [-2, -1, 0, 1, 2]
     assert len(custom_dataset) == 278
@@ -387,6 +385,7 @@ def test_top_down_PoseTrack18Video_dataset():
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['frame_index_rand'] = False
     data_cfg_copy['frame_indices_train'] = [0, -1]
+
     custom_dataset = dataset_class(
         ann_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_val.json',
@@ -399,36 +398,34 @@ def test_top_down_PoseTrack18Video_dataset():
     assert custom_dataset.frame_indices_train == [-1, 0]
 
     # Test evaluate function, use gt bbox
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['Total AP'], 100)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['Total AP'], 100)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
     # Test evaluate function, use det bbox
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
+    with pytest.warns(UserWarning):
+        custom_dataset = dataset_class(
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
+            img_prefix='tests/data/posetrack18/',
+            data_cfg=data_cfg_copy,
+            pipeline=[],
+            dataset_info=dataset_info,
+            test_mode=True)
 
-    custom_dataset = dataset_class(
-        ann_file='tests/data/posetrack18/annotations/'
-        'test_posetrack18_val.json',
-        img_prefix='tests/data/posetrack18/',
-        data_cfg=data_cfg_copy,
-        pipeline=[],
-        dataset_info=dataset_info,
-        test_mode=True)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    # since the det box input assume each keypoint position to be (0,0),
+    # the Total AP will be zero.
+    assert_almost_equal(infos['Total AP'], 0)
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        # since the det box input assume each keypoint position to be (0,0),
-        # the Total AP will be zero.
-        assert_almost_equal(infos['Total AP'], 0)
-
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_CrowdPose_dataset():
@@ -499,13 +496,12 @@ def test_top_down_CrowdPose_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_COCO_wholebody_dataset():
@@ -576,13 +572,12 @@ def test_top_down_COCO_wholebody_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_halpe_dataset():
@@ -653,13 +648,12 @@ def test_top_down_halpe_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_OCHuman_dataset():
@@ -726,13 +720,12 @@ def test_top_down_OCHuman_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_MPII_dataset():
@@ -890,13 +883,12 @@ def test_top_down_AIC_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_top_down_JHMDB_dataset():
@@ -968,16 +960,15 @@ def test_top_down_JHMDB_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
-        assert_almost_equal(infos['Mean PCK'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK'])
+    assert_almost_equal(infos['Mean PCK'], 1.0)
 
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['tPCK'])
-        assert_almost_equal(infos['Mean tPCK'], 1.0)
+    infos = custom_dataset.evaluate(results, metric=['tPCK'])
+    assert_almost_equal(infos['Mean tPCK'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_top_down_h36m_dataset():
@@ -1023,10 +1014,9 @@ def test_top_down_h36m_dataset():
     assert image_id in custom_dataset.img_ids
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'EPE')
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='EPE')
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'AUC')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='AUC')

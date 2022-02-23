@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import tempfile
 
 import pytest
 from mmcv import Config
@@ -61,15 +60,14 @@ def test_OneHand10K_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_hand_coco_wholebody_dataset():
@@ -121,15 +119,14 @@ def test_hand_coco_wholebody_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_FreiHand2D_dataset():
@@ -183,15 +180,14 @@ def test_FreiHand2D_dataset():
     assert custom_dataset.num_images == 8
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_RHD2D_dataset():
@@ -245,15 +241,14 @@ def test_RHD2D_dataset():
     assert custom_dataset.num_images == 3
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_Panoptic2D_dataset():
@@ -307,16 +302,14 @@ def test_Panoptic2D_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir,
-                                        ['PCKh', 'EPE', 'AUC'])
-        assert_almost_equal(infos['PCKh'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCKh', 'EPE', 'AUC'])
+    assert_almost_equal(infos['PCKh'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_InterHand2D_dataset():
@@ -376,16 +369,15 @@ def test_InterHand2D_dataset():
 
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK', 'EPE', 'AUC'])
-        print(infos, flush=True)
-        assert_almost_equal(infos['PCK'], 1.0)
-        assert_almost_equal(infos['AUC'], 0.95)
-        assert_almost_equal(infos['EPE'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK', 'EPE', 'AUC'])
+    print(infos, flush=True)
+    assert_almost_equal(infos['PCK'], 1.0)
+    assert_almost_equal(infos['AUC'], 0.95)
+    assert_almost_equal(infos['EPE'], 0.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_InterHand3D_dataset():
@@ -450,16 +442,15 @@ def test_InterHand3D_dataset():
 
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(
+    results = convert_db_to_output(
         custom_dataset.db, keys=['rel_root_depth', 'hand_type'], is_3d=True)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir,
-                                        ['MRRPE', 'MPJPE', 'Handedness_acc'])
-        assert_almost_equal(infos['MRRPE'], 0.0, decimal=5)
-        assert_almost_equal(infos['MPJPE_all'], 0.0, decimal=5)
-        assert_almost_equal(infos['MPJPE_single'], 0.0, decimal=5)
-        assert_almost_equal(infos['MPJPE_interacting'], 0.0, decimal=5)
-        assert_almost_equal(infos['Handedness_acc'], 1.0)
+    infos = custom_dataset.evaluate(
+        results, metric=['MRRPE', 'MPJPE', 'Handedness_acc'])
+    assert_almost_equal(infos['MRRPE'], 0.0, decimal=5)
+    assert_almost_equal(infos['MPJPE_all'], 0.0, decimal=5)
+    assert_almost_equal(infos['MPJPE_single'], 0.0, decimal=5)
+    assert_almost_equal(infos['MPJPE_interacting'], 0.0, decimal=5)
+    assert_almost_equal(infos['Handedness_acc'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
