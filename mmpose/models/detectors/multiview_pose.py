@@ -134,7 +134,7 @@ class DetectAndRegress(BasePose):
     for details.
 
     Args:
-        detector_2d (ConfigDict): Dictionary to construct the 2D pose detector
+        backbone (ConfigDict): Dictionary to construct the 2D pose detector
         train_cfg (ConfigDict): Config for training. Default: None.
         test_cfg (ConfigDict): Config for testing. Default: None.
         pretrained (str): Path to the pretrained 2D model. Default: None.
@@ -143,7 +143,7 @@ class DetectAndRegress(BasePose):
     """
 
     def __init__(self,
-                 detector_2d,
+                 backbone,
                  human_detector,
                  pose_regressor,
                  train_cfg=None,
@@ -151,8 +151,8 @@ class DetectAndRegress(BasePose):
                  pretrained=None,
                  freeze_2d=True):
         super(DetectAndRegress, self).__init__()
-        if detector_2d is not None:
-            self.backbone = builder.build_posenet(detector_2d)
+        if backbone is not None:
+            self.backbone = builder.build_posenet(backbone)
             if self.training and pretrained is not None:
                 load_checkpoint(self.backbone, pretrained)
         else:
@@ -581,15 +581,15 @@ class VoxelSinglePose(BasePose):
                 self.pose_head.get_loss(valid_preds, valid_targets,
                                         valid_weights))
         else:
-            pose_input_cube = feature_maps.new_zeros(batch_size,
+            pose_input_cube = feature_maps[0].new_zeros(batch_size,
                                                      self.num_joints,
                                                      *self.sub_cube_size)
-            coordinates = feature_maps.new_zeros(batch_size,
+            coordinates = feature_maps[0].new_zeros(batch_size,
                                                  *self.sub_cube_size,
                                                  3).view(batch_size, -1, 3)
-            pseudo_targets = feature_maps.new_zeros(batch_size,
+            pseudo_targets = feature_maps[0].new_zeros(batch_size,
                                                     self.num_joints, 3)
-            pseudo_weights = feature_maps.new_zeros(batch_size,
+            pseudo_weights = feature_maps[0].new_zeros(batch_size,
                                                     self.num_joints, 1)
             pose_heatmaps_3d = self.pose_net(pose_input_cube)
             pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)

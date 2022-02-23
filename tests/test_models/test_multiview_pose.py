@@ -60,7 +60,7 @@ def test_voxelpose_forward():
 
     model_cfg = dict(
         type='DetectAndRegress',
-        detector_2d=None,
+        backbone=None,
         human_detector=dict(
             type='VoxelCenterDetector',
             image_size=[960, 512],
