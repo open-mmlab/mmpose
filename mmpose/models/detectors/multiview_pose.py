@@ -402,7 +402,7 @@ class DetectAndRegress(BasePose):
             human_candidates=human_candidates)
 
         result = {}
-        result['human_pose_3d'] = human_poses.cpu().numpy()
+        result['pose_3d'] = human_poses.cpu().numpy()
         result['human_detection_3d'] = human_candidates.cpu().numpy()
         result['sample_id'] = [img_meta['sample_id'] for img_meta in img_metas]
 
