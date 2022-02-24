@@ -1,13 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
 import base64
+import os
 
 import mmcv
 import torch
 
-from mmpose.apis import (init_pose_model, inference_top_down_pose_model,
-                         inference_bottom_up_pose_model)
-from mmpose.models.detectors import TopDown, AssociativeEmbedding
+from mmpose.apis import (inference_bottom_up_pose_model,
+                         inference_top_down_pose_model, init_pose_model)
+from mmpose.models.detectors import AssociativeEmbedding, TopDown
 
 try:
     from ts.torch_handler.base_handler import BaseHandler

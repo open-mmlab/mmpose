@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 import warnings
-from argparse import Namespace, ArgumentParser
+from argparse import ArgumentParser, Namespace
 from tempfile import TemporaryDirectory
 
 import mmcv
