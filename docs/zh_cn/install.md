@@ -73,15 +73,13 @@ conda install pytorch==1.7.0 torchvision==0.8.0 cudatoolkit=9.2 -c pytorch
 a. 安装最新版本的 mmcv-full。MMPose 推荐用户使用如下的命令安装预编译好的 mmcv。
 
 ```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+# pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9.0/index.html
+# 我们可以忽略 PyTorch 的小版本号
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9/index.html
 ```
 
-其中，命令里 url 的 ``{cu_version}`` 和 ``{torch_version}`` 变量需由用户进行指定。
-例如，如果想要安装 ``CUDA 10.2`` 和 ``PyTorch 1.8.0`` 下的最新版 ``mmcv-full``，可使用以下命令：
-
-```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/index.html
-```
+PyTorch 在 1.x.0 和 1.x.1 之间通常是兼容的，故 mmcv-full 只提供 1.x.0 的编译包。如果你的 PyTorch 版本是 1.x.1，你可以放心地安装在 1.x.0 版本编译的 mmcv-full。
 
 可查阅 [这里](https://github.com/open-mmlab/mmcv#installation) 以参考不同版本的 MMCV 所兼容的 PyTorch 和 CUDA 版本。
 

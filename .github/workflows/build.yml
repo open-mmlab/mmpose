@@ -35,12 +35,16 @@ jobs:
         torch: [1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.5.0
+            torch_version: torch1.5
             torchvision: 0.6.0
           - torch: 1.6.0
+            torch_version: torch1.6
             torchvision: 0.7.0
           - torch: 1.7.0
+            torch_version: torch1.7
             torchvision: 0.8.1
           - torch: 1.8.0
+            torch_version: torch1.8
             torchvision: 0.9.0
 
     steps:
@@ -57,7 +61,7 @@ jobs:
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMCV
         run: |
-          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/torch${{matrix.torch}}/index.html
+          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch_version}}/index.html
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
         run: pip install -r requirements.txt
@@ -79,12 +83,16 @@ jobs:
         torch: [1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.5.0
+            torch_version: torch1.5
             torchvision: 0.6.0
           - torch: 1.6.0
+            torch_version: torch1.6
             torchvision: 0.7.0
           - torch: 1.7.0
+            torch_version: torch1.7
             torchvision: 0.8.1
           - torch: 1.8.0
+            torch_version: torch1.8
             torchvision: 0.9.0
 
     steps:
@@ -114,7 +122,7 @@ jobs:
       - name: Install mmpose dependencies
         run: |
           python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/torch${{matrix.torch}}/index.html
+          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
@@ -143,10 +151,14 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
-        torch: [1.9.0]
+        torch: [1.9.0, 1.10.0]
         include:
           - torch: 1.9.0
+            torch_version: torch1.9
             torchvision: 0.10.0
+          - torch: 1.10.0
+            torch_version: torch1.10
+            torchvision: 0.11.0
 
     steps:
       - uses: actions/checkout@v2
@@ -172,7 +184,7 @@ jobs:
       - name: Install mmpose dependencies
         run: |
           python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch${{matrix.torch}}/index.html
+          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install

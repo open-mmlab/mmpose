@@ -74,14 +74,13 @@ If you build PyTorch from source instead of installing the pre-built package, yo
 a. Install mmcv, we recommend you to install the pre-built mmcv as below.
 
 ```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+# pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9.0/index.html
+# We can ignore the micro version of PyTorch
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9/index.html
 ```
 
-Please replace ``{cu_version}`` and ``{torch_version}`` in the url to your desired one. For example, to install the latest ``mmcv-full`` with ``CUDA 10.2`` and ``PyTorch 1.8.0``, use the following command:
-
-```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/index.html
-```
+mmcv-full is only compiled on PyTorch 1.x.0 because the compatibility usually holds between 1.x.0 and 1.x.1. If your PyTorch version is 1.x.1, you can install mmcv-full compiled with PyTorch 1.x.0 and it usually works well.
 
 See [here](https://github.com/open-mmlab/mmcv#installation) for different versions of MMCV compatible to different PyTorch and CUDA versions.
 
