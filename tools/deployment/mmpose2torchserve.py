@@ -7,6 +7,8 @@ import mmcv
 import torch
 from mmcv.runner import CheckpointLoader
 
+import warnings
+
 try:
     from model_archiver.model_packaging import package_model
     from model_archiver.model_packaging_utils import ModelExportUtils
@@ -113,6 +115,18 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    
+    # Following strings of text style are from colorama package
+    bright_style, reset_style = '\x1b[1m', '\x1b[0m'
+    red_text, blue_text = '\x1b[31m', '\x1b[34m'
+    white_background = '\x1b[107m'
+
+    msg = white_background + bright_style + red_text
+    msg += 'DeprecationWarning: This tool will be deprecated in future. '
+    msg += blue_text + 'Welcome to use the unified model deployment toolbox '
+    msg += 'MMDeploy: https://github.com/open-mmlab/mmdeploy'
+    msg += reset_style
+    warnings.warn(msg)
 
     if package_model is None:
         raise ImportError('`torch-model-archiver` is required.'
