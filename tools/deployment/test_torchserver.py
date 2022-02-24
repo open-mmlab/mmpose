@@ -1,15 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
-from argparse import ArgumentParser
 import warnings
+from argparse import ArgumentParser
 
 import requests
 
-from mmpose.apis import (inference_bottom_up_pose_model,
-                         inference_top_down_pose_model, init_pose_model,
-                         vis_pose_result)
-from mmpose.models import AssociativeEmbedding, TopDown
+from mmpose.apis import (init_pose_model, vis_pose_result,
+                         inference_top_down_pose_model,
+                         inference_bottom_up_pose_model)
+from mmpose.models import TopDown, AssociativeEmbedding
+
 
 def parse_args():
     parser = ArgumentParser()

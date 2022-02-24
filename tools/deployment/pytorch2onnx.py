@@ -7,7 +7,6 @@ import torch
 
 from mmpose.apis import init_pose_model
 
-
 try:
     import onnx
     import onnxruntime as rt
@@ -133,7 +132,7 @@ if __name__ == '__main__':
     args = parse_args()
 
     assert args.opset_version == 11, 'MMPose only supports opset 11 now'
-    
+
     # Following strings of text style are from colorama package
     bright_style, reset_style = '\x1b[1m', '\x1b[0m'
     red_text, blue_text = '\x1b[31m', '\x1b[34m'

@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
-from argparse import ArgumentParser, Namespace
 import warnings
+from argparse import Namespace, ArgumentParser
 from tempfile import TemporaryDirectory
 
 import mmcv
@@ -114,7 +114,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    
+
     # Following strings of text style are from colorama package
     bright_style, reset_style = '\x1b[1m', '\x1b[0m'
     red_text, blue_text = '\x1b[31m', '\x1b[34m'
