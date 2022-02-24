@@ -1,12 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
+import warnings
 
 import numpy as np
 import torch
 
 from mmpose.apis import init_pose_model
 
-import warnings
 
 try:
     import onnx

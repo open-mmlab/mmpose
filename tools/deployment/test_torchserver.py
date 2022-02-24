@@ -2,6 +2,7 @@
 import os
 import os.path as osp
 from argparse import ArgumentParser
+import warnings
 
 import requests
 
@@ -9,8 +10,6 @@ from mmpose.apis import (inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
                          vis_pose_result)
 from mmpose.models import AssociativeEmbedding, TopDown
-
-import warnings
 
 def parse_args():
     parser = ArgumentParser()

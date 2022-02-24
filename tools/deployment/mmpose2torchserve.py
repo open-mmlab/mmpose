@@ -1,13 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 from argparse import ArgumentParser, Namespace
+import warnings
 from tempfile import TemporaryDirectory
 
 import mmcv
 import torch
 from mmcv.runner import CheckpointLoader
-
-import warnings
 
 try:
     from model_archiver.model_packaging import package_model
