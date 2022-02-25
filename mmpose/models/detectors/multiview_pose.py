@@ -272,7 +272,7 @@ class DetectAndRegress(BasePose):
         else:
             assert 'input_heatmaps' in data_batch
             batch_size = data_batch['input_heatmaps'][0][0].shape[0]
-        
+
         outputs = dict(loss=loss, log_vars=log_vars, num_samples=batch_size)
 
         return outputs
@@ -586,16 +586,15 @@ class VoxelSinglePose(BasePose):
                 self.pose_head.get_loss(valid_preds, valid_targets,
                                         valid_weights))
         else:
-            pose_input_cube = feature_maps[0].new_zeros(batch_size,
-                                                     self.num_joints,
-                                                     *self.sub_cube_size)
+            pose_input_cube = feature_maps[0].new_zeros(
+                batch_size, self.num_joints, *self.sub_cube_size)
             coordinates = feature_maps[0].new_zeros(batch_size,
-                                                 *self.sub_cube_size,
-                                                 3).view(batch_size, -1, 3)
+                                                    *self.sub_cube_size,
+                                                    3).view(batch_size, -1, 3)
             pseudo_targets = feature_maps[0].new_zeros(batch_size,
-                                                    self.num_joints, 3)
+                                                       self.num_joints, 3)
             pseudo_weights = feature_maps[0].new_zeros(batch_size,
-                                                    self.num_joints, 1)
+                                                       self.num_joints, 1)
             pose_heatmaps_3d = self.pose_net(pose_input_cube)
             pose_3d = self.pose_head(pose_heatmaps_3d, coordinates)
             losses.update(

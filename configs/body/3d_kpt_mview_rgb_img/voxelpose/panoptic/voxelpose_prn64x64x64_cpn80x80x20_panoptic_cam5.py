@@ -111,8 +111,7 @@ model = dict(
         space_size=space_size,
         cube_size=cube_size,
         space_center=space_center,
-        center_net=dict(
-            type='V2VNet', input_channels=15, output_channels=1),
+        center_net=dict(type='V2VNet', input_channels=15, output_channels=1),
         center_head=dict(
             type='CuboidCenterHead',
             space_size=space_size,
@@ -130,11 +129,8 @@ model = dict(
         sub_space_size=sub_space_size,
         sub_cube_size=sub_cube_size,
         num_joints=15,
-        pose_net=dict(
-            type='V2VNet', input_channels=15, output_channels=15),
-        pose_head=dict(type='CuboidPoseHead', beta=100.0)
-    )
-)
+        pose_net=dict(type='V2VNet', input_channels=15, output_channels=15),
+        pose_head=dict(type='CuboidPoseHead', beta=100.0)))
 
 train_pipeline = [
     dict(
