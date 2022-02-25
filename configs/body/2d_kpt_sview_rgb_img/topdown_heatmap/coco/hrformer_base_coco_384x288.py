@@ -49,6 +49,7 @@ model = dict(
         norm_cfg=norm_cfg,
         extra=dict(
             drop_path_rate=0.3,
+            with_rpe=False,
             stage1=dict(
                 num_modules=1,
                 num_branches=1,
