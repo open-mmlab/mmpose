@@ -3,8 +3,10 @@ import argparse
 import mmcv
 import numpy as np
 import torch
+from torch import nn
+from torch import Tensor
 from mmcv.runner import load_checkpoint
-
+import torchvision.transforms as T
 from mmpose.models import build_posenet
 
 try:
@@ -46,7 +48,8 @@ def pytorch2onnx(model,
                  opset_version=11,
                  show=False,
                  output_file='tmp.onnx',
-                 verify=False):
+                 verify=False,
+                 add_normalization=False):
     """Convert pytorch model to onnx model.
 
     Args:
@@ -60,9 +63,12 @@ def pytorch2onnx(model,
             Default: False.
     """
     model.cpu().eval()
-
-    one_img = torch.randn(input_shape)
-
+    print("add normalitation", add_normalization)
+    if add_normalization:
+        model = WrappedModel(model)
+        one_img = torch.randint(low=0, high=255, size=input_shape).float()
+    else:
+        one_img = torch.randn(input_shape)
     register_extra_symbolics(opset_version)
     torch.onnx.export(
         model,
@@ -114,6 +120,10 @@ def parse_args():
         action='store_true',
         help='verify the onnx model output against pytorch output')
     parser.add_argument(
+        '--add-normalization',
+        action='store_true',
+        help='add normalization layer to the exported onnx model')
+    parser.add_argument(
         '--shape',
         type=int,
         nargs='+',
@@ -121,6 +131,18 @@ def parse_args():
         help='input size')
     args = parser.parse_args()
     return args
+
+class WrappedModel(nn.Module):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+        self.normalize = T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+
+    def forward(self, x: Tensor) -> Tensor:
+        x /= 255.
+        x = self.normalize(x)
+        x = self.model(x)
+        return x
 
 
 if __name__ == '__main__':
@@ -149,4 +171,5 @@ if __name__ == '__main__':
         opset_version=args.opset_version,
         show=args.show,
         output_file=args.output_file,
-        verify=args.verify)
+        verify=args.verify,
+        add_normalization=args.add_normalization)
