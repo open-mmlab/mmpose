@@ -267,7 +267,12 @@ class DetectAndRegress(BasePose):
         losses = self.forward(**data_batch)
 
         loss, log_vars = self._parse_losses(losses)
-        batch_size = data_batch['img'][0].shape[0]
+        if 'img' in data_batch:
+            batch_size = data_batch['img'][0].shape[0]
+        else:
+            assert 'input_heatmaps' in data_batch
+            batch_size = data_batch['input_heatmaps'][0][0].shape[0]
+        
         outputs = dict(loss=loss, log_vars=log_vars, num_samples=batch_size)
 
         return outputs
