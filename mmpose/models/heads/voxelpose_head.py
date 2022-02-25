@@ -33,9 +33,9 @@ class CuboidCenterHead(nn.Module):
                  max_pool_kernel=3):
         super(CuboidCenterHead, self).__init__()
         # use register_buffer
-        self.register_buffer('grid_size', torch.tensor(space_size))
-        self.register_buffer('cube_size', torch.tensor(cube_size))
-        self.register_buffer('grid_center', torch.tensor(space_center))
+        self.register_buffer('grid_size', torch.tensor(space_size), persistent=False)
+        self.register_buffer('cube_size', torch.tensor(cube_size), persistent=False)
+        self.register_buffer('grid_center', torch.tensor(space_center), persistent=False)
 
         self.num_candidates = max_num
         self.max_pool_kernel = max_pool_kernel
