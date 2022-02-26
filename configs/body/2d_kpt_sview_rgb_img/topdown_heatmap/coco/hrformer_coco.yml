@@ -1,0 +1,56 @@
+Collections:
+- Name: HRFormer
+  Paper:
+    Title: 'HRFormer: High-Resolution Vision Transformer for Dense Predict'
+    URL: https://proceedings.neurips.cc/paper/2021/hash/3bbfdde8842a5c44a0323518eec97cbe-Abstract.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/hrformer.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_small_coco_256x192.py
+  In Collection: HRFormer
+  Metadata:
+    Architecture: &id001
+    - HRFormer
+    Training Data: COCO
+  Name: topdown_heatmap_hrformer_small_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.737
+      AP@0.5: 0.899
+      AP@0.75: 0.81
+      AR: 0.792
+      AR@0.5: 0.938
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_256x192-b657896f_20220226.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_small_coco_384x288.py
+  In Collection: HRFormer
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_hrformer_small_coco_384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.755
+      AP@0.5: 0.906
+      AP@0.75: 0.822
+      AR: 0.805
+      AR@0.5: 0.941
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_384x288-4b52b078_20220226.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_base_coco_256x192.py
+  In Collection: HRFormer
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_hrformer_base_coco_256x192
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.753
+      AP@0.5: 0.907
+      AP@0.75: 0.821
+      AR: 0.806
+      AR@0.5: 0.943
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_256x192-66cee214_20220226.pth
