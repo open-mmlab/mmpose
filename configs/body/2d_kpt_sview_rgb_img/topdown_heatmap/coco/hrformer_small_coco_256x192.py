@@ -43,7 +43,8 @@ channel_cfg = dict(
 norm_cfg = dict(type='SyncBN', requires_grad=True)
 model = dict(
     type='TopDown',
-    pretrained='models/hrformer_small.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/hrformer_small-09516375_20220226.pth',
     backbone=dict(
         type='HRFormer',
         in_channels=3,
