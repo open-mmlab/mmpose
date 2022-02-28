@@ -547,8 +547,6 @@ def inference_interhand_3d_model(model,
 
         # prepare data
         data = {
-            'image_file':
-            img_or_path,
             'center':
             center,
             'scale':
@@ -574,6 +572,11 @@ def inference_interhand_3d_model(model,
                 'root_depth_bound': cfg.data_cfg['root_depth_bound']
             }
         }
+
+        if isinstance(img_or_path, np.ndarray):
+            data['img'] = img_or_path
+        else:
+            data['image_file'] = img_or_path
 
         data = test_pipeline(data)
         batch_data.append(data)

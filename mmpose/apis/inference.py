@@ -248,8 +248,6 @@ def _inference_single_pose_model(model,
 
         # prepare data
         data = {
-            'image_file':
-            img_or_path,
             'center':
             center,
             'scale':
@@ -272,6 +270,11 @@ def _inference_single_pose_model(model,
                 'flip_pairs': flip_pairs
             }
         }
+        if isinstance(img_or_path, np.ndarray):
+            data['img'] = img_or_path
+        else:
+            data['image_file'] = img_or_path
+
         data = test_pipeline(data)
         batch_data.append(data)
 
@@ -489,7 +492,6 @@ def inference_bottom_up_pose_model(model,
 
     # prepare data
     data = {
-        'image_file': img_or_path,
         'dataset': dataset_name,
         'ann_info': {
             'image_size': np.array(cfg.data_cfg['image_size']),
@@ -497,6 +499,10 @@ def inference_bottom_up_pose_model(model,
             'flip_index': flip_index,
         }
     }
+    if isinstance(img_or_path, np.ndarray):
+        data['img'] = img_or_path
+    else:
+        data['image_file'] = img_or_path
 
     data = test_pipeline(data)
     data = collate([data], samples_per_gpu=1)
