@@ -12,6 +12,6 @@ Please follow [DATA Preparation](/docs/en/tasks/3d_body_keypoint.md) to prepare 
 
 ## Demo
 
-Please follow [Demo](/demo/docs/en/3d_human_pose_demo.md) to run demos.
+Please follow [Demo](/demo/docs/3d_human_pose_demo.md) to run demos.
 
 <img src="https://user-images.githubusercontent.com/15977946/118820606-02df2000-b8e9-11eb-9984-b9228101e780.gif" width="600px" alt><br>

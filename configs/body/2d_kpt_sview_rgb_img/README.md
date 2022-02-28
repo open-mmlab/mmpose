@@ -14,6 +14,6 @@ Please follow [DATA Preparation](/docs/en/tasks/2d_body_keypoint.md) to prepare 
 
 ## Demo
 
-Please follow [Demo](/demo/docs/en/2d_human_pose_demo.md#2d-human-pose-demo) to run demos.
+Please follow [Demo](/demo/docs/2d_human_pose_demo.md#2d-human-pose-demo) to run demos.
 
 <img src="demo/resources/demo_coco.gif" width="600px" alt>
