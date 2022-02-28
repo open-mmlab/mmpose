@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import tempfile
 import warnings
 
 from mmcv.runner import DistEvalHook as _DistEvalHook
@@ -55,32 +54,6 @@ class EvalHook(_EvalHook):
         super().__init__(dataloader, start, interval, by_epoch, save_best,
                          rule, test_fn, greater_keys, less_keys, **eval_kwargs)
 
-    def evaluate(self, runner, results):
-        """Evaluate the results.
-
-        Args:
-            runner (:obj:`mmcv.Runner`): The underlined training runner.
-            results (list): Output results.
-        """
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            eval_res = self.dataloader.dataset.evaluate(
-                results,
-                res_folder=tmp_dir,
-                logger=runner.logger,
-                **self.eval_kwargs)
-
-        for name, val in eval_res.items():
-            runner.log_buffer.output[name] = val
-        runner.log_buffer.ready = True
-
-        if self.save_best is not None:
-            if self.key_indicator == 'auto':
-                # infer from eval_results
-                self._init_rule(self.rule, list(eval_res.keys())[0])
-            return eval_res[self.key_indicator]
-
-        return None
-
 
 class DistEvalHook(_DistEvalHook):
 
@@ -123,29 +96,3 @@ class DistEvalHook(_DistEvalHook):
                          rule, test_fn, greater_keys, less_keys,
                          broadcast_bn_buffer, tmpdir, gpu_collect,
                          **eval_kwargs)
-
-    def evaluate(self, runner, results):
-        """Evaluate the results.
-
-        Args:
-            runner (:obj:`mmcv.Runner`): The underlined training runner.
-            results (list): Output results.
-        """
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            eval_res = self.dataloader.dataset.evaluate(
-                results,
-                res_folder=tmp_dir,
-                logger=runner.logger,
-                **self.eval_kwargs)
-
-        for name, val in eval_res.items():
-            runner.log_buffer.output[name] = val
-        runner.log_buffer.ready = True
-
-        if self.save_best is not None:
-            if self.key_indicator == 'auto':
-                # infer from eval_results
-                self._init_rule(self.rule, list(eval_res.keys())[0])
-            return eval_res[self.key_indicator]
-
-        return None

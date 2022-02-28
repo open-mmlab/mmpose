@@ -1,6 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import tempfile
-
 import numpy as np
 import pytest
 from mmcv import Config
@@ -10,7 +8,7 @@ from mmpose.datasets import DATASETS
 
 
 def convert_coco_to_output(coco, is_wholebody=False):
-    outputs = []
+    results = []
     for img_id in coco.getImgIds():
         preds = []
         scores = []
@@ -41,9 +39,9 @@ def convert_coco_to_output(coco, is_wholebody=False):
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
 
-        outputs.append(output)
+        results.append(output)
 
-    return outputs
+    return results
 
 
 def test_bottom_up_COCO_dataset():
@@ -94,13 +92,13 @@ def test_bottom_up_COCO_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = convert_coco_to_output(custom_dataset.coco)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_coco_to_output(custom_dataset.coco)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
+
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_bottom_up_CrowdPose_dataset():
@@ -152,13 +150,12 @@ def test_bottom_up_CrowdPose_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
-    outputs = convert_coco_to_output(custom_dataset.coco)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_coco_to_output(custom_dataset.coco)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_bottom_up_MHP_dataset():
@@ -212,13 +209,12 @@ def test_bottom_up_MHP_dataset():
     assert len(custom_dataset.img_ids) == 2
     _ = custom_dataset[0]
 
-    outputs = convert_coco_to_output(custom_dataset.coco)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_coco_to_output(custom_dataset.coco)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_bottom_up_AIC_dataset():
@@ -271,13 +267,12 @@ def test_bottom_up_AIC_dataset():
     assert len(custom_dataset.img_ids) == 3
     _ = custom_dataset[0]
 
-    outputs = convert_coco_to_output(custom_dataset.coco)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_coco_to_output(custom_dataset.coco)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
 
 
 def test_bottom_up_COCO_wholebody_dataset():
@@ -331,10 +326,9 @@ def test_bottom_up_COCO_wholebody_dataset():
     assert len(custom_dataset.img_ids) == 4
     _ = custom_dataset[0]
 
-    outputs = convert_coco_to_output(custom_dataset.coco, is_wholebody=True)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_coco_to_output(custom_dataset.coco, is_wholebody=True)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'PCK')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')

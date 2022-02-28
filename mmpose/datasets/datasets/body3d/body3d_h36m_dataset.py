@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict, defaultdict
 
 import mmcv
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.core.evaluation import keypoint_mpjpe
 from mmpose.datasets.datasets.base import Kpt3dSviewKpt2dDataset
@@ -225,12 +226,8 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
 
         return joints_2d
 
-    def evaluate(self,
-                 outputs,
-                 res_folder,
-                 metric='mpjpe',
-                 logger=None,
-                 **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='mpjpe', **kwargs):
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
             if _metric not in self.ALLOWED_METRICS:
@@ -238,11 +235,17 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
                     f'Unsupported metric "{_metric}" for human3.6 dataset.'
                     f'Supported metrics are {self.ALLOWED_METRICS}')
 
-        res_file = osp.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
+
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            image_paths = output['target_image_paths']
+        for result in results:
+            preds = result['preds']
+            image_paths = result['target_image_paths']
             batch_size = len(image_paths)
             for i in range(batch_size):
                 target_id = self.name2id[image_paths[i]]
@@ -264,6 +267,9 @@ class Body3DH36MDataset(Kpt3dSviewKpt2dDataset):
             else:
                 raise NotImplementedError
             name_value_tuples.extend(_nv_tuples)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return OrderedDict(name_value_tuples)
 

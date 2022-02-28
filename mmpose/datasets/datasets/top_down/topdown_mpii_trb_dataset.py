@@ -1,13 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy as cp
-import os
 import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.datasets.builder import DATASETS
 from ..base import Kpt2dSviewRgbImgTopDownDataset
@@ -136,8 +136,8 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
             newitem = cp.deepcopy(tmpl)
             image_id = anno['image_id']
             newitem['bbox_id'] = anno['id']
-            newitem['image_file'] = os.path.join(
-                self.img_prefix, imid2info[image_id]['file_name'])
+            newitem['image_file'] = osp.join(self.img_prefix,
+                                             imid2info[image_id]['file_name'])
 
             if max(anno['keypoints']) == 0:
                 continue
@@ -186,7 +186,8 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
                 hit[i] = 1
         return hit, exist
 
-    def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='PCKh', **kwargs):
         """Evaluate PCKh for MPII-TRB dataset.
 
         Note:
@@ -196,7 +197,8 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
             - heatmap width: W
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
@@ -206,7 +208,9 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
                     000000397133.jpg']
                 - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
                 - bbox_ids (list[str]): For example, ['27407'].
-            res_folder(str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
 
@@ -219,14 +223,19 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -247,6 +256,9 @@ class TopDownMpiiTrbDataset(Kpt2dSviewRgbImgTopDownDataset):
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value
 
