@@ -2,15 +2,15 @@
 import copy
 import glob
 import json
-import os
 import os.path as osp
 import pickle
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import mmcv
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.core.camera import SimpleCamera
 from mmpose.datasets.builder import DATASETS
@@ -91,7 +91,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         self.ann_info['use_different_joint_weights'] = False
 
         if ann_file is None:
-            self.db_file = os.path.join(
+            self.db_file = osp.join(
                 img_prefix, f'group_{self.subset}_cam{self.num_cameras}.pkl')
         else:
             self.db_file = ann_file
@@ -296,14 +296,18 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                             sample_id += 1
         return db
 
-    def evaluate(self, outputs, res_folder, metric='mpjpe', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='mpjpe', **kwargs):
         """
 
         Args:
-            outputs list(dict(pose_3d, sample_id)):
-                pose_3d (np.ndarray): predicted 3D human pose
-                sample_id (np.ndarray): sample id of a frame.
-            res_folder (str): Path of directory to save the results.
+            results (list[dict]): Testing results containing the following
+                items:
+                - pose_3d (np.ndarray): predicted 3D human pose
+                - sample_id (np.ndarray): sample id of a frame.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed.
                 Defaults: 'mpjpe'.
             **kwargs:
@@ -311,16 +315,17 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         Returns:
 
         """
-        pose_3ds = np.concatenate([output['pose_3d'] for output in outputs],
+        pose_3ds = np.concatenate([result['pose_3d'] for result in results],
                                   axis=0)
         sample_ids = []
-        for output in outputs:
-            sample_ids.extend(output['sample_id'])
-        _outputs = [
+        for result in results:
+            sample_ids.extend(result['sample_id'])
+
+        _results = [
             dict(sample_id=sample_id, pose_3d=pose_3d)
             for (sample_id, pose_3d) in zip(sample_ids, pose_3ds)
         ]
-        _outputs = self._sort_and_unique_outputs(_outputs, key='sample_id')
+        _results = self._sort_and_unique_outputs(_results, key='sample_id')
 
         metrics = metric if isinstance(metric, list) else [metric]
         for _metric in metrics:
@@ -329,14 +334,19 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
                     f'Unsupported metric "{_metric}"'
                     f'Supported metrics are {self.ALLOWED_METRICS}')
 
-        res_file = osp.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
-        mmcv.dump(_outputs, res_file)
+        mmcv.dump(_results, res_file)
 
         eval_list = []
         gt_num = self.db_size // self.num_cameras
         assert len(
-            _outputs) == gt_num, f'number mismatch: {len(_outputs)}, {gt_num}'
+            _results) == gt_num, f'number mismatch: {len(_results)}, {gt_num}'
 
         total_gt = 0
         for i in range(gt_num):
@@ -348,7 +358,7 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
             if joints_3d_vis.sum() < 1:
                 continue
 
-            pred = _outputs[i]['pose_3d'].copy()
+            pred = _results[i]['pose_3d'].copy()
             pred = pred[pred[:, 0, 3] >= 0]
             for pose in pred:
                 mpjpes = []
@@ -400,6 +410,9 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
             else:
                 raise NotImplementedError
             name_value_tuples.extend(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return OrderedDict(name_value_tuples)
 

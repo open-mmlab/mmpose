@@ -162,8 +162,8 @@ class Kpt3dSviewKpt2dDataset(Dataset, metaclass=ABCMeta):
         return sample_indices
 
     @abstractmethod
-    def evaluate(self, outputs, res_folder, metric, **kwargs):
-        """Evaluate results."""
+    def evaluate(self, results, *args, **kwargs):
+        """Evaluate keypoint results."""
 
     def prepare_data(self, idx):
         """Get data sample."""
