@@ -36,38 +36,50 @@ class LoadImageFromFile:
         self.file_client_args = file_client_args.copy()
         self.file_client = None
 
+    def _read_image(self, path):
+        img_bytes = self.file_client.get(path)
+        img = mmcv.imfrombytes(
+            img_bytes, flag=self.color_type, channel_order=self.channel_order)
+        if img is None:
+            raise ValueError(f'Fail to read {path}')
+        if self.to_float32:
+            img = img.astype(np.float32)
+        return img
+
     def __call__(self, results):
         """Loading image(s) from file."""
         if self.file_client is None:
             self.file_client = mmcv.FileClient(**self.file_client_args)
 
-        image_file = results['image_file']
+        image_file = results.get('image_file', None)
 
         if isinstance(image_file, (list, tuple)):
-            imgs = []
-            for image in image_file:
-                img_bytes = self.file_client.get(image)
-                img = mmcv.imfrombytes(
-                    img_bytes,
-                    flag=self.color_type,
-                    channel_order=self.channel_order)
-                if self.to_float32:
-                    img = img.astype(np.float32)
-                if img is None:
-                    raise ValueError(f'Fail to read {image}')
-                imgs.append(img)
-            results['img'] = imgs
+            # Load images from a list of paths
+            results['img'] = [self._read_image(path) for path in image_file]
+        elif image_file is not None:
+            # Load single image from path
+            results['img'] = self._read_image(image_file)
         else:
-            img_bytes = self.file_client.get(image_file)
-            img = mmcv.imfrombytes(
-                img_bytes,
-                flag=self.color_type,
-                channel_order=self.channel_order)
-            if self.to_float32:
-                img = img.astype(np.float32)
-            if img is None:
-                raise ValueError(f'Fail to read {image_file}')
-            results['img'] = img
+            if 'img' not in results:
+                # If `image_file`` is not in results, check the `img` exists
+                # and format the image. This for compatibility when the image
+                # is manually set outside the pipeline.
+                raise KeyError('Either `image_file` or `img` should exist in '
+                               'results.')
+            assert isinstance(results['img'], np.ndarray)
+            if self.color_type == 'color' and self.channel_order == 'rgb':
+                # The original results['img'] is assumed to be image(s) in BGR
+                # order, so we convert the color according to the arguments.
+                if results['img'].ndim == 3:
+                    results['img'] = mmcv.bgr2rgb(results['img'])
+                elif results['img'].ndim == 4:
+                    results['img'] = np.concatenate(
+                        [mmcv.bgr2rgb(img) for img in results['img']], axis=0)
+                else:
+                    raise ValueError('results["img"] has invalid shape '
+                                     f'{results["img"].shape}')
+
+            results['image_file'] = None
 
         return results
 

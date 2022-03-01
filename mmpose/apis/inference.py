@@ -2,7 +2,6 @@
 import os
 import warnings
 
-import cv2
 import mmcv
 import numpy as np
 import torch
@@ -108,44 +107,9 @@ def _box2cs(cfg, box):
 
     # pixel std is 200.0
     scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-
     scale = scale * 1.25
 
     return center, scale
-
-
-class LoadImage:
-    """A simple pipeline to load image."""
-
-    def __init__(self, color_type='color', channel_order='rgb'):
-        self.color_type = color_type
-        self.channel_order = channel_order
-
-    def __call__(self, results):
-        """Call function to load images into results.
-
-        Args:
-            results (dict): A result dict contains the img_or_path.
-
-        Returns:
-            dict: ``results`` will be returned containing loaded image.
-        """
-        if isinstance(results['img_or_path'], str):
-            results['image_file'] = results['img_or_path']
-            img = mmcv.imread(results['img_or_path'], self.color_type,
-                              self.channel_order)
-        elif isinstance(results['img_or_path'], np.ndarray):
-            results['image_file'] = ''
-            if self.color_type == 'color' and self.channel_order == 'rgb':
-                img = cv2.cvtColor(results['img_or_path'], cv2.COLOR_BGR2RGB)
-            else:
-                img = results['img_or_path']
-        else:
-            raise TypeError('"img_or_path" must be a numpy array or a str or '
-                            'a pathlib.Path object')
-
-        results['img'] = img
-        return results
 
 
 def _inference_single_pose_model(model,
@@ -178,12 +142,11 @@ def _inference_single_pose_model(model,
 
     cfg = model.cfg
     device = next(model.parameters()).device
+    if device.type == 'cpu':
+        device = -1
 
     # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
+    test_pipeline = Compose(cfg.test_pipeline)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -285,8 +248,6 @@ def _inference_single_pose_model(model,
 
         # prepare data
         data = {
-            'img_or_path':
-            img_or_path,
             'center':
             center,
             'scale':
@@ -309,18 +270,16 @@ def _inference_single_pose_model(model,
                 'flip_pairs': flip_pairs
             }
         }
+        if isinstance(img_or_path, np.ndarray):
+            data['img'] = img_or_path
+        else:
+            data['image_file'] = img_or_path
+
         data = test_pipeline(data)
         batch_data.append(data)
 
-    batch_data = collate(batch_data, samples_per_gpu=1)
-
-    if next(model.parameters()).is_cuda:
-        # scatter not work so just move image to cuda device
-        batch_data['img'] = batch_data['img'].to(device)
-    # get all img_metas of each bounding box
-    batch_data['img_metas'] = [
-        img_metas[0] for img_metas in batch_data['img_metas'].data
-    ]
+    batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
+    batch_data = scatter(batch_data, [device])[0]
 
     # forward the model
     with torch.no_grad():
@@ -525,17 +484,14 @@ def inference_bottom_up_pose_model(model,
 
     cfg = model.cfg
     device = next(model.parameters()).device
-    score_per_joint = cfg.model.test_cfg.get('score_per_joint', False)
+    if device.type == 'cpu':
+        device = -1
 
     # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
+    test_pipeline = Compose(cfg.test_pipeline)
 
     # prepare data
     data = {
-        'img_or_path': img_or_path,
         'dataset': dataset_name,
         'ann_info': {
             'image_size': np.array(cfg.data_cfg['image_size']),
@@ -543,15 +499,14 @@ def inference_bottom_up_pose_model(model,
             'flip_index': flip_index,
         }
     }
+    if isinstance(img_or_path, np.ndarray):
+        data['img'] = img_or_path
+    else:
+        data['image_file'] = img_or_path
 
     data = test_pipeline(data)
     data = collate([data], samples_per_gpu=1)
-    if next(model.parameters()).is_cuda:
-        # scatter to specified GPU
-        data = scatter(data, [device])[0]
-    else:
-        # just get the actual data from DataContainer
-        data['img_metas'] = data['img_metas'].data[0]
+    data = scatter(data, [device])[0]
 
     with OutputHook(model, outputs=outputs, as_tensor=False) as h:
         # forward the model
@@ -577,6 +532,7 @@ def inference_bottom_up_pose_model(model,
             })
 
         # pose nms
+        score_per_joint = cfg.model.test_cfg.get('score_per_joint', False)
         keep = oks_nms(
             pose_results,
             pose_nms_thr,
