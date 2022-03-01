@@ -3,9 +3,60 @@ import os.path as osp
 
 import numpy as np
 import pytest
-from mmcv.utils import build_from_cfg
+from mmcv import bgr2rgb, build_from_cfg
 
 from mmpose.datasets import PIPELINES
+from mmpose.datasets.pipelines import Compose
+
+
+def check_keys_equal(result_keys, target_keys):
+    """Check if all elements in target_keys is in result_keys."""
+    return set(target_keys) == set(result_keys)
+
+
+def check_keys_contain(result_keys, target_keys):
+    """Check if elements in target_keys is in result_keys."""
+    return set(target_keys).issubset(set(result_keys))
+
+
+def test_compose():
+    with pytest.raises(TypeError):
+        # transform must be callable or a dict
+        Compose('LoadImageFromFile')
+
+    target_keys = ['img', 'img_rename', 'img_metas']
+
+    # test Compose given a data pipeline
+    img = np.random.randn(256, 256, 3)
+    results = dict(img=img, img_file='test_image.png')
+    test_pipeline = [
+        dict(
+            type='Collect',
+            keys=['img', ('img', 'img_rename')],
+            meta_keys=['img_file'])
+    ]
+    compose = Compose(test_pipeline)
+    compose_results = compose(results)
+    assert check_keys_equal(compose_results.keys(), target_keys)
+    assert check_keys_equal(compose_results['img_metas'].data.keys(),
+                            ['img_file'])
+
+    # test Compose when forward data is None
+    results = None
+
+    class ExamplePipeline:
+
+        def __call__(self, results):
+            return None
+
+    nonePipeline = ExamplePipeline()
+    test_pipeline = [nonePipeline]
+    compose = Compose(test_pipeline)
+    compose_results = compose(results)
+    assert compose_results is None
+
+    assert repr(compose) == compose.__class__.__name__ + \
+        f'(\n    {nonePipeline}\n)'
 
 
 def test_load_image_from_file():
@@ -51,6 +102,25 @@ def test_load_image_from_file():
 
     results = load(results)
     assert len(results['img']) == 2
+
+    # manually set image outside the pipeline
+    img = np.random.randint(0, 255, (32, 32, 3), dtype=np.uint8)
+    results = load(dict(img=img))
+    np.testing.assert_equal(results['img'], bgr2rgb(img))
+
+    imgs = np.random.randint(0, 255, (2, 32, 32, 3), dtype=np.uint8)
+    desired = np.concatenate([bgr2rgb(img) for img in imgs], axis=0)
+    results = load(dict(img=imgs))
+    np.testing.assert_equal(results['img'], desired)
+
+    # neither 'image_file' or valid 'img' is given
+    results = dict()
+    with pytest.raises(KeyError):
+        _ = load(results)
+
+    results = dict(img=np.random.randint(0, 255, (32, 32), dtype=np.uint8))
+    with pytest.raises(ValueError):
+        _ = load(results)
 
 
 def test_albu_transform():
