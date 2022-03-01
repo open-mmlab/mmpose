@@ -6,7 +6,7 @@ import torch
 from mmcv.parallel import collate, scatter
 
 from mmpose.datasets.pipelines import Compose
-from .inference import LoadImage, _box2cs, _xywh2xyxy, _xyxy2xywh
+from .inference import _box2cs, _xywh2xyxy, _xyxy2xywh
 
 
 def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
@@ -253,6 +253,10 @@ def inference_pose_lifter_model(model,
     cfg = model.cfg
     test_pipeline = Compose(cfg.test_pipeline)
 
+    device = next(model.parameters()).device
+    if device.type == 'cpu':
+        device = -1
+
     if dataset_info is not None:
         flip_pairs = dataset_info.flip_pairs
         assert 'stats_info' in dataset_info._dataset_info
@@ -329,11 +333,7 @@ def inference_pose_lifter_model(model,
         batch_data.append(data)
 
     batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
-    if next(model.parameters()).is_cuda:
-        device = next(model.parameters()).device
-        batch_data = scatter(batch_data, target_gpus=[device.index])[0]
-    else:
-        batch_data = scatter(batch_data, target_gpus=[-1])[0]
+    batch_data = scatter(batch_data, target_gpus=[device])[0]
 
     with torch.no_grad():
         result = model(
@@ -528,12 +528,11 @@ def inference_interhand_3d_model(model,
 
     cfg = model.cfg
     device = next(model.parameters()).device
+    if device.type == 'cpu':
+        device = -1
 
     # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
+    test_pipeline = Compose(cfg.test_pipeline)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -548,8 +547,6 @@ def inference_interhand_3d_model(model,
 
         # prepare data
         data = {
-            'img_or_path':
-            img_or_path,
             'center':
             center,
             'scale':
@@ -576,18 +573,16 @@ def inference_interhand_3d_model(model,
             }
         }
 
+        if isinstance(img_or_path, np.ndarray):
+            data['img'] = img_or_path
+        else:
+            data['image_file'] = img_or_path
+
         data = test_pipeline(data)
         batch_data.append(data)
 
-    batch_data = collate(batch_data, samples_per_gpu=1)
-
-    if next(model.parameters()).is_cuda:
-        # scatter not work so just move image to cuda device
-        batch_data['img'] = batch_data['img'].to(device)
-    # get all img_metas of each bounding box
-    batch_data['img_metas'] = [
-        img_metas[0] for img_metas in batch_data['img_metas'].data
-    ]
+    batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
+    batch_data = scatter(batch_data, [device])[0]
 
     # forward the model
     with torch.no_grad():
@@ -700,12 +695,11 @@ def inference_mesh_model(model,
 
     cfg = model.cfg
     device = next(model.parameters()).device
+    if device.type == 'cpu':
+        device = -1
 
     # build the data pipeline
-    channel_order = cfg.test_pipeline[0].get('channel_order', 'rgb')
-    test_pipeline = [LoadImage(channel_order=channel_order)
-                     ] + cfg.test_pipeline[1:]
-    test_pipeline = Compose(test_pipeline)
+    test_pipeline = Compose(cfg.test_pipeline)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -721,7 +715,7 @@ def inference_mesh_model(model,
 
         # prepare data
         data = {
-            'img_or_path':
+            'image_file':
             img_or_path,
             'center':
             center,
@@ -757,15 +751,8 @@ def inference_mesh_model(model,
         data = test_pipeline(data)
         batch_data.append(data)
 
-    batch_data = collate(batch_data, samples_per_gpu=1)
-
-    if next(model.parameters()).is_cuda:
-        # scatter not work so just move image to cuda device
-        batch_data['img'] = batch_data['img'].to(device)
-    # get all img_metas of each bounding box
-    batch_data['img_metas'] = [
-        img_metas[0] for img_metas in batch_data['img_metas'].data
-    ]
+    batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
+    batch_data = scatter(batch_data, target_gpus=[device])[0]
 
     # forward the model
     with torch.no_grad():
