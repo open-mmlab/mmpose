@@ -30,6 +30,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/alexnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/cpm_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hourglass_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_augmentation_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_dark_coco.yml
