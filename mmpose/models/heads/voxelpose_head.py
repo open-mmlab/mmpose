@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
-# Adapted from
+# Copyright and License Information
 # https://github.com/microsoft/voxelpose-pytorch/blob/main/lib/models
-# Original licence: MIT License.
+# Original Licence: MIT License
 # ------------------------------------------------------------------------------
 
 import torch
