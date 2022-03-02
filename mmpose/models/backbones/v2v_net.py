@@ -1,7 +1,8 @@
 # ------------------------------------------------------------------------------
+# Copyright and License Information
 # Adapted from
 # https://github.com/microsoft/voxelpose-pytorch/blob/main/lib/models/v2v_net.py
-# Original licence: MIT License.
+# Original Licence: MIT License
 # ------------------------------------------------------------------------------
 
 import torch.nn as nn
