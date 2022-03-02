@@ -134,8 +134,7 @@ def train_model(model,
     else:
         if digit_version(mmcv.__version__) >= digit_version(
                 '1.4.4') or torch.cuda.is_available():
-            model = MMDataParallel(
-                model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+            model = MMDataParallel(model, device_ids=cfg.gpu_ids)
         else:
             warnings.warn(
                 'We recommend to use MMCV >= 1.4.4 for CPU training. '
