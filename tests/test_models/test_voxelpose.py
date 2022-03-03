@@ -18,8 +18,8 @@ def test_voxelpose_forward():
     space_center = [0, -500, 800]
     cube_size = [20, 20, 8]
     train_data_cfg = dict(
-        image_size=[960, 512],
-        heatmap_size=[[240, 128]],
+        image_size=[240, 128],
+        heatmap_size=[[60, 32]],
         space_size=space_size,
         space_center=space_center,
         cube_size=cube_size,
@@ -58,7 +58,7 @@ def test_voxelpose_forward():
     ]
 
     project_layer = ProjectLayer(
-        dict(image_size=[960, 512], heatmap_size=[240, 128]))
+        dict(image_size=[240, 128], heatmap_size=[60, 32]))
     root_net = CuboidProposalNet(
         dict(type='V2VNet', input_channels=15, output_channels=1))
     center_head = builder.build_head(
