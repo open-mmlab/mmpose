@@ -446,8 +446,9 @@ class PoseSequenceToTensor:
         item
     """
 
-    def __init__(self, item):
+    def __init__(self, item, reshape=True):
         self.item = item
+        self.reshape = reshape
 
     def __call__(self, results):
         assert self.item in results
@@ -459,8 +460,9 @@ class PoseSequenceToTensor:
         if seq.ndim == 2:
             seq = seq[None, ...]
 
-        T = seq.shape[0]
-        seq = seq.transpose(1, 2, 0).reshape(-1, T)
+        if self.reshape:
+            T = seq.shape[0]
+            seq = seq.transpose(1, 2, 0).reshape(-1, T)
         results[self.item] = torch.from_numpy(seq)
 
         return results
