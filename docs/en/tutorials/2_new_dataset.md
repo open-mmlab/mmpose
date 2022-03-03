@@ -74,7 +74,7 @@ An example of the dataset config is as follows.
 
 1. `name`: the keypoint name. The keypoint name must be unique.
 2. `id`: the keypoint id.
-3. `color`: ([R, G, B]) is used for keypoint visualization.
+3. `color`: ([B, G, R]) is used for keypoint visualization.
 4. `type`: 'upper' or 'lower', will be used in data augmetation.
 5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
 
