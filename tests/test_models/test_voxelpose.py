@@ -1,8 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import platform
 import tempfile
 
-import pytest
 from mmcv import Config
 
 from mmpose.datasets import DATASETS, build_dataloader
@@ -11,10 +9,6 @@ from mmpose.models.detectors.voxelpose import (CuboidProposalNet,
                                                PoseRegressionNet, ProjectLayer)
 
 
-@pytest.mark.skipif(
-    platform.system() == 'Windows',
-    reason='Windows container on Github Action does not have enough RAM '
-    'to run the test.')
 def test_voxelpose_forward():
     dataset = 'Body3DMviewDirectPanopticDataset'
     dataset_class = DATASETS.get(dataset)
