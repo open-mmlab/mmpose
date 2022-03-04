@@ -3,10 +3,8 @@
 # Original licence: Copyright (c)  HoBeom Jeon, under the MIT License.
 # ------------------------------------------------------------------------------
 import math
-import warnings
 
 import numpy as np
-import torch
 
 from .builder import FILTERS
 from .filter import TemporalFilter
@@ -23,13 +21,7 @@ def exponential_smoothing(a, x, x_prev):
 
 class OneEuro:
 
-    def __init__(self,
-                 t0,
-                 x0,
-                 dx0=0.0,
-                 min_cutoff=1.0,
-                 beta=0.0,
-                 d_cutoff=1.0):
+    def __init__(self, t0, x0, dx0, min_cutoff, beta, d_cutoff=1.0):
         super(OneEuro, self).__init__()
         """Initialize the one euro filter."""
         # The parameters.
@@ -67,10 +59,10 @@ class OneEuroFilter(TemporalFilter):
     c3f77d587351c806e901221a9dc05d1ffade4b/lib/utils/smooth_pose.py.
 
     Args:
-        min_cutoff (float, optional):
-        Decreasing the minimum cutoff frequency decreases slow speed jitter
-        beta (float, optional):
-        Increasing the speed coefficient(beta) decreases speed lag.
+        min_cutoff (float, optional): Decreasing the minimum cutoff frequency
+            decreases slow speed jitter
+        beta (float, optional): Increasing the speed coefficient(beta)
+            decreases speed lag.
     Returns:
         np.ndarray: smoothed poses
     """
@@ -78,27 +70,20 @@ class OneEuroFilter(TemporalFilter):
     def __init__(self, min_cutoff=0.004, beta=0.7):
         # OneEuroFilter has Markov Property and maintains status variables
         # within the class, thus has a windows_size of 1
-        super(OneEuroFilter, self).__init__(window_size=1)
+        super().__init__(window_size=1)
         self.min_cutoff = min_cutoff
         self.beta = beta
-
         self._one_euro = None
 
     def __call__(self, x=None):
-        if len(x.shape) != 3:
-            warnings.warn('x should be a tensor or numpy of [T*M,K,C]')
-        assert len(x.shape) == 3
-        x_type = x
-        if isinstance(x, torch.Tensor):
-            if x.is_cuda:
-                x = x.cpu().numpy()
-            else:
-                x = x.numpy()
+        assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
+                             f', but got invalid shape {x.shape}')
 
         if self._one_euro is None:
             self._one_euro = OneEuro(
                 np.zeros_like(x[0]),
                 x[0],
+                dx0=0.0,
                 min_cutoff=self.min_cutoff,
                 beta=self.beta,
             )
@@ -114,10 +99,4 @@ class OneEuroFilter(TemporalFilter):
             pose = self._one_euro(t, pose)
             pred_pose_hat[idx] = pose
 
-        if isinstance(x_type, torch.Tensor):
-            # we also return tensor by default
-            if x_type.is_cuda:
-                pred_pose_hat = torch.from_numpy(pred_pose_hat).cuda()
-            else:
-                pred_pose_hat = torch.from_numpy(pred_pose_hat)
         return pred_pose_hat
