@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import tempfile
 
 import pytest
 from mmcv import Config
@@ -60,13 +59,12 @@ def test_animal_horse10_dataset():
     assert custom_dataset.num_images == 3
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
-        assert_almost_equal(infos['PCK'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK'])
+    assert_almost_equal(infos['PCK'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_animal_fly_dataset():
@@ -120,13 +118,13 @@ def test_animal_fly_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
-        assert_almost_equal(infos['PCK'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    infos = custom_dataset.evaluate(results, metric=['PCK'])
+    assert_almost_equal(infos['PCK'], 1.0)
+
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_animal_locust_dataset():
@@ -181,13 +179,13 @@ def test_animal_locust_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
-        assert_almost_equal(infos['PCK'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    infos = custom_dataset.evaluate(results, metric=['PCK'])
+    assert_almost_equal(infos['PCK'], 1.0)
+
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_animal_zebra_dataset():
@@ -235,13 +233,12 @@ def test_animal_zebra_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
-        assert_almost_equal(infos['PCK'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['PCK'])
+    assert_almost_equal(infos['PCK'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_animal_ATRW_dataset():
@@ -297,13 +294,12 @@ def test_animal_ATRW_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric=['PCK'])
 
 
 def test_animal_Macaque_dataset():
@@ -361,13 +357,12 @@ def test_animal_Macaque_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric=['PCK'])
 
 
 def test_animalpose_dataset():
@@ -429,13 +424,12 @@ def test_animalpose_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric=['PCK'])
 
 
 def test_ap10k_dataset():
@@ -493,15 +487,14 @@ def test_ap10k_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
+    results = convert_db_to_output(custom_dataset.db)
 
-    for output in outputs:
+    for output in results:
         # as there is only one box in each image for test
         output['bbox_ids'] = [0 for _ in range(len(output['bbox_ids']))]
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
-        assert_almost_equal(infos['AP'], 1.0)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
 
-        with pytest.raises(KeyError):
-            infos = custom_dataset.evaluate(outputs, tmpdir, ['PCK'])
+    with pytest.raises(KeyError):
+        infos = custom_dataset.evaluate(results, metric=['PCK'])

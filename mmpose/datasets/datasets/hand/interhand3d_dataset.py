@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.core.evaluation.top_down_eval import keypoint_epe
 from mmpose.datasets.builder import DATASETS
@@ -175,7 +176,7 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
             capture_id = str(img['capture'])
             camera_name = img['camera']
             frame_idx = str(img['frame_idx'])
-            image_file = os.path.join(self.img_prefix, self.id2name[img_id])
+            image_file = osp.join(self.img_prefix, self.id2name[img_id])
 
             camera_pos = np.array(
                 cameras[capture_id]['campos'][camera_name], dtype=np.float32)
@@ -251,7 +252,8 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metric='MPJPE', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='MPJPE', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
         will be saved in ``${res_folder}/result_keypoints.json``.
 
@@ -262,7 +264,8 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
             - heatmap width: W
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
@@ -275,7 +278,9 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
                 - image_paths (list[str]): For example, ['Capture6/\
                     0012_aokay_upright/cam410061/image4996.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-            res_folder (str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed.
                 Options: 'MRRPE', 'MPJPE', 'Handedness_acc'.
 
@@ -288,25 +293,30 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         kpts = []
-        for output in outputs:
-            preds = output.get('preds')
+        for result in results:
+            preds = result.get('preds')
             if preds is None and 'MPJPE' in metrics:
                 raise KeyError('metric MPJPE is not supported')
 
-            hand_type = output.get('hand_type')
+            hand_type = result.get('hand_type')
             if hand_type is None and 'Handedness_acc' in metrics:
                 raise KeyError('metric Handedness_acc is not supported')
 
-            rel_root_depth = output.get('rel_root_depth')
+            rel_root_depth = result.get('rel_root_depth')
             if rel_root_depth is None and 'MRRPE' in metrics:
                 raise KeyError('metric MRRPE is not supported')
 
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -335,6 +345,9 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value
 

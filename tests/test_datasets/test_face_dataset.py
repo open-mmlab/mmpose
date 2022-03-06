@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import tempfile
 from unittest.mock import MagicMock
 
 import pytest
@@ -58,13 +57,12 @@ def test_face_300W_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
-        assert_almost_equal(infos['NME'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['NME'])
+    assert_almost_equal(infos['NME'], 0.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_face_coco_wholebody_dataset():
@@ -113,13 +111,12 @@ def test_face_coco_wholebody_dataset():
     assert custom_dataset.num_images == 4
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
-        assert_almost_equal(infos['NME'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['NME'])
+    assert_almost_equal(infos['NME'], 0.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_face_AFLW_dataset():
@@ -169,13 +166,12 @@ def test_face_AFLW_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
-        assert_almost_equal(infos['NME'], 0.0)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['NME'])
+    assert_almost_equal(infos['NME'], 0.0)
 
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_face_WFLW_dataset():
@@ -225,14 +221,12 @@ def test_face_WFLW_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['NME'])
+    assert_almost_equal(infos['NME'], 0.0)
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
-        assert_almost_equal(infos['NME'], 0.0)
-
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_face_COFW_dataset():
@@ -282,11 +276,9 @@ def test_face_COFW_dataset():
     assert custom_dataset.num_images == 2
     _ = custom_dataset[0]
 
-    outputs = convert_db_to_output(custom_dataset.db)
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric=['NME'])
+    assert_almost_equal(infos['NME'], 0.0)
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        infos = custom_dataset.evaluate(outputs, tmpdir, ['NME'])
-        assert_almost_equal(infos['NME'], 0.0)
-
-        with pytest.raises(KeyError):
-            _ = custom_dataset.evaluate(outputs, tmpdir, 'mAP')
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='mAP')

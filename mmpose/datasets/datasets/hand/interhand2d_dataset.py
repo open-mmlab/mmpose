@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.datasets.builder import DATASETS
 from ..base import Kpt2dSviewRgbImgTopDownDataset
@@ -162,7 +163,7 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
             capture_id = str(img['capture'])
             camera_name = img['camera']
             frame_idx = str(img['frame_idx'])
-            image_file = os.path.join(self.img_prefix, self.id2name[img_id])
+            image_file = osp.join(self.img_prefix, self.id2name[img_id])
 
             camera_pos, camera_rot = np.array(
                 cameras[capture_id]['campos'][camera_name],
@@ -229,7 +230,8 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='PCK', **kwargs):
         """Evaluate interhand2d keypoint results. The pose prediction results
         will be saved in ``${res_folder}/result_keypoints.json``.
 
@@ -240,7 +242,8 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
             - heatmap width: W
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
@@ -249,7 +252,9 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
                 - image_paths (list[str]): For example, ['Capture12/\
                     0390_dh_touchROM/cam410209/image62434.jpg']
                 - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-            res_folder (str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.
 
@@ -262,14 +267,19 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -289,5 +299,8 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value
