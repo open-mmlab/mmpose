@@ -20,7 +20,7 @@
 - Refactor multi-view 3D pose estimation framework towards better modularization and expansibility ([\#1196](https://github.com/open-mmlab/mmpose/pull/1196)) @wusize
 - Add WebcamAPI documents and tutorials ([\#1187](https://github.com/open-mmlab/mmpose/pull/1187)) @ly015
 - Refactor dataset evaluation interface to align with other OpenMMLab codebases ([\#1209](https://github.com/open-mmlab/mmpose/pull/1209)) @ly015
-- Add deprecation message for deploy tools since [MMDeploy](https://github.com/open-mmlab/mmdeploy) has support MMPose ([\#1207](https://github.com/open-mmlab/mmpose/pull/1207)) @QwQ2000
+- Add deprecation message for deploy tools since [MMDeploy](https://github.com/open-mmlab/mmdeploy) has supported MMPose ([\#1207](https://github.com/open-mmlab/mmpose/pull/1207)) @QwQ2000
 - Improve documentation quality ([\#1206](https://github.com/open-mmlab/mmpose/pull/1206), [\#1161](https://github.com/open-mmlab/mmpose/pull/1161)) @ly015
 - Switch to OpenMMLab official pre-commit-hook for copyright check ([\#1214](https://github.com/open-mmlab/mmpose/pull/1214)) @ly015
 
