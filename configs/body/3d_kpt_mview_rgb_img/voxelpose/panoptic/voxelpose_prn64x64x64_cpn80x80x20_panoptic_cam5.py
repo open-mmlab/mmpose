@@ -65,7 +65,7 @@ test_data_cfg.update(
         subset='validation'))
 
 # model settings
-detector_2d = dict(
+backbone = dict(
     type='AssociativeEmbedding',
     pretrained=None,
     backbone=dict(type='ResNet', depth=50),
@@ -101,31 +101,36 @@ detector_2d = dict(
     ))
 
 model = dict(
-    type='VoxelPose',
-    detector_2d=detector_2d,
+    type='DetectAndRegress',
+    backbone=backbone,
     pretrained='checkpoints/resnet_50_deconv.pth.tar',
-    space_3d=dict(
+    human_detector=dict(
+        type='VoxelCenterDetector',
+        image_size=image_size,
+        heatmap_size=heatmap_size,
         space_size=space_size,
-        space_center=space_center,
         cube_size=cube_size,
-        sub_space_size=sub_space_size,
-        sub_cube_size=sub_cube_size),
-    project_layer=dict(image_size=image_size, heatmap_size=heatmap_size),
-    center_net=dict(
-        type='V2VNet', input_channels=num_joints, output_channels=1),
-    center_head=dict(
-        type='CuboidCenterHead',
-        cfg=dict(
+        space_center=space_center,
+        center_net=dict(type='V2VNet', input_channels=15, output_channels=1),
+        center_head=dict(
+            type='CuboidCenterHead',
             space_size=space_size,
             space_center=space_center,
             cube_size=cube_size,
             max_num=10,
-            max_pool_kernel=3)),
-    pose_net=dict(
-        type='V2VNet', input_channels=num_joints, output_channels=num_joints),
-    pose_head=dict(type='CuboidPoseHead', beta=100.0),
-    train_cfg=dict(dist_threshold=500.0),
-    test_cfg=dict(center_threshold=0.3))
+            max_pool_kernel=3),
+        train_cfg=dict(dist_threshold=500.0),
+        test_cfg=dict(center_threshold=0.3),
+    ),
+    pose_regressor=dict(
+        type='VoxelSinglePose',
+        image_size=image_size,
+        heatmap_size=heatmap_size,
+        sub_space_size=sub_space_size,
+        sub_cube_size=sub_cube_size,
+        num_joints=15,
+        pose_net=dict(type='V2VNet', input_channels=15, output_channels=15),
+        pose_head=dict(type='CuboidPoseHead', beta=100.0)))
 
 train_pipeline = [
     dict(
