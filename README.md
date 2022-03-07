@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘Documentation](https://mmpose.readthedocs.io/en/v0.23.0/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/v0.23.0/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.23.0/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/v0.23.0/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/v0.23.0/changelog.html) |
+[📘Documentation](https://mmpose.readthedocs.io/en/v0.24.0/) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/v0.24.0/install.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.24.0/modelzoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/v0.24.0/papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/v0.24.0/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,9 +73,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## News
 
-* 2022-02-11: MMPose [v0.23.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.23.0) was released. Major updates includes:
-  * Release [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): A simple yet powerful tool to develop interactive webcam applications with MMPose functions
-  * Support CPU training and testing
+* 2022-03-07: MMPose [v0.24.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.24.0) is released. Major updates includes:
+  * Support HRFormer ["HRFormer: High-Resolution Vision Transformer for Dense Predict"](https://proceedings.neurips.cc/paper/2021/hash/3bbfdde8842a5c44a0323518eec97cbe-Abstract.html), NeurIPS'2021
+  * Support Windows installation with pip
+* 2022-02-28: MMPose model deployment is supported by [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0
+* 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) is released with documents and tutorials
+  * MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose functions
 * 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## Installation
