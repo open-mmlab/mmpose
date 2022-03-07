@@ -5,8 +5,6 @@ from mmcv import Config
 
 from mmpose.datasets import DATASETS, build_dataloader
 from mmpose.models import builder
-from mmpose.models.detectors.voxelpose import (CuboidProposalNet,
-                                               PoseRegressionNet, ProjectLayer)
 
 
 def test_voxelpose_forward():
@@ -17,7 +15,7 @@ def test_voxelpose_forward():
     space_size = [8000, 8000, 2000]
     space_center = [0, -500, 800]
     cube_size = [20, 20, 8]
-    train_data_cfg = dict(
+    data_cfg = dict(
         image_size=[960, 512],
         heatmap_size=[[240, 128]],
         space_size=space_size,
@@ -38,7 +36,7 @@ def test_voxelpose_forward():
             type='MultiItemProcess',
             pipeline=[
                 dict(
-                    type='BottomUpGenerateTarget', sigma=3, max_num_people=30)
+                    type='BottomUpGenerateTarget', sigma=3, max_num_people=20)
             ]),
         dict(
             type='DiscardDuplicatedItems',
@@ -54,31 +52,53 @@ def test_voxelpose_forward():
         dict(
             type='Collect',
             keys=['targets_3d', 'input_heatmaps'],
-            meta_keys=['camera', 'center', 'scale', 'joints_3d']),
+            meta_keys=[
+                'camera', 'center', 'scale', 'joints_3d', 'num_persons',
+                'joints_3d_visible', 'roots_3d', 'sample_id'
+            ]),
     ]
 
-    project_layer = ProjectLayer(
-        dict(image_size=[960, 512], heatmap_size=[240, 128]))
-    root_net = CuboidProposalNet(
-        dict(type='V2VNet', input_channels=15, output_channels=1))
-    center_head = builder.build_head(
-        dict(
-            type='CuboidCenterHead',
-            cfg=dict(
+    model_cfg = dict(
+        type='DetectAndRegress',
+        backbone=None,
+        human_detector=dict(
+            type='VoxelCenterDetector',
+            image_size=[960, 512],
+            heatmap_size=[240, 128],
+            space_size=space_size,
+            cube_size=cube_size,
+            space_center=space_center,
+            center_net=dict(
+                type='V2VNet', input_channels=15, output_channels=1),
+            center_head=dict(
+                type='CuboidCenterHead',
                 space_size=space_size,
                 space_center=space_center,
                 cube_size=cube_size,
-                max_num=10,
-                max_pool_kernel=3)))
-    pose_net = PoseRegressionNet(
-        dict(type='V2VNet', input_channels=15, output_channels=15))
-    pose_head = builder.build_head(dict(type='CuboidPoseHead', beta=100.0))
+                max_num=3,
+                max_pool_kernel=3),
+            train_cfg=dict(dist_threshold=500000000.0),
+            test_cfg=dict(center_threshold=0.0),
+        ),
+        pose_regressor=dict(
+            type='VoxelSinglePose',
+            image_size=[960, 512],
+            heatmap_size=[240, 128],
+            sub_space_size=[2000, 2000, 2000],
+            sub_cube_size=[20, 20, 8],
+            num_joints=15,
+            pose_net=dict(
+                type='V2VNet', input_channels=15, output_channels=15),
+            pose_head=dict(type='CuboidPoseHead', beta=100.0),
+            train_cfg=None,
+            test_cfg=None))
 
+    model = builder.build_posenet(model_cfg)
     with tempfile.TemporaryDirectory() as tmpdir:
         dataset = dataset_class(
             ann_file=tmpdir + '/tmp_train.pkl',
             img_prefix='tests/data/panoptic_body3d/',
-            data_cfg=train_data_cfg,
+            data_cfg=data_cfg,
             pipeline=pipeline,
             dataset_info=dataset_info,
             test_mode=False)
@@ -93,25 +113,17 @@ def test_voxelpose_forward():
         samples_per_gpu=1)
 
     for data in data_loader:
-        initial_cubes, _ = project_layer(
-            [htm[0] for htm in data['input_heatmaps']],
-            data['img_metas'].data[0], space_size, [space_center], cube_size)
-        _ = root_net(initial_cubes)
-        center_candidates = center_head(data['targets_3d'])
-        center_candidates[..., 3] = \
-            (center_candidates[..., 4] > 0.5).float() - 1.0
+        # test forward_train
+        _ = model(
+            img=None,
+            img_metas=data['img_metas'].data[0],
+            return_loss=True,
+            targets_3d=data['targets_3d'],
+            input_heatmaps=data['input_heatmaps'])
 
-        batch_size, num_candidates, _ = center_candidates.shape
-
-        for n in range(num_candidates):
-            index = center_candidates[:, n, 3] >= 0
-            num_valid = index.sum()
-            if num_valid > 0:
-                pose_input_cube, coordinates \
-                    = project_layer([htm[0] for htm in data['input_heatmaps']],
-                                    data['img_metas'].data[0],
-                                    [800, 800, 800],
-                                    center_candidates[:, n, :3],
-                                    [8, 8, 8])
-                pose_heatmaps_3d = pose_net(pose_input_cube)
-                _ = pose_head(pose_heatmaps_3d[index], coordinates[index])
+        # test forward_test
+        _ = model(
+            img=None,
+            img_metas=data['img_metas'].data[0],
+            return_loss=False,
+            input_heatmaps=data['input_heatmaps'])

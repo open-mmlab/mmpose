@@ -18,23 +18,27 @@ class CuboidCenterHead(nn.Module):
     pooling).
 
     Args:
-        cfg (dict):
-            space_size (list[3]): The size of the 3D space.
-            cube_size (list[3]): The size of the heatmap volume.
-            space_center (list[3]): The coordinate of space center.
-            max_num (int): Maximum of human center detections.
-            max_pool_kernel (int): Kernel size of the max-pool kernel in nms.
+        space_size (list[3]): The size of the 3D space.
+        cube_size (list[3]): The size of the heatmap volume.
+        space_center (list[3]): The coordinate of space center.
+        max_num (int): Maximum of human center detections.
+        max_pool_kernel (int): Kernel size of the max-pool kernel in nms.
     """
 
-    def __init__(self, cfg):
+    def __init__(self,
+                 space_size,
+                 space_center,
+                 cube_size,
+                 max_num=10,
+                 max_pool_kernel=3):
         super(CuboidCenterHead, self).__init__()
         # use register_buffer
-        self.register_buffer('grid_size', torch.tensor(cfg['space_size']))
-        self.register_buffer('cube_size', torch.tensor(cfg['cube_size']))
-        self.register_buffer('grid_center', torch.tensor(cfg['space_center']))
+        self.register_buffer('grid_size', torch.tensor(space_size))
+        self.register_buffer('cube_size', torch.tensor(cube_size))
+        self.register_buffer('grid_center', torch.tensor(space_center))
 
-        self.num_candidates = cfg['max_num']
-        self.max_pool_kernel = cfg['max_pool_kernel']
+        self.num_candidates = max_num
+        self.max_pool_kernel = max_pool_kernel
         self.loss = nn.MSELoss()
 
     def _get_real_locations(self, indices):
