@@ -11,6 +11,6 @@ Please follow [DATA Preparation](/docs/en/tasks/2d_face_keypoint.md) to prepare 
 
 ## Demo
 
-Please follow [Demo](/demo/docs/en/2d_face_demo.md) to run demos.
+Please follow [Demo](/demo/docs/2d_face_demo.md) to run demos.
 
 <img src="https://user-images.githubusercontent.com/11788150/109144943-ccd44900-779c-11eb-9e9d-8682e7629654.gif" width="600px" alt><br>
