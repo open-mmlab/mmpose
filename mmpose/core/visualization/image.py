@@ -143,11 +143,11 @@ def imshow_keypoints(img,
             for kid, kpt in enumerate(kpts):
                 x_coord, y_coord, kpt_score = int(kpt[0]), int(kpt[1]), kpt[2]
                 if kpt_score > kpt_score_thr:
+                    color = tuple(int(c) for c in pose_kpt_color[kid])
                     if show_keypoint_weight:
                         img_copy = img.copy()
-                        r, g, b = pose_kpt_color[kid]
                         cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                   radius, (int(r), int(g), int(b)), -1)
+                                   radius, color, -1)
                         transparency = max(0, min(1, kpt_score))
                         cv2.addWeighted(
                             img_copy,
@@ -157,9 +157,8 @@ def imshow_keypoints(img,
                             0,
                             dst=img)
                     else:
-                        r, g, b = pose_kpt_color[kid]
                         cv2.circle(img, (int(x_coord), int(y_coord)), radius,
-                                   (int(r), int(g), int(b)), -1)
+                                   color, -1)
 
         # draw links
         if skeleton is not None and pose_link_color is not None:
@@ -172,7 +171,7 @@ def imshow_keypoints(img,
                         and pos2[1] > 0 and pos2[1] < img_h
                         and kpts[sk[0], 2] > kpt_score_thr
                         and kpts[sk[1], 2] > kpt_score_thr):
-                    r, g, b = pose_link_color[sk_id]
+                    color = tuple(int(c) for c in pose_link_color[sk_id])
                     if show_keypoint_weight:
                         img_copy = img.copy()
                         X = (pos1[0], pos2[0])
@@ -187,8 +186,7 @@ def imshow_keypoints(img,
                             (int(mX), int(mY)),
                             (int(length / 2), int(stickwidth)), int(angle), 0,
                             360, 1)
-                        cv2.fillConvexPoly(img_copy, polygon,
-                                           (int(r), int(g), int(b)))
+                        cv2.fillConvexPoly(img_copy, polygon, color)
                         transparency = max(
                             0, min(1, 0.5 * (kpts[sk[0], 2] + kpts[sk[1], 2])))
                         cv2.addWeighted(
@@ -199,11 +197,7 @@ def imshow_keypoints(img,
                             0,
                             dst=img)
                     else:
-                        cv2.line(
-                            img,
-                            pos1,
-                            pos2, (int(r), int(g), int(b)),
-                            thickness=thickness)
+                        cv2.line(img, pos1, pos2, color, thickness=thickness)
 
     return img
 

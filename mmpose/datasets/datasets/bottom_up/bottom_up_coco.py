@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 from xtcocotools.cocoeval import COCOeval
 
 from mmpose.core.post_processing import oks_nms, soft_oks_nms
@@ -106,8 +107,7 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
         db_rec = {}
         db_rec['dataset'] = self.dataset_name
-        db_rec['image_file'] = os.path.join(self.img_prefix,
-                                            self.id2name[img_id])
+        db_rec['image_file'] = osp.join(self.img_prefix, self.id2name[img_id])
         db_rec['mask'] = mask_list
         db_rec['joints'] = joints_list
 
@@ -139,7 +139,8 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
         return joints
 
-    def evaluate(self, outputs, res_folder, metric='mAP', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='mAP', **kwargs):
         """Evaluate coco keypoint results. The pose prediction results will be
         saved in ``${res_folder}/result_keypoints.json``.
 
@@ -148,7 +149,8 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
             - num_keypoints: K
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (list[np.ndarray(P, K, 3+tag_num)]): \
                     Pose predictions for all people in images.
@@ -157,7 +159,9 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
                     val2017/000000397133.jpg']
                 - heatmap (np.ndarray[N, K, H, W]): model outputs.
 
-            res_folder (str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed. Defaults: 'mAP'.
 
         Returns:
@@ -169,22 +173,27 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         preds = []
         scores = []
         image_paths = []
 
-        for output in outputs:
-            preds.append(output['preds'])
-            scores.append(output['scores'])
-            image_paths.append(output['image_paths'][0])
+        for result in results:
+            preds.append(result['preds'])
+            scores.append(result['scores'])
+            image_paths.append(result['image_paths'][0])
 
         kpts = defaultdict(list)
         # iterate over images
         for idx, _preds in enumerate(preds):
             str_image_path = image_paths[idx]
-            image_id = self.name2id[os.path.basename(str_image_path)]
+            image_id = self.name2id[osp.basename(str_image_path)]
             # iterate over people
             for idx_person, kpt in enumerate(_preds):
                 # use bbox area
@@ -213,6 +222,10 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
         info_str = self._do_python_keypoint_eval(res_file)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
+
         return name_value
 
     def _write_coco_keypoint_results(self, keypoints, res_file):

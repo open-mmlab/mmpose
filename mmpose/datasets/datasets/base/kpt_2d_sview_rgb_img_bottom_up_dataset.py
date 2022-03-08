@@ -161,9 +161,8 @@ class Kpt2dSviewRgbImgBottomUpDataset(Dataset, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def evaluate(self, cfg, outputs, res_folder, metric, *args, **kwargs):
+    def evaluate(self, results, *args, **kwargs):
         """Evaluate keypoint results."""
-        raise NotImplementedError
 
     def prepare_train_img(self, idx):
         """Prepare image for training given the index."""

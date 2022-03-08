@@ -1,11 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
-import os
+import os.path as osp
 import warnings
 from collections import OrderedDict
 
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 from scipy.io import loadmat, savemat
 
 from ...builder import DATASETS
@@ -121,7 +121,7 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
 
                 joints_3d[:, 0:2] = joints[:, 0:2] - 1
                 joints_3d_visible[:, :2] = joints_vis[:, None]
-            image_file = os.path.join(self.img_prefix, image_name)
+            image_file = osp.join(self.img_prefix, image_name)
             gt_db.append({
                 'image_file': image_file,
                 'bbox_id': bbox_id,
@@ -138,7 +138,8 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metric='PCKh', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='PCKh', **kwargs):
         """Evaluate PCKh for MPII dataset. Adapted from
         https://github.com/leoxiaobin/deep-high-resolution-net.pytorch
         Copyright (c) Microsoft, under the MIT License.
@@ -150,7 +151,8 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
             - heatmap width: W
 
         Args:
-            outputs (list[dict]): Outputs containing the following items.
+            results (list[dict]): Testing results containing the following
+                items:
 
                 - preds (np.ndarray[N,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
@@ -159,7 +161,8 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
                 - image_paths (list[str]): For example, ['/val2017/000000\
                     397133.jpg']
                 - heatmap (np.ndarray[N, K, H, W]): model output heatmap.
-            res_folder(str): Path of directory to save the results.
+            res_folder (str, optional): The folder to save the testing
+                results. Default: None.
             metric (str | list[str]): Metrics to be performed.
                 Defaults: 'PCKh'.
 
@@ -174,9 +177,9 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
                 raise KeyError(f'metric {metric} is not supported')
 
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            bbox_ids = result['bbox_ids']
             batch_size = len(bbox_ids)
             for i in range(batch_size):
                 kpts.append({'keypoints': preds[i], 'bbox_id': bbox_ids[i]})
@@ -189,14 +192,13 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
         preds = preds[..., :2] + 1.0
 
         if res_folder:
-            pred_file = os.path.join(res_folder, 'pred.mat')
+            pred_file = osp.join(res_folder, 'pred.mat')
             savemat(pred_file, mdict={'preds': preds})
 
         SC_BIAS = 0.6
         threshold = 0.5
 
-        gt_file = os.path.join(
-            os.path.dirname(self.ann_file), 'mpii_gt_val.mat')
+        gt_file = osp.join(osp.dirname(self.ann_file), 'mpii_gt_val.mat')
         gt_dict = loadmat(gt_file)
         dataset_joints = gt_dict['dataset_joints']
         jnt_missing = gt_dict['jnt_missing']
