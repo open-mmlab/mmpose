@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+import random
 
 import mmcv
 import numpy as np
@@ -7,7 +8,8 @@ import torch
 from mmcv.utils import build_from_cfg
 
 from mmpose.core.camera import CAMERAS
-from mmpose.core.post_processing import fliplr_regression
+from mmpose.core.post_processing import (affine_transform, fliplr_regression,
+                                         get_affine_transform)
 from mmpose.datasets.builder import PIPELINES
 
 
@@ -603,10 +605,12 @@ class GenerateVoxel3DHeatmapTarget:
 
         for n in range(num_people):
             for idx, joint_id in enumerate(joint_indices):
-                mu_x = joints_3d[n][joint_id][0]
-                mu_y = joints_3d[n][joint_id][1]
-                mu_z = joints_3d[n][joint_id][2]
-                vis = joints_3d_visible[n][joint_id][0]
+                assert joints_3d.shape[2] == 3
+
+                mu_x = np.mean(joints_3d[n][joint_id, 0])
+                mu_y = np.mean(joints_3d[n][joint_id, 1])
+                mu_z = np.mean(joints_3d[n][joint_id, 2])
+                vis = np.mean(joints_3d_visible[n][joint_id, 0])
                 if vis < 1:
                     continue
                 i_x = [
@@ -640,4 +644,201 @@ class GenerateVoxel3DHeatmapTarget:
 
         results['targets_3d'] = target
 
+        return results
+
+
+@PIPELINES.register_module()
+class AffineJoints:
+    """Apply affine transformation to joints coordinates.
+
+    Args:
+        item (str): The name of the joints to apply affine.
+        visible_item (str): The name of the visibility item.
+
+    Required keys:
+        item, visible_item(optional)
+
+    Modified keys:
+        item, visible_item(optional)
+    """
+
+    def __init__(self, item='joints', visible_item=None):
+        self.item = item
+        self.visible_item = visible_item
+
+    def __call__(self, results):
+        """Perform random affine transformation to joints coordinates."""
+
+        c = results['center']
+        s = results['scale'] / 200.0
+        r = results['rotation']
+        image_size = results['ann_info']['image_size']
+
+        assert self.item in results
+        joints = results[self.item]
+
+        if self.visible_item is not None:
+            assert self.visible_item in results
+            joints_vis = results[self.visible_item]
+        else:
+            joints_vis = [np.ones_like(joints[0]) for _ in range(len(joints))]
+
+        trans = get_affine_transform(c, s, r, image_size)
+        nposes = len(joints)
+        for n in range(nposes):
+            for i in range(len(joints[0])):
+                if joints_vis[n][i, 0] > 0.0:
+                    joints[n][i,
+                              0:2] = affine_transform(joints[n][i, 0:2], trans)
+                    if (np.min(joints[n][i, :2]) < 0
+                            or joints[n][i, 0] >= image_size[0]
+                            or joints[n][i, 1] >= image_size[1]):
+                        joints_vis[n][i, :] = 0
+
+        results[self.item] = joints
+        if self.visible_item is not None:
+            results[self.visible_item] = joints_vis
+
+        return results
+
+
+@PIPELINES.register_module()
+class GenerateInputHeatmaps:
+    """Generate 2D input heatmaps for multi-camera heatmaps when the 2D model
+    is not available.
+
+    Required keys: 'joints'
+    Modified keys: 'input_heatmaps'
+
+    Args:
+        sigma (int): Sigma of heatmap gaussian (mm).
+        base_size (int): the base size of human
+        target_type (str): type of target heatmap, only support 'gaussian' now
+    """
+
+    def __init__(self,
+                 item='joints',
+                 visible_item=None,
+                 obscured=0.0,
+                 from_pred=True,
+                 sigma=3,
+                 scale=None,
+                 base_size=96,
+                 target_type='gaussian',
+                 heatmap_cfg=None):
+        self.item = item
+        self.visible_item = visible_item
+        self.obscured = obscured
+        self.from_pred = from_pred
+        self.sigma = sigma
+        self.scale = scale
+        self.base_size = base_size
+        self.target_type = target_type
+        self.heatmap_cfg = heatmap_cfg
+
+    def _compute_human_scale(self, pose, joints_vis):
+        idx = joints_vis[:, 0] == 1
+        if np.sum(idx) == 0:
+            return 0
+        minx, maxx = np.min(pose[idx, 0]), np.max(pose[idx, 0])
+        miny, maxy = np.min(pose[idx, 1]), np.max(pose[idx, 1])
+
+        return np.clip(
+            np.maximum(maxy - miny, maxx - minx)**2, (self.base_size / 2)**2,
+            (self.base_size * 2)**2)
+
+    def __call__(self, results):
+        assert self.target_type == 'gaussian', 'Only support gaussian map now'
+        assert results['ann_info'][
+            'num_scales'] == 1, 'Only support one scale now'
+        heatmap_size = results['ann_info']['heatmap_size'][0]
+
+        num_joints = results['ann_info']['num_joints']
+        image_size = results['ann_info']['image_size']
+
+        joints = results[self.item]
+
+        if self.visible_item is not None:
+            assert self.visible_item in results
+            joints_vis = results[self.visible_item]
+        else:
+            joints_vis = [np.ones_like(joints[0]) for _ in range(len(joints))]
+
+        nposes = len(joints)
+        target = np.zeros((num_joints, heatmap_size[1], heatmap_size[0]),
+                          dtype=np.float32)
+        feat_stride = image_size / heatmap_size
+
+        for n in range(nposes):
+            if random.random() < self.obscured:
+                continue
+
+            human_scale = 2 * self._compute_human_scale(
+                joints[n][:, 0:2] / feat_stride, joints_vis[n])
+            if human_scale == 0:
+                continue
+            cur_sigma = self.sigma * np.sqrt(
+                (human_scale / (self.base_size**2)))
+            tmp_size = cur_sigma * 3
+            for joint_id in range(num_joints):
+                feat_stride = image_size / heatmap_size
+                mu_x = int(joints[n][joint_id][0] / feat_stride[0])
+                mu_y = int(joints[n][joint_id][1] / feat_stride[1])
+
+                ul = [int(mu_x - tmp_size), int(mu_y - tmp_size)]
+                br = [int(mu_x + tmp_size + 1), int(mu_y + tmp_size + 1)]
+                if ul[0] >= heatmap_size[0] or \
+                        ul[1] >= heatmap_size[1] \
+                        or br[0] < 0 or br[1] < 0:
+                    continue
+
+                size = 2 * tmp_size + 1
+                x = np.arange(0, size, 1, np.float32)
+                y = x[:, np.newaxis]
+                x0 = y0 = size // 2
+
+                # determine the value of scale
+                if self.from_pred:
+                    if self.scale is None:
+                        scale = joints[n][joint_id][2] if len(
+                            joints[n][joint_id]) == 3 else 1.0
+                    else:
+                        scale = self.scale
+                else:
+                    if self.heatmap_cfg is None:
+                        scale = self.scale
+                    else:
+                        base_scale = self.heatmap_cfg['base_scale']
+                        offset = self.heatmap_cfg['offset']
+                        thr = self.heatmap_cfg['threshold']
+                        scale = (base_scale + np.random.randn(1) * offset
+                                 ) if random.random() < thr else self.scale
+
+                        for cfg in self.heatmap_cfg['extra']:
+                            if joint_id in cfg['joint_ids']:
+                                scale = scale * cfg[
+                                    'scale_factor'] if random.random(
+                                    ) < cfg['threshold'] else scale
+
+                g = np.exp(-((x - x0)**2 + (y - y0)**2) /
+                           (2 * cur_sigma**2)) * scale
+
+                # usable gaussian range
+                g_x = max(0, 0 - ul[0]), min(br[0], heatmap_size[0]) - ul[0]
+                g_y = max(0, -ul[1]), min(br[1], heatmap_size[1]) - ul[1]
+
+                # Image range
+                img_x = max(0, ul[0]), min(br[0], heatmap_size[0])
+                img_y = max(0, ul[1]), min(br[1], heatmap_size[1])
+
+                target[joint_id][img_y[0]:img_y[1],
+                                 img_x[0]:img_x[1]] = np.maximum(
+                                     target[joint_id][img_y[0]:img_y[1],
+                                                      img_x[0]:img_x[1]],
+                                     g[g_y[0]:g_y[1], g_x[0]:g_x[1]])
+            target = np.clip(target, 0, 1)
+
+        # target can be extended to multi-scale,
+        # if results['ann_info']['num_scales'] > 1
+        results['input_heatmaps'] = [target]
         return results
