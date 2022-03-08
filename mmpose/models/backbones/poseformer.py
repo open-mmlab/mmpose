@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
-from einops import rearrange
 from mmcv.cnn import build_norm_layer
 from mmcv.cnn.bricks.registry import DROPOUT_LAYERS
 from mmcv.cnn.bricks.transformer import FFN
@@ -273,10 +272,8 @@ class PoseFormer(BaseBackbone):
     def spatial_forward_features(self, x):
         # b is batch size, f is number of frames, p is number of joints
         b, _, f, p = x.shape
-        x = rearrange(
-            x,
-            'b c f p  -> (b f) p  c',
-        )
+        x = x.permute(0, 2, 3, 1)
+        x = x.contiguous().view(b * f, p, -1)
 
         x = self.spatial_patch_to_embedding(x)
         x += self.spatial_pos_embed
@@ -286,8 +283,9 @@ class PoseFormer(BaseBackbone):
             x = blk(x)
 
         x = self.spatial_norm(x)
-        x = rearrange(x, '(b f) w c -> b f (w c)', f=f)
 
+        _, w, c = x.shape
+        x = x.view(b, f, w * c)
         return x
 
     def forward_features(self, x):
@@ -307,7 +305,6 @@ class PoseFormer(BaseBackbone):
 
     def forward(self, x):
         x = x.permute(0, 3, 1, 2)
-        b, _, _, p = x.shape
         # Now x is [batch_size, 2 channels, receptive frames, joint_num]
         x = self.spatial_forward_features(x)
         x = self.forward_features(x)
