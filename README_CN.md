@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/en/v0.23.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/en/v0.23.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/en/v0.23.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/en/v0.23.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.23.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/en/v0.24.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/en/v0.24.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/en/v0.24.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/en/v0.24.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.24.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,9 +73,12 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-* 2022-02-11: MMPose [v0.23.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.23.0) 已经发布. 主要更新包括:
-  * 新增 [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam): 用于快速开发基于 MMPose 的简单视频交互应用
-  * 支持 CPU 训练和测试
+* 2022-03-07: MMPose [v0.24.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.24.0) 已经发布. 主要更新包括:
+  * 支持 HRFormer ["HRFormer: High-Resolution Vision Transformer for Dense Predict"](https://proceedings.neurips.cc/paper/2021/hash/3bbfdde8842a5c44a0323518eec97cbe-Abstract.html), NeurIPS'2021
+  * 支持在 Windows 系统使用 pip 安装 MMPose
+* 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
+* 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
+  * MMPose Webcam API 用于快速开发基于 MMPose 的简单视频交互应用
 * 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装
@@ -247,22 +250,23 @@ MMPose 是一款由不同学校和公司共同贡献的开源项目。我们感�
 
 * [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab 计算机视觉基础库
 * [MIM](https://github.com/open-mmlab/mim): MIM 是 OpenMMlab 项目、算法、模型的统一入口
-* [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab 图像分类工具箱与测试基准
-* [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab 检测工具箱与测试基准
-* [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab 新一代通用3D目标检测平台
-* [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab 语义分割工具箱与测试基准
-* [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab 新一代视频理解工具箱与测试基准
-* [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab 一体化视频目标感知平台
-* [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab 姿态估计工具箱与测试基准
-* [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab 图像视频编辑工具箱
+* [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab 图像分类工具箱
+* [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab 目标检测工具箱
+* [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab 新一代通用 3D 目标检测平台
+* [MMRotate](https://github.com/open-mmlab/mmrotate): OpenMMLab 旋转框检测工具箱与测试基准
+* [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab 语义分割工具箱
 * [MMOCR](https://github.com/open-mmlab/mmocr): OpenMMLab 全流程文字检测识别理解工具包
-* [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab 新一代生成模型工具箱
-* [MMFlow](https://github.com/open-mmlab/mmflow): OpenMMLab 光流估计工具箱与测试基准
-* [MMFewShot](https://github.com/open-mmlab/mmfewshot): OpenMMLab 少样本学习工具箱与测试基准
+* [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab 姿态估计工具箱
 * [MMHuman3D](https://github.com/open-mmlab/mmhuman3d): OpenMMLab 人体参数化模型工具箱与测试基准
 * [MMSelfSup](https://github.com/open-mmlab/mmselfsup): OpenMMLab 自监督学习工具箱与测试基准
 * [MMRazor](https://github.com/open-mmlab/mmrazor): OpenMMLab 模型压缩工具箱与测试基准
-* [MMDeploy](https://github.com/open-mmlab/mmdeploy):OpenMMLab 模型部署框架
+* [MMFewShot](https://github.com/open-mmlab/mmfewshot): OpenMMLab 少样本学习工具箱与测试基准
+* [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab 新一代视频理解工具箱
+* [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab 一体化视频目标感知平台
+* [MMFlow](https://github.com/open-mmlab/mmflow): OpenMMLab 光流估计工具箱与测试基准
+* [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab 图像视频编辑工具箱
+* [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab 图片视频生成模型工具箱
+* [MMDeploy](https://github.com/open-mmlab/mmdeploy): OpenMMLab 模型部署框架
 
 ## 欢迎加入 OpenMMLab 社区
 
