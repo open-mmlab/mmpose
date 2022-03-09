@@ -15,8 +15,9 @@ def test_imshow_keypoints():
     kpts = np.array([[1, 1, 1], [10, 10, 1]], dtype=np.float32)
     pose_result = [kpts]
     skeleton = [[0, 1]]
-    pose_kpt_color = [(127, 127, 127)] * len(kpts)
-    pose_link_color = [(127, 127, 127)] * len(skeleton)
+    # None: kpt or link is hidden
+    pose_kpt_color = [(127, 127, 127)] * (len(kpts) - 1) + [None]
+    pose_link_color = [(127, 127, 127)] * (len(skeleton) - 1) + [None]
     img_vis_2d = imshow_keypoints(
         img,
         pose_result,
