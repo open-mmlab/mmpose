@@ -142,26 +142,28 @@ def imshow_keypoints(img,
             assert len(pose_kpt_color) == len(kpts)
 
             for kid, kpt in enumerate(kpts):
-                if pose_kpt_color[kid] is not None:
-                    x_coord, y_coord, kpt_score = int(kpt[0]), int(
-                        kpt[1]), kpt[2]
-                    if kpt_score > kpt_score_thr:
-                        color = tuple(int(c) for c in pose_kpt_color[kid])
-                        if show_keypoint_weight:
-                            img_copy = img.copy()
-                            cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                       radius, color, -1)
-                            transparency = max(0, min(1, kpt_score))
-                            cv2.addWeighted(
-                                img_copy,
-                                transparency,
-                                img,
-                                1 - transparency,
-                                0,
-                                dst=img)
-                        else:
-                            cv2.circle(img, (int(x_coord), int(y_coord)),
-                                       radius, color, -1)
+                x_coord, y_coord, kpt_score = int(kpt[0]), int(kpt[1]), kpt[2]
+                
+                if kpt_score < kpt_score_thr or pose_kpt_color[kid] is None:
+                    # skip the point that should not be drawn
+                    continue
+                    
+                color = tuple(int(c) for c in pose_kpt_color[kid])
+                if show_keypoint_weight:
+                    img_copy = img.copy()
+                    cv2.circle(img_copy, (int(x_coord), int(y_coord)),
+                                radius, color, -1)
+                    transparency = max(0, min(1, kpt_score))
+                    cv2.addWeighted(
+                        img_copy,
+                        transparency,
+                        img,
+                        1 - transparency,
+                        0,
+                        dst=img)
+                else:
+                    cv2.circle(img, (int(x_coord), int(y_coord)), radius,
+                                color, -1)
 
         # draw links
         if skeleton is not None and pose_link_color is not None:
