@@ -143,16 +143,16 @@ def imshow_keypoints(img,
 
             for kid, kpt in enumerate(kpts):
                 x_coord, y_coord, kpt_score = int(kpt[0]), int(kpt[1]), kpt[2]
-                
+
                 if kpt_score < kpt_score_thr or pose_kpt_color[kid] is None:
                     # skip the point that should not be drawn
                     continue
-                    
+
                 color = tuple(int(c) for c in pose_kpt_color[kid])
                 if show_keypoint_weight:
                     img_copy = img.copy()
-                    cv2.circle(img_copy, (int(x_coord), int(y_coord)),
-                                radius, color, -1)
+                    cv2.circle(img_copy, (int(x_coord), int(y_coord)), radius,
+                               color, -1)
                     transparency = max(0, min(1, kpt_score))
                     cv2.addWeighted(
                         img_copy,
@@ -163,16 +163,19 @@ def imshow_keypoints(img,
                         dst=img)
                 else:
                     cv2.circle(img, (int(x_coord), int(y_coord)), radius,
-                                color, -1)
+                               color, -1)
 
         # draw links
         if skeleton is not None and pose_link_color is not None:
             assert len(pose_link_color) == len(skeleton)
 
             for sk_id, sk in enumerate(skeleton):
-                if (pos1[0] < 0 or pos1[0] >= img_w or pos1[1] < 0
-                        or pos1[1] >= img_h or pos2[0] < 0 or pos2[0] >= img_w
-                        or pos2[1] < 0 or pos2[1] >= img_h
+                pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
+                pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
+
+                if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
+                        or pos1[1] >= img_h or pos2[0] <= 0 or pos2[0] >= img_w
+                        or pos2[1] <= 0 or pos2[1] >= img_h
                         or kpts[sk[0], 2] < kpt_score_thr
                         or kpts[sk[1], 2] < kpt_score_thr
                         or pose_link_color[sk_id] is None):
