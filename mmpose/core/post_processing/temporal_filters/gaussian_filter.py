@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
-import scipy.signal as signal
 from scipy.ndimage.filters import gaussian_filter1d
+from scipy.signal import medfilt
 
 from .builder import FILTERS
 from .filter import TemporalFilter
@@ -14,15 +14,15 @@ class GaussianFilter(TemporalFilter):
     Adapted from:
     https://github.com/akanazawa/human_dynamics/blob/mas
     ter/src/util/smooth_bbox.py.
+
     Args:
-        x (np.ndarray): input pose
-        window_size (int, optional): for median filters (must be odd).
-        sigma (float, optional): Sigma for gaussian smoothing.
-    Returns:
-        np.ndarray: Smoothed poses
+        window_size (int): The size of the filter window (i.e., the number
+            of coefficients). window_length must be a positive odd integer.
+            Default: 11
+        sigma (float): Sigma for gaussian smoothing. Default: 4.0
     """
 
-    def __init__(self, window_size=11, sigma=4):
+    def __init__(self, window_size: int = 11, sigma: float = 4.0):
         super().__init__(window_size)
         assert window_size % 2 == 1, (
             'The window size of GaussianFilter should'
@@ -34,15 +34,9 @@ class GaussianFilter(TemporalFilter):
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 
-        T = x.shape[0]
         if x.shape[0] < self.window_size:
             pad_width = [(self.window_size - x.shape[0], 0), (0, 0), (0, 0)]
             x = np.pad(x, pad_width, mode='edge')
-
-        smoothed = np.array(
-            [signal.medfilt(param, self.window_size) for param in x.T]).T
-
-        smooth_poses = np.array(
-            [gaussian_filter1d(traj, self.sigma) for traj in smoothed.T]).T
-
-        return smooth_poses[-T:]
+        y = medfilt(x, (self.window_size, 1, 1))
+        y = gaussian_filter1d(y, self.sigma, axis=0)
+        return y

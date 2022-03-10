@@ -15,18 +15,14 @@ class SavizkyGolayFilter(TemporalFilter):
     scipy.signal.savgol_filter.html.
 
     Args:
-        window_size (float):
-                    The length of the filter window
-                    (i.e., the number of coefficients).
-                    window_length must be a positive odd integer.
-        polyorder (int):
-                    The order of the polynomial used to fit the samples.
-                    polyorder must be less than window_length.
-    Returns:
-        smoothed poses (np.ndarray, torch.tensor)
+        window_size (int): The size of the filter window (i.e., the number
+            of coefficients). window_length must be a positive odd integer.
+            Default: 11
+        polyorder (int): The order of the polynomial used to fit the samples.
+            polyorder must be less than window_size.
     """
 
-    def __init__(self, window_size=11, polyorder=2):
+    def __init__(self, window_size: int = 11, polyorder: int = 2):
         super().__init__(window_size)
 
         # 1-D Savitzky-Golay filter
@@ -44,14 +40,11 @@ class SavizkyGolayFilter(TemporalFilter):
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 
-        T, K, C = x.shape
-        if x.shape[0] < self.window_size:
-            pad_width = [(self.window_size - x.shape[0], 0), (0, 0), (0, 0)]
+        T = x.shape[0]
+        if T < self.window_size:
+            pad_width = [(self.window_size - T, 0), (0, 0), (0, 0)]
             x = np.pad(x, pad_width, mode='edge')
 
-        # smooth at different axis
-        smooth_poses = savgol_filter(
-            x.reshape(-1, K * C), self.window_size, self.polyorder, axis=0)
-        smooth_poses = smooth_poses.reshape(-1, K, C)
+        smoothed = savgol_filter(x, self.window_size, self.polyorder, axis=0)
 
-        return smooth_poses[-T:]
+        return smoothed[-T:]

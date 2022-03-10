@@ -3,7 +3,7 @@ from typing import List, Union
 from unittest import TestCase
 
 import numpy as np
-from mmcv import Config, is_list_of
+from mmcv import is_list_of
 
 from mmpose.core.post_processing.smoother import Smoother
 
@@ -11,9 +11,8 @@ from mmpose.core.post_processing.smoother import Smoother
 class TestSmoother(TestCase):
 
     def build_smoother(self):
-        filter_cfg = Config.fromfile(
-            'configs/_base_/filters/gaussian.py').filter_cfg
-        smoother = Smoother(filter_cfg, keypoint_dim=2)
+        smoother = Smoother(
+            'configs/_base_/filters/gaussian.py', keypoint_dim=2)
         return smoother
 
     def build_pose_results(self,

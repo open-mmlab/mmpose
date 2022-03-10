@@ -2,6 +2,7 @@
 import copy
 import os
 import os.path as osp
+import warnings
 from argparse import ArgumentParser
 
 import cv2
@@ -12,6 +13,7 @@ from mmpose.apis import (extract_pose_sequence, get_track_id,
                          inference_pose_lifter_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_3d_pose_result)
+from mmpose.core import Smoother
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -124,10 +126,6 @@ def main():
     parser.add_argument(
         '--tracking-thr', type=float, default=0.3, help='Tracking threshold')
     parser.add_argument(
-        '--euro',
-        action='store_true',
-        help='Using One_Euro_Filter for smoothing')
-    parser.add_argument(
         '--radius',
         type=int,
         default=8,
@@ -194,11 +192,27 @@ def main():
             pose_det_results_last,
             next_id,
             use_oks=args.use_oks_tracking,
-            tracking_thr=args.tracking_thr,
-            use_one_euro=args.euro,
-            fps=video.fps)
+            tracking_thr=args.tracking_thr)
 
         pose_det_results_list.append(copy.deepcopy(pose_det_results))
+
+    # Smooth 2D pose results
+    if args.euro:
+        warnings.warn(
+            'Argument --euro will be deprecated in the future. '
+            'Please use --smooth to enable temporal smoothing, and '
+            '--smooth-filter-cfg to set the filter config.',
+            DeprecationWarning)
+        smoother = Smoother(
+            filter_cfg='configs/_base_/filters/one_euro.py', keypoint_dim=2)
+    elif args.smooth:
+        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=2)
+    else:
+        smoother = None
+
+    if smoother:
+        # Apply offline smoothing
+        pose_det_results_list = smoother.smooth(pose_det_results_list)
 
     # Second stage: Pose lifting
     print('Stage 2: 2D-to-3D pose lifting.')

@@ -33,8 +33,13 @@ class OneEuro:
         self.dx_prev = dx0
         self.t_prev = t0
 
-    def __call__(self, t, x):
+    def __call__(self, x, t=None):
         """Compute the filtered signal."""
+
+        if t is None:
+            # Assume input is feed frame by frame if not specified
+            t = self.t_prev + 1
+
         t_e = t - self.t_prev
 
         # The filtered derivative of the signal.
@@ -63,8 +68,6 @@ class OneEuroFilter(TemporalFilter):
             decreases slow speed jitter
         beta (float, optional): Increasing the speed coefficient(beta)
             decreases speed lag.
-    Returns:
-        np.ndarray: smoothed poses
     """
 
     def __init__(self, min_cutoff=0.004, beta=0.7):
@@ -75,11 +78,15 @@ class OneEuroFilter(TemporalFilter):
         self.beta = beta
         self._one_euro = None
 
-    def __call__(self, x=None):
+    def __call__(self, x: np.ndarray):
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 
+        pred_pose_hat = x.copy()
+
         if self._one_euro is None:
+            # The filter is invoked for the first time
+            # Initialize the filter
             self._one_euro = OneEuro(
                 np.zeros_like(x[0]),
                 x[0],
@@ -87,16 +94,17 @@ class OneEuroFilter(TemporalFilter):
                 min_cutoff=self.min_cutoff,
                 beta=self.beta,
             )
+            t0 = 1
+        else:
+            # The filter has been invoked
+            t0 = 0
 
-        pred_pose_hat = np.zeros_like(x)
-
-        # initialize
-        pred_pose_hat[0] = x[0]
-
-        for idx, pose in enumerate(x[1:]):
-            idx += 1
-            t = np.ones_like(pose) * idx
-            pose = self._one_euro(t, pose)
-            pred_pose_hat[idx] = pose
+        for t, pose in enumerate(x):
+            if t < t0:
+                # If the filter is invoked for the first time
+                # set pred_pose_hat[0] = x[0]
+                continue
+            pose = self._one_euro(pose)
+            pred_pose_hat[t] = pose
 
         return pred_pose_hat

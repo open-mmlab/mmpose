@@ -3,6 +3,13 @@ from abc import ABCMeta, abstractmethod
 
 
 class TemporalFilter(metaclass=ABCMeta):
+    """Base class of temporal filter.
+
+    A subclass should implement the method __call__().
+
+    Parameters:
+        window_size (int): the size of the sliding window.
+    """
 
     def __init__(self, window_size=1):
         self._window_size = window_size
@@ -15,9 +22,14 @@ class TemporalFilter(metaclass=ABCMeta):
     def __call__(self, x):
         """Apply filter to a pose sequence.
 
+        Note:
+            T: The temporal length of the pose sequence
+            K: The keypoint number of each target
+            C: The keypoint coordinate dimension
+
         Args:
-            x (Tensor): shape (T, K, C), the pose sequence of a single target
+            x (np.ndarray): input pose sequence in shape [T, K, C]
 
         Returns:
-            Tensor: shape(T, K, C)
+            np.ndarray: Smoothed pose sequence in shape [T, K, C]
         """

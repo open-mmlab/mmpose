@@ -1,9 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import warnings
-from typing import Dict
+from typing import Dict, Union
 
 import numpy as np
-from mmcv import is_seq_of
+from mmcv import Config, is_seq_of
 
 from mmpose.core.post_processing.temporal_filters import build_filter
 
@@ -18,8 +19,9 @@ class Smoother():
         C: The keypoint coordinate dimension
 
     Args:
-        filter_cfg (dict): The filter config. See example config files in
-            `configs/_base_/filters/` for details.
+        filter_cfg (dict | str): The filter config. See example config files in
+            `configs/_base_/filters/` for details. Alternatively a config file
+            path can be accepted and the config will be loaded.
         keypoint_dim (int): The keypoint coordinate dimension, which is
             also indicated as C.
     Example:
@@ -46,7 +48,9 @@ class Smoother():
         >>>     smoothed_result_t = smoother.smooth(result_t)
     """
 
-    def __init__(self, filter_cfg: Dict, keypoint_dim: int = 2):
+    def __init__(self, filter_cfg: Union[Dict, str], keypoint_dim: int = 2):
+        if isinstance(filter_cfg, str):
+            filter_cfg = Config.fromfile(filter_cfg).filter_cfg
         self.filter_cfg = filter_cfg
         self.keypoint_dim = keypoint_dim
         self.padding_size = build_filter(filter_cfg).window_size - 1
@@ -119,14 +123,12 @@ class Smoother():
             if self._has_track_id(results):
                 id2result = ((result['track_id'], result)
                              for result in results_t)
-                print('has_track_id')
             else:
                 id2result = enumerate(results_t)
-                print('no_track_id')
 
             for track_id, result in id2result:
-                result = result.copy()
-                result['keypoint'] = poses[track_id][t]
+                result = copy.deepcopy(result)
+                result['keypoints'][:, :self.keypoint_dim] = poses[track_id][t]
                 updated_results_t.append(result)
 
             updated_results.append(updated_results_t)
@@ -187,16 +189,17 @@ class Smoother():
                 # For new target, build a new filter
                 pose_filter = build_filter(self.filter_cfg)
 
+            # Update the history information
+            if self.padding_size > 0:
+                pose_history = pose[-self.padding_size:].copy()
+            else:
+                pose_history = None
+            update_history[track_id] = (pose_history, pose_filter)
+
             # Smooth the pose sequence with the filter
             smoothed_pose = pose_filter(pose)
             smoothed_poses[track_id] = smoothed_pose[-T:]
 
-            # Update the history information
-            if self.padding_size > 0:
-                pose_history = smoothed_pose[-self.padding_size:]
-            else:
-                pose_history = None
-            update_history[track_id] = (pose_history, pose_filter)
         self.history = update_history
 
         # Scatter the pose sequences back to the format of results
@@ -206,5 +209,4 @@ class Smoother():
         # output structure consistent with the input's
         if single_frame:
             smoothed_results = smoothed_results[0]
-
         return smoothed_results
