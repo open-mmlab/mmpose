@@ -194,6 +194,15 @@ def get_track_id(results,
             current frame (bbox_result, pose_result, track_id).
         - next_id (int): The track id for the new person instance.
     """
+    if use_one_euro:
+        warnings.warn(
+            'In the future, get_track_id() will no longer perform '
+            'temporal refinement and the arguments `use_one_euro` and '
+            '`fps` will be deprecated. This part of function has been '
+            'migrated to Smoother (mmpose.core.Smoother). See '
+            'demo/top_down_pose_trackign_demo_with_mmdet.py for an '
+            'example.', DeprecationWarning)
+
     results = _get_area(results)
 
     if use_oks:
@@ -218,13 +227,6 @@ def get_track_id(results,
             result['track_id'] = track_id
 
         if use_one_euro:
-            warnings.warn(
-                'In the future, get_track_id() will no longer perform '
-                'temporal refinement and the arguments `use_one_euro` and '
-                '`fps` will be deprecated. This part of function has been '
-                'migrated to Smoother (mmpose.core.Smoother). See '
-                'demo/top_down_pose_trackign_demo_with_mmdet.py for an '
-                'example.', DeprecationWarning)
             result['keypoints'] = _temporal_refine(
                 result, match_result, fps=fps)
         del match_result

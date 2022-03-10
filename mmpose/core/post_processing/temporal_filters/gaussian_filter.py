@@ -34,9 +34,11 @@ class GaussianFilter(TemporalFilter):
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 
-        if x.shape[0] < self.window_size:
-            pad_width = [(self.window_size - x.shape[0], 0), (0, 0), (0, 0)]
+        T = x.shape[0]
+        if T < self.window_size:
+            pad_width = [(self.window_size - T, 0), (0, 0), (0, 0)]
             x = np.pad(x, pad_width, mode='edge')
-        y = medfilt(x, (self.window_size, 1, 1))
-        y = gaussian_filter1d(y, self.sigma, axis=0)
-        return y
+        smoothed = medfilt(x, (self.window_size, 1, 1))
+
+        smoothed = gaussian_filter1d(smoothed, self.sigma, axis=0)
+        return smoothed[-T:]
