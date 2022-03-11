@@ -2,7 +2,6 @@
 import copy
 import os
 import os.path as osp
-import warnings
 from argparse import ArgumentParser
 
 import cv2
@@ -135,6 +134,17 @@ def main():
         type=int,
         default=2,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--smooth',
+        action='store_true',
+        help='Apply a temporal filter to smooth the pose estimation results. '
+        'See also --smooth-filter-cfg.')
+    parser.add_argument(
+        '--smooth-filter-cfg',
+        type=str,
+        default='configs/_base_/filters/one_euro.py',
+        help='Config file of the filter to smooth the pose estimation '
+        'results. See also --smooth.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -165,7 +175,7 @@ def main():
     pose_det_results_list = []
     next_id = 0
     pose_det_results = []
-    for frame in video:
+    for frame in mmcv.track_iter_progress(video):
         pose_det_results_last = pose_det_results
 
         # test a single image, the resulting box is (x1, y1, x2, y2)
@@ -195,24 +205,6 @@ def main():
             tracking_thr=args.tracking_thr)
 
         pose_det_results_list.append(copy.deepcopy(pose_det_results))
-
-    # Smooth 2D pose results
-    if args.euro:
-        warnings.warn(
-            'Argument --euro will be deprecated in the future. '
-            'Please use --smooth to enable temporal smoothing, and '
-            '--smooth-filter-cfg to set the filter config.',
-            DeprecationWarning)
-        smoother = Smoother(
-            filter_cfg='configs/_base_/filters/one_euro.py', keypoint_dim=2)
-    elif args.smooth:
-        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=2)
-    else:
-        smoother = None
-
-    if smoother:
-        # Apply offline smoothing
-        pose_det_results_list = smoother.smooth(pose_det_results_list)
 
     # Second stage: Pose lifting
     print('Stage 2: 2D-to-3D pose lifting.')
@@ -250,6 +242,12 @@ def main():
         data_cfg = pose_lift_model.cfg.test_data_cfg
     else:
         data_cfg = pose_lift_model.cfg.data_cfg
+
+    # build pose smoother for temporal refinement
+    if args.smooth:
+        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=3)
+    else:
+        smoother = None
 
     num_instances = args.num_instances
     for i, pose_det_results in enumerate(
@@ -292,6 +290,10 @@ def main():
             res['bbox'] = det_res['bbox']
             res['track_id'] = instance_id
             pose_lift_results_vis.append(res)
+
+        # Smoothing
+        if smoother:
+            pose_lift_results = smoother.smooth(pose_lift_results)
 
         # Visualization
         if num_instances < 0:

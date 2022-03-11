@@ -23,7 +23,9 @@ class Smoother():
             `configs/_base_/filters/` for details. Alternatively a config file
             path can be accepted and the config will be loaded.
         keypoint_dim (int): The keypoint coordinate dimension, which is
-            also indicated as C.
+            also indicated as C. Default: 2
+        keypoint_key (str): The dict key of the keypoints in the pose results.
+            Default: 'keypoints'
     Example:
         >>> import numpy as np
         >>> # Build dummy pose result
@@ -48,11 +50,15 @@ class Smoother():
         >>>     smoothed_result_t = smoother.smooth(result_t)
     """
 
-    def __init__(self, filter_cfg: Union[Dict, str], keypoint_dim: int = 2):
+    def __init__(self,
+                 filter_cfg: Union[Dict, str],
+                 keypoint_dim: int = 2,
+                 keypoint_key: str = 'keypoints'):
         if isinstance(filter_cfg, str):
             filter_cfg = Config.fromfile(filter_cfg).filter_cfg
         self.filter_cfg = filter_cfg
         self.keypoint_dim = keypoint_dim
+        self.key = keypoint_key
         self.padding_size = build_filter(filter_cfg).window_size - 1
         self.history = {}
 
@@ -81,7 +87,7 @@ class Smoother():
 
             collated = {
                 id: np.stack([
-                    results_t[id]['keypoints'][:, :self.keypoint_dim]
+                    results_t[id][self.key][:, :self.keypoint_dim]
                     for results_t in results
                 ])
                 for id in track_ids
@@ -98,7 +104,7 @@ class Smoother():
 
             collated = {
                 id: np.stack([
-                    results_t[id]['keypoints'][:, :self.keypoint_dim]
+                    results_t[id][self.key][:, :self.keypoint_dim]
                     for results_t in results
                 ])
                 for id in range(n_target)
@@ -128,7 +134,7 @@ class Smoother():
 
             for track_id, result in id2result:
                 result = copy.deepcopy(result)
-                result['keypoints'][:, :self.keypoint_dim] = poses[track_id][t]
+                result[self.key][:, :self.keypoint_dim] = poses[track_id][t]
                 updated_results_t.append(result)
 
             updated_results.append(updated_results_t)
