@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import pytest
+
 from mmpose.apis import (get_track_id, inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
                          vis_pose_tracking_result)
@@ -152,6 +154,11 @@ def test_bottom_up_pose_tracking_demo():
         pose_results, pose_results_last, next_id=next_id, use_oks=True)
 
     pose_results_last = pose_results
-    # one_euro
-    pose_results, next_id = get_track_id(
-        pose_results, pose_results_last, next_id=next_id, use_one_euro=True)
+
+    # one_euro (will be deprecated)
+    with pytest.deprecated_call():
+        pose_results, next_id = get_track_id(
+            pose_results,
+            pose_results_last,
+            next_id=next_id,
+            use_one_euro=True)
