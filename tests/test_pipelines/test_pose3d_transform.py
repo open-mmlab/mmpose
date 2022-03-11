@@ -392,37 +392,67 @@ def test_input_heatmap_generation():
         joints_visible=np.ones([2, 17, 3]),
         ann_info=ann_info)
 
-    pipeline = Compose([
-        dict(
-            type='GenerateInputHeatmaps',
-            item='joints',
-            visible_item='joints_visible',
-            obscured=0.0,
-            from_pred=False,
-            sigma=3,
-            scale=1.0,
-            base_size=96,
-            target_type='gaussian',
-            heatmap_cfg=dict(
-                base_scale=0.9,
-                offset=0.03,
-                threshold=0.6,
-                extra=[
-                    dict(joint_ids=[7, 8], scale_factor=0.5, threshold=0.1),
-                    dict(
-                        joint_ids=[9, 10],
-                        scale_factor=0.2,
-                        threshold=0.1,
-                    ),
-                    dict(
-                        joint_ids=[
-                            0, 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16
-                        ],
-                        scale_factor=0.5,
-                        threshold=0.05)
-                ]))
-    ])
-    results_ = pipeline(results)
+    pipeline = dict(
+        type='GenerateInputHeatmaps',
+        item='joints',
+        visible_item='joints_visible',
+        obscured=0.0,
+        from_pred=False,
+        sigma=3,
+        scale=1.0,
+        base_size=96,
+        target_type='gaussian',
+        heatmap_cfg=dict(
+            base_scale=0.9,
+            offset=0.03,
+            threshold=0.6,
+            extra=[
+                dict(joint_ids=[7, 8], scale_factor=0.5, threshold=0.1),
+                dict(
+                    joint_ids=[9, 10],
+                    scale_factor=0.2,
+                    threshold=0.1,
+                ),
+                dict(
+                    joint_ids=[0, 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16],
+                    scale_factor=0.5,
+                    threshold=0.05)
+            ]))
+
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `obscured`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['obscured'] = 0.5
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `heatmap_cfg`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['heatmap_cfg'] = None
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `from_pred`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['from_pred'] = True
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+    # test `from_pred` & `scale`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['from_pred'] = True
+    pipeline_copy['scale'] = None
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
     assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
                                                    heatmap_size[0])
 
@@ -442,6 +472,13 @@ def test_affine_joints():
         dict(
             type='AffineJoints', item='joints', visible_item='joints_visible')
     ])
+    results_ = pipeline(results)
+    assert results_['joints'].shape == (3, 17, 2)
+    assert results_['joints_visible'].shape == (3, 17, 2)
+
+    # test `joints_visible` is zero
+    results_copy = copy.deepcopy(results)
+    results_copy['joints_visible'] = np.zeros((3, 17, 2))
     results_ = pipeline(results)
     assert results_['joints'].shape == (3, 17, 2)
     assert results_['joints_visible'].shape == (3, 17, 2)
