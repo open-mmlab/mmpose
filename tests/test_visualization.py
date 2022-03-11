@@ -10,15 +10,16 @@ from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
                          imshow_multiview_keypoints_3d)
 
 
-def test_imshow_keypoints():
-    # 2D keypoint
+def test_imshow_keypoints_2d():
     img = np.zeros((100, 100, 3), dtype=np.uint8)
-    kpts = np.array([[1, 1, 1], [10, 10, 1]], dtype=np.float32)
+    kpts = np.array([[1, 1, 1], [2, 2, 1], [4, 4, 1], [8, 8, 1]],
+                    dtype=np.float32)
     pose_result = [kpts]
-    skeleton = [[0, 1]]
-    pose_kpt_color = [(127, 127, 127)] * len(kpts)
-    pose_link_color = [(127, 127, 127)] * len(skeleton)
-    img_vis_2d = imshow_keypoints(
+    skeleton = [[0, 1], [1, 2], [2, 3]]
+    # None: kpt or link is hidden
+    pose_kpt_color = [None] + [(127, 127, 127)] * (len(kpts) - 1)
+    pose_link_color = [(127, 127, 127)] * (len(skeleton) - 1) + [None]
+    _ = imshow_keypoints(
         img,
         pose_result,
         skeleton=skeleton,
@@ -26,12 +27,17 @@ def test_imshow_keypoints():
         pose_link_color=pose_link_color,
         show_keypoint_weight=True)
 
-    # 3D keypoint
+
+def test_imshow_keypoints_3d():
+    img = np.zeros((100, 100, 3), dtype=np.uint8)
     kpts_3d = np.array([[0, 0, 0, 1], [1, 1, 1, 1]], dtype=np.float32)
     pose_result_3d = [{'keypoints_3d': kpts_3d, 'title': 'test'}]
+    skeleton = [[0, 1]]
+    pose_kpt_color = [(127, 127, 127)] * len(kpts_3d)
+    pose_link_color = [(127, 127, 127)] * len(skeleton)
     _ = imshow_keypoints_3d(
         pose_result_3d,
-        img=img_vis_2d,
+        img=img,
         skeleton=skeleton,
         pose_kpt_color=pose_kpt_color,
         pose_link_color=pose_link_color,
