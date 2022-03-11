@@ -107,12 +107,7 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
         assert self.num_cameras == len(self.cam_list)
         self.need_camera_param = True
 
-        self.subset = data_cfg.get('subset', 'train')
-        if self.subset == 'test':
-            self.frame_range = list(range(300, 601))
-        else:
-            self.frame_range = list(range(0, 300)) + list(range(601, 3200))
-
+        self.frame_range = data_cfg['frame_range']
         self.width = data_cfg.get('width', 1032)
         self.height = data_cfg.get('height', 776)
         self.center = np.array((self.width / 2, self.height / 2),
@@ -236,8 +231,9 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
             for person in range(self.num_persons):
                 pose3d = self.gt_pose_db[person][fid] * 1000.0
                 if len(pose3d[0]) > 0:
+                    # print('len(pose3d[0]): ', len(pose3d[0]))
                     all_poses_3d.append(pose3d)
-                    all_poses_3d_vis.append(np.ones((self.num_joints, 3)))
+                    all_poses_3d_vis.append(np.ones((14, 3)))
 
                     pose2d = single_view_camera.world_to_pixel(pose3d)
                     x_check = np.bitwise_and(pose2d[:, 0] >= 0,
@@ -582,12 +578,14 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
         return results
 
     @staticmethod
-    def coco2shelf3D(coco_pose, alpha):
+    def coco2shelf3D(coco_pose, alpha=0.75):
         """transform coco order(our method output) 3d pose to shelf dataset
         order with interpolation.
 
-        :param coco_pose: np.array with shape 17x3
-        :return: 3D pose in shelf order with shape 14x3
+        Args:
+            coco_pose: np.array with shape 17x3
+
+        Returns: 3D pose in shelf order with shape 14x3
         """
         shelf_pose = np.zeros((14, 3))
         coco2shelf = np.array([16, 14, 12, 11, 13, 15, 10, 8, 6, 5, 7, 9])

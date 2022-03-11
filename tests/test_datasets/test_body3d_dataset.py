@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import tempfile
 
 import numpy as np
@@ -327,7 +328,6 @@ def test_body3dmview_direct_panoptic_dataset():
             dataset_info=dataset_info,
             test_mode=False)
 
-    import copy
     gt_num = test_dataset.db_size // test_dataset.num_cameras
     results = []
     for i in range(gt_num):
@@ -345,3 +345,181 @@ def test_body3dmview_direct_panoptic_dataset():
 
         results.append(dict(pose_3d=gt_pose, sample_id=[i]))
     _ = test_dataset.evaluate(results, metric=['mAP', 'mpjpe'])
+
+
+def test_body3dmview_direct_campus_dataset():
+    # Test Mview-Campus dataset
+    dataset = 'Body3DMviewDirectCampusDataset'
+    dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/campus.py').dataset_info
+    space_size = [12000.0, 12000.0, 12000.0]
+    space_center = [3000.0, 4500.0, 1000.0]
+    cube_size = [80, 80, 20]
+
+    data_root = 'tests/data/campus'
+    train_data_cfg = dict(
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        image_size=[800, 640],
+        heatmap_size=[[200, 160]],
+        num_joints=17,
+        cam_list=[0, 1, 2],
+        num_cameras=3,
+        frame_range=list(range(0, 3)),
+        width=360,
+        height=288,
+        root_id=[11, 12],
+        max_nposes=3,
+        min_nposes=1,
+        num_train_samples=10,
+        maximum_person=10,
+        cam_file=f'{data_root}/calibration_campus.json',
+        train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
+        test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
+        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+    )
+
+    test_data_cfg = dict(
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        image_size=[800, 640],
+        heatmap_size=[[200, 160]],
+        num_joints=17,
+        cam_list=[0, 1, 2],
+        num_cameras=3,
+        frame_range=list(range(0, 3)),
+        width=360,
+        height=288,
+        maximum_person=10,
+        cam_file=f'{data_root}/calibration_campus.json',
+        train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
+        test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
+        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+    )
+
+    train_dataset = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=train_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    test_dataset = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=test_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert len(train_dataset) == train_data_cfg['num_train_samples']
+
+    # test the length of dataset
+    gt_num = len(test_dataset)
+    assert gt_num == len(test_data_cfg['frame_range'])
+    results = []
+    for i in range(gt_num):
+        # test the __getitem__ method of dataset
+        _ = copy.deepcopy(test_dataset[i])
+        # due to the empty pipeline, each sample is a dict of multi-view infos
+        pose_3d = np.ones(
+            (1, test_data_cfg['maximum_person'], test_dataset.num_joints, 5))
+
+        # due to the complex process, we do not use the gt
+        # coco pose converting from shelf poses
+        results.append(dict(pose_3d=pose_3d, sample_id=[i]))
+
+    _ = test_dataset.evaluate(results, metric='pcp')
+
+
+def test_body3dmview_direct_shelf_dataset():
+    # Test Mview-Shelf dataset
+    dataset = 'Body3DMviewDirectShelfDataset'
+    dataset_class = DATASETS.get(dataset)
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/shelf.py').dataset_info
+    space_size = [8000, 8000, 2000]
+    space_center = [450, -320, 800]
+    cube_size = [48, 48, 12]
+
+    data_root = 'tests/data/shelf'
+    train_data_cfg = dict(
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        image_size=[800, 608],
+        heatmap_size=[[200, 152]],
+        num_joints=17,
+        cam_list=[0, 1, 2, 3, 4],
+        num_cameras=5,
+        frame_range=list(range(0, 3)),
+        width=1032,
+        height=776,
+        root_id=[11, 12],
+        max_nposes=3,
+        min_nposes=1,
+        num_train_samples=10,
+        maximum_person=10,
+        cam_file=f'{data_root}/calibration_shelf.json',
+        train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
+        test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
+        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+    )
+
+    test_data_cfg = dict(
+        space_size=space_size,
+        space_center=space_center,
+        cube_size=cube_size,
+        image_size=[800, 608],
+        heatmap_size=[[200, 152]],
+        num_joints=17,
+        cam_list=[0, 1, 2, 3, 4],
+        num_cameras=5,
+        frame_range=list(range(0, 3)),
+        width=1032,
+        height=776,
+        maximum_person=10,
+        cam_file=f'{data_root}/calibration_shelf.json',
+        train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
+        test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
+        gt_pose_db_file=f'{data_root}/actorsGT.mat',
+    )
+
+    train_dataset = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=train_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
+
+    test_dataset = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=test_data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert len(train_dataset) == train_data_cfg['num_train_samples']
+
+    # test the length of dataset
+    gt_num = len(test_dataset)
+    assert gt_num == len(test_data_cfg['frame_range'])
+    results = []
+    for i in range(gt_num):
+        # test the __getitem__ method of dataset
+        _ = copy.deepcopy(test_dataset[i])
+        # due to the empty pipeline, each sample is a dict of multi-view infos
+        pose_3d = np.ones(
+            (1, test_data_cfg['maximum_person'], test_dataset.num_joints, 5))
+
+        # due to the complex process, we do not use the gt
+        # coco pose converting from shelf poses
+        results.append(dict(pose_3d=pose_3d, sample_id=[i]))
+
+    _ = test_dataset.evaluate(results, metric='pcp')

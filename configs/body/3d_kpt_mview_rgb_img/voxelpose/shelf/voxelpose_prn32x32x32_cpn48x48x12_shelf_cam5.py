@@ -27,9 +27,9 @@ log_config = dict(
 
 space_size = [8000, 8000, 2000]
 space_center = [450, -320, 800]
-cube_size = [80, 80, 20]
+cube_size = [48, 48, 12]
 sub_space_size = [2000, 2000, 2000]
-sub_cube_size = [64, 64, 64]
+sub_cube_size = [32, 32, 32]
 image_size = [800, 608]
 heatmap_size = [200, 152]
 
@@ -185,7 +185,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/shelf'
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=2,
     workers_per_gpu=4,
     val_dataloader=dict(samples_per_gpu=4),
     test_dataloader=dict(samples_per_gpu=4),

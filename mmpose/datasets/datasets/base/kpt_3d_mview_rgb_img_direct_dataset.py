@@ -61,7 +61,6 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         dataset_info = DatasetInfo(dataset_info)
 
-        # assert self.ann_info['num_joints'] <= dataset_info.keypoint_num
         self.ann_info['flip_pairs'] = dataset_info.flip_pairs
         self.ann_info['num_scales'] = 1
         self.ann_info['flip_index'] = dataset_info.flip_index

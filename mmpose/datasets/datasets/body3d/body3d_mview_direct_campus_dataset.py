@@ -93,7 +93,7 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
 
         self.db_size = self.num_cameras * len(
             self.frame_range
-        ) if self.test_mode else self.num_cameras * self.num_train_sampels
+        ) if self.test_mode else self.num_cameras * self.num_train_samples
         print(f'=> load {self.db_size} samples')
 
     def load_config(self, data_cfg):
@@ -107,12 +107,7 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
         assert self.num_cameras == len(self.cam_list)
         self.need_camera_param = True
 
-        self.subset = data_cfg.get('subset', 'train')
-        if self.subset == 'test':
-            self.frame_range = list(range(350, 471)) + list(range(650, 751))
-        else:
-            self.frame_range = list(range(0, 350)) + list(range(
-                471, 650)) + list(range(751, 2000))
+        self.frame_range = data_cfg['frame_range']
 
         self.width = data_cfg.get('width', 360)
         self.height = data_cfg.get('height', 288)
@@ -125,7 +120,7 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
 
         self.max_nposes = data_cfg.get('max_nposes', 10)
         self.min_nposes = data_cfg.get('min_nposes', 1)
-        self.num_train_sampels = data_cfg.get('num_train_sampels', 3000)
+        self.num_train_samples = data_cfg.get('num_train_samples', 3000)
         self.maximum_person = data_cfg.get('maximum_person', 10)
 
         self.cam_file = data_cfg.get(
@@ -228,8 +223,6 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
             image_file = osp.join(
                 self.img_prefix, 'Camera' + cam_id,
                 'campus4-c{0}-{1:05d}.png'.format(cam_id, fid))
-            assert osp.exists(image_file), f'the image file {image_file}' \
-                f'does not exist, please check it again'
 
             all_poses_3d = []
             all_poses_3d_vis = []
@@ -378,7 +371,7 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
         if self.test_mode:
             return len(self.frame_range)
         else:
-            return self.num_train_sampels
+            return self.num_train_samples
 
     @staticmethod
     def get_new_center(center_list):
@@ -600,8 +593,10 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
         """transform coco order(our method output) 3d pose to campus dataset
         order with interpolation.
 
-        :param coco_pose: np.array with shape 17x3
-        :return: 3D pose in campus order with shape 14x3
+        Args:
+            coco_pose: np.array with shape 17x3
+
+        Returns: 3D pose in campus order with shape 14x3
         """
         campus_pose = np.zeros((14, 3))
         coco2campus = np.array([16, 14, 12, 11, 13, 15, 10, 8, 6, 5, 7, 9])

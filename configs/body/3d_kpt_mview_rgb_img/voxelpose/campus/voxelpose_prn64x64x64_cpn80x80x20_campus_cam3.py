@@ -45,13 +45,14 @@ train_data_cfg = dict(
     num_joints=num_joints,
     cam_list=[0, 1, 2],
     num_cameras=3,
-    subset='train',
+    frame_range=list(range(0, 350)) + list(range(471, 650)) +
+    list(range(751, 2000)),
     width=360,
     height=288,
     root_id=[11, 12],
     max_nposes=10,
     min_nposes=1,
-    num_train_sampels=3000,
+    num_train_samples=3000,
     maximum_person=10,
     cam_file=f'{data_root}/calibration_campus.json',
     test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
@@ -60,7 +61,8 @@ train_data_cfg = dict(
 )
 
 test_data_cfg = train_data_cfg.copy()
-test_data_cfg.update(dict(subset='test'))
+test_data_cfg.update(
+    dict(frame_range=list(range(350, 471)) + list(range(650, 751))))
 
 # model settings
 model = dict(
@@ -188,8 +190,8 @@ data_root = 'data/campus'
 data = dict(
     samples_per_gpu=1,
     workers_per_gpu=4,
-    val_dataloader=dict(samples_per_gpu=1),
-    test_dataloader=dict(samples_per_gpu=1),
+    val_dataloader=dict(samples_per_gpu=4),
+    test_dataloader=dict(samples_per_gpu=4),
     train=dict(
         type='Body3DMviewDirectCampusDataset',
         ann_file=None,

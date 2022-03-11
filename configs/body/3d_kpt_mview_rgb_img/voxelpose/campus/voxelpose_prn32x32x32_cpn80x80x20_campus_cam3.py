@@ -1,6 +1,6 @@
 _base_ = [
     '../../../../_base_/default_runtime.py',
-    '../../../../_base_/datasets/shelf.py'
+    '../../../../_base_/datasets/campus.py'
 ]
 checkpoint_config = dict(interval=1)
 evaluation = dict(
@@ -12,7 +12,7 @@ optimizer = dict(
 )
 optimizer_config = dict(grad_clip=None)
 
-# learning rate policy
+# learning policy
 lr_config = dict(
     policy='step',
     warmup='linear',
@@ -25,17 +25,17 @@ log_config = dict(
         dict(type='TextLoggerHook'),
     ])
 
-space_size = [8000, 8000, 2000]
-space_center = [450, -320, 800]
+space_size = [12000.0, 12000.0, 2000.0]
+space_center = [3000.0, 4500.0, 1000.0]
 cube_size = [80, 80, 20]
-sub_space_size = [2000, 2000, 2000]
-sub_cube_size = [64, 64, 64]
-image_size = [800, 608]
-heatmap_size = [200, 152]
+sub_space_size = [2000.0, 2000.0, 2000.0]
+sub_cube_size = [32, 32, 32]
+image_size = [800, 640]
+heatmap_size = [200, 160]
 
 num_joints = 17
 
-data_root = 'data/shelf'
+data_root = 'data/campus'
 train_data_cfg = dict(
     space_size=space_size,
     space_center=space_center,
@@ -43,25 +43,26 @@ train_data_cfg = dict(
     image_size=image_size,
     heatmap_size=[heatmap_size],
     num_joints=num_joints,
-    cam_list=[0, 1, 2, 3, 4],
-    num_cameras=5,
-    frame_range=list(range(0, 300)) + list(range(601, 3200)),
-    width=1032,
-    height=776,
+    cam_list=[0, 1, 2],
+    num_cameras=3,
+    frame_range=list(range(0, 350)) + list(range(471, 650)) +
+    list(range(751, 2000)),
+    width=360,
+    height=288,
     root_id=[11, 12],
-    max_nposes=6,
+    max_nposes=10,
     min_nposes=1,
     num_train_samples=3000,
     maximum_person=10,
-    cam_file=f'{data_root}/calibration_shelf.json',
-    test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
+    cam_file=f'{data_root}/calibration_campus.json',
+    test_pose_db_file=f'{data_root}/pred_campus_maskrcnn_hrnet_coco.pkl',
     train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
     gt_pose_db_file=f'{data_root}/actorsGT.mat',
 )
 
 test_data_cfg = train_data_cfg.copy()
-test_data_cfg.update(dict(frame_range=list(range(300, 601))))
-
+test_data_cfg.update(
+    dict(frame_range=list(range(350, 471)) + list(range(650, 751))))
 # model settings
 model = dict(
     type='DetectAndRegress',
@@ -111,7 +112,7 @@ train_pipeline = [
                 type='GenerateInputHeatmaps',
                 item='joints',
                 visible_item='joints_visible',
-                obscured=0.05,
+                obscured=0.0,
                 from_pred=False,
                 sigma=3,
                 scale=1.0,
@@ -123,19 +124,19 @@ train_pipeline = [
                     threshold=0.6,
                     extra=[
                         dict(
-                            joint_ids=[7, 8, 13, 14],
-                            scale_factor=0.5,
-                            threshold=0.1),
+                            joint_ids=[7, 8], scale_factor=0.5, threshold=0.1),
                         dict(
-                            joint_ids=[9, 10, 15, 16],
+                            joint_ids=[9, 10],
                             scale_factor=0.2,
                             threshold=0.1,
                         ),
                         dict(
-                            joint_ids=[0, 1, 2, 3, 4, 5, 6, 11, 12],
+                            joint_ids=[
+                                0, 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16
+                            ],
                             scale_factor=0.5,
                             threshold=0.05)
-                    ])),
+                    ]))
         ]),
     dict(
         type='DiscardDuplicatedItems',
@@ -165,6 +166,7 @@ val_pipeline = [
                 type='GenerateInputHeatmaps',
                 item='joints',
                 from_pred=True,
+                scale=1.0,
                 sigma=3,
                 base_size=96,
                 target_type='gaussian'),
@@ -183,28 +185,28 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/shelf'
+data_root = 'data/campus'
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=2,
     workers_per_gpu=4,
     val_dataloader=dict(samples_per_gpu=4),
     test_dataloader=dict(samples_per_gpu=4),
     train=dict(
-        type='Body3DMviewDirectShelfDataset',
+        type='Body3DMviewDirectCampusDataset',
         ann_file=None,
         img_prefix=data_root,
         data_cfg=train_data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
-        type='Body3DMviewDirectShelfDataset',
+        type='Body3DMviewDirectCampusDataset',
         ann_file=None,
         img_prefix=data_root,
         data_cfg=test_data_cfg,
         pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
     test=dict(
-        type='Body3DMviewDirectShelfDataset',
+        type='Body3DMviewDirectCampusDataset',
         ann_file=None,
         img_prefix=data_root,
         data_cfg=test_data_cfg,
