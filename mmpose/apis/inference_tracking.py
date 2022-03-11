@@ -177,8 +177,9 @@ def get_track_id(results,
     Args:
         results (list[dict]): The bbox & pose results of the current frame
             (bbox_result, pose_result).
-        results_last (list[dict]): The bbox & pose & track_id info of the
-            last frame (bbox_result, pose_result, track_id).
+        results_last (list[dict], optional): The bbox & pose & track_id info
+            of the last frame (bbox_result, pose_result, track_id). None is
+            equivalent to an empty result list. Default: None
         next_id (int): The track id for the new person instance.
         min_keypoints (int): Minimum number of keypoints recognized as person.
             default: 3.
@@ -202,6 +203,9 @@ def get_track_id(results,
             'migrated to Smoother (mmpose.core.Smoother). See '
             'demo/top_down_pose_trackign_demo_with_mmdet.py for an '
             'example.', DeprecationWarning)
+
+    if results_last is None:
+        results_last = []
 
     results = _get_area(results)
 

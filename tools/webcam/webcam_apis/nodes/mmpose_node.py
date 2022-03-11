@@ -13,7 +13,7 @@ from .node import Node
 @dataclass
 class TrackInfo:
     next_id: int = 0
-    last_pose_results: Optional[List] = None
+    last_pose_preds: List = None
 
 
 @NODES.register_module()
@@ -32,7 +32,7 @@ class TopDownPoseEstimatorNode(Node):
             cls_ids: Optional[List] = None,
             cls_names: Optional[List] = None,
             bbox_thr: float = 0.5,
-            smooth: bool = True,
+            smooth: bool = False,
             smooth_filter_cfg: str = 'configs/_base_/filters/one_euro.py'):
         super().__init__(name=name, enable_key=enable_key, enable=enable)
 
@@ -93,7 +93,7 @@ class TopDownPoseEstimatorNode(Node):
             full_det_preds.extend(det_preds)
 
         # Inference pose
-        pose_results, _ = inference_top_down_pose_model(
+        pose_preds, _ = inference_top_down_pose_model(
             self.model,
             img,
             full_det_preds,
@@ -101,22 +101,22 @@ class TopDownPoseEstimatorNode(Node):
             format='xyxy')
 
         # Pose tracking
-        pose_results, next_id = get_track_id(
-            pose_results,
-            self.track_info.last_pose_results,
+        pose_preds, next_id = get_track_id(
+            pose_preds,
+            self.track_info.last_pose_preds,
             self.track_info.next_id,
             use_oks=False,
             tracking_thr=0.3)
 
         self.track_info.next_id = next_id
-        self.track_info.last_pose_results = pose_results.copy()
+        self.track_info.last_pose_preds = pose_preds.copy()
 
         # Pose smoothing
         if self.smoother:
-            pose_results = self.smoother.smooth(pose_results)
+            pose_preds = self.smoother.smooth(pose_preds)
 
         pose_result = {
-            'preds': pose_results,
+            'preds': pose_preds,
             'model_cfg': self.model.cfg.copy(),
         }
 

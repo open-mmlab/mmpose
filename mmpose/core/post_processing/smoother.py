@@ -156,6 +156,11 @@ class Smoother():
             which has the same data structure as the input's.
         """
 
+        # Check if input is empty
+        if not (results) or not (results[0]):
+            warnings.warn('Smoother received empty result.')
+            return results
+
         # Check input is single frame or sequence
         if is_seq_of(results, dict):
             single_frame = True
@@ -163,11 +168,6 @@ class Smoother():
         else:
             assert is_seq_of(results, list)
             single_frame = False
-
-        # Check if input is empty
-        if len(results[0]) == 0:
-            warnings.warn('Smoother received empty result.')
-            return results
 
         # Get temporal length of input
         T = len(results)
