@@ -7,6 +7,7 @@ import cv2
 
 from mmpose.apis import (get_track_id, inference_bottom_up_pose_model,
                          init_pose_model, vis_pose_tracking_result)
+from mmpose.core import Smoother
 from mmpose.datasets import DatasetInfo
 
 
@@ -42,7 +43,19 @@ def main():
     parser.add_argument(
         '--euro',
         action='store_true',
-        help='Using One_Euro_Filter for smoothing')
+        help='(Deprecated, please use --smooth and --smooth-filter-cfg) '
+        'Using One_Euro_Filter for smoothing.')
+    parser.add_argument(
+        '--smooth',
+        action='store_true',
+        help='Apply a temporal filter to smooth the pose estimation results. '
+        'See also --smooth-filter-cfg.')
+    parser.add_argument(
+        '--smooth-filter-cfg',
+        type=str,
+        default='configs/_base_/filters/one_euro.py',
+        help='Config file of the filter to smooth the pose estimation '
+        'results. See also --smooth.')
     parser.add_argument(
         '--radius',
         type=int,
@@ -97,6 +110,20 @@ def main():
     # optional
     return_heatmap = False
 
+    # build pose smoother for temporal refinement
+    if args.euro:
+        warnings.warn(
+            'Argument --euro will be deprecated in the future. '
+            'Please use --smooth to enable temporal smoothing, and '
+            '--smooth-filter-cfg to set the filter config.',
+            DeprecationWarning)
+        smoother = Smoother(
+            filter_cfg='configs/_base_/filters/one_euro.py', keypoint_dim=2)
+    elif args.smooth:
+        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=2)
+    else:
+        smoother = None
+
     # e.g. use ('backbone', ) to return backbone feature
     output_layer_names = None
     next_id = 0
@@ -125,6 +152,10 @@ def main():
             tracking_thr=args.tracking_thr,
             use_one_euro=args.euro,
             fps=fps)
+
+        # post-process the pose results with smoother
+        if smoother:
+            pose_results = smoother.smooth(pose_results)
 
         # show the results
         vis_img = vis_pose_tracking_result(
