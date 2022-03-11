@@ -3,6 +3,7 @@ import copy
 import tempfile
 
 import numpy as np
+import pytest
 from mmcv import Config
 
 from mmpose.datasets import DATASETS
@@ -355,7 +356,7 @@ def test_body3dmview_direct_campus_dataset():
         'configs/_base_/datasets/campus.py').dataset_info
     space_size = [12000.0, 12000.0, 12000.0]
     space_center = [3000.0, 4500.0, 1000.0]
-    cube_size = [80, 80, 20]
+    cube_size = [8, 8, 2]
 
     data_root = 'tests/data/campus'
     train_data_cfg = dict(
@@ -400,12 +401,25 @@ def test_body3dmview_direct_campus_dataset():
         gt_pose_db_file=f'{data_root}/actorsGT.mat',
     )
 
+    # test when dataset_info is None
     train_dataset = dataset_class(
         ann_file=None,
         img_prefix=data_root,
         data_cfg=train_data_cfg,
         pipeline=[],
-        dataset_info=dataset_info,
+        dataset_info=None,
+        test_mode=False)
+
+    # test different `image_size`
+    train_data_cfg_copy = copy.deepcopy(train_data_cfg)
+    train_data_cfg_copy['image_size'] = [800, 600]
+    train_data_cfg_copy['heatmap_size'] = [[200, 150]]
+    _ = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=train_data_cfg_copy,
+        pipeline=[],
+        dataset_info=None,
         test_mode=False)
 
     test_dataset = dataset_class(
@@ -416,7 +430,33 @@ def test_body3dmview_direct_campus_dataset():
         dataset_info=dataset_info,
         test_mode=True)
 
+    # test the length of dataset
     assert len(train_dataset) == train_data_cfg['num_train_samples']
+    gt_num = len(train_dataset)
+    results = []
+    for i in range(gt_num):
+        # test the __getitem__ method of dataset
+        _ = copy.deepcopy(train_dataset[i])
+        # due to the empty pipeline, each sample is a dict of multi-view infos
+        pose_3d = np.ones(
+            (1, train_data_cfg['maximum_person'], train_dataset.num_joints, 5))
+
+        # due to the complex process, we do not use the gt
+        # coco pose converting from shelf poses
+        results.append(dict(pose_3d=pose_3d, sample_id=[i]))
+
+    _ = train_dataset.evaluate(results, metric='pcp')
+
+    # test unsupported metric
+    with pytest.raises(ValueError):
+        _ = train_dataset.evaluate(results, metric='mpjpe')
+
+    # test res_folder in `evaluate`
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _ = train_dataset.evaluate(results, res_folder=tmpdir, metric='pcp')
+
+    # test recall_threshold
+    _ = train_dataset.evaluate(results, recall_threshold=50000, metric='pcp')
 
     # test the length of dataset
     gt_num = len(test_dataset)
@@ -444,7 +484,7 @@ def test_body3dmview_direct_shelf_dataset():
         'configs/_base_/datasets/shelf.py').dataset_info
     space_size = [8000, 8000, 2000]
     space_center = [450, -320, 800]
-    cube_size = [48, 48, 12]
+    cube_size = [8, 8, 2]
 
     data_root = 'tests/data/shelf'
     train_data_cfg = dict(
@@ -489,12 +529,25 @@ def test_body3dmview_direct_shelf_dataset():
         gt_pose_db_file=f'{data_root}/actorsGT.mat',
     )
 
+    # test when dataset_info is None
     train_dataset = dataset_class(
         ann_file=None,
         img_prefix=data_root,
         data_cfg=train_data_cfg,
         pipeline=[],
-        dataset_info=dataset_info,
+        dataset_info=None,
+        test_mode=False)
+
+    # test different `image_size`
+    train_data_cfg_copy = copy.deepcopy(train_data_cfg)
+    train_data_cfg_copy['image_size'] = [800, 400]
+    train_data_cfg_copy['heatmap_size'] = [[200, 100]]
+    _ = dataset_class(
+        ann_file=None,
+        img_prefix=data_root,
+        data_cfg=train_data_cfg_copy,
+        pipeline=[],
+        dataset_info=None,
         test_mode=False)
 
     test_dataset = dataset_class(
@@ -505,7 +558,33 @@ def test_body3dmview_direct_shelf_dataset():
         dataset_info=dataset_info,
         test_mode=True)
 
+    # test the length of dataset
     assert len(train_dataset) == train_data_cfg['num_train_samples']
+    gt_num = len(train_dataset)
+    results = []
+    for i in range(gt_num):
+        # test the __getitem__ method of dataset
+        _ = copy.deepcopy(train_dataset[i])
+        # due to the empty pipeline, each sample is a dict of multi-view infos
+        pose_3d = np.ones(
+            (1, train_data_cfg['maximum_person'], train_dataset.num_joints, 5))
+
+        # due to the complex process, we do not use the gt
+        # coco pose converting from shelf poses
+        results.append(dict(pose_3d=pose_3d, sample_id=[i]))
+
+    _ = train_dataset.evaluate(results, metric='pcp')
+
+    # test unsupported metric
+    with pytest.raises(ValueError):
+        _ = train_dataset.evaluate(results, metric='mpjpe')
+
+    # test res_folder in `evaluate`
+    with tempfile.TemporaryDirectory() as tmpdir:
+        _ = train_dataset.evaluate(results, res_folder=tmpdir, metric='pcp')
+
+    # test recall_threshold
+    _ = train_dataset.evaluate(results, recall_threshold=50000, metric='pcp')
 
     # test the length of dataset
     gt_num = len(test_dataset)
