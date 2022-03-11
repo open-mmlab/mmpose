@@ -7,6 +7,7 @@ import cv2
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
                          vis_pose_tracking_result)
+from mmpose.core import Smoother
 from mmpose.datasets import DatasetInfo
 
 try:
@@ -78,6 +79,17 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--smooth',
+        action='store_true',
+        help='Apply a temporal filter to smooth the pose estimation results. '
+        'See also --smooth-filter-cfg.')
+    parser.add_argument(
+        '--smooth-filter-cfg',
+        type=str,
+        default='configs/_base_/filters/one_euro.py',
+        help='Config file of the filter to smooth the pose estimation '
+        'results. See also --smooth.')
 
     assert has_mmtrack, 'Please install mmtrack to run the demo.'
 
@@ -127,6 +139,12 @@ def main():
     # e.g. use ('backbone', ) to return backbone feature
     output_layer_names = None
 
+    # build pose smoother for temporal refinement
+    if args.smooth:
+        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=2)
+    else:
+        smoother = None
+
     frame_id = 0
     while (cap.isOpened()):
         flag, img = cap.read()
@@ -150,6 +168,9 @@ def main():
             dataset_info=dataset_info,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
+
+        if smoother:
+            pose_results = smoother.smooth(pose_results)
 
         # show the results
         vis_img = vis_pose_tracking_result(

@@ -1,29 +1,39 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import time
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model)
+from mmpose.core import Smoother
 from ..utils import Message
 from .builder import NODES
 from .node import Node
 
 
+@dataclass
+class TrackInfo:
+    next_id: int = 0
+    last_pose_preds: List = None
+
+
 @NODES.register_module()
 class TopDownPoseEstimatorNode(Node):
 
-    def __init__(self,
-                 name: str,
-                 model_config: str,
-                 model_checkpoint: str,
-                 input_buffer: str,
-                 output_buffer: Union[str, List[str]],
-                 enable_key: Optional[Union[str, int]] = None,
-                 enable: bool = True,
-                 device: str = 'cuda:0',
-                 cls_ids: Optional[List] = None,
-                 cls_names: Optional[List] = None,
-                 bbox_thr: float = 0.5):
+    def __init__(
+            self,
+            name: str,
+            model_config: str,
+            model_checkpoint: str,
+            input_buffer: str,
+            output_buffer: Union[str, List[str]],
+            enable_key: Optional[Union[str, int]] = None,
+            enable: bool = True,
+            device: str = 'cuda:0',
+            cls_ids: Optional[List] = None,
+            cls_names: Optional[List] = None,
+            bbox_thr: float = 0.5,
+            smooth: bool = False,
+            smooth_filter_cfg: str = 'configs/_base_/filters/one_euro.py'):
         super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         # Init model
@@ -35,6 +45,10 @@ class TopDownPoseEstimatorNode(Node):
         self.cls_names = cls_names
         self.bbox_thr = bbox_thr
 
+        if smooth:
+            self.smoother = Smoother(smooth_filter_cfg, keypoint_dim=2)
+        else:
+            self.smoother = None
         # Init model
         self.model = init_pose_model(
             self.model_config,
@@ -42,11 +56,7 @@ class TopDownPoseEstimatorNode(Node):
             device=self.device.lower())
 
         # Store history for pose tracking
-        self.track_info = {
-            'next_id': 0,
-            'last_pose_preds': [],
-            'last_time': None
-        }
+        self.track_info = TrackInfo()
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', essential=True)
@@ -91,26 +101,19 @@ class TopDownPoseEstimatorNode(Node):
             format='xyxy')
 
         # Pose tracking
-        current_time = time.time()
-        if self.track_info['last_time'] is None:
-            fps = None
-        elif self.track_info['last_time'] >= current_time:
-            fps = None
-        else:
-            fps = 1.0 / (current_time - self.track_info['last_time'])
-
         pose_preds, next_id = get_track_id(
             pose_preds,
-            self.track_info['last_pose_preds'],
-            self.track_info['next_id'],
+            self.track_info.last_pose_preds,
+            self.track_info.next_id,
             use_oks=False,
-            tracking_thr=0.3,
-            use_one_euro=True,
-            fps=fps)
+            tracking_thr=0.3)
 
-        self.track_info['next_id'] = next_id
-        self.track_info['last_pose_preds'] = pose_preds.copy()
-        self.track_info['last_time'] = current_time
+        self.track_info.next_id = next_id
+        self.track_info.last_pose_preds = pose_preds.copy()
+
+        # Pose smoothing
+        if self.smoother:
+            pose_preds = self.smoother.smooth(pose_preds)
 
         pose_result = {
             'preds': pose_preds,
