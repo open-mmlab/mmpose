@@ -2,6 +2,7 @@
 # Adapted from https://github.com/HoBeom/OneEuroFilter-Numpy
 # Original licence: Copyright (c)  HoBeom Jeon, under the MIT License.
 # ------------------------------------------------------------------------------
+import warnings
 from time import time
 
 import numpy as np
@@ -35,6 +36,13 @@ class OneEuroFilter:
             d_cutoff (float): Input data FPS
             fps (float): Video FPS for video inference
         """
+        warnings.warn(
+            'OneEuroFilter from '
+            '`mmpose/core/post_processing/one_euro_filter.py` will '
+            'be deprecated in the future. Please use Smoother'
+            '(`mmpose/core/post_processing/smoother.py`) with '
+            'OneEuroFilter (`mmpose/core/post_processing/temporal_'
+            'filters/one_euro_filter.py`).', DeprecationWarning)
 
         # The parameters.
         self.data_shape = x0.shape
@@ -50,10 +58,13 @@ class OneEuroFilter:
             # Using in realtime inference
             self.t_e = None
             self.skip_frame_factor = d_cutoff
+            self.fps = d_cutoff
         else:
             # fps using video inference
             self.realtime = False
-            self.d_cutoff = np.full(x0.shape, float(fps))
+            self.fps = float(fps)
+            self.d_cutoff = np.full(x0.shape, self.fps)
+
         self.t_prev = time()
 
     def __call__(self, x, t_e=1.0):
@@ -81,13 +92,13 @@ class OneEuroFilter:
         mask = np.ma.masked_where(x <= 0, x)
 
         # The filtered derivative of the signal.
-        a_d = smoothing_factor(t_e, self.d_cutoff)
+        a_d = smoothing_factor(t_e / self.fps, self.d_cutoff)
         dx = (x - self.x_prev) / t_e
         dx_hat = exponential_smoothing(a_d, dx, self.dx_prev)
 
         # The filtered signal.
         cutoff = self.min_cutoff + self.beta * np.abs(dx_hat)
-        a = smoothing_factor(t_e, cutoff)
+        a = smoothing_factor(t_e / self.fps, cutoff)
         x_hat = exponential_smoothing(a, x, self.x_prev)
 
         # missing keypoints remove

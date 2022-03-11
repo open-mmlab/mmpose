@@ -10,7 +10,7 @@ import numpy as np
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model, vis_pose_result)
-from mmpose.core import apply_bugeye_effect, apply_sunglasses_effect
+from mmpose.core import Smoother, apply_bugeye_effect, apply_sunglasses_effect
 from mmpose.utils import StopWatch
 
 try:
@@ -152,6 +152,18 @@ def parse_args():
         help='Enable synchronous mode that video I/O and inference will be '
         'temporally aligned. Note that this will reduce the display FPS.')
 
+    parser.add_argument(
+        '--smooth',
+        action='store_true',
+        help='Apply a temporal filter to smooth the pose estimation results. '
+        'See also --smooth-filter-cfg.')
+    parser.add_argument(
+        '--smooth-filter-cfg',
+        type=str,
+        default='configs/_base_/filters/one_euro.py',
+        help='Config file of the filter to smooth the pose estimation '
+        'results. See also --smooth.')
+
     return parser.parse_args()
 
 
@@ -265,8 +277,9 @@ def inference_pose():
             ts_input, frame, t_info, mmdet_results = det_result_queue.popleft()
 
         pose_results_list = []
-        for model_info, pose_history in zip(pose_model_list,
-                                            pose_history_list):
+        for model_info, pose_history, smoother in zip(pose_model_list,
+                                                      pose_history_list,
+                                                      pose_smoother_list):
             model_name = model_info['name']
             pose_model = model_info['model']
             cat_ids = model_info['cat_ids']
@@ -295,9 +308,10 @@ def inference_pose():
                     pose_results_last,
                     next_id,
                     use_oks=False,
-                    tracking_thr=0.3,
-                    use_one_euro=True,
-                    fps=None)
+                    tracking_thr=0.3)
+
+                if smoother:
+                    pose_results = smoother.smooth(pose_results)
 
                 pose_results_list.append(pose_results)
 
@@ -497,6 +511,7 @@ def main():
     global pose_result_queue, pose_result_queue_mutex
     global det_model, pose_model_list, pose_history_list
     global event_exit, event_inference_done
+    global pose_smoother_list
 
     args = parse_args()
 
@@ -539,6 +554,16 @@ def main():
     pose_history_list = []
     for _ in range(len(pose_model_list)):
         pose_history_list.append({'pose_results_last': [], 'next_id': 0})
+
+    # build pose smoother for temporal refinement
+    pose_smoother_list = []
+    for _ in range(len(pose_model_list)):
+        if args.smooth:
+            smoother = Smoother(
+                filter_cfg=args.smooth_filter_cfg, keypoint_dim=2)
+        else:
+            smoother = None
+        pose_smoother_list.append(smoother)
 
     # frame buffer
     if args.buffer_size > 0:
