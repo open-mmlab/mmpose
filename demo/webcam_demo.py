@@ -165,7 +165,7 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
     Returns:
         List[Dict]: detection results for mmpose input
     """
-    # print(mmdet_results)
+
     if isinstance(mmdet_results, tuple):
         mmdet_results = mmdet_results[0]
     
