@@ -140,8 +140,6 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 
 </details>
 
-Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
-
 <details open>
 <summary><b>Supported <a href="https://mmpose.readthedocs.io/en/latest/datasets.html">datasets</a>:</b></summary>
 
