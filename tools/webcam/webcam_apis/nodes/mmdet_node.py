@@ -62,12 +62,16 @@ class DetectorNode(Node):
             dets = preds
             segms = [None] * len(dets)
 
-        assert len(dets) == len(self.model.CLASSES)
-        assert len(segms) == len(self.model.CLASSES)
+        det_model_classes = self.model.CLASSES
+        if isinstance(det_model_classes, str):
+            det_model_classes = (det_model_classes, )
+
+        assert len(dets) == len(det_model_classes)
+        assert len(segms) == len(det_model_classes)
         result = {'preds': [], 'model_cfg': self.model.cfg.copy()}
 
         for i, (cls_name, bboxes,
-                masks) in enumerate(zip(self.model.CLASSES, dets, segms)):
+                masks) in enumerate(zip(det_model_classes, dets, segms)):
             if masks is None:
                 masks = [None] * len(bboxes)
             else:
