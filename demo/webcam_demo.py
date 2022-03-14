@@ -165,8 +165,12 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
     Returns:
         List[Dict]: detection results for mmpose input
     """
+    # print(mmdet_results)
     if isinstance(mmdet_results, tuple):
         mmdet_results = mmdet_results[0]
+    
+    if isinstance(class_names, str):
+        class_names = (class_names, )
 
     if not isinstance(cat_ids, (list, tuple)):
         cat_ids = [cat_ids]
@@ -236,6 +240,7 @@ def inference_detection():
             time.sleep(0.001)
         with input_queue_mutex:
             ts_input, frame = input_queue.popleft()
+
         # inference detection
         with stop_watch.timeit('Det'):
             mmdet_results = inference_detector(det_model, frame)
