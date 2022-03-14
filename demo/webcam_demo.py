@@ -168,6 +168,9 @@ def process_mmdet_results(mmdet_results, class_names=None, cat_ids=1):
     if isinstance(mmdet_results, tuple):
         mmdet_results = mmdet_results[0]
 
+    if isinstance(class_names, str):
+        class_names = (class_names, )
+
     if not isinstance(cat_ids, (list, tuple)):
         cat_ids = [cat_ids]
 
