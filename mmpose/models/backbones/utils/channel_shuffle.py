@@ -24,6 +24,6 @@ def channel_shuffle(x, groups):
 
     x = x.view(batch_size, groups, channels_per_group, height, width)
     x = torch.transpose(x, 1, 2).contiguous()
-    x = x.view(batch_size, -1, height, width)
+    x = x.view(batch_size, groups * channels_per_group, height, width)
 
     return x
