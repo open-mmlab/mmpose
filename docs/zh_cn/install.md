@@ -16,9 +16,9 @@
 
 ## 安装依赖包
 
-- Linux (Windows 系统暂未有官方支持)
+- Linux | Windows | macOS
 - Python 3.6+
-- PyTorch 1.3+
+- PyTorch 1.5+
 - CUDA 9.2+ (如果从源码编译 PyTorch,则可以兼容 CUDA 9.0 版本)
 - GCC 5+
 - [mmcv](https://github.com/open-mmlab/mmcv) 请安装最新版本的 mmcv-full
