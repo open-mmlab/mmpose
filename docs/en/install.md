@@ -14,9 +14,9 @@
 
 ## Requirements
 
-- Linux (Windows is not officially supported)
+- Linux | Windows | macOS
 - Python 3.6+
-- PyTorch 1.3+
+- PyTorch 1.5+
 - CUDA 9.2+ (If you build PyTorch from source, CUDA 9.0 is also compatible)
 - GCC 5+
 - [mmcv](https://github.com/open-mmlab/mmcv) (Please install the latest version of mmcv-full)
