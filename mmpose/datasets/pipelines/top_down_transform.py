@@ -322,8 +322,8 @@ class TopDownAffine:
                         flags=cv2.INTER_LINEAR)
                 for i in range(results['ann_info']['num_joints']):
                     if joints_3d_visible[i, 0] > 0.0:
-                        joints_3d[i,
-                                  0:2] = affine_transform(joints_3d[i, 0:2], trans)
+                        joints_3d[i, 0:2] = affine_transform(
+                            joints_3d[i, 0:2], trans)
 
         results['img'] = img
         results['joints_3d'] = joints_3d
@@ -649,7 +649,8 @@ class TopDownGenerateTarget:
                         t = np.empty(
                             (0, num_joints, heatmap_size[1], heatmap_size[0]),
                             dtype=np.float32)
-                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1),
+                                            dtype=np.float32)
                         for i in range(num_sigmas):
                             t_i, t_weight_i = self._msra_generate_target(
                                 cfg, j, j_vis, self.sigma[i])
@@ -662,11 +663,13 @@ class TopDownGenerateTarget:
                     target = np.empty(
                         (0, num_joints, heatmap_size[1], heatmap_size[0]),
                         dtype=np.float32)
-                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1),
+                                             dtype=np.float32)
                     for i in range(num_sigmas):
                         target_i, target_weight_i = self._msra_generate_target(
                             cfg, joints_3d, joints_3d_visible, self.sigma[i])
-                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target = np.concatenate([target, target_i[None]],
+                                                axis=0)
                         target_weight = np.concatenate(
                             [target_weight, target_weight_i[None]], axis=0)
 
@@ -677,8 +680,7 @@ class TopDownGenerateTarget:
                     target_weight = []
                     for j, j_vis in zip(joints_3d, joints_3d_visible):
                         t, t_weight = self._msra_generate_target(
-                            results['ann_info'], j, j_vis,
-                            self.sigma)
+                            results['ann_info'], j, j_vis, self.sigma)
                         target.append(t)
                         target_weight.append(t_weight)
                 else:
@@ -699,7 +701,8 @@ class TopDownGenerateTarget:
                     target_weight = []
                     for j, j_vis in zip(joints_3d, joints_3d_visible):
                         t = np.empty((0, num_joints, H, W), dtype=np.float32)
-                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1),
+                                            dtype=np.float32)
                         for i in range(num_kernels):
                             t_i, t_weight_i = self._megvii_generate_target(
                                 cfg, j, j_vis, self.kernel[i])
@@ -710,11 +713,15 @@ class TopDownGenerateTarget:
                         target_weight.append(t_weight)
                 else:
                     target = np.empty((0, num_joints, H, W), dtype=np.float32)
-                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1),
+                                             dtype=np.float32)
                     for i in range(num_kernels):
-                        target_i, target_weight_i = self._megvii_generate_target(
-                            cfg, joints_3d, joints_3d_visible, self.kernel[i])
-                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target_i, target_weight_i = \
+                            self._megvii_generate_target(
+                                cfg, joints_3d, joints_3d_visible,
+                                self.kernel[i])
+                        target = np.concatenate([target, target_i[None]],
+                                                axis=0)
                         target_weight = np.concatenate(
                             [target_weight, target_weight_i[None]], axis=0)
 
@@ -725,8 +732,7 @@ class TopDownGenerateTarget:
                     target_weight = []
                     for j, j_vis in zip(joints_3d, joints_3d_visible):
                         t, t_weight = self._megvii_generate_target(
-                            results['ann_info'], j, j_vis,
-                            self.kernel)
+                            results['ann_info'], j, j_vis, self.kernel)
                         target.append(t)
                         target_weight.append(t_weight)
                 else:
@@ -756,12 +762,12 @@ class TopDownGenerateTarget:
                     target_weight = []
                     for j, j_vis in zip(joints_3d, joints_3d_visible):
                         t = np.empty((0, channel_factor * num_joints, H, W),
-                                          dtype=np.float32)
-                        t_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                                     dtype=np.float32)
+                        t_weight = np.empty((0, num_joints, 1),
+                                            dtype=np.float32)
                         for i in range(num_factors):
                             t_i, t_weight_i = self._udp_generate_target(
-                                cfg, j, j_vis, factors[i],
-                                self.target_type)
+                                cfg, j, j_vis, factors[i], self.target_type)
                             t = np.concatenate([t, t_i[None]], axis=0)
                             t_weight = np.concatenate(
                                 [t_weight, t_weight_i[None]], axis=0)
@@ -770,12 +776,14 @@ class TopDownGenerateTarget:
                 else:
                     target = np.empty((0, channel_factor * num_joints, H, W),
                                       dtype=np.float32)
-                    target_weight = np.empty((0, num_joints, 1), dtype=np.float32)
+                    target_weight = np.empty((0, num_joints, 1),
+                                             dtype=np.float32)
                     for i in range(num_factors):
                         target_i, target_weight_i = self._udp_generate_target(
                             cfg, joints_3d, joints_3d_visible, factors[i],
                             self.target_type)
-                        target = np.concatenate([target, target_i[None]], axis=0)
+                        target = np.concatenate([target, target_i[None]],
+                                                axis=0)
                         target_weight = np.concatenate(
                             [target_weight, target_weight_i[None]], axis=0)
 
@@ -792,8 +800,8 @@ class TopDownGenerateTarget:
                         target_weight.append(t_weight)
                 else:
                     target, target_weight = self._udp_generate_target(
-                        results['ann_info'], joints_3d, joints_3d_visible, factors,
-                        self.target_type)
+                        results['ann_info'], joints_3d, joints_3d_visible,
+                        factors, self.target_type)
         else:
             raise ValueError(
                 f'Encoding approach {self.encoding} is not supported!')

@@ -1,9 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import warnings
 
 import numpy as np
 import torch
-import copy
 
 from ..builder import POSENETS
 from .top_down import TopDown
@@ -18,9 +18,9 @@ except ImportError:
 
 @POSENETS.register_module()
 class LSTMPoseMachine(TopDown):
-    """Top-down pose detectors for LSTM Pose Machine.
-    Paper ref: Luo, Yue, et al. "Lstm pose machines." Proceedings of the IEEE
-    conference on computer vision and pattern recognition (2018).
+    """Top-down pose detectors for LSTM Pose Machine. Paper ref: Luo, Yue, et
+    al. "Lstm pose machines." Proceedings of the IEEE conference on computer
+    vision and pattern recognition (2018).
 
     <``https://arxiv.org/abs/1712.06316``>
 
@@ -163,7 +163,9 @@ class LSTMPoseMachine(TopDown):
                                          output_flipped_heatmap[i]) * 0.5
 
         if self.with_keypoint:
-            meta_keys = ['image_file', 'center', 'scale', 'bbox_score', 'bbox_id']
+            meta_keys = [
+                'image_file', 'center', 'scale', 'bbox_score', 'bbox_id'
+            ]
             batch_size = len(img_metas)
             num_frame = len(img_metas[0]['image_file'])
             for f in range(num_frame):
@@ -172,14 +174,16 @@ class LSTMPoseMachine(TopDown):
                     for key in meta_keys:
                         test_metas[i][key] = img_metas[i][key][f]
                 keypoint_result = self.keypoint_head.decode(
-                    test_metas, output_heatmap[f], img_size=[img_width, img_height])
+                    test_metas,
+                    output_heatmap[f],
+                    img_size=[img_width, img_height])
 
                 if result == {}:
                     result.update(keypoint_result)
                 else:
                     for key in result.keys():
-                        result[key] = np.concatenate((result[key],
-                                                      keypoint_result[key]), axis=0)
+                        result[key] = np.concatenate(
+                            (result[key], keypoint_result[key]), axis=0)
 
             if not return_heatmap:
                 output_heatmap = None

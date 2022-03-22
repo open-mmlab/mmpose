@@ -173,10 +173,10 @@ class LSTM_PM(BaseBackbone):
 
     def __init__(self,
                  in_channels=3,
-                 out_channels=17,
+                 out_channels=15,
                  stem_channels=32,
                  hidden_channels=48,
-                 num_stages=7,
+                 num_stages=5,
                  conv_cfg=None,
                  norm_cfg=None):
         super().__init__()

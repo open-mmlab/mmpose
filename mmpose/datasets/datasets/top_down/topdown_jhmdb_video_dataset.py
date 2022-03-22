@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
-import os.path as osp
 import warnings
 from collections import OrderedDict
 
@@ -78,7 +77,6 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             test_mode=test_mode)
 
         self.use_gt_bbox = data_cfg['use_gt_bbox']
-        self.bbox_file = data_cfg['bbox_file']
         self.det_bbox_thr = data_cfg.get('det_bbox_thr', 0.0)
         self.soft_nms = data_cfg['soft_nms']
         self.nms_thr = data_cfg['nms_thr']
@@ -158,7 +156,8 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 y1 = max(0, y)
                 x2 = min(width - 1, x1 + max(0, w - 1))
                 y2 = min(height - 1, y1 + max(0, h - 1))
-                if ('area' not in obj or obj['area'] > 0) and x2 > x1 and y2 > y1:
+                if ('area' not in obj
+                        or obj['area'] > 0) and x2 > x1 and y2 > y1:
                     obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
                     valid_objs.append(obj)
             objs = valid_objs
@@ -183,7 +182,8 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
                 center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
 
-                image_file = os.path.join(self.img_prefix, self.id2name[img_id])
+                image_file = os.path.join(self.img_prefix,
+                                          self.id2name[img_id])
                 track_id = obj['track_id']
                 rec = {
                     'image_file': image_file,
