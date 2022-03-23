@@ -19,9 +19,10 @@ from .mesh import (MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
 from .top_down import (TopDownAicDataset, TopDownCocoDataset,
                        TopDownCocoWholeBodyDataset, TopDownCrowdPoseDataset,
                        TopDownH36MDataset, TopDownHalpeDataset,
-                       TopDownJhmdbDataset, TopDownMhpDataset,
-                       TopDownMpiiDataset, TopDownMpiiTrbDataset,
-                       TopDownOCHumanDataset, TopDownPoseTrack18Dataset,
+                       TopDownJhmdbDataset, TopDownJhmdbVideoDataset,
+                       TopDownMhpDataset, TopDownMpiiDataset,
+                       TopDownMpiiTrbDataset, TopDownOCHumanDataset,
+                       TopDownPoseTrack18Dataset,
                        TopDownPoseTrack18VideoDataset)
 
 __all__ = [
@@ -40,5 +41,6 @@ __all__ = [
     'Body3DH36MDataset', 'AnimalHorse10Dataset', 'AnimalMacaqueDataset',
     'AnimalFlyDataset', 'AnimalLocustDataset', 'AnimalZebraDataset',
     'AnimalATRWDataset', 'AnimalPoseDataset', 'TopDownH36MDataset',
-    'TopDownHalpeDataset', 'TopDownPoseTrack18VideoDataset'
+    'TopDownHalpeDataset', 'TopDownPoseTrack18VideoDataset',
+    'TopDownJhmdbVideoDataset'
 ]

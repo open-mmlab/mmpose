@@ -165,19 +165,6 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
     def _write_keypoint_results(keypoint_results, gt_folder, pred_folder):
         """Write results into a json file."""
 
-    @abstractmethod
-    def _do_keypoint_eval(self, gt_folder, pred_folder):
-        """Keypoint evaluation.
-        Args:
-            gt_folder (str): The folder of the json files storing
-                ground truth keypoint annotations.
-            pred_folder (str): The folder of the json files storing
-                prediction results.
-
-        Returns:
-            List: Evaluation results for evaluation metric.
-        """
-
     def __len__(self):
         """Get the size of the dataset."""
         return len(self.db)

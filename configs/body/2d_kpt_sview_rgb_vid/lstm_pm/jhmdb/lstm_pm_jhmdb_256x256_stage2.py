@@ -59,8 +59,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[192, 256],
-    heatmap_size=[48, 64],
+    image_size=[256, 256],
+    heatmap_size=[32, 32],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -74,6 +74,8 @@ data_cfg = dict(
     det_bbox_thr=0.0,
     frame_indices_train=[0, 1, 2, 3, 4],
     frame_indices_test=[0, 1, 2, 3, 4],
+    frame_interval_train=1,
+    frame_interval_test=5,
 )
 
 # take care of orders of the transforms

@@ -18,10 +18,10 @@ class LSTM(nn.Module):
     """
 
     def __init__(self, out_channels=17, stem_channels=32, hidden_channels=48):
-
+        super().__init__()
         self.conv_fx = build_conv_layer(
             cfg=dict(type='Conv2d'),
-            in_channels=out_channels + stem_channels + 1,
+            in_channels=out_channels + stem_channels,
             out_channels=hidden_channels,
             kernel_size=3,
             stride=1,
@@ -39,7 +39,7 @@ class LSTM(nn.Module):
 
         self.conv_ix = build_conv_layer(
             cfg=dict(type='Conv2d'),
-            in_channels=out_channels + stem_channels + 1,
+            in_channels=out_channels + stem_channels,
             out_channels=hidden_channels,
             kernel_size=3,
             stride=1,
@@ -57,7 +57,7 @@ class LSTM(nn.Module):
 
         self.conv_gx = build_conv_layer(
             cfg=dict(type='Conv2d'),
-            in_channels=out_channels + stem_channels + 1,
+            in_channels=out_channels + stem_channels,
             out_channels=hidden_channels,
             kernel_size=3,
             stride=1,
@@ -75,7 +75,7 @@ class LSTM(nn.Module):
 
         self.conv_ox = build_conv_layer(
             cfg=dict(type='Conv2d'),
-            in_channels=out_channels + stem_channels + 1,
+            in_channels=out_channels + stem_channels,
             out_channels=hidden_channels,
             kernel_size=3,
             stride=1,
@@ -276,7 +276,7 @@ class LSTM_PM(BaseBackbone):
                 stride=1,
                 padding=0))
 
-        self.conv1 = nn.Sequential(*layers)
+        return nn.Sequential(*layers)
 
     def _make_conv2(self, in_channels):
         """Make conv2 for feature extraction."""
@@ -352,7 +352,7 @@ class LSTM_PM(BaseBackbone):
         heatmaps = []
 
         # Stage1
-        image = images[:, :self.in_channels, :, :]
+        image = images[0]
         initial_heatmap = self.conv1(image)
         feature = self.conv2(image)
 
@@ -365,8 +365,7 @@ class LSTM_PM(BaseBackbone):
 
         # Stage2
         for i in range(1, self.num_stages):
-            image = images[:, self.in_channels * i:self.in_channels *
-                           (i + 1), :, :]
+            image = images[i]
             features = self.conv2(image)
             cell, hidden = self.lstm(heatmap, features, hidden, cell)
             heatmap = self.conv3(hidden)

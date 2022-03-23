@@ -3,7 +3,6 @@ import copy
 import warnings
 
 import numpy as np
-import torch
 
 from ..builder import POSENETS
 from .top_down import TopDown
@@ -122,8 +121,6 @@ class LSTMPoseMachine(TopDown):
         # if return loss
         losses = dict()
         if self.with_keypoint:
-            target = torch.stack(target, dim=1)
-            target_weight = torch.stack(target_weight, dim=1)
             keypoint_losses = self.keypoint_head.get_loss(
                 output, target, target_weight)
             losses.update(keypoint_losses)

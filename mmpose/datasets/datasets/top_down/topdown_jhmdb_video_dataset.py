@@ -97,8 +97,8 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
         frame_interval_train = data_cfg.get('frame_interval_train', 1)
         frame_interval_test = data_cfg.get('frame_interval_test', 5)
-        self.frame_interval = frame_interval_train if self.test_mode \
-            else frame_interval_test
+        self.frame_interval = frame_interval_test if self.test_mode \
+            else frame_interval_train
         assert self.frame_interval > 0
 
         self.db = self._get_db()
@@ -219,7 +219,6 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             # frame_id start from 1
             cur_frame_id = 1
             for clip_id in range(int(np.ceil(nframes / self.frame_interval))):
-                cur_frame_id += clip_id * self.frame_interval
                 track_ids = vid_info[cur_frame_id].keys()
 
                 for track_id in track_ids:
@@ -240,6 +239,8 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                             for rec in rec_list:
                                 clip[key].append(rec[key])
                         gt_db.append(clip)
+
+                cur_frame_id += self.frame_interval
         return gt_db
 
     def _write_keypoint_results(self, keypoints, res_file):

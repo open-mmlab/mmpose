@@ -128,17 +128,31 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
         losses = dict()
 
         assert isinstance(output, list)
-        assert target.dim() == 4 and target_weight.dim() == 3
 
         if isinstance(self.loss, nn.Sequential):
             assert len(self.loss) == len(output)
+            identity_loss = False
+        else:
+            identity_loss = True
+        if isinstance(target, list):
+            assert isinstance(target_weight, list)
+            identity_target = False
+        else:
+            identity_target = True
+
         for i in range(len(output)):
-            target_i = target
-            target_weight_i = target_weight
-            if isinstance(self.loss, nn.Sequential):
-                loss_func = self.loss[i]
+            if identity_target:
+                target_i = target
+                target_weight_i = target_weight
             else:
+                target_i = target[i]
+                target_weight_i = target_weight[i]
+            assert target_i.dim() == 4 and target_weight_i.dim() == 3
+
+            if identity_loss:
                 loss_func = self.loss
+            else:
+                loss_func = self.loss[i]
             loss_i = loss_func(output[i], target_i, target_weight_i)
             if 'mse_loss' not in losses:
                 losses['mse_loss'] = loss_i
@@ -162,6 +176,12 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             target_weight (torch.Tensor[NxKx1]):
                 Weights across different joint types.
         """
+
+        assert isinstance(output, list)
+        if isinstance(target, list):
+            assert isinstance(target_weight, list)
+            target = target[-1]
+            target_weight = target_weight[-1]
 
         accuracy = dict()
 

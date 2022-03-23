@@ -34,7 +34,6 @@ class TopDownRandomFlip:
 
         # A flag indicating whether the image is flipped,
         # which can be used by child class.
-        flipped = False
         if np.random.rand() <= self.flip_prob:
             flipped = True
             if isinstance(img, list):
@@ -66,6 +65,11 @@ class TopDownRandomFlip:
                     joints_3d, joints_3d_visible, img.shape[1],
                     results['ann_info']['flip_pairs'])
                 center[0] = img.shape[1] - center[0] - 1
+
+        else:
+            joints_3d_new = joints_3d
+            joints_3d_visible_new = joints_3d_visible
+            flipped = False
 
         results['img'] = img
         results['joints_3d'] = joints_3d_new
@@ -260,7 +264,7 @@ class TopDownAffine:
                 assert isinstance(rot, list)
                 assert isinstance(img, list)
                 assert isinstance(joints_3d, list)
-                for i, (c, s, r) in enumerate(center, scale, rot):
+                for i, (c, s, r) in enumerate(zip(center, scale, rot)):
                     trans = get_warp_matrix(r, c * 2.0, image_size - 1.0,
                                             s * 200.0)
                     img[i] = cv2.warpAffine(
@@ -295,7 +299,7 @@ class TopDownAffine:
                 assert isinstance(img, list)
                 assert isinstance(joints_3d, list)
                 assert isinstance(joints_3d_visible, list)
-                for i, (c, s, r) in enumerate(center, scale, rot):
+                for i, (c, s, r) in enumerate(zip(center, scale, rot)):
                     trans = get_affine_transform(c, s, r, image_size)
                     img[i] = cv2.warpAffine(
                         img[i],
