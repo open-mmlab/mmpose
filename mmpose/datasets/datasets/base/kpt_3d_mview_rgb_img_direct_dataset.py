@@ -1,9 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+import json
+import os.path as osp
+import pickle
 from abc import ABCMeta, abstractmethod
 
-import json_tricks as json
+import json_tricks as json_
 import numpy as np
+import scipy.io as scio
 from torch.utils.data import Dataset
 
 from mmpose.datasets import DatasetInfo
@@ -124,7 +128,7 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
         """Write results into a json file."""
 
         with open(res_file, 'w') as f:
-            json.dump(keypoints, f, sort_keys=True, indent=4)
+            json_.dump(keypoints, f, sort_keys=True, indent=4)
 
     def __len__(self):
         """Get the size of the dataset."""
@@ -140,3 +144,110 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
             results[c] = result
 
         return self.pipeline(results)
+
+    @staticmethod
+    def _sort_and_unique_outputs(outputs, key='sample_id'):
+        """sort outputs and remove the repeated ones."""
+        outputs = sorted(outputs, key=lambda x: x[key])
+        num_outputs = len(outputs)
+        for i in range(num_outputs - 1, 0, -1):
+            if outputs[i][key] == outputs[i - 1][key]:
+                del outputs[i]
+
+        return outputs
+
+    def _get_scale(self, raw_image_size):
+        heatmap_size = self.ann_info['heatmap_size']
+        image_size = self.ann_info['image_size']
+        assert heatmap_size[0][0] / heatmap_size[0][1] \
+               == image_size[0] / image_size[1]
+        w, h = raw_image_size
+        w_resized, h_resized = image_size
+        if w / w_resized < h / h_resized:
+            w_pad = h / h_resized * w_resized
+            h_pad = h
+        else:
+            w_pad = w
+            h_pad = w / w_resized * h_resized
+
+        scale = np.array([w_pad, h_pad], dtype=np.float32)
+
+        return scale
+
+    @staticmethod
+    def rotate_points(points, center, rot_rad):
+        """
+        :param points:  N*2
+        :param center:  2
+        :param rot_rad: scalar
+        :return: N*2
+        """
+        rot_rad = rot_rad * np.pi / 180.0
+        rotate_mat = np.array([[np.cos(rot_rad), -np.sin(rot_rad)],
+                               [np.sin(rot_rad),
+                                np.cos(rot_rad)]])
+        center = center.reshape(2, 1)
+        points = points.T
+        points = rotate_mat.dot(points - center) + center
+
+        return points.T
+
+    @staticmethod
+    def calc_bbox(pose, pose_vis):
+        index = pose_vis[:, 0] > 0
+        bbox = [
+            np.min(pose[index, 0]),
+            np.min(pose[index, 1]),
+            np.max(pose[index, 0]),
+            np.max(pose[index, 1])
+        ]
+
+        return np.array(bbox)
+
+    def _get_cam(self, calib):
+        """Get camera parameters.
+
+        Returns: Camera parameters.
+        """
+        cameras = {}
+        for id, cam in calib.items():
+            sel_cam = {}
+            # note the transpose operation different from from VoxelPose
+            sel_cam['R'] = np.array(cam['R'], dtype=np.float32).T
+            sel_cam['T'] = np.array(cam['T'], dtype=np.float32)
+
+            sel_cam['k'] = np.array(cam['k'], dtype=np.float32)
+            sel_cam['p'] = np.array(cam['p'], dtype=np.float32)
+
+            sel_cam['f'] = [[cam['fx']], [cam['fy']]]
+            sel_cam['c'] = [[cam['cx']], [cam['cy']]]
+
+            cameras[id] = sel_cam
+
+        return cameras
+
+    def _load_files(self):
+        """load related db files."""
+        assert osp.exists(self.cam_file), f'camera calibration file ' \
+            f"{self.cam_file} doesn't exist, please check again"
+        with open(self.cam_file) as cfile:
+            calib = json.load(cfile)
+        self.cameras = self._get_cam(calib)
+
+        assert osp.exists(self.train_pose_db_file), f'train_pose_db_file ' \
+            f"{self.train_pose_db_file} doesn't exist, please check again"
+        with open(self.train_pose_db_file, 'rb') as pfile:
+            self.train_pose_db = pickle.load(pfile)
+
+        assert osp.exists(self.test_pose_db_file), f'test_pose_db_file ' \
+            f"{self.test_pose_db_file} doesn't exist, please check again"
+        with open(self.test_pose_db_file, 'rb') as pfile:
+            self.test_pose_db = pickle.load(pfile)
+
+        assert osp.exists(self.gt_pose_db_file), f'gt_pose_db_file ' \
+            f"{self.gt_pose_db_file} doesn't exist, please check again"
+        gt = scio.loadmat(self.gt_pose_db_file)
+        self.gt_pose_db = np.array(np.array(
+            gt['actor3D'].tolist()).tolist()).squeeze()
+
+        self.num_persons = len(self.gt_pose_db)
