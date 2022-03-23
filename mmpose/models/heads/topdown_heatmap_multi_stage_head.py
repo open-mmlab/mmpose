@@ -208,7 +208,7 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             out.append(y)
         return out
 
-    def inference_model(self, x, flip_pairs=None):
+    def inference_model(self, x, flip_pairs=None, return_last=True):
         """Inference function.
 
         Returns:
@@ -218,24 +218,33 @@ class TopdownHeatmapMultiStageHead(TopdownHeatmapBaseHead):
             x (List[torch.Tensor[NxKxHxW]]): Input features.
             flip_pairs (None | list[tuple()):
                 Pairs of keypoints which are mirrored.
+            return_last (bool): Choose to return the last output or
+                all the outputs.
         """
         output = self.forward(x)
         assert isinstance(output, list)
-        output = output[-1]
 
-        if flip_pairs is not None:
-            # perform flip
-            output_heatmap = flip_back(
-                output.detach().cpu().numpy(),
-                flip_pairs,
-                target_type=self.target_type)
-            # feature is not aligned, shift flipped heatmap for higher accuracy
-            if self.test_cfg.get('shift_heatmap', False):
-                output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
-        else:
-            output_heatmap = output.detach().cpu().numpy()
+        output_heatmaps = []
+        for i in range(len(output)):
+            if flip_pairs is not None:
+                # perform flip
+                output_heatmap = flip_back(
+                    output[i].detach().cpu().numpy(),
+                    flip_pairs,
+                    target_type=self.target_type)
+                # feature is not aligned, shift flipped heatmap
+                # for higher accuracy
+                if self.test_cfg.get('shift_heatmap', False):
+                    output_heatmap[:, :, :, 1:] = output_heatmap[:, :, :, :-1]
+                output_heatmaps.append(output_heatmap)
+            else:
+                output_heatmap = output[i].detach().cpu().numpy()
+                output_heatmaps.append(output_heatmap)
 
-        return output_heatmap
+        if return_last:
+            output_heatmaps = output_heatmaps[-1]
+
+        return output_heatmaps
 
     def _make_deconv_layer(self, num_layers, num_filters, num_kernels):
         """Make deconv layers."""

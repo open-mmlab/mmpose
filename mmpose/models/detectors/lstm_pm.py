@@ -145,7 +145,7 @@ class LSTMPoseMachine(TopDown):
             features = self.neck(features)
         if self.with_keypoint:
             output_heatmap = self.keypoint_head.inference_model(
-                features, flip_pairs=None)
+                features, flip_pairs=None, return_last=False)
 
         if self.test_cfg.get('flip_test', True):
             imgs_flipped = [img.flip(3) for img in imgs]

@@ -267,7 +267,7 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
         with open(res_file, 'r') as fin:
             preds = json.load(fin)
-        assert len(preds) == len(self.db)
+        assert len(preds) == len(self.image_db)
 
         outputs = []
         gts = []
@@ -275,7 +275,7 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
         threshold_bbox = []
         threshold_torso = []
 
-        for pred, item in zip(preds, self.db):
+        for pred, item in zip(preds, self.image_db):
             outputs.append(np.array(pred['keypoints'])[:, :-1])
             gts.append(np.array(item['joints_3d'])[:, :-1])
             masks.append((np.array(item['joints_3d_visible'])[:, 0]) > 0)
@@ -415,3 +415,13 @@ class TopDownJhmdbVideoDataset(Kpt2dSviewRgbVidTopDownDataset):
         name_value = OrderedDict(info_str)
 
         return name_value
+
+    def _sort_and_unique_bboxes(self, kpts, key='bbox_id'):
+        """sort kpts and remove the repeated ones."""
+        kpts = sorted(kpts, key=lambda x: x[key])
+        num = len(kpts)
+        for i in range(num - 1, 0, -1):
+            if kpts[i][key] == kpts[i - 1][key]:
+                del kpts[i]
+
+        return kpts

@@ -22,7 +22,7 @@ lr_config = dict(
     step=[8, 15])
 total_epochs = 20
 log_config = dict(
-    interval=100,
+    interval=50,
     hooks=[
         dict(type='TextLoggerHook'),
         # dict(type='TensorboardLoggerHook')
@@ -97,7 +97,7 @@ train_pipeline = [
         keys=['img', 'target', 'target_weight'],
         meta_keys=[
             'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
-            'rotation', 'bbox', 'flip_pairs'
+            'rotation', 'bbox_score', 'flip_pairs'
         ]),
 ]
 
@@ -115,7 +115,8 @@ val_pipeline = [
             'img',
         ],
         meta_keys=[
-            'image_file', 'center', 'scale', 'rotation', 'bbox', 'flip_pairs'
+            'image_file', 'center', 'scale', 'rotation', 'bbox_score',
+            'flip_pairs'
         ]),
 ]
 
@@ -123,10 +124,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/jhmdb'
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=64,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=4),
-    test_dataloader=dict(samples_per_gpu=4),
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownJhmdbVideoDataset',
         ann_file=f'{data_root}/annotations/Sub1_train.json',
