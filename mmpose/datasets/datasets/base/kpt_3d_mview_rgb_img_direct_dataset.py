@@ -114,7 +114,6 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         return id2name, name2id
 
-    @abstractmethod
     def _get_db(self):
         """Load dataset."""
         raise NotImplementedError
