@@ -7,7 +7,7 @@ MMPose supported datasets:
 
 - [Human3.6M](#human36m) \[ [Homepage](http://vision.imar.ro/human3.6m/description.php) \]
 - [CMU Panoptic](#cmu-panoptic) \[ [Homepage](http://domedb.perception.cs.cmu.edu/) \]
-- [Campus/Shelf](#campus/shelf) \[ [Homepage](http://campar.in.tum.de/Chair/MultiHumanPose) \]
+- [Campus/Shelf](#campus-and-shelf) \[ [Homepage](http://campar.in.tum.de/Chair/MultiHumanPose) \]
 
 ## Human3.6M
 
@@ -120,10 +120,10 @@ mmpose
             ├── ...
 ```
 
-## Campus/Shelf
+## Campus and Shelf
 
 <details>
-<summary align="right"><a href="http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf.html">Campus/Shelf (CVPR'2014)</a></summary>
+<summary align="right"><a href="http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf">Campus and Shelf (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings {belagian14multi,

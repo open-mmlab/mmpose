@@ -17,7 +17,7 @@
 <!-- [DATASET] -->
 
 <details>
-<summary align="right"><a href="http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf.html">Campus (CVPR'2014)</a></summary>
+<summary align="right"><a href="http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf">Campus (CVPR'2014)</a></summary>
 
 ```bibtex
 @inproceedings {belagian14multi,
