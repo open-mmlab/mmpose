@@ -16,7 +16,9 @@
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153801397-640f2b45-64e7-41b3-8b00-670c16c57df5.png">
-<figcaption>Pose Estimation Config 示意</figcaption>
+</div>
+<div align=center>
+Pose Estimation Config 示意
 </div>
 
 可以看到，这个 config 已经实现了我们设计思路中“1-目标检测”和“2-关键点检测”的功能。我们还需要实现“3-贴素材图”功能，这就需要定义一个新的 Node了。
@@ -93,7 +95,9 @@ class SunglassesNode(FrameDrawingNode):
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153773612-bcf86b91-31a3-47b5-886d-e33577016f85.png">
-<figcaption>太阳镜特效原理示意</figcaption>
+</div>
+太阳镜特效原理示意
+<div align=center>
 </div>
 
 ### Get Advanced：关于 Node 和 FrameEffectNode
@@ -132,7 +136,9 @@ class SunglassesNode(FrameDrawingNode):
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153801499-590a7810-b231-4a38-8053-c7d33af1535a.png">
-<figcaption>修改后的 Config，添加了 SunglassesNode 节点</figcaption>
+</div>
+修改后的 Config，添加了 SunglassesNode 节点
+<div align=center>
 </div>
 
 具体的写法如下：
