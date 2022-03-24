@@ -114,10 +114,6 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         return id2name, name2id
 
-    def _get_db(self):
-        """Load dataset."""
-        raise NotImplementedError
-
     @abstractmethod
     def evaluate(self, results, *args, **kwargs):
         """Evaluate keypoint results."""
