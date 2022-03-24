@@ -110,9 +110,9 @@ Runner 和 Node 的关系简单来说如下图所示：
 
 图中的每个 Data Buffer 就是一个用来存放数据的容器。用户不需要关注 buffer 的具体细节，只需要将其简单理解成 Node 输入输出的名字即可。用户在 config 中可以任意定义这些名字，不过要注意有以下几个特殊的名字：
 
-- _input_：存放 runner 读入的视频帧，用于模型推理
-- _frame_ ：存放 runner 读入的视频帧，用于可视化
-- _display_：存放经过所以 Node 处理后的结果，用于在屏幕上显示
+- \_input\_：存放 runner 读入的视频帧，用于模型推理
+- \_frame\_ ：存放 runner 读入的视频帧，用于可视化
+- \_display\_：存放经过所以 Node 处理后的结果，用于在屏幕上显示
 
 当一帧视频数据被 runner 读入后，会被放进 _input_ 和 _frame_ 两个 buffer 中，然后按照 config 中定义的 Node 连接关系依次通过各个 Node ，最终到达 _display_ ，并被 runner 读出显示在屏幕上。
 

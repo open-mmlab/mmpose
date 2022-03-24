@@ -28,7 +28,7 @@
 1. Node：所有 node 的基类，实现了初始化，绑定 runner，启动运行，数据输入输出等基本功能。子类通过重写抽象方法`process()`方法定义具体的 node 功能。
 2. FrameDrawingNode：用来绘制图像的 node 基类。FrameDrawingNode继承自 Node 并进一步封装了`process()`方法，提供了抽象方法`draw()`供子类实现具体的图像绘制功能。
 
-显然，“贴素材图”这个功能属于图像绘制，因此我们只需要继承 BaseFrameEffectNode 类即可。具体实现如下：
+显然，“贴素材图”这个功能属于图像绘制，因此我们只需要继承 FrameDrawingNode 类即可。具体实现如下：
 
 ```python
 # 假设该文件路径为
@@ -110,14 +110,14 @@ class SunglassesNode(FrameDrawingNode):
 1. 在__init__()中注册输入、输出 buffer，并调用基类的__init__()方法
 2. 实现process()和bypass()（如需要）方法
 
-[FrameDrawingNode 类](tools/webcam/webcam_apis/nodes/frame_drawing_node.py) ：继承自 Node 类，对`process()`和`bypass()`方法做了进一步封装：
+[FrameDrawingNode 类](/tools/webcam/webcam_apis/nodes/frame_drawing_node.py) ：继承自 Node 类，对`process()`和`bypass()`方法做了进一步封装：
 
 - process()：从接到输入中提取帧图像，传入draw()方法中绘图。draw()是一个抽象接口，有子类实现
 - bypass()：直接将节点输入返回
 
 ### Get Advanced: 关于节点的输入、输出格式
 
-我们定义了[FrameMessage 类](tools/webcam/webcam_apis/utils/message.py)作为节点间通信的数据结构。也就是说，通常情况下节点的输入、输出和 buffer 中存储的元素，都是 FrameMessage 类的实例。FrameMessage 通常用来存储视频中1帧的信息，它提供了简单的接口，用来提取和存入数据：
+我们定义了[FrameMessage 类](/tools/webcam/webcam_apis/utils/message.py)作为节点间通信的数据结构。也就是说，通常情况下节点的输入、输出和 buffer 中存储的元素，都是 FrameMessage 类的实例。FrameMessage 通常用来存储视频中1帧的信息，它提供了简单的接口，用来提取和存入数据：
 
 - `get_image()`：返回图像
 - `set_image()`：设置图像

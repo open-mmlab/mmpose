@@ -13,7 +13,7 @@ We can apply fun effects on videos with pose estimation results, like adding sun
 Launch the demo from the mmpose root directory:
 
 ```shell
-python tools/webcam/run_webcam.py --config tools/webcam/configs/examples/pose_estimation.py
+python tools/webcam/run_webcam.py --config tools/webcam/configs/eyes/eyes.py
 ```
 
 ### Hotkeys
