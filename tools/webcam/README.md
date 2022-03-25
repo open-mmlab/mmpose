@@ -4,7 +4,9 @@ MMPose Webcam API is a handy tool to develop interactive webcam applications wit
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153800450-2522efe8-bc11-457d-9037-d8aee4fc4f36.png">
-<figcaption>MMPose Webcam API Overview</figcaption>
+</div>
+<div align=center>
+MMPose Webcam API Overview
 </div>
 
 ## Requirements
