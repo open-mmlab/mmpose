@@ -182,8 +182,9 @@ class PoseFormer(BaseBackbone):
                  num_frame=9,
                  num_joints=17,
                  in_chans=2,
-                 embed_dim_ratio=32,
-                 depth=4,
+                 spatial_embed_dim=32,
+                 spatial_depth=4,
+                 temporal_depth=4,
                  num_heads=8,
                  mlp_ratio=2.,
                  qkv_bias=True,
@@ -192,7 +193,7 @@ class PoseFormer(BaseBackbone):
                  attn_drop_rate=0.,
                  drop_path_rate=0.2,
                  act_cfg=dict(type='GELU'),
-                 norm_cfg=dict(type='LN'),
+                 norm_cfg=dict(type='LN', eps=1e-6),
                  init_cfg=None):
         """
         Args:
@@ -200,8 +201,10 @@ class PoseFormer(BaseBackbone):
             num_joints (int, tuple): joints number
             in_chans (int): number of input channels,
                             2D joints have 2 channels: (x,y)
-            embed_dim_ratio (int): embedding dimension ratio
-            depth (int): depth of transformer
+            spatial_embed_dim (int): embedding dimension of
+                                     the spatial transformer
+            spatial_depth (int): depth of the spatial transformer
+            temporal_depth (int): depth of the temporal transformer
             num_heads (int): number of attention heads
             mlp_ratio (int): ratio of mlp hidden dim to embedding dim
             qkv_bias (bool): enable bias for qkv if True
@@ -217,53 +220,60 @@ class PoseFormer(BaseBackbone):
         if norm_cfg is None:
             norm_cfg = dict(type='LN')
         # Temporal embed_dim is num_joints * spatial embedding dim ratio
-        embed_dim = embed_dim_ratio * num_joints
+        temporal_embed_dim = spatial_embed_dim * num_joints
         # output dimension is num_joints * 3
 
         # Spatial patch embedding
-        self.spatial_patch_to_embedding = nn.Linear(in_chans, embed_dim_ratio)
+        self.spatial_patch_to_embedding = nn.Linear(in_chans,
+                                                    spatial_embed_dim)
         self.spatial_pos_embed = nn.Parameter(
-            torch.zeros(1, num_joints, embed_dim_ratio))
+            torch.zeros(1, num_joints, spatial_embed_dim))
 
         self.temporal_pos_embed = nn.Parameter(
-            torch.zeros(1, num_frame, embed_dim))
+            torch.zeros(1, num_frame, temporal_embed_dim))
         self.pos_drop = nn.Dropout(p=drop_rate)
 
         # Stochastic depth decay rule
-        dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]
+        spatial_dpr = [
+            x.item() for x in torch.linspace(0, drop_path_rate, spatial_depth)
+        ]
 
         self.spatial_blocks = nn.ModuleList([
             TransformerEncoderLayer(
-                embed_dims=embed_dim_ratio,
+                embed_dims=spatial_embed_dim,
                 num_heads=num_heads,
-                feedforward_channels=int(mlp_ratio * embed_dim),
+                feedforward_channels=int(mlp_ratio * spatial_embed_dim),
                 qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
                 drop_rate=drop_rate,
                 attn_drop_rate=attn_drop_rate,
-                drop_path_rate=dpr[i],
+                drop_path_rate=spatial_dpr[i],
                 act_cfg=act_cfg,
                 norm_cfg=norm_cfg,
-                init_cfg=init_cfg) for i in range(depth)
+                init_cfg=init_cfg) for i in range(spatial_depth)
         ])
 
-        self.blocks = nn.ModuleList([
+        temporal_dpr = [
+            x.item() for x in torch.linspace(0, drop_path_rate, temporal_depth)
+        ]
+
+        self.temporal_blocks = nn.ModuleList([
             TransformerEncoderLayer(
-                embed_dims=embed_dim,
+                embed_dims=temporal_embed_dim,
                 num_heads=num_heads,
-                feedforward_channels=int(mlp_ratio * embed_dim),
+                feedforward_channels=int(mlp_ratio * temporal_embed_dim),
                 qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
                 drop_rate=drop_rate,
                 attn_drop_rate=attn_drop_rate,
-                drop_path_rate=dpr[i],
+                drop_path_rate=temporal_dpr[i],
                 act_cfg=act_cfg,
                 norm_cfg=norm_cfg,
-                init_cfg=init_cfg) for i in range(depth)
+                init_cfg=init_cfg) for i in range(temporal_depth)
         ])
 
-        self.spatial_norm = build_norm_layer(norm_cfg, embed_dim_ratio)[1]
-        self.temporal_norm = build_norm_layer(norm_cfg, embed_dim)[1]
+        self.spatial_norm = build_norm_layer(norm_cfg, spatial_embed_dim)[1]
+        self.temporal_norm = build_norm_layer(norm_cfg, temporal_embed_dim)[1]
 
         # An easy way to implement weighted mean
         self.weighted_mean = torch.nn.Conv1d(
@@ -292,7 +302,7 @@ class PoseFormer(BaseBackbone):
         b = x.shape[0]
         x += self.temporal_pos_embed
         x = self.pos_drop(x)
-        for blk in self.blocks:
+        for blk in self.temporal_blocks:
             x = blk(x)
 
         x = self.temporal_norm(x)

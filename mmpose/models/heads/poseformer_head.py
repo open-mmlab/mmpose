@@ -10,7 +10,7 @@ from .temporal_regression_head import TemporalRegressionHead
 class PoseFormerHead(TemporalRegressionHead):
 
     def __init__(self,
-                 embed_dim_ratio=32,
+                 spatial_embed_dim=32,
                  num_joints=17,
                  max_norm=None,
                  loss_keypoint=None,
@@ -19,7 +19,7 @@ class PoseFormerHead(TemporalRegressionHead):
                  test_cfg=None):
         nn.Module.__init__(self)
 
-        self.embed_dim_ratio = embed_dim_ratio
+        self.spatial_embed_dim = spatial_embed_dim
         self.num_joints = num_joints
         self.max_norm = max_norm
         self.loss = build_loss(loss_keypoint)
@@ -31,8 +31,8 @@ class PoseFormerHead(TemporalRegressionHead):
         self.test_cfg = {} if test_cfg is None else test_cfg
 
         self.fc = nn.Sequential(
-            nn.LayerNorm(embed_dim_ratio * num_joints),
-            nn.Linear(embed_dim_ratio * num_joints, num_joints * 3),
+            nn.LayerNorm(spatial_embed_dim * num_joints, eps=1e-5),
+            nn.Linear(spatial_embed_dim * num_joints, num_joints * 3),
         )
 
         if self.max_norm is not None:

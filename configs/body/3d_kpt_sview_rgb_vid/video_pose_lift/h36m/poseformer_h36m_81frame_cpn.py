@@ -41,7 +41,7 @@ channel_cfg = dict(
 model = dict(
     type='PoseLifter',
     pretrained=None,
-    backbone=dict(type='PoseFormer'),
+    backbone=dict(type='PoseFormer', num_frame=81),
     keypoint_head=dict(
         type='PoseFormerHead', loss_keypoint=dict(type='MPJPELoss')),
     train_cfg=dict(),
@@ -51,7 +51,7 @@ model = dict(
 data_root = 'data/h36m'
 train_data_cfg = dict(
     num_joints=17,
-    seq_len=9,
+    seq_len=81,
     seq_frame_interval=1,
     causal=False,
     temporal_padding=False,
@@ -63,7 +63,7 @@ train_data_cfg = dict(
 )
 test_data_cfg = dict(
     num_joints=17,
-    seq_len=1,
+    seq_len=81,
     seq_frame_interval=1,
     causal=False,
     temporal_padding=False,
