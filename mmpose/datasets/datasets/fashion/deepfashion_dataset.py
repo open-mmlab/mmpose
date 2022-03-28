@@ -1,10 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.datasets.builder import DATASETS
 from ..base import Kpt2dSviewRgbImgTopDownDataset
@@ -14,9 +15,9 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
-    `DeepFashion: Powering Robust Clothes Recognition
-    and Retrieval with Rich Annotations' CVPR'2016 and
-    `Fashion Landmark Detection in the Wild' ECCV'2016
+    "DeepFashion: Powering Robust Clothes Recognition
+    and Retrieval with Rich Annotations", CVPR'2016.
+    "Fashion Landmark Detection in the Wild", ECCV'2016.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -131,8 +132,7 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
                 # use 1.25bbox as input
                 center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
-                image_file = os.path.join(self.img_prefix,
-                                          self.id2name[img_id])
+                image_file = osp.join(self.img_prefix, self.id2name[img_id])
                 gt_db.append({
                     'image_file': image_file,
                     'center': center,
@@ -150,26 +150,30 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
 
         return gt_db
 
-    def evaluate(self, outputs, res_folder, metric='PCK', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='PCK', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[N,K,3]): The first two dimensions are
-                    coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[N,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_paths (list[str]): For example, [ 'img_00000001.jpg']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            results (list[dict]): Testing results containing the following
+                items:
 
-            res_folder (str): Path of directory to save the results.
+                - preds (np.ndarray[N,K,3]): The first two dimensions are \
+                    coordinates, score is the third dimension of the array.
+                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_paths (list[str]): For example, ['img_00000001.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed.
                 Options: 'PCK', 'AUC', 'EPE'.
 
@@ -182,14 +186,19 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -209,5 +218,8 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value

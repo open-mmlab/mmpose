@@ -1,8 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
+
 import numpy as np
 import torch
 
-from mmpose.models.detectors import TopDown
+from mmpose.models.detectors import PoseWarper, TopDown
 
 
 def test_vipnas_forward():
@@ -235,12 +237,241 @@ def test_topdown_forward():
         _ = detector.forward_dummy(imgs)
 
 
-def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
+def test_posewarper_forward():
+    # test PoseWarper
+    model_cfg = dict(
+        type='PoseWarper',
+        pretrained=None,
+        backbone=dict(
+            type='HRNet',
+            in_channels=3,
+            extra=dict(
+                stage1=dict(
+                    num_modules=1,
+                    num_branches=1,
+                    block='BOTTLENECK',
+                    num_blocks=(4, ),
+                    num_channels=(64, )),
+                stage2=dict(
+                    num_modules=1,
+                    num_branches=2,
+                    block='BASIC',
+                    num_blocks=(4, 4),
+                    num_channels=(48, 96)),
+                stage3=dict(
+                    num_modules=4,
+                    num_branches=3,
+                    block='BASIC',
+                    num_blocks=(4, 4, 4),
+                    num_channels=(48, 96, 192)),
+                stage4=dict(
+                    num_modules=3,
+                    num_branches=4,
+                    block='BASIC',
+                    num_blocks=(4, 4, 4, 4),
+                    num_channels=(48, 96, 192, 384))),
+            frozen_stages=4,
+        ),
+        concat_tensors=True,
+        neck=dict(
+            type='PoseWarperNeck',
+            in_channels=48,
+            freeze_trans_layer=True,
+            out_channels=17,
+            inner_channels=128,
+            deform_groups=17,
+            dilations=(3, 6, 12, 18, 24),
+            trans_conv_kernel=1,
+            res_blocks_cfg=dict(block='BASIC', num_blocks=20),
+            offsets_kernel=3,
+            deform_conv_kernel=3),
+        keypoint_head=dict(
+            type='TopdownHeatmapSimpleHead',
+            in_channels=17,
+            out_channels=17,
+            num_deconv_layers=0,
+            extra=dict(final_conv_kernel=0, ),
+            loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
+        train_cfg=dict(),
+        test_cfg=dict(
+            flip_test=False,
+            post_process='default',
+            shift_heatmap=True,
+            modulate_kernel=11))
+
+    detector = PoseWarper(model_cfg['backbone'], model_cfg['neck'],
+                          model_cfg['keypoint_head'], model_cfg['train_cfg'],
+                          model_cfg['test_cfg'], model_cfg['pretrained'], None,
+                          model_cfg['concat_tensors'])
+    assert detector.concat_tensors
+
+    detector.init_weights()
+
+    input_shape = (2, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
+
+    # test argument 'concat_tensors'
+    model_cfg_copy = copy.deepcopy(model_cfg)
+    model_cfg_copy['concat_tensors'] = False
+
+    detector = PoseWarper(model_cfg_copy['backbone'], model_cfg_copy['neck'],
+                          model_cfg_copy['keypoint_head'],
+                          model_cfg_copy['train_cfg'],
+                          model_cfg_copy['test_cfg'],
+                          model_cfg_copy['pretrained'], None,
+                          model_cfg_copy['concat_tensors'])
+    assert not detector.concat_tensors
+
+    detector.init_weights()
+
+    input_shape = (2, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
+
+    # flip test
+    model_cfg_copy = copy.deepcopy(model_cfg)
+    model_cfg_copy['test_cfg']['flip_test'] = True
+
+    detector = PoseWarper(model_cfg_copy['backbone'], model_cfg_copy['neck'],
+                          model_cfg_copy['keypoint_head'],
+                          model_cfg_copy['train_cfg'],
+                          model_cfg_copy['test_cfg'],
+                          model_cfg_copy['pretrained'], None,
+                          model_cfg_copy['concat_tensors'])
+
+    detector.init_weights()
+
+    input_shape = (1, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
+
+    # test different number of dilations
+    model_cfg_copy = copy.deepcopy(model_cfg)
+    model_cfg_copy['neck']['dilations'] = (3, 6, 12)
+
+    detector = PoseWarper(model_cfg_copy['backbone'], model_cfg_copy['neck'],
+                          model_cfg_copy['keypoint_head'],
+                          model_cfg_copy['train_cfg'],
+                          model_cfg_copy['test_cfg'],
+                          model_cfg_copy['pretrained'], None,
+                          model_cfg_copy['concat_tensors'])
+
+    detector.init_weights()
+
+    input_shape = (2, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
+
+    # test different backbone, change head accordingly
+    model_cfg_copy = copy.deepcopy(model_cfg)
+    model_cfg_copy['backbone'] = dict(type='ResNet', depth=18)
+    model_cfg_copy['neck']['in_channels'] = 512
+    model_cfg_copy['keypoint_head'] = dict(
+        type='TopdownHeatmapSimpleHead',
+        in_channels=17,
+        out_channels=17,
+        loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True))
+
+    detector = PoseWarper(model_cfg_copy['backbone'], model_cfg_copy['neck'],
+                          model_cfg_copy['keypoint_head'],
+                          model_cfg_copy['train_cfg'],
+                          model_cfg_copy['test_cfg'],
+                          model_cfg_copy['pretrained'], None,
+                          model_cfg_copy['concat_tensors'])
+
+    detector.init_weights()
+
+    input_shape = (1, 3, 64, 64)
+    num_frames = 2
+    mm_inputs = _demo_mm_inputs(input_shape, None, num_frames)
+
+    imgs = mm_inputs.pop('imgs')
+    target = mm_inputs.pop('target')
+    target_weight = mm_inputs.pop('target_weight')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward train
+    losses = detector.forward(
+        imgs, target, target_weight, img_metas, return_loss=True)
+    assert isinstance(losses, dict)
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+        _ = detector.forward_dummy(imgs)
+
+
+def _demo_mm_inputs(
+        input_shape=(1, 3, 256, 256), num_outputs=None, num_frames=1):
     """Create a superset of inputs needed to run test or train batches.
 
     Args:
         input_shape (tuple):
             input batch dimensions
+        num_frames (int):
+            number of frames for each sample, default: 1,
+            if larger than 1, return a list of tensors
     """
     (N, C, H, W) = input_shape
 
@@ -264,12 +495,23 @@ def _demo_mm_inputs(input_shape=(1, 3, 256, 256), num_outputs=None):
         'flip_pairs': [],
         'inference_channel': np.arange(17),
         'image_file': '<demo>.png',
+        'frame_weight': np.random.uniform(0, 1, num_frames),
     } for _ in range(N)]
 
     mm_inputs = {
-        'imgs': torch.FloatTensor(imgs).requires_grad_(True),
         'target': torch.FloatTensor(target),
         'target_weight': torch.FloatTensor(target_weight),
         'img_metas': img_metas
     }
+
+    if num_frames == 1:
+        imgs = torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
+    else:
+
+        imgs = [
+            torch.FloatTensor(rng.rand(*input_shape)).requires_grad_(True)
+            for _ in range(num_frames)
+        ]
+
+    mm_inputs['imgs'] = imgs
     return mm_inputs

@@ -96,6 +96,30 @@ def collate_metrics(keys):
     return used_metrics, metric_idx
 
 
+def collect_paper_readme():
+    """Collect paper readme files for collections.
+
+    Returns:
+        dict: collection name to corresponding paper readme link.
+    """
+    link_prefix = 'https://github.com/open-mmlab/mmpose/blob/master/'
+
+    readme_files = glob.glob(osp.join('docs/en/papers/*/*.md'))
+    readme_files.sort()
+    collection2readme = {}
+
+    for readme_file in readme_files:
+        with open(readme_file) as f:
+            keyline = [
+                line for line in f.readlines() if line.startswith('<summary')
+            ][0]
+            name = re.findall(r'<a href=".*">(.*?)[ ]*\(.*\'.*\).*</a>',
+                              keyline)[0]
+            collection2readme[name] = link_prefix + readme_file
+
+    return collection2readme
+
+
 def parse_config_path(path):
     """Parse model information from the config path.
 
@@ -121,7 +145,9 @@ def parse_config_path(path):
     # convert task name to readable version
     task2readable = {
         '2d_kpt_sview_rgb_img': '2D Keypoint',
+        '2d_kpt_sview_rgb_vid': '2D Keypoint',
         '3d_kpt_sview_rgb_img': '3D Keypoint',
+        '3d_kpt_mview_rgb_img': '3D Keypoint',
         '3d_kpt_sview_rgb_vid': '3D Keypoint',
         '3d_mesh_sview_rgb_img': '3D Mesh',
         None: None
@@ -147,21 +173,19 @@ def parse_md(md_file):
     Returns:
         Bool: If the target YAML file is different from the original.
     """
-    collection_info = parse_config_path(md_file)
-    collection_name = ' '.join([
-        collection_info['target'], collection_info['task'],
-        collection_info['algorithm'], collection_info['dataset']
-    ])
-    # collection_name = osp.splitext(osp.basename(md_file))[0]
-    collection = dict(
-        Name=collection_name,
-        Metadata={'Architecture': []},
-        README=osp.relpath(md_file, MMPOSE_ROOT),
-        Paper=None)
+
+    collection = {'Name': None, 'Paper': None}
     models = []
+
+    # get readme files
+    collection2readme = collect_paper_readme()
 
     # record the publish year of the latest paper
     paper_year = -1
+    dataset = None
+
+    # architectures for collection and model
+    architecture = []
 
     with open(md_file, 'r') as md:
         lines = md.readlines()
@@ -183,17 +207,20 @@ def parse_md(md_file):
 
                 paper_type = re.findall(r'\[(.*)\]', lines[i])[0]
 
+                # lower priority for dataset paper
                 if paper_type == 'DATASET':
-                    # DATASET paper has lower priority
                     year = 0
 
                 if year > paper_year:
                     collection['Paper'] = dict(Title=title, URL=url)
+                    collection['Name'] = name
+                    collection['README'] = collection2readme[name]
                     paper_year = year
 
                 # get architecture
                 if paper_type in {'ALGORITHM', 'BACKBONE'}:
-                    collection['Metadata']['Architecture'].append(name)
+                    architecture.append(name)
+
                 # get dataset
                 elif paper_type == 'DATASET':
                     dataset = name
@@ -237,7 +264,10 @@ def parse_md(md_file):
                     task_name = ' '.join(
                         [model_info['target'], model_info['task']])
 
-                    metadata = {'Training Data': dataset}
+                    metadata = {
+                        'Training Data': dataset,
+                        'Architecture': architecture
+                    }
                     if flops_idx != -1:
                         metadata['FLOPs'] = float(line[flops_idx])
                     if params_idx != -1:
@@ -252,7 +282,7 @@ def parse_md(md_file):
                         'Name':
                         model_name,
                         'In Collection':
-                        collection_name,
+                        collection['Name'],
                         'Config':
                         config,
                         'Metadata':
@@ -273,8 +303,7 @@ def parse_md(md_file):
                 i += 1
 
     result = {'Collections': [collection], 'Models': models}
-    yml_file = md_file[:-2] + 'yml'
-
+    yml_file = osp.splitext(md_file)[0] + '.yml'
     is_different = dump_yaml_and_check_difference(result, yml_file)
     return is_different
 

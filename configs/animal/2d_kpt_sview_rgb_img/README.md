@@ -5,7 +5,7 @@ dogs, macaques, and cheetah. It provides detailed behavioral analysis for neuros
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_animal_keypoint.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/2d_animal_keypoint.md) to prepare data.
 
 ## Demo
 

@@ -1,9 +1,13 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
-from mmcv.parallel import MODULE_WRAPPERS, MMDistributedDataParallel
+from mmcv.parallel import MODULE_WRAPPERS as MMCV_MODULE_WRAPPERS
+from mmcv.parallel import MMDistributedDataParallel
 from mmcv.parallel.scatter_gather import scatter_kwargs
+from mmcv.utils import Registry
 from torch.cuda._utils import _get_device_index
+
+MODULE_WRAPPERS = Registry('module wrapper', parent=MMCV_MODULE_WRAPPERS)
 
 
 @MODULE_WRAPPERS.register_module()

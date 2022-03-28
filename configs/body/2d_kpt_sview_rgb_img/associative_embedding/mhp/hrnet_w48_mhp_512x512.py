@@ -1,9 +1,7 @@
-_base_ = ['../../../../_base_/datasets/mhp.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/mhp.py'
+]
 checkpoint_config = dict(interval=50)
 evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
@@ -20,13 +18,6 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[400, 550])
 total_epochs = 600
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 channel_cfg = dict(
     dataset_joints=16,
     dataset_channel=[
@@ -168,8 +159,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/mhp'
 data = dict(
-    samples_per_gpu=16,
     workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=16),
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpMhpDataset',
         ann_file=f'{data_root}/annotations/mhp_train.json',

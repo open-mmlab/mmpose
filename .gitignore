@@ -65,8 +65,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
-docs_zh-CN/_build/
+docs/en/_build
+docs/zh_cn/_build
 
 # PyBuilder
 target/
@@ -106,7 +106,6 @@ venv.bak/
 .mypy_cache/
 
 # custom
-mmpose/version.py
 mmpose/.mim
 /models
 /data
@@ -130,6 +129,17 @@ mmdetection/
 aist_data/
 demo/run_aist.py
 run_aist.py
+docs/**/topics/
+docs/**/papers/*.md
+docs/**/datasets.md
+docs/**/modelzoo.md
+
+!tests/data/**/*.pkl
+!tests/data/**/*.pkl.json
+!tests/data/**/*.log.json
+!tests/data/**/*.pth
+!tests/data/**/*.npy
+
 # Pytorch
 *.pth
 

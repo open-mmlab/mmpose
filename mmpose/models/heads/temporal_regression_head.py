@@ -13,15 +13,14 @@ from mmpose.models.builder import HEADS, build_loss
 class TemporalRegressionHead(nn.Module):
     """Regression head of VideoPose3D.
 
-    Paper ref: Dario Pavllo.
-    ``3D human pose estimation in video with temporal convolutions and
-     semi-supervised training``
+    "3D human pose estimation in video with temporal convolutions and
+    semi-supervised training", CVPR'2019.
 
-     Args:
-         in_channels (int): Number of input channels
-         num_joints (int): Number of joints
-         loss_keypoint (dict): Config for keypoint loss. Default: None.
-         max_norm (float|None): if not None, the weight of convolution layers
+    Args:
+        in_channels (int): Number of input channels
+        num_joints (int): Number of joints
+        loss_keypoint (dict): Config for keypoint loss. Default: None.
+        max_norm (float|None): if not None, the weight of convolution layers
             will be clipped to have a maximum norm of max_norm.
         is_trajectory (bool): If the model only predicts root joint
             position, then this arg should be set to True. In this case,
@@ -65,7 +64,7 @@ class TemporalRegressionHead(nn.Module):
         """Transform inputs for decoder.
 
         Args:
-            inputs (tuple/list of Tensor | Tensor): multi-level features.
+            inputs (tuple or list of Tensor | Tensor): multi-level features.
 
         Returns:
             Tensor: The transformed inputs
@@ -91,8 +90,8 @@ class TemporalRegressionHead(nn.Module):
         """Calculate keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 3]): Output keypoints.
@@ -130,8 +129,8 @@ class TemporalRegressionHead(nn.Module):
         """Calculate accuracy for keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
+            - batch_size: N
+            - num_keypoints: K
 
         Args:
             output (torch.Tensor[N, K, 3]): Output keypoints.
@@ -139,6 +138,7 @@ class TemporalRegressionHead(nn.Module):
             target_weight (torch.Tensor[N, K, 3]):
                 Weights across different joint types.
             metas (list(dict)): Information about data augmentation including:
+
                 - target_image_path (str): Optional, path to the image file
                 - target_mean (float): Optional, normalization parameter of
                     the target pose.
@@ -228,9 +228,11 @@ class TemporalRegressionHead(nn.Module):
         Args:
             metas (list(dict)): Information about data augmentation.
                 By default this includes:
+
                 - "target_image_path": path to the image file
             output (np.ndarray[N, K, 3]): predicted regression vector.
             metas (list(dict)): Information about data augmentation including:
+
                 - target_image_path (str): Optional, path to the image file
                 - target_mean (float): Optional, normalization parameter of
                     the target pose.

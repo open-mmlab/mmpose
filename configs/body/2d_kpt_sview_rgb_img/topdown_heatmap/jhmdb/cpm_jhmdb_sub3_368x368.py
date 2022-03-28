@@ -1,9 +1,8 @@
-_base_ = ['../../../../_base_/datasets/jhmdb.py']
-log_level = 'INFO'
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/jhmdb.py'
+]
 load_from = 'https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth'  # noqa: E501
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
 checkpoint_config = dict(interval=1)
 evaluation = dict(interval=1, metric=['PCK', 'tPCK'], save_best='Mean PCK')
 
@@ -20,13 +19,6 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[20, 30])
 total_epochs = 40
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 channel_cfg = dict(
     num_output_channels=15,
     dataset_joints=15,
@@ -94,7 +86,7 @@ train_pipeline = [
         keys=['img', 'target', 'target_weight'],
         meta_keys=[
             'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
-            'rotation', 'bbox', 'flip_pairs'
+            'rotation', 'bbox_score', 'flip_pairs'
         ]),
 ]
 
@@ -112,7 +104,8 @@ val_pipeline = [
             'img',
         ],
         meta_keys=[
-            'image_file', 'center', 'scale', 'rotation', 'bbox', 'flip_pairs'
+            'image_file', 'center', 'scale', 'rotation', 'bbox_score',
+            'flip_pairs'
         ]),
 ]
 

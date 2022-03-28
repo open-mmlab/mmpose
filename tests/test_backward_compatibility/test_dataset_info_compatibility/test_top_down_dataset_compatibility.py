@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 import pytest
 from numpy.testing import assert_almost_equal
-from tests.utils.data_utils import convert_db_to_output
 
 from mmpose.datasets import DATASETS
+from tests.utils.data_utils import convert_db_to_output
 
 
 def test_top_down_COCO_dataset_compatibility():
@@ -198,7 +198,7 @@ def test_top_down_PoseTrack18_dataset_compatibility():
         vis_thr=0.2,
         use_gt_bbox=True,
         det_bbox_thr=0.0,
-        bbox_file='tests/data/posetrack18/'
+        bbox_file='tests/data/posetrack18/annotations/'
         'test_posetrack18_human_detections.json',
     )
     # Test det bbox
@@ -206,7 +206,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
     data_cfg_copy['use_gt_bbox'] = False
     with pytest.warns(DeprecationWarning):
         _ = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
@@ -214,7 +215,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
 
     with pytest.warns(DeprecationWarning):
         _ = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg_copy,
             pipeline=[],
@@ -223,7 +225,8 @@ def test_top_down_PoseTrack18_dataset_compatibility():
     # Test gt bbox
     with pytest.warns(DeprecationWarning):
         custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/test_posetrack18.json',
+            ann_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_val.json',
             img_prefix='tests/data/posetrack18/',
             data_cfg=data_cfg,
             pipeline=[],

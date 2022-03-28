@@ -10,7 +10,7 @@ Bottom-up approaches (e.g. AE) first detect all the whole-body keypoints and the
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_wholebody_keypoint.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/2d_wholebody_keypoint.md) to prepare data.
 
 ## Demo
 

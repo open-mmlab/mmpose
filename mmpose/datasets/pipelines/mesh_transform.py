@@ -35,7 +35,7 @@ def _flip_smpl_pose(pose):
 def _flip_iuv(iuv, uv_type='BF'):
     """Flip IUV image horizontally.
 
-    Notes:
+    Note:
         IUV image height: H
         IUV image width: W
 
@@ -87,7 +87,7 @@ def _construct_rotation_matrix(rot, size=3):
 def _rotate_joints_3d(joints_3d, rot):
     """Rotate the 3D joints in the local coordinates.
 
-    Notes:
+    Note:
         Joints number: K
 
     Args:

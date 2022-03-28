@@ -1,16 +1,15 @@
 Collections:
-- Metadata:
-    Architecture:
-    - ResNext
-  Name: Body 2D Keypoint topdown_heatmap coco
+- Name: ResNext
   Paper:
     Title: Aggregated residual transformations for deep neural networks
     URL: http://openaccess.thecvf.com/content_cvpr_2017/html/Xie_Aggregated_Residual_Transformations_CVPR_2017_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext_coco.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/resnext.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: &id001
+    - ResNext
     Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_256x192
   Results:
@@ -24,8 +23,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_256x192-dcff15f6_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext50_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext50_coco_384x288
   Results:
@@ -39,8 +39,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext50_coco_384x288-412c848f_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_256x192
   Results:
@@ -54,8 +55,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_256x192-c7eba365_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext101_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext101_coco_384x288
   Results:
@@ -69,8 +71,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext101_coco_384x288-f5eabcd6_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_256x192
   Results:
@@ -84,8 +87,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/resnext/resnext152_coco_256x192-102449aa_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnext152_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ResNext
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_resnext152_coco_384x288
   Results:

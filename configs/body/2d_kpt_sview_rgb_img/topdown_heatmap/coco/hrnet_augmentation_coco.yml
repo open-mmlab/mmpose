@@ -1,16 +1,15 @@
 Collections:
-- Metadata:
-    Architecture:
-    - HRNet
-  Name: Body 2D Keypoint topdown_heatmap coco
+- Name: Albumentations
   Paper:
     Title: 'Albumentations: fast and flexible image augmentations'
     URL: https://www.mdpi.com/649002
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_augmentation_coco.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/techniques/albumentations.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_coarsedropout.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: Albumentations
   Metadata:
+    Architecture: &id001
+    - HRNet
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_coarsedropout
   Results:
@@ -24,8 +23,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_coarsedropout-0f16a0ce_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_gridmask.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: Albumentations
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_gridmask
   Results:
@@ -39,8 +39,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/augmentation/hrnet_w32_coco_256x192_gridmask-868180df_20210320.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_photometric.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: Albumentations
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_hrnet_w32_coco_256x192_photometric
   Results:

@@ -10,7 +10,7 @@ Bottom-up approaches (e.g. AE) first detect all the keypoints and then group/ass
 
 ## Data preparation
 
-Please follow [DATA Preparation](/docs/tasks/2d_body_keypoint.md) to prepare data.
+Please follow [DATA Preparation](/docs/en/tasks/2d_body_keypoint.md) to prepare data.
 
 ## Demo
 

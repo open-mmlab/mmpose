@@ -30,6 +30,7 @@ class GetRootCenteredPose:
 
     Required keys:
         item
+
     Modified keys:
         item, visible_item, root_name
     """
@@ -89,8 +90,10 @@ class NormalizeJointCoordinate:
         std (array): Std values of joint coordinates in shape [K, C].
         norm_param_file (str): Optionally load a dict containing `mean` and
             `std` from a file using `mmcv.load`.
+
     Required keys:
         item
+
     Modified keys:
         item
     """
@@ -131,8 +134,10 @@ class ImageCoordinateNormalization:
             class definition for more details. If None is given, the camera
             parameter will be obtained during processing of each data sample
             with the key "camera_param".
+
     Required keys:
         item
+
     Modified keys:
         item (, camera_param)
     """
@@ -190,6 +195,7 @@ class CollectCameraIntrinsics:
 
     Required keys:
         camera_param (if camera parameters are not given in initialization)
+
     Modified keys:
         intrinsics
     """
@@ -229,6 +235,7 @@ class CameraProjection:
     Args:
         item (str): The name of the pose to apply camera projection.
         mode (str): The type of camera projection, supported options are
+
             - world_to_camera
             - world_to_pixel
             - camera_to_world
@@ -243,8 +250,10 @@ class CameraProjection:
             with the key "camera_param".
 
     Required keys:
-        item
-        camera_param (if camera parameters are not given in initialization)
+
+        - item
+        - camera_param (if camera parameters are not given in initialization)
+
     Modified keys:
         output_name
     """
@@ -316,10 +325,12 @@ class RelativeJointRandomFlip:
         item (str|list[str]): The name of the pose to flip.
         flip_cfg (dict|list[dict]): Configurations of the fliplr_regression
             function. It should contain the following arguments:
-                - `center_mode`: The mode to set the center location on the
-                    x-axis to flip around.
-                -`center_x` or `center_index`: Set the x-axis location or the
-                    root joint's index to define the flip center.
+
+            - ``center_mode``: The mode to set the center location on the \
+                x-axis to flip around.
+            - ``center_x`` or ``center_index``: Set the x-axis location or \
+                the root joint's index to define the flip center.
+
             Please refer to the docstring of the fliplr_regression function for
             more details.
         visible_item (str|list[str]): The name of the visibility item which
@@ -333,6 +344,7 @@ class RelativeJointRandomFlip:
 
     Required keys:
         item
+
     Modified keys:
         item (, camera_param)
     """
@@ -422,13 +434,14 @@ class PoseSequenceToTensor:
 
     The original pose sequence should have a shape of [T,K,C] or [K,C], where
     T is the sequence length, K and C are keypoint number and dimension. The
-    converted pose sequence will have a shape of [K*C, T].
+    converted pose sequence will have a shape of [KxC, T].
 
     Args:
         item (str): The name of the pose sequence
 
     Required keys:
         item
+
     Modified keys:
         item
     """
@@ -463,7 +476,7 @@ class Generate3DHeatmapTarget:
     Args:
         sigma: Sigma of heatmap gaussian.
         joint_indices (list): Indices of joints used for heatmap generation.
-        If None (default) is given, all joints will be used.
+            If None (default) is given, all joints will be used.
         max_bound (float): The maximal value of heatmap.
     """
 
@@ -539,4 +552,92 @@ class Generate3DHeatmapTarget:
         target = target * self.max_bound
         results['target'] = target
         results['target_weight'] = target_weight
+        return results
+
+
+@PIPELINES.register_module()
+class GenerateVoxel3DHeatmapTarget:
+    """Generate the target 3d heatmap.
+
+    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info_3d'.
+    Modified keys: 'target', and 'target_weight'.
+
+    Args:
+        sigma: Sigma of heatmap gaussian (mm).
+        joint_indices (list): Indices of joints used for heatmap generation.
+            If None (default) is given, all joints will be used.
+    """
+
+    def __init__(self, sigma=200.0, joint_indices=None):
+        self.sigma = sigma  # mm
+        self.joint_indices = joint_indices
+
+    def __call__(self, results):
+        """Generate the target heatmap."""
+        joints_3d = results['joints_3d']
+        joints_3d_visible = results['joints_3d_visible']
+        cfg = results['ann_info']
+
+        num_people = len(joints_3d)
+        num_joints = joints_3d[0].shape[0]
+
+        if self.joint_indices is not None:
+            num_joints = len(self.joint_indices)
+            joint_indices = self.joint_indices
+        else:
+            joint_indices = list(range(num_joints))
+
+        space_size = cfg['space_size']
+        space_center = cfg['space_center']
+        cube_size = cfg['cube_size']
+        grids_x = np.linspace(-space_size[0] / 2, space_size[0] / 2,
+                              cube_size[0]) + space_center[0]
+        grids_y = np.linspace(-space_size[1] / 2, space_size[1] / 2,
+                              cube_size[1]) + space_center[1]
+        grids_z = np.linspace(-space_size[2] / 2, space_size[2] / 2,
+                              cube_size[2]) + space_center[2]
+
+        target = np.zeros(
+            (num_joints, cube_size[0], cube_size[1], cube_size[2]),
+            dtype=np.float32)
+
+        for n in range(num_people):
+            for idx, joint_id in enumerate(joint_indices):
+                mu_x = joints_3d[n][joint_id][0]
+                mu_y = joints_3d[n][joint_id][1]
+                mu_z = joints_3d[n][joint_id][2]
+                vis = joints_3d_visible[n][joint_id][0]
+                if vis < 1:
+                    continue
+                i_x = [
+                    np.searchsorted(grids_x, mu_x - 3 * self.sigma),
+                    np.searchsorted(grids_x, mu_x + 3 * self.sigma, 'right')
+                ]
+                i_y = [
+                    np.searchsorted(grids_y, mu_y - 3 * self.sigma),
+                    np.searchsorted(grids_y, mu_y + 3 * self.sigma, 'right')
+                ]
+                i_z = [
+                    np.searchsorted(grids_z, mu_z - 3 * self.sigma),
+                    np.searchsorted(grids_z, mu_z + 3 * self.sigma, 'right')
+                ]
+                if i_x[0] >= i_x[1] or i_y[0] >= i_y[1] or i_z[0] >= i_z[1]:
+                    continue
+                kernel_xs, kernel_ys, kernel_zs = np.meshgrid(
+                    grids_x[i_x[0]:i_x[1]],
+                    grids_y[i_y[0]:i_y[1]],
+                    grids_z[i_z[0]:i_z[1]],
+                    indexing='ij')
+                g = np.exp(-((kernel_xs - mu_x)**2 + (kernel_ys - mu_y)**2 +
+                             (kernel_zs - mu_z)**2) / (2 * self.sigma**2))
+                target[idx, i_x[0]:i_x[1], i_y[0]:i_y[1], i_z[0]:i_z[1]] \
+                    = np.maximum(target[idx, i_x[0]:i_x[1],
+                                 i_y[0]:i_y[1], i_z[0]:i_z[1]], g)
+
+        target = np.clip(target, 0, 1)
+        if target.shape[0] == 1:
+            target = target[0]
+
+        results['targets_3d'] = target
+
         return results

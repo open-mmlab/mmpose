@@ -1,0 +1,50 @@
+Collections:
+- Name: ViPNAS
+  Paper:
+    Title: 'ViPNAS: Efficient Video Pose Estimation via Neural Architecture Search'
+    URL: https://arxiv.org/abs/2105.10154
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/vipnas.md
+Models:
+- Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_mbv3_coco_wholebody_256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: &id001
+    - ViPNAS
+    Training Data: COCO-WholeBody
+  Name: topdown_heatmap_vipnas_mbv3_coco_wholebody_256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.619
+      Body AR: 0.7
+      Face AP: 0.585
+      Face AR: 0.689
+      Foot AP: 0.477
+      Foot AR: 0.608
+      Hand AP: 0.386
+      Hand AR: 0.505
+      Whole AP: 0.473
+      Whole AR: 0.578
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_mbv3_coco_wholebody_256x192-0fee581a_20211205.pth
+- Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_res50_coco_wholebody_256x192.py
+  In Collection: ViPNAS
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO-WholeBody
+  Name: topdown_heatmap_vipnas_res50_coco_wholebody_256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.643
+      Body AR: 0.726
+      Face AP: 0.587
+      Face AR: 0.698
+      Foot AP: 0.553
+      Foot AR: 0.694
+      Hand AP: 0.41
+      Hand AR: 0.529
+      Whole AP: 0.495
+      Whole AR: 0.607
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192-49e1c3a4_20211112.pth

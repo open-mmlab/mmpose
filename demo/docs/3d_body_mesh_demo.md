@@ -1,15 +1,13 @@
-## 3D Hand Demo
+## 3D Mesh Demo
 
 <img src="https://user-images.githubusercontent.com/28900607/124615414-d33fa380-dea7-11eb-9ec4-a01d0931e028.gif" width="600px" alt><br>
 
-### 3D Hand Estimation Image Demo
+### 3D Mesh Recovery Demo
 
-#### Using gt hand bounding boxes as input
-
-We provide a demo script to test a single image, given gt json file.
+We provide a demo script to recover human 3D mesh from a single image.
 
 ```shell
-python demo/interhand3d_img_demo.py \
+python demo/mesh_img_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
     --json-file ${JSON_FILE} \
     --img-root ${IMG_ROOT} \

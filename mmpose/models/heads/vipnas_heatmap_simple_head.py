@@ -36,13 +36,14 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
         in_index (int|Sequence[int]): Input feature index. Default: -1
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
-            'resize_concat': Multiple feature maps will be resize to the
+            Default: None.
+
+            - 'resize_concat': Multiple feature maps will be resize to the
                 same size as first one and than concat together.
                 Usually used in FCN head of HRNet.
-            'multiple_select': Multiple feature maps will be bundle into
+            - 'multiple_select': Multiple feature maps will be bundle into
                 a list and passed into decode head.
-            None: Only one select feature map is allowed.
-            Default: None.
+            - None: Only one select feature map is allowed.
         align_corners (bool): align_corners argument of F.interpolate.
             Default: False.
         loss_keypoint (dict): Config for keypoint loss. Default: None.
@@ -146,15 +147,15 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
         """Calculate top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[N,K,H,W]): Output heatmaps.
+            target (torch.Tensor[N,K,H,W]): Target heatmaps.
+            target_weight (torch.Tensor[N,K,1]):
                 Weights across different joint types.
         """
 
@@ -162,7 +163,7 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
 
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 4 and target_weight.dim() == 3
-        losses['mse_loss'] = self.loss(output, target, target_weight)
+        losses['heatmap_loss'] = self.loss(output, target, target_weight)
 
         return losses
 
@@ -170,15 +171,15 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
         """Calculate accuracy for top-down keypoint loss.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[N,K,H,W]): Output heatmaps.
+            target (torch.Tensor[N,K,H,W]): Target heatmaps.
+            target_weight (torch.Tensor[N,K,1]):
                 Weights across different joint types.
         """
 
@@ -207,8 +208,8 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
             output_heatmap (np.ndarray): Output heatmaps.
 
         Args:
-            x (torch.Tensor[NxKxHxW]): Input features.
-            flip_pairs (None | list[tuple()):
+            x (torch.Tensor[N,K,H,W]): Input features.
+            flip_pairs (None | list[tuple]):
                 Pairs of keypoints which are mirrored.
         """
         output = self.forward(x)
@@ -239,12 +240,13 @@ class ViPNASHeatmapSimpleHead(TopdownHeatmapBaseHead):
             in_index (int|Sequence[int]): Input feature index.
             input_transform (str|None): Transformation type of input features.
                 Options: 'resize_concat', 'multiple_select', None.
-                'resize_concat': Multiple feature maps will be resize to the
+
+                - 'resize_concat': Multiple feature maps will be resize to the
                     same size as first one and than concat together.
                     Usually used in FCN head of HRNet.
-                'multiple_select': Multiple feature maps will be bundle into
+                - 'multiple_select': Multiple feature maps will be bundle into
                     a list and passed into decode head.
-                None: Only one select feature map is allowed.
+                - None: Only one select feature map is allowed.
         """
 
         if input_transform is not None:

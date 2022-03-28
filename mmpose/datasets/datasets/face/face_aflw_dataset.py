@@ -1,10 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import os.path as osp
+import tempfile
 import warnings
 from collections import OrderedDict
 
 import numpy as np
-from mmcv import Config
+from mmcv import Config, deprecated_api_warning
 
 from mmpose.datasets.builder import DATASETS
 from ..base import Kpt2dSviewRgbImgTopDownDataset
@@ -14,10 +15,10 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
     """Face AFLW dataset for top-down face keypoint localization.
 
-    `Annotated Facial Landmarks in the Wild: A Large-scale,
-    Real-world Database for Facial Landmark Localization.
+    "Annotated Facial Landmarks in the Wild: A Large-scale,
+    Real-world Database for Facial Landmark Localization".
     In Proc. First IEEE International Workshop on Benchmarking
-    Facial Image Analysis Technologies, 2011`
+    Facial Image Analysis Technologies, 2011.
 
     The dataset loads raw images and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -96,8 +97,7 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
                 else:
                     center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
 
-                image_file = os.path.join(self.img_prefix,
-                                          self.id2name[img_id])
+                image_file = osp.join(self.img_prefix, self.id2name[img_id])
 
                 gt_db.append({
                     'image_file': image_file,
@@ -123,33 +123,37 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
         Args:
             box_sizes (np.ndarray[N, 1]): box size
 
-        Return:
+        Returns:
             np.ndarray[N, 2]: normalized factor
         """
 
         return np.tile(box_sizes, [1, 2])
 
-    def evaluate(self, outputs, res_folder, metric='NME', **kwargs):
+    @deprecated_api_warning(name_dict=dict(outputs='results'))
+    def evaluate(self, results, res_folder=None, metric='NME', **kwargs):
         """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in `${res_folder}/result_keypoints.json`.
+        be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
-            batch_size: N
-            num_keypoints: K
-            heatmap height: H
-            heatmap width: W
+            - batch_size: N
+            - num_keypoints: K
+            - heatmap height: H
+            - heatmap width: W
 
         Args:
-            outputs (list(preds, boxes, image_path, output_heatmap))
-                :preds (np.ndarray[1,K,3]): The first two dimensions are
+            results (list[dict]): Testing results containing the following
+                items:
+
+                - preds (np.ndarray[1,K,3]): The first two dimensions are \
                     coordinates, score is the third dimension of the array.
-                :boxes (np.ndarray[1,6]): [center[0], center[1], scale[0]
-                    , scale[1],area, score]
-                :image_path (list[str]): For example, ['3', '0', '0', 'W', '/',
-                    'i', 'b', 'u', 'g', '/', 'i', 'm', 'a', 'g', 'e', '_', '0',
-                    '1', '8', '.', 'j', 'p', 'g']
-                :output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-            res_folder (str): Path of directory to save the results.
+                - boxes (np.ndarray[1,6]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+                - image_path (list[str]): For example, ['aflw/images/flickr/ \
+                    0/image00002.jpg']
+                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
             metric (str | list[str]): Metric to be performed.
                 Options: 'NME'.
 
@@ -162,14 +166,19 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        res_file = os.path.join(res_folder, 'result_keypoints.json')
+        if res_folder is not None:
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_keypoints.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
 
         kpts = []
-        for output in outputs:
-            preds = output['preds']
-            boxes = output['boxes']
-            image_paths = output['image_paths']
-            bbox_ids = output['bbox_ids']
+        for result in results:
+            preds = result['preds']
+            boxes = result['boxes']
+            image_paths = result['image_paths']
+            bbox_ids = result['bbox_ids']
 
             batch_size = len(image_paths)
             for i in range(batch_size):
@@ -189,5 +198,8 @@ class FaceAFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
         self._write_keypoint_results(kpts, res_file)
         info_str = self._report_metric(res_file, metrics)
         name_value = OrderedDict(info_str)
+
+        if tmp_folder is not None:
+            tmp_folder.cleanup()
 
         return name_value

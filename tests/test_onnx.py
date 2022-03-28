@@ -3,6 +3,7 @@ import os.path as osp
 import tempfile
 
 import torch.nn as nn
+
 from tools.deployment.pytorch2onnx import _convert_batchnorm, pytorch2onnx
 
 

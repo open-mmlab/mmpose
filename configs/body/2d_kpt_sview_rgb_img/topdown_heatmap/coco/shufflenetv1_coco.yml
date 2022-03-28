@@ -1,17 +1,16 @@
 Collections:
-- Metadata:
-    Architecture:
-    - ShufflenetV1
-  Name: Body 2D Keypoint topdown_heatmap coco
+- Name: ShufflenetV1
   Paper:
     Title: 'Shufflenet: An extremely efficient convolutional neural network for mobile
       devices'
     URL: http://openaccess.thecvf.com/content_cvpr_2018/html/Zhang_ShuffleNet_An_Extremely_CVPR_2018_paper.html
-  README: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/shufflenetv1.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_256x192.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ShufflenetV1
   Metadata:
+    Architecture: &id001
+    - ShufflenetV1
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv1_coco_256x192
   Results:
@@ -25,8 +24,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/shufflenetv1/shufflenetv1_coco_256x192-353bc02c_20200727.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco_384x288.py
-  In Collection: Body 2D Keypoint topdown_heatmap coco
+  In Collection: ShufflenetV1
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: topdown_heatmap_shufflenetv1_coco_384x288
   Results:

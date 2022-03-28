@@ -1,9 +1,14 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
+import mmcv
+import numpy as np
 import torch
+import torch.distributed as dist
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
-from mmcv.runner import DistSamplerSeedHook, EpochBasedRunner, OptimizerHook
+from mmcv.runner import (DistSamplerSeedHook, EpochBasedRunner, OptimizerHook,
+                         get_dist_info)
+from mmcv.utils import digit_version
 
 from mmpose.core import DistEvalHook, EvalHook, build_optimizers
 from mmpose.core.distributed_wrapper import DistributedDataParallelWrapper
@@ -17,6 +22,39 @@ except ImportError:
         'Fp16OptimizerHook from mmpose will be deprecated from '
         'v0.15.0. Please install mmcv>=1.1.4', DeprecationWarning)
     from mmpose.core import Fp16OptimizerHook
+
+
+def init_random_seed(seed=None, device='cuda'):
+    """Initialize random seed.
+
+    If the seed is not set, the seed will be automatically randomized,
+    and then broadcast to all processes to prevent some potential bugs.
+
+    Args:
+        seed (int, Optional): The seed. Default to None.
+        device (str): The device where the seed will be put on.
+            Default to 'cuda'.
+
+    Returns:
+        int: Seed to be used.
+    """
+    if seed is not None:
+        return seed
+
+    # Make sure all ranks share the same random seed to prevent
+    # some potential bugs. Please refer to
+    # https://github.com/open-mmlab/mmdetection/issues/6339
+    rank, world_size = get_dist_info()
+    seed = np.random.randint(2**31)
+    if world_size == 1:
+        return seed
+
+    if rank == 0:
+        random_num = torch.tensor(seed, dtype=torch.int32, device=device)
+    else:
+        random_num = torch.tensor(0, dtype=torch.int32, device=device)
+    dist.broadcast(random_num, src=0)
+    return random_num.item()
 
 
 def train_model(model,
@@ -94,8 +132,14 @@ def train_model(model,
                 broadcast_buffers=False,
                 find_unused_parameters=find_unused_parameters)
     else:
-        model = MMDataParallel(
-            model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        if digit_version(mmcv.__version__) >= digit_version(
+                '1.4.4') or torch.cuda.is_available():
+            model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+        else:
+            warnings.warn(
+                'We recommend to use MMCV >= 1.4.4 for CPU training. '
+                'See https://github.com/open-mmlab/mmpose/pull/1157 for '
+                'details.')
 
     # build runner
     optimizer = build_optimizers(model, cfg.optimizer)
@@ -125,9 +169,14 @@ def train_model(model,
             optimizer_config = cfg.optimizer_config
 
     # register hooks
-    runner.register_training_hooks(cfg.lr_config, optimizer_config,
-                                   cfg.checkpoint_config, cfg.log_config,
-                                   cfg.get('momentum_config', None))
+    runner.register_training_hooks(
+        cfg.lr_config,
+        optimizer_config,
+        cfg.checkpoint_config,
+        cfg.log_config,
+        cfg.get('momentum_config', None),
+        custom_hooks_config=cfg.get('custom_hooks_config', None))
+
     if distributed:
         runner.register_hook(DistSamplerSeedHook())
 

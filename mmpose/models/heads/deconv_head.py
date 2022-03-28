@@ -24,13 +24,14 @@ class DeconvHead(nn.Module):
         in_index (int|Sequence[int]): Input feature index. Default: 0
         input_transform (str|None): Transformation type of input features.
             Options: 'resize_concat', 'multiple_select', None.
-            'resize_concat': Multiple feature maps will be resized to the
+            Default: None.
+
+            - 'resize_concat': Multiple feature maps will be resized to the
                 same size as the first one and then concat together.
                 Usually used in FCN head of HRNet.
-            'multiple_select': Multiple feature maps will be bundle into
+            - 'multiple_select': Multiple feature maps will be bundle into
                 a list and passed into decode head.
-            None: Only one select feature map is allowed.
-            Default: None.
+            - None: Only one select feature map is allowed.
         align_corners (bool): align_corners argument of F.interpolate.
             Default: False.
         loss_keypoint (dict): Config for loss. Default: None.
@@ -139,12 +140,13 @@ class DeconvHead(nn.Module):
             in_index (int|Sequence[int]): Input feature index.
             input_transform (str|None): Transformation type of input features.
                 Options: 'resize_concat', 'multiple_select', None.
-                'resize_concat': Multiple feature maps will be resize to the
+
+                - 'resize_concat': Multiple feature maps will be resize to the
                     same size as first one and than concat together.
                     Usually used in FCN head of HRNet.
-                'multiple_select': Multiple feature maps will be bundle into
+                - 'multiple_select': Multiple feature maps will be bundle into
                     a list and passed into decode head.
-                None: Only one select feature map is allowed.
+                - None: Only one select feature map is allowed.
         """
 
         if input_transform is not None:
@@ -247,15 +249,15 @@ class DeconvHead(nn.Module):
         """Calculate bottom-up masked mse loss.
 
         Note:
-            batch_size: N
-            num_channels: C
-            heatmaps height: H
-            heatmaps weight: W
+            - batch_size: N
+            - num_channels: C
+            - heatmaps height: H
+            - heatmaps weight: W
 
         Args:
-            outputs (List(torch.Tensor[NxCxHxW])): Multi-scale outputs.
-            targets (List(torch.Tensor[NxCxHxW])): Multi-scale targets.
-            masks (List(torch.Tensor[NxHxW])): Masks of multi-scale targets.
+            outputs (List(torch.Tensor[N,C,H,W])): Multi-scale outputs.
+            targets (List(torch.Tensor[N,C,H,W])): Multi-scale targets.
+            masks (List(torch.Tensor[N,H,W])): Masks of multi-scale targets.
         """
 
         losses = dict()

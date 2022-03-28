@@ -1,9 +1,7 @@
-_base_ = ['../../../../_base_/datasets/coco_wholebody.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/coco_wholebody.py'
+]
 checkpoint_config = dict(interval=50)
 evaluation = dict(interval=50, metric='mAP', key_indicator='AP')
 
@@ -20,13 +18,6 @@ lr_config = dict(
     warmup_ratio=0.001,
     step=[200, 260])
 total_epochs = 300
-log_config = dict(
-    interval=50,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
-
 channel_cfg = dict(
     num_output_channels=133,
     dataset_joints=133,
@@ -176,8 +167,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=16,
     workers_per_gpu=2,
+    train_dataloader=dict(samples_per_gpu=16),
+    val_dataloader=dict(samples_per_gpu=1),
+    test_dataloader=dict(samples_per_gpu=1),
     train=dict(
         type='BottomUpCocoWholeBodyDataset',
         ann_file=f'{data_root}/annotations/coco_wholebody_train_v1.0.json',

@@ -1,35 +1,32 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, run tests with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: build
 
 on:
   push:
-   branches:
-    - master
+    branches:
+      - master
+    paths-ignore:
+      - 'README.md'
+      - 'README_CN.md'
+      - 'docs/**'
+      - 'examples/**'
+      - '.dev_scripts/**'
 
   pull_request:
+    paths-ignore:
+      - 'README.md'
+      - 'README_CN.md'
+      - 'docs/**'
+      - 'examples/**'
+      - '.dev_scripts/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Install pre-commit hook
-        run: |
-          pip install pre-commit
-          pre-commit install
-      - name: Linting
-        run: pre-commit run --all-files
-      - name: Check docstring coverage
-        run: |
-          pip install interrogate
-          interrogate -v --ignore-init-method --ignore-module --ignore-nested-functions --ignore-regex "__repr__" --fail-under 80 mmpose
-
   build_cpu:
     runs-on: ubuntu-18.04
     strategy:
@@ -38,12 +35,16 @@ jobs:
         torch: [1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.5.0
+            torch_version: torch1.5
             torchvision: 0.6.0
           - torch: 1.6.0
+            torch_version: torch1.6
             torchvision: 0.7.0
           - torch: 1.7.0
+            torch_version: torch1.7
             torchvision: 0.8.1
           - torch: 1.8.0
+            torch_version: torch1.8
             torchvision: 0.9.0
 
     steps:
@@ -60,7 +61,7 @@ jobs:
         run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMCV
         run: |
-          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/torch${{matrix.torch}}/index.html
+          pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch_version}}/index.html
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
         run: pip install -r requirements.txt
@@ -82,12 +83,16 @@ jobs:
         torch: [1.5.0, 1.6.0, 1.7.0, 1.8.0]
         include:
           - torch: 1.5.0
+            torch_version: torch1.5
             torchvision: 0.6.0
           - torch: 1.6.0
+            torch_version: torch1.6
             torchvision: 0.7.0
           - torch: 1.7.0
+            torch_version: torch1.7
             torchvision: 0.8.1
           - torch: 1.8.0
+            torch_version: torch1.8
             torchvision: 0.9.0
 
     steps:
@@ -96,11 +101,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install python-dev
+        run: apt-get update && apt-get install -y python${{matrix.python-version}}-dev
+        if: ${{matrix.python-version != '3.9'}}
       - name: Install system dependencies
         run: |
-          apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg python${{matrix.python-version}}-dev
+          apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
           apt-get clean
           rm -rf /var/lib/apt/lists/*
+      - name: Upgrade pip
+        run: python -m pip install pip --upgrade
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get install -y libprotobuf-dev protobuf-compiler
         if: ${{matrix.python-version == '3.9'}}
@@ -112,7 +122,7 @@ jobs:
       - name: Install mmpose dependencies
         run: |
           python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch}}/index.html
+          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
@@ -140,11 +150,15 @@ jobs:
       image: pytorch/pytorch:1.9.0-cuda10.2-cudnn7-devel
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9-dev]
-        torch: [1.9.0]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        torch: [1.9.0, 1.10.0]
         include:
           - torch: 1.9.0
+            torch_version: torch1.9
             torchvision: 0.10.0
+          - torch: 1.10.0
+            torch_version: torch1.10
+            torchvision: 0.11.0
 
     steps:
       - uses: actions/checkout@v2
@@ -152,17 +166,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install python-dev
-        run: apt-get update && apt-get install -y python${{matrix.python-version}}-dev
-        if: ${{matrix.python-version != '3.9-dev'}}
       - name: Install system dependencies
         run: |
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
           apt-get clean
           rm -rf /var/lib/apt/lists/*
+      - name: Upgrade pip
+        run: python -m pip install pip --upgrade
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get update && apt-get -y install libprotobuf-dev protobuf-compiler cmake
-        if: ${{matrix.python-version == '3.9-dev'}}
+        if: ${{matrix.python-version == '3.9'}}
       - name: Install Pillow
         run: python -m pip install Pillow==6.2.2
         if: ${{matrix.torchvision < 0.5}}
@@ -171,7 +184,7 @@ jobs:
       - name: Install mmpose dependencies
         run: |
           python -V
-          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch}}/index.html
+          python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
@@ -188,6 +201,52 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           files: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  build_windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2022]
+        python-version: [3.8]
+        platform: [cpu]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Upgrade pip
+        run: pip install pip --upgrade --user
+      - name: Install PyTorch
+        # As a complement to Linux CI, we test on PyTorch LTS version
+        run: pip install torch==1.8.2+${{ matrix.platform }} torchvision==0.9.2+${{ matrix.platform }} -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+      - name: Install MMCV
+        run: pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/torch1.8/index.html --only-binary mmcv-full
+      - name: Install mmpose dependencies
+        run: |
+          python -V
+          python -m pip install xtcocotools
+          python -m pip install -r requirements/tests.txt -r requirements/optional.txt
+          python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
+          python -c 'import mmcv; print(mmcv.__version__)'
+      - name: Show pip list
+        run: pip list
+      - name: Build and install
+        run: pip install -e .
+      - name: Run unittests
+        run: coverage run --branch --source mmpose -m pytest tests -sv
+      - name: Generate coverage report
+        run: |
+          coverage xml
+          coverage report -m
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          file: ./coverage.xml
           flags: unittests
           env_vars: OS,PYTHON
           name: codecov-umbrella

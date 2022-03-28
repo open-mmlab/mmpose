@@ -1,17 +1,16 @@
 Collections:
-- Metadata:
-    Architecture:
-    - Associative Embedding
-    - ResNet
-  Name: Body 2D Keypoint associative_embedding coco
+- Name: Associative Embedding
   Paper:
     Title: 'Associative embedding: End-to-end learning for joint detection and grouping'
     URL: https://arxiv.org/abs/1611.05424
-  README: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/resnet_coco.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/associative_embedding.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: &id001
+    - Associative Embedding
+    - ResNet
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
   Results:
@@ -25,8 +24,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
   Results:
@@ -40,8 +40,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
   Results:
@@ -55,8 +56,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
   Results:
@@ -70,8 +72,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res152_coco_512x512-364eb38d_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_512x512
   Results:
@@ -85,8 +88,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_512x512-5521bead_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res50_coco_640x640.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res50_coco_640x640
   Results:
@@ -100,8 +104,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res50_coco_640x640-2046f9cb_20200822.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res101_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res101_coco_512x512
   Results:
@@ -115,8 +120,9 @@ Models:
     Task: Body 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/bottom_up/res101_coco_512x512-e0c95157_20200816.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/res152_coco_512x512.py
-  In Collection: Body 2D Keypoint associative_embedding coco
+  In Collection: Associative Embedding
   Metadata:
+    Architecture: *id001
     Training Data: COCO
   Name: associative_embedding_res152_coco_512x512
   Results:
