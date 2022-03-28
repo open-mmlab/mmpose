@@ -82,7 +82,7 @@ dataset_info = dict(
     },
     skeleton_info={
         0:
-        dict(link=('wrist', 'thumb1'), id=0, color=[255, 128, 0]),
+        dict(link=('wrist', 'thumb4'), id=0, color=[255, 128, 0]),
         1:
         dict(link=('thumb1', 'thumb2'), id=1, color=[255, 128, 0]),
         2:
@@ -90,7 +90,7 @@ dataset_info = dict(
         3:
         dict(link=('thumb3', 'thumb4'), id=3, color=[255, 128, 0]),
         4:
-        dict(link=('wrist', 'forefinger1'), id=4, color=[255, 153, 255]),
+        dict(link=('wrist', 'forefinger4'), id=4, color=[255, 153, 255]),
         5:
         dict(link=('forefinger1', 'forefinger2'), id=5, color=[255, 153, 255]),
         6:
@@ -98,7 +98,7 @@ dataset_info = dict(
         7:
         dict(link=('forefinger3', 'forefinger4'), id=7, color=[255, 153, 255]),
         8:
-        dict(link=('wrist', 'middle_finger1'), id=8, color=[102, 178, 255]),
+        dict(link=('wrist', 'middle_finger4'), id=8, color=[102, 178, 255]),
         9:
         dict(
             link=('middle_finger1', 'middle_finger2'),
@@ -115,7 +115,7 @@ dataset_info = dict(
             id=11,
             color=[102, 178, 255]),
         12:
-        dict(link=('wrist', 'ring_finger1'), id=12, color=[255, 51, 51]),
+        dict(link=('wrist', 'ring_finger4'), id=12, color=[255, 51, 51]),
         13:
         dict(
             link=('ring_finger1', 'ring_finger2'), id=13, color=[255, 51, 51]),
@@ -126,7 +126,7 @@ dataset_info = dict(
         dict(
             link=('ring_finger3', 'ring_finger4'), id=15, color=[255, 51, 51]),
         16:
-        dict(link=('wrist', 'pinky_finger1'), id=16, color=[0, 255, 0]),
+        dict(link=('wrist', 'pinky_finger4'), id=16, color=[0, 255, 0]),
         17:
         dict(
             link=('pinky_finger1', 'pinky_finger2'), id=17, color=[0, 255, 0]),
