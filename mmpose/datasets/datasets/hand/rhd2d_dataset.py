@@ -73,6 +73,11 @@ class Rhd2DDataset(Kpt2dSviewRgbImgTopDownDataset):
                 'for details.', DeprecationWarning)
             cfg = Config.fromfile('configs/_base_/datasets/rhd2d.py')
             dataset_info = cfg._cfg_dict['dataset_info']
+        warnings.warn(
+            'Please note that the in RHD dataset, its keypoint definition is'
+            'different from others. Check `configs/_base_/datasets/rhd2d.py`'
+            'for details. If you want to combine RHD with other hand datasets'
+            'to train a single model, please modify the keypoint orders.')
 
         super().__init__(
             ann_file,
