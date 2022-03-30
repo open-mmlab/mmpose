@@ -1,13 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import json
 import os.path as osp
 import pickle
 from abc import ABCMeta, abstractmethod
 
-import json_tricks as json_
+import json_tricks as json
 import numpy as np
-import scipy.io as scio
+from scipy.io import loadmat
 from torch.utils.data import Dataset
 
 from mmpose.datasets import DatasetInfo
@@ -81,6 +80,11 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         self.pipeline = Compose(self.pipeline)
 
+    @abstractmethod
+    def _get_db(self):
+        """Load dataset."""
+        raise NotImplementedError
+
     def load_config(self, data_cfg):
         """Initialize dataset attributes according to the config.
 
@@ -123,7 +127,7 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
         """Write results into a json file."""
 
         with open(res_file, 'w') as f:
-            json_.dump(keypoints, f, sort_keys=True, indent=4)
+            json.dump(keypoints, f, sort_keys=True, indent=4)
 
     def __len__(self):
         """Get the size of the dataset."""
@@ -241,7 +245,7 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
         assert osp.exists(self.gt_pose_db_file), f'gt_pose_db_file ' \
             f"{self.gt_pose_db_file} doesn't exist, please check again"
-        gt = scio.loadmat(self.gt_pose_db_file)
+        gt = loadmat(self.gt_pose_db_file)
         self.gt_pose_db = np.array(np.array(
             gt['actor3D'].tolist()).tolist()).squeeze()
 

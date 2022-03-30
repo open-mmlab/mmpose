@@ -135,6 +135,14 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
 
         self._load_files()
 
+    def _get_db(self):
+        """Load dataset."""
+        raise NotImplementedError(
+            '_get_db method is not overwritten here because of two reasons.'
+            'First, the training and test samples are quite different. '
+            'Second, the training samples have some randomness which is not'
+            'appropriate to collect all samples into a database one time.')
+
     def __getitem__(self, idx):
         """Get the sample given index."""
 
