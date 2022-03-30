@@ -14,6 +14,7 @@ import json
 from glob import glob
 from mmpose.datasets.dataset_info import DatasetInfo
 
+
 def get_scale(target_size, raw_image_size):
     w, h = raw_image_size
     w_resized, h_resized = target_size
@@ -30,7 +31,9 @@ def get_scale(target_size, raw_image_size):
 
 
 def get_panoptic_camera_parameters(cam_file, camera_names,
-                                   M=[[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]]):
+                                   M=[[1.0, 0.0, 0.0],
+                                      [0.0, 0.0, -1.0],
+                                      [0.0, 1.0, 0.0]]):
     with open(cam_file) as cfile:
         calib = json.load(cfile)
 
@@ -118,6 +121,8 @@ def inference(args):
 
     input_data, num_cameras = get_input_data(args.img_root, args.camera_param_file)
     num_frames = len(input_data) // num_cameras
+    prog_bar = mmcv.ProgressBar(num_frames)
+
     for i in range(num_frames):
         multiview_data = {}
         image_infos = []
@@ -129,7 +134,7 @@ def inference(args):
             img_bytes = file_client.get(image_file)
             img = mmcv.imfrombytes(
                 img_bytes, flag='color', channel_order='rgb')
-            img = img.astype(np.float32)
+            # img = img.astype(np.float32)
             # get image scale
             height, width, _ = img.shape
             input_size = config_dict['model']['human_detector']['image_size']
@@ -157,6 +162,7 @@ def inference(args):
                           dataset_info=dataset_info, radius=args.radius,
                           thickness=args.thickness, out_dir=args.out_img_root,
                           show=args.show)
+        prog_bar.update()
 
 
 if __name__ == '__main__':

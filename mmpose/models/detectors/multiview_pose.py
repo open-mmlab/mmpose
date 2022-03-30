@@ -432,7 +432,8 @@ class DetectAndRegress(BasePose):
             img_meta = img_metas[i]
             num_cameras = len(img_meta['camera'])
             pose_3d_i = pose_3d[i]
-            pose_3d_i = pose_3d_i[pose_3d_i[:, 0, 3]] >= 0
+            pose_3d_i = pose_3d_i[pose_3d_i[:, 0, 3] >= 0]
+
             num_persons, num_keypoints, _ = pose_3d_i.shape
             pose_3d_list = [p[..., [0, 1, 2, 4]] for p in pose_3d_i] if num_persons > 0 else []
             img_3d = imshow_multiview_keypoints_3d(pose_3d_list,
@@ -442,7 +443,7 @@ class DetectAndRegress(BasePose):
                                                    space_size=[8000, 8000, 2000],
                                                    space_center=[0, -500, 800])
             if out_dir is not None:
-                mmcv.image.imwrite(img_3d, f'{out_dir}_{sample_id[i]}_3d.jpg')
+                mmcv.image.imwrite(img_3d, os.path.join(out_dir, 'vis_3d', f'{sample_id[i]}_3d.jpg'))
 
             for j in range(num_cameras):
                 single_camera = SimpleCamera(img_meta['camera'][j])
@@ -462,7 +463,7 @@ class DetectAndRegress(BasePose):
                                        dataset_info.pose_link_color, radius,
                                        thickness)
                 if out_dir is not None:
-                    mmcv.image.imwrite(img, f'{out_dir}_{sample_id[i]}_{j}_2d.jpg')
+                    mmcv.image.imwrite(img, os.path.join(out_dir, f'{sample_id[i]}_{j}_2d.jpg'))
                 # TODO: show image
 
     def forward_dummy(self, img, input_heatmaps=None, num_candidates=5):
