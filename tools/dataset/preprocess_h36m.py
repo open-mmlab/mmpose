@@ -395,7 +395,7 @@ def parse_args():
         help='Directory of the processed files. If not given, it will be '
         'placed under the same parent directory as original_dir.')
     parser.add_argument(
-        '--sample_rate',
+        '--sample-rate',
         type=int,
         default=5,
         help='Downsample FPS to `1 / sample_rate`. Default: 5.')

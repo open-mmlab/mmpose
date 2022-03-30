@@ -49,7 +49,7 @@ def parse_args():
         help='evaluation metric, which depends on the dataset,'
         ' e.g., "mAP" for MSCOCO')
     parser.add_argument(
-        '--gpu_collect',
+        '--gpu-collect',
         action='store_true',
         help='whether to use gpu to collect results')
     parser.add_argument('--tmpdir', help='tmp dir for writing some results')
@@ -66,7 +66,7 @@ def parse_args():
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
         help='job launcher')
-    parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument('--local-rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
