@@ -15,13 +15,13 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.737
-      AP@0.5: 0.899
-      AP@0.75: 0.81
+      AP: 0.738
+      AP@0.5: 0.904
+      AP@0.75: 0.811
       AR: 0.792
-      AR@0.5: 0.938
+      AR@0.5: 0.941
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_256x192-b657896f_20220226.pth
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_256x192-5310d898_20220316.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_small_coco_384x288.py
   In Collection: HRFormer
   Metadata:
@@ -31,13 +31,13 @@ Models:
   Results:
   - Dataset: COCO
     Metrics:
-      AP: 0.755
-      AP@0.5: 0.906
-      AP@0.75: 0.822
-      AR: 0.805
+      AP: 0.757
+      AP@0.5: 0.905
+      AP@0.75: 0.824
+      AR: 0.807
       AR@0.5: 0.941
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_384x288-4b52b078_20220226.pth
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_384x288-98d237ed_20220316.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_base_coco_256x192.py
   In Collection: HRFormer
   Metadata:
@@ -49,8 +49,24 @@ Models:
     Metrics:
       AP: 0.753
       AP@0.5: 0.907
-      AP@0.75: 0.821
-      AR: 0.806
+      AP@0.75: 0.826
+      AR: 0.807
       AR@0.5: 0.943
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_256x192-66cee214_20220226.pth
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_256x192-6f5f1169_20220316.pth
+- Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_base_coco_384x288.py
+  In Collection: HRFormer
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: topdown_heatmap_hrformer_base_coco_384x288
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.774
+      AP@0.5: 0.909
+      AP@0.75: 0.842
+      AR: 0.823
+      AR@0.5: 0.945
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_base_coco_384x288-ecf0758d_20220316.pth
