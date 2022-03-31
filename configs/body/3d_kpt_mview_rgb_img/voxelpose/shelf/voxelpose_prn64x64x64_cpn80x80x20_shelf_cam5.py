@@ -79,7 +79,7 @@ train_data_cfg = dict(
     # 2D pose estimator trained on COCO
     test_pose_db_file=f'{data_root}/pred_shelf_maskrcnn_hrnet_coco.pkl',
     # 3D human poses, use for generating input heatmap to train 3D model
-    train_pose_db_file=f'{data_root}/panoptic_training_pose.pkl',
+    train_pose_db_file='data/panoptic_training_pose.pkl',
     # 2D and 3D ground-truth poses
     gt_pose_db_file=f'{data_root}/actorsGT.mat',
 )

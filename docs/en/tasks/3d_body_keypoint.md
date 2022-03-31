@@ -145,7 +145,7 @@ Please follow [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch
 
 2. We directly use the processed camera parameters from [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch). You can download them from this repository and place in under `$MMPOSE/data/campus/calibration_campus.json` and `$MMPOSE/data/shelf/calibration_shelf.json`, respectively.
 
-3. Like [Voxelpose](https://github.com/microsoft/voxelpose-pytorch), due to the limited and incomplete annotations of the two datasets, we don't train the model using this dataset. Instead, we directly use the 2D pose estimator trained on COCO, and use independent 3D human poses from the CMU Panoptic dataset to train our 3D model. It lies in `${MMPOSE}/data/campus/panoptic_training_pose.pkl` and `${MMPOSE}/data/shelf/panoptic_training_pose.pkl`, respectively.
+3. Like [Voxelpose](https://github.com/microsoft/voxelpose-pytorch), due to the limited and incomplete annotations of the two datasets, we don't train the model using this dataset. Instead, we directly use the 2D pose estimator trained on COCO, and use independent 3D human poses from the CMU Panoptic dataset to train our 3D model. It lies in `${MMPOSE}/data/panoptic_training_pose.pkl`.
 
 4. Like [Voxelpose](https://github.com/microsoft/voxelpose-pytorch), for testing, we first estimate 2D poses and generate 2D heatmaps for these two datasets. You can download the predicted poses from [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch) and place them in  `$MMPOSE/data/campus/pred_campus_maskrcnn_hrnet_coco.pkl` and `$MMPOSE/data/shelf/pred_shelf_maskrcnn_hrnet_coco.pkl`, respectively. You can also use the models trained on COCO dataset (like HigherHRNet) to generate 2D heatmaps directly.
 
@@ -159,6 +159,7 @@ mmpose
 ├── tools
 ├── configs
 `── data
+    ├── panoptic_training_pose.pkl
     ├── campus
     |   ├── Camera0
     |   |   |   ├── campus4-c0-00000.png
@@ -171,7 +172,6 @@ mmpose
     |   |   |   ├── campus4-c2-01999.png
     |   ├── calibration_campus.json
     |   ├── pred_campus_maskrcnn_hrnet_coco.pkl
-    |   ├── panoptic_training_pose.pkl
     |   ├── actorsGT.mat
     ├── shelf
     |   ├── Camera0
@@ -185,6 +185,5 @@ mmpose
     |   |   |   ├── img_003199.png
     |   ├── calibration_shelf.json
     |   ├── pred_shelf_maskrcnn_hrnet_coco.pkl
-    |   ├── panoptic_training_pose.pkl
     |   ├── actorsGT.mat
 ```
