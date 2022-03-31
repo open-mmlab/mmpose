@@ -213,6 +213,8 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
 
     def _prepare_train_sample(self, idx):
         results = {}
+        # To prepare a training sample, there are three steps.
+        # 1. Randomly sample some 3D poses from motion capture database
         nposes_ori = np.random.choice(range(self.min_nposes, self.max_nposes))
         select_poses = np.random.choice(self.train_pose_db, nposes_ori)
 
@@ -221,9 +223,11 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
 
         bbox_list = []
         center_list = []
+        # 2. Place the selected poses at random locations in the space
         for n in range(nposes_ori):
             points = joints_3d[n][:, :2].copy()
 
+            # get the location of a person's root joint
             center = np.mean(points[self.root_id, :2], axis=0)
             rot_rad = np.random.uniform(-180, 180)
 
@@ -261,12 +265,15 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
 
         roots_3d = np.mean(joints_3d_u[:, self.root_id], axis=1)
 
+        # 3. Project 3D poses to all views to get the respective 2D locations
         for cam_id, cam_param in self.cameras.items():
             joints = []
             joints_vis = []
             single_view_camera = SimpleCamera(cam_param)
             for n in range(nposes):
+                # project the 3D pose to the view to get 2D location
                 pose2d = single_view_camera.world_to_pixel(joints_3d[n])
+                # check the validity of joint cooridinate
                 x_check = np.bitwise_and(pose2d[:, 0] >= 0,
                                          pose2d[:, 0] <= self.width - 1)
                 y_check = np.bitwise_and(pose2d[:, 1] >= 0,
@@ -312,6 +319,11 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
 
     @staticmethod
     def get_new_center(center_list):
+        """Generate new center or select from the center list randomly.
+
+        The proability and the parameters related to cooridinates can also be
+        tuned, just make sure that the center is within the given 3D space.
+        """
         if len(center_list) == 0 or random.random() < 0.7:
             new_center = np.array([
                 np.random.uniform(-1000.0, 2000.0),
@@ -326,6 +338,10 @@ class Body3DMviewDirectShelfDataset(Kpt3dMviewRgbImgDirectDataset):
 
     @staticmethod
     def isvalid(bbox, bbox_list):
+        """Check if the new person bbox are valid, which need to satisfies:
+
+        have a sufficiently small iou with all other person bboxes.
+        """
         if len(bbox_list) == 0:
             return True
 

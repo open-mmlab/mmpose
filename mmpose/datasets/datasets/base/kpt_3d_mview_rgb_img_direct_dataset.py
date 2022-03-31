@@ -175,11 +175,14 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
     @staticmethod
     def rotate_points(points, center, rot_rad):
-        """
-        :param points:  N*2
-        :param center:  2
-        :param rot_rad: scalar
-        :return: N*2
+        """Rotate the points around the center.
+
+        Args:
+            points: np.ndarray, N*2
+            center: np.ndarray, 2
+            rot_rad: scalar
+        Return:
+            np.ndarray (N*2)
         """
         rot_rad = rot_rad * np.pi / 180.0
         rotate_mat = np.array([[np.cos(rot_rad), -np.sin(rot_rad)],
@@ -193,6 +196,7 @@ class Kpt3dMviewRgbImgDirectDataset(Dataset, metaclass=ABCMeta):
 
     @staticmethod
     def calc_bbox(pose, pose_vis):
+        """calculate the bbox of a pose."""
         index = pose_vis[:, 0] > 0
         bbox = [
             np.min(pose[index, 0]),
