@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-# import glob
 import os.path as osp
 import random
 import tempfile
@@ -25,6 +24,13 @@ class Body3DMviewDirectCampusDataset(Kpt3dMviewRgbImgDirectDataset):
     <http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf>`
 
     The dataset loads both 2D and 3D annotations as well as camera parameters.
+    It is worth mentioning that when training multi-view 3D pose models,
+    due to the limited and incomplete annotations of this dataset, we may not
+    use this dataset to train the model. Instead, we use the 2D pose estimator
+    trained on COCO, and use independent 3D human poses from the CMU Panoptic
+    dataset to train the 3D model.
+    For testing, we first estimate 2D poses and generate 2D heatmaps for this
+    dataset as the input to 3D model.
 
     Campus keypoint indices::
 
