@@ -418,8 +418,8 @@ class DetectAndRegress(BasePose):
 
         return result
 
-    def show_result(self, img, img_metas, input_heatmaps=None,
-                    dataset_info=None, radius=4, thickness=1, out_dir=None, show=False):
+    def show_result(self, img, img_metas, visualize_2d=False, input_heatmaps=None,
+                    dataset_info=None, radius=4, thickness=2, out_dir=None, show=False):
         """Visualize the results."""
         result = self.forward_test(img, img_metas, input_heatmaps=None)
         pose_3d = result['pose_3d']
@@ -445,26 +445,27 @@ class DetectAndRegress(BasePose):
             if out_dir is not None:
                 mmcv.image.imwrite(img_3d, os.path.join(out_dir, 'vis_3d', f'{sample_id[i]}_3d.jpg'))
 
-            for j in range(num_cameras):
-                single_camera = SimpleCamera(img_meta['camera'][j])
-                img_file = img_meta['image_file'][j]
-                # img = mmcv.imread(img)
-                if num_persons > 0:
-                    pose_2d = np.ones_like(pose_3d_i[..., :3])
-                    pose_2d_flat = single_camera.world_to_pixel(
-                        pose_3d_i[..., :3].reshape((-1, 3)))
-                    pose_2d[..., :2] = pose_2d_flat.reshape((num_persons, -1, 2))
-                    pose_2d_list = [pose for pose in pose_2d]
-                else:
-                    pose_2d_list = []
+            if visualize_2d:
+                for j in range(num_cameras):
+                    single_camera = SimpleCamera(img_meta['camera'][j])
+                    img_file = img_meta['image_file'][j]
+                    # img = mmcv.imread(img)
+                    if num_persons > 0:
+                        pose_2d = np.ones_like(pose_3d_i[..., :3])
+                        pose_2d_flat = single_camera.world_to_pixel(
+                            pose_3d_i[..., :3].reshape((-1, 3)))
+                        pose_2d[..., :2] = pose_2d_flat.reshape((num_persons, -1, 2))
+                        pose_2d_list = [pose for pose in pose_2d]
+                    else:
+                        pose_2d_list = []
 
-                img = imshow_keypoints(img_file, pose_2d_list, dataset_info.skeleton, 0.0,
-                                       dataset_info.pose_kpt_color[:num_keypoints],
-                                       dataset_info.pose_link_color, radius,
-                                       thickness)
-                if out_dir is not None:
-                    mmcv.image.imwrite(img, os.path.join(out_dir, f'{sample_id[i]}_{j}_2d.jpg'))
-                # TODO: show image
+                    img = imshow_keypoints(img_file, pose_2d_list, dataset_info.skeleton, 0.0,
+                                           dataset_info.pose_kpt_color[:num_keypoints],
+                                           dataset_info.pose_link_color, radius,
+                                           thickness)
+                    if out_dir is not None:
+                        mmcv.image.imwrite(img, os.path.join(out_dir, f'{sample_id[i]}_{j}_2d.jpg'))
+                    # TODO: show image
 
     def forward_dummy(self, img, input_heatmaps=None, num_candidates=5):
         """Used for computing network FLOPs."""

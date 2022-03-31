@@ -161,7 +161,7 @@ def inference(args):
         model.show_result(**multiview_data, input_heatmaps=None,
                           dataset_info=dataset_info, radius=args.radius,
                           thickness=args.thickness, out_dir=args.out_img_root,
-                          show=args.show)
+                          show=args.show, visualize_2d=args.visualize_single_view)
         prog_bar.update()
 
 
@@ -187,6 +187,11 @@ if __name__ == '__main__':
         type=str,
         default='Body3DMviewDirectPanopticDataset')
     parser.add_argument(
+        '--visualize-single-view',
+        action='store_true',
+        default=False,
+        help='whether to visualize single view imgs')
+    parser.add_argument(
         '--show',
         action='store_true',
         default=False,
@@ -196,12 +201,12 @@ if __name__ == '__main__':
     parser.add_argument(
         '--radius',
         type=int,
-        default=4,
+        default=8,
         help='Keypoint radius for visualization')
     parser.add_argument(
         '--thickness',
         type=int,
-        default=1,
+        default=8,
         help='Link thickness for visualization')
 
     args = parser.parse_args()
