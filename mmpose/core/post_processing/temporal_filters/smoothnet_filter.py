@@ -137,7 +137,7 @@ class SmoothNet(nn.Module):
         return out.div(count)
 
 
-@FILTERS.register_module(name=['SmoothNet', 'Smoothnet', 'smoothnet'])
+@FILTERS.register_module(name=['SmoothNetFilter', 'SmoothNet', 'smoothnet'])
 class SmoothNetFilter(TemporalFilter):
     """Apply SmoothNet filter.
 
@@ -163,9 +163,11 @@ class SmoothNetFilter(TemporalFilter):
         res_hidden_size: int = 256,
         num_blocks: int = 3,
         device: str = 'cpu',
+        root_index: Optional[int] = None,
     ):
         super().__init__(window_size)
         self.device = device
+        self.root_index = root_index
         self.smoothnet = SmoothNet(window_size, output_size, hidden_size,
                                    res_hidden_size, num_blocks)
         if checkpoint:
@@ -173,26 +175,42 @@ class SmoothNetFilter(TemporalFilter):
         self.smoothnet.to(device)
         self.smoothnet.eval()
 
+        for p in self.smoothnet.parameters():
+            p.requires_grad_(False)
+
     def __call__(self, x: np.ndarray):
 
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 
+        root_index = self.root_index
+        if root_index is not None:
+            x_root = x[:, root_index:root_index + 1]
+            x = np.delete(x, root_index, axis=1)
+            x = x - x_root
+
         T, K, C = x.shape
-        # Do not apply the filter if the input length is less than the window
-        # size.
+
         if T < self.window_size:
-            return x
+            # Skip smoothing if the input length is less than the window size
+            smoothed = x
+        else:
+            dtype = x.dtype
 
-        dtype = x.dtype
+            # Convert to tensor and forward the model
+            with torch.no_grad():
+                x = torch.tensor(x, dtype=torch.float32, device=self.device)
+                x = x.view(1, T, K * C).permute(0, 2, 1)  # to [1, KC, T]
+                smoothed = self.smoothnet(x)  # in shape [1, KC, T]
 
-        # Convert to tensor and forward the model
-        x = torch.tensor(x, dtype=torch.float32, device=self.device)
-        x = x.view(1, T, K * C).permute(0, 2, 1)  # to [1, KC, T]
-        smoothed = self.smoothnet(x)  # in shape [1, KC, T]
+            # Convert model output back to input shape and format
+            smoothed = smoothed.permute(0, 2, 1).view(T, K, C)  # to [T, K, C]
+            smoothed = smoothed.cpu().numpy().astype(dtype)  # to numpy.ndarray
 
-        # Convert model output back to input shape and format
-        smoothed = smoothed.permute(0, 2, 1).view(T, K, C)  # to [T, K, C]
-        smoothed = smoothed.cpu().numpy().astype(dtype)  # to numpy.ndarray
+        if root_index is not None:
+            smoothed += x_root
+            smoothed = np.concatenate(
+                (smoothed[:, :root_index], x_root, smoothed[:, root_index:]),
+                axis=1)
 
         return smoothed
