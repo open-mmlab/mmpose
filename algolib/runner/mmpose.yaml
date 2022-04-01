@@ -1,5 +1,5 @@
 global_configs:
-    reader: MemcachedReader
+    reader: CephReader
     maxstep: None
     benchmark: None
     seed: None
