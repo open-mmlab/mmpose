@@ -1,127 +1,185 @@
-
-'''
-source from smoothnet: 
-arxiv.org/pdf/2112.13715.pdf
-'''
-import os
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.nn.init as init
+# Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
+import torch
+from mmcv.runner import load_checkpoint
+from torch import Tensor, nn
 
 from .builder import FILTERS
 from .filter import TemporalFilter
 
 
-class Encoder(nn.Module):
-    def __init__(self, in_length, hid_size):
-        super(Encoder, self).__init__()
-        self.conv1d = nn.Linear(in_features=in_length, out_features=hid_size, bias=True)
-        self.lrelu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
-    def forward(self, input):
-        return self.lrelu(self.conv1d(input))
+class SmoothNetResBlock(nn.Module):
 
-class Dense(nn.Module):
-    '''
-        N Residual Block
-    '''
-    def __init__(self, hid_size=256, mid_size=256, dropout=0.25):
-        super(Dense, self).__init__()
-        self.linear_1 = nn.Linear(in_features=hid_size, out_features=mid_size, bias=True)
-        self.linear_2 = nn.Linear(in_features=mid_size, out_features=hid_size, bias=True)
-        self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
-        self.dropout = nn.Dropout(p=dropout)
-    def forward(self, input):
-        x = input
-        x_f = self.lrelu(self.dropout(self.linear_1(input)))
-        return self.lrelu(self.dropout(self.linear_2(x_f))) + x
-
-class Decoder(nn.Module):
-    def __init__(self, hid_size, out_length):
-        super(Decoder, self).__init__()
-        self.conv1d = nn.Linear(in_features=hid_size, out_features=out_length, bias=True)
-
-    def forward(self, input):
-        return self.conv1d(input)
-
-@FILTERS.register_module(name=['SmoothNet', 'Smoothnet', 'smoothnet'])
-class SmoothNet(nn.Module):
-    """
-    SmoothNet is a plug-and-play temporal-only network to refine human poses.
-    Smoothing the outputs of existing 2d/3d/6d pose backbones.
-    Args:
-        in_length (int):
-                    The length of the input window size
-                    (64 frames by default).
-        out_length (int):
-                    The length of the output window size
-                    (the same as in_length by default).       
-        hid_size (int):
-                    Hidden size
-        num_block (int):
-                    N blocks of the middle dense layers
-        dropout (float)
-        mid_size (int): 
-                    Another hidden size 
-                    (256 by default).       
-                
-    Returns:
-        smoothed poses (np.ndarray, torch.tensor)
-    """
-    def __init__(self, 
-                in_length=64, 
-                out_length=64, 
-                hid_size=512, 
-                num_block=3, 
-                dropout=0.5, 
-                mid_size=256):
-        super(SmoothNet, self).__init__()
-        self.in_length = in_length
-        self.out_length = out_length
-
-        self.enc = Encoder(in_length, hid_size)
-        self.dec = Decoder(hid_size, out_length)
-
-        ResidualBlock = []
-        for i in range(num_block):
-            ResidualBlock.append(Dense(hid_size=hid_size, mid_size=mid_size, dropout=dropout))
-        self.ResidualBlock = nn.Sequential(*ResidualBlock)
+    def __init__(self, in_channels, hidden_channels, dropout=0.5):
+        super().__init__()
+        self.linear1 = nn.Linear(in_channels, hidden_channels)
+        self.linear2 = nn.Linear(hidden_channels, in_channels)
+        self.lrelu = nn.LeakyReLU(0.2, inplace=True)
+        self.dropout = nn.Dropout(p=dropout, inplace=True)
 
     def forward(self, x):
-        T, K, C = x.size()
+        identity = x
+        x = self.linear1(x)
+        x = self.dropout(x)
+        x = self.lrelu(x)
+        x = self.linear2(x)
+        x = self.dropout(x)
+        x = self.lrelu(x)
 
-        assert len(x.shape) == 3
-        assert T == self.in_length == self.out_length
-        x_type = x
-        if isinstance(x, torch.Tensor):
-            if x.is_cuda:
-                x = x
-            else:
-                x = x.cuda()
-        elif isinstance(x, np.array):
-            x = torch.from_numpy(x).cuda()
-
-        x = x.reshape(1, T, K*C) #[N=1, T, K*C]
-        x = x.permute(0,2,1) #[N=1, K*C, T]
-
-        # smooth all axes parallelly
-        x_ = self.enc(x)
-        x_ = self.ResidualBlock(x_)
-        smooth_poses = self.dec(x_)
-        
-        # return the original shape
-        smooth_poses = smooth_poses.permute(0,2,1)
-        smooth_poses = smooth_poses.reshape(T,K,-1)
-
-        if isinstance(x_type, torch.Tensor):
-            if x_type.is_cuda:
-                smooth_poses = smooth_poses
-            else:
-                smooth_poses = smooth_poses.cpu()
-        elif isinstance(x_type, np.array):
-            smooth_poses = smooth_poses.cpu().numpy()
-        return smooth_poses
+        out = x + identity
+        return out
 
 
+class SmoothNet(nn.Module):
+    """SmoothNet is a plug-and-play temporal-only network to refine human
+    poses. It works for 2d/3d/6d pose smoothing.
 
+    "SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos",
+    arXiv'2021. More details can be found in the `paper
+    <https://arxiv.org/abs/2112.13715>`__ .
+
+    Note:
+        N: The batch size
+        T: The temporal length of the pose sequence
+        C: The total pose dimension (e.g. keypoint_number * keypoint_dim)
+
+    Args:
+        window_size (int): The size of the input window.
+        output_size (int): The size of the output window.
+        hidden_size (int): The hidden feature dimension in the encoder,
+            the decoder and between residual blocks. Default: 512
+        res_hidden_size (int): The hidden feature dimension inside the
+            residual blocks. Default: 256
+        num_blocks (int): The number of residual blocks. Default: 3
+        dropout (float): Dropout probability. Default: 0.5
+
+    Shape:
+        Input: (N, C, T) the original pose sequence
+        Output: (N, C, T) the smoothed pose sequence
+    """
+
+    def __init__(self,
+                 window_size: int,
+                 output_size: int,
+                 hidden_size: int = 512,
+                 res_hidden_size: int = 256,
+                 num_blocks: int = 3,
+                 dropout: float = 0.5):
+        super().__init__()
+        self.window_size = window_size
+        self.output_size = output_size
+        self.hidden_size = hidden_size
+        self.res_hidden_size = res_hidden_size
+        self.num_blocks = num_blocks
+        self.dropout = dropout
+
+        assert output_size <= window_size, (
+            'The output size should be less than or equal to the window size.',
+            f' Got output_size=={output_size} and window_size=={window_size}')
+
+        # Build encoder layers
+        self.encoder = nn.Sequential(
+            nn.Linear(window_size, hidden_size),
+            nn.LeakyReLU(0.1, inplace=True))
+
+        # Build residual blocks
+        res_blocks = []
+        for _ in range(num_blocks):
+            res_blocks.append(
+                SmoothNetResBlock(
+                    in_channels=hidden_size,
+                    hidden_channels=res_hidden_size,
+                    dropout=dropout))
+        self.res_blocks = nn.Sequential(*res_blocks)
+
+        # Build decoder layers
+        self.decoder = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Forward function."""
+        N, C, T = x.shape
+        num_windows = T - self.window_size + 1
+
+        assert T >= self.window_size, (
+            'Input sequence length must be no less than the window size. ',
+            f'Got x.shape[2]=={T} and window_size=={self.window_size}')
+
+        # Unfold x to obtain input sliding windows
+        # [N, C, num_windows, window_size]
+        x = x.unfold(2, self.window_size, 1)
+
+        # Forward layers
+        x = self.encoder(x)
+        x = self.res_blocks(x)
+        x = self.decoder(x)  # [N, C, num_windows, output_size]
+
+        # Accumulate output ensembles
+        out = x.new_zeros(N, C, T)
+        count = x.new_zeros(T)
+
+        for t in range(num_windows):
+            out[..., t:t + self.output_size] += x[:, :, t]
+            count[t:t + self.output_size] += 1.0
+
+        return out.div(count)
+
+
+@FILTERS.register_module(name=['SmoothNet', 'Smoothnet', 'smoothnet'])
+class SmoothNetFilter(TemporalFilter):
+    """Apply SmoothNet filter.
+
+    "SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos",
+    arXiv'2021. More details can be found in the `paper
+    <https://arxiv.org/abs/2112.13715>`__ .
+
+    Args:
+        window_size (int): The size of the filter window (i.e., the number
+            of coefficients). window_length must be a positive odd integer.
+        checkpoint (str): The checkpoint file of the pretrained SmoothNet
+            model. Please note that `checkpoint` and `window_size` should
+            be matched.
+        device (str)
+    """
+
+    def __init__(
+        self,
+        window_size: int,
+        checkpoint: str,
+        output_size,
+        hidden_size: int = 512,
+        res_hidden_size: int = 256,
+        num_blocks: int = 3,
+        dropout: float = 0.5,
+        device: str = 'cpu',
+    ):
+        super().__init__(window_size)
+        self.device = device
+        self.smoothnet = SmoothNet(window_size, output_size, hidden_size,
+                                   res_hidden_size, num_blocks, dropout)
+        load_checkpoint(self.smoothnet, checkpoint)
+        self.smoothnet.to(device)
+        self.smoothnet.eval()
+
+    def __call__(self, x: np.ndarray):
+
+        assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
+                             f', but got invalid shape {x.shape}')
+
+        T, K, C = x.shape
+        # Do not apply the filter if the input length is less than the window
+        # size.
+        if T < self.window_size:
+            return x
+
+        dtype = x.dtype
+
+        # Convert to tensor and forward the model
+        x = torch.tensor(x, dtype=torch.float32, device=self.device)
+        x = x.view(1, T, K * C).permute(0, 2, 1)  # to [1, KC, T]
+        smoothed = self.smoothnet(x)  # in shape [1, KC, T]
+
+        # Convert model output back to input shape and format
+        smoothed = smoothed.permute(0, 2, 1).view(T, K, C)  # to [T, K, C]
+        smoothed = smoothed.cpu().numpy().astype(dtype)  # to numpy.ndarray
+
+        return smoothed
