@@ -6,10 +6,9 @@ import warnings
 import cv2
 import mmcv
 import numpy as np
+from matplotlib import pyplot as plt
 from mmcv.utils.misc import deprecated_api_warning
 from mmcv.visualization.color import color_val
-from matplotlib import pyplot as plt
-
 
 try:
     import trimesh
@@ -484,8 +483,12 @@ def imshow_multiview_keypoints_3d(
         # draw each point on image
         xs, ys, zs, scores = kpts.T
         valid = scores > kpt_score_thr
-        ax.scatter(xs[valid], ys[valid], zs[valid], marker='o',
-                   color=pose_kpt_color[valid])
+        ax.scatter(
+            xs[valid],
+            ys[valid],
+            zs[valid],
+            marker='o',
+            color=pose_kpt_color[valid])
 
         for link, link_color in zip(skeleton, pose_link_color):
             link_indices = [_i for _i in link]

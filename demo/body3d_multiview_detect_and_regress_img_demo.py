@@ -1,18 +1,20 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import json
 import os
-import cv2
 import os.path as osp
-from mmpose.datasets.pipelines import Compose
-from mmcv.parallel import collate, scatter
-from mmcv import Config
 from argparse import ArgumentParser
+from glob import glob
+
+import cv2
 import mmcv
 import numpy as np
+from mmcv import Config
+from mmcv.parallel import collate, scatter
+
 from mmpose.apis.inference import init_pose_model
 from mmpose.core.post_processing import get_affine_transform
-import json
-from glob import glob
 from mmpose.datasets.dataset_info import DatasetInfo
+from mmpose.datasets.pipelines import Compose
 
 
 def get_scale(target_size, raw_image_size):
@@ -30,9 +32,9 @@ def get_scale(target_size, raw_image_size):
     return scale
 
 
-def get_panoptic_camera_parameters(cam_file, camera_names,
-                                   M=[[1.0, 0.0, 0.0],
-                                      [0.0, 0.0, -1.0],
+def get_panoptic_camera_parameters(cam_file,
+                                   camera_names,
+                                   M=[[1.0, 0.0, 0.0], [0.0, 0.0, -1.0],
                                       [0.0, 1.0, 0.0]]):
     with open(cam_file) as cfile:
         calib = json.load(cfile)
@@ -60,8 +62,8 @@ def get_panoptic_camera_parameters(cam_file, camera_names,
 
 
 def get_input_data(img_path, cam_file):
-    camera_names = sorted([d for d in os.listdir(img_path)
-                          if osp.isdir(osp.join(img_path, d))])
+    camera_names = sorted(
+        [d for d in os.listdir(img_path) if osp.isdir(osp.join(img_path, d))])
     directories = [osp.join(img_path, d) for d in camera_names]
     num_cameras = len(camera_names)
     # load camera parameters
@@ -76,12 +78,9 @@ def get_input_data(img_path, cam_file):
             single_view_camera = cameras[camera_names[i]].copy()
             image_file = frame[i]
             input_data.append({
-                'image_file':
-                    image_file,
-                'camera':
-                    single_view_camera,
-                'sample_id':
-                    sample_id,
+                'image_file': image_file,
+                'camera': single_view_camera,
+                'sample_id': sample_id,
             })
             sample_id += 1
 
@@ -96,9 +95,7 @@ def inference(args):
     dataset_info = DatasetInfo(dataset_info)
 
     model = init_pose_model(
-            config_dict,
-            args.pose_model_checkpoint,
-            device=args.device.lower())
+        config_dict, args.pose_model_checkpoint, device=args.device.lower())
     pipeline = [
         dict(
             type='MultiItemProcess',
@@ -109,17 +106,17 @@ def inference(args):
                     mean=[0.485, 0.456, 0.406],
                     std=[0.229, 0.224, 0.225]),
             ]),
-        dict(
-            type='DiscardDuplicatedItems',
-            keys_list=['sample_id']),
+        dict(type='DiscardDuplicatedItems', keys_list=['sample_id']),
         dict(
             type='Collect',
             keys=['img'],
-            meta_keys=['sample_id', 'camera', 'center', 'scale', 'image_file']),
+            meta_keys=['sample_id', 'camera', 'center', 'scale',
+                       'image_file']),
     ]
     pipeline = Compose(pipeline)
 
-    input_data, num_cameras = get_input_data(args.img_root, args.camera_param_file)
+    input_data, num_cameras = get_input_data(args.img_root,
+                                             args.camera_param_file)
     num_frames = len(input_data) // num_cameras
     prog_bar = mmcv.ProgressBar(num_frames)
 
@@ -145,7 +142,8 @@ def inference(args):
                 scale=scale / 200.0,
                 rot=0.0,
                 output_size=input_size)
-            img = cv2.warpAffine(img, mat_input, (int(input_size[0]), int(input_size[1])))
+            img = cv2.warpAffine(img, mat_input,
+                                 (int(input_size[0]), int(input_size[1])))
             image_infos.append(input_data[i * num_cameras + c])
 
             singleview_data['img'] = img
@@ -158,23 +156,26 @@ def inference(args):
         multiview_data = collate([multiview_data], samples_per_gpu=1)
         multiview_data = scatter(multiview_data, [args.device])[0]
 
-        model.show_result(**multiview_data, input_heatmaps=None,
-                          dataset_info=dataset_info, radius=args.radius,
-                          thickness=args.thickness, out_dir=args.out_img_root,
-                          show=args.show, visualize_2d=args.visualize_single_view)
+        model.show_result(
+            **multiview_data,
+            input_heatmaps=None,
+            dataset_info=dataset_info,
+            radius=args.radius,
+            thickness=args.thickness,
+            out_dir=args.out_img_root,
+            show=args.show,
+            visualize_2d=args.visualize_single_view)
         prog_bar.update()
 
 
 if __name__ == '__main__':
     parser = ArgumentParser()
+    parser.add_argument('config_file', help='Config file pose model')
     parser.add_argument(
-        'config_file',
-        help='Config file pose model')
-    parser.add_argument(
-        'pose_model_checkpoint',
-        help='Checkpoint file for pose model')
+        'pose_model_checkpoint', help='Checkpoint file for pose model')
     parser.add_argument('--img-root', type=str, default='', help='Image root')
-    parser.add_argument('--out-img-root', type=str, default='', help='Output image root')
+    parser.add_argument(
+        '--out-img-root', type=str, default='', help='Output image root')
     parser.add_argument(
         '--camera-param-file',
         type=str,
@@ -183,9 +184,7 @@ if __name__ == '__main__':
         ' the camera space to to world space. If None, no conversion will be '
         'applied.')
     parser.add_argument(
-        '--dataset',
-        type=str,
-        default='Body3DMviewDirectPanopticDataset')
+        '--dataset', type=str, default='Body3DMviewDirectPanopticDataset')
     parser.add_argument(
         '--visualize-single-view',
         action='store_true',
