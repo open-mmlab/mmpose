@@ -137,6 +137,7 @@ MMPose 也提供了其他更详细的教程:
 * [x] [UDP](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
 * [x] [Albumentations](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#albumentations-information-2020) (Information'2020)
 * [x] [SoftWingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
+* [x] [SmoothNet](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#smoothnet-arxiv-2021) (arXiv'2021)
 
 </details>
 
