@@ -7,6 +7,7 @@ MMPose supported datasets:
 
 - [Human3.6M](#human36m) \[ [Homepage](http://vision.imar.ro/human3.6m/description.php) \]
 - [CMU Panoptic](#cmu-panoptic) \[ [Homepage](http://domedb.perception.cs.cmu.edu/) \]
+- [Campus/Shelf](#campus-and-shelf) \[ [Homepage](http://campar.in.tum.de/Chair/MultiHumanPose) \]
 
 ## Human3.6M
 
@@ -117,4 +118,72 @@ mmpose
         |   |   ├── calibration_160224_haggling1.json
         ├── 160226_haggling1
             ├── ...
+```
+
+## Campus and Shelf
+
+<details>
+<summary align="right"><a href="http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf">Campus and Shelf (CVPR'2014)</a></summary>
+
+```bibtex
+@inproceedings {belagian14multi,
+    title = {{3D} Pictorial Structures for Multiple Human Pose Estimation},
+    author = {Belagiannis, Vasileios and Amin, Sikandar and Andriluka, Mykhaylo and Schiele, Bernt and Navab
+    Nassir and Ilic, Slobo
+    booktitle = {IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year = {2014},
+    month = {June},
+    organization={IEEE}
+}
+```
+
+</details>
+
+Please follow [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch) to prepare these two datasets.
+
+1. Please download the datasets from the [official website](http://campar.in.tum.de/Chair/MultiHumanPose) and extract them under `$MMPOSE/data/campus` and `$MMPOSE/data/shelf`, respectively. The original data include images as well as the ground truth pose file `actorsGT.mat`.
+
+2. We directly use the processed camera parameters from [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch). You can download them from this repository and place in under `$MMPOSE/data/campus/calibration_campus.json` and `$MMPOSE/data/shelf/calibration_shelf.json`, respectively.
+
+3. Like [Voxelpose](https://github.com/microsoft/voxelpose-pytorch), due to the limited and incomplete annotations of the two datasets, we don't train the model using this dataset. Instead, we directly use the 2D pose estimator trained on COCO, and use independent 3D human poses from the CMU Panoptic dataset to train our 3D model. It lies in `${MMPOSE}/data/panoptic_training_pose.pkl`.
+
+4. Like [Voxelpose](https://github.com/microsoft/voxelpose-pytorch), for testing, we first estimate 2D poses and generate 2D heatmaps for these two datasets. You can download the predicted poses from [voxelpose-pytorch](https://github.com/microsoft/voxelpose-pytorch) and place them in  `$MMPOSE/data/campus/pred_campus_maskrcnn_hrnet_coco.pkl` and `$MMPOSE/data/shelf/pred_shelf_maskrcnn_hrnet_coco.pkl`, respectively. You can also use the models trained on COCO dataset (like HigherHRNet) to generate 2D heatmaps directly.
+
+The directory tree should be like this:
+
+```text
+mmpose
+├── mmpose
+├── docs
+├── tests
+├── tools
+├── configs
+`── data
+    ├── panoptic_training_pose.pkl
+    ├── campus
+    |   ├── Camera0
+    |   |   |   ├── campus4-c0-00000.png
+    |   |   |   ├── ...
+    |   |   |   ├── campus4-c0-01999.png
+    |   ...
+    |   ├── Camera2
+    |   |   |   ├── campus4-c2-00000.png
+    |   |   |   ├── ...
+    |   |   |   ├── campus4-c2-01999.png
+    |   ├── calibration_campus.json
+    |   ├── pred_campus_maskrcnn_hrnet_coco.pkl
+    |   ├── actorsGT.mat
+    ├── shelf
+    |   ├── Camera0
+    |   |   |   ├── img_000000.png
+    |   |   |   ├── ...
+    |   |   |   ├── img_003199.png
+    |   ...
+    |   ├── Camera4
+    |   |   |   ├── img_000000.png
+    |   |   |   ├── ...
+    |   |   |   ├── img_003199.png
+    |   ├── calibration_shelf.json
+    |   ├── pred_shelf_maskrcnn_hrnet_coco.pkl
+    |   ├── actorsGT.mat
 ```

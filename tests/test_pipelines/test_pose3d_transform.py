@@ -334,3 +334,151 @@ def test_3d_heatmap_generation():
     results_3d = pipeline(results)
     assert results_3d['target'].shape == (3, 64, 64, 64)
     assert results_3d['target_weight'].shape == (3, 1)
+
+
+def test_voxel3D_heatmap_generation():
+    heatmap_size = [200, 160]
+    cube_size = [8, 8, 2]
+    ann_info = dict(
+        image_size=np.array([800, 640]),
+        heatmap_size=np.array([heatmap_size]),
+        num_joints=17,
+        num_scales=1,
+        space_size=[12000.0, 12000.0, 2000.0],
+        space_center=[3000.0, 4500.0, 1000.0],
+        cube_size=cube_size)
+
+    results = dict(
+        joints_3d=np.ones([2, 17, 3]),
+        joints_3d_visible=np.ones([2, 17, 3]),
+        ann_info=ann_info)
+
+    # test single joint index
+    joint_indices = [[11, 12]]
+    pipeline = Compose([
+        dict(
+            type='GenerateVoxel3DHeatmapTarget',
+            sigma=200.0,
+            joint_indices=joint_indices,
+        ),
+    ])
+    results_ = pipeline(results)
+    assert results_['targets_3d'].shape == (8, 8, 2)
+
+    # test multiple joint indices
+    joint_indices = [0, 8, 6]
+    pipeline = Compose([
+        dict(
+            type='GenerateVoxel3DHeatmapTarget',
+            sigma=200.0,
+            joint_indices=joint_indices,
+        ),
+    ])
+    results_ = pipeline(results)
+    assert results_['targets_3d'].shape == (3, 8, 8, 2)
+
+
+def test_input_heatmap_generation():
+    heatmap_size = [200, 160]
+    ann_info = dict(
+        image_size=np.array([800, 640]),
+        heatmap_size=np.array([heatmap_size]),
+        num_joints=17,
+        num_scales=1,
+    )
+
+    results = dict(
+        joints=np.zeros([2, 17, 3]),
+        joints_visible=np.ones([2, 17, 3]),
+        ann_info=ann_info)
+
+    pipeline = dict(
+        type='GenerateInputHeatmaps',
+        item='joints',
+        visible_item='joints_visible',
+        obscured=0.0,
+        from_pred=False,
+        sigma=3,
+        scale=1.0,
+        base_size=96,
+        target_type='gaussian',
+        heatmap_cfg=dict(
+            base_scale=0.9,
+            offset=0.03,
+            threshold=0.6,
+            extra=[
+                dict(joint_ids=[7, 8], scale_factor=0.5, threshold=0.1),
+                dict(
+                    joint_ids=[9, 10],
+                    scale_factor=0.2,
+                    threshold=0.1,
+                ),
+                dict(
+                    joint_ids=[0, 1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16],
+                    scale_factor=0.5,
+                    threshold=0.05)
+            ]))
+
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `obscured`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['obscured'] = 0.5
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `heatmap_cfg`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['heatmap_cfg'] = None
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+    # test `from_pred`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['from_pred'] = True
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+    # test `from_pred` & `scale`
+    pipeline_copy = copy.deepcopy(pipeline)
+    pipeline_copy['from_pred'] = True
+    pipeline_copy['scale'] = None
+    pipelines = Compose([pipeline])
+    results_ = pipelines(results)
+    assert results_['input_heatmaps'][0].shape == (17, heatmap_size[1],
+                                                   heatmap_size[0])
+
+
+def test_affine_joints():
+    ann_info = dict(image_size=np.array([800, 640]))
+
+    results = dict(
+        center=np.array([180, 144]),
+        scale=np.array([360, 288], dtype=np.float32),
+        rotation=0.0,
+        joints=np.ones((3, 17, 2)),
+        joints_visible=np.ones((3, 17, 2)),
+        ann_info=ann_info)
+
+    pipeline = Compose([
+        dict(
+            type='AffineJoints', item='joints', visible_item='joints_visible')
+    ])
+    results_ = pipeline(results)
+    assert results_['joints'].shape == (3, 17, 2)
+    assert results_['joints_visible'].shape == (3, 17, 2)
+
+    # test `joints_visible` is zero
+    results_copy = copy.deepcopy(results)
+    results_copy['joints_visible'] = np.zeros((3, 17, 2))
+    results_ = pipeline(results)
+    assert results_['joints'].shape == (3, 17, 2)
+    assert results_['joints_visible'].shape == (3, 17, 2)

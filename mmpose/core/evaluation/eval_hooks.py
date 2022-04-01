@@ -5,7 +5,8 @@ from mmcv.runner import DistEvalHook as _DistEvalHook
 from mmcv.runner import EvalHook as _EvalHook
 
 MMPOSE_GREATER_KEYS = [
-    'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc'
+    'acc', 'ap', 'ar', 'pck', 'auc', '3dpck', 'p-3dpck', '3dauc', 'p-3dauc',
+    'pcp'
 ]
 MMPOSE_LESS_KEYS = ['loss', 'epe', 'nme', 'mpjpe', 'p-mpjpe', 'n-mpjpe']
 

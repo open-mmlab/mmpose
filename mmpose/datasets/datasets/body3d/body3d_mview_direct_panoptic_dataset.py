@@ -135,24 +135,6 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
         self.root_id = data_cfg.get('root_id', 0)
         self.max_persons = data_cfg.get('max_num', 10)
 
-    def _get_scale(self, raw_image_size):
-        heatmap_size = self.ann_info['heatmap_size']
-        image_size = self.ann_info['image_size']
-        assert heatmap_size[0][0] / heatmap_size[0][1] \
-               == image_size[0] / image_size[1]
-        w, h = raw_image_size
-        w_resized, h_resized = image_size
-        if w / w_resized < h / h_resized:
-            w_pad = h / h_resized * w_resized
-            h_pad = h
-        else:
-            w_pad = w
-            h_pad = w / w_resized * h_resized
-
-        scale = np.array([w_pad, h_pad], dtype=np.float32)
-
-        return scale
-
     def _get_cam(self, seq):
         """Get camera parameters.
 
@@ -480,14 +462,3 @@ class Body3DMviewDirectPanopticDataset(Kpt3dMviewRgbImgDirectDataset):
             results[c] = result
 
         return self.pipeline(results)
-
-    @staticmethod
-    def _sort_and_unique_outputs(outputs, key='sample_id'):
-        """sort outputs and remove the repeated ones."""
-        outputs = sorted(outputs, key=lambda x: x[key])
-        num_outputs = len(outputs)
-        for i in range(num_outputs - 1, 0, -1):
-            if outputs[i][key] == outputs[i - 1][key]:
-                del outputs[i]
-
-        return outputs

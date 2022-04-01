@@ -1,0 +1,30 @@
+Collections:
+- Name: VoxelPose
+  Paper:
+    Title: 'VoxelPose: Towards Multi-Camera 3D Human Pose Estimation in Wild Environment'
+    URL: https://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123460188.pdf
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/voxelpose.md
+Models:
+- Config: configs/body/3d_kpt_mview_rgb_img/voxelpose/campus/voxelpose_prn32x32x32_cpn80x80x20_campus_cam3.py
+  In Collection: VoxelPose
+  Metadata:
+    Architecture: &id001
+    - VoxelPose
+    Training Data: Campus
+  Name: voxelpose_voxelpose_prn32x32x32_cpn80x80x20_campus_cam3
+  Results:
+  - Dataset: Campus
+    Metrics: {}
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn32x32x32_cpn80x80x20_campus_cam3-3ecee30e_20220323.pth
+- Config: configs/body/3d_kpt_mview_rgb_img/voxelpose/campus/voxelpose_prn64x64x64_cpn80x80x20_campus_cam3.py
+  In Collection: VoxelPose
+  Metadata:
+    Architecture: *id001
+    Training Data: Campus
+  Name: voxelpose_voxelpose_prn64x64x64_cpn80x80x20_campus_cam3
+  Results:
+  - Dataset: Campus
+    Metrics: {}
+    Task: Body 3D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_campus_cam3-d8decbf7_20220323.pth
