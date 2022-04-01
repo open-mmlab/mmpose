@@ -70,6 +70,9 @@ class OneEuroFilter(TemporalFilter):
             decreases speed lag.
     """
 
+    # Not shareable because the filter holds status of a specific target
+    _shareable: bool = False
+
     def __init__(self, min_cutoff=0.004, beta=0.7):
         # OneEuroFilter has Markov Property and maintains status variables
         # within the class, thus has a windows_size of 1

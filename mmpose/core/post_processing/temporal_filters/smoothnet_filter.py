@@ -190,7 +190,6 @@ class SmoothNetFilter(TemporalFilter):
             p.requires_grad_(False)
 
     def __call__(self, x: np.ndarray):
-
         assert x.ndim == 3, ('Input should be an array with shape [T, K, C]'
                              f', but got invalid shape {x.shape}')
 

@@ -104,7 +104,7 @@ def main():
     parser.add_argument(
         '--out-video-root',
         type=str,
-        default=None,
+        default='vis_results',
         help='Root of the output video file. '
         'Default not saving the visualization video.')
     parser.add_argument(
@@ -205,6 +205,9 @@ def main():
             tracking_thr=args.tracking_thr)
 
         pose_det_results_list.append(copy.deepcopy(pose_det_results))
+
+        if len(pose_det_results_list) >= 200:
+            break
 
     # Second stage: Pose lifting
     print('Stage 2: 2D-to-3D pose lifting.')
