@@ -206,9 +206,6 @@ def main():
 
         pose_det_results_list.append(copy.deepcopy(pose_det_results))
 
-        if len(pose_det_results_list) >= 200:
-            break
-
     # Second stage: Pose lifting
     print('Stage 2: 2D-to-3D pose lifting.')
 
