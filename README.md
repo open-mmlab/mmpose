@@ -151,7 +151,7 @@ Supported [datasets](https://mmpose.readthedocs.io/en/latest/datasets.html):
 * [x] [MPII](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#mpii-cvpr-2014) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
 * [x] [Human3.6M](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#human3-6m-tpami-2014) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
 * [x] [COCO](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
-* [x] [CMU Panoptic](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#cmu-panoptic-iccv-2015) (ICCV'2015)
+* [x] [CMU Panoptic](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#cmu-panoptic-iccv-2015) \[[homepage](http://domedb.perception.cs.cmu.edu/)\] (ICCV'2015)
 * [x] [DeepFashion](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#deepfashion-cvpr-2016) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
 * [x] [300W](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#300w-imavis-2016) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
 * [x] [RHD](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#rhd-iccv-2017) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
