@@ -272,7 +272,10 @@ mmpose
 
 ## COCO-WholeBody (Hand)
 
-[DATASET]
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://link.springer.com/chapter/10.1007/978-3-030-58545-7_12">COCO-WholeBody-Hand (ECCV'2020)</a></summary>
 
 ```bibtex
 @inproceedings{jin2020whole,
@@ -282,6 +285,8 @@ mmpose
   year={2020}
 }
 ```
+
+</details>
 
 For [COCO-WholeBody](https://github.com/jin-s13/COCO-WholeBody/) dataset, images can be downloaded from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
 Download COCO-WholeBody annotations for COCO-WholeBody annotations for [Train](https://drive.google.com/file/d/1thErEToRbmM9uLNi1JXXfOsaS5VK2FXf/view?usp=sharing) / [Validation](https://drive.google.com/file/d/1N6VgwKnj8DeyGXCvp1eYgNbRmw6jdfrb/view?usp=sharing) (Google Drive).

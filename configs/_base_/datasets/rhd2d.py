@@ -8,77 +8,87 @@ dataset_info = dict(
         homepage='https://lmb.informatik.uni-freiburg.de/resources/'
         'datasets/RenderedHandposeDataset.en.html',
     ),
+    # In RHD, 1-4: left thumb [tip to palm], which means the finger is from
+    # tip to palm, so as other fingers. Please refer to
+    # `https://lmb.informatik.uni-freiburg.de/resources/datasets/
+    # RenderedHandpose/README` for details of keypoint definition.
+    # But in COCO-WholeBody-Hand, FreiHand, CMU Panoptic HandDB, it is in
+    # inverse order. Pay attention to this if you want to combine RHD with
+    # other hand datasets to train a single model.
+    # Also, note that 'keypoint_info' will not directly affect the order of
+    # the keypoint in the dataset. It is mostly for visualization & storing
+    # information about flip_pairs.
     keypoint_info={
         0:
         dict(name='wrist', id=0, color=[255, 255, 255], type='', swap=''),
         1:
-        dict(name='thumb1', id=1, color=[255, 128, 0], type='', swap=''),
+        dict(name='thumb4', id=1, color=[255, 128, 0], type='', swap=''),
         2:
-        dict(name='thumb2', id=2, color=[255, 128, 0], type='', swap=''),
+        dict(name='thumb3', id=2, color=[255, 128, 0], type='', swap=''),
         3:
-        dict(name='thumb3', id=3, color=[255, 128, 0], type='', swap=''),
+        dict(name='thumb2', id=3, color=[255, 128, 0], type='', swap=''),
         4:
-        dict(name='thumb4', id=4, color=[255, 128, 0], type='', swap=''),
+        dict(name='thumb1', id=4, color=[255, 128, 0], type='', swap=''),
         5:
         dict(
-            name='forefinger1', id=5, color=[255, 153, 255], type='', swap=''),
+            name='forefinger4', id=5, color=[255, 153, 255], type='', swap=''),
         6:
         dict(
-            name='forefinger2', id=6, color=[255, 153, 255], type='', swap=''),
+            name='forefinger3', id=6, color=[255, 153, 255], type='', swap=''),
         7:
         dict(
-            name='forefinger3', id=7, color=[255, 153, 255], type='', swap=''),
+            name='forefinger2', id=7, color=[255, 153, 255], type='', swap=''),
         8:
         dict(
-            name='forefinger4', id=8, color=[255, 153, 255], type='', swap=''),
+            name='forefinger1', id=8, color=[255, 153, 255], type='', swap=''),
         9:
         dict(
-            name='middle_finger1',
+            name='middle_finger4',
             id=9,
             color=[102, 178, 255],
             type='',
             swap=''),
         10:
         dict(
-            name='middle_finger2',
+            name='middle_finger3',
             id=10,
             color=[102, 178, 255],
             type='',
             swap=''),
         11:
         dict(
-            name='middle_finger3',
+            name='middle_finger2',
             id=11,
             color=[102, 178, 255],
             type='',
             swap=''),
         12:
         dict(
-            name='middle_finger4',
+            name='middle_finger1',
             id=12,
             color=[102, 178, 255],
             type='',
             swap=''),
         13:
         dict(
-            name='ring_finger1', id=13, color=[255, 51, 51], type='', swap=''),
+            name='ring_finger4', id=13, color=[255, 51, 51], type='', swap=''),
         14:
         dict(
-            name='ring_finger2', id=14, color=[255, 51, 51], type='', swap=''),
+            name='ring_finger3', id=14, color=[255, 51, 51], type='', swap=''),
         15:
         dict(
-            name='ring_finger3', id=15, color=[255, 51, 51], type='', swap=''),
+            name='ring_finger2', id=15, color=[255, 51, 51], type='', swap=''),
         16:
         dict(
-            name='ring_finger4', id=16, color=[255, 51, 51], type='', swap=''),
+            name='ring_finger1', id=16, color=[255, 51, 51], type='', swap=''),
         17:
-        dict(name='pinky_finger1', id=17, color=[0, 255, 0], type='', swap=''),
+        dict(name='pinky_finger4', id=17, color=[0, 255, 0], type='', swap=''),
         18:
-        dict(name='pinky_finger2', id=18, color=[0, 255, 0], type='', swap=''),
+        dict(name='pinky_finger3', id=18, color=[0, 255, 0], type='', swap=''),
         19:
-        dict(name='pinky_finger3', id=19, color=[0, 255, 0], type='', swap=''),
+        dict(name='pinky_finger2', id=19, color=[0, 255, 0], type='', swap=''),
         20:
-        dict(name='pinky_finger4', id=20, color=[0, 255, 0], type='', swap='')
+        dict(name='pinky_finger1', id=20, color=[0, 255, 0], type='', swap='')
     },
     skeleton_info={
         0:
