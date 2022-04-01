@@ -1,4 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+# ------------------------------------------------------------------------------
+# Adapted from https://github.com/microsoft/voxelpose-pytorch
+# Original license: Copyright (c) Microsoft Corporation, under the MIT License.
+# ------------------------------------------------------------------------------
+
 import copy
 import os.path as osp
 import random
