@@ -26,26 +26,26 @@ class Rhd2DDataset(Kpt2dSviewRgbImgTopDownDataset):
     Rhd keypoint indexes::
 
         0: 'wrist',
-        1: 'thumb1',
-        2: 'thumb2',
-        3: 'thumb3',
-        4: 'thumb4',
-        5: 'forefinger1',
-        6: 'forefinger2',
-        7: 'forefinger3',
-        8: 'forefinger4',
-        9: 'middle_finger1',
-        10: 'middle_finger2',
-        11: 'middle_finger3',
-        12: 'middle_finger4',
-        13: 'ring_finger1',
-        14: 'ring_finger2',
-        15: 'ring_finger3',
-        16: 'ring_finger4',
-        17: 'pinky_finger1',
-        18: 'pinky_finger2',
-        19: 'pinky_finger3',
-        20: 'pinky_finger4'
+        1: 'thumb4',
+        2: 'thumb3',
+        3: 'thumb2',
+        4: 'thumb1',
+        5: 'forefinger4',
+        6: 'forefinger3',
+        7: 'forefinger2',
+        8: 'forefinger1',
+        9: 'middle_finger4',
+        10: 'middle_finger3',
+        11: 'middle_finger2',
+        12: 'middle_finger1',
+        13: 'ring_finger4',
+        14: 'ring_finger3',
+        15: 'ring_finger2',
+        16: 'ring_finger1',
+        17: 'pinky_finger4',
+        18: 'pinky_finger3',
+        19: 'pinky_finger2',
+        20: 'pinky_finger1'
 
     Args:
         ann_file (str): Path to the annotation file.
@@ -73,6 +73,13 @@ class Rhd2DDataset(Kpt2dSviewRgbImgTopDownDataset):
                 'for details.', DeprecationWarning)
             cfg = Config.fromfile('configs/_base_/datasets/rhd2d.py')
             dataset_info = cfg._cfg_dict['dataset_info']
+        warnings.warn(
+            'Please note that the in RHD dataset, its keypoint indices are'
+            'different from other hand datasets like COCO-WholeBody-Hand,'
+            'FreiHand, CMU Panoptic HandDB, and OneHand10K. You can check'
+            '`configs/_base_/datasets/rhd2d.py` for details. If you want to '
+            'combine RHD with other hand datasets to train a single model, '
+            'please reorder the keypoint indices accordingly.')
 
         super().__init__(
             ann_file,
