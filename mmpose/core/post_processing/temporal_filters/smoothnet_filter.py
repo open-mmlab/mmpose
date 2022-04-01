@@ -146,12 +146,23 @@ class SmoothNetFilter(TemporalFilter):
     <https://arxiv.org/abs/2112.13715>`__ .
 
     Args:
-        window_size (int): The size of the filter window (i.e., the number
-            of coefficients). window_length must be a positive odd integer.
+        window_size (int): The size of the filter window. It's also the
+            window_size of SmoothNet model.
+        output_size (int): The output window size of SmoothNet model.
         checkpoint (str): The checkpoint file of the pretrained SmoothNet
-            model. Please note that `checkpoint` and `window_size` should
-            be matched.
-        device (str)
+            model. Please note that `checkpoint` should be matched with
+            `window_size` and `output_size`.
+        hidden_size (int): SmoothNet argument. See :class:`SmoothNet` for
+            details. Default: 512
+        hidden_res_size (int): SmoothNet argument. See :class:`SmoothNet`
+            for details. Default: 256
+        num_blocks (int): SmoothNet argument. See :class:`SmoothNet` for
+            details. Default: 3
+        device (str): Device for model inference. Default: 'cpu'
+        root_index (int, optional): If not None, relative keypoint coordinates
+            will be calculated as the SmoothNet input, by centering the
+            keypoints around the root point. The model output will be
+            converted back to absolute coordinates. Default: None
     """
 
     def __init__(
