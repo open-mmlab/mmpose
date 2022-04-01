@@ -29,6 +29,9 @@ class TestTemporalFilter(TestCase):
     def test_temporal_filter(self):
         for filter_cfg in self.get_filter_configs():
             with self.subTest(msg=f'Test {filter_cfg.type}'):
+                # Do not load checkpoint in CI
+                if 'checkpoint' in filter_cfg:
+                    filter_cfg.checkpoint = None
                 filter = build_filter(filter_cfg)
 
                 # Test input with single frame
@@ -43,5 +46,3 @@ class TestTemporalFilter(TestCase):
                 y = filter(x)
                 self.assertTrue(isinstance(y, np.ndarray))
                 self.assertEqual(x.shape, y.shape)
-
-                # Test invalid

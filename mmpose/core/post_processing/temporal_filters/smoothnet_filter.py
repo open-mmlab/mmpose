@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Optional
+
 import numpy as np
 import torch
 from mmcv.runner import load_checkpoint
@@ -9,6 +11,17 @@ from .filter import TemporalFilter
 
 
 class SmoothNetResBlock(nn.Module):
+    """Residual block module used in SmoothNet.
+
+    Args:
+        in_channels (int): Input channel number.
+        hidden_channels (int): The hidden feature channel number.
+        dropout (float): Dropout probability. Default: 0.5
+
+    Shape:
+        Input: (*, in_channels)
+        Output: (*, in_channels)
+    """
 
     def __init__(self, in_channels, hidden_channels, dropout=0.5):
         super().__init__()
@@ -144,19 +157,19 @@ class SmoothNetFilter(TemporalFilter):
     def __init__(
         self,
         window_size: int,
-        checkpoint: str,
-        output_size,
+        output_size: int,
+        checkpoint: Optional[str] = None,
         hidden_size: int = 512,
         res_hidden_size: int = 256,
         num_blocks: int = 3,
-        dropout: float = 0.5,
         device: str = 'cpu',
     ):
         super().__init__(window_size)
         self.device = device
         self.smoothnet = SmoothNet(window_size, output_size, hidden_size,
-                                   res_hidden_size, num_blocks, dropout)
-        load_checkpoint(self.smoothnet, checkpoint)
+                                   res_hidden_size, num_blocks)
+        if checkpoint:
+            load_checkpoint(self.smoothnet, checkpoint)
         self.smoothnet.to(device)
         self.smoothnet.eval()
 
