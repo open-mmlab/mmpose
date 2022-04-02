@@ -1,9 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import tempfile
 
+import torch
 from mmcv import Config
 
 from mmpose.datasets import DATASETS, build_dataloader
+from mmpose.datasets.dataset_info import DatasetInfo
 from mmpose.models import builder
 
 
@@ -31,7 +33,7 @@ def test_voxelpose_forward():
         need_camera_param=True,
         root_id=2)
 
-    pipeline = [
+    pipeline_heatmap = [
         dict(
             type='MultiItemProcess',
             pipeline=[
@@ -99,7 +101,7 @@ def test_voxelpose_forward():
             ann_file=tmpdir + '/tmp_train.pkl',
             img_prefix='tests/data/panoptic_body3d/',
             data_cfg=data_cfg,
-            pipeline=pipeline,
+            pipeline=pipeline_heatmap,
             dataset_info=dataset_info,
             test_mode=False)
 
@@ -112,18 +114,28 @@ def test_voxelpose_forward():
         workers_per_gpu=1,
         samples_per_gpu=1)
 
-    for data in data_loader:
-        # test forward_train
-        _ = model(
-            img=None,
-            img_metas=data['img_metas'].data[0],
-            return_loss=True,
-            targets_3d=data['targets_3d'],
-            input_heatmaps=data['input_heatmaps'])
+    with torch.no_grad():
+        for data in data_loader:
+            # test forward_train
+            _ = model(
+                img=None,
+                img_metas=data['img_metas'].data[0],
+                return_loss=True,
+                targets_3d=data['targets_3d'],
+                input_heatmaps=data['input_heatmaps'])
 
-        # test forward_test
-        _ = model(
-            img=None,
-            img_metas=data['img_metas'].data[0],
-            return_loss=False,
-            input_heatmaps=data['input_heatmaps'])
+            # test forward_test
+            _ = model(
+                img=None,
+                img_metas=data['img_metas'].data[0],
+                return_loss=False,
+                input_heatmaps=data['input_heatmaps'])
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                model.show_result(
+                    img=None,
+                    img_metas=data['img_metas'].data[0],
+                    input_heatmaps=data['input_heatmaps'],
+                    dataset_info=DatasetInfo(dataset_info),
+                    out_dir=tmpdir,
+                    visualize_2d=True)

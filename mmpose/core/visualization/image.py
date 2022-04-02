@@ -440,3 +440,75 @@ def imshow_mesh_3d(img,
             valid_mask * color[:, :, :3] + (1 - valid_mask) * output_img)
 
     return output_img
+
+
+def imshow_multiview_keypoints_3d(
+    pose_result,
+    skeleton=None,
+    pose_kpt_color=None,
+    pose_link_color=None,
+    space_size=[8000, 8000, 2000],
+    space_center=[0, -500, 800],
+    kpt_score_thr=0.0,
+):
+    """Draw 3D keypoints and links in 3D coordinates.
+
+    Args:
+        pose_result (list[kpts]): The poses to draw. Each element kpts is
+            a set of K keypoints as an Kx4 numpy.ndarray, where each
+            keypoint is represented as x, y, z, score.
+        skeleton (list of [idx_i,idx_j]): Skeleton described by a list of
+            links, each is a pair of joint indices.
+        pose_kpt_color (np.ndarray[Nx3]`): Color of N keypoints. If None, do
+            not nddraw keypoints.
+        pose_link_color (np.array[Mx3]): Color of M links. If None, do not
+            draw links.
+        space_size: (list). Default: [8000, 8000, 2000].
+        space_center: (list). Default: [0, -500, 800].
+        kpt_score_thr (float): Minimum score of keypoints to be shown.
+            Default: 0.0.
+    """
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.set_xlim3d(space_center[0] - space_size[0] * 0.5,
+                  space_center[0] + space_size[0] * 0.5)
+    ax.set_ylim3d(space_center[1] - space_size[1] * 0.5,
+                  space_center[1] + space_size[1] * 0.5)
+    ax.set_zlim3d(space_center[2] - space_size[2] * 0.5,
+                  space_center[2] + space_size[2] * 0.5)
+    pose_kpt_color = np.array(pose_kpt_color)
+    pose_kpt_color = pose_kpt_color[..., ::-1] / 255.
+
+    for kpts in pose_result:
+        # draw each point on image
+        xs, ys, zs, scores = kpts.T
+        valid = scores > kpt_score_thr
+        ax.scatter(
+            xs[valid],
+            ys[valid],
+            zs[valid],
+            marker='o',
+            color=pose_kpt_color[valid])
+
+        for link, link_color in zip(skeleton, pose_link_color):
+            link_indices = [_i for _i in link]
+            xs_3d = kpts[link_indices, 0]
+            ys_3d = kpts[link_indices, 1]
+            zs_3d = kpts[link_indices, 2]
+            kpt_score = kpts[link_indices, 3]
+            if kpt_score.min() > kpt_score_thr:
+                # matplotlib uses RGB color in [0, 1] value range
+                _color = np.array(link_color[::-1]) / 255.
+                ax.plot(xs_3d, ys_3d, zs_3d, color=_color)
+
+    # convert figure to numpy array
+    fig.tight_layout()
+    fig.canvas.draw()
+    img_w, img_h = fig.canvas.get_width_height()
+    img_vis = np.frombuffer(
+        fig.canvas.tostring_rgb(), dtype=np.uint8).reshape(img_h, img_w, -1)
+    img_vis = mmcv.rgb2bgr(img_vis)
+
+    plt.close(fig)
+
+    return img_vis

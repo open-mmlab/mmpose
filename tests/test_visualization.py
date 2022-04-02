@@ -6,7 +6,8 @@ import numpy as np
 import pytest
 
 from mmpose.core import (apply_bugeye_effect, apply_sunglasses_effect,
-                         imshow_bboxes, imshow_keypoints, imshow_keypoints_3d)
+                         imshow_bboxes, imshow_keypoints, imshow_keypoints_3d,
+                         imshow_multiview_keypoints_3d)
 
 
 def test_imshow_keypoints():
@@ -35,6 +36,17 @@ def test_imshow_keypoints():
         pose_kpt_color=pose_kpt_color,
         pose_link_color=pose_link_color,
         vis_height=400)
+
+    # multiview 3D keypoint
+    pose_result_3d = [kpts_3d]
+    _ = imshow_multiview_keypoints_3d(
+        pose_result_3d,
+        skeleton=skeleton,
+        pose_kpt_color=pose_kpt_color,
+        pose_link_color=pose_link_color,
+        space_size=[8, 8, 8],
+        space_center=[0, 0, 0],
+        kpt_score_thr=0.0)
 
 
 def test_imshow_bbox():
