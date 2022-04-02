@@ -244,5 +244,6 @@ if __name__ == '__main__':
               'Default Panoptic3D demo data will be used.')
         img_root = download_panoptic3d_demo_data()
         args.img_root = img_root
+        args.camera_param_file = os.path.join(img_root, 'camera_parameters.json')
 
     inference(args)
