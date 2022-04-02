@@ -430,7 +430,7 @@ class DetectAndRegress(BasePose):
                     out_dir=None,
                     show=False):
         """Visualize the results."""
-        result = self.forward_test(img, img_metas, input_heatmaps=None)
+        result = self.forward_test(img, img_metas, input_heatmaps=input_heatmaps)
         pose_3d = result['pose_3d']
         sample_id = result['sample_id']
         batch_size = pose_3d.shape[0]
@@ -451,8 +451,8 @@ class DetectAndRegress(BasePose):
                 skeleton=dataset_info.skeleton,
                 pose_kpt_color=dataset_info.pose_kpt_color[:num_keypoints],
                 pose_link_color=dataset_info.pose_link_color,
-                space_size=[8000, 8000, 2000],
-                space_center=[0, -500, 800])
+                space_size=self.human_detector.space_size,
+                space_center=self.human_detector.space_center)
             if out_dir is not None:
                 mmcv.image.imwrite(
                     img_3d,
