@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import glob
 import os.path as osp
 from unittest import TestCase
 
@@ -20,9 +20,9 @@ class TestTemporalFilter(TestCase):
                               keypoint_dim).astype(np.float32)
 
     def get_filter_configs(self):
-        cfg_files = os.listdir(self.cfg_folder)
+        cfg_files = glob.glob(osp.join(self.cfg_folder, '*.py'))
         for cfg_file in cfg_files:
-            cfg = Config.fromfile(osp.join(self.cfg_folder, cfg_file))
+            cfg = Config.fromfile(cfg_file)
             assert 'filter_cfg' in cfg
             yield cfg.filter_cfg
 
