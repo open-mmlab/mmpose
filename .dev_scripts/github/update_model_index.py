@@ -109,13 +109,14 @@ def collect_paper_readme():
     collection2readme = {}
 
     for readme_file in readme_files:
-        with open(readme_file) as f:
+        with open(readme_file, encoding='utf-8') as f:
             keyline = [
                 line for line in f.readlines() if line.startswith('<summary')
             ][0]
             name = re.findall(r'<a href=".*">(.*?)[ ]*\(.*\'.*\).*</a>',
                               keyline)[0]
-            collection2readme[name] = link_prefix + readme_file
+            collection2readme[name] = link_prefix + readme_file.replace(
+                '\\', '/')
 
     return collection2readme
 
@@ -187,7 +188,7 @@ def parse_md(md_file):
     # architectures for collection and model
     architecture = []
 
-    with open(md_file, 'r') as md:
+    with open(md_file, 'r', encoding='utf-8') as md:
         lines = md.readlines()
         i = 0
         while i < len(lines):
@@ -319,8 +320,10 @@ def update_model_index():
     yml_files.sort()
 
     model_index = {
-        'Import':
-        [osp.relpath(yml_file, MMPOSE_ROOT) for yml_file in yml_files]
+        'Import': [
+            osp.relpath(yml_file, MMPOSE_ROOT).replace('\\', '/')
+            for yml_file in yml_files
+        ]
     }
     model_index_file = osp.join(MMPOSE_ROOT, 'model-index.yml')
     is_different = dump_yaml_and_check_difference(model_index,
