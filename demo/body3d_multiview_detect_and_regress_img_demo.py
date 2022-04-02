@@ -2,8 +2,10 @@
 import json
 import os
 import os.path as osp
+import tarfile
 from argparse import ArgumentParser
 from glob import glob
+from urllib.request import urlretrieve
 
 import cv2
 import mmcv
@@ -15,6 +17,28 @@ from mmpose.apis.inference import init_pose_model
 from mmpose.core.post_processing import get_affine_transform
 from mmpose.datasets.dataset_info import DatasetInfo
 from mmpose.datasets.pipelines import Compose
+
+
+def download_panoptic3d_demo_data():
+    """Download Panoptic3D demo data at `demo/resources/panoptic_body3d_demo/`
+
+    Return:
+        str: data path.
+    """
+    url = 'https://download.openmmlab.com/mmpose/demo/panoptic_body3d_demo.tar'
+    rsc_dir = osp.join('demo', 'resources')
+    data_path = osp.join('demo', 'resources', 'panoptic_body3d_demo')
+
+    if not osp.isdir(data_path):
+        print('Downloading Panoptic3D demo data ...')
+        tar_path = osp.join(rsc_dir, 'panoptic_body3d_demo.tar')
+        urlretrieve(url, tar_path)
+
+        print('Extracting Panoptic3D demo data ...')
+        data_pkg = tarfile.open(tar_path)
+        data_pkg.extractall(rsc_dir)
+
+    return data_path
 
 
 def get_scale(target_size, raw_image_size):
@@ -173,7 +197,11 @@ if __name__ == '__main__':
     parser.add_argument('config_file', help='Config file pose model')
     parser.add_argument(
         'pose_model_checkpoint', help='Checkpoint file for pose model')
-    parser.add_argument('--img-root', type=str, default='', help='Image root')
+    parser.add_argument(
+        '--img-root',
+        type=str,
+        default=None,
+        help='Image root. If not given, default data will be used.')
     parser.add_argument(
         '--out-img-root', type=str, default='', help='Output image root')
     parser.add_argument(
@@ -209,4 +237,12 @@ if __name__ == '__main__':
         help='Link thickness for visualization')
 
     args = parser.parse_args()
+
+    # Check and download data
+    if args.img_root is None:
+        print('The argument `img_root` is not set. '
+              'Default Panoptic3D demo data will be used.')
+        img_root = download_panoptic3d_demo_data()
+        args.img_root = img_root
+
     inference(args)
