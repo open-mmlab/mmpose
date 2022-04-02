@@ -10,6 +10,7 @@ from urllib.request import urlretrieve
 import cv2
 import mmcv
 import numpy as np
+import torch
 from mmcv import Config
 from mmcv.parallel import collate, scatter
 
@@ -179,16 +180,16 @@ def inference(args):
         # TODO: inference with input_heatmaps/kpts_2d
         multiview_data = collate([multiview_data], samples_per_gpu=1)
         multiview_data = scatter(multiview_data, [args.device])[0]
-
-        model.show_result(
-            **multiview_data,
-            input_heatmaps=None,
-            dataset_info=dataset_info,
-            radius=args.radius,
-            thickness=args.thickness,
-            out_dir=args.out_img_root,
-            show=args.show,
-            visualize_2d=args.visualize_single_view)
+        with torch.no_grad():
+            model.show_result(
+                **multiview_data,
+                input_heatmaps=None,
+                dataset_info=dataset_info,
+                radius=args.radius,
+                thickness=args.thickness,
+                out_dir=args.out_img_root,
+                show=args.show,
+                visualize_2d=args.visualize_single_view)
         prog_bar.update()
 
 
@@ -244,6 +245,7 @@ if __name__ == '__main__':
               'Default Panoptic3D demo data will be used.')
         img_root = download_panoptic3d_demo_data()
         args.img_root = img_root
-        args.camera_param_file = os.path.join(img_root, 'camera_parameters.json')
+        args.camera_param_file = os.path.join(img_root,
+                                              'camera_parameters.json')
 
     inference(args)
