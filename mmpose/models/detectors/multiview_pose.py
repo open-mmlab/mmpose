@@ -481,7 +481,7 @@ class DetectAndRegress(BasePose):
                                             int(img_size[0]), 3],
                                            dtype=np.uint8)
                             img.fill(255)  # or img[:] = 255
-                            img_file = os.path.join(tmpdir, f'tmp.jpg')
+                            img_file = os.path.join(tmpdir, 'tmp.jpg')
                             mmcv.image.imwrite(img, img_file)
                         img = imshow_keypoints(
                             img_file, pose_2d_list, dataset_info.skeleton, 0.0,
