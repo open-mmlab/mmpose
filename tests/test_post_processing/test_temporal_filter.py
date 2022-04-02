@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os
+import glob
 import os.path as osp
 from unittest import TestCase
 
@@ -20,15 +20,18 @@ class TestTemporalFilter(TestCase):
                               keypoint_dim).astype(np.float32)
 
     def get_filter_configs(self):
-        cfg_files = os.listdir(self.cfg_folder)
+        cfg_files = glob.glob(osp.join(self.cfg_folder, '*.py'))
         for cfg_file in cfg_files:
-            cfg = Config.fromfile(osp.join(self.cfg_folder, cfg_file))
+            cfg = Config.fromfile(cfg_file)
             assert 'filter_cfg' in cfg
             yield cfg.filter_cfg
 
     def test_temporal_filter(self):
         for filter_cfg in self.get_filter_configs():
             with self.subTest(msg=f'Test {filter_cfg.type}'):
+                # Do not load checkpoint in CI
+                if 'checkpoint' in filter_cfg:
+                    filter_cfg.checkpoint = None
                 filter = build_filter(filter_cfg)
 
                 # Test input with single frame
@@ -43,5 +46,3 @@ class TestTemporalFilter(TestCase):
                 y = filter(x)
                 self.assertTrue(isinstance(y, np.ndarray))
                 self.assertEqual(x.shape, y.shape)
-
-                # Test invalid

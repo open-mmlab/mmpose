@@ -11,12 +11,19 @@ class TemporalFilter(metaclass=ABCMeta):
         window_size (int): the size of the sliding window.
     """
 
+    # If the filter can be shared by multiple humans or targets
+    _shareable: bool = True
+
     def __init__(self, window_size=1):
         self._window_size = window_size
 
     @property
     def window_size(self):
         return self._window_size
+
+    @property
+    def shareable(self):
+        return self._shareable
 
     @abstractmethod
     def __call__(self, x):

@@ -104,7 +104,7 @@ def main():
     parser.add_argument(
         '--out-video-root',
         type=str,
-        default=None,
+        default='vis_results',
         help='Root of the output video file. '
         'Default not saving the visualization video.')
     parser.add_argument(
