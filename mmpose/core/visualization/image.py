@@ -498,7 +498,7 @@ def imshow_multiview_keypoints_3d(
             kpt_score = kpts[link_indices, 3]
             if kpt_score.min() > kpt_score_thr:
                 # matplotlib uses RGB color in [0, 1] value range
-                _color = link_color[::-1] / 255.
+                _color = np.array(link_color[::-1]) / 255.
                 ax.plot(xs_3d, ys_3d, zs_3d, color=_color)
 
     # convert figure to numpy array
