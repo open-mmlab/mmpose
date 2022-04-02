@@ -3,6 +3,7 @@ import os
 
 import mmcv
 import numpy as np
+import tempfile
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -461,7 +462,6 @@ class DetectAndRegress(BasePose):
             if visualize_2d:
                 for j in range(num_cameras):
                     single_camera = SimpleCamera(img_meta['camera'][j])
-                    img_file = img_meta['image_file'][j]
                     # img = mmcv.imread(img)
                     if num_persons > 0:
                         pose_2d = np.ones_like(pose_3d_i[..., :3])
@@ -472,11 +472,21 @@ class DetectAndRegress(BasePose):
                         pose_2d_list = [pose for pose in pose_2d]
                     else:
                         pose_2d_list = []
-
-                    img = imshow_keypoints(
-                        img_file, pose_2d_list, dataset_info.skeleton, 0.0,
-                        dataset_info.pose_kpt_color[:num_keypoints],
-                        dataset_info.pose_link_color, radius, thickness)
+                    with tempfile.TemporaryDirectory() as tmpdir:
+                        if 'image_file' in img_meta:
+                            img_file = img_meta['image_file'][j]
+                        else:
+                            img_size = img_meta['center'][j] * 2
+                            img = np.zeros([int(img_size[1]),
+                                            int(img_size[0]), 3],
+                                           dtype=np.uint8)
+                            img.fill(255)  # or img[:] = 255
+                            img_file = os.path.join(tmpdir, f'tmp.jpg')
+                            mmcv.image.imwrite(img, img_file)
+                        img = imshow_keypoints(
+                            img_file, pose_2d_list, dataset_info.skeleton, 0.0,
+                            dataset_info.pose_kpt_color[:num_keypoints],
+                            dataset_info.pose_link_color, radius, thickness)
                     if out_dir is not None:
                         mmcv.image.imwrite(
                             img,

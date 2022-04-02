@@ -137,4 +137,4 @@ def test_voxelpose_forward():
                     input_heatmaps=data['input_heatmaps'],
                     dataset_info=DatasetInfo(dataset_info),
                     out_dir=tmpdir,
-                    visualize_2d=False)
+                    visualize_2d=True)
