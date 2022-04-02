@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import tempfile
-import torch
 
+import torch
 from mmcv import Config
+
 from mmpose.datasets import DATASETS, build_dataloader
-from mmpose.models import builder
 from mmpose.datasets.dataset_info import DatasetInfo
+from mmpose.models import builder
 
 
 def test_voxelpose_forward():

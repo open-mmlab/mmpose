@@ -1,9 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import tempfile
 
 import mmcv
 import numpy as np
-import tempfile
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -431,7 +431,8 @@ class DetectAndRegress(BasePose):
                     out_dir=None,
                     show=False):
         """Visualize the results."""
-        result = self.forward_test(img, img_metas, input_heatmaps=input_heatmaps)
+        result = self.forward_test(
+            img, img_metas, input_heatmaps=input_heatmaps)
         pose_3d = result['pose_3d']
         sample_id = result['sample_id']
         batch_size = pose_3d.shape[0]
@@ -477,9 +478,10 @@ class DetectAndRegress(BasePose):
                             img_file = img_meta['image_file'][j]
                         else:
                             img_size = img_meta['center'][j] * 2
-                            img = np.zeros([int(img_size[1]),
-                                            int(img_size[0]), 3],
-                                           dtype=np.uint8)
+                            img = np.zeros(
+                                [int(img_size[1]),
+                                 int(img_size[0]), 3],
+                                dtype=np.uint8)
                             img.fill(255)  # or img[:] = 255
                             img_file = os.path.join(tmpdir, 'tmp.jpg')
                             mmcv.image.imwrite(img, img_file)
