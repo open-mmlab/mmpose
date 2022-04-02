@@ -19,8 +19,9 @@
 
 **Improvements**
 
-- Improve documentation quality ([\#1275](https://github.com/open-mmlab/mmpose/pull/1275), [\#1255](https://github.com/open-mmlab/mmpose/pull/1255), [\#1258](https://github.com/open-mmlab/mmpose/pull/1258), [\#1249](https://github.com/open-mmlab/mmpose/pull/1249), [\#1247](https://github.com/open-mmlab/mmpose/pull/1247), [\#1240](https://github.com/open-mmlab/mmpose/pull/1240), [\#1235](https://github.com/open-mmlab/mmpose/pull/1235)) @ly015, @jin-s13, @YoniChechik
+- Update HRFormer configs and checkpoints with relative position bias ([\#1245](https://github.com/open-mmlab/mmpose/pull/1245)) @zengwang430521
 - Support using different random seed for each distributed node ([\#1257](https://github.com/open-mmlab/mmpose/pull/1257), [\#1229](https://github.com/open-mmlab/mmpose/pull/1229)) @ly015
+- Improve documentation quality ([\#1275](https://github.com/open-mmlab/mmpose/pull/1275), [\#1255](https://github.com/open-mmlab/mmpose/pull/1255), [\#1258](https://github.com/open-mmlab/mmpose/pull/1258), [\#1249](https://github.com/open-mmlab/mmpose/pull/1249), [\#1247](https://github.com/open-mmlab/mmpose/pull/1247), [\#1240](https://github.com/open-mmlab/mmpose/pull/1240), [\#1235](https://github.com/open-mmlab/mmpose/pull/1235)) @ly015, @jin-s13, @YoniChechik
 
 **Bug Fixes**
 
