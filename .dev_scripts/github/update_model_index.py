@@ -334,7 +334,10 @@ def update_model_index():
 
 if __name__ == '__main__':
 
-    file_list = [fn for fn in sys.argv[1:] if osp.basename(fn) != 'README.md']
+    file_list = [
+        fn for fn in sys.argv[1:]
+        if osp.basename(fn) != 'README.md' and '_base_' not in fn
+    ]
 
     if not file_list:
         sys.exit(0)
