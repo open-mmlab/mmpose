@@ -1,5 +1,39 @@
 # Changelog
 
+## v0.25.0 (02/04/2022)
+
+**Highlights**
+
+- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9 @wusize
+- Add `Smoother` module for temporal smoothing of the pose estimation with configurable filters ([\#1127](https://github.com/open-mmlab/mmpose/pull/1127)) @ailingzengzzz, @ly015
+- Support SmoothNet for pose smoothing, ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021 ([\#1279](https://github.com/open-mmlab/mmpose/pull/1279)) @ailingzengzzz, @ly015
+- Add multiview 3D pose estimation demo ([\#1270](https://github.com/open-mmlab/mmpose/pull/1270)) @wusize
+
+**New Features**
+
+- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9 @wusize
+- Add `Smoother` module for temporal smoothing of the pose estimation with configurable filters ([\#1127](https://github.com/open-mmlab/mmpose/pull/1127)) @ailingzengzzz, @ly015
+- Support SmoothNet for pose smoothing, ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021 ([\#1279](https://github.com/open-mmlab/mmpose/pull/1279)) @ailingzengzzz, @ly015
+- Add multiview 3D pose estimation demo ([\#1270](https://github.com/open-mmlab/mmpose/pull/1270)) @wusize
+- Support multi-machine distributed training ([\#1248](https://github.com/open-mmlab/mmpose/pull/1248)) @ly015
+
+**Improvements**
+
+- Improve documentation quality ([\#1275](https://github.com/open-mmlab/mmpose/pull/1275), [\#1255](https://github.com/open-mmlab/mmpose/pull/1255), [\#1258](https://github.com/open-mmlab/mmpose/pull/1258), [\#1249](https://github.com/open-mmlab/mmpose/pull/1249), [\#1247](https://github.com/open-mmlab/mmpose/pull/1247), [\#1240](https://github.com/open-mmlab/mmpose/pull/1240), [\#1235](https://github.com/open-mmlab/mmpose/pull/1235)) @ly015, @jin-s13, @YoniChechik
+- Support using different random seed for each distributed node ([\#1257](https://github.com/open-mmlab/mmpose/pull/1257), [\#1229](https://github.com/open-mmlab/mmpose/pull/1229)) @ly015
+
+**Bug Fixes**
+
+- Fix keypoint index in RHD dataset meta information ([\#1265](https://github.com/open-mmlab/mmpose/pull/1265)) @liqikai9
+- Fix pre-commit hook unexpected behavior on Windows ([\#1282](https://github.com/open-mmlab/mmpose/pull/1282)) @liqikai9
+- Remove python-dev installation in CI ([\#1276](https://github.com/open-mmlab/mmpose/pull/1276)) @ly015
+- Unify hyphens in argument names in tools and demos ([\#1271](https://github.com/open-mmlab/mmpose/pull/1271)) @ly015
+- Fix ambiguous channel size in `channel_shuffle` that may cause exporting failure ([\#1242]( @PINTO0309https://github.com/open-mmlab/mmpose/pull/1242)) @PINTO0309
+- Fix a bug in Webcam API that causes single-class detectors fail ([\#1239](https://github.com/open-mmlab/mmpose/pull/1239)) @674106399
+- Fix the issue that `custom_hook` can not be set in configs ([\#1236](https://github.com/open-mmlab/mmpose/pull/1236)) @bladrome
+- Fix incompatible MMCV version in DockerFile ([\#raykindle](https://github.com/open-mmlab/mmpose/pull/raykindle))
+- Skip invisible joints in visualization ([\#1228](https://github.com/open-mmlab/mmpose/pull/1228)) @womeier
+
 ## v0.24.0 (07/03/2022)
 
 **Highlights**

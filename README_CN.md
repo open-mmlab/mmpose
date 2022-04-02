@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/en/v0.24.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/en/v0.24.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/en/v0.24.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/en/v0.24.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.24.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/en/v0.25.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/en/v0.25.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/en/v0.25.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/en/v0.25.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.25.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,9 +73,11 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-* 2022-03-07: MMPose [v0.24.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.24.0) 已经发布. 主要更新包括:
-  * 支持 HRFormer ["HRFormer: High-Resolution Vision Transformer for Dense Predict"](https://proceedings.neurips.cc/paper/2021/hash/3bbfdde8842a5c44a0323518eec97cbe-Abstract.html), NeurIPS'2021
-  * 支持在 Windows 系统使用 pip 安装 MMPose
+* 2022-03-07: MMPose [v0.25.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.25.0) 已经发布. 主要更新包括:
+  * 支持 Shelf 和 Campus 数据集及预训练模型 ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014
+  * 新增 `Smoother` 模块: 使用可配置滤波器进行时序姿态平滑，增加预测结果鲁棒性
+  * 增加多视角多人姿态估计 demo
+  * 支持 SmoothNet 姿态平滑算法 ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021
 * 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
 * 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
   * MMPose Webcam API 用于快速开发基于 MMPose 的简单视频交互应用
