@@ -57,10 +57,19 @@ class Smoother():
         if isinstance(filter_cfg, str):
             filter_cfg = Config.fromfile(filter_cfg).filter_cfg
         self.filter_cfg = filter_cfg
+        self._filter = build_filter(filter_cfg)
         self.keypoint_dim = keypoint_dim
         self.key = keypoint_key
-        self.padding_size = build_filter(filter_cfg).window_size - 1
+        self.padding_size = self._filter.window_size - 1
         self.history = {}
+
+    def _get_filter(self):
+        fltr = self._filter
+        if not fltr.shareable:
+            # If the filter is not shareable, build a new filter for the next
+            # requires
+            self._filter = build_filter(self.filter_cfg)
+        return fltr
 
     def _collate_pose(self, results):
         """Collate the pose results to pose sequences.
@@ -193,7 +202,7 @@ class Smoother():
                     pose = np.concatenate((pose_history, pose), axis=0)
             else:
                 # For new target, build a new filter
-                pose_filter = build_filter(self.filter_cfg)
+                pose_filter = self._get_filter()
 
             # Update the history information
             if self.padding_size > 0:
