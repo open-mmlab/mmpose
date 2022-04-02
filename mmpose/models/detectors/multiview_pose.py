@@ -1,10 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os
+import tempfile
+
+import mmcv
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.runner import load_checkpoint
 
-from mmpose.core.camera import SimpleCameraTorch
+from mmpose.core import imshow_keypoints, imshow_multiview_keypoints_3d
+from mmpose.core.camera import SimpleCamera, SimpleCameraTorch
 from mmpose.core.post_processing.post_transforms import (
     affine_transform_torch, get_affine_transform)
 from .. import builder
@@ -414,9 +420,81 @@ class DetectAndRegress(BasePose):
 
         return result
 
-    def show_result(self, **kwargs):
+    def show_result(self,
+                    img,
+                    img_metas,
+                    visualize_2d=False,
+                    input_heatmaps=None,
+                    dataset_info=None,
+                    radius=4,
+                    thickness=2,
+                    out_dir=None,
+                    show=False):
         """Visualize the results."""
-        raise NotImplementedError
+        result = self.forward_test(
+            img, img_metas, input_heatmaps=input_heatmaps)
+        pose_3d = result['pose_3d']
+        sample_id = result['sample_id']
+        batch_size = pose_3d.shape[0]
+        # get kpts and skeleton structure
+
+        for i in range(batch_size):
+            # visualize 3d results
+            img_meta = img_metas[i]
+            num_cameras = len(img_meta['camera'])
+            pose_3d_i = pose_3d[i]
+            pose_3d_i = pose_3d_i[pose_3d_i[:, 0, 3] >= 0]
+
+            num_persons, num_keypoints, _ = pose_3d_i.shape
+            pose_3d_list = [p[..., [0, 1, 2, 4]]
+                            for p in pose_3d_i] if num_persons > 0 else []
+            img_3d = imshow_multiview_keypoints_3d(
+                pose_3d_list,
+                skeleton=dataset_info.skeleton,
+                pose_kpt_color=dataset_info.pose_kpt_color[:num_keypoints],
+                pose_link_color=dataset_info.pose_link_color,
+                space_size=self.human_detector.space_size,
+                space_center=self.human_detector.space_center)
+            if out_dir is not None:
+                mmcv.image.imwrite(
+                    img_3d,
+                    os.path.join(out_dir, 'vis_3d', f'{sample_id[i]}_3d.jpg'))
+
+            if visualize_2d:
+                for j in range(num_cameras):
+                    single_camera = SimpleCamera(img_meta['camera'][j])
+                    # img = mmcv.imread(img)
+                    if num_persons > 0:
+                        pose_2d = np.ones_like(pose_3d_i[..., :3])
+                        pose_2d_flat = single_camera.world_to_pixel(
+                            pose_3d_i[..., :3].reshape((-1, 3)))
+                        pose_2d[..., :2] = pose_2d_flat.reshape(
+                            (num_persons, -1, 2))
+                        pose_2d_list = [pose for pose in pose_2d]
+                    else:
+                        pose_2d_list = []
+                    with tempfile.TemporaryDirectory() as tmpdir:
+                        if 'image_file' in img_meta:
+                            img_file = img_meta['image_file'][j]
+                        else:
+                            img_size = img_meta['center'][j] * 2
+                            img = np.zeros(
+                                [int(img_size[1]),
+                                 int(img_size[0]), 3],
+                                dtype=np.uint8)
+                            img.fill(255)  # or img[:] = 255
+                            img_file = os.path.join(tmpdir, 'tmp.jpg')
+                            mmcv.image.imwrite(img, img_file)
+                        img = imshow_keypoints(
+                            img_file, pose_2d_list, dataset_info.skeleton, 0.0,
+                            dataset_info.pose_kpt_color[:num_keypoints],
+                            dataset_info.pose_link_color, radius, thickness)
+                    if out_dir is not None:
+                        mmcv.image.imwrite(
+                            img,
+                            os.path.join(out_dir,
+                                         f'{sample_id[i]}_{j}_2d.jpg'))
+                    # TODO: show image
 
     def forward_dummy(self, img, input_heatmaps=None, num_candidates=5):
         """Used for computing network FLOPs."""
