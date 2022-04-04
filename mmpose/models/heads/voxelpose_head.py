@@ -86,12 +86,15 @@ class CuboidCenterHead(nn.Module):
             indices: Indices of points in the original 3D tensor
         """
         batch_size = indices.shape[0]
-        num_people = indices.shape[1]
-        indices_x = (indices //
-                     (shape[1] * shape[2])).reshape(batch_size, num_people, -1)
-        indices_y = ((indices % (shape[1] * shape[2])) //
-                     shape[2]).reshape(batch_size, num_people, -1)
-        indices_z = (indices % shape[2]).reshape(batch_size, num_people, -1)
+        indices_x = torch.div(
+            indices, shape[1] * shape[2],
+            rounding_mode='floor').view(batch_size, -1, 1)
+        indices_y = torch.div(
+            torch.remainder(indices, shape[1] * shape[2]), shape[2],
+            rounding_mode='floor').view(batch_size, -1, 1)
+        indices_z = torch.remainder(
+            indices, shape[2]).view(batch_size, -1, 1)
+
         indices = torch.cat([indices_x, indices_y, indices_z], dim=2)
         return indices
 
