@@ -87,11 +87,11 @@ class CuboidCenterHead(nn.Module):
         """
         batch_size = indices.shape[0]
         indices_x = torch.div(
-            indices, shape[1] * shape[2],
-            rounding_mode='floor').view(batch_size, -1, 1)
+            indices,
+            shape[1] * shape[2]).floor().view(batch_size, -1, 1)
         indices_y = torch.div(
-            torch.remainder(indices, shape[1] * shape[2]), shape[2],
-            rounding_mode='floor').view(batch_size, -1, 1)
+            torch.remainder(indices, shape[1] * shape[2]),
+            shape[2]).floor().view(batch_size, -1, 1)
         indices_z = torch.remainder(
             indices, shape[2]).view(batch_size, -1, 1)
 
