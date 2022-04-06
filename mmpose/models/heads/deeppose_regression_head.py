@@ -26,7 +26,8 @@ class DeepposeRegressionHead(nn.Module):
                  num_joints,
                  loss_keypoint=None,
                  train_cfg=None,
-                 test_cfg=None):
+                 test_cfg=None,
+                 out_sigma=False):
         super().__init__()
 
         self.in_channels = in_channels
@@ -37,13 +38,23 @@ class DeepposeRegressionHead(nn.Module):
         self.train_cfg = {} if train_cfg is None else train_cfg
         self.test_cfg = {} if test_cfg is None else test_cfg
 
-        self.fc = nn.Linear(self.in_channels, self.num_joints * 2)
+        self.out_sigma = out_sigma
+
+        if out_sigma:
+            self.fc = nn.Linear(self.in_channels, self.num_joints * 4)
+            self.output = None
+        else:
+            self.fc = nn.Linear(self.in_channels, self.num_joints * 2)
 
     def forward(self, x):
         """Forward function."""
         output = self.fc(x)
         N, C = output.shape
-        return output.reshape([N, C // 2, 2])
+        if self.out_sigma:
+            self.output = output.reshape([N, C // 4, 4])
+            return self.output[:, :, :2]
+        else:
+            return output.reshape([N, C // 2, 2])
 
     def get_loss(self, output, target, target_weight):
         """Calculate top-down keypoint loss.
@@ -62,7 +73,10 @@ class DeepposeRegressionHead(nn.Module):
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 3 and target_weight.dim() == 3
-        losses['reg_loss'] = self.loss(output, target, target_weight)
+        if self.out_sigma:
+            losses['reg_loss'] = self.loss(self.output, target, target_weight)
+        else:
+            losses['reg_loss'] = self.loss(output, target, target_weight)
 
         return losses
 

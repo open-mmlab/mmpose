@@ -6,6 +6,94 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ..builder import LOSSES
+from ..utils.realnvp import RealNVP
+
+
+@LOSSES.register_module
+class RLELoss(nn.Module):
+    """
+    RLELoss: "Human Pose Regression With Residual Log-Likelihood Estimation".
+
+    Args:
+        use_target_weight (bool): Option to use weighted MSE loss.
+            Different joint types may have different target weights.
+        size_average (bool): Option to average the loss by the batch_size.
+        residual (bool): Option to add L1 loss and let the flow
+            learn the residual error distribution.
+        q_dis (string): Option for the identity Q(error) distribution,
+            Options: "Laplace" or "Gaussian"
+    """
+
+    def __init__(self,
+                 use_target_weight=False,
+                 size_average=True,
+                 residual=True,
+                 q_dis='Laplace'):
+        super(RLELoss, self).__init__()
+        self.size_average = size_average
+        self.use_target_weight = use_target_weight
+        self.residual = residual
+        self.q_dis = q_dis
+
+        self.flow = RealNVP()
+
+    def _apply(self, fn):
+        self.flow.prior.loc = fn(self.flow.prior.loc)
+        self.flow.prior.scale_tril = fn(self.flow.prior.scale_tril)
+        self.flow.prior._unbroadcasted_scale_tril =\
+            fn(self.flow.prior._unbroadcasted_scale_tril)
+        self.flow.prior.covariance_matrix = \
+            fn(self.flow.prior.covariance_matrix)
+        self.flow.prior.precision_matrix = \
+            fn(self.flow.prior.precision_matrix)
+        self.flow.mask = fn(self.flow.mask)
+        self.flow.s._apply(fn)
+        self.flow.t._apply(fn)
+
+    def forward(self, output, target, target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2 or D=3)
+
+        Args:
+            output (torch.Tensor[N, K, D*2]): Output regression,
+                    including coords and sigmas.
+            target (torch.Tensor[N, K, D]): Target regression.
+            target_weight (torch.Tensor[N, K, D]):
+                Weights across different joint types.
+        """
+        sigma = output[:, :, 2:].sigmoid()
+        coord = output[:, :, :2]
+
+        error = (coord - target) / sigma
+        # (B, K, 2)
+        log_phi = self.flow.log_prob(error.reshape(-1, 2))
+        log_phi = log_phi.reshape(target.shape[0], target.shape[1], 1)
+        log_sigma = torch.log(sigma).reshape(target.shape[0], target.shape[1],
+                                             2)
+        nf_loss = log_sigma - log_phi
+
+        if self.residual:
+            assert self.q_dis in ['Laplace', 'Gaussian']
+            if self.q_dis == 'Laplace':
+                loss_q = torch.abs(error)
+            else:
+                loss_q = error**2
+            loss = nf_loss + loss_q
+        else:
+            loss = nf_loss
+
+        if self.use_target_weight:
+            assert target_weight is not None
+            loss *= target_weight
+
+        if self.size_average:
+            loss /= len(loss)
+
+        return loss.sum()
 
 
 @LOSSES.register_module()
