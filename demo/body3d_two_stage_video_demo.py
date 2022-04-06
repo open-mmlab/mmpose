@@ -22,7 +22,8 @@ except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
 
-def convert_keypoint_definition(keypoints, pose_det_dataset, pose_lift_dataset):
+def convert_keypoint_definition(keypoints, pose_det_dataset,
+                                pose_lift_dataset):
     """Convert pose det dataset keypoints definition to pose lifter dataset
     keypoints definition.
 
