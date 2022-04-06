@@ -22,7 +22,8 @@ except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
 
-def covert_keypoint_definition(keypoints, pose_det_dataset, pose_lift_dataset):
+def convert_keypoint_definition(keypoints, pose_det_dataset,
+                                pose_lift_dataset):
     """Convert pose det dataset keypoints definition to pose lifter dataset
     keypoints definition.
 
@@ -234,7 +235,7 @@ def main():
     for pose_det_results in pose_det_results_list:
         for res in pose_det_results:
             keypoints = res['keypoints']
-            res['keypoints'] = covert_keypoint_definition(
+            res['keypoints'] = convert_keypoint_definition(
                 keypoints, pose_det_dataset, pose_lift_dataset)
 
     # load temporal padding config from model.data_cfg
