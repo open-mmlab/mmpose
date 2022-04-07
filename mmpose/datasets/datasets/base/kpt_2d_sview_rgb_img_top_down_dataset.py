@@ -141,8 +141,8 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
             'image_size'][1]
         center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
 
-        if (not self.test_mode) and np.random.rand() < 0.3:
-            center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
+        # if (not self.test_mode) and np.random.rand() < 0.3:
+        #     center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
 
         if w > aspect_ratio * h:
             h = w * 1.0 / aspect_ratio

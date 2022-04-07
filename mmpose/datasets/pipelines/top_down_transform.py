@@ -9,10 +9,68 @@ from mmpose.datasets.builder import PIPELINES
 
 
 @PIPELINES.register_module()
+class TopDownGetBboxCenterScale:
+    """Convert bbox from [x, y, w, h] to center and scale.
+
+    The center is the coordinates of the bbox center, and the scale is the
+    bbox width and height normalized by a scale factor. Optionally, apply
+    arandom shift to the bbox center.
+
+    Required key: 'bbox', 'ann_info'
+
+    Modifies key: 'center', 'scale'
+
+    Args:
+        padding (float): bbox padding scale that will be multilied to scale.
+            Default: 1.25
+        shift_prob (float): Probability of applying a random shift to the bbox
+            center. Default: 0.3
+        shift_factor (float): The factor to control the shift range. The
+            ranges in x and y axis are [-dx, dx] and [-dy, dy] respectively,
+            where dx = w*shift_factor, dy = y*shift_factor. Default: 0.2
+    """
+    # pixel std is 200.0
+    scale_factor: float = 200.0
+
+    def __init__(self,
+                 padding: float = 1.25,
+                 shift_prob: float = 0,
+                 shift_factor: float = 0):
+        self.padding = padding
+        self.shift_prob = shift_prob
+        self.shift_factor = shift_factor
+
+    def __call__(self, results):
+        x, y, w, h = results['bbox']
+        image_size = results['ann_info']['image_size']
+
+        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
+
+        # random shift bbox center
+        if np.random.rand() < self.shift_prob:
+            center += np.random.uniform(-1, 1, 2) * [w, h] * self.shift_factor
+
+        aspect_ratio = image_size[0] / image_size[1]
+        if w > aspect_ratio * h:
+            h = w * 1.0 / aspect_ratio
+        elif w < aspect_ratio * h:
+            w = h * aspect_ratio
+
+        scale = np.array([w, h], dtype=np.float32)
+
+        # normalize and padding
+        scale = scale / self.scale_factor * self.padding
+
+        results['center'] = center
+        results['scale'] = scale
+        return results
+
+
+@PIPELINES.register_module()
 class TopDownRandomFlip:
     """Data augmentation with random image flip.
 
-    Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
+    Required key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
     'ann_info'.
 
     Modifies key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
@@ -67,7 +125,7 @@ class TopDownHalfBodyTransform:
     """Data augmentation with half-body transform. Keep only the upper body or
     the lower body at random.
 
-    Required keys: 'joints_3d', 'joints_3d_visible', and 'ann_info'.
+    Required key: 'joints_3d', 'joints_3d_visible', and 'ann_info'.
 
     Modifies key: 'scale' and 'center'.
 
@@ -185,10 +243,10 @@ class TopDownGetRandomScaleRotation:
 class TopDownAffine:
     """Affine transform the image to make input.
 
-    Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
+    Required key:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
     'rotation' and 'center'.
 
-    Modified keys:'img', 'joints_3d', and 'joints_3d_visible'.
+    Modified key:'img', 'joints_3d', and 'joints_3d_visible'.
 
     Args:
         use_udp (bool): To use unbiased data processing.
@@ -257,9 +315,9 @@ class TopDownAffine:
 class TopDownGenerateTarget:
     """Generate the target heatmap.
 
-    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Required key: 'joints_3d', 'joints_3d_visible', 'ann_info'.
 
-    Modified keys: 'target', and 'target_weight'.
+    Modified key: 'target', and 'target_weight'.
 
     Args:
         sigma: Sigma of heatmap gaussian for 'MSRA' approach.
@@ -643,7 +701,7 @@ class TopDownGenerateTarget:
 class TopDownGenerateTargetRegression:
     """Generate the target regression vector (coordinates).
 
-    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified keys:
+    Required key: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified key:
     'target', and 'target_weight'.
     """
 
