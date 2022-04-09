@@ -26,10 +26,10 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/en/v0.25.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/en/v0.25.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/en/v0.25.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/en/v0.25.0/papers/algorithms.html) |
+[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.25.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.25.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.25.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.25.0/papers/algorithms.html) |
 [🆕更新日志](https://mmpose.readthedocs.io/en/v0.25.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
