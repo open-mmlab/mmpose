@@ -73,7 +73,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## News
 
-* 2022-04-02: MMPose [v0.25.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.25.0) is released. Major updates includes:
+* 2022-04-02: MMPose [v0.25.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.25.0) is released. Major updates include:
   * Support Shelf and Campus datasets with pre-trained models ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014
   * New module `Smoother`: Pose temporal smoothing with configurable filters
   * Add multi-view multi-person 3D pose estimation demo
