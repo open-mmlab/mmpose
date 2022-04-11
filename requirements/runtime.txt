@@ -8,4 +8,4 @@ opencv-python
 pillow
 scipy
 torchvision
-xtcocotools>=1.8
+xtcocotools>=1.12
