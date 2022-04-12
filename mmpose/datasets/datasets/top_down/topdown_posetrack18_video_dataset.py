@@ -183,8 +183,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-
             image_files = []
             cur_image_file = osp.join(self.img_prefix, self.id2name[img_id])
             image_files.append(cur_image_file)
@@ -221,8 +219,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                     image_files.append(cur_image_file)
             rec.append({
                 'image_file': image_files,
-                'center': center,
-                'scale': scale,
                 'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
@@ -311,13 +307,10 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                                   f'use {cur_image_file} instead.')
                     image_files.append(cur_image_file)
 
-            center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
             kpt_db.append({
                 'image_file': image_files,
-                'center': center,
-                'scale': scale,
                 'rotation': 0,
                 'bbox': box[:4],
                 'bbox_score': score,

@@ -156,13 +156,9 @@ class AnimalATRWDataset(Kpt2dSviewRgbImgTopDownDataset):
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-            center, scale = self._xywh2cs(*obj['clean_bbox'][:4], padding=1.0)
-
             image_file = osp.join(self.img_prefix, self.id2name[img_id])
             rec.append({
                 'image_file': image_file,
-                'center': center,
-                'scale': scale,
                 'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
