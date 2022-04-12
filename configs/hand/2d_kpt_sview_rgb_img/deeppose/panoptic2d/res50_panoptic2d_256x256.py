@@ -66,6 +66,14 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(
+        type='TopDownGetBboxCenterScale',
+        # The bbox is the tightest bbox enclosing keypoints.
+        # The paper uses 2.2 bbox as the input, while
+        # we use 1.76 (2.2 * 0.8) bbox as the input.
+        padding=1.76,
+        shift_prob=0.3,
+        shift_factor=0.2),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
@@ -87,6 +95,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownGetBboxCenterScale', padding=1.76),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(

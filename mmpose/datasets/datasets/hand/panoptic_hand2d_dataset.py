@@ -108,16 +108,9 @@ class PanopticDataset(Kpt2dSviewRgbImgTopDownDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # The bbox is the tightest bbox enclosing keypoints.
-                # The paper uses 2.2 bbox as the input, while
-                # we use 1.76 (2.2 * 0.8) bbox as the input.
-                center, scale = self._xywh2cs(*obj['bbox'][:4], 1.76)
-
                 image_file = osp.join(self.img_prefix, self.id2name[img_id])
                 gt_db.append({
                     'image_file': image_file,
-                    'center': center,
-                    'scale': scale,
                     'rotation': 0,
                     'joints_3d': joints_3d,
                     'joints_3d_visible': joints_3d_visible,

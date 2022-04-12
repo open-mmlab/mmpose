@@ -74,6 +74,11 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(
+        type='TopDownGetBboxCenterScale',
+        padding=1.25,
+        shift_prob=0.3,
+        shift_factor=0.2),
     dict(type='HandRandomFlip', flip_prob=0.5),
     dict(type='TopDownRandomTranslation', trans_factor=0.15),
     dict(
@@ -115,6 +120,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
