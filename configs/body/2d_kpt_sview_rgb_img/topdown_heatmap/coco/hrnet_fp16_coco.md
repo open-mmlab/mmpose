@@ -53,4 +53,4 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 | Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
 | :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_hrnet_w32_fp16](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_fp16_dynamic.py)  | 256x192 | 0.746 | 0.905 | 0.88 | 0.800 | 0.943 | [ckpt](hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_fp16_dynamic_20210430.log.json) |
+| [pose_hrnet_w32_fp16](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192_fp16_dynamic.py)  | 256x192 | 0.746 | 0.905 | 0.88 | 0.800 | 0.943 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_fp16_dynamic_20210430.log.json) |
