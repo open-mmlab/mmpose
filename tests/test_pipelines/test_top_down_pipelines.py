@@ -10,10 +10,10 @@ from xtcocotools.coco import COCO
 from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        NormalizeTensor, TopDownAffine,
                                        TopDownGenerateTarget,
+                                       TopDownGetBboxCenterScale,
                                        TopDownGetRandomScaleRotation,
                                        TopDownHalfBodyTransform,
-                                       TopDownRandomFlip,
-                                       TopDownRandomTranslation, ToTensor)
+                                       TopDownRandomFlip, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):
@@ -233,11 +233,20 @@ def test_top_down_pipeline():
     assert 'image_file' in results_final['img_metas'].data
 
 
-def test_random_translation():
-    results = dict(
-        center=np.zeros([2]),
-        scale=1,
-    )
-    pipeline = TopDownRandomTranslation()
+def test_top_down_get_bbox_center_scale():
+    bbox = np.array([50, 50, 100, 100], dtype=np.float32)
+    img_w, img_h = 192, 256
+    padding = 1.25
+
+    results = dict(bbox=bbox, ann_info=dict(image_size=[img_w, img_h]))
+
+    pipeline = TopDownGetBboxCenterScale(
+        padding=padding, shift_prob=1., shift_factor=0)
+
     results = pipeline(results)
-    assert results['center'].shape == (2, )
+    center, scale = results['center'], results['scale']
+    center_exp = bbox[:2] + bbox[2:] * 0.5
+    scale_exp = np.array([bbox[2], bbox[2] / img_w * img_h],
+                         dtype=np.float32) / 200 * padding
+    np.testing.assert_almost_equal(center, center_exp)
+    np.testing.assert_almost_equal(scale, scale_exp)

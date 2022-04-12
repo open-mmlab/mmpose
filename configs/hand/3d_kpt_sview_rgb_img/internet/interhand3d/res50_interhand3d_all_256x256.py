@@ -80,7 +80,6 @@ train_pipeline = [
         shift_prob=0.3,
         shift_factor=0.2),
     dict(type='HandRandomFlip', flip_prob=0.5),
-    dict(type='TopDownRandomTranslation', trans_factor=0.15),
     dict(
         type='TopDownGetRandomScaleRotation',
         rot_factor=45,

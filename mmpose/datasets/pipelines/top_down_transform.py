@@ -750,37 +750,3 @@ class TopDownGenerateTargetRegression:
         results['target_weight'] = target_weight
 
         return results
-
-
-@PIPELINES.register_module()
-class TopDownRandomTranslation:
-    """Data augmentation with random translation.
-
-    Required key: 'scale' and 'center'.
-
-    Modifies key: 'center'.
-
-    Note:
-        - bbox height: H
-        - bbox width: W
-
-    Args:
-        trans_factor (float): Translating center to
-            ``[-trans_factor, trans_factor] * [W, H] + center``.
-        trans_prob (float): Probability of random translation.
-    """
-
-    def __init__(self, trans_factor=0.15, trans_prob=1.0):
-        self.trans_factor = trans_factor
-        self.trans_prob = trans_prob
-
-    def __call__(self, results):
-        """Perform data augmentation with random translation."""
-        center = results['center']
-        scale = results['scale']
-        if np.random.rand() <= self.trans_prob:
-            # reference bbox size is [200, 200] pixels
-            center += self.trans_factor * np.random.uniform(
-                -1, 1, size=2) * scale * 200
-        results['center'] = center
-        return results
