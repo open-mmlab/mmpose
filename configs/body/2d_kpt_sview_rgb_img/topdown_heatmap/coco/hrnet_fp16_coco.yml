@@ -21,4 +21,4 @@ Models:
       AR: 0.8
       AR@0.5: 0.943
     Task: Body 2D Keypoint
-  Weights: hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth
+  Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192_fp16_dynamic-290efc2e_20210430.pth
