@@ -46,6 +46,16 @@ class LoadImageFromFile:
             img = img.astype(np.float32)
         return img
 
+    @staticmethod
+    def _bgr2rgb(img):
+        if img.ndim == 3:
+            return mmcv.bgr2rgb(img)
+        elif img.ndim == 4:
+            return np.concatenate([mmcv.bgr2rgb(img_) for img_ in img], axis=0)
+        else:
+            raise ValueError('results["img"] has invalid shape '
+                             f'{img.shape}')
+
     def __call__(self, results):
         """Loading image(s) from file."""
         if self.file_client is None:
@@ -66,19 +76,19 @@ class LoadImageFromFile:
                 # is manually set outside the pipeline.
                 raise KeyError('Either `image_file` or `img` should exist in '
                                'results.')
-            assert isinstance(results['img'], np.ndarray)
+            if isinstance(results['img'], (list, tuple)):
+                assert isinstance(results['img'][0], np.ndarray)
+            else:
+                assert isinstance(results['img'], np.ndarray)
             if self.color_type == 'color' and self.channel_order == 'rgb':
                 # The original results['img'] is assumed to be image(s) in BGR
                 # order, so we convert the color according to the arguments.
-                if results['img'].ndim == 3:
-                    results['img'] = mmcv.bgr2rgb(results['img'])
-                elif results['img'].ndim == 4:
-                    results['img'] = np.concatenate(
-                        [mmcv.bgr2rgb(img) for img in results['img']], axis=0)
+                if isinstance(results['img'], (list, tuple)):
+                    results['img'] = [
+                        self._bgr2rgb(img) for img in results['img']
+                    ]
                 else:
-                    raise ValueError('results["img"] has invalid shape '
-                                     f'{results["img"].shape}')
-
+                    results['img'] = self._bgr2rgb(results['img'])
             results['image_file'] = None
 
         return results
