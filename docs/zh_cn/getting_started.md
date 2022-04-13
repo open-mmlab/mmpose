@@ -277,4 +277,4 @@ CUDA_VISIBLE_DEVICES=4,5,6,7 GPUS=4 ./tools/slurm_train.sh ${PARTITION} ${JOB_NA
 - [如何设计数据处理流程](tutorials/3_data_pipeline.md)
 - [如何增加新模块](tutorials/4_new_modules.md)
 - [如何导出模型为 onnx 格式](tutorials/5_export_model.md)
-- [如何自定义模型运行参数](tutorials/6_customize_runtime.md)
+- [如何自定义运行配置](tutorials/6_customize_runtime.md)
