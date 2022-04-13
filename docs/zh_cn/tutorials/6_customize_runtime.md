@@ -37,9 +37,9 @@
 optimizer = dict(type='Adam', lr=0.0003, weight_decay=0.0001)
 ```
 
-若要修改模型的学习率，用户只需在配置文件中修改优化器的`lr`参数。优化器各参数的设置可参考PyTorch的[使用文档](https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim) 。
+若要修改模型的学习率，用户只需在配置文件中修改优化器的 `lr` 参数。优化器各参数的设置可参考PyTorch的[使用文档](https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim)。
 
-例如，若您想要使用在PyTorch中配置为 `torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)` 的 `Adam` 优化器，可按照以下形式修改配置文件。
+例如，用户想要使用在PyTorch中配置为 `torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)` 的 `Adam` 优化器，可按照以下形式修改配置文件。
 
 ```python
 optimizer = dict(type='Adam', lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
@@ -49,10 +49,10 @@ optimizer = dict(type='Adam', lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_de
 
 #### 1. 定义一个新优化器
 
-如果您想添加一个新的优化器，名字叫`MyOptimizer`，参数包括`a`，`b`和`c`，可以按照以下步骤定义该优化器。
+如果您想添加一个新的优化器，名字叫`MyOptimizer`，参数包括 `a` 、 `b` 、 `c` ，可以按照以下步骤定义该优化器。
 
-首先，创建一个新目录`mmpose/core/optimizer`。
-然后，在新文件`mmpose/core/optimizer/my_optimizer.py`中实现该优化器：
+首先，创建一个新目录 `mmpose/core/optimizer` 。
+然后，在新文件 `mmpose/core/optimizer/my_optimizer.py` 中实现该优化器：
 
 ```python
 from .builder import OPTIMIZERS
@@ -68,7 +68,7 @@ class MyOptimizer(Optimizer):
 
 #### 2. 注册这个优化器
 
-新优化器必须先导入主命名空间才能被正常索引。有两种实现方式。
+新优化器必须先导入主命名空间才能被成功调用。有两种实现方式。
 
 - 修改`mmpose/core/optimizer/__init__.py`来导入
 
@@ -84,13 +84,13 @@ from .my_optimizer import MyOptimizer
 custom_imports = dict(imports=['mmpose.core.optimizer.my_optimizer'], allow_failed_imports=False)
 ```
 
-在程序的开头，库 `mmpose.core.optimizer.my_optimizer` 将会被导入。此时类 `MyOptimizer` 会自动注册。
-注意只有包含类 `MyOptimizer` 的库才能被导入。`mmpose.core.optimizer.my_optimizer.MyOptimizer` **不可以**被直接导入。
+在程序运行之初，库 `mmpose.core.optimizer.my_optimizer` 将会被导入。此时类 `MyOptimizer` 会自动注册。
+注意只有包含类 `MyOptimizer` 的库才能被导入。 `mmpose.core.optimizer.my_optimizer.MyOptimizer` **不可以**被直接导入。
 
 #### 3. 在配置文件中指定优化器
 
 在新优化器 `MyOptimizer` 注册之后，它可以在配置文件中通过 `optimizer` 调用。
-在配置文件中，优化器通过 `optimizer` 以如下方式定义：
+在配置文件中，优化器通过 `optimizer` 以如下方式指定：
 
 ```python
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
@@ -104,7 +104,7 @@ optimizer = dict(type='MyOptimizer', a=a_value, b=b_value, c=c_value)
 
 ### 自定义优化器构造器
 
-有些模型的优化过程可能对不同参数有不同的设置，例如批归一化层的权重衰减。
+某些模型的优化过程可能对不同参数有不同的设置，例如批归一化层的权重衰减。
 用户可以通过自定义优化器构造器来实现这些精细的参数调整。
 
 ```python
@@ -139,12 +139,12 @@ class MyOptimizerConstructor:
   ```python
   optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
   ```
-  
+
 - __使用动量策略加速模型收敛__
   我们支持根据学习率来修改模型动量的动量调度器。它可以让模型收敛更快。
   动量调度器通常和学习率调度器一起使用。例如3D检测中使用下面的配置来加速收敛。
-  更多细节可以参考[CyclicLrUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L327)和 [CyclicMomentumUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/momentum_updater.py#L130)的实现。
-  
+  更多细节可以参考 [CyclicLrUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L327) 和 [CyclicMomentumUpdater](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/momentum_updater.py#L130) 的实现。
+
   ```python
   lr_config = dict(
       policy='cyclic',
@@ -159,12 +159,11 @@ class MyOptimizerConstructor:
       step_ratio_up=0.4,
   )
   ```
-  
 
 ## 自定义训练策略
 
 我们默认使用的学习率变化策略为阶梯式衰减策略，即MMCV中的[`StepLRHook`](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L153)。
-此外，我们还支持很多[学习率变化策略](https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py)，例如余弦退火策略`CosineAnnealing`和多项式策略`Poly`。其调用方式如下
+此外，我们还支持很多[学习率变化策略](https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py)，例如余弦退火策略 `CosineAnnealing` 和多项式策略 `Poly` 。其调用方式如下
 
 - 多项式策略:
 
@@ -205,7 +204,7 @@ workflow = [('train', 1)]
 ```{note}
 1. 进行验证时，模型权重不会发生变化。
 1. 配置文件中，参数 `total_epochs` 只控制训练轮数，不影响验证工作流
-1. 工作流 `[('train', 1), ('val', 1)]` 和 `[('train', 1)]` 不会改变 `EpochEvalHook` 的行为。因为 `EpochEvalHook` 只在 `after_train_epoch` 之后被调用。而验证工作流只会影响被 `after_val_epoch`调用的钩子。
+1. 工作流 `[('train', 1), ('val', 1)]` 和 `[('train', 1)]` 不会改变 `EpochEvalHook` 的行为。因为 `EpochEvalHook` 只在 `after_train_epoch` 中被调用。而验证工作流只会影响被 `after_val_epoch` 调用的钩子。
    因此，工作流 `[('train', 1), ('val', 1)]` 与 `[('train', 1)]` 唯一的差别就是运行程序会在每轮训练后计算模型在验证集上的损失。
 ```
 
@@ -246,7 +245,7 @@ class MyHook(Hook):
         pass
 ```
 
-用户需要根据钩子的实际用途定义该钩子在 `before_run`, `after_run`, `before_epoch`, `after_epoch`, `before_iter`, 和 `after_iter`中的行为。
+用户需要根据钩子的实际用途定义该钩子在 `before_run` 、 `after_run` 、 `before_epoch` 、 `after_epoch` 、 `before_iter` 以及 `after_iter` 中的行为。
 
 #### 2. 注册这个新的钩子
 
@@ -254,8 +253,8 @@ class MyHook(Hook):
 
 - 通过修改 `mmpose/core/utils/__init__.py` 进行导入。
 
-  新定义的模块需要被导入到 `mmpose/core/utils/__init__.py` 才能被注册器索引并添加：
-  
+  新定义的模块需要被导入到 `mmpose/core/utils/__init__.py` 才能被注册器找到并添加：
+
 ```python
 from .my_hook import MyHook
 ```
@@ -274,7 +273,7 @@ custom_hooks = [
 ]
 ```
 
-用户可以通过将参数 `priority` 设置为 `'NORMAL'` 或 `'HIGHEST'` 来设定钩子的优先级：
+用户可以通过将钩子的参数 `priority` 设置为 `'NORMAL'` 或 `'HIGHEST'` 来设定它的优先级
 
 ```python
 custom_hooks = [
@@ -305,23 +304,23 @@ mmcv_hooks = [
 - optimizer_config
 - momentum_config
 
-这些钩子中，只有日志钩子的优先级为  `VERY_LOW` ，其他钩子的优先级都是 `NORMAL` 。
-前面的教程已经讲述了如何修改 `optimizer_config`, `momentum_config`, 和 `lr_config`。这里我们介绍如何修改 `log_config`, `checkpoint_config`, and `evaluation`。
+这些钩子中，只有日志钩子的优先级为 `VERY_LOW` ，其他钩子的优先级都是 `NORMAL` 。
+前面的教程已经讲述了如何修改 `optimizer_config` 、 `momentum_config` 、  `lr_config`。这里我们介绍如何修改 `log_config` 、 `checkpoint_config` 、 `evaluation`。
 
 #### 模型权重文件配置
 
-MMCV的运行程序会使用 `checkpoint_config` 来初始化 [`CheckpointHook`](https://github.com/open-mmlab/mmcv/blob/9ecd6b0d5ff9d2172c49a182eaa669e9f27bb8e7/mmcv/runner/hooks/checkpoint.py#L9)。
+MMCV的运行程序会使用 `checkpoint_config` 来初始化 [`CheckpointHook`](https://github.com/open-mmlab/mmcv/blob/9ecd6b0d5ff9d2172c49a182eaa669e9f27bb8e7/mmcv/runner/hooks/checkpoint.py#L9) 。
 
 ```python
 checkpoint_config = dict(interval=1)
 ```
 
-用户可以通过设置 `max_keep_ckpts` 来保存一定数量的模型权重文件；通过设置 `save_optimizer` 以决定是否保存优化器的状态。
+用户可以通过设置 `max_keep_ckpts` 来保存有限的模型权重文件；通过设置 `save_optimizer` 以决定是否保存优化器的状态。
 [这份文档](https://mmcv.readthedocs.io/en/latest/api.html#mmcv.runner.CheckpointHook)介绍了更多参数的细节。
 
 #### 日志配置
 
-日志配置 `log_config` 可以设置多个日志钩子，并且可以设定记录间隔。目前MMCV支持的日志钩子包括 `WandbLoggerHook`, `MlflowLoggerHook`, 和 `TensorboardLoggerHook`。
+日志配置 `log_config` 可以设置多个日志钩子，并且可以设定记录间隔。目前MMCV支持的日志钩子包括 `WandbLoggerHook` 、 `MlflowLoggerHook` 、 `TensorboardLoggerHook`。
 [这份文档](https://mmcv.readthedocs.io/en/latest/api.html#mmcv.runner.LoggerHook)介绍了更多日志钩子的使用细节。
 
 ```python
@@ -336,7 +335,7 @@ log_config = dict(
 #### 测试配置
 
 测试配置 `evaluation` 可以用来初始化 [`EvalHook`](https://github.com/open-mmlab/mmpose/blob/master/mmpose/core/evaluation/eval_hooks.py#L11)。
-除了参数 `interval`，其他参数（例如 `metric`）会被传给 `dataset.evaluate()`。
+除了参数 `interval` ，其他参数（例如 `metric`）会被传给 `dataset.evaluate()`
 
 ```python
 evaluation = dict(interval=1, metric='mAP')
