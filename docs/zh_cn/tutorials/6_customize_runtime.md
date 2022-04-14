@@ -31,13 +31,13 @@
 
 ### 使用PyTorch支持的优化器
 
-我们现已支持所有PyTorch自带的优化器。若要使用这些优化器，用户只需在配置文件中修改 `optimizer` 这一项。比如说，若您想使用 `Adam` 优化器，可以对配置文件做如下修改
+我们现已支持PyTorch自带的所有优化器。若要使用这些优化器，用户只需在配置文件中修改 `optimizer` 这一项。比如说，若您想使用 `Adam` 优化器，可以对配置文件做如下修改
 
 ```python
 optimizer = dict(type='Adam', lr=0.0003, weight_decay=0.0001)
 ```
 
-若要修改模型的学习率，用户只需在配置文件中修改优化器的 `lr` 参数。优化器各参数的设置可参考PyTorch的[使用文档](https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim)。
+若要修改模型的学习率，用户只需在配置文件中修改优化器的 `lr` 参数。优化器各参数的设置可参考PyTorch的[API文档](https://pytorch.org/docs/stable/optim.html?highlight=optim#module-torch.optim)。
 
 例如，用户想要使用在PyTorch中配置为 `torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)` 的 `Adam` 优化器，可按照以下形式修改配置文件。
 
@@ -72,7 +72,7 @@ class MyOptimizer(Optimizer):
 
 - 修改`mmpose/core/optimizer/__init__.py`来导入
 
-  新定义的优化器得在 `mmpose/core/optimizer/__init__.py` 中被导入，注册器才能索引并添加它。
+  新定义的优化器得在 `mmpose/core/optimizer/__init__.py` 中被导入，注册器才能发现并添加它。
 
 ```python
 from .my_optimizer import MyOptimizer
@@ -104,8 +104,8 @@ optimizer = dict(type='MyOptimizer', a=a_value, b=b_value, c=c_value)
 
 ### 自定义优化器构造器
 
-某些模型的优化过程可能对不同参数有不同的设置，例如批归一化层的权重衰减。
-用户可以通过自定义优化器构造器来实现这些精细的参数调整。
+有些模型可能需要在优化器里对一些特别参数进行设置，例如批归一化层的权重衰减系数。
+用户可以通过自定义优化器构造器来实现这些精细参数的调整。
 
 ```python
 from mmcv.utils import build_from_cfg
@@ -133,8 +133,8 @@ class MyOptimizerConstructor:
 有些优化器没有实现的功能可以通过优化器构造器（例如对不同权重设置不同学习率）或者钩子实现。
 我们列出了一些用于稳定、加速训练的常用设置。欢迎通过PR、issue提出更多这样的设置。
 
-- __使用梯度裁剪来稳定训练__：
-  有些模型需要梯度裁剪来使梯度数值保持在某个范围，以让训练过程更加稳定。例如：
+- __使用梯度截断来稳定训练__：
+  有些模型需要梯度截断来使梯度数值保持在某个范围，以让训练过程更加稳定。例如：
 
   ```python
   optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
@@ -335,7 +335,7 @@ log_config = dict(
 #### 测试配置
 
 测试配置 `evaluation` 可以用来初始化 [`EvalHook`](https://github.com/open-mmlab/mmpose/blob/master/mmpose/core/evaluation/eval_hooks.py#L11)。
-除了参数 `interval` ，其他参数（例如 `metric`）会被传给 `dataset.evaluate()`
+除了参数 `interval` ，其他参数（例如 `metric`）会被传递给 `dataset.evaluate()`。
 
 ```python
 evaluation = dict(interval=1, metric='mAP')
