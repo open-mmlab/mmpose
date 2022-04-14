@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 
+from mmpose.core.bbox import bbox_xywh2cs
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform, get_warp_matrix,
                                          warp_affine_joints)
@@ -29,8 +30,9 @@ class TopDownGetBboxCenterScale:
             ranges in x and y axis are [-dx, dx] and [-dy, dy] respectively,
             where dx = w*shift_factor, dy = y*shift_factor. Default: 0.2
     """
-    # pixel std is 200.0
-    scale_factor: float = 200.0
+    # Pixel std is 200.0, which serves as the normalization factor to
+    # to calculate bbox scales.
+    pixel_std: float = 200.0
 
     def __init__(self,
                  padding: float = 1.25,
@@ -41,25 +43,20 @@ class TopDownGetBboxCenterScale:
         self.shift_factor = shift_factor
 
     def __call__(self, results):
-        x, y, w, h = results['bbox']
+        bbox = results['bbox']
         image_size = results['ann_info']['image_size']
+        aspect_ratio = image_size[0] / image_size[1]
 
-        center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
+        center, scale = bbox_xywh2cs(
+            bbox,
+            aspect_ratio=aspect_ratio,
+            padding=self.padding,
+            pixel_std=self.pixel_std)
 
         # random shift bbox center
         if np.random.rand() < self.shift_prob:
-            center += np.random.uniform(-1, 1, 2) * [w, h] * self.shift_factor
-
-        aspect_ratio = image_size[0] / image_size[1]
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
-
-        scale = np.array([w, h], dtype=np.float32)
-
-        # normalize and padding
-        scale = scale / self.scale_factor * self.padding
+            center += np.random.uniform(-1, 1,
+                                        2) * bbox[2:4] * self.shift_factor
 
         results['center'] = center
         results['scale'] = scale

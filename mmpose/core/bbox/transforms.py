@@ -1,0 +1,67 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+import numpy as np
+
+
+def bbox_xyxy2xywh(bbox_xyxy):
+    """Transform the bbox format from x1y1x2y2 to xywh.
+
+    Args:
+        bbox_xyxy (np.ndarray): Bounding boxes (with scores), shaped (n, 4) or
+            (n, 5). (left, top, right, bottom, [score])
+
+    Returns:
+        np.ndarray: Bounding boxes (with scores),
+          shaped (n, 4) or (n, 5). (left, top, width, height, [score])
+    """
+    bbox_xywh = bbox_xyxy.copy()
+    bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
+    bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
+
+    return bbox_xywh
+
+
+def bbox_xywh2xyxy(bbox_xywh):
+    """Transform the bbox format from xywh to x1y1x2y2.
+
+    Args:
+        bbox_xywh (ndarray): Bounding boxes (with scores),
+            shaped (n, 4) or (n, 5). (left, top, width, height, [score])
+    Returns:
+        np.ndarray: Bounding boxes (with scores), shaped (n, 4) or
+          (n, 5). (left, top, right, bottom, [score])
+    """
+    bbox_xyxy = bbox_xywh.copy()
+    bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
+    bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
+
+    return bbox_xyxy
+
+
+def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
+    """This encodes bbox(x,y,w,h) into (center, scale)
+
+    Args:
+        bbox (ndarray): Single bbox in (x, y, w, h)
+        aspect_ratio (float): The expected bbox aspect ratio (w over h)
+        padding (float): Bbox padding factor that will be multilied to scale.
+            Default: 1.0
+        pixel_std (float): The scale normalization factor. Default: 200.0
+
+    Returns:
+        tuple: A tuple containing center and scale.
+        - np.ndarray[float32](2,): Center of the bbox (x, y).
+        - np.ndarray[float32](2,): Scale of the bbox w & h.
+    """
+
+    x, y, w, h = bbox[:4]
+    center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
+
+    if w > aspect_ratio * h:
+        h = w * 1.0 / aspect_ratio
+    elif w < aspect_ratio * h:
+        w = h * aspect_ratio
+
+    scale = np.array([w, h], dtype=np.float32) / pixel_std
+    scale = scale * padding
+
+    return center, scale
