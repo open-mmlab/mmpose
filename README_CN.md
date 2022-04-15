@@ -109,7 +109,7 @@ MMPose 也提供了其他更详细的教程:
 * [如何设计数据处理流程](docs/zh_cn/tutorials/3_data_pipeline.md)
 * [如何增加新模块](docs/zh_cn/tutorials/4_new_modules.md)
 * [如何导出模型为 onnx 格式](docs/zh_cn/tutorials/5_export_model.md)
-* [如何自定义模型运行参数](docs/en/tutorials/6_customize_runtime.md)(英文)
+* [如何自定义运行配置](docs/zh_cn/tutorials/6_customize_runtime.md)
 
 ## 模型库
 
