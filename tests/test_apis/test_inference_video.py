@@ -42,6 +42,15 @@ def test_top_down_video_multi_frame_demo():
     vis_pose_result(
         pose_model, cur_frame, pose_results, dataset_info=dataset_info)
 
+    # test when thr person_result is None
+    pose_results, _ = inference_top_down_video_pose_model(
+        pose_model,
+        frames,
+        person_results=None,
+        format='xywh',
+        bbox_thr=0.3,
+        dataset_info=dataset_info)
+
     # test a video file
     with tempfile.TemporaryDirectory() as tmpdir:
         # create video file from multiple frames
@@ -63,6 +72,3 @@ def test_top_down_video_multi_frame_demo():
             person_result,
             format='xyxy',
             dataset_info=dataset_info)
-        # show the results
-        vis_pose_result(
-            pose_model, cur_frame, pose_results, dataset_info=dataset_info)

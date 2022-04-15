@@ -36,7 +36,7 @@ def inference_top_down_video_pose_model(model,
     if person_results is None:
         # create dummy person results
         if isinstance(frames_or_paths[0], str):
-            width, height = Image.open(frames_or_paths[0])
+            width, height = Image.open(frames_or_paths[0]).size
         else:
             height, width = frames_or_paths.shape[:2]
         person_results = [{'bbox': np.array([0, 0, width, height])}]
