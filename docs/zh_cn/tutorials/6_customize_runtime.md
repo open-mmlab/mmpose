@@ -49,9 +49,9 @@ optimizer = dict(type='Adam', lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_de
 
 #### 1. 定义一个新优化器
 
-如果您想添加一个新的优化器，名字叫`MyOptimizer`，参数包括 `a` 、 `b` 、 `c` ，可以按照以下步骤定义该优化器。
+如果您想添加一个新的优化器，名字叫`MyOptimizer`，参数包括 `a` 、`b` 、`c`，可以按照以下步骤定义该优化器。
 
-首先，创建一个新目录 `mmpose/core/optimizer` 。
+首先，创建一个新目录 `mmpose/core/optimizer`。
 然后，在新文件 `mmpose/core/optimizer/my_optimizer.py` 中实现该优化器：
 
 ```python
@@ -70,7 +70,7 @@ class MyOptimizer(Optimizer):
 
 新优化器必须先导入主命名空间才能被成功调用。有两种实现方式。
 
-- 修改`mmpose/core/optimizer/__init__.py`来导入
+- 修改 `mmpose/core/optimizer/__init__.py` 来导入
 
   新定义的优化器得在 `mmpose/core/optimizer/__init__.py` 中被导入，注册器才能发现并添加它。
 
@@ -96,7 +96,7 @@ custom_imports = dict(imports=['mmpose.core.optimizer.my_optimizer'], allow_fail
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
 ```
 
-如果要使用自己实现的新优化器 `MyOptimizer` ，可以进行如下修改：
+如果要使用自己实现的新优化器 `MyOptimizer`，可以进行如下修改：
 
 ```python
 optimizer = dict(type='MyOptimizer', a=a_value, b=b_value, c=c_value)
@@ -163,7 +163,7 @@ class MyOptimizerConstructor:
 ## 自定义训练策略
 
 我们默认使用的学习率变化策略为阶梯式衰减策略，即MMCV中的[`StepLRHook`](https://github.com/open-mmlab/mmcv/blob/f48241a65aebfe07db122e9db320c31b685dc674/mmcv/runner/hooks/lr_updater.py#L153)。
-此外，我们还支持很多[学习率变化策略](https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py)，例如余弦退火策略 `CosineAnnealing` 和多项式策略 `Poly` 。其调用方式如下
+此外，我们还支持很多[学习率变化策略](https://github.com/open-mmlab/mmcv/blob/master/mmcv/runner/hooks/lr_updater.py)，例如余弦退火策略 `CosineAnnealing` 和多项式策略 `Poly`。其调用方式如下
 
 - 多项式策略:
 
@@ -192,7 +192,7 @@ class MyOptimizerConstructor:
 workflow = [('train', 1)]
 ```
 
-即“训练1轮”。
+即“训练 1 轮”。
 有时候用户可能想要计算模型在验证集上的某些指标（例如损失、准确率）。此时可将工作流设定为
 
 ```python
@@ -245,7 +245,7 @@ class MyHook(Hook):
         pass
 ```
 
-用户需要根据钩子的实际用途定义该钩子在 `before_run` 、 `after_run` 、 `before_epoch` 、 `after_epoch` 、 `before_iter` 以及 `after_iter` 中的行为。
+用户需要根据钩子的实际用途定义该钩子在 `before_run` 、`after_run` 、`before_epoch` 、`after_epoch` 、`before_iter` 以及 `after_iter` 中的行为。
 
 #### 2. 注册这个新的钩子
 
@@ -281,7 +281,7 @@ custom_hooks = [
 ]
 ```
 
-钩子在注册时，其优先级默认为 `NORMAL` 。
+钩子在注册时，其优先级默认为 `NORMAL`。
 
 ### 使用MMCV中的钩子
 
@@ -304,12 +304,12 @@ mmcv_hooks = [
 - optimizer_config
 - momentum_config
 
-这些钩子中，只有日志钩子的优先级为 `VERY_LOW` ，其他钩子的优先级都是 `NORMAL` 。
-前面的教程已经讲述了如何修改 `optimizer_config` 、 `momentum_config` 、  `lr_config`。这里我们介绍如何修改 `log_config` 、 `checkpoint_config` 、 `evaluation`。
+这些钩子中，只有日志钩子的优先级为 `VERY_LOW`，其他钩子的优先级都是 `NORMAL`。
+前面的教程已经讲述了如何修改 `optimizer_config` 、`momentum_config` 、`lr_config`。这里我们介绍如何修改 `log_config` 、`checkpoint_config` 、`evaluation`。
 
 #### 模型权重文件配置
 
-MMCV的运行程序会使用 `checkpoint_config` 来初始化 [`CheckpointHook`](https://github.com/open-mmlab/mmcv/blob/9ecd6b0d5ff9d2172c49a182eaa669e9f27bb8e7/mmcv/runner/hooks/checkpoint.py#L9) 。
+MMCV的运行程序会使用 `checkpoint_config` 来初始化 [`CheckpointHook`](https://github.com/open-mmlab/mmcv/blob/9ecd6b0d5ff9d2172c49a182eaa669e9f27bb8e7/mmcv/runner/hooks/checkpoint.py#L9)。
 
 ```python
 checkpoint_config = dict(interval=1)
@@ -320,7 +320,7 @@ checkpoint_config = dict(interval=1)
 
 #### 日志配置
 
-日志配置 `log_config` 可以设置多个日志钩子，并且可以设定记录间隔。目前MMCV支持的日志钩子包括 `WandbLoggerHook` 、 `MlflowLoggerHook` 、 `TensorboardLoggerHook`。
+日志配置 `log_config` 可以设置多个日志钩子，并且可以设定记录间隔。目前MMCV支持的日志钩子包括 `WandbLoggerHook` 、`MlflowLoggerHook` 、`TensorboardLoggerHook`。
 [这份文档](https://mmcv.readthedocs.io/en/latest/api.html#mmcv.runner.LoggerHook)介绍了更多日志钩子的使用细节。
 
 ```python
@@ -335,7 +335,7 @@ log_config = dict(
 #### 测试配置
 
 测试配置 `evaluation` 可以用来初始化 [`EvalHook`](https://github.com/open-mmlab/mmpose/blob/master/mmpose/core/evaluation/eval_hooks.py#L11)。
-除了参数 `interval` ，其他参数（例如 `metric`）会被传递给 `dataset.evaluate()`。
+除了参数 `interval`，其他参数（例如 `metric`）会被传递给 `dataset.evaluate()`。
 
 ```python
 evaluation = dict(interval=1, metric='mAP')
