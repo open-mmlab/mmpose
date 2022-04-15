@@ -38,9 +38,10 @@ def inference_top_down_video_pose_model(model,
         if isinstance(frames_or_paths[0], str):
             width, height = Image.open(frames_or_paths[0]).size
         else:
-            height, width = frames_or_paths.shape[:2]
+            height, width = frames_or_paths[0].shape[:2]
         person_results = [{'bbox': np.array([0, 0, width, height])}]
 
+    # if
     if len(person_results) == 0:
         return pose_results, returned_outputs
 

@@ -64,12 +64,21 @@ def test_top_down_video_multi_frame_demo():
         frames = video[:len(pose_model.cfg.data_cfg.frame_weight_test)]
 
         person_result = []
-        person_result.append({'bbox': [50, 75, 100, 150]})
+        person_result.append({'bbox': [50, 75, 100, 150, 0.6]})
 
         # test the frames in the format of image array
         pose_results, _ = inference_top_down_video_pose_model(
             pose_model,
             frames,
             person_result,
+            bbox_thr=0.9,
+            format='xyxy',
+            dataset_info=dataset_info)
+
+        # test the frames in the format of image array
+        pose_results, _ = inference_top_down_video_pose_model(
+            pose_model,
+            frames,
+            person_results=None,
             format='xyxy',
             dataset_info=dataset_info)
