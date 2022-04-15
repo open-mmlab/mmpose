@@ -36,10 +36,10 @@ class ToTensor:
             2, 0, 1).to(self.device))
         if isinstance(results['img'], (list, tuple)):
             results['img'] = [
-                to_tensor(img.astype('float32')) for img in results['img']
+                to_tensor(img) for img in results['img']
             ]
         else:
-            results['img'] = to_tensor(results['img'].astype('float32'))
+            results['img'] = to_tensor(results['img'])
 
         return results
 
