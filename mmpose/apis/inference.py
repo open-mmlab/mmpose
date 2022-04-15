@@ -97,8 +97,7 @@ def _inference_single_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
-    _pipeline_gpu_speedup(test_pipeline, 
-        next(model.parameters()).device)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -458,9 +457,8 @@ def inference_bottom_up_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
-    _pipeline_gpu_speedup(test_pipeline, 
-        next(model.parameters()).device)
-        
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
+
     # prepare data
     data = {
         'dataset': dataset_name,

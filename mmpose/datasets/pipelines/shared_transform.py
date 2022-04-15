@@ -35,9 +35,7 @@ class ToTensor:
         to_tensor = (lambda x: torch.from_numpy(x.astype('float32')).permute(
             2, 0, 1).to(self.device))
         if isinstance(results['img'], (list, tuple)):
-            results['img'] = [
-                to_tensor(img) for img in results['img']
-            ]
+            results['img'] = [to_tensor(img) for img in results['img']]
         else:
             results['img'] = to_tensor(results['img'])
 
