@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
+
 import cv2
 import numpy as np
 
@@ -14,8 +16,7 @@ class TopDownGetBboxCenterScale:
     """Convert bbox from [x, y, w, h] to center and scale.
 
     The center is the coordinates of the bbox center, and the scale is the
-    bbox width and height normalized by a scale factor. Optionally, apply
-    arandom shift to the bbox center.
+    bbox width and height normalized by a scale factor.
 
     Required key: 'bbox', 'ann_info'
 
@@ -24,42 +25,67 @@ class TopDownGetBboxCenterScale:
     Args:
         padding (float): bbox padding scale that will be multilied to scale.
             Default: 1.25
-        shift_prob (float): Probability of applying a random shift to the bbox
-            center. Default: 0.3
-        shift_factor (float): The factor to control the shift range. The
-            ranges in x and y axis are [-dx, dx] and [-dy, dy] respectively,
-            where dx = w*shift_factor, dy = y*shift_factor. Default: 0.2
     """
     # Pixel std is 200.0, which serves as the normalization factor to
     # to calculate bbox scales.
     pixel_std: float = 200.0
 
-    def __init__(self,
-                 padding: float = 1.25,
-                 shift_prob: float = 0,
-                 shift_factor: float = 0):
+    def __init__(self, padding: float = 1.25):
         self.padding = padding
-        self.shift_prob = shift_prob
-        self.shift_factor = shift_factor
 
     def __call__(self, results):
-        bbox = results['bbox']
-        image_size = results['ann_info']['image_size']
-        aspect_ratio = image_size[0] / image_size[1]
 
-        center, scale = bbox_xywh2cs(
-            bbox,
-            aspect_ratio=aspect_ratio,
-            padding=self.padding,
-            pixel_std=self.pixel_std)
+        if 'center' in results and 'scale' in results:
+            warnings.warn(
+                'Use the "center" and "scale" that already exist in the data '
+                'sample. The padding will still be applied.')
+            results['scale'] *= self.padding
+        else:
+            bbox = results['bbox']
+            image_size = results['ann_info']['image_size']
+            aspect_ratio = image_size[0] / image_size[1]
 
-        # random shift bbox center
-        if np.random.rand() < self.shift_prob:
-            center += np.random.uniform(-1, 1,
-                                        2) * bbox[2:4] * self.shift_factor
+            center, scale = bbox_xywh2cs(
+                bbox,
+                aspect_ratio=aspect_ratio,
+                padding=self.padding,
+                pixel_std=self.pixel_std)
+
+            results['center'] = center
+            results['scale'] = scale
+        return results
+
+
+@PIPELINES.register_module()
+class TopDownRandomShiftBboxCenter:
+    """Random shift the bbox center.
+
+    Required key: 'center', 'scale'
+
+    Modifies key: 'center'
+
+    Args:
+        shift_factor (float): The factor to control the shift range, which is
+            scale*pixel_std*scale_factor. Default: 0.16
+        prob (float): Probability of applying random shift. Default: 0.3
+    """
+    # Pixel std is 200.0, which serves as the normalization factor to
+    # to calculate bbox scales.
+    pixel_std: float = 200.0
+
+    def __init__(self, shift_factor: float = 0.16, prob: float = 0.3):
+        self.shift_factor = shift_factor
+        self.prob = prob
+
+    def __call__(self, results):
+
+        center = results['center']
+        scale = results['scale']
+        if np.random.rand() < self.prob:
+            center += np.random.uniform(
+                -1, 1, 2) * self.shift_factor * scale * self.pixel_std
 
         results['center'] = center
-        results['scale'] = scale
         return results
 
 

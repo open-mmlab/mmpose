@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
 import os.path as osp
+import warnings
 
 import numpy as np
 import torch
@@ -13,7 +14,8 @@ from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
                                        TopDownGetBboxCenterScale,
                                        TopDownGetRandomScaleRotation,
                                        TopDownHalfBodyTransform,
-                                       TopDownRandomFlip, ToTensor)
+                                       TopDownRandomFlip,
+                                       TopDownRandomShiftBboxCenter, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):
@@ -234,14 +236,14 @@ def test_top_down_pipeline():
 
 
 def test_top_down_get_bbox_center_scale():
+    # Test conversion from bbox to center and scale
     bbox = np.array([50, 50, 100, 100], dtype=np.float32)
     img_w, img_h = 192, 256
     padding = 1.25
 
     results = dict(bbox=bbox, ann_info=dict(image_size=[img_w, img_h]))
 
-    pipeline = TopDownGetBboxCenterScale(
-        padding=padding, shift_prob=1., shift_factor=0)
+    pipeline = TopDownGetBboxCenterScale(padding=padding)
 
     results = pipeline(results)
     center, scale = results['center'], results['scale']
@@ -250,3 +252,30 @@ def test_top_down_get_bbox_center_scale():
                          dtype=np.float32) / 200 * padding
     np.testing.assert_almost_equal(center, center_exp)
     np.testing.assert_almost_equal(scale, scale_exp)
+
+    # Test using existing center and scale
+    center = np.array([100, 100], dtype=np.float32)
+    scale = np.array([0.5, 0.5], dtype=np.float32)
+    padding = 1.25
+    results = dict(center=center.copy(), scale=scale.copy())
+
+    pipeline = TopDownGetBboxCenterScale(padding=padding)
+
+    with warnings.catch_warnings(record=True):
+        results = pipeline(results)
+
+    np.testing.assert_almost_equal(scale * padding, results['scale'])
+
+
+def test_top_down_random_shift_bbox_center_scale():
+    center = np.array([100, 100], dtype=np.float32)
+    scale = np.array([0.5, 0.5], dtype=np.float32)
+    shift_factor = 0.16
+    pixel_std = 200.
+    results = dict(center=center.copy(), scale=scale.copy())
+
+    pipeline = TopDownRandomShiftBboxCenter(shift_factor=0.16, prob=1.0)
+    results = pipeline(results)
+
+    np.testing.assert_array_less(
+        np.abs(center - results['center']), scale * shift_factor * pixel_std)
