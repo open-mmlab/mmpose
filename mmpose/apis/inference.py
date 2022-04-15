@@ -49,6 +49,9 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     return model
 
 
+
+
+
 def _inference_single_pose_model(model,
                                  imgs_or_paths,
                                  bboxes,
@@ -94,6 +97,8 @@ def _inference_single_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, 
+        next(model.parameters()).device)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -191,8 +196,8 @@ def _inference_single_pose_model(model,
 
     batch_data = []
     for bbox in bboxes:
-        # prepare data
 
+        # prepare data
         data = {
             'bbox':
             bbox,
@@ -214,7 +219,6 @@ def _inference_single_pose_model(model,
                 'flip_pairs': flip_pairs
             }
         }
-
         if use_multi_frames:
             # weight for different frames in multi-frame inference setting
             data['frame_weight'] = cfg.data.test.data_cfg.frame_weight_test
@@ -229,7 +233,6 @@ def _inference_single_pose_model(model,
                 data['image_file'] = imgs_or_paths
 
         data = test_pipeline(data)
-        print(test_pipeline)
         batch_data.append(data)
 
     batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
@@ -455,7 +458,9 @@ def inference_bottom_up_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
-
+    _pipeline_gpu_speedup(test_pipeline, 
+        next(model.parameters()).device)
+        
     # prepare data
     data = {
         'dataset': dataset_name,
@@ -797,36 +802,3 @@ def process_mmdet_results(mmdet_results, cat_id=1):
         person_results.append(person)
 
     return person_results
-
-
-def collect_multi_frames(video, frame_id, indices, online=False):
-    """Collect multi frames from the video.
-
-    Args:
-        video (mmcv.VideoReader): A VideoReader of the input video file.
-        frame_id (int): index of the current frame
-        indices (list(int)): index offsets of the frames to collect
-        online (bool): inference mode, if set to True, can not use future
-            frame information.
-
-    Returns:
-        list(ndarray): multi frames collected from the input video file.
-    """
-    num_frames = len(video)
-    frames = []
-    # put the current frame at first
-    frames.append(video[frame_id])
-    # use multi frames for inference
-    for idx in indices:
-        # skip current frame
-        if idx == 0:
-            continue
-        support_idx = frame_id + idx
-        # online mode, can not use future frame information
-        if online:
-            support_idx = np.clip(support_idx, 0, frame_id)
-        else:
-            support_idx = np.clip(support_idx, 0, num_frames - 1)
-        frames.append(video[support_idx])
-
-    return frames

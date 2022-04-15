@@ -4,6 +4,7 @@ from collections.abc import Sequence
 
 import mmcv
 import numpy as np
+import torch
 from mmcv.parallel import DataContainer as DC
 from mmcv.utils import build_from_cfg
 from numpy import random
@@ -27,11 +28,18 @@ class ToTensor:
         results (dict): contain all information about training.
     """
 
+    def __init__(self, device='cpu'):
+        self.device = device
+
     def __call__(self, results):
+        to_tensor = (lambda x: torch.from_numpy(x.astype('float32')).permute(
+            2, 0, 1).to(self.device))
         if isinstance(results['img'], (list, tuple)):
-            results['img'] = [F.to_tensor(img) for img in results['img']]
+            results['img'] = [
+                to_tensor(img.astype('float32')) for img in results['img']
+            ]
         else:
-            results['img'] = F.to_tensor(results['img'])
+            results['img'] = to_tensor(results['img'].astype('float32'))
 
         return results
 
@@ -54,12 +62,12 @@ class NormalizeTensor:
     def __call__(self, results):
         if isinstance(results['img'], (list, tuple)):
             results['img'] = [
-                F.normalize(img, mean=self.mean, std=self.std)
+                F.normalize(img, mean=self.mean, std=self.std, inplace=True)
                 for img in results['img']
             ]
         else:
             results['img'] = F.normalize(
-                results['img'], mean=self.mean, std=self.std)
+                results['img'], mean=self.mean, std=self.std, inplace=True)
 
         return results
 
