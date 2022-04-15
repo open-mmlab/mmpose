@@ -91,11 +91,8 @@ data_cfg = dict(
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(
-        type='TopDownGetBboxCenterScale',
-        padding=1.25,
-        shift_prob=0.3,
-        shift_factor=0.2),
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
+    dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
     dict(
         type='TopDownHalfBodyTransform',
         num_joints_half_body=8,
