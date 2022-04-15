@@ -103,7 +103,6 @@ def main():
     if pose_model.__class__.__name__ == 'PoseWarper':
         pose_model.concat_tensors = False
 
-    dataset = pose_model.cfg.data['test']['type']
     # get datasetinfo
     dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)
     dataset_info = DatasetInfo(dataset_info)
@@ -171,7 +170,6 @@ def main():
             pose_model,
             frame,
             pose_results,
-            dataset=dataset,
             dataset_info=dataset_info,
             kpt_score_thr=args.kpt_thr,
             radius=args.radius,

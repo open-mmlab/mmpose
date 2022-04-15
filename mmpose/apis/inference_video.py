@@ -97,9 +97,13 @@ def _inference_single_video_pose_model(model,
                                        bboxes,
                                        dataset_info=None,
                                        return_heatmap=False):
-    assert isinstance(frames_or_paths, (list, tuple))
-
     cfg = model.cfg
+
+    # the input sample is a list of frames
+    assert isinstance(frames_or_paths, (list, tuple))
+    # the length of input frames must equal to frame weight in the config
+    assert len(frames_or_paths) == len(cfg.data_cfg.frame_weight_test)
+
     device = next(model.parameters()).device
     if device.type == 'cpu':
         device = -1
