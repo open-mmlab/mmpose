@@ -23,7 +23,8 @@ def test_top_down_video_multi_frame_demo():
         'dataset_info', None))
 
     person_result = []
-    person_result.append({'bbox': [50, 50, 50, 100]})
+    # the last value is the confidence of bbox
+    person_result.append({'bbox': [50, 50, 50, 100, 0.5]})
 
     # test a viedo folder
     video_folder = 'tests/data/posetrack18/videos/000001_mpiinew_test'
@@ -37,6 +38,7 @@ def test_top_down_video_multi_frame_demo():
         frames,
         person_result,
         format='xywh',
+        bbox_thr=0.3,
         dataset_info=dataset_info)
     # show the results
     vis_pose_result(
@@ -48,7 +50,6 @@ def test_top_down_video_multi_frame_demo():
         frames,
         person_results=None,
         format='xywh',
-        bbox_thr=0.3,
         dataset_info=dataset_info)
 
     # test a video file
