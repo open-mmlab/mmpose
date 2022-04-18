@@ -55,7 +55,7 @@ def test_top_down_video_multi_frame_demo():
     # test a video file
     with tempfile.TemporaryDirectory() as tmpdir:
         # create video file from multiple frames
-        video_path = osp.join(tmpdir, 'tmp_video.mp4')
+        video_path = osp.join(tmpdir.name, 'tmp_video.mp4')
         mmcv.frames2video(video_folder, video_path, fourcc='mp4v')
         video = mmcv.VideoReader(video_path)
 
