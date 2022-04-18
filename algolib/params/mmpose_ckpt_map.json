@@ -1,0 +1,11 @@
+{
+    "shufflenetv2_coco_256x192": {
+        "path": "/mnt/lustre/share_data/PAT/datasets/mmpose/checkpoint/shufflenetv2_coco_256x192/epoch_210.pth"
+    },
+    "hrnet_w32_coco_256x192_udp": {
+        "path": "/mnt/lustre/share_data/PAT/datasets/mmpose/checkpoint/hrnet_w32_coco_256x192_udp/epoch_210.pth"
+    },
+    "res50_wflw_256x256": {
+        "path": "/mnt/lustre/share_data/PAT/datasets/mmpose/checkpoint/res50_wflw_256x256/epoch_210.pth"
+    }
+}
