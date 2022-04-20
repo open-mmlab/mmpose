@@ -178,10 +178,9 @@ def test_top_down_demo():
     person_result.append({'bbox': [50, 50, 50, 100, 0.5]})
 
     # test a viedo folder
+    num_frames = len(pose_model.cfg.data_cfg.frame_weight_test)
     video_folder = 'tests/data/posetrack18/videos/000001_mpiinew_test'
-    frames = sorted(glob(
-        osp.join(video_folder,
-                 '*.jpg')))[:len(pose_model.cfg.data_cfg.frame_weight_test)]
+    frames = sorted(glob(osp.join(video_folder, '*.jpg')))[:num_frames]
     cur_frame = frames[0]
 
     # test the frames in the format of image paths
@@ -196,7 +195,7 @@ def test_top_down_demo():
     vis_pose_result(
         pose_model, cur_frame, pose_results, dataset_info=dataset_info)
 
-    # test when thr person_result is None
+    # test when the person_result is None
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         frames,
@@ -205,13 +204,13 @@ def test_top_down_demo():
         dataset_info=dataset_info)
 
     # test a video file
-    video_path = 'tests/data/posetrack18/videos/000001_mpiinew_test/'
-    '000001_mpiinew_test.mp4'
+    video_path = 'tests/data/posetrack18/videos/000001_mpiinew_test/'\
+        '000001_mpiinew_test.mp4'
     video = mmcv.VideoReader(video_path)
 
     # get a sample for test
     cur_frame = video[0]
-    frames = video[:len(pose_model.cfg.data_cfg.frame_weight_test)]
+    frames = video[:num_frames]
 
     person_result = []
     person_result.append({'bbox': [50, 75, 100, 150, 0.6]})
@@ -225,7 +224,7 @@ def test_top_down_demo():
         format='xyxy',
         dataset_info=dataset_info)
 
-    # test the frames in the format of image array
+    # # test the frames in the format of image array
     pose_results, _ = inference_top_down_pose_model(
         pose_model,
         frames,
