@@ -398,7 +398,7 @@ def inference_top_down_pose_model(model,
         if isinstance(imgs_or_paths[0], str):
             width, height = Image.open(imgs_or_paths[0]).size
         else:
-            height, width = imgs_or_paths.shape[:2]
+            height, width = imgs_or_paths[0].shape[:2]
         person_results = [{'bbox': np.array([0, 0, width, height])}]
 
     if len(person_results) == 0:
