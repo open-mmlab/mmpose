@@ -80,6 +80,13 @@ def main():
         type=str,
         help='return the output of some desired layers, '
         'e.g. use ("backbone", ) to return backbone feature')
+    parser.add_argument(
+        '--save-memory',
+        action='store_false',
+        default=True,
+        help='save memory usage when using large model for inference. If you'
+        'have plenty of memory, you can turn it off to gain faster inference'
+        'speed. Default: True.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -98,9 +105,12 @@ def main():
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
 
-    # If use 'PoseWarper' detector, set concat_tensors to False to save memory
-    if pose_model.__class__.__name__ == 'PoseWarper':
-        pose_model.concat_tensors = False
+    # some hand-crafted setting to save memory for specific models
+    if args.save_memory:
+        # If use 'PoseWarper' detector, set concat_tensors to False
+        if pose_model.__class__.__name__ == 'PoseWarper':
+            pose_model.concat_tensors = False
+    # TODO: some hand-crafted setting to accelerate inference speed
 
     dataset = pose_model.cfg.data['test']['type']
     # get datasetinfo
