@@ -179,8 +179,9 @@ def test_top_down_demo():
 
     # test a viedo folder
     video_folder = 'tests/data/posetrack18/videos/000001_mpiinew_test'
-    frames = sorted(glob(osp.join(
-        video_folder, '*')))[:len(pose_model.cfg.data_cfg.frame_weight_test)]
+    frames = sorted(glob(
+        osp.join(video_folder,
+                 '*.jpg')))[:len(pose_model.cfg.data_cfg.frame_weight_test)]
     cur_frame = frames[0]
 
     # test the frames in the format of image paths
