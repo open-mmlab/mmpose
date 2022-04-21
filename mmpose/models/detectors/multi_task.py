@@ -46,8 +46,8 @@ class MultiTask(nn.Module):
         for head in heads:
             assert head is not None
             self.heads.append(builder.build_head(head))
-
-        self.init_weights(pretrained=pretrained)
+        self.pretrained = pretrained
+        self.init_weights()
 
     @property
     def with_necks(self):
@@ -56,7 +56,9 @@ class MultiTask(nn.Module):
 
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
-        self.backbone.init_weights(pretrained)
+        if pretrained is not None:
+            self.pretrained = pretrained
+        self.backbone.init_weights(self.pretrained)
         if self.with_necks:
             for neck in self.necks:
                 if hasattr(neck, 'init_weights'):

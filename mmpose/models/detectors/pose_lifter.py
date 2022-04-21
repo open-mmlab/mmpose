@@ -86,8 +86,8 @@ class PoseLifter(BasePose):
         if self.semi:
             assert keypoint_head is not None and traj_head is not None
             self.loss_semi = builder.build_loss(loss_semi)
-
-        self.init_weights(pretrained=pretrained)
+        self.pretrained = pretrained
+        self.init_weights()
 
     @property
     def with_neck(self):
@@ -125,13 +125,15 @@ class PoseLifter(BasePose):
 
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
-        self.backbone.init_weights(pretrained)
+        if pretrained is not None:
+            self.pretrained = pretrained
+        self.backbone.init_weights(self.pretrained)
         if self.with_neck:
             self.neck.init_weights()
         if self.with_keypoint:
             self.keypoint_head.init_weights()
         if self.with_traj_backbone:
-            self.traj_backbone.init_weights(pretrained)
+            self.traj_backbone.init_weights(self.pretrained)
         if self.with_traj_neck:
             self.traj_neck.init_weights()
         if self.with_traj:
