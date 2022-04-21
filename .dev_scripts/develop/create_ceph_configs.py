@@ -68,7 +68,7 @@ def update_ceph_config(filename, args, dry_run=False):
         # Update image loading in pipelines
         content = re.sub(
             r'dict\(type=\'LoadImageFromFile\'\)',
-            'dict(type=\'LoadImageFromeFile\', '
+            'dict(type=\'LoadImageFromFile\', '
             'file_client_args=file_client_args)',
             content,
             flags=re.S)
