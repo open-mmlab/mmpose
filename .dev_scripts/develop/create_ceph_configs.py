@@ -125,6 +125,7 @@ if __name__ == '__main__':
         print('Copying config files to "config_ceph" ...')
         shutil.copytree('configs', 'configs_ceph', dirs_exist_ok=True)
 
+        print('Updating ceph configuration ...')
         with Pool(processes=8) as pool:
             files = glob.glob(
                 osp.join('configs_ceph', '**', '*.py'), recursive=True)
