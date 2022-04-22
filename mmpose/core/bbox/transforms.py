@@ -38,7 +38,7 @@ def bbox_xywh2xyxy(bbox_xywh):
 
 
 def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
-    """This encodes bbox(x,y,w,h) into (center, scale)
+    """Transform the bbox format from (x,y,w,h) into (center, scale)
 
     Args:
         bbox (ndarray): Single bbox in (x, y, w, h)
@@ -65,3 +65,24 @@ def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
     scale = scale * padding
 
     return center, scale
+
+
+def bbox_cs2xywh(center, scale, padding=1., pixel_std=200.):
+    """Transform the bbox format from (center, scale) to (x,y,w,h). Note that
+    this is not an exact inverse operation of ``bbox_xywh2cs`` because the
+    normalization of aspect ratio in ``bbox_xywh2cs`` is irreversible.
+
+    Args:
+        center (ndarray): Single bbox center in (x, y)
+        scale (ndarray): Single bbox scale in (scale_x, scale_y)
+        padding (float): Bbox padding factor that will be multilied to scale.
+            Default: 1.0
+        pixel_std (float): The scale normalization factor. Default: 200.0
+
+    Returns:
+        ndarray: Single bbox in (x, y, w, h)
+    """
+
+    wh = scale / padding * pixel_std
+    xy = center - 0.5 * wh
+    return np.r_[xy, wh]
