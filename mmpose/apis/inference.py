@@ -118,7 +118,7 @@ def _inference_single_pose_model(model,
                                  dataset='TopDownCocoDataset',
                                  dataset_info=None,
                                  return_heatmap=False,
-                                 use_multi_frame=False):
+                                 use_multi_frames=False):
     """Inference human bounding boxes.
 
     Note:
@@ -136,7 +136,7 @@ def _inference_single_pose_model(model,
         dataset (str): Dataset name. Deprecated.
         dataset_info (DatasetInfo): A class containing all dataset info.
         return_heatmap (bool): Flag to return heatmap, default: False
-        use_multi_frame (bool): Flag to use multi frames for inference
+        use_multi_frames (bool): Flag to use multi frames for inference
 
     Returns:
         ndarray[NxKx3]: Predicted pose x, y, score.
@@ -148,7 +148,7 @@ def _inference_single_pose_model(model,
     if device.type == 'cpu':
         device = -1
 
-    if use_multi_frame:
+    if use_multi_frames:
         assert 'frame_weight_test' in cfg.data.test.data_cfg
         # use multi frames for inference
         # the number of input frames must equal to frame weight in the config
@@ -281,7 +281,7 @@ def _inference_single_pose_model(model,
             }
         }
 
-        if use_multi_frame:
+        if use_multi_frames:
             # weight for different frames in multi-frame inference setting
             data['frame_weight'] = cfg.data.test.data_cfg.frame_weight_test
             if isinstance(imgs_or_paths[0], np.ndarray):
@@ -369,10 +369,10 @@ def inference_top_down_pose_model(model,
     """
     # decide whether use multi frames for inference
     if isinstance(imgs_or_paths, (list, tuple)):
-        use_multi_frame = True
+        use_multi_frames = True
     else:
         assert isinstance(imgs_or_paths, (str, np.ndarray))
-        use_multi_frame = False
+        use_multi_frames = False
     # get dataset info
     if (dataset_info is None and hasattr(model, 'cfg')
             and 'dataset_info' in model.cfg):
@@ -392,7 +392,7 @@ def inference_top_down_pose_model(model,
 
     if person_results is None:
         # create dummy person results
-        sample = imgs_or_paths[0] if use_multi_frame else imgs_or_paths
+        sample = imgs_or_paths[0] if use_multi_frames else imgs_or_paths
         if isinstance(sample, str):
             width, height = Image.open(sample).size
         else:
@@ -433,7 +433,7 @@ def inference_top_down_pose_model(model,
             dataset=dataset,
             dataset_info=dataset_info,
             return_heatmap=return_heatmap,
-            use_multi_frame=use_multi_frame)
+            use_multi_frames=use_multi_frames)
 
         if return_heatmap:
             h.layer_outputs['heatmap'] = heatmap

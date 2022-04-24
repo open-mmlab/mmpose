@@ -87,6 +87,11 @@ def main():
         help='save memory usage when using large model for inference. If you'
         'have plenty of memory, you can turn it off to gain faster inference'
         'speed. Default: True.')
+    parser.add_argument(
+        '--use-multi-frames',
+        action='store_true',
+        default=False,
+        help='whether use multi frames for inference. Default: False.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -144,31 +149,12 @@ def main():
             fps, size)
 
     # frame index offsets for inference, used in multi-frame inference setting
-    if 'frame_indices_test' in pose_model.cfg.data.test.data_cfg:
+    if args.use_multi_frames:
+        assert 'frame_indices_test' in pose_model.cfg.data.test.data_cfg
         indices = pose_model.cfg.data.test.data_cfg['frame_indices_test']
-    else:
-        # single-frame inference setting
-        indices = []
 
     print('Running inference...')
     for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
-        frames = []
-        # put the current frame at first
-        frames.append(cur_frame)
-
-        # multi-frame inference
-        for idx in indices:
-            # skip current frame
-            if idx == 0:
-                continue
-            support_idx = frame_id + idx
-            # online mode, can not use future frame information
-            if args.online:
-                support_idx = np.clip(support_idx, 0, frame_id)
-            else:
-                support_idx = np.clip(support_idx, 0, nframes - 1)
-            frames.append(video[support_idx])
-
         # get the detection results of current frame
         # the resulting box is (x1, y1, x2, y2)
         mmdet_results = inference_detector(det_model, cur_frame)
@@ -176,10 +162,27 @@ def main():
         # keep the person class bounding boxes.
         person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
 
+        if args.use_multi_frames:
+            frames = []
+            # put the current frame at first
+            frames.append(cur_frame)
+            # use multi frames for inference
+            for idx in indices:
+                # skip current frame
+                if idx == 0:
+                    continue
+                support_idx = frame_id + idx
+                # online mode, can not use future frame information
+                if args.online:
+                    support_idx = np.clip(support_idx, 0, frame_id)
+                else:
+                    support_idx = np.clip(support_idx, 0, nframes - 1)
+                frames.append(video[support_idx])
+
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
-            frames,
+            frames if args.use_multi_frames else cur_frame,
             person_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
