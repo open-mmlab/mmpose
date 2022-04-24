@@ -85,7 +85,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='TopdownGetBboxCenterScale', padding=1.25),
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
