@@ -2,6 +2,7 @@
 import copy
 import os
 import os.path as osp
+import warnings
 from argparse import ArgumentParser
 
 import cv2
@@ -13,6 +14,8 @@ from mmpose.apis import (extract_pose_sequence, get_track_id,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_3d_pose_result)
 from mmpose.core import Smoother
+from mmpose.datasets import DatasetInfo
+from mmpose.models import PoseLifter, TopDown
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -45,6 +48,23 @@ def covert_keypoint_definition(keypoints, pose_det_dataset, pose_lift_dataset):
         keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
         # spine is in the middle of thorax and pelvis
         keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+        # rearrange other keypoints
+        keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
+            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
+        return keypoints_new
+    elif pose_det_dataset == 'TopDownPoseTrack18VideoDataset' and \
+            pose_lift_dataset == 'Body3DH36MDataset':
+        keypoints_new = np.zeros((17, keypoints.shape[1]))
+        # pelvis is in the middle of l_hip and r_hip
+        keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
+        # thorax is in the middle of l_shoulder and r_shoulder
+        keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
+        # head is in the middle of head_bottom and head_top
+        keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
+        # spine is in the middle of thorax and pelvis
+        keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+        # neck_base is
+        keypoints_new[9] = (keypoints_new[0] + keypoints_new[8]) / 2
         # rearrange other keypoints
         keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
             keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
@@ -145,6 +165,35 @@ def main():
         default='configs/_base_/filters/one_euro.py',
         help='Config file of the filter to smooth the pose estimation '
         'results. See also --smooth.')
+    parser.add_argument(
+        '--return-heatmap',
+        action='store_true',
+        default=False,
+        help='whether to return heatmap')
+    parser.add_argument(
+        '--output-layer-names',
+        nargs='*',
+        type=str,
+        help='return the output of some desired layers, '
+        'e.g. use ("backbone", ) to return backbone feature')
+    parser.add_argument(
+        '--online',
+        action='store_true',
+        default=False,
+        help='inference mode. If set to True, can not use future frame'
+        'information. Default: False.')
+    parser.add_argument(
+        '--save-memory',
+        action='store_false',
+        default=True,
+        help='save memory usage when using large model for inference. If you'
+        'have plenty of memory, you can turn it off to gain faster inference'
+        'speed. Default: True.')
+    parser.add_argument(
+        '--use-multi-frames',
+        action='store_true',
+        default=False,
+        help='whether use multi frames for inference. Default: False.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -154,11 +203,13 @@ def main():
     assert args.det_checkpoint is not None
 
     video = mmcv.VideoReader(args.video_path)
-    assert video.opened, f'Failed to load video file {args.video_path}'
+    assert video.opened, f'Faild to load video file {args.video_path}'
+    nframes = len(video)
 
     # First stage: 2D pose detection
     print('Stage 1: 2D pose detection.')
 
+    print('Initializing model...')
     person_det_model = init_detector(
         args.det_config, args.det_checkpoint, device=args.device.lower())
 
@@ -167,34 +218,75 @@ def main():
         args.pose_detector_checkpoint,
         device=args.device.lower())
 
-    assert pose_det_model.cfg.model.type == 'TopDown', 'Only "TopDown"' \
+    assert isinstance(pose_det_model, TopDown), 'Only "TopDown"' \
         'model is supported for the 1st stage (2D pose detection)'
 
+    # some hand-crafted setting to save memory for specific models
+    if args.save_memory:
+        # If use 'PoseWarper' detector, set concat_tensors to False
+        if pose_det_model.__class__.__name__ == 'PoseWarper':
+            pose_det_model.concat_tensors = False
+
+    # frame index offsets for inference, used in multi-frame inference setting
+    if args.use_multi_frames:
+        assert 'frame_indices_test' in pose_det_model.cfg.data.test.data_cfg
+        indices = pose_det_model.cfg.data.test.data_cfg['frame_indices_test']
+
     pose_det_dataset = pose_det_model.cfg.data['test']['type']
+    # get datasetinfo
+    dataset_info = pose_det_model.cfg.data['test'].get('dataset_info', None)
+    if dataset_info is None:
+        warnings.warn(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+    else:
+        dataset_info = DatasetInfo(dataset_info)
 
     pose_det_results_list = []
     next_id = 0
     pose_det_results = []
-    for frame in mmcv.track_iter_progress(video):
+
+    print('Running 2D pose detection inference...')
+    for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         pose_det_results_last = pose_det_results
 
         # test a single image, the resulting box is (x1, y1, x2, y2)
-        mmdet_results = inference_detector(person_det_model, frame)
+        mmdet_results = inference_detector(person_det_model, cur_frame)
 
         # keep the person class bounding boxes.
         person_det_results = process_mmdet_results(mmdet_results,
                                                    args.det_cat_id)
 
-        # make person results for single image
+        if args.use_multi_frames:
+            frames = []
+            # put the current frame at first
+            frames.append(cur_frame)
+
+            # use multi frames for inference
+            for idx in indices:
+                # skip current frame
+                if idx == 0:
+                    continue
+                support_idx = frame_id + idx
+                # online mode, can not use future frame information
+                if args.online:
+                    support_idx = np.clip(support_idx, 0, frame_id)
+                else:
+                    support_idx = np.clip(support_idx, 0, nframes - 1)
+                frames.append(video[support_idx])
+
+        # make person results for current image
         pose_det_results, _ = inference_top_down_pose_model(
             pose_det_model,
-            frame,
+            frames if args.use_multi_frames else cur_frame,
             person_det_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
             dataset=pose_det_dataset,
-            return_heatmap=False,
-            outputs=None)
+            dataset_info=dataset_info,
+            return_heatmap=args.return_heatmap,
+            outputs=args.output_layer_names)
 
         # get track id for each person instance
         pose_det_results, next_id = get_track_id(
@@ -209,12 +301,13 @@ def main():
     # Second stage: Pose lifting
     print('Stage 2: 2D-to-3D pose lifting.')
 
+    print('Initializing model...')
     pose_lift_model = init_pose_model(
         args.pose_lifter_config,
         args.pose_lifter_checkpoint,
         device=args.device.lower())
 
-    assert pose_lift_model.cfg.model.type == 'PoseLifter', \
+    assert isinstance(pose_lift_model, PoseLifter), \
         'Only "PoseLifter" model is supported for the 2nd stage ' \
         '(2D-to-3D lifting)'
     pose_lift_dataset = pose_lift_model.cfg.data['test']['type']
@@ -250,6 +343,7 @@ def main():
         smoother = None
 
     num_instances = args.num_instances
+    print('Running 2D-to-3D pose lifting inference...')
     for i, pose_det_results in enumerate(
             mmcv.track_iter_progress(pose_det_results_list)):
         # extract and pad input pose2d sequence
