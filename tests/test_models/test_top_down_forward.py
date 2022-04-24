@@ -2,6 +2,7 @@
 import copy
 
 import numpy as np
+import pytest
 import torch
 
 from mmpose.models.detectors import PoseWarper, TopDown
@@ -78,6 +79,9 @@ def test_topdown_forward():
     detector = TopDown(model_cfg['backbone'], None, model_cfg['keypoint_head'],
                        model_cfg['train_cfg'], model_cfg['test_cfg'],
                        model_cfg['pretrained'])
+
+    with pytest.raises(TypeError):
+        detector.init_weights(pretrained=dict())
 
     detector.init_weights()
 
