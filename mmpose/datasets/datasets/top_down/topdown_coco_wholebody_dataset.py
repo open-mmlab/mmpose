@@ -137,6 +137,7 @@ class TopDownCocoWholeBodyDataset(TopDownCocoDataset):
             image_file = os.path.join(self.img_prefix, self.id2name[img_id])
             rec.append({
                 'image_file': image_file,
+                'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
