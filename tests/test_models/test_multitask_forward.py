@@ -27,7 +27,7 @@ def test_multitask_forward():
     model = MultiTask(**model_cfg)
     with pytest.raises(TypeError):
         model.init_weights(pretrained=dict())
-
+    model.pretrained = model_cfg['pretrained']
     # build inputs and target
     mm_inputs = _demo_mm_inputs()
     inputs = mm_inputs['img']

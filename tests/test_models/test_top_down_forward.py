@@ -82,7 +82,7 @@ def test_topdown_forward():
 
     with pytest.raises(TypeError):
         detector.init_weights(pretrained=dict())
-
+    detector.pretrained = model_cfg['pretrained']
     detector.init_weights()
 
     input_shape = (1, 3, 256, 256)

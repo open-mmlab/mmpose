@@ -53,7 +53,7 @@ def test_parametric_mesh_forward():
 
     with pytest.raises(TypeError):
         detector.init_weights(pretrained=dict())
-
+    detector.pretrained = model_cfg['pretrained']
     detector.init_weights()
 
     optimizers_config = dict(generator=dict(type='Adam', lr=0.0001))

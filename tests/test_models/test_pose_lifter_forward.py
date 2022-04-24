@@ -74,7 +74,7 @@ def test_pose_lifter_forward():
 
     with pytest.raises(TypeError):
         detector.init_weights(pretrained=dict())
-
+    detector.pretrained = model_cfg['pretrained']
     detector.init_weights()
 
     inputs = _create_inputs(
