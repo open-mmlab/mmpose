@@ -51,11 +51,13 @@ If the video is cropped with the object centered in the screen, we can simply us
 ```shell
 python demo/top_down_video_demo_full_frame_without_det.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_FILE} \
+    --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
@@ -63,7 +65,7 @@ Examples:
 python demo/top_down_video_demo_full_frame_without_det.py \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth \
-    --video-path demo/resources/<demo_fly_video.avi> \
+    --video-path https://user-images.githubusercontent.com/87690686/165095600-f68e0d42-830d-4c22-8940-c90c9f3bb817.mp4 \
     --out-video-root vis_results
 ```
 
@@ -82,12 +84,14 @@ For these COCO-animals, please download the COCO pre-trained detection model fro
 python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_FILE} \
+    --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     --det-cat-id ${CATEGORY_ID}
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
@@ -115,12 +119,14 @@ The pre-trained animal pose estimation model can be found in [pose model zoo](ht
 python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_FILE} \
+    --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--det-cat-id ${CATEGORY_ID}]
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 

@@ -77,13 +77,17 @@ Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmd
 python demo/top_down_video_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_FILE} \
+    --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
 Examples:
+
+For single-frame inference that do not rely on extra frames to get the final results of the current frame, try this:
 
 ```shell
 python demo/top_down_video_demo_with_mmdet.py \
@@ -93,6 +97,18 @@ python demo/top_down_video_demo_with_mmdet.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
+```
+
+For multi-frame inference that rely on extra frames to get the final results of the current frame, try this:
+
+```shell
+python demo/top_down_video_demo_with_mmdet.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
+    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py \
+    https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
+    --video-path https://user-images.githubusercontent.com/87690686/165097893-6202c605-5b4b-4636-ad98-482b4265df2b.mp4 \
+    --out-video-root vis_results --use-multi-frames
 ```
 
 ### 2D Human Pose Bottom-Up Image Demo
@@ -107,6 +123,8 @@ python demo/bottom_up_img_demo.py \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]
 ```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
@@ -125,7 +143,7 @@ We also provide a video demo to illustrate the results.
 ```shell
 python demo/bottom_up_video_demo.py \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_FILE} \
+    --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]

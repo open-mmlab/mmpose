@@ -68,6 +68,8 @@ python demo/body3d_two_stage_video_demo.py \
     [--thickness THICKNESS]
 ```
 
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
 Example:
 
 ```shell
@@ -78,7 +80,7 @@ python demo/body3d_two_stage_video_demo.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_256x192-b9e0b3ab_20200708.pth \
     configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py \
     https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth \
-    --video-path demo/resources/<demo_body3d>.mp4 \
+    --video-path https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
     --out-video-root vis_results \
     --rebase-keypoint-height
 ```
