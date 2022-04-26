@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
+import pytest
 import torch
 
 from mmpose.models.detectors import MultiTask
@@ -24,7 +25,9 @@ def test_multitask_forward():
         pretrained=None,
     )
     model = MultiTask(**model_cfg)
-
+    with pytest.raises(TypeError):
+        model.init_weights(pretrained=dict())
+    model.pretrained = model_cfg['pretrained']
     # build inputs and target
     mm_inputs = _demo_mm_inputs()
     inputs = mm_inputs['img']
