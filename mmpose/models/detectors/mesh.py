@@ -72,11 +72,14 @@ class ParametricMesh(BasePose):
         self.test_cfg = test_cfg
 
         self.loss_mesh = builder.build_loss(loss_mesh)
-        self.init_weights(pretrained=pretrained)
+        self.pretrained = pretrained
+        self.init_weights()
 
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
-        self.backbone.init_weights(pretrained)
+        if pretrained is not None:
+            self.pretrained = pretrained
+        self.backbone.init_weights(self.pretrained)
         self.mesh_head.init_weights()
         if self.with_gan:
             self.discriminator.init_weights()

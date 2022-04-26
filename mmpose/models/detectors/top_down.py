@@ -66,8 +66,8 @@ class TopDown(BasePose):
                 keypoint_head['loss_keypoint'] = loss_pose
 
             self.keypoint_head = builder.build_head(keypoint_head)
-
-        self.init_weights(pretrained=pretrained)
+        self.pretrained = pretrained
+        self.init_weights()
 
     @property
     def with_neck(self):
@@ -81,7 +81,9 @@ class TopDown(BasePose):
 
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
-        self.backbone.init_weights(pretrained)
+        if pretrained is not None:
+            self.pretrained = pretrained
+        self.backbone.init_weights(self.pretrained)
         if self.with_neck:
             self.neck.init_weights()
         if self.with_keypoint:

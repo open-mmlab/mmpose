@@ -3,6 +3,7 @@ import os.path as osp
 import tempfile
 
 import numpy as np
+import pytest
 import torch
 
 from mmpose.core.optimizer import build_optimizers
@@ -49,6 +50,10 @@ def test_parametric_mesh_forward():
         loss_gan=None)
 
     detector = ParametricMesh(**model_cfg)
+
+    with pytest.raises(TypeError):
+        detector.init_weights(pretrained=dict())
+    detector.pretrained = model_cfg['pretrained']
     detector.init_weights()
 
     optimizers_config = dict(generator=dict(type='Adam', lr=0.0001))

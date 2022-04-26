@@ -65,7 +65,8 @@ class AssociativeEmbedding(BasePose):
         self.test_cfg = test_cfg
         self.use_udp = test_cfg.get('use_udp', False)
         self.parser = HeatmapParser(self.test_cfg)
-        self.init_weights(pretrained=pretrained)
+        self.pretrained = pretrained
+        self.init_weights()
 
     @property
     def with_keypoint(self):
@@ -74,7 +75,9 @@ class AssociativeEmbedding(BasePose):
 
     def init_weights(self, pretrained=None):
         """Weight initialization for model."""
-        self.backbone.init_weights(pretrained)
+        if pretrained is not None:
+            self.pretrained = pretrained
+        self.backbone.init_weights(self.pretrained)
         if self.with_keypoint:
             self.keypoint_head.init_weights()
 
