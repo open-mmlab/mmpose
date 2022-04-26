@@ -34,37 +34,25 @@ def covert_keypoint_definition(keypoints, pose_det_dataset, pose_lift_dataset):
         pose_det_dataset, (str): Name of the dataset for 2D pose detector.
         pose_lift_dataset (str): Name of the dataset for pose lifter model.
     """
+    coco_style_datasets = [
+        'TopDownCocoDataset', 'TopDownPoseTrack18Dataset',
+        'TopDownPoseTrack18VideoDataset'
+    ]
     if pose_det_dataset == 'TopDownH36MDataset' and \
             pose_lift_dataset == 'Body3DH36MDataset':
         return keypoints
-    elif pose_det_dataset == 'TopDownCocoDataset' and \
+    elif pose_det_dataset in coco_style_datasets and \
             pose_lift_dataset == 'Body3DH36MDataset':
         keypoints_new = np.zeros((17, keypoints.shape[1]))
         # pelvis is in the middle of l_hip and r_hip
         keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
         # thorax is in the middle of l_shoulder and r_shoulder
         keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
-        # head is in the middle of l_eye and r_eye
+        # in COCO, head is in the middle of l_eye and r_eye
+        # in PoseTrack18, head is in the middle of head_bottom and head_top
         keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
         # spine is in the middle of thorax and pelvis
         keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
-        # rearrange other keypoints
-        keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
-            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
-        return keypoints_new
-    elif pose_det_dataset == 'TopDownPoseTrack18VideoDataset' and \
-            pose_lift_dataset == 'Body3DH36MDataset':
-        keypoints_new = np.zeros((17, keypoints.shape[1]))
-        # pelvis is in the middle of l_hip and r_hip
-        keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
-        # thorax is in the middle of l_shoulder and r_shoulder
-        keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
-        # head is in the middle of head_bottom and head_top
-        keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
-        # spine is in the middle of thorax and pelvis
-        keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
-        # neck_base is
-        keypoints_new[9] = (keypoints_new[0] + keypoints_new[8]) / 2
         # rearrange other keypoints
         keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
             keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
