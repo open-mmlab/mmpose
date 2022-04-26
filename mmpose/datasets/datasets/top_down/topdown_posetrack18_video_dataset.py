@@ -2,7 +2,6 @@
 import os
 import os.path as osp
 import tempfile
-import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -215,9 +214,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 if osp.exists(sup_image_file):
                     image_files.append(sup_image_file)
                 else:
-                    warnings.warn(
-                        f'{sup_image_file} does not exist, '
-                        f'use {cur_image_file} instead.', UserWarning)
                     image_files.append(cur_image_file)
             rec.append({
                 'image_file': image_files,
@@ -307,8 +303,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 if osp.exists(sup_image_file):
                     image_files.append(sup_image_file)
                 else:
-                    warnings.warn(f'{sup_image_file} does not exist, '
-                                  f'use {cur_image_file} instead.')
                     image_files.append(cur_image_file)
 
             center, scale = self._xywh2cs(*box[:4])
