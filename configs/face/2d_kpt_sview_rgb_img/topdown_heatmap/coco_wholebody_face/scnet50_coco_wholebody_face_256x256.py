@@ -3,7 +3,7 @@ _base_ = [
     '../../../../_base_/datasets/coco_wholebody_face.py'
 ]
 checkpoint_config = dict(interval=1)
-evaluation = dict(interval=1, metric=['NME'], key_indicator='NME')
+evaluation = dict(interval=1, metric=['NME'], save_best='NME')
 
 optimizer = dict(
     type='Adam',

@@ -1,10 +1,8 @@
-_base_ = ['../../../../_base_/datasets/coco.py']
-log_level = 'INFO'
-load_from = None
-resume_from = None
-dist_params = dict(backend='nccl')
-workflow = [('train', 1)]
-checkpoint_config = dict(interval=5, create_symlink=False)
+_base_ = [
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/coco.py'
+]
+
 evaluation = dict(interval=10, metric='mAP', save_best='AP')
 
 optimizer = dict(
@@ -166,26 +164,29 @@ test_pipeline = val_pipeline
 data = dict(
     samples_per_gpu=32,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=64),
-    test_dataloader=dict(samples_per_gpu=64),
+    val_dataloader=dict(samples_per_gpu=32),
+    test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
         img_prefix=f'{data_root}/train2017/',
         data_cfg=data_cfg,
-        pipeline=train_pipeline),
+        pipeline=train_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='TopDownCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
         img_prefix=f'{data_root}/val2017/',
         data_cfg=data_cfg,
-        pipeline=val_pipeline),
+        pipeline=val_pipeline,
+        dataset_info={{_base_.dataset_info}}),
 )
 
 # fp16 settings

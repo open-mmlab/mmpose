@@ -4,7 +4,7 @@ _base_ = [
 ]
 checkpoint_config = dict(interval=20)
 evaluation = dict(
-    interval=10, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], key_indicator='MPJPE')
+    interval=10, metric=['mpjpe', 'p-mpjpe', 'n-mpjpe'], save_best='MPJPE')
 
 # optimizer settings
 optimizer = dict(

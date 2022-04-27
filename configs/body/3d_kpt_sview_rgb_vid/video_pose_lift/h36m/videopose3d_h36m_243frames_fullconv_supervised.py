@@ -2,8 +2,7 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/h36m.py'
 ]
-evaluation = dict(
-    interval=10, metric=['mpjpe', 'p-mpjpe'], key_indicator='MPJPE')
+evaluation = dict(interval=10, metric=['mpjpe', 'p-mpjpe'], save_best='MPJPE')
 
 # optimizer settings
 optimizer = dict(
