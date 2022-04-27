@@ -34,8 +34,8 @@ model_list:
     ## HRNetV2 + AFLW
     - config: configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256.py
       checkpoint: https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth
-    # HigherHRNet
     # WingLoss
+    ## WingLoss + WFLW
     - config: configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_wingloss.py
       checkpoint: https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_wingloss-f82a5e53_20210303.pth
     # DarkPose
@@ -69,11 +69,11 @@ model_list:
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hourglass52_coco_256x256.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hourglass/hourglass52_coco_256x256-4ec713ba_20200709.pth
     # HRFormer
-    # HRFormer + COCO
-    - config: configs\body\2d_kpt_sview_rgb_img\topdown_heatmap\coco\hrformer_small_coco_256x192.py
+    ## HRFormer + COCO
+    - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_small_coco_256x192.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_256x192-5310d898_20220316.pth
     # VoxelPose
-    # VoxelPose + Panoptic
+    ## VoxelPose + Panoptic
     - config: configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.py
       checkpoint: https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-545c150e_20211103.pth
     # PoseWarper
@@ -136,19 +136,20 @@ model_list:
     # SimpleBaselin3D
     ## SimpleBaseline3D + MPI-INF-3DHP
     - config: configs/body/3d_kpt_sview_rgb_img/pose_lift/mpi_inf_3dhp/simplebaseline3d_mpi-inf-3dhp.py
-      checkpoint: https://download.openmmlab.com/mmpose/body3d/simplebaseline3d/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
+      checkpoint: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
       input_shape: 34, 1
     # UDP
     ## AE + HigherHRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w32_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_coco_512x512_udp-8cc64794_20210222.pth
-    ## HRNetV2 + UDP + OneHand10k/RHD2D
+    ## HRNetV2 + UDP + OneHand10k
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/onehand10k/hrnetv2_w18_onehand10k_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_onehand10k_256x256_udp-0d1b515d_20210330.pth
+    ## HRNetV2 + UDP + RHD2D
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/hrnetv2_w18_rhd2d_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_rhd2d_256x256_udp-63ba6007_20210330.pth
     # SCNet
-    # SCNet + COCO
+    ## SCNet + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_256x192.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_256x192-6920f829_20200709.pth
     # SCNet
@@ -234,11 +235,11 @@ model_list:
     ## AE + HigherHRNet + UDP + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/higherhrnet_w48_coco_512x512_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet48_coco_512x512_udp-7cad61ef_20210222.pth
-    ## HRNetV2 + UDP + Panoptic
+    ## HRNetV2 + UDP + Panoptic2D
     - config: configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/panoptic2d/hrnetv2_w18_panoptic2d_256x256_udp.py
       checkpoint: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_panoptic_256x256_udp-f9e15948_20210330.pth
     # SCNet
-    # SCNet + COCO
+    ## SCNet + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet50_coco_384x288.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/scnet/scnet50_coco_384x288-9cacd0ea_20200709.pth
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/scnet101_coco_256x192.py
@@ -335,7 +336,7 @@ model_list:
     - config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res152_mpii_256x256.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256-15f5e6f9_20210205.pth
     # HRFormer
-    # HRFormer + COCO
+    ## HRFormer + COCO
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_small_coco_384x288.py
       checkpoint: https://download.openmmlab.com/mmpose/top_down/hrformer/hrformer_small_coco_384x288-98d237ed_20220316.pth
     - config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrformer_base_coco_256x192.py

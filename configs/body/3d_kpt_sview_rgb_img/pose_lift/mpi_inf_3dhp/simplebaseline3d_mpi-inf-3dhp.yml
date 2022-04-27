@@ -20,4 +20,4 @@ Models:
       MPJPE: 84.3
       P-MPJPE: 53.2
     Task: Body 3D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/body3d/simplebaseline3d/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
+  Weights: https://download.openmmlab.com/mmpose/body3d/simple_baseline/simplebaseline3d_mpi-inf-3dhp-b75546f6_20210603.pth
