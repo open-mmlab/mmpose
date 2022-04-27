@@ -9,6 +9,7 @@ evaluation = dict(
 optimizer = dict(
     type='Adam',
     lr=2e-4,
+    weight_decay=0.1
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -41,7 +42,8 @@ channel_cfg = dict(
 model = dict(
     type='PoseLifter',
     pretrained=None,
-    backbone=dict(type='PoseFormer', num_frame=81),
+    backbone=dict(
+        type='PoseFormer', num_frame=81, drop_path_rate=0.1),
     keypoint_head=dict(
         type='PoseFormerHead', loss_keypoint=dict(type='MPJPELoss')),
     train_cfg=dict(),
@@ -120,7 +122,7 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=1024,
+    samples_per_gpu=512,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=128),
     test_dataloader=dict(samples_per_gpu=128),
