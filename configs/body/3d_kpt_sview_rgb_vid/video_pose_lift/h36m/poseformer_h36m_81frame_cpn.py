@@ -8,7 +8,7 @@ evaluation = dict(
 # optimizer settings
 optimizer = dict(
     type='Adam',
-    lr=1e-4,
+    lr=2e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -18,7 +18,7 @@ lr_config = dict(
     gamma=0.98,
 )
 
-total_epochs = 160
+total_epochs = 130
 
 log_config = dict(
     interval=20,
@@ -120,7 +120,7 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 data = dict(
-    samples_per_gpu=128,
+    samples_per_gpu=1024,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=128),
     test_dataloader=dict(samples_per_gpu=128),
