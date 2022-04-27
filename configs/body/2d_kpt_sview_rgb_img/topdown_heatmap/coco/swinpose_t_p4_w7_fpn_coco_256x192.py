@@ -58,10 +58,9 @@ model = dict(
         num_outs=4),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=1440,
+        in_channels=256,
         out_channels=channel_cfg['num_output_channels'],
-        input_transform='concat_resize',
-        in_index=[0, 1, 2, 3],
+        in_index=0,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
