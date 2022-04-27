@@ -2,8 +2,7 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/freihand2d.py'
 ]
-evaluation = dict(
-    interval=10, metric=['PCK', 'AUC', 'EPE'], key_indicator='AUC')
+evaluation = dict(interval=10, metric=['PCK', 'AUC', 'EPE'], save_best='AUC')
 
 optimizer = dict(
     type='Adam',

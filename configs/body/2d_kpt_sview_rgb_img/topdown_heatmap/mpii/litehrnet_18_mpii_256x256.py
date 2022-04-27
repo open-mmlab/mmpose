@@ -2,7 +2,7 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/mpii.py'
 ]
-evaluation = dict(interval=10, metric='PCKh', key_indicator='PCKh')
+evaluation = dict(interval=10, metric='PCKh', save_best='PCKh')
 
 optimizer = dict(
     type='Adam',

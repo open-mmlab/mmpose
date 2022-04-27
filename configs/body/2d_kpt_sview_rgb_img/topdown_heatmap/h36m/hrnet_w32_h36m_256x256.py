@@ -2,7 +2,7 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/h36m.py'
 ]
-evaluation = dict(interval=10, metric=['PCK', 'EPE'], key_indicator='PCK')
+evaluation = dict(interval=10, metric=['PCK', 'EPE'], save_best='PCK')
 
 optimizer = dict(
     type='Adam',
