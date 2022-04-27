@@ -63,8 +63,8 @@ def _match_by_tag(inp, params):
         tags = tag_k[idx]
         joints = np.concatenate((loc_k[idx], val_k[idx, :, None], tags), 1)
         mask = joints[:, 2] > params.detection_threshold
-        tags = tags[mask]
-        joints = joints[mask]
+        tags = tags[mask]  # shape: [M, L]
+        joints = joints[mask]  # shape: [M, 3 + L], 3: x, y, val
 
         if joints.shape[0] == 0:
             continue
@@ -75,14 +75,16 @@ def _match_by_tag(inp, params):
                 joint_dict.setdefault(key, np.copy(default_))[idx] = joint
                 tag_dict[key] = [tag]
         else:
-            grouped_keys = list(joint_dict.keys())[:params.max_num_people]
+            # shape: [M]
+            grouped_keys = list(joint_dict.keys())
+            if params.ignore_too_much:
+                grouped_keys = grouped_keys[:params.max_num_people]
+            # shape: [M, L]
             grouped_tags = [np.mean(tag_dict[i], axis=0) for i in grouped_keys]
 
-            if (params.ignore_too_much
-                    and len(grouped_keys) == params.max_num_people):
-                continue
-
+            # shape: [M, M, L]
             diff = joints[:, None, 3:] - np.array(grouped_tags)[None, :, :]
+            # shape: [M, M]
             diff_normed = np.linalg.norm(diff, ord=2, axis=2)
             diff_saved = np.copy(diff_normed)
 
@@ -112,7 +114,13 @@ def _match_by_tag(inp, params):
                         joints[row]
                     tag_dict[key] = [tags[row]]
 
-    results = np.array([joint_dict[i] for i in joint_dict]).astype(np.float32)
+    joint_dict_keys = list(joint_dict.keys())
+    if params.ignore_too_much:
+        # The new person joints beyond the params.max_num_people will be
+        # ignored, for the dict is in ordered when python > 3.6 version.
+        joint_dict_keys = joint_dict_keys[:params.max_num_people]
+    results = np.array([joint_dict[i]
+                        for i in joint_dict_keys]).astype(np.float32)
     return results
 
 
