@@ -334,26 +334,24 @@ def test_top_down_PoseTrack18Video_dataset():
             test_mode=False)
 
     # Test train mode (must use gt bbox)
-    with pytest.warns(UserWarning):
-        _ = dataset_class(
-            ann_file='tests/data/posetrack18/annotations/'
-            'test_posetrack18_val.json',
-            img_prefix='tests/data/posetrack18/',
-            data_cfg=data_cfg,
-            pipeline=[],
-            dataset_info=dataset_info,
-            test_mode=False)
+    _ = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=False)
 
     # # Test gt bbox + test mode
-    with pytest.warns(UserWarning):
-        custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/annotations/'
-            'test_posetrack18_val.json',
-            img_prefix='tests/data/posetrack18/',
-            data_cfg=data_cfg,
-            pipeline=[],
-            dataset_info=dataset_info,
-            test_mode=True)
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
 
     assert custom_dataset.test_mode is True
     assert custom_dataset.dataset_name == 'posetrack18'
@@ -368,15 +366,15 @@ def test_top_down_PoseTrack18Video_dataset():
     # Test det bbox + test mode
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
-    with pytest.warns(UserWarning):
-        custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/annotations/'
-            'test_posetrack18_val.json',
-            img_prefix='tests/data/posetrack18/',
-            data_cfg=data_cfg_copy,
-            pipeline=[],
-            dataset_info=dataset_info,
-            test_mode=True)
+
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
 
     assert custom_dataset.frame_indices_test == [-2, -1, 0, 1, 2]
     assert len(custom_dataset) == 278
@@ -408,15 +406,14 @@ def test_top_down_PoseTrack18Video_dataset():
     # Test evaluate function, use det bbox
     data_cfg_copy = copy.deepcopy(data_cfg)
     data_cfg_copy['use_gt_bbox'] = False
-    with pytest.warns(UserWarning):
-        custom_dataset = dataset_class(
-            ann_file='tests/data/posetrack18/annotations/'
-            'test_posetrack18_val.json',
-            img_prefix='tests/data/posetrack18/',
-            data_cfg=data_cfg_copy,
-            pipeline=[],
-            dataset_info=dataset_info,
-            test_mode=True)
+    custom_dataset = dataset_class(
+        ann_file='tests/data/posetrack18/annotations/'
+        'test_posetrack18_val.json',
+        img_prefix='tests/data/posetrack18/',
+        data_cfg=data_cfg_copy,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
 
     results = convert_db_to_output(custom_dataset.db)
     infos = custom_dataset.evaluate(results, metric='mAP')

@@ -2,7 +2,6 @@
 import os
 import os.path as osp
 import tempfile
-import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -207,18 +206,15 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                     continue
                 # the supporting frame index
                 support_idx = ref_idx + index
+                # clip the frame index to make sure that it does not exceed
+                # the boundings of frame indices
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
                     cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
-                if osp.exists(sup_image_file):
-                    image_files.append(sup_image_file)
-                else:
-                    warnings.warn(
-                        f'{sup_image_file} does not exist, '
-                        f'use {cur_image_file} instead.', UserWarning)
-                    image_files.append(cur_image_file)
+                image_files.append(sup_image_file)
+
             rec.append({
                 'image_file': image_files,
                 'center': center,
@@ -299,17 +295,14 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                     continue
                 # the supporting frame index
                 support_idx = ref_idx + index
+                # clip the frame index to make sure that it does not exceed
+                # the boundings of frame indices
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
                     cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
-                if osp.exists(sup_image_file):
-                    image_files.append(sup_image_file)
-                else:
-                    warnings.warn(f'{sup_image_file} does not exist, '
-                                  f'use {cur_image_file} instead.')
-                    image_files.append(cur_image_file)
+                image_files.append(sup_image_file)
 
             center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
