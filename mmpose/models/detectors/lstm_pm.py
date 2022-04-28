@@ -110,8 +110,6 @@ class LSTMPoseMachine(TopDown):
 
     def forward_train(self, imgs, target, target_weight, img_metas, **kwargs):
         """Defines the computation performed at every call when training."""
-        # imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-        assert imgs[0].size(0) == len(img_metas)
         output = self.backbone(imgs)
         if self.with_neck:
             output = self.neck(output)
@@ -132,9 +130,14 @@ class LSTMPoseMachine(TopDown):
 
     def forward_test(self, imgs, img_metas, return_heatmap=False, **kwargs):
         """Defines the computation performed at every call when testing."""
-        # imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
-        assert imgs[0].size(0) == len(img_metas)
-        batch_size, _, img_height, img_width = imgs[0].shape
+        if isinstance(imgs, list):
+            # imgs (list[Fxtorch.Tensor[NxCximgHximgW]]): multiple input frames
+            assert imgs[0].size(0) == len(img_metas)
+            batch_size, _, img_height, img_width = imgs[0].shape
+        else:
+            assert imgs.size(0) == len(img_metas)
+            batch_size, _, img_height, img_width = imgs.shape
+
         if batch_size > 1:
             assert 'bbox_id' in img_metas[0]
 
@@ -148,7 +151,10 @@ class LSTMPoseMachine(TopDown):
                 features, flip_pairs=None, return_last=False)
 
         if self.test_cfg.get('flip_test', True):
-            imgs_flipped = [img.flip(3) for img in imgs]
+            if isinstance(imgs, list):
+                imgs_flipped = [img.flip(3) for img in imgs]
+            else:
+                imgs_flipped = imgs.flip(3)
             features_flipped = self.backbone(imgs_flipped)
             if self.with_neck:
                 features_flipped = self.neck(features_flipped)
@@ -160,27 +166,33 @@ class LSTMPoseMachine(TopDown):
                                          output_flipped_heatmap[i]) * 0.5
 
         if self.with_keypoint:
-            meta_keys = [
-                'image_file', 'center', 'scale', 'bbox_score', 'bbox_id'
-            ]
-            batch_size = len(img_metas)
-            num_frame = len(img_metas[0]['image_file'])
-            for f in range(num_frame):
-                test_metas = copy.deepcopy(img_metas)
-                for i in range(batch_size):
-                    for key in meta_keys:
-                        test_metas[i][key] = img_metas[i][key][f]
-                keypoint_result = self.keypoint_head.decode(
-                    test_metas,
-                    output_heatmap[f],
-                    img_size=[img_width, img_height])
+            if isinstance(imgs, list):
+                meta_keys = [
+                    'image_file', 'center', 'scale', 'bbox_score', 'bbox_id'
+                ]
+                num_frame = len(img_metas[0]['image_file'])
+                for f in range(num_frame):
+                    test_metas = copy.deepcopy(img_metas)
+                    for i in range(batch_size):
+                        for key in meta_keys:
+                            test_metas[i][key] = img_metas[i][key][f]
+                    keypoint_result = self.keypoint_head.decode(
+                        test_metas,
+                        output_heatmap[f],
+                        img_size=[img_width, img_height])
 
-                if result == {}:
-                    result.update(keypoint_result)
-                else:
-                    for key in result.keys():
-                        result[key] = np.concatenate(
-                            (result[key], keypoint_result[key]), axis=0)
+                    if result == {}:
+                        result.update(keypoint_result)
+                    else:
+                        for key in result.keys():
+                            result[key] = np.concatenate(
+                                (result[key], keypoint_result[key]), axis=0)
+            else:
+                keypoint_result = self.keypoint_head.decode(
+                    img_metas,
+                    output_heatmap[-1],
+                    img_size=[img_width, img_height])
+                result.update(keypoint_result)
 
             if not return_heatmap:
                 output_heatmap = None

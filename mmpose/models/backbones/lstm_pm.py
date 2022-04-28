@@ -151,7 +151,7 @@ class LSTM_PM(BaseBackbone):
         out_channels (int):  Number of output channels. Default: 17.
         stem_channels (int): Number of channels of stem features. Default: 32.
         hidden_channels (int): Number of channels of hidden state. Default: 48.
-        num_stages (int): Numerber of stages for propagation. Default: 9.
+        num_stages (int): Numerber of stages for propagation. Default: 5.
         conv_cfg (dict | None): The config dict for conv layers. Default: None.
         norm_cfg (dict | None): The config dict for norm layers. Default: None.
 
@@ -347,8 +347,14 @@ class LSTM_PM(BaseBackbone):
                 elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
                     constant_init(m, 1)
 
-    def forward(self, images):
+    def forward(self, input):
         """Forward function."""
+        if isinstance(input, list):
+            assert len(input) == self.num_stages
+            images = input
+        else:
+            images = [input for _ in range(self.num_stages)]
+
         heatmaps = []
 
         # Stage1
