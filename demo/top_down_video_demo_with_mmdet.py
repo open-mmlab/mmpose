@@ -63,12 +63,7 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
-    parser.add_argument(
-        '--online',
-        action='store_true',
-        default=False,
-        help='inference mode. If set to True, can not use future frame'
-        'information. Default: False.')
+
     parser.add_argument(
         '--return-heatmap',
         action='store_true',
@@ -80,18 +75,25 @@ def main():
         type=str,
         help='return the output of some desired layers, '
         'e.g. use ("backbone", ) to return backbone feature')
-    parser.add_argument(
-        '--save-memory',
-        action='store_false',
-        default=True,
-        help='save memory usage when using large model for inference. If you'
-        'have plenty of memory, you can turn it off to gain faster inference'
-        'speed. Default: True.')
+
     parser.add_argument(
         '--use-multi-frames',
         action='store_true',
         default=False,
-        help='whether use multi frames for inference. Default: False.')
+        help='whether to use multi frames for inference. Default: False.')
+    parser.add_argument(
+        '--online',
+        action='store_true',
+        default=False,
+        help='inference mode. If set to True, can not use future frame'
+        'information when using multi frmaes for inference. Default: False.')
+    parser.add_argument(
+        '--save-memory',
+        action='store_true',
+        default=False,
+        help='save memory usage when using large model for inference. If you'
+        'have plenty of memory, you can turn it off to gain faster inference'
+        'speed. Default: True.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 

@@ -4,6 +4,8 @@ import warnings
 from argparse import ArgumentParser
 
 import cv2
+import mmcv
+import numpy as np
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model, process_mmdet_results,
@@ -83,6 +85,36 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
+    parser.add_argument(
+        '--return-heatmap',
+        action='store_true',
+        default=False,
+        help='whether to return heatmap')
+    parser.add_argument(
+        '--output-layer-names',
+        nargs='*',
+        type=str,
+        help='return the output of some desired layers, '
+        'e.g. use ("backbone", ) to return backbone feature')
+
+    parser.add_argument(
+        '--use-multi-frames',
+        action='store_true',
+        default=False,
+        help='whether to use multi frames for inference. Default: False.')
+    parser.add_argument(
+        '--online',
+        action='store_true',
+        default=False,
+        help='inference mode. If set to True, can not use future frame'
+        'information when using multi frmaes for inference. Default: False.')
+    parser.add_argument(
+        '--save-memory',
+        action='store_true',
+        default=False,
+        help='save memory usage when using large model for inference. If you'
+        'have plenty of memory, you can turn it off to gain faster inference'
+        'speed. Default: True.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -92,11 +124,19 @@ def main():
     assert args.det_config is not None
     assert args.det_checkpoint is not None
 
+    print('Initializing model...')
     det_model = init_detector(
         args.det_config, args.det_checkpoint, device=args.device.lower())
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
+
+    # some hand-crafted setting to save memory for specific models
+    if args.save_memory:
+        # If use 'PoseWarper' detector, set concat_tensors to False
+        if pose_model.__class__.__name__ == 'PoseWarper':
+            pose_model.concat_tensors = False
+    # TODO: some hand-crafted setting to accelerate inference speed
 
     dataset = pose_model.cfg.data['test']['type']
     dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)
@@ -108,10 +148,10 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    cap = cv2.VideoCapture(args.video_path)
-    fps = None
-
-    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
+    # read video
+    video = mmcv.VideoReader(args.video_path)
+    assert video.opened, f'Faild to load video file {args.video_path}'
+    nframes = len(video)
 
     if args.out_video_root == '':
         save_out_video = False
@@ -120,20 +160,18 @@ def main():
         save_out_video = True
 
     if save_out_video:
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        fps = video.fps
+        size = (video.width, video.height)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         videoWriter = cv2.VideoWriter(
             os.path.join(args.out_video_root,
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
-    # optional
-    return_heatmap = False
-
-    # e.g. use ('backbone', ) to return backbone feature
-    output_layer_names = None
+    # frame index offsets for inference, used in multi-frame inference setting
+    if args.use_multi_frames:
+        assert 'frame_indices_test' in pose_model.cfg.data.test.data_cfg
+        indices = pose_model.cfg.data.test.data_cfg['frame_indices_test']
 
     # build pose smoother for temporal refinement
     if args.euro:
@@ -151,29 +189,45 @@ def main():
 
     next_id = 0
     pose_results = []
-    while (cap.isOpened()):
+    print('Running inference...')
+    for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         pose_results_last = pose_results
 
-        flag, img = cap.read()
-        if not flag:
-            break
-        # test a single image, the resulting box is (x1, y1, x2, y2)
-        mmdet_results = inference_detector(det_model, img)
+        # get the detection results of current frame
+        # the resulting box is (x1, y1, x2, y2)
+        mmdet_results = inference_detector(det_model, cur_frame)
 
         # keep the person class bounding boxes.
         person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
 
+        if args.use_multi_frames:
+            frames = []
+            # put the current frame at first
+            frames.append(cur_frame)
+            # use multi frames for inference
+            for idx in indices:
+                # skip current frame
+                if idx == 0:
+                    continue
+                support_idx = frame_id + idx
+                # online mode, can not use future frame information
+                if args.online:
+                    support_idx = np.clip(support_idx, 0, frame_id)
+                else:
+                    support_idx = np.clip(support_idx, 0, nframes - 1)
+                frames.append(video[support_idx])
+
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
-            img,
+            frames if args.use_multi_frames else cur_frame,
             person_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=return_heatmap,
-            outputs=output_layer_names)
+            return_heatmap=args.return_heatmap,
+            outputs=args.output_layer_names)
 
         # get track id for each person instance
         pose_results, next_id = get_track_id(
@@ -188,9 +242,9 @@ def main():
             pose_results = smoother.smooth(pose_results)
 
         # show the results
-        vis_img = vis_pose_tracking_result(
+        vis_frame = vis_pose_tracking_result(
             pose_model,
-            img,
+            cur_frame,
             pose_results,
             radius=args.radius,
             thickness=args.thickness,
@@ -200,15 +254,14 @@ def main():
             show=False)
 
         if args.show:
-            cv2.imshow('Image', vis_img)
+            cv2.imshow('Frame', vis_frame)
 
         if save_out_video:
-            videoWriter.write(vis_img)
+            videoWriter.write(vis_frame)
 
         if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    cap.release()
     if save_out_video:
         videoWriter.release()
     if args.show:

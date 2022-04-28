@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
+from mmcv.utils.misc import deprecated_api_warning
 from PIL import Image
 
 from mmpose.core.post_processing import oks_nms
@@ -311,6 +312,7 @@ def _inference_single_pose_model(model,
     return result['preds'], result['output_heatmap']
 
 
+@deprecated_api_warning(name_dict=dict(img_or_path='imgs_or_paths'))
 def inference_top_down_pose_model(model,
                                   imgs_or_paths,
                                   person_results=None,
@@ -332,8 +334,8 @@ def inference_top_down_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        imgs_or_paths (list(str) | list(np.ndarray)): Image filename(s) or
-            loaded image(s).
+        imgs_or_paths (str | np.ndarray | list(str) | list(np.ndarray)):
+            Image filename(s) or loaded image(s).
         person_results (list(dict), optional): a list of detected persons that
             contains ``bbox`` and/or ``track_id``:
 
@@ -367,7 +369,7 @@ def inference_top_down_pose_model(model,
             Output feature maps from layers specified in `outputs`. \
             Includes 'heatmap' if `return_heatmap` is True.
     """
-    # decide whether use multi frames for inference
+    # decide whether to use multi frames for inference
     if isinstance(imgs_or_paths, (list, tuple)):
         use_multi_frames = True
     else:

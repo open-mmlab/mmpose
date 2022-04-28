@@ -15,13 +15,24 @@ python demo/top_down_pose_tracking_demo_with_mmdet.py \
     --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
-    [--use-oks-tracking --tracking-thr ${TRACKING_THR} --euro]
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}] \
+    [--use-oks-tracking --tracking-thr ${TRACKING_THR} --euro] \
+    [--use-multi-frames] [--online] [--save-memory]
 ```
 
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+Note that
+
+1. `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
+2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference.
+
+3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frmaes for inference.
+
+4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
+
+For single-frame inference that do not rely on extra frames to get the final results of the current frame, try this:
 
 ```shell
 python demo/top_down_pose_tracking_demo_with_mmdet.py \
@@ -31,6 +42,19 @@ python demo/top_down_pose_tracking_demo_with_mmdet.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
+```
+
+For multi-frame inference that rely on extra frames to get the final results of the current frame, try this:
+
+```shell
+python demo/top_down_pose_tracking_demo_with_mmdet.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
+    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
+    --video-path demo/resources/demo.mp4 \
+    --out-video-root vis_results \
+    --use-multi-frames --save-memory --online
 ```
 
 ### 2D Top-Down Video Human Pose Tracking Demo with MMTracking
@@ -47,12 +71,23 @@ python demo/top_down_video_demo_with_mmtracking.py \
     --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}] \
+    [--use-multi-frames] [--online] [--save-memory]
 ```
 
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+Note that
+
+1. `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
+2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference.
+
+3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frmaes for inference.
+
+4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
+
+For single-frame inference that do not rely on extra frames to get the final results of the current frame, try this:
 
 ```shell
 python demo/top_down_pose_tracking_demo_with_mmtracking.py \
@@ -61,6 +96,18 @@ python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results
+```
+
+For multi-frame inference that rely on extra frames to get the final results of the current frame, try this:
+
+```shell
+python demo/top_down_pose_tracking_demo_with_mmtracking.py \
+    demo/mmtracking_cfg/tracktor_faster-rcnn_r50_fpn_4e_mot17-private.py \
+    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
+    --video-path demo/resources/demo.mp4 \
+    --out-video-root vis_results \
+    --use-multi-frames --save-memory --online
 ```
 
 ### 2D Bottom-Up Video Human Pose Tracking Demo

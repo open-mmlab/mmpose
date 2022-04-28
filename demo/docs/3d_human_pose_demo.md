@@ -65,12 +65,23 @@ python demo/body3d_two_stage_video_demo.py \
     [--tracking-thr TRACKING_THR] \
     [--euro] \
     [--radius RADIUS] \
-    [--thickness THICKNESS]
+    [--thickness THICKNESS] \
+    [--use-multi-frames] [--online] [--save-memory]
 ```
 
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+Note that
 
-Example:
+1. `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
+2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference.
+
+3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frmaes for inference.
+
+4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
+
+Examples:
+
+During 2D pose detection, for single-frame inference that do not rely on extra frames to get the final results of the current frame, try this:
 
 ```shell
 python demo/body3d_two_stage_video_demo.py \
@@ -83,4 +94,20 @@ python demo/body3d_two_stage_video_demo.py \
     --video-path https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
     --out-video-root vis_results \
     --rebase-keypoint-height
+```
+
+During 2D pose detection, for multi-frame inference that rely on extra frames to get the final results of the current frame, try this:
+
+```shell
+python demo/body3d_two_stage_video_demo.py \
+    demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
+    https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
+    configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py \
+    https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
+    configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/h36m/videopose3d_h36m_243frames_fullconv_supervised_cpn_ft.py \
+    https://download.openmmlab.com/mmpose/body3d/videopose/videopose_h36m_243frames_fullconv_supervised_cpn_ft-88f5abbb_20210527.pth \
+    --video-path https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
+    --out-video-root vis_results \
+    --rebase-keypoint-height \
+    --use-multi-frames --save-memory --online
 ```

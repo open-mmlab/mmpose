@@ -80,10 +80,19 @@ python demo/top_down_video_demo_with_mmdet.py \
     --video-path ${VIDEO_PATH} \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
+    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}] \
+    [--use-multi-frames] [--online] [--save-memory]
 ```
 
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+Note that
+
+1. `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
+2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference.
+
+3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frmaes for inference.
+
+4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
 
@@ -108,7 +117,8 @@ python demo/top_down_video_demo_with_mmdet.py \
     configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py \
     https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
     --video-path https://user-images.githubusercontent.com/87690686/165097893-6202c605-5b4b-4636-ad98-482b4265df2b.mp4 \
-    --out-video-root vis_results --use-multi-frames
+    --out-video-root vis_results \
+    --use-multi-frames --save-memory --online
 ```
 
 ### 2D Human Pose Bottom-Up Image Demo
@@ -123,8 +133,6 @@ python demo/bottom_up_img_demo.py \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]
 ```
-
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
@@ -148,6 +156,8 @@ python demo/bottom_up_video_demo.py \
     [--show --device ${GPU_ID or CPU}] \
     [--kpt-thr ${KPT_SCORE_THR} --pose-nms-thr ${POSE_NMS_THR}]
 ```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
