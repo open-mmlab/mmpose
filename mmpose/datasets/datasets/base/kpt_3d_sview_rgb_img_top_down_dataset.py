@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+import warnings
 from abc import ABCMeta, abstractmethod
 
 import json_tricks as json
@@ -200,6 +201,14 @@ class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
             center (np.ndarray[float32](2,)): center of the bbox (x, y).
             scale (np.ndarray[float32](2,)): scale of the bbox w & h.
         """
+
+        warnings.warn(
+            'The ``_xywh2cs`` method will be deprecated and removed from '
+            f'{self.__class__.__name__} in the future. Please use data '
+            'transforms ``TopDownGetBboxCenterScale`` and '
+            '``TopDownRandomShiftBboxCenter`` in the pipeline instead.',
+            DeprecationWarning)
+
         aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
             'image_size'][1]
         center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)

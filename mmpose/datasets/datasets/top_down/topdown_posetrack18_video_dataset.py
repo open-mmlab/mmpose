@@ -506,7 +506,17 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                 json.dump(info, f, sort_keys=True, indent=4)
 
     def _do_keypoint_eval(self, gt_folder, pred_folder):
-        """Keypoint evaluation using poseval."""
+        """Keypoint evaluation using poseval.
+
+        Args:
+            gt_folder (str): The folder of the json files storing
+                ground truth keypoint annotations.
+            pred_folder (str): The folder of the json files storing
+                prediction results.
+
+        Returns:
+            List: Evaluation results for evaluation metric.
+        """
 
         if not has_poseval:
             raise ImportError('Please install poseval package for evaluation'
