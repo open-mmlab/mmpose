@@ -30,6 +30,16 @@ def test_pvt():
     with pytest.raises(AssertionError):
         PyramidVisionTransformer(pretrain_img_size=(224, 224, 224))
 
+    # test padding
+    model = PyramidVisionTransformer(
+        paddings=['corner', 'corner', 'corner', 'corner'])
+    temp = torch.randn((1, 3, 32, 32))
+    outs = model(temp)
+    assert outs[0].shape == (1, 64, 8, 8)
+    assert outs[1].shape == (1, 128, 4, 4)
+    assert outs[2].shape == (1, 320, 2, 2)
+    assert outs[3].shape == (1, 512, 1, 1)
+
     # Test absolute position embedding
     temp = torch.randn((1, 3, 224, 224))
     model = PyramidVisionTransformer(
@@ -75,6 +85,20 @@ def test_pvtv2():
     # test pretrained image size
     with pytest.raises(AssertionError):
         PyramidVisionTransformerV2(pretrain_img_size=(224, 224, 224))
+
+    # test pretrained checkpoint
+    PyramidVisionTransformerV2(
+        embed_dims=32,
+        num_layers=[2, 2, 2, 2],
+        pretrained='https://github.com/whai362/PVT/'
+        'releases/download/v2/pvt_v2_b0.pth')
+
+    # test init_cfg
+    PyramidVisionTransformerV2(
+        embed_dims=32,
+        num_layers=[2, 2, 2, 2],
+        init_cfg=dict(checkpoint='https://github.com/whai362/PVT/'
+                      'releases/download/v2/pvt_v2_b0.pth'))
 
     # Test normal inference
     temp = torch.randn((1, 3, 32, 32))
