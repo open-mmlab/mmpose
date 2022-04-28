@@ -55,8 +55,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[256, 256],
-    heatmap_size=[32, 32],
+    image_size=[368, 368],
+    heatmap_size=[46, 46],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
@@ -105,10 +105,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/mpii'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=16,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=32),
-    test_dataloader=dict(samples_per_gpu=32),
+    val_dataloader=dict(samples_per_gpu=16),
+    test_dataloader=dict(samples_per_gpu=16),
     train=dict(
         type='TopDownMpiiDataset',
         ann_file=f'{data_root}/annotations/mpii_train.json',
