@@ -75,7 +75,7 @@ Note that
 
 2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference.
 
-3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frmaes for inference.
+3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference.
 
 4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 

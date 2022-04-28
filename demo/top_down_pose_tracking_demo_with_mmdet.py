@@ -107,7 +107,7 @@ def main():
         action='store_true',
         default=False,
         help='inference mode. If set to True, can not use future frame'
-        'information when using multi frmaes for inference. Default: False.')
+        'information when using multi frames for inference. Default: False.')
     parser.add_argument(
         '--save-memory',
         action='store_true',
@@ -136,7 +136,6 @@ def main():
         # If use 'PoseWarper' detector, set concat_tensors to False
         if pose_model.__class__.__name__ == 'PoseWarper':
             pose_model.concat_tensors = False
-    # TODO: some hand-crafted setting to accelerate inference speed
 
     dataset = pose_model.cfg.data['test']['type']
     dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)

@@ -175,7 +175,7 @@ def main():
         action='store_true',
         default=False,
         help='inference mode. If set to True, can not use future frame'
-        'information when using multi frmaes for inference. Default: False.')
+        'information when using multi frames for inference. Default: False.')
     parser.add_argument(
         '--save-memory',
         action='store_true',
