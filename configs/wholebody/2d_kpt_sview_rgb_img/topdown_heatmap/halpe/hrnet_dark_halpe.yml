@@ -16,7 +16,7 @@ Models:
   Results:
   - Dataset: Halpe
     Metrics:
-      Whole AP: 0.531
-      Whole AR: 0.642
+      Whole AP: 0.527
+      Whole AR: 0.62
     Task: Wholebody 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_halpe_384x288_dark_plus-d13c2588_20211021.pth
