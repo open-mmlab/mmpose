@@ -50,9 +50,9 @@ For multi-frame inference that rely on extra frames to get the final results of 
 python demo/top_down_pose_tracking_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
-    https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
-    --video-path demo/resources/demo.mp4 \
+    configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py \
+    https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
+    --video-path https://user-images.githubusercontent.com/87690686/137440639-fb08603d-9a35-474e-b65f-46b5c06b68d6.mp4 \
     --out-video-root vis_results \
     --use-multi-frames --save-memory --online
 ```
