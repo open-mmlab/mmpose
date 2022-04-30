@@ -57,7 +57,8 @@ model = dict(
         in_channels=[128, 256, 512, 1024],
         start_level=0,
         out_channels=256,
-        num_outs=4),
+        num_outs=4,
+        upsample_cfg=dict(mode='bilinear', align_corners=False)),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
         in_channels=256,
