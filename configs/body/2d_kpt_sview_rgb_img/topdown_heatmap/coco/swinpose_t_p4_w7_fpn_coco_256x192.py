@@ -36,7 +36,6 @@ model = dict(
     type='TopDown',
     pretrained=pretrained,
     backbone=dict(
-        # _delete_=True,
         type='SwinTransformer',
         embed_dims=96,
         depths=[2, 2, 6, 2],

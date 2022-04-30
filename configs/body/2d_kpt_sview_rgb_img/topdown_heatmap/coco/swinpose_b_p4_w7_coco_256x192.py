@@ -29,17 +29,17 @@ channel_cfg = dict(
 
 # model settings
 # pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
-#               '/v1.0.0/swin_tiny_patch4_window7_224.pth')
-pretrained = 'work_dirs/pretrained/swin/swin_tiny_patch4_window7_224.pth'
+#               '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
+pretrained = 'work_dirs/pretrained/swin/swin_base_patch4_window7_224_22k.pth'
 
 model = dict(
     type='TopDown',
     pretrained=pretrained,
     backbone=dict(
         type='SwinTransformer',
-        embed_dims=96,
-        depths=[2, 2, 6, 2],
-        num_heads=[3, 6, 12, 24],
+        embed_dims=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
         window_size=7,
         mlp_ratio=4,
         qkv_bias=True,
@@ -54,7 +54,7 @@ model = dict(
     ),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=768,
+        in_channels=1024,
         out_channels=channel_cfg['num_output_channels'],
         in_index=3,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
