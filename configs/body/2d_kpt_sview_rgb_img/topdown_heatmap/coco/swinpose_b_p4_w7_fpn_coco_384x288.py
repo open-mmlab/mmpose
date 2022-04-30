@@ -30,7 +30,7 @@ channel_cfg = dict(
 # model settings
 # pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
 #               '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
-pretrained = 'work_dirs/pretrained/swin/swin_tiny_patch4_window7_224.pth'
+pretrained = 'work_dirs/pretrained/swin/swin_base_patch4_window7_224_22k.pth'
 
 model = dict(
     type='TopDown',
@@ -136,7 +136,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
