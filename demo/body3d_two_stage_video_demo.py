@@ -176,7 +176,7 @@ def main():
     assert args.det_checkpoint is not None
 
     video = mmcv.VideoReader(args.video_path)
-    assert video.opened, f'Faild to load video file {args.video_path}'
+    assert video.opened, f'Failed to load video file {args.video_path}'
 
     # First stage: 2D pose detection
     print('Stage 1: 2D pose detection.')
