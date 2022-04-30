@@ -65,18 +65,6 @@ def main():
         help='Link thickness for visualization')
 
     parser.add_argument(
-        '--return-heatmap',
-        action='store_true',
-        default=False,
-        help='whether to return heatmap')
-    parser.add_argument(
-        '--output-layer-names',
-        nargs='*',
-        type=str,
-        help='return the output of some desired layers, '
-        'e.g. use ("backbone", ) to return backbone feature')
-
-    parser.add_argument(
         '--use-multi-frames',
         action='store_true',
         default=False,
@@ -142,6 +130,13 @@ def main():
         assert 'frame_indices_test' in pose_model.cfg.data.test.data_cfg
         indices = pose_model.cfg.data.test.data_cfg['frame_indices_test']
 
+    # whether to return heatmap, optional
+    return_heatmap = False
+
+    # return the output of some desired layers,
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     print('Running inference...')
     for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         # get the detection results of current frame
@@ -164,8 +159,8 @@ def main():
             format='xyxy',
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=args.return_heatmap,
-            outputs=args.output_layer_names)
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         # show the results
         vis_frame = vis_pose_result(

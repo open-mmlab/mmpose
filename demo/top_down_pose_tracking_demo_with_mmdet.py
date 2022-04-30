@@ -84,17 +84,6 @@ def main():
         type=int,
         default=1,
         help='Link thickness for visualization')
-    parser.add_argument(
-        '--return-heatmap',
-        action='store_true',
-        default=False,
-        help='whether to return heatmap')
-    parser.add_argument(
-        '--output-layer-names',
-        nargs='*',
-        type=str,
-        help='return the output of some desired layers, '
-        'e.g. use ("backbone", ) to return backbone feature')
 
     parser.add_argument(
         '--use-multi-frames',
@@ -173,6 +162,13 @@ def main():
     else:
         smoother = None
 
+    # whether to return heatmap, optional
+    return_heatmap = False
+
+    # return the output of some desired layers,
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     next_id = 0
     pose_results = []
     print('Running inference...')
@@ -199,8 +195,8 @@ def main():
             format='xyxy',
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=args.return_heatmap,
-            outputs=args.output_layer_names)
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         # get track id for each person instance
         pose_results, next_id = get_track_id(

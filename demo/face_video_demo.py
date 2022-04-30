@@ -68,18 +68,6 @@ def main():
         default=1,
         help='Link thickness for visualization')
 
-    parser.add_argument(
-        '--return-heatmap',
-        action='store_true',
-        default=False,
-        help='whether to return heatmap')
-    parser.add_argument(
-        '--output-layer-names',
-        nargs='*',
-        type=str,
-        help='return the output of some desired layers, '
-        'e.g. use ("backbone", ) to return backbone feature')
-
     assert has_face_det, 'Please install face_recognition to run the demo. '\
                          '"pip install face_recognition", For more details, '\
                          'see https://github.com/ageitgey/face_recognition'
@@ -122,6 +110,13 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
+    # whether to return heatmap, optional
+    return_heatmap = False
+
+    # return the output of some desired layers,
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     print('Running inference...')
     for _, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         face_det_results = face_recognition.face_locations(
@@ -137,8 +132,8 @@ def main():
             format='xyxy',
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=args.return_heatmap,
-            outputs=args.output_layer_names)
+            return_heatmap=return_heatmap,
+            outputs=output_layer_names)
 
         # show the results
         vis_frame = vis_pose_result(
