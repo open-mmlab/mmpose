@@ -178,13 +178,6 @@ def main():
         help='inference mode. If set to True, can not use future frame'
         'information when using multi frames for inference in the 2D pose'
         'detection stage. Default: False.')
-    parser.add_argument(
-        '--save-memory',
-        action='store_true',
-        default=False,
-        help='save memory usage when using large model for inference. If you'
-        'have plenty of memory, you can turn it off to gain faster inference'
-        'speed. Default: True.')
 
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
@@ -210,12 +203,6 @@ def main():
 
     assert isinstance(pose_det_model, TopDown), 'Only "TopDown"' \
         'model is supported for the 1st stage (2D pose detection)'
-
-    # some hand-crafted setting to save memory for specific models
-    if args.save_memory:
-        # If use 'PoseWarper' detector, set concat_tensors to False
-        if pose_det_model.__class__.__name__ == 'PoseWarper':
-            pose_det_model.concat_tensors = False
 
     # frame index offsets for inference, used in multi-frame inference setting
     if args.use_multi_frames:

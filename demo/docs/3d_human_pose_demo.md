@@ -66,7 +66,7 @@ python demo/body3d_two_stage_video_demo.py \
     [--euro] \
     [--radius RADIUS] \
     [--thickness THICKNESS] \
-    [--use-multi-frames] [--online] [--save-memory]
+    [--use-multi-frames] [--online]
 ```
 
 Note that
@@ -76,8 +76,6 @@ Note that
 2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference in the 2D pose detection stage.
 
 3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference in the 2D pose detection stage.
-
-4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
 
@@ -109,5 +107,5 @@ python demo/body3d_two_stage_video_demo.py \
     --video-path https://user-images.githubusercontent.com/87690686/164970135-b14e424c-765a-4180-9bc8-fa8d6abc5510.mp4 \
     --out-video-root vis_results \
     --rebase-keypoint-height \
-    --use-multi-frames --save-memory --online
+    --use-multi-frames --online
 ```

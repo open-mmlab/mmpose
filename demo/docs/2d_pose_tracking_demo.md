@@ -17,7 +17,7 @@ python demo/top_down_pose_tracking_demo_with_mmdet.py \
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}] \
     [--use-oks-tracking --tracking-thr ${TRACKING_THR} --euro] \
-    [--use-multi-frames] [--online] [--save-memory]
+    [--use-multi-frames] [--online]
 ```
 
 Note that
@@ -27,8 +27,6 @@ Note that
 2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference in the pose estimation stage.
 
 3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference in the pose estimation stage.
-
-4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
 
@@ -54,7 +52,7 @@ python demo/top_down_pose_tracking_demo_with_mmdet.py \
     https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
     --video-path https://user-images.githubusercontent.com/87690686/137440639-fb08603d-9a35-474e-b65f-46b5c06b68d6.mp4 \
     --out-video-root vis_results \
-    --use-multi-frames --save-memory --online
+    --use-multi-frames --online
 ```
 
 ### 2D Top-Down Video Human Pose Tracking Demo with MMTracking
@@ -72,7 +70,7 @@ python demo/top_down_video_demo_with_mmtracking.py \
     --out-video-root ${OUTPUT_VIDEO_ROOT} \
     [--show --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}] \
-    [--use-multi-frames] [--online] [--save-memory]
+    [--use-multi-frames] [--online]
 ```
 
 Note that
@@ -82,8 +80,6 @@ Note that
 2. You can turn on the `[--use-multi-frames]` option to use multi frames for inference in the pose estimation stage.
 
 3. If the `[--online]` option is set to **True**, future frame information can **not** be used when using multi frames for inference in the pose estimation stage.
-
-4. You can turn on the `[--save-memory]` option to save memory when using multi frames for inference.
 
 Examples:
 
@@ -107,7 +103,7 @@ python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results \
-    --use-multi-frames --save-memory --online
+    --use-multi-frames --online
 ```
 
 ### 2D Bottom-Up Video Human Pose Tracking Demo

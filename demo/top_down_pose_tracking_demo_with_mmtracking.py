@@ -116,13 +116,6 @@ def main():
         help='inference mode. If set to True, can not use future frame'
         'information when using multi frames for inference in the pose'
         'estimation stage. Default: False.')
-    parser.add_argument(
-        '--save-memory',
-        action='store_true',
-        default=False,
-        help='save memory usage when using large model for inference. If you'
-        'have plenty of memory, you can turn it off to gain faster inference'
-        'speed. Default: True.')
 
     assert has_mmtrack, 'Please install mmtrack to run the demo.'
 
@@ -137,12 +130,6 @@ def main():
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
-
-    # some hand-crafted setting to save memory for specific models
-    if args.save_memory:
-        # If use 'PoseWarper' detector, set concat_tensors to False
-        if pose_model.__class__.__name__ == 'PoseWarper':
-            pose_model.concat_tensors = False
 
     dataset = pose_model.cfg.data['test']['type']
     dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)
