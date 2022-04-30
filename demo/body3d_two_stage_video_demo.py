@@ -9,8 +9,8 @@ import cv2
 import mmcv
 import numpy as np
 
-from mmpose.apis import (extract_pose_sequence, get_track_id,
-                         inference_pose_lifter_model,
+from mmpose.apis import (collect_multi_frames, extract_pose_sequence,
+                         get_track_id, inference_pose_lifter_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_3d_pose_result)
 from mmpose.core import Smoother
@@ -193,7 +193,6 @@ def main():
 
     video = mmcv.VideoReader(args.video_path)
     assert video.opened, f'Faild to load video file {args.video_path}'
-    nframes = len(video)
 
     # First stage: 2D pose detection
     print('Stage 1: 2D pose detection.')
@@ -248,22 +247,8 @@ def main():
                                                    args.det_cat_id)
 
         if args.use_multi_frames:
-            frames = []
-            # put the current frame at first
-            frames.append(cur_frame)
-
-            # use multi frames for inference
-            for idx in indices:
-                # skip current frame
-                if idx == 0:
-                    continue
-                support_idx = frame_id + idx
-                # online mode, can not use future frame information
-                if args.online:
-                    support_idx = np.clip(support_idx, 0, frame_id)
-                else:
-                    support_idx = np.clip(support_idx, 0, nframes - 1)
-                frames.append(video[support_idx])
+            frames = collect_multi_frames(video, frame_id, indices,
+                                          args.online)
 
         # make person results for current image
         pose_det_results, _ = inference_top_down_pose_model(

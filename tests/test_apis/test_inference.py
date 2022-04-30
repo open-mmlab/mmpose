@@ -6,7 +6,7 @@ from glob import glob
 import mmcv
 import numpy as np
 
-from mmpose.apis import (inference_bottom_up_pose_model,
+from mmpose.apis import (collect_multi_frames, inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_pose_result)
 from mmpose.datasets import DatasetInfo
@@ -269,3 +269,17 @@ def test_process_mmdet_results():
         mmdet_results=(det_results, det_mask_results), cat_id=1)
 
     _ = process_mmdet_results(mmdet_results=det_results, cat_id=1)
+
+
+def test_collect_multi_frames():
+    # video file for test
+    video_path = 'tests/data/posetrack18/videos/000001_mpiinew_test/'\
+        '000001_mpiinew_test.mp4'
+    video = mmcv.VideoReader(video_path)
+
+    frame_id = 0
+    indices = [-1, -2, 0, 1, 2]
+
+    _ = collect_multi_frames(video, frame_id, indices, online=True)
+
+    _ = collect_multi_frames(video, frame_id, indices, online=False)

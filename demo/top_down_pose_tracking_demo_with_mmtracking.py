@@ -5,10 +5,9 @@ from argparse import ArgumentParser
 
 import cv2
 import mmcv as mmcv
-import numpy as np
 
-from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
-                         vis_pose_tracking_result)
+from mmpose.apis import (collect_multi_frames, inference_top_down_pose_model,
+                         init_pose_model, vis_pose_tracking_result)
 from mmpose.core import Smoother
 from mmpose.datasets import DatasetInfo
 
@@ -156,7 +155,6 @@ def main():
     # read video
     video = mmcv.VideoReader(args.video_path)
     assert video.opened, f'Faild to load video file {args.video_path}'
-    nframes = len(video)
 
     if args.out_video_root == '':
         save_out_video = False
@@ -188,21 +186,8 @@ def main():
     for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
 
         if args.use_multi_frames:
-            frames = []
-            # put the current frame at first
-            frames.append(cur_frame)
-            # use multi frames for inference
-            for idx in indices:
-                # skip current frame
-                if idx == 0:
-                    continue
-                support_idx = frame_id + idx
-                # online mode, can not use future frame information
-                if args.online:
-                    support_idx = np.clip(support_idx, 0, frame_id)
-                else:
-                    support_idx = np.clip(support_idx, 0, nframes - 1)
-                frames.append(video[support_idx])
+            frames = collect_multi_frames(video, frame_id, indices,
+                                          args.online)
 
         mmtracking_results = inference_mot(
             tracking_model, cur_frame, frame_id=frame_id)
