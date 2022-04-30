@@ -1,9 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+import os.path as osp
+from glob import glob
 
+import mmcv
 import numpy as np
 
-from mmpose.apis import (inference_bottom_up_pose_model,
+from mmpose.apis import (collect_multi_frames, inference_bottom_up_pose_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_pose_result)
 from mmpose.datasets import DatasetInfo
@@ -159,6 +162,76 @@ def test_top_down_demo():
     vis_pose_result(
         pose_model, image_name, pose_results, dataset_info=dataset_info)
 
+    # test video pose demo
+    # PoseWarper + PoseTrack18 demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/'
+        'hrnet_w48_posetrack18_384x288_posewarper_stage2.py',
+        None,
+        device='cpu')
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
+
+    person_result = []
+    # the last value is the confidence of bbox
+    person_result.append({'bbox': [50, 50, 50, 100, 0.5]})
+
+    # test a viedo folder
+    num_frames = len(pose_model.cfg.data_cfg.frame_weight_test)
+    video_folder = 'tests/data/posetrack18/videos/000001_mpiinew_test'
+    frames = sorted(glob(osp.join(video_folder, '*.jpg')))[:num_frames]
+    cur_frame = frames[0]
+
+    # test the frames in the format of image paths
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        frames,
+        person_result,
+        format='xywh',
+        bbox_thr=0.3,
+        dataset_info=dataset_info)
+    # show the results
+    vis_pose_result(
+        pose_model, cur_frame, pose_results, dataset_info=dataset_info)
+
+    # test when the person_result is None
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        frames,
+        person_results=None,
+        format='xywh',
+        dataset_info=dataset_info)
+
+    # test a video file
+    video_path = 'tests/data/posetrack18/videos/000001_mpiinew_test/'\
+        '000001_mpiinew_test.mp4'
+    video = mmcv.VideoReader(video_path)
+
+    # get a sample for test
+    cur_frame = video[0]
+    frames = video[:num_frames]
+
+    person_result = []
+    person_result.append({'bbox': [50, 75, 100, 150, 0.6]})
+
+    # test the frames in the format of image array
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        frames,
+        person_result,
+        bbox_thr=0.9,
+        format='xyxy',
+        dataset_info=dataset_info)
+
+    # # test the frames in the format of image array
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        frames,
+        person_results=None,
+        format='xyxy',
+        dataset_info=dataset_info)
+
 
 def test_bottom_up_demo():
 
@@ -196,3 +269,17 @@ def test_process_mmdet_results():
         mmdet_results=(det_results, det_mask_results), cat_id=1)
 
     _ = process_mmdet_results(mmdet_results=det_results, cat_id=1)
+
+
+def test_collect_multi_frames():
+    # video file for test
+    video_path = 'tests/data/posetrack18/videos/000001_mpiinew_test/'\
+        '000001_mpiinew_test.mp4'
+    video = mmcv.VideoReader(video_path)
+
+    frame_id = 0
+    indices = [-1, -2, 0, 1, 2]
+
+    _ = collect_multi_frames(video, frame_id, indices, online=True)
+
+    _ = collect_multi_frames(video, frame_id, indices, online=False)

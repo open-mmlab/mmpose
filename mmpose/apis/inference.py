@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
+from mmcv.utils.misc import deprecated_api_warning
 from PIL import Image
 
 from mmpose.core.post_processing import oks_nms
@@ -113,27 +114,30 @@ def _box2cs(cfg, box):
 
 
 def _inference_single_pose_model(model,
-                                 img_or_path,
+                                 imgs_or_paths,
                                  bboxes,
                                  dataset='TopDownCocoDataset',
                                  dataset_info=None,
-                                 return_heatmap=False):
+                                 return_heatmap=False,
+                                 use_multi_frames=False):
     """Inference human bounding boxes.
 
     Note:
+        - num_frames: F
         - num_bboxes: N
         - num_keypoints: K
 
     Args:
         model (nn.Module): The loaded pose model.
-        img_or_path (str | np.ndarray): Image filename or loaded image.
+        imgs_or_paths (list(str) | list(np.ndarray)): Image filename(s) or
+            loaded image(s)
         bboxes (list | np.ndarray): All bounding boxes (with scores),
             shaped (N, 4) or (N, 5). (left, top, width, height, [score])
             where N is number of bounding boxes.
         dataset (str): Dataset name. Deprecated.
         dataset_info (DatasetInfo): A class containing all dataset info.
-        outputs (list[str] | tuple[str]): Names of layers whose output is
-            to be returned, default: None
+        return_heatmap (bool): Flag to return heatmap, default: False
+        use_multi_frames (bool): Flag to use multi frames for inference
 
     Returns:
         ndarray[NxKx3]: Predicted pose x, y, score.
@@ -144,6 +148,13 @@ def _inference_single_pose_model(model,
     device = next(model.parameters()).device
     if device.type == 'cpu':
         device = -1
+
+    if use_multi_frames:
+        assert 'frame_weight_test' in cfg.data.test.data_cfg
+        # use multi frames for inference
+        # the number of input frames must equal to frame weight in the config
+        assert len(imgs_or_paths) == len(
+            cfg.data.test.data_cfg.frame_weight_test)
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
@@ -270,10 +281,19 @@ def _inference_single_pose_model(model,
                 'flip_pairs': flip_pairs
             }
         }
-        if isinstance(img_or_path, np.ndarray):
-            data['img'] = img_or_path
+
+        if use_multi_frames:
+            # weight for different frames in multi-frame inference setting
+            data['frame_weight'] = cfg.data.test.data_cfg.frame_weight_test
+            if isinstance(imgs_or_paths[0], np.ndarray):
+                data['img'] = imgs_or_paths
+            else:
+                data['image_file'] = imgs_or_paths
         else:
-            data['image_file'] = img_or_path
+            if isinstance(imgs_or_paths, np.ndarray):
+                data['img'] = imgs_or_paths
+            else:
+                data['image_file'] = imgs_or_paths
 
         data = test_pipeline(data)
         batch_data.append(data)
@@ -292,8 +312,9 @@ def _inference_single_pose_model(model,
     return result['preds'], result['output_heatmap']
 
 
+@deprecated_api_warning(name_dict=dict(img_or_path='imgs_or_paths'))
 def inference_top_down_pose_model(model,
-                                  img_or_path,
+                                  imgs_or_paths,
                                   person_results=None,
                                   bbox_thr=None,
                                   format='xywh',
@@ -301,9 +322,11 @@ def inference_top_down_pose_model(model,
                                   dataset_info=None,
                                   return_heatmap=False,
                                   outputs=None):
-    """Inference a single image with a list of person bounding boxes.
+    """Inference a single image with a list of person bounding boxes. Support
+    single-frame and multi-frame inference setting.
 
     Note:
+        - num_frames: F
         - num_people: P
         - num_keypoints: K
         - bbox height: H
@@ -311,7 +334,8 @@ def inference_top_down_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        img_or_path (str| np.ndarray): Image filename or loaded image.
+        imgs_or_paths (str | np.ndarray | list(str) | list(np.ndarray)):
+            Image filename(s) or loaded image(s).
         person_results (list(dict), optional): a list of detected persons that
             contains ``bbox`` and/or ``track_id``:
 
@@ -345,6 +369,12 @@ def inference_top_down_pose_model(model,
             Output feature maps from layers specified in `outputs`. \
             Includes 'heatmap' if `return_heatmap` is True.
     """
+    # decide whether to use multi frames for inference
+    if isinstance(imgs_or_paths, (list, tuple)):
+        use_multi_frames = True
+    else:
+        assert isinstance(imgs_or_paths, (str, np.ndarray))
+        use_multi_frames = False
     # get dataset info
     if (dataset_info is None and hasattr(model, 'cfg')
             and 'dataset_info' in model.cfg):
@@ -364,10 +394,11 @@ def inference_top_down_pose_model(model,
 
     if person_results is None:
         # create dummy person results
-        if isinstance(img_or_path, str):
-            width, height = Image.open(img_or_path).size
+        sample = imgs_or_paths[0] if use_multi_frames else imgs_or_paths
+        if isinstance(sample, str):
+            width, height = Image.open(sample).size
         else:
-            height, width = img_or_path.shape[:2]
+            height, width = sample.shape[:2]
         person_results = [{'bbox': np.array([0, 0, width, height])}]
 
     if len(person_results) == 0:
@@ -399,11 +430,12 @@ def inference_top_down_pose_model(model,
         # poses is results['pred'] # N x 17x 3
         poses, heatmap = _inference_single_pose_model(
             model,
-            img_or_path,
+            imgs_or_paths,
             bboxes_xywh,
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=return_heatmap)
+            return_heatmap=return_heatmap,
+            use_multi_frames=use_multi_frames)
 
         if return_heatmap:
             h.layer_outputs['heatmap'] = heatmap
@@ -831,3 +863,36 @@ def process_mmdet_results(mmdet_results, cat_id=1):
         person_results.append(person)
 
     return person_results
+
+
+def collect_multi_frames(video, frame_id, indices, online=False):
+    """Collect multi frames from the video.
+
+    Args:
+        video (mmcv.VideoReader): A VideoReader of the input video file.
+        frame_id (int): index of the current frame
+        indices (list(int)): index offsets of the frames to collect
+        online (bool): inference mode, if set to True, can not use future
+            frame information.
+
+    Returns:
+        list(ndarray): multi frames collected from the input video file.
+    """
+    num_frames = len(video)
+    frames = []
+    # put the current frame at first
+    frames.append(video[frame_id])
+    # use multi frames for inference
+    for idx in indices:
+        # skip current frame
+        if idx == 0:
+            continue
+        support_idx = frame_id + idx
+        # online mode, can not use future frame information
+        if online:
+            support_idx = np.clip(support_idx, 0, frame_id)
+        else:
+            support_idx = np.clip(support_idx, 0, num_frames - 1)
+        frames.append(video[support_idx])
+
+    return frames

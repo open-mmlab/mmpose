@@ -4,10 +4,11 @@ import warnings
 from argparse import ArgumentParser
 
 import cv2
+import mmcv
 
-from mmpose.apis import (get_track_id, inference_top_down_pose_model,
-                         init_pose_model, process_mmdet_results,
-                         vis_pose_tracking_result)
+from mmpose.apis import (collect_multi_frames, get_track_id,
+                         inference_top_down_pose_model, init_pose_model,
+                         process_mmdet_results, vis_pose_tracking_result)
 from mmpose.core import Smoother
 from mmpose.datasets import DatasetInfo
 
@@ -84,6 +85,20 @@ def main():
         default=1,
         help='Link thickness for visualization')
 
+    parser.add_argument(
+        '--use-multi-frames',
+        action='store_true',
+        default=False,
+        help='whether to use multi frames for inference in the pose'
+        'estimation stage. Default: False.')
+    parser.add_argument(
+        '--online',
+        action='store_true',
+        default=False,
+        help='inference mode. If set to True, can not use future frame'
+        'information when using multi frames for inference in the pose'
+        'estimation stage. Default: False.')
+
     assert has_mmdet, 'Please install mmdet to run the demo.'
 
     args = parser.parse_args()
@@ -92,6 +107,7 @@ def main():
     assert args.det_config is not None
     assert args.det_checkpoint is not None
 
+    print('Initializing model...')
     det_model = init_detector(
         args.det_config, args.det_checkpoint, device=args.device.lower())
     # build the pose model from a config file and a checkpoint file
@@ -108,10 +124,9 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    cap = cv2.VideoCapture(args.video_path)
-    fps = None
-
-    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
+    # read video
+    video = mmcv.VideoReader(args.video_path)
+    assert video.opened, f'Faild to load video file {args.video_path}'
 
     if args.out_video_root == '':
         save_out_video = False
@@ -120,20 +135,18 @@ def main():
         save_out_video = True
 
     if save_out_video:
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        fps = video.fps
+        size = (video.width, video.height)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         videoWriter = cv2.VideoWriter(
             os.path.join(args.out_video_root,
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
-    # optional
-    return_heatmap = False
-
-    # e.g. use ('backbone', ) to return backbone feature
-    output_layer_names = None
+    # frame index offsets for inference, used in multi-frame inference setting
+    if args.use_multi_frames:
+        assert 'frame_indices_test' in pose_model.cfg.data.test.data_cfg
+        indices = pose_model.cfg.data.test.data_cfg['frame_indices_test']
 
     # build pose smoother for temporal refinement
     if args.euro:
@@ -149,24 +162,34 @@ def main():
     else:
         smoother = None
 
+    # whether to return heatmap, optional
+    return_heatmap = False
+
+    # return the output of some desired layers,
+    # e.g. use ('backbone', ) to return backbone feature
+    output_layer_names = None
+
     next_id = 0
     pose_results = []
-    while (cap.isOpened()):
+    print('Running inference...')
+    for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         pose_results_last = pose_results
 
-        flag, img = cap.read()
-        if not flag:
-            break
-        # test a single image, the resulting box is (x1, y1, x2, y2)
-        mmdet_results = inference_detector(det_model, img)
+        # get the detection results of current frame
+        # the resulting box is (x1, y1, x2, y2)
+        mmdet_results = inference_detector(det_model, cur_frame)
 
         # keep the person class bounding boxes.
         person_results = process_mmdet_results(mmdet_results, args.det_cat_id)
 
+        if args.use_multi_frames:
+            frames = collect_multi_frames(video, frame_id, indices,
+                                          args.online)
+
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
-            img,
+            frames if args.use_multi_frames else cur_frame,
             person_results,
             bbox_thr=args.bbox_thr,
             format='xyxy',
@@ -188,9 +211,9 @@ def main():
             pose_results = smoother.smooth(pose_results)
 
         # show the results
-        vis_img = vis_pose_tracking_result(
+        vis_frame = vis_pose_tracking_result(
             pose_model,
-            img,
+            cur_frame,
             pose_results,
             radius=args.radius,
             thickness=args.thickness,
@@ -200,15 +223,14 @@ def main():
             show=False)
 
         if args.show:
-            cv2.imshow('Image', vis_img)
+            cv2.imshow('Frame', vis_frame)
 
         if save_out_video:
-            videoWriter.write(vis_img)
+            videoWriter.write(vis_frame)
 
         if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    cap.release()
     if save_out_video:
         videoWriter.release()
     if args.show:
