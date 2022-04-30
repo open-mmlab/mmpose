@@ -430,7 +430,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
         self._write_keypoint_results(valid_kpts, gt_folder, res_folder)
 
-        info_str = self._do_keypoint_eval(gt_folder, res_folder)
+        info_str = self._do_python_keypoint_eval(gt_folder, res_folder)
         name_value = OrderedDict(info_str)
 
         if tmp_folder is not None:
@@ -505,7 +505,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             with open(osp.join(pred_folder, json_file), 'w') as f:
                 json.dump(info, f, sort_keys=True, indent=4)
 
-    def _do_keypoint_eval(self, gt_folder, pred_folder):
+    def _do_python_keypoint_eval(self, gt_folder, pred_folder):
         """Keypoint evaluation using poseval.
 
         Args:
