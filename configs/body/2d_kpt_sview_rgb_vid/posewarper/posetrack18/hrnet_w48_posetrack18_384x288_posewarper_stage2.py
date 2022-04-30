@@ -66,7 +66,7 @@ model = dict(
                 num_channels=(48, 96, 192, 384))),
         frozen_stages=4,
     ),
-    concat_tensors=True,
+    concat_tensors=False,
     neck=dict(
         type='PoseWarperNeck',
         in_channels=48,

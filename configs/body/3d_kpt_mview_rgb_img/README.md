@@ -6,3 +6,7 @@ For this task, we currently support [VoxelPose](/configs/body/3d_kpt_mview_rgb_i
 ## Data preparation
 
 Please follow [DATA Preparation](/docs/en/tasks/3d_body_keypoint.md) to prepare data.
+
+## Demo
+
+Please follow [Demo](/demo/docs/3d_multiview_human_pose_demo.md) to run the demo.

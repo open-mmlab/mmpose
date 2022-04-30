@@ -4,6 +4,7 @@ import warnings
 from argparse import ArgumentParser
 
 import cv2
+import mmcv
 import numpy as np
 
 from mmpose.apis import (inference_top_down_pose_model, init_pose_model,
@@ -48,6 +49,7 @@ def main():
     args = parser.parse_args()
 
     assert args.show or (args.out_video_root != '')
+    print('Initializing model...')
     # build the pose model from a config file and a checkpoint file
     pose_model = init_pose_model(
         args.pose_config, args.pose_checkpoint, device=args.device.lower())
@@ -62,12 +64,12 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    cap = cv2.VideoCapture(args.video_path)
-    assert cap.isOpened(), f'Faild to load video file {args.video_path}'
+    # read video
+    video = mmcv.VideoReader(args.video_path)
+    assert video.opened, f'Faild to load video file {args.video_path}'
 
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-            int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    fps = video.fps
+    size = (video.width, video.height)
 
     if args.out_video_root == '':
         save_out_video = False
@@ -82,24 +84,22 @@ def main():
                          f'vis_{os.path.basename(args.video_path)}'), fourcc,
             fps, size)
 
-    # optional
+    # whether to return heatmap, optional
     return_heatmap = False
 
+    # return the output of some desired layers,
     # e.g. use ('backbone', ) to return backbone feature
     output_layer_names = None
 
-    while (cap.isOpened()):
-        flag, img = cap.read()
-        if not flag:
-            break
-
+    print('Running inference...')
+    for frame_id, cur_frame in enumerate(mmcv.track_iter_progress(video)):
         # keep the person class bounding boxes.
         person_results = [{'bbox': np.array([0, 0, size[0], size[1]])}]
 
         # test a single image, with a list of bboxes.
         pose_results, returned_outputs = inference_top_down_pose_model(
             pose_model,
-            img,
+            cur_frame,
             person_results,
             format='xyxy',
             dataset=dataset,
@@ -108,9 +108,9 @@ def main():
             outputs=output_layer_names)
 
         # show the results
-        vis_img = vis_pose_result(
+        vis_frame = vis_pose_result(
             pose_model,
-            img,
+            cur_frame,
             pose_results,
             radius=args.radius,
             thickness=args.thickness,
@@ -120,15 +120,14 @@ def main():
             show=False)
 
         if args.show:
-            cv2.imshow('Image', vis_img)
+            cv2.imshow('Frame', vis_frame)
 
         if save_out_video:
-            videoWriter.write(vis_img)
+            videoWriter.write(vis_frame)
 
         if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    cap.release()
     if save_out_video:
         videoWriter.release()
     if args.show:
