@@ -99,8 +99,8 @@ For multi-frame inference that rely on extra frames to get the final results of 
 ```shell
 python demo/top_down_pose_tracking_demo_with_mmtracking.py \
     demo/mmtracking_cfg/tracktor_faster-rcnn_r50_fpn_4e_mot17-private.py \
-    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
-    https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192-ec54d7f3_20200709.pth \
+    configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py \
+    https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth  \
     --video-path demo/resources/demo.mp4 \
     --out-video-root vis_results \
     --use-multi-frames --online
