@@ -22,12 +22,18 @@ class RealNVP(nn.Module):
             nn.Linear(2, 64), nn.LeakyReLU(), nn.Linear(64, 64),
             nn.LeakyReLU(), nn.Linear(64, 2))
 
+    @property
+    def prior(self):
+        return distributions.MultivariateNormal(self.loc, self.cov)
+
     def __init__(self):
         super(RealNVP, self).__init__()
 
-        self.prior = distributions.MultivariateNormal(
-            torch.zeros(2), torch.eye(2))
-        self.mask = torch.tensor([[0, 1], [1, 0]] * 3, dtype=torch.float32)
+        self.register_buffer('loc', torch.zeros(2))
+        self.register_buffer('cov', torch.eye(2))
+        self.register_buffer(
+            'mask', torch.tensor([[0, 1], [1, 0]] * 3, dtype=torch.float32))
+
         self.s = torch.nn.ModuleList(
             [self.get_scale_net() for _ in range(len(self.mask))])
         self.t = torch.nn.ModuleList(
@@ -35,14 +41,9 @@ class RealNVP(nn.Module):
         self.init_weights()
 
     def init_weights(self):
-        for m in self.t:
-            for mm in m.modules():
-                if isinstance(mm, nn.Linear):
-                    nn.init.xavier_uniform_(mm.weight, gain=0.01)
-        for m in self.s:
-            for mm in m.modules():
-                if isinstance(mm, nn.Linear):
-                    nn.init.xavier_uniform_(mm.weight, gain=0.01)
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight, gain=0.01)
 
     def backward_p(self, x):
         log_det_jacob, z = x.new_zeros(x.shape[0]), x

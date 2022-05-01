@@ -19,15 +19,17 @@ class DeepposeRegressionHead(nn.Module):
         in_channels (int): Number of input channels
         num_joints (int): Number of joints
         loss_keypoint (dict): Config for keypoint loss. Default: None.
+        out_sigma (bool): Predict the sigma (the viriance of the joint
+            location) together with the joint location. Default: False
     """
 
     def __init__(self,
                  in_channels,
                  num_joints,
                  loss_keypoint=None,
+                 out_sigma=False,
                  train_cfg=None,
-                 test_cfg=None,
-                 out_sigma=False):
+                 test_cfg=None):
         super().__init__()
 
         self.in_channels = in_channels
@@ -42,17 +44,20 @@ class DeepposeRegressionHead(nn.Module):
 
         if out_sigma:
             self.fc = nn.Linear(self.in_channels, self.num_joints * 4)
-            self.output = None
         else:
             self.fc = nn.Linear(self.in_channels, self.num_joints * 2)
 
     def forward(self, x):
         """Forward function."""
+        if isinstance(x, (list, tuple)):
+            assert len(x) == 1, ('DeepPoseRegressionHead only supports '
+                                 'single-level feature.')
+            x = x[0]
+
         output = self.fc(x)
         N, C = output.shape
         if self.out_sigma:
-            self.output = output.reshape([N, C // 4, 4])
-            return self.output[:, :, :2]
+            return output.reshape([N, C // 4, 4])
         else:
             return output.reshape([N, C // 2, 2])
 
@@ -73,10 +78,8 @@ class DeepposeRegressionHead(nn.Module):
         losses = dict()
         assert not isinstance(self.loss, nn.Sequential)
         assert target.dim() == 3 and target_weight.dim() == 3
-        if self.out_sigma:
-            losses['reg_loss'] = self.loss(self.output, target, target_weight)
-        else:
-            losses['reg_loss'] = self.loss(output, target, target_weight)
+
+        losses['reg_loss'] = self.loss(output, target, target_weight)
 
         return losses
 
@@ -140,11 +143,12 @@ class DeepposeRegressionHead(nn.Module):
                 - "scale": scale of the bbox
                 - "rotation": rotation of the bbox
                 - "bbox_score": score of bbox
-            output (np.ndarray[N, K, 2]): predicted regression vector.
+            output (np.ndarray[N, K, >=2]): predicted regression vector.
             kwargs: dict contains 'img_size'.
                 img_size (tuple(img_width, img_height)): input image size.
         """
         batch_size = len(img_metas)
+        output = output[..., :2]  # get prediction joint locations
 
         if 'bbox_id' in img_metas[0]:
             bbox_ids = []

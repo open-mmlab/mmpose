@@ -35,20 +35,7 @@ class RLELoss(nn.Module):
         self.residual = residual
         self.q_dis = q_dis
 
-        self.flow = RealNVP()
-
-    def _apply(self, fn):
-        self.flow.prior.loc = fn(self.flow.prior.loc)
-        self.flow.prior.scale_tril = fn(self.flow.prior.scale_tril)
-        self.flow.prior._unbroadcasted_scale_tril =\
-            fn(self.flow.prior._unbroadcasted_scale_tril)
-        self.flow.prior.covariance_matrix = \
-            fn(self.flow.prior.covariance_matrix)
-        self.flow.prior.precision_matrix = \
-            fn(self.flow.prior.precision_matrix)
-        self.flow.mask = fn(self.flow.mask)
-        self.flow.s._apply(fn)
-        self.flow.t._apply(fn)
+        self.flow_model = RealNVP()
 
     def forward(self, output, target, target_weight=None):
         """Forward function.
@@ -65,12 +52,12 @@ class RLELoss(nn.Module):
             target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        sigma = output[:, :, 2:].sigmoid()
-        coord = output[:, :, :2]
+        pred = output[:, :, :2]
+        sigma = output[:, :, 2].sigmoid()
 
-        error = (coord - target) / sigma
+        error = (pred - target) / (sigma + 1e-9)
         # (B, K, 2)
-        log_phi = self.flow.log_prob(error.reshape(-1, 2))
+        log_phi = self.flow_model.log_prob(error.reshape(-1, 2))
         log_phi = log_phi.reshape(target.shape[0], target.shape[1], 1)
         log_sigma = torch.log(sigma).reshape(target.shape[0], target.shape[1],
                                              2)
@@ -79,9 +66,10 @@ class RLELoss(nn.Module):
         if self.residual:
             assert self.q_dis in ['Laplace', 'Gaussian']
             if self.q_dis == 'Laplace':
-                loss_q = torch.abs(error)
+                loss_q = torch.log(sigma * 2) + torch.abs(error)
             else:
-                loss_q = error**2
+                loss_q = torch.log(
+                    sigma * math.sqrt(2 * math.pi)) + 0.5 * error**2
             loss = nf_loss + loss_q
         else:
             loss = nf_loss
