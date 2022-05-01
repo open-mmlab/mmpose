@@ -86,19 +86,25 @@ def test_pvtv2():
     with pytest.raises(AssertionError):
         PyramidVisionTransformerV2(pretrain_img_size=(224, 224, 224))
 
-    # test pretrained checkpoint
-    PyramidVisionTransformerV2(
+    # test load pretrained weights
+    model = PyramidVisionTransformerV2(
         embed_dims=32,
         num_layers=[2, 2, 2, 2],
         pretrained='https://github.com/whai362/PVT/'
         'releases/download/v2/pvt_v2_b0.pth')
+    model.init_weights()
 
     # test init_cfg
-    PyramidVisionTransformerV2(
+    model = PyramidVisionTransformerV2(
         embed_dims=32,
         num_layers=[2, 2, 2, 2],
         init_cfg=dict(checkpoint='https://github.com/whai362/PVT/'
                       'releases/download/v2/pvt_v2_b0.pth'))
+    model.init_weights()
+
+    # test init weights from scratch
+    model = PyramidVisionTransformerV2(embed_dims=32, num_layers=[2, 2, 2, 2])
+    model.init_weights()
 
     # Test normal inference
     temp = torch.randn((1, 3, 32, 32))

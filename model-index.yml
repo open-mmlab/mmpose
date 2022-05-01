@@ -39,6 +39,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/litehrnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mobilenetv2_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/mspn_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/pvt_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnest_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/resnet_dark_coco.yml
