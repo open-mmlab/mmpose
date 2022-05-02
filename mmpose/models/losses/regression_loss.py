@@ -9,10 +9,15 @@ from ..builder import LOSSES
 from ..utils.realnvp import RealNVP
 
 
-@LOSSES.register_module
+@LOSSES.register_module()
 class RLELoss(nn.Module):
-    """
-    RLELoss: "Human Pose Regression With Residual Log-Likelihood Estimation".
+    """RLE Loss.
+
+    `Human Pose Regression With Residual Log-Likelihood Estimation
+    arXiv: <https://arxiv.org/abs/2107.11291>`_.
+
+    Code is modified from `the official implementation
+    <https://github.com/Jeff-sjtu/res-loglikelihood-regression>`_.
 
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
