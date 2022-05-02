@@ -69,7 +69,7 @@ class DeepposeRegressionHead(nn.Module):
             - num_keypoints: K
 
         Args:
-            output (torch.Tensor[N, K, 2]): Output keypoints.
+            output (torch.Tensor[N, K, 2 or 4]): Output keypoints.
             target (torch.Tensor[N, K, 2]): Target keypoints.
             target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
@@ -91,7 +91,7 @@ class DeepposeRegressionHead(nn.Module):
             - num_keypoints: K
 
         Args:
-            output (torch.Tensor[N, K, 2]): Output keypoints.
+            output (torch.Tensor[N, K, 2 or 4]): Output keypoints.
             target (torch.Tensor[N, K, 2]): Target keypoints.
             target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
@@ -100,6 +100,7 @@ class DeepposeRegressionHead(nn.Module):
         accuracy = dict()
 
         N = output.shape[0]
+        output = output[..., :2]
 
         _, avg_acc, cnt = keypoint_pck_accuracy(
             output.detach().cpu().numpy(),
