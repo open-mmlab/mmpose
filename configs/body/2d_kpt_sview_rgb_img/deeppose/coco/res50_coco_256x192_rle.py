@@ -30,7 +30,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
+    # pretrained='torchvision://resnet50',
+    pretrained='work_dirs/pretrained/resnet/resnet50-0676ba61.pth',
     backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
