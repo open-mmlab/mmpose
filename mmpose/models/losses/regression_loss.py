@@ -58,7 +58,7 @@ class RLELoss(nn.Module):
                 Weights across different joint types.
         """
         pred = output[:, :, :2]
-        sigma = output[:, :, 2].sigmoid()
+        sigma = output[:, :, 2:4].sigmoid()
 
         error = (pred - target) / (sigma + 1e-9)
         # (B, K, 2)
