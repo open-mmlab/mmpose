@@ -112,17 +112,11 @@ class HandCocoWholeBodyDataset(Kpt2dSviewRgbImgTopDownDataset):
                         joints_3d_visible[:, :2] = np.minimum(
                             1, keypoints[:, 2:3])
 
-                        # use 1.25 padded bbox as input
-                        center, scale = self._xywh2cs(
-                            *obj[f'{type}hand_box'][:4], 1.25)
-
                         image_file = osp.join(self.img_prefix,
                                               self.id2name[img_id])
 
                         gt_db.append({
                             'image_file': image_file,
-                            'center': center,
-                            'scale': scale,
                             'rotation': 0,
                             'joints_3d': joints_3d,
                             'joints_3d_visible': joints_3d_visible,

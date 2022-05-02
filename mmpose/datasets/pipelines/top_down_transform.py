@@ -1,7 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import warnings
+
 import cv2
 import numpy as np
 
+from mmpose.core.bbox import bbox_xywh2cs
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform, get_warp_matrix,
                                          warp_affine_joints)
@@ -9,10 +12,88 @@ from mmpose.datasets.builder import PIPELINES
 
 
 @PIPELINES.register_module()
+class TopDownGetBboxCenterScale:
+    """Convert bbox from [x, y, w, h] to center and scale.
+
+    The center is the coordinates of the bbox center, and the scale is the
+    bbox width and height normalized by a scale factor.
+
+    Required key: 'bbox', 'ann_info'
+
+    Modifies key: 'center', 'scale'
+
+    Args:
+        padding (float): bbox padding scale that will be multilied to scale.
+            Default: 1.25
+    """
+    # Pixel std is 200.0, which serves as the normalization factor to
+    # to calculate bbox scales.
+    pixel_std: float = 200.0
+
+    def __init__(self, padding: float = 1.25):
+        self.padding = padding
+
+    def __call__(self, results):
+
+        if 'center' in results and 'scale' in results:
+            warnings.warn(
+                'Use the "center" and "scale" that already exist in the data '
+                'sample. The padding will still be applied.')
+            results['scale'] *= self.padding
+        else:
+            bbox = results['bbox']
+            image_size = results['ann_info']['image_size']
+            aspect_ratio = image_size[0] / image_size[1]
+
+            center, scale = bbox_xywh2cs(
+                bbox,
+                aspect_ratio=aspect_ratio,
+                padding=self.padding,
+                pixel_std=self.pixel_std)
+
+            results['center'] = center
+            results['scale'] = scale
+        return results
+
+
+@PIPELINES.register_module()
+class TopDownRandomShiftBboxCenter:
+    """Random shift the bbox center.
+
+    Required key: 'center', 'scale'
+
+    Modifies key: 'center'
+
+    Args:
+        shift_factor (float): The factor to control the shift range, which is
+            scale*pixel_std*scale_factor. Default: 0.16
+        prob (float): Probability of applying random shift. Default: 0.3
+    """
+    # Pixel std is 200.0, which serves as the normalization factor to
+    # to calculate bbox scales.
+    pixel_std: float = 200.0
+
+    def __init__(self, shift_factor: float = 0.16, prob: float = 0.3):
+        self.shift_factor = shift_factor
+        self.prob = prob
+
+    def __call__(self, results):
+
+        center = results['center']
+        scale = results['scale']
+        if np.random.rand() < self.prob:
+            center += np.random.uniform(
+                -1, 1, 2) * self.shift_factor * scale * self.pixel_std
+
+        results['center'] = center
+        return results
+
+
+@PIPELINES.register_module()
 class TopDownRandomFlip:
     """Data augmentation with random image flip.
 
-    Required keys: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
+    Required key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
     'ann_info'.
 
     Modifies key: 'img', 'joints_3d', 'joints_3d_visible', 'center' and
@@ -67,7 +148,7 @@ class TopDownHalfBodyTransform:
     """Data augmentation with half-body transform. Keep only the upper body or
     the lower body at random.
 
-    Required keys: 'joints_3d', 'joints_3d_visible', and 'ann_info'.
+    Required key: 'joints_3d', 'joints_3d_visible', and 'ann_info'.
 
     Modifies key: 'scale' and 'center'.
 
@@ -185,10 +266,10 @@ class TopDownGetRandomScaleRotation:
 class TopDownAffine:
     """Affine transform the image to make input.
 
-    Required keys:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
+    Required key:'img', 'joints_3d', 'joints_3d_visible', 'ann_info','scale',
     'rotation' and 'center'.
 
-    Modified keys:'img', 'joints_3d', and 'joints_3d_visible'.
+    Modified key:'img', 'joints_3d', and 'joints_3d_visible'.
 
     Args:
         use_udp (bool): To use unbiased data processing.
@@ -257,9 +338,9 @@ class TopDownAffine:
 class TopDownGenerateTarget:
     """Generate the target heatmap.
 
-    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'.
+    Required key: 'joints_3d', 'joints_3d_visible', 'ann_info'.
 
-    Modified keys: 'target', and 'target_weight'.
+    Modified key: 'target', and 'target_weight'.
 
     Args:
         sigma: Sigma of heatmap gaussian for 'MSRA' approach.
@@ -643,7 +724,7 @@ class TopDownGenerateTarget:
 class TopDownGenerateTargetRegression:
     """Generate the target regression vector (coordinates).
 
-    Required keys: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified keys:
+    Required key: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified key:
     'target', and 'target_weight'.
     """
 
@@ -691,38 +772,4 @@ class TopDownGenerateTargetRegression:
         results['target'] = target
         results['target_weight'] = target_weight
 
-        return results
-
-
-@PIPELINES.register_module()
-class TopDownRandomTranslation:
-    """Data augmentation with random translation.
-
-    Required key: 'scale' and 'center'.
-
-    Modifies key: 'center'.
-
-    Note:
-        - bbox height: H
-        - bbox width: W
-
-    Args:
-        trans_factor (float): Translating center to
-            ``[-trans_factor, trans_factor] * [W, H] + center``.
-        trans_prob (float): Probability of random translation.
-    """
-
-    def __init__(self, trans_factor=0.15, trans_prob=1.0):
-        self.trans_factor = trans_factor
-        self.trans_prob = trans_prob
-
-    def __call__(self, results):
-        """Perform data augmentation with random translation."""
-        center = results['center']
-        scale = results['scale']
-        if np.random.rand() <= self.trans_prob:
-            # reference bbox size is [200, 200] pixels
-            center += self.trans_factor * np.random.uniform(
-                -1, 1, size=2) * scale * 200
-        results['center'] = center
         return results

@@ -101,8 +101,6 @@ class TopDownMpiiDataset(Kpt2dSviewRgbImgTopDownDataset):
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:
                 center[1] = center[1] + 15 * scale[1]
-                # padding to include proper amount of context
-                scale = scale * 1.25
 
             # MPII uses matlab format, index is 1-based,
             # we should first convert to 0-based index
