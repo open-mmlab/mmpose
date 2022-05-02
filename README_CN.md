@@ -205,6 +205,8 @@ MMPose 也提供了其他更详细的教程:
 * [x] [ResNetV1D](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
 * [x] [ResNeSt](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
 * [x] [HRFormer](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
+* [x] [PVT](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvt-iccv-2021) (ICCV'2021)
+* [x] [PVTV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvtv2-cvmj-2022) (CVMJ'2022)
 
 </details>
 
