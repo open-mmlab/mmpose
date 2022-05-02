@@ -10,6 +10,7 @@ from mmcv.runner import load_checkpoint
 from mmcv.utils.misc import deprecated_api_warning
 from PIL import Image
 
+from mmpose.core.bbox import bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.core.post_processing import oks_nms
 from mmpose.datasets.dataset_info import DatasetInfo
 from mmpose.datasets.pipelines import Compose
@@ -46,71 +47,6 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     model.to(device)
     model.eval()
     return model
-
-
-def _xyxy2xywh(bbox_xyxy):
-    """Transform the bbox format from x1y1x2y2 to xywh.
-
-    Args:
-        bbox_xyxy (np.ndarray): Bounding boxes (with scores), shaped (n, 4) or
-            (n, 5). (left, top, right, bottom, [score])
-
-    Returns:
-        np.ndarray: Bounding boxes (with scores),
-          shaped (n, 4) or (n, 5). (left, top, width, height, [score])
-    """
-    bbox_xywh = bbox_xyxy.copy()
-    bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
-    bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
-
-    return bbox_xywh
-
-
-def _xywh2xyxy(bbox_xywh):
-    """Transform the bbox format from xywh to x1y1x2y2.
-
-    Args:
-        bbox_xywh (ndarray): Bounding boxes (with scores),
-            shaped (n, 4) or (n, 5). (left, top, width, height, [score])
-    Returns:
-        np.ndarray: Bounding boxes (with scores), shaped (n, 4) or
-          (n, 5). (left, top, right, bottom, [score])
-    """
-    bbox_xyxy = bbox_xywh.copy()
-    bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
-    bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
-
-    return bbox_xyxy
-
-
-def _box2cs(cfg, box):
-    """This encodes bbox(x,y,w,h) into (center, scale)
-
-    Args:
-        x, y, w, h
-
-    Returns:
-        tuple: A tuple containing center and scale.
-
-        - np.ndarray[float32](2,): Center of the bbox (x, y).
-        - np.ndarray[float32](2,): Scale of the bbox w & h.
-    """
-
-    x, y, w, h = box[:4]
-    input_size = cfg.data_cfg['image_size']
-    aspect_ratio = input_size[0] / input_size[1]
-    center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-    if w > aspect_ratio * h:
-        h = w * 1.0 / aspect_ratio
-    elif w < aspect_ratio * h:
-        w = h * aspect_ratio
-
-    # pixel std is 200.0
-    scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-    scale = scale * 1.25
-
-    return center, scale
 
 
 def _inference_single_pose_model(model,
@@ -255,14 +191,11 @@ def _inference_single_pose_model(model,
 
     batch_data = []
     for bbox in bboxes:
-        center, scale = _box2cs(cfg, bbox)
-
         # prepare data
+
         data = {
-            'center':
-            center,
-            'scale':
-            scale,
+            'bbox':
+            bbox,
             'bbox_score':
             bbox[4] if len(bbox) == 5 else 1,
             'bbox_id':
@@ -296,6 +229,7 @@ def _inference_single_pose_model(model,
                 data['image_file'] = imgs_or_paths
 
         data = test_pipeline(data)
+        print(test_pipeline)
         batch_data.append(data)
 
     batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
@@ -416,11 +350,11 @@ def inference_top_down_pose_model(model,
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes)
+        bboxes_xywh = bbox_xyxy2xywh(bboxes)
     else:
         # format is already 'xywh'
         bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes)
+        bboxes_xyxy = bbox_xywh2xyxy(bboxes)
 
     # if bbox_thr remove all bounding box
     if len(bboxes_xywh) == 0:

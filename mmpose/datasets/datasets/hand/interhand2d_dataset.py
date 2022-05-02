@@ -210,13 +210,8 @@ class InterHand2DDataset(Kpt2dSviewRgbImgTopDownDataset):
                     bbox[2] -= bbox[0]
                     bbox[3] -= bbox[1]
 
-                    # use 1.5bbox as input
-                    center, scale = self._xywh2cs(*bbox, 1.5)
-
                     gt_db.append({
                         'image_file': image_file,
-                        'center': center,
-                        'scale': scale,
                         'rotation': 0,
                         'joints_3d': joints_3d,
                         'joints_3d_visible': joints_3d_visible,

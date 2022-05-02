@@ -1,6 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 
+from mmpose.core.bbox.transforms import bbox_cs2xywh
+
 
 def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
     outputs = []
@@ -18,19 +20,27 @@ def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):
             db[j]['image_file'] for j in range(i, min(i + batch_size, len_db))
         ]
         bbox_ids = [j for j in range(i, min(i + batch_size, len_db))]
-        box = np.stack([
-            np.array([
-                db[j]['center'][0], db[j]['center'][1], db[j]['scale'][0],
-                db[j]['scale'][1],
-                db[j]['scale'][0] * db[j]['scale'][1] * 200 * 200, 1.0
-            ],
-                     dtype=np.float32)
-            for j in range(i, min(i + batch_size, len_db))
-        ])
+
+        # Get bbox directly or from center+scale
+        if 'bbox' in db[i]:
+            boxes = np.stack(
+                [db[j]['bbox'] for j in range(i, min(i + batch_size, len_db))])
+        else:
+            assert 'center' in db[i] and 'scale' in db[i]
+            boxes = np.stack([
+                bbox_cs2xywh(db[j]['center'], db[j]['scale'])
+                for j in range(i, min(i + batch_size, len_db))
+            ])
+
+        # Add bbox area and score
+        boxes = np.concatenate(
+            (boxes, np.prod(boxes[:, 2:4], axis=1,
+                            keepdims=True), np.ones((boxes.shape[0], 1))),
+            axis=1)
 
         output = {}
         output['preds'] = keypoints
-        output['boxes'] = box
+        output['boxes'] = boxes
         output['image_paths'] = image_paths
         output['output_heatmap'] = None
         output['bbox_ids'] = bbox_ids

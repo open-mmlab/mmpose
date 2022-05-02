@@ -200,14 +200,10 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
             if self.use_gt_root_depth:
                 bbox = np.array(ann['bbox'], dtype=np.float32)
-                # extend the bbox to include some context
-                center, scale = self._xywh2cs(*bbox, 1.25)
                 abs_depth = [joint_cam[20, 2], joint_cam[41, 2]]
             else:
                 rootnet_ann_data = rootnet_result[str(ann_id[0])]
                 bbox = np.array(rootnet_ann_data['bbox'], dtype=np.float32)
-                # the bboxes have been extended
-                center, scale = self._xywh2cs(*bbox, 1.0)
                 abs_depth = rootnet_ann_data['abs_depth']
             # 41: 'l_wrist', left hand root
             # 20: 'r_wrist', right hand root
@@ -229,8 +225,6 @@ class InterHand3DDataset(Kpt3dSviewRgbImgTopDownDataset):
 
             gt_db.append({
                 'image_file': image_file,
-                'center': center,
-                'scale': scale,
                 'rotation': 0,
                 'joints_3d': joints_3d,
                 'joints_3d_visible': joints_3d_visible,
