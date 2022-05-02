@@ -5,8 +5,8 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 
+from mmpose.core.bbox import bbox_xywh2cs, bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.datasets.pipelines import Compose
-from .inference import _box2cs, _xywh2xyxy, _xyxy2xywh
 
 
 def extract_pose_sequence(pose_results, frame_idx, causal, seq_len, step=1):
@@ -516,11 +516,11 @@ def inference_interhand_3d_model(model,
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes)
+        bboxes_xywh = bbox_xyxy2xywh(bboxes)
     else:
         # format is already 'xywh'
         bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes)
+        bboxes_xyxy = bbox_xywh2xyxy(bboxes)
 
     # if bbox_thr remove all bounding box
     if len(bboxes_xywh) == 0:
@@ -543,7 +543,9 @@ def inference_interhand_3d_model(model,
 
     batch_data = []
     for bbox in bboxes:
-        center, scale = _box2cs(cfg, bbox)
+        image_size = cfg.data_cfg.image_size
+        aspect_ratio = image_size[0] / image_size[1]  # w over h
+        center, scale = bbox_xywh2cs(bbox, aspect_ratio, padding=1.25)
 
         # prepare data
         data = {
@@ -683,11 +685,11 @@ def inference_mesh_model(model,
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes)
+        bboxes_xywh = bbox_xyxy2xywh(bboxes)
     else:
         # format is already 'xywh'
         bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes)
+        bboxes_xyxy = bbox_xywh2xyxy(bboxes)
 
     # if bbox_thr remove all bounding box
     if len(bboxes_xywh) == 0:
@@ -711,7 +713,9 @@ def inference_mesh_model(model,
 
     batch_data = []
     for bbox in bboxes:
-        center, scale = _box2cs(cfg, bbox)
+        image_size = cfg.data_cfg.image_size
+        aspect_ratio = image_size[0] / image_size[1]  # w over h
+        center, scale = bbox_xywh2cs(bbox, aspect_ratio, padding=1.25)
 
         # prepare data
         data = {

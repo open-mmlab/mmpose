@@ -85,11 +85,8 @@ class FaceWFLWDataset(Kpt2dSviewRgbImgTopDownDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                if 'center' in obj and 'scale' in obj:
-                    center = np.array(obj['center'])
-                    scale = np.array([obj['scale'], obj['scale']]) * 1.25
-                else:
-                    center, scale = self._xywh2cs(*obj['bbox'][:4], 1.25)
+                center = np.array(obj['center'])
+                scale = np.array([obj['scale'], obj['scale']])
 
                 image_file = osp.join(self.img_prefix, self.id2name[img_id])
                 gt_db.append({
