@@ -30,9 +30,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    # pretrained='torchvision://resnet50',
-    pretrained='work_dirs/pretrained/resnet/resnet50-0676ba61.pth',
-    backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
+    pretrained='torchvision://resnet152',
+    backbone=dict(type='ResNet', depth=152, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
         type='DeepposeRegressionHead',
@@ -43,7 +42,8 @@ model = dict(
             type='RLELoss',
             use_target_weight=True,
             size_average=True,
-            residual=True)),
+            residual=True,
+            q_dis='strict')),
     train_cfg=dict(),
     test_cfg=dict(flip_test=True))
 
@@ -61,7 +61,8 @@ data_cfg = dict(
     use_gt_bbox=False,
     det_bbox_thr=0.0,
     bbox_file='data/coco/person_detection_results/'
-    'COCO_val2017_detections_AP_H_56_person.json')
+    'COCO_val2017_detections_AP_H_56_person.json',
+)
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),

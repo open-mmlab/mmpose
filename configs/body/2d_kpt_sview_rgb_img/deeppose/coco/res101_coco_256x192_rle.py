@@ -6,7 +6,7 @@ evaluation = dict(interval=10, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-3,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -16,7 +16,7 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=0.001,
     step=[170, 200])
-total_epochs = 210
+total_epochs = 270
 channel_cfg = dict(
     num_output_channels=17,
     dataset_joints=17,
@@ -72,7 +72,8 @@ train_pipeline = [
         num_joints_half_body=8,
         prob_half_body=0.3),
     dict(
-        type='TopDownGetRandomScaleRotation', rot_factor=40, scale_factor=0.5),
+        type='TopDownGetRandomScaleRotation', rot_factor=45,
+        scale_factor=0.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(
@@ -110,7 +111,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
