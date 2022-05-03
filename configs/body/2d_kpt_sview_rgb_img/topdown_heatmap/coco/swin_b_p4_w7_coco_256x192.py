@@ -28,9 +28,8 @@ channel_cfg = dict(
     ])
 
 # model settings
-# pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
-#               '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
-pretrained = 'work_dirs/pretrained/swin/swin_base_patch4_window7_224_22k.pth'
+pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
+              '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
 
 model = dict(
     type='TopDown',

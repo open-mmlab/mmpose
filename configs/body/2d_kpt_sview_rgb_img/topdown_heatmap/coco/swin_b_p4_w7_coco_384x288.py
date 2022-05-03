@@ -28,9 +28,8 @@ channel_cfg = dict(
     ])
 
 # model settings
-# pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
-#               '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
-pretrained = 'work_dirs/pretrained/swin/swin_base_patch4_window7_224_22k.pth'
+pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
+              '/v1.0.0/swin_base_patch4_window12_384_22k.pth')
 
 model = dict(
     type='TopDown',
@@ -40,7 +39,7 @@ model = dict(
         embed_dims=128,
         depths=[2, 2, 18, 2],
         num_heads=[4, 8, 16, 32],
-        window_size=7,
+        window_size=12,
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
@@ -52,20 +51,11 @@ model = dict(
         with_cp=False,
         convert_weights=True,
     ),
-    neck=dict(
-        type='FPN',
-        in_channels=[128, 256, 512, 1024],
-        start_level=0,
-        out_channels=256,
-        num_outs=4,
-        upsample_cfg=dict(mode='bilinear', align_corners=False)),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=256,
+        in_channels=1024,
         out_channels=channel_cfg['num_output_channels'],
-        in_index=0,
-        num_deconv_layers=0,
-        extra=dict(final_conv_kernel=1, ),
+        in_index=3,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
@@ -75,8 +65,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[192, 256],
-    heatmap_size=[48, 64],
+    image_size=[288, 384],
+    heatmap_size=[72, 96],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
