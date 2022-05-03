@@ -127,7 +127,7 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
 
         return id2name, name2id
 
-    def _xywh2cs(self, x, y, w, h, padding=1.25):
+    def _xywh2cs(self, x, y, w, h, padding=1.25, random_shift=True):
         """This encodes bbox(x,y,w,h) into (center, scale)
 
         Args:
@@ -150,7 +150,7 @@ class Kpt2dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):
             'image_size'][1]
         center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
 
-        if (not self.test_mode) and np.random.rand() < 0.3:
+        if (not self.test_mode) and np.random.rand() < 0.3 and random_shift:
             center += 0.4 * (np.random.rand(2) - 0.5) * [w, h]
 
         if w > aspect_ratio * h:

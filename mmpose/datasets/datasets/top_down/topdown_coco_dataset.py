@@ -88,6 +88,7 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
+        self.random_shift = data_cfg.get('random_shift', True)
 
         self.db = self._get_db()
 
@@ -162,6 +163,12 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
+<<<<<<< HEAD
+=======
+            center, scale = self._xywh2cs(
+                *obj['clean_bbox'][:4], random_shift=self.random_shift)
+
+>>>>>>> 5ae96a00 (remove random shift)
             image_file = osp.join(self.img_prefix, self.id2name[img_id])
             rec.append({
                 'image_file': image_file,

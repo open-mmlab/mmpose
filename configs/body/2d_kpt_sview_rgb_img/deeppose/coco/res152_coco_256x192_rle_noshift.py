@@ -43,8 +43,7 @@ model = dict(
             type='RLELoss',
             use_target_weight=True,
             size_average=True,
-            residual=True,
-            q_dis='strict')),
+            residual=True)),
     train_cfg=dict(),
     test_cfg=dict(flip_test=True))
 
@@ -63,6 +62,7 @@ data_cfg = dict(
     det_bbox_thr=0.0,
     bbox_file='data/coco/person_detection_results/'
     'COCO_val2017_detections_AP_H_56_person.json',
+    random_shift=False,
 )
 
 train_pipeline = [
