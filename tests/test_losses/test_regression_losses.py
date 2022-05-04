@@ -14,7 +14,7 @@ def test_rle_loss():
     loss(fake_pred, fake_label)
 
     # test RLELoss with Q(error) changed to "Gaussian"(default "Laplace")
-    loss_cfg = dict(type='RLELoss', q_dis='Gaussian')
+    loss_cfg = dict(type='RLELoss', q_dis='gaussian')
     loss = build_loss(loss_cfg)
 
     fake_pred = torch.zeros((1, 3, 4))

@@ -60,10 +60,7 @@ class RLELoss(nn.Module):
         pred = output[:, :, :2]
         sigma = output[:, :, 2:4].sigmoid()
 
-        if self.q_dis == 'strict':
-            error = (pred - target) / sigma
-        else:
-            error = (pred - target) / (sigma + 1e-9)
+        error = (pred - target) / (sigma + 1e-9)
         # (B, K, 2)
         log_phi = self.flow_model.log_prob(error.reshape(-1, 2))
         log_phi = log_phi.reshape(target.shape[0], target.shape[1], 1)
@@ -75,13 +72,10 @@ class RLELoss(nn.Module):
             assert self.q_dis in ['laplace', 'gaussian', 'strict']
             if self.q_dis == 'laplace':
                 loss_q = torch.log(sigma * 2) + torch.abs(error)
-            elif self.q_dis == 'gaussian':
+            else:
                 loss_q = torch.log(
                     sigma * math.sqrt(2 * math.pi)) + 0.5 * error**2
-            else:
-                loss_q = torch.log(sigma * math.sqrt(
-                    2 * math.pi)) + torch.abs(pred - target) / (
-                        math.sqrt(2) * sigma + 1e-9)
+
             loss = nf_loss + loss_q
         else:
             loss = nf_loss
