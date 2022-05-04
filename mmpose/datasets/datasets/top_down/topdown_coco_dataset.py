@@ -89,8 +89,6 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
 
-
-
         self.db = self._get_db()
 
         print(f'=> num_images: {self.num_images}')
@@ -164,14 +162,9 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-
-
-
-
             image_file = osp.join(self.img_prefix, self.id2name[img_id])
             rec.append({
                 'image_file': image_file,
-
                 'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
@@ -209,7 +202,6 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
 
             if score < self.det_bbox_thr:
                 continue
-
 
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
