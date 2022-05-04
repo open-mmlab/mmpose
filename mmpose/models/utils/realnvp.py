@@ -12,6 +12,9 @@ class RealNVP(nn.Module):
 
     Code is modified from `the official implementation of RLE
     <https://github.com/Jeff-sjtu/res-loglikelihood-regression>`_.
+
+    See also `real-nvp-pytorch
+    <https://github.com/senya-ashukha/real-nvp-pytorch>`_.
     """
 
     @staticmethod

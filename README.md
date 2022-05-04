@@ -153,6 +153,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 * [x] [Albumentations](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#albumentations-information-2020) (Information'2020)
 * [x] [SoftWingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 * [x] [SmoothNet](/configs/_base_/filters/smoothnet_h36m.md) (arXiv'2021)
+* [x] [RLE](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
 
