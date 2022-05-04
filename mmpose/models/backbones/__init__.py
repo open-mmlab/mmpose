@@ -19,12 +19,12 @@ from .seresnet import SEResNet
 from .seresnext import SEResNeXt
 from .shufflenet_v1 import ShuffleNetV1
 from .shufflenet_v2 import ShuffleNetV2
+from .swin import SwinTransformer
 from .tcn import TCN
 from .v2v_net import V2VNet
 from .vgg import VGG
 from .vipnas_mbv3 import ViPNAS_MobileNetV3
 from .vipnas_resnet import ViPNAS_ResNet
-from .swin import SwinTransformer
 
 __all__ = [
     'AlexNet', 'HourglassNet', 'HourglassAENet', 'HRNet', 'MobileNetV2',

@@ -8,14 +8,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import (build_activation_layer, build_conv_layer,
                       build_norm_layer, xavier_init)
-
 from mmcv.cnn.bricks.transformer import (BaseTransformerLayer,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
 from mmcv.runner.base_module import BaseModule
 from mmcv.utils import to_2tuple
 from torch.nn.init import normal_
-
 
 try:
     from mmcv.ops.multi_scale_deform_attn import MultiScaleDeformableAttention
@@ -788,8 +786,9 @@ class DeformableDetrTransformer(Transformer):
         proposals = []
         _cur = 0
         for lvl, (H, W) in enumerate(spatial_shapes):
-            mask_flatten_ = memory_padding_mask[:, _cur:(_cur + H * W)].view(
-                N, H, W, 1)
+            mask_flatten_ = memory_padding_mask[:,
+                                                _cur:(_cur +
+                                                      H * W)].view(N, H, W, 1)
             valid_H = torch.sum(~mask_flatten_[:, :, 0, 0], 1)
             valid_W = torch.sum(~mask_flatten_[:, 0, :, 0], 1)
 
