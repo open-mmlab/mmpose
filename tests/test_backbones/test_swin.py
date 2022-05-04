@@ -28,7 +28,8 @@ def test_swin_transformer():
     """Test Swin Transformer backbone."""
 
     with pytest.raises(TypeError):
-        SwinTransformer()
+        # Pretrained arg must be str or None.
+        SwinTransformer(pretrained=123)
 
     with pytest.raises(AssertionError):
         # Because swin uses non-overlapping patch embed, so the stride of patch
