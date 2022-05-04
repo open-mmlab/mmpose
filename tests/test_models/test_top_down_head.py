@@ -515,14 +515,15 @@ def test_fc_head():
     input_shape = (1, 2048)
     inputs = _demo_inputs(input_shape)
     out = head(inputs)
-    assert out.shape == torch.Size([1, 17, 2])
+    assert out.shape == torch.Size([1, 17, 4])
 
-    _ = head.get_loss(out, out, torch.ones_like(out))
+    target = out[:, :, 0:2]
 
+    _ = head.get_loss(out, target, torch.ones_like(target))
     _ = head.inference_model(inputs)
     _ = head.inference_model(inputs, [])
 
-    acc = head.get_accuracy(out, out, torch.ones_like(out))
+    acc = head.get_accuracy(out, target, torch.ones_like(target))
     assert acc['acc_pose'] == 1.
 
 
