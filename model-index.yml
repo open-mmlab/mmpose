@@ -50,6 +50,7 @@ Import:
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/seresnet_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv1_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/shufflenetv2_coco.yml
+- configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_coco.yml
 - configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/crowdpose/hrnet_crowdpose.yml

@@ -144,6 +144,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 <details open>
 <summary><b>Supported techniques:</b></summary>
 
+* [x] [FPN](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
 * [x] [FP16](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
 * [x] [Wingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
 * [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/en/latest/papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
@@ -205,6 +206,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 * [x] [MobilenetV2](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#mobilenetv2-cvpr-2018) (CVPR'2018)
 * [x] [ResNetV1D](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
 * [x] [ResNeSt](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
+* [x] [Swin](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
 * [x] [HRFormer](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
 
 </details>
