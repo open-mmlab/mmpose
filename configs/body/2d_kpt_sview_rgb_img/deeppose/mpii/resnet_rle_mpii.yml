@@ -1,0 +1,23 @@
+Collections:
+- Name: RLE
+  Paper:
+    Title: Human pose regression with residual log-likelihood estimation
+    URL: https://arxiv.org/abs/2107.11291
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/rle.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256_rle.py
+  In Collection: RLE
+  Metadata:
+    Architecture:
+    - DeepPose
+    - RLE
+    - ResNet
+    Training Data: MPII
+  Name: deeppose_res50_mpii_256x256_rle
+  Results:
+  - Dataset: MPII
+    Metrics:
+      Mean: 0.86
+      Mean@0.1: 0.263
+    Task: Body 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle-5f92a619_20220504.pth
