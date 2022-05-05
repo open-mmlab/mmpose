@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.25.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.25.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.25.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.25.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.25.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.26.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.26.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.26.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,14 +73,15 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-* 2022-03-07: MMPose [v0.25.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.25.0) 已经发布. 主要更新包括:
-  * 支持 Shelf 和 Campus 数据集及预训练模型 ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014
-  * 新增 `Smoother` 模块: 使用可配置滤波器进行时序姿态平滑，增加预测结果鲁棒性
-  * 增加多视角多人姿态估计 demo
-  * 支持 SmoothNet 姿态平滑算法 ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021
+* 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) 已经发布. 主要更新包括:
+  * 新增算法 [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
+  * 新增主干网络 [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021
+  * 新增主干网络 [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 和 [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022
+  * 优化了推理速度和 CPU 占用率
+* 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
 * 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
 * 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
-  * MMPose Webcam API 用于快速开发基于 MMPose 的简单视频交互应用
+  MMPose Webcam API 用于快速开发基于 MMPose 的视频交互应用，具有上手简单、易于扩展的特点
 * 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装

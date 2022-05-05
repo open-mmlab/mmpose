@@ -1,17 +1,145 @@
 # Changelog
 
+## v0.26.0 (05/05/2022)
+
+**Highlights**
+
+- Support [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021 ([\#1259](https://github.com/open-mmlab/mmpose/pull/1259)) @Indigo6, @ly015
+- Support [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021 ([\#1300](https://github.com/open-mmlab/mmpose/pull/1300)) @yumendecc, @ly015
+- Support [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 and [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022 ([\#1343](https://github.com/open-mmlab/mmpose/pull/1343)) @zengwang430521
+- Speed up inference and reduce CPU usage by optimizing the pre-processing pipeline ([\#1320](https://github.com/open-mmlab/mmpose/pull/1320)) @chenxinfeng4, @liqikai9
+
+**New Features**
+
+- Support [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021 ([\#1259](https://github.com/open-mmlab/mmpose/pull/1259)) @Indigo6, @ly015
+- Support [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021 ([\#1300](https://github.com/open-mmlab/mmpose/pull/1300)) @yumendecc, @ly015
+- Support [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 and [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022 ([\#1343](https://github.com/open-mmlab/mmpose/pull/1343)) @zengwang430521
+- Support [FPN](https://openaccess.thecvf.com/content_cvpr_2017/html/Lin_Feature_Pyramid_Networks_CVPR_2017_paper.html), CVPR'2017 ([\#1300](https://github.com/open-mmlab/mmpose/pull/1300)) @yumendecc, @ly015
+
+**Improvements**
+
+- Speed up inference and reduce CPU usage by optimizing the pre-processing pipeline ([\#1320](https://github.com/open-mmlab/mmpose/pull/1320)) @chenxinfeng4, @liqikai9
+- Video demo supports models that requires multi-frame inputs ([\#1300](https://github.com/open-mmlab/mmpose/pull/1300)) @liqikai9, @jin-s13
+- Update benchmark regression list ([\#1328](https://github.com/open-mmlab/mmpose/pull/1328)) @ly015, @liqikai9
+- Remove unnecessary warnings in `TopDownPoseTrack18VideoDataset` ([\#1335](https://github.com/open-mmlab/mmpose/pull/1335)) @liqikai9
+- Improve documentation quality ([\#1313](https://github.com/open-mmlab/mmpose/pull/1313), [\#1305](https://github.com/open-mmlab/mmpose/pull/1305)) @Ben-Louis, @ly015
+- Update deprecating settings in configs ([\#1317](https://github.com/open-mmlab/mmpose/pull/1317)) @ly015
+
+**Bug Fixes**
+
+- Fix a bug in human skeleton grouping that may skip the matching process unexpectedly when `ignore_to_much` is True ([\#1341](https://github.com/open-mmlab/mmpose/pull/1341)) @daixinghome
+- Fix a GPG key error that leads to CI failure ([\#1354](https://github.com/open-mmlab/mmpose/pull/1354)) @ly015
+- Fix bugs in distributed training script ([\#1338](https://github.com/open-mmlab/mmpose/pull/1338), [\#1298](https://github.com/open-mmlab/mmpose/pull/1298)) @ly015
+- Fix an upstream bug in xtoccotools that causes incorrect AP(M) results ([\#1308](https://github.com/open-mmlab/mmpose/pull/1308)) @jin-s13, @ly015
+- Fix indentiation errors in the colab tutorial ([\#1298](https://github.com/open-mmlab/mmpose/pull/1298)) @YuanZi1501040205
+- Fix incompatible model weight initialization with other OpenMMLab codebases ([\#1329](https://github.com/open-mmlab/mmpose/pull/1329)) @274869388
+- Fix HRNet FP16 checkpoints download URL ([\#1309](https://github.com/open-mmlab/mmpose/pull/1309)) @YinAoXiong
+- Fix typos in `body3d_two_stage_video_demo.py` ([\#1295](https://github.com/open-mmlab/mmpose/pull/1295)) @mucozcan
+
+**Breaking Changes**
+
+- Refactor bbox processing in datasets and pipelines ([\#1311](https://github.com/open-mmlab/mmpose/pull/1311)) @ly015, @Ben-Louis
+  The bbox format conversion (xywh to center-scale) and random translation are moved from the dataset to the pipeline. The comparison between new and old version is as below:
+
+<table aligned='center'>
+<thead>
+    <tr align='center'>
+        <td> </td>
+        <th> v0.26.0 </th>
+        <th> v0.25.0 </th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+<th>Dataset<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/top_down/topdown_coco_dataset.py'>TopDownCOCODataset</a>)</small>
+</th>
+<td  valign='top'>
+
+```python
+...
+# Data sample only contains bbox
+rec.append({
+    'bbox': obj['clean_bbox][:4],
+    ...
+})
+```
+
+</td>
+<td  valign='top'>
+
+```python
+...
+# Convert bbox from xywh to center-scale
+center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+# Data sample contains center and scale
+rec.append({
+    'bbox': obj['clean_bbox][:4],
+    'center': center,
+    'scale': scale,
+    ...
+})
+```
+
+</td>
+</tr>
+<tr>
+<th>Pipeline Config<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192.py'>HRNet+COCO</a>)</small></th>
+<td valign='top'>
+
+```python
+...
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    # Convert bbox from xywh to center-scale
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
+    # Randomly shift bbox center
+    dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
+    ...
+]
+```
+
+</td>
+<td valign='top'>
+
+```python
+...
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    ...
+]
+```
+
+</td>
+</tr>
+<tr>
+<th>Advantage</th>
+<td valign='top'>
+<li>Simpler data sample content</li>
+<li>Flexible bbox format conversion and augmentation</li>
+<li>Apply bbox random translation every epoch (instead of only applying once at the annotation loading)
+</td>
+<td valign='top'>-</td>
+</tr>
+<tr>
+<th>BC Breaking</th>
+<td valign='top'>The method <code>_xywh2cs</code> of dataset base classes (e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/base/kpt_2d_sview_rgb_img_top_down_dataset.py'>Kpt2dSviewRgbImgTopDownDataset</a>) will be deprecated in the future. Custom datasets will need modifications to move the bbox format conversion to pipelines.</td>
+<td valign='top'>-</td>
+</tr>
+</tbody>
+</table>
+
 ## v0.25.0 (02/04/2022)
 
 **Highlights**
 
-- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9 @wusize
+- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9, @wusize
 - Add `Smoother` module for temporal smoothing of the pose estimation with configurable filters ([\#1127](https://github.com/open-mmlab/mmpose/pull/1127)) @ailingzengzzz, @ly015
 - Support SmoothNet for pose smoothing, ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021 ([\#1279](https://github.com/open-mmlab/mmpose/pull/1279)) @ailingzengzzz, @ly015
 - Add multiview 3D pose estimation demo ([\#1270](https://github.com/open-mmlab/mmpose/pull/1270)) @wusize
 
 **New Features**
 
-- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9 @wusize
+- Support Shelf and Campus datasets with pre-trained VoxelPose models, ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014 ([\#1225](https://github.com/open-mmlab/mmpose/pull/1225)) @liqikai9, @wusize
 - Add `Smoother` module for temporal smoothing of the pose estimation with configurable filters ([\#1127](https://github.com/open-mmlab/mmpose/pull/1127)) @ailingzengzzz, @ly015
 - Support SmoothNet for pose smoothing, ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021 ([\#1279](https://github.com/open-mmlab/mmpose/pull/1279)) @ailingzengzzz, @ly015
 - Add multiview 3D pose estimation demo ([\#1270](https://github.com/open-mmlab/mmpose/pull/1270)) @wusize
