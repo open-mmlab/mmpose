@@ -175,16 +175,6 @@ def test_top_down_pipeline():
     assert 'target_weight' in results_target
     assert results_target['target_weight'].shape == (num_joints, 1)
 
-    generate_target = TopDownGenerateTarget(
-        sigma=2, target_type='GaussianHeatmap', unbiased_encoding=True)
-    results_target = generate_target(copy.deepcopy(results_tensor))
-    assert 'target' in results_target
-    assert results_target['target'].shape == (
-        num_joints, results['ann_info']['heatmap_size'][1],
-        results['ann_info']['heatmap_size'][0])
-    assert 'target_weight' in results_target
-    assert results_target['target_weight'].shape == (num_joints, 1)
-
     generate_target = TopDownGenerateTarget(sigma=2, unbiased_encoding=False)
     results_target = generate_target(copy.deepcopy(results_tensor))
     assert 'target' in results_target
@@ -203,6 +193,16 @@ def test_top_down_pipeline():
         results['ann_info']['heatmap_size'][0])
     assert 'target_weight' in results_target
     assert results_target['target_weight'].shape == (2, num_joints, 1)
+
+    generate_target = TopDownGenerateTarget(
+        sigma=2, encoding='UDP', target_type='GaussianHeatmap')
+    results_target = generate_target(copy.deepcopy(results_tensor))
+    assert 'target' in results_target
+    assert results_target['target'].shape == (
+        num_joints, results['ann_info']['heatmap_size'][1],
+        results['ann_info']['heatmap_size'][0])
+    assert 'target_weight' in results_target
+    assert results_target['target_weight'].shape == (num_joints, 1)
 
     generate_target = TopDownGenerateTarget(
         kernel=(11, 11), encoding='Megvii', unbiased_encoding=False)
