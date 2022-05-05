@@ -42,91 +42,90 @@
   The bbox format conversion (xywh to center-scale) and random translation are moved from the dataset to the pipeline. The comparison between new and old version is as below:
 
 <table aligned='center'>
-    <thead>
-        <tr align='center'>
-            <td> </td>
-            <th> v0.26.0 </th>
-            <th> v0.25.0 </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr valign='top'>
-            <th>Dataset<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/top_down/topdown_coco_dataset.py'>TopDownCOCODataset</a>)</small></th>
-            <td>
+<thead>
+    <tr align='center'>
+        <td> </td>
+        <th> v0.26.0 </th>
+        <th> v0.25.0 </th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+<th>Dataset<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/top_down/topdown_coco_dataset.py'>TopDownCOCODataset</a>)</small>
+</th>
+<td  valign='top'>
 
-            ```python
-            ...
-            # Convert bbox from xywh to center-scale
-            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-            # Data sample contains center and scale
-            rec.append({
-                'bbox': obj['clean_bbox][:4],
-                'center': center,
-                'scale': scale,
-                ...
-            })
-            ```
+```python
+...
+# Convert bbox from xywh to center-scale
+center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+# Data sample contains center and scale
+rec.append({
+    'bbox': obj['clean_bbox][:4],
+    'center': center,
+    'scale': scale,
+    ...
+})
+```
 
-            </td>
-            <td>
+</td>
+<td  valign='top'>
 
-            ```python
-            ...
-            # Data sample only contains bbox
-            rec.append({
-                'bbox': obj['clean_bbox][:4],
-                ...
-            })
-            ```
+```python
+...
+# Data sample only contains bbox
+rec.append({
+    'bbox': obj['clean_bbox][:4],
+    ...
+})
+```
 
-            </td>
-        </tr valign='top'>
-        <tr>
-            <th>Pipeline Config<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192.py'>HRNet+COCO</a>)</small></th>
-            <td valign='top'>
+</td>
+</tr>
+<tr>
+<th>Pipeline Config<br><small>(e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/hrnet_w32_coco_256x192.py'>HRNet+COCO</a>)</small></th>
+<td valign='top'>
 
-            ```python
-            ...
-            train_pipeline = [
-                dict(type='LoadImageFromFile'),
-                # Convert bbox from xywh to center-scale
-                dict(type='TopDownGetBboxCenterScale', padding=1.25),
-                # Randomly shift bbox center
-                dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
-                ...
-            ]
-            ```
+```python
+...
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    # Convert bbox from xywh to center-scale
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
+    # Randomly shift bbox center
+    dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
+    ...
+]
+```
 
-            </td>
-            <td valign='top'>
+</td>
+<td valign='top'>
 
-            ```python
-            ...
-            train_pipeline = [
-                dict(type='LoadImageFromFile'),
-                dict(type='TopDownGetBboxCenterScale', padding=1.25),
-                dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
-                ...
-            ]
-            ```
+```python
+...
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    ...
+]
+```
 
-            </td>
-        </tr>
-        <tr>
-            <th>Advantage</th>
-            <td valign='top'>
-                <li>Simpler data sample content</li>
-                <li>Flexible bbox format conversion and augmentation</li>
-                <li>Apply bbox random translation every epoch (instead of only applying once at the annotation loading)
-            </td>
-            <td valign='top'>-</td>
-        </tr>
-        <tr>
-            <th>BC Breaking</th>
-            <td valign='top'>The method `_xywh2cs` of dataset base classes (e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/base/kpt_2d_sview_rgb_img_top_down_dataset.py'>Kpt2dSviewRgbImgTopDownDataset</a>) will be deprecated in the future. Custom datasets would need modifications to move the bbox format conversion to pipelines.</td>
-            <td valign='top'>-</td>
-        </tr>
-    </tbody>
+</td>
+</tr>
+<tr>
+<th>Advantage</th>
+<td valign='top'>
+<li>Simpler data sample content</li>
+<li>Flexible bbox format conversion and augmentation</li>
+<li>Apply bbox random translation every epoch (instead of only applying once at the annotation loading)
+</td>
+<td valign='top'>-</td>
+</tr>
+<tr>
+<th>BC Breaking</th>
+<td valign='top'>The method <code>_xywh2cs</code> of dataset base classes (e.g. <a href='https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/datasets/base/kpt_2d_sview_rgb_img_top_down_dataset.py'>Kpt2dSviewRgbImgTopDownDataset</a>) will be deprecated in the future. Custom datasets will need modifications to move the bbox format conversion to pipelines.</td>
+<td valign='top'>-</td>
+</tr>
+</tbody>
 </table>
 
 ## v0.25.0 (02/04/2022)
