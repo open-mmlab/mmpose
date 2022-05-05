@@ -21,6 +21,11 @@ except ImportError:
 
 
 def prefetch_img_metas(cfg, ori_wh):
+    """Pre-fetch the img_metas from config and original image size.
+
+    Return:
+        dict: img_metas.
+    """
     w, h = ori_wh
     bbox = np.array([0, 0, w, h])
     center, scale = _box2cs(cfg, bbox)
@@ -70,6 +75,10 @@ def prefetch_img_metas(cfg, ori_wh):
 
 
 def process_img(frame_resize, img_metas, device):
+    """Process the image.
+
+    Cast the image to device and do normalization.
+    """
     assert frame_resize.shape[1::-1] == tuple(
         img_metas['ann_info']['image_size'])
     frame_cuda = torch.from_numpy(frame_resize).to(device).float()
