@@ -10,7 +10,6 @@ import torch
 from torchvision.transforms import functional as F
 
 from mmpose.apis import init_pose_model, vis_pose_result
-from mmpose.apis.inference import _box2cs
 from mmpose.datasets import DatasetInfo
 
 try:
@@ -18,6 +17,27 @@ try:
 except ImportError:
     raise ImportError(
         'Please install ffmpegcv with:\n\n    pip install ffmpegcv')
+
+
+def box2cs(box, image_size):
+    """Encode bbox(x,y,w,h) into (center, scale) without padding.
+
+    Returns:
+        tuple: A tuple containing center and scale.
+    """
+    x, y, w, h = box[:4]
+
+    aspect_ratio = 1. * image_size[0] / image_size[1]
+    center = np.zeros((2), dtype=np.float32)
+    center[0] = x + w * 0.5
+    center[1] = y + h * 0.5
+
+    if w > aspect_ratio * h:
+        h = w * 1.0 / aspect_ratio
+    elif w < aspect_ratio * h:
+        w = h * aspect_ratio
+    scale = np.array([w * 1.0 / 200.0, h * 1.0 / 200.0], dtype=np.float32)
+    return center, scale
 
 
 def prefetch_img_metas(cfg, ori_wh):
@@ -28,8 +48,7 @@ def prefetch_img_metas(cfg, ori_wh):
     """
     w, h = ori_wh
     bbox = np.array([0, 0, w, h])
-    center, scale = _box2cs(cfg, bbox)
-    scale /= 1.25  # never expand bbox area
+    center, scale = box2cs(bbox, cfg.data_cfg['image_size'])
     dataset_info = cfg.data['test'].get('dataset_info', None)
     assert dataset_info, 'Please set `dataset_info` in the config.'
     img_metas = {
