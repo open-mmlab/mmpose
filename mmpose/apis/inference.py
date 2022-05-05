@@ -13,7 +13,7 @@ from PIL import Image
 from mmpose.core.bbox import bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.core.post_processing import oks_nms
 from mmpose.datasets.dataset_info import DatasetInfo
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.pipelines import Compose, ToTensor
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
 
@@ -47,6 +47,22 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     model.to(device)
     model.eval()
     return model
+
+
+def _pipeline_gpu_speedup(pipeline, device):
+    """Load images to GPU and speed up the data transforms in pipelines.
+
+    Args:
+        pipeline: A instance of `Compose`.
+        device: A string or torch.device.
+
+    Examples:
+        _pipeline_gpu_speedup(test_pipeline, 'cuda:0')
+    """
+
+    for t in pipeline.transforms:
+        if isinstance(t, ToTensor):
+            t.device = device
 
 
 def _inference_single_pose_model(model,
@@ -94,6 +110,7 @@ def _inference_single_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -192,7 +209,6 @@ def _inference_single_pose_model(model,
     batch_data = []
     for bbox in bboxes:
         # prepare data
-
         data = {
             'bbox':
             bbox,
@@ -229,7 +245,6 @@ def _inference_single_pose_model(model,
                 data['image_file'] = imgs_or_paths
 
         data = test_pipeline(data)
-        print(test_pipeline)
         batch_data.append(data)
 
     batch_data = collate(batch_data, samples_per_gpu=len(batch_data))
@@ -455,6 +470,7 @@ def inference_bottom_up_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     # prepare data
     data = {
