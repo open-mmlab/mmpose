@@ -4,6 +4,61 @@ import torch
 from mmpose.models import build_loss
 
 
+def test_rle_loss():
+    # test RLELoss without target weight(default None)
+    loss_cfg = dict(type='RLELoss')
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label)
+
+    # test RLELoss with Q(error) changed to "Gaussian"(default "Laplace")
+    loss_cfg = dict(type='RLELoss', q_dis='gaussian')
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label)
+
+    # test RLELoss._apply(fn)
+    loss_cfg = dict(type='RLELoss', size_average=False)
+    loss = build_loss(loss_cfg)
+    loss.cpu()
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label)
+
+    # test RLELoss with size_average(default True) changed to False
+    loss_cfg = dict(type='RLELoss', size_average=False)
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label)
+
+    # test RLELoss with residual(default True) changed to False
+    loss_cfg = dict(type='RLELoss', residual=False)
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label)
+
+    # test RLELoss with target weight
+    loss_cfg = dict(type='RLELoss', use_target_weight=True)
+    loss = build_loss(loss_cfg)
+
+    fake_pred = torch.zeros((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label, torch.ones_like(fake_label))
+
+    fake_pred = torch.ones((1, 3, 4))
+    fake_label = torch.zeros((1, 3, 2))
+    loss(fake_pred, fake_label, torch.ones_like(fake_label))
+
+
 def test_smooth_l1_loss():
     # test SmoothL1Loss without target weight(default None)
     loss_cfg = dict(type='SmoothL1Loss')

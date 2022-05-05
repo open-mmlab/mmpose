@@ -2,7 +2,6 @@
 import os
 import os.path as osp
 import tempfile
-import warnings
 from collections import OrderedDict, defaultdict
 
 import json_tricks as json
@@ -183,8 +182,6 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             joints_3d[:, :2] = keypoints[:, :2]
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-            center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-
             image_files = []
             cur_image_file = osp.join(self.img_prefix, self.id2name[img_id])
             image_files.append(cur_image_file)
@@ -207,22 +204,17 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                     continue
                 # the supporting frame index
                 support_idx = ref_idx + index
+                # clip the frame index to make sure that it does not exceed
+                # the boundings of frame indices
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
                     cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
-                if osp.exists(sup_image_file):
-                    image_files.append(sup_image_file)
-                else:
-                    warnings.warn(
-                        f'{sup_image_file} does not exist, '
-                        f'use {cur_image_file} instead.', UserWarning)
-                    image_files.append(cur_image_file)
+                image_files.append(sup_image_file)
+
             rec.append({
                 'image_file': image_files,
-                'center': center,
-                'scale': scale,
                 'bbox': obj['clean_bbox'][:4],
                 'rotation': 0,
                 'joints_3d': joints_3d,
@@ -299,25 +291,19 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
                     continue
                 # the supporting frame index
                 support_idx = ref_idx + index
+                # clip the frame index to make sure that it does not exceed
+                # the boundings of frame indices
                 support_idx = np.clip(support_idx, 0, nframes - 1)
                 sup_image_file = cur_image_file.replace(
                     cur_image_name,
                     str(support_idx).zfill(self.ph_fill_len) + '.jpg')
 
-                if osp.exists(sup_image_file):
-                    image_files.append(sup_image_file)
-                else:
-                    warnings.warn(f'{sup_image_file} does not exist, '
-                                  f'use {cur_image_file} instead.')
-                    image_files.append(cur_image_file)
+                image_files.append(sup_image_file)
 
-            center, scale = self._xywh2cs(*box[:4])
             joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
             joints_3d_visible = np.ones((num_joints, 3), dtype=np.float32)
             kpt_db.append({
                 'image_file': image_files,
-                'center': center,
-                'scale': scale,
                 'rotation': 0,
                 'bbox': box[:4],
                 'bbox_score': score,
@@ -437,7 +423,7 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
 
         self._write_keypoint_results(valid_kpts, gt_folder, res_folder)
 
-        info_str = self._do_keypoint_eval(gt_folder, res_folder)
+        info_str = self._do_python_keypoint_eval(gt_folder, res_folder)
         name_value = OrderedDict(info_str)
 
         if tmp_folder is not None:
@@ -512,8 +498,18 @@ class TopDownPoseTrack18VideoDataset(Kpt2dSviewRgbVidTopDownDataset):
             with open(osp.join(pred_folder, json_file), 'w') as f:
                 json.dump(info, f, sort_keys=True, indent=4)
 
-    def _do_keypoint_eval(self, gt_folder, pred_folder):
-        """Keypoint evaluation using poseval."""
+    def _do_python_keypoint_eval(self, gt_folder, pred_folder):
+        """Keypoint evaluation using poseval.
+
+        Args:
+            gt_folder (str): The folder of the json files storing
+                ground truth keypoint annotations.
+            pred_folder (str): The folder of the json files storing
+                prediction results.
+
+        Returns:
+            List: Evaluation results for evaluation metric.
+        """
 
         if not has_poseval:
             raise ImportError('Please install poseval package for evaluation'

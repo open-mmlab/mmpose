@@ -66,7 +66,7 @@ model = dict(
                 num_channels=(48, 96, 192, 384))),
         frozen_stages=4,
     ),
-    concat_tensors=True,
+    concat_tensors=False,
     neck=dict(
         type='PoseWarperNeck',
         in_channels=48,
@@ -124,6 +124,8 @@ data_cfg = dict(
 # take care of orders of the transforms
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
+    dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
     dict(
         type='TopDownHalfBodyTransform',
         num_joints_half_body=8,
@@ -150,6 +152,7 @@ train_pipeline = [
 
 val_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type='TopDownGetBboxCenterScale', padding=1.25),
     dict(type='TopDownAffine'),
     dict(type='ToTensor'),
     dict(

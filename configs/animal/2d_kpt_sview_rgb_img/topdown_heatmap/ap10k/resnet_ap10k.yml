@@ -15,11 +15,11 @@ Models:
   Results:
   - Dataset: AP-10K
     Metrics:
-      AP: 0.699
-      AP@0.5: 0.94
-      AP@0.75: 0.76
-      APL: 0.703
-      APM: 0.57
+      AP: 0.681
+      AP@0.5: 0.923
+      AP@0.75: 0.74
+      APL: 0.688
+      APM: 0.51
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.pth
 - Config: configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res101_ap10k_256x256.py
@@ -31,10 +31,10 @@ Models:
   Results:
   - Dataset: AP-10K
     Metrics:
-      AP: 0.698
-      AP@0.5: 0.943
-      AP@0.75: 0.754
-      APL: 0.702
-      APM: 0.543
+      AP: 0.681
+      AP@0.5: 0.922
+      AP@0.75: 0.742
+      APL: 0.688
+      APM: 0.534
     Task: Animal 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.pth

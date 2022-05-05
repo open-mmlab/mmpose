@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+import warnings
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -133,6 +134,14 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
             center (np.ndarray[float32](2,)): center of the bbox (x, y).
             scale (np.ndarray[float32](2,)): scale of the bbox w & h.
         """
+
+        warnings.warn(
+            'The ``_xywh2cs`` method will be deprecated and removed from '
+            f'{self.__class__.__name__} in the future. Please use data '
+            'transforms ``TopDownGetBboxCenterScale`` and '
+            '``TopDownRandomShiftBboxCenter`` in the pipeline instead.',
+            DeprecationWarning)
+
         aspect_ratio = self.ann_info['image_size'][0] / self.ann_info[
             'image_size'][1]
         center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
@@ -159,24 +168,6 @@ class Kpt2dSviewRgbVidTopDownDataset(Dataset, metaclass=ABCMeta):
     @abstractmethod
     def evaluate(self, results, *args, **kwargs):
         """Evaluate keypoint results."""
-
-    @staticmethod
-    @abstractmethod
-    def _write_keypoint_results(keypoint_results, gt_folder, pred_folder):
-        """Write results into a json file."""
-
-    @abstractmethod
-    def _do_keypoint_eval(self, gt_folder, pred_folder):
-        """Keypoint evaluation.
-        Args:
-            gt_folder (str): The folder of the json files storing
-                ground truth keypoint annotations.
-            pred_folder (str): The folder of the json files storing
-                prediction results.
-
-        Returns:
-            List: Evaluation results for evaluation metric.
-        """
 
     def __len__(self):
         """Get the size of the dataset."""

@@ -143,6 +143,7 @@ MMPose 也提供了其他更详细的教程:
 <details open>
 <summary><b>支持的技术</b></summary>
 
+* [x] [FPN](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
 * [x] [FP16](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
 * [x] [Wingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
 * [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
@@ -151,6 +152,7 @@ MMPose 也提供了其他更详细的教程:
 * [x] [Albumentations](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#albumentations-information-2020) (Information'2020)
 * [x] [SoftWingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 * [x] [SmoothNet](/configs/_base_/filters/smoothnet_h36m.md) (arXiv'2021)
+* [x] [RLE](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
 
@@ -167,7 +169,7 @@ MMPose 也提供了其他更详细的教程:
 * [x] [DeepFashion](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#deepfashion-cvpr-2016) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
 * [x] [300W](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#300w-imavis-2016) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
 * [x] [RHD](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#rhd-iccv-2017) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
-* [x] [CMU Panoptic HandDB](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-handdb-cvpr-2017) \[[homepage](http://domedb.perception.cs.cmu.edu/handdb.html)\] (CVPR'2017)
+* [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-iccv-2015) \[[homepage](http://domedb.perception.cs.cmu.edu/)\] (ICCV'2015)
 * [x] [AI Challenger](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#ai-challenger-arxiv-2017) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
 * [x] [MHP](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
 * [x] [WFLW](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
@@ -204,6 +206,7 @@ MMPose 也提供了其他更详细的教程:
 * [x] [MobilenetV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#mobilenetv2-cvpr-2018) (CVPR'2018)
 * [x] [ResNetV1D](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
 * [x] [ResNeSt](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
+* [x] [Swin](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
 * [x] [HRFormer](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
 * [x] [PVT](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvt-iccv-2021) (ICCV'2021)
 * [x] [PVTV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvtv2-cvmj-2022) (CVMJ'2022)
