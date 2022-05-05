@@ -113,7 +113,7 @@ def process_img(frame_resize, img_metas, device):
 def main():
     """Visualize the demo video with GPU acceleration.
 
-    Using mmdet to detect the human.
+    Using full frame to estimate the keypoints.
     """
     parser = ArgumentParser()
     parser.add_argument('pose_config', help='Config file for pose')
