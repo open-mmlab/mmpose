@@ -76,7 +76,7 @@ jobs:
   build_cuda101:
     runs-on: ubuntu-18.04
     container:
-      image: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
+      image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
     strategy:
       matrix:
         python-version: [3.7]
@@ -148,7 +148,7 @@ jobs:
   build_cuda102:
     runs-on: ubuntu-18.04
     container:
-      image: pytorch/pytorch:1.9.0-cuda10.2-cudnn7-devel
+      image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
