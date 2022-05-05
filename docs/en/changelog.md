@@ -57,13 +57,9 @@
 
 ```python
 ...
-# Convert bbox from xywh to center-scale
-center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-# Data sample contains center and scale
+# Data sample only contains bbox
 rec.append({
     'bbox': obj['clean_bbox][:4],
-    'center': center,
-    'scale': scale,
     ...
 })
 ```
@@ -73,9 +69,13 @@ rec.append({
 
 ```python
 ...
-# Data sample only contains bbox
+# Convert bbox from xywh to center-scale
+center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
+# Data sample contains center and scale
 rec.append({
     'bbox': obj['clean_bbox][:4],
+    'center': center,
+    'scale': scale,
     ...
 })
 ```
