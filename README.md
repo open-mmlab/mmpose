@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘Documentation](https://mmpose.readthedocs.io/en/v0.25.0/) |
-[🛠️Installation](https://mmpose.readthedocs.io/en/v0.25.0/install.html) |
-[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.25.0/modelzoo.html) |
-[📜Papers](https://mmpose.readthedocs.io/en/v0.25.0/papers/algorithms.html) |
-[🆕Update News](https://mmpose.readthedocs.io/en/v0.25.0/changelog.html) |
+[📘Documentation](https://mmpose.readthedocs.io/en/v0.26.0/) |
+[🛠️Installation](https://mmpose.readthedocs.io/en/v0.26.0/install.html) |
+[👀Model Zoo](https://mmpose.readthedocs.io/en/v0.26.0/modelzoo.html) |
+[📜Papers](https://mmpose.readthedocs.io/en/v0.26.0/papers/algorithms.html) |
+[🆕Update News](https://mmpose.readthedocs.io/en/v0.26.0/changelog.html) |
 [🤔Reporting Issues](https://github.com/open-mmlab/mmpose/issues/new/choose)
 </div>
 
@@ -73,14 +73,15 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## News
 
-* 2022-04-02: MMPose [v0.25.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.25.0) is released. Major updates include:
-  * Support Shelf and Campus datasets with pre-trained models ["3D Pictorial Structures for Multiple Human Pose Estimation"](http://campar.in.tum.de/pub/belagiannis2014cvpr/belagiannis2014cvpr.pdf), CVPR'2014
-  * New module `Smoother`: Pose temporal smoothing with configurable filters
-  * Add multi-view multi-person 3D pose estimation demo
-  * Support SmoothNet for pose smoothing ["SmoothNet: A Plug-and-Play Network for Refining Human Poses in Videos"](https://arxiv.org/abs/2112.13715), arXiv'2021
+* 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) is released. Major updates include:
+  * Support [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
+  * Support [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021
+  * Support [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 and [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022
+  * Optimize the inference speed and CPU usage
+* 2022-04: MMPose is available on [Gitee](https://gitee.com/open-mmlab/mmpose)
 * 2022-02-28: MMPose model deployment is supported by [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0
 * 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) is released with documents and tutorials
-  * MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose functions
+  MMPose Webcam API is a simple yet powerful tool to develop interactive webcam applications with MMPose features.
 * 2021-12-29: OpenMMLab Open Platform is online! Try our [pose estimation demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## Installation
