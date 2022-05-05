@@ -76,7 +76,7 @@ jobs:
   build_cuda101:
     runs-on: ubuntu-18.04
     container:
-      image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
+      image: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
     strategy:
       matrix:
         python-version: [3.7]
@@ -101,6 +101,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Fetch GPG keys
+        run: |
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
       - name: Install system dependencies
         run: |
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git-all ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
@@ -108,10 +112,6 @@ jobs:
           rm -rf /var/lib/apt/lists/*
       - name: Upgrade pip
         run: python -m pip install pip --upgrade
-      - name: Fetch GPG keys
-        run: |
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get install -y libprotobuf-dev protobuf-compiler
         if: ${{matrix.python-version == '3.9'}}
@@ -148,7 +148,7 @@ jobs:
   build_cuda102:
     runs-on: ubuntu-18.04
     container:
-      image: pytorch/pytorch:1.8.1-cuda10.2-cudnn7-devel
+      image: pytorch/pytorch:1.9.0-cuda10.2-cudnn7-devel
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
@@ -167,6 +167,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Fetch GPG keys
+        run: |
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
       - name: Install system dependencies
         run: |
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git-all ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
@@ -174,10 +178,6 @@ jobs:
           rm -rf /var/lib/apt/lists/*
       - name: Upgrade pip
         run: python -m pip install pip --upgrade
-      - name: Fetch GPG keys
-        run: |
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-          apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
       - name: Install dependencies for compiling onnx when python=3.9
         run: python -m pip install protobuf && apt-get update && apt-get -y install libprotobuf-dev protobuf-compiler cmake
         if: ${{matrix.python-version == '3.9'}}
