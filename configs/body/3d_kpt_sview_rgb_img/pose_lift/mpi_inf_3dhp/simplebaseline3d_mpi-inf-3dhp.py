@@ -5,7 +5,7 @@ _base_ = [
 evaluation = dict(
     interval=10,
     metric=['mpjpe', 'p-mpjpe', '3dpck', '3dauc'],
-    key_indicator='MPJPE')
+    save_best='MPJPE')
 
 # optimizer settings
 optimizer = dict(

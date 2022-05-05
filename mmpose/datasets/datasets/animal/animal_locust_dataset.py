@@ -121,20 +121,18 @@ class AnimalLocustDataset(Kpt2dSviewRgbImgTopDownDataset):
                 joints_3d[:, :2] = keypoints[:, :2]
                 joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
-                # the ori image is 160x160
-                center, scale = self._xywh2cs(0, 0, 160, 160, 0.8)
+                # use the entire image which is 160x160
+                bbox = np.array([0, 0, 160, 160], dtype=np.float32)
 
                 image_file = osp.join(self.img_prefix, self.id2name[img_id])
 
                 gt_db.append({
                     'image_file': image_file,
-                    'center': center,
-                    'scale': scale,
                     'rotation': 0,
                     'joints_3d': joints_3d,
                     'joints_3d_visible': joints_3d_visible,
                     'dataset': self.dataset_name,
-                    'bbox': obj['bbox'],
+                    'bbox': bbox,
                     'bbox_score': 1,
                     'bbox_id': bbox_id
                 })

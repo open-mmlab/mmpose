@@ -7,11 +7,13 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
+from mmcv.utils.misc import deprecated_api_warning
 from PIL import Image
 
+from mmpose.core.bbox import bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.core.post_processing import oks_nms
 from mmpose.datasets.dataset_info import DatasetInfo
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.pipelines import Compose, ToTensor
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
 
@@ -47,93 +49,47 @@ def init_pose_model(config, checkpoint=None, device='cuda:0'):
     return model
 
 
-def _xyxy2xywh(bbox_xyxy):
-    """Transform the bbox format from x1y1x2y2 to xywh.
+def _pipeline_gpu_speedup(pipeline, device):
+    """Load images to GPU and speed up the data transforms in pipelines.
 
     Args:
-        bbox_xyxy (np.ndarray): Bounding boxes (with scores), shaped (n, 4) or
-            (n, 5). (left, top, right, bottom, [score])
+        pipeline: A instance of `Compose`.
+        device: A string or torch.device.
 
-    Returns:
-        np.ndarray: Bounding boxes (with scores),
-          shaped (n, 4) or (n, 5). (left, top, width, height, [score])
-    """
-    bbox_xywh = bbox_xyxy.copy()
-    bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
-    bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
-
-    return bbox_xywh
-
-
-def _xywh2xyxy(bbox_xywh):
-    """Transform the bbox format from xywh to x1y1x2y2.
-
-    Args:
-        bbox_xywh (ndarray): Bounding boxes (with scores),
-            shaped (n, 4) or (n, 5). (left, top, width, height, [score])
-    Returns:
-        np.ndarray: Bounding boxes (with scores), shaped (n, 4) or
-          (n, 5). (left, top, right, bottom, [score])
-    """
-    bbox_xyxy = bbox_xywh.copy()
-    bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
-    bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
-
-    return bbox_xyxy
-
-
-def _box2cs(cfg, box):
-    """This encodes bbox(x,y,w,h) into (center, scale)
-
-    Args:
-        x, y, w, h
-
-    Returns:
-        tuple: A tuple containing center and scale.
-
-        - np.ndarray[float32](2,): Center of the bbox (x, y).
-        - np.ndarray[float32](2,): Scale of the bbox w & h.
+    Examples:
+        _pipeline_gpu_speedup(test_pipeline, 'cuda:0')
     """
 
-    x, y, w, h = box[:4]
-    input_size = cfg.data_cfg['image_size']
-    aspect_ratio = input_size[0] / input_size[1]
-    center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
-    if w > aspect_ratio * h:
-        h = w * 1.0 / aspect_ratio
-    elif w < aspect_ratio * h:
-        w = h * aspect_ratio
-
-    # pixel std is 200.0
-    scale = np.array([w / 200.0, h / 200.0], dtype=np.float32)
-    scale = scale * 1.25
-
-    return center, scale
+    for t in pipeline.transforms:
+        if isinstance(t, ToTensor):
+            t.device = device
 
 
 def _inference_single_pose_model(model,
-                                 img_or_path,
+                                 imgs_or_paths,
                                  bboxes,
                                  dataset='TopDownCocoDataset',
                                  dataset_info=None,
-                                 return_heatmap=False):
+                                 return_heatmap=False,
+                                 use_multi_frames=False):
     """Inference human bounding boxes.
 
     Note:
+        - num_frames: F
         - num_bboxes: N
         - num_keypoints: K
 
     Args:
         model (nn.Module): The loaded pose model.
-        img_or_path (str | np.ndarray): Image filename or loaded image.
+        imgs_or_paths (list(str) | list(np.ndarray)): Image filename(s) or
+            loaded image(s)
         bboxes (list | np.ndarray): All bounding boxes (with scores),
             shaped (N, 4) or (N, 5). (left, top, width, height, [score])
             where N is number of bounding boxes.
         dataset (str): Dataset name. Deprecated.
         dataset_info (DatasetInfo): A class containing all dataset info.
-        outputs (list[str] | tuple[str]): Names of layers whose output is
-            to be returned, default: None
+        return_heatmap (bool): Flag to return heatmap, default: False
+        use_multi_frames (bool): Flag to use multi frames for inference
 
     Returns:
         ndarray[NxKx3]: Predicted pose x, y, score.
@@ -145,8 +101,16 @@ def _inference_single_pose_model(model,
     if device.type == 'cpu':
         device = -1
 
+    if use_multi_frames:
+        assert 'frame_weight_test' in cfg.data.test.data_cfg
+        # use multi frames for inference
+        # the number of input frames must equal to frame weight in the config
+        assert len(imgs_or_paths) == len(
+            cfg.data.test.data_cfg.frame_weight_test)
+
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     assert len(bboxes[0]) in [4, 5]
 
@@ -244,14 +208,10 @@ def _inference_single_pose_model(model,
 
     batch_data = []
     for bbox in bboxes:
-        center, scale = _box2cs(cfg, bbox)
-
         # prepare data
         data = {
-            'center':
-            center,
-            'scale':
-            scale,
+            'bbox':
+            bbox,
             'bbox_score':
             bbox[4] if len(bbox) == 5 else 1,
             'bbox_id':
@@ -270,10 +230,19 @@ def _inference_single_pose_model(model,
                 'flip_pairs': flip_pairs
             }
         }
-        if isinstance(img_or_path, np.ndarray):
-            data['img'] = img_or_path
+
+        if use_multi_frames:
+            # weight for different frames in multi-frame inference setting
+            data['frame_weight'] = cfg.data.test.data_cfg.frame_weight_test
+            if isinstance(imgs_or_paths[0], np.ndarray):
+                data['img'] = imgs_or_paths
+            else:
+                data['image_file'] = imgs_or_paths
         else:
-            data['image_file'] = img_or_path
+            if isinstance(imgs_or_paths, np.ndarray):
+                data['img'] = imgs_or_paths
+            else:
+                data['image_file'] = imgs_or_paths
 
         data = test_pipeline(data)
         batch_data.append(data)
@@ -292,8 +261,9 @@ def _inference_single_pose_model(model,
     return result['preds'], result['output_heatmap']
 
 
+@deprecated_api_warning(name_dict=dict(img_or_path='imgs_or_paths'))
 def inference_top_down_pose_model(model,
-                                  img_or_path,
+                                  imgs_or_paths,
                                   person_results=None,
                                   bbox_thr=None,
                                   format='xywh',
@@ -301,9 +271,11 @@ def inference_top_down_pose_model(model,
                                   dataset_info=None,
                                   return_heatmap=False,
                                   outputs=None):
-    """Inference a single image with a list of person bounding boxes.
+    """Inference a single image with a list of person bounding boxes. Support
+    single-frame and multi-frame inference setting.
 
     Note:
+        - num_frames: F
         - num_people: P
         - num_keypoints: K
         - bbox height: H
@@ -311,7 +283,8 @@ def inference_top_down_pose_model(model,
 
     Args:
         model (nn.Module): The loaded pose model.
-        img_or_path (str| np.ndarray): Image filename or loaded image.
+        imgs_or_paths (str | np.ndarray | list(str) | list(np.ndarray)):
+            Image filename(s) or loaded image(s).
         person_results (list(dict), optional): a list of detected persons that
             contains ``bbox`` and/or ``track_id``:
 
@@ -345,6 +318,12 @@ def inference_top_down_pose_model(model,
             Output feature maps from layers specified in `outputs`. \
             Includes 'heatmap' if `return_heatmap` is True.
     """
+    # decide whether to use multi frames for inference
+    if isinstance(imgs_or_paths, (list, tuple)):
+        use_multi_frames = True
+    else:
+        assert isinstance(imgs_or_paths, (str, np.ndarray))
+        use_multi_frames = False
     # get dataset info
     if (dataset_info is None and hasattr(model, 'cfg')
             and 'dataset_info' in model.cfg):
@@ -364,10 +343,11 @@ def inference_top_down_pose_model(model,
 
     if person_results is None:
         # create dummy person results
-        if isinstance(img_or_path, str):
-            width, height = Image.open(img_or_path).size
+        sample = imgs_or_paths[0] if use_multi_frames else imgs_or_paths
+        if isinstance(sample, str):
+            width, height = Image.open(sample).size
         else:
-            height, width = img_or_path.shape[:2]
+            height, width = sample.shape[:2]
         person_results = [{'bbox': np.array([0, 0, width, height])}]
 
     if len(person_results) == 0:
@@ -385,11 +365,11 @@ def inference_top_down_pose_model(model,
 
     if format == 'xyxy':
         bboxes_xyxy = bboxes
-        bboxes_xywh = _xyxy2xywh(bboxes)
+        bboxes_xywh = bbox_xyxy2xywh(bboxes)
     else:
         # format is already 'xywh'
         bboxes_xywh = bboxes
-        bboxes_xyxy = _xywh2xyxy(bboxes)
+        bboxes_xyxy = bbox_xywh2xyxy(bboxes)
 
     # if bbox_thr remove all bounding box
     if len(bboxes_xywh) == 0:
@@ -399,11 +379,12 @@ def inference_top_down_pose_model(model,
         # poses is results['pred'] # N x 17x 3
         poses, heatmap = _inference_single_pose_model(
             model,
-            img_or_path,
+            imgs_or_paths,
             bboxes_xywh,
             dataset=dataset,
             dataset_info=dataset_info,
-            return_heatmap=return_heatmap)
+            return_heatmap=return_heatmap,
+            use_multi_frames=use_multi_frames)
 
         if return_heatmap:
             h.layer_outputs['heatmap'] = heatmap
@@ -489,6 +470,7 @@ def inference_bottom_up_pose_model(model,
 
     # build the data pipeline
     test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     # prepare data
     data = {
@@ -831,3 +813,36 @@ def process_mmdet_results(mmdet_results, cat_id=1):
         person_results.append(person)
 
     return person_results
+
+
+def collect_multi_frames(video, frame_id, indices, online=False):
+    """Collect multi frames from the video.
+
+    Args:
+        video (mmcv.VideoReader): A VideoReader of the input video file.
+        frame_id (int): index of the current frame
+        indices (list(int)): index offsets of the frames to collect
+        online (bool): inference mode, if set to True, can not use future
+            frame information.
+
+    Returns:
+        list(ndarray): multi frames collected from the input video file.
+    """
+    num_frames = len(video)
+    frames = []
+    # put the current frame at first
+    frames.append(video[frame_id])
+    # use multi frames for inference
+    for idx in indices:
+        # skip current frame
+        if idx == 0:
+            continue
+        support_idx = frame_id + idx
+        # online mode, can not use future frame information
+        if online:
+            support_idx = np.clip(support_idx, 0, frame_id)
+        else:
+            support_idx = np.clip(support_idx, 0, num_frames - 1)
+        frames.append(video[support_idx])
+
+    return frames
