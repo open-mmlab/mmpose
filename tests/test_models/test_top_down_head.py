@@ -503,6 +503,29 @@ def test_fc_head():
     acc = head.get_accuracy(out, out, torch.ones_like(out))
     assert acc['acc_pose'] == 1.
 
+    # Test fc head with out_sigma set to True(Default False)
+    head = DeepposeRegressionHead(
+        in_channels=2048,
+        num_joints=17,
+        out_sigma=True,
+        loss_keypoint=dict(type='RLELoss', use_target_weight=True))
+
+    head.init_weights()
+
+    input_shape = (1, 2048)
+    inputs = _demo_inputs(input_shape)
+    out = head(inputs)
+    assert out.shape == torch.Size([1, 17, 4])
+
+    target = out[:, :, 0:2]
+
+    _ = head.get_loss(out, target, torch.ones_like(target))
+    _ = head.inference_model(inputs)
+    _ = head.inference_model(inputs, [])
+
+    acc = head.get_accuracy(out, target, torch.ones_like(target))
+    assert acc['acc_pose'] == 1.
+
 
 def _demo_inputs(input_shape=(1, 3, 64, 64)):
     """Create a superset of inputs needed to run backbone.
