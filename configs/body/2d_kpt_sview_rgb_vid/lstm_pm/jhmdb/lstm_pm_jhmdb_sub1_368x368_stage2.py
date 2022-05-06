@@ -124,10 +124,10 @@ test_pipeline = val_pipeline
 
 data_root = 'data/jhmdb'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=16,
     workers_per_gpu=2,
-    val_dataloader=dict(samples_per_gpu=32),
-    test_dataloader=dict(samples_per_gpu=32),
+    val_dataloader=dict(samples_per_gpu=16),
+    test_dataloader=dict(samples_per_gpu=16),
     train=dict(
         type='TopDownJhmdbVideoDataset',
         ann_file=f'{data_root}/annotations/Sub1_train.json',
