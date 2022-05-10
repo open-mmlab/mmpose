@@ -139,8 +139,8 @@ class AnimalPoseDataset(Kpt2dSviewRgbImgTopDownDataset):
             x, y, w, h = obj['bbox']
             x1 = max(0, x)
             y1 = max(0, y)
-            x2 = min(width - 1, x1 + max(0, w - 1))
-            y2 = min(height - 1, y1 + max(0, h - 1))
+            x2 = min(width - 1, x1 + max(0, w))
+            y2 = min(height - 1, y1 + max(0, h))
             if ('area' not in obj or obj['area'] > 0) and x2 > x1 and y2 > y1:
                 obj['clean_bbox'] = [x1, y1, x2 - x1, y2 - y1]
                 valid_objs.append(obj)
