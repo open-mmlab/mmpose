@@ -100,6 +100,11 @@ def test_bottom_up_COCO_dataset():
     with pytest.raises(KeyError):
         _ = custom_dataset.evaluate(results, metric='PCK')
 
+    # Test when gt annotations are absent
+    del custom_dataset.coco.dataset['annotations']
+    with pytest.warns(UserWarning):
+        _ = custom_dataset.evaluate(results, metric='mAP')
+
 
 def test_bottom_up_CrowdPose_dataset():
     dataset = 'BottomUpCrowdPoseDataset'
