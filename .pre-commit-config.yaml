@@ -40,16 +40,16 @@ repos:
     hooks:
       - id: codespell
         args: ["--skip", "*.ipynb", "-L", "mot"]
-  - repo: local
-    hooks:
-      - id: update-model-index
-        name: update-model-index
-        description: Collect model information and update model-index.yml
-        entry: .dev_scripts/github/update_model_index.py
-        additional_dependencies: [mmcv]
-        language: python
-        files: ^configs/.*\.md$
-        require_serial: true
+  # - repo: local
+  #   hooks:
+  #     - id: update-model-index
+  #       name: update-model-index
+  #       description: Collect model information and update model-index.yml
+  #       entry: .dev_scripts/github/update_model_index.py
+  #       additional_dependencies: [pyyaml]
+  #       language: python
+  #       files: ^configs/.*\.md$
+  #       require_serial: true
   - repo: https://github.com/open-mmlab/pre-commit-hooks
     rev: v0.2.0
     hooks:
