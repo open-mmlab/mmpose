@@ -11,7 +11,7 @@ import os.path as osp
 import re
 import sys
 
-import mmcv
+import yaml
 
 MMPOSE_ROOT = osp.dirname(osp.dirname(osp.dirname(__file__)))
 
@@ -27,7 +27,7 @@ def dump_yaml_and_check_difference(obj, file):
         Bool: If the target YAML file is different from the original.
     """
 
-    str_dump = mmcv.dump(obj, None, file_format='yaml', sort_keys=True)
+    str_dump = yaml.dump(obj, None, sort_keys=True)
 
     if osp.isfile(file):
         file_exists = True
