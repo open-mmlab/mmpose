@@ -220,11 +220,19 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
 
         self._write_coco_keypoint_results(valid_kpts, res_file)
 
-        info_str = self._do_python_keypoint_eval(res_file)
-        name_value = OrderedDict(info_str)
+        # do evaluation only if the ground truth keypoint annotations exist
+        if 'annotations' in self.coco.dataset:
+            info_str = self._do_python_keypoint_eval(res_file)
+            name_value = OrderedDict(info_str)
 
-        if tmp_folder is not None:
-            tmp_folder.cleanup()
+            if tmp_folder is not None:
+                tmp_folder.cleanup()
+        else:
+            warnings.warn(f'Due to the absence of ground truth keypoint'
+                          f'annotations, the quantitative evaluation can not'
+                          f'be conducted. The prediction results have been'
+                          f'saved at: {osp.abspath(res_file)}')
+            name_value = {}
 
         return name_value
 

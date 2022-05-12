@@ -301,6 +301,11 @@ def test_animal_ATRW_dataset():
     with pytest.raises(KeyError):
         infos = custom_dataset.evaluate(results, metric=['PCK'])
 
+    # Test when gt annotations are absent
+    del custom_dataset.coco.dataset['annotations']
+    with pytest.warns(UserWarning):
+        _ = custom_dataset.evaluate(results, metric='mAP')
+
 
 def test_animal_Macaque_dataset():
     dataset = 'AnimalMacaqueDataset'
@@ -363,6 +368,11 @@ def test_animal_Macaque_dataset():
 
     with pytest.raises(KeyError):
         infos = custom_dataset.evaluate(results, metric=['PCK'])
+
+    # Test when gt annotations are absent
+    del custom_dataset.coco.dataset['annotations']
+    with pytest.warns(UserWarning):
+        _ = custom_dataset.evaluate(results, metric='mAP')
 
 
 def test_animalpose_dataset():
@@ -431,6 +441,11 @@ def test_animalpose_dataset():
     with pytest.raises(KeyError):
         infos = custom_dataset.evaluate(results, metric=['PCK'])
 
+    # Test when gt annotations are absent
+    del custom_dataset.coco.dataset['annotations']
+    with pytest.warns(UserWarning):
+        _ = custom_dataset.evaluate(results, metric='mAP')
+
 
 def test_ap10k_dataset():
     dataset = 'AnimalAP10KDataset'
@@ -498,3 +513,8 @@ def test_ap10k_dataset():
 
     with pytest.raises(KeyError):
         infos = custom_dataset.evaluate(results, metric=['PCK'])
+
+    # Test when gt annotations are absent
+    del custom_dataset.coco.dataset['annotations']
+    with pytest.warns(UserWarning):
+        _ = custom_dataset.evaluate(results, metric='mAP')
