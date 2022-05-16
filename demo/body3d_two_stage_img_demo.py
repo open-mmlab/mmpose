@@ -11,7 +11,8 @@ from xtcocotools.coco import COCO
 from mmpose.apis import (inference_pose_lifter_model,
                          inference_top_down_pose_model, vis_3d_pose_result)
 from mmpose.apis.inference import init_pose_model
-from mmpose.core import SimpleCamera
+from mmpose.core.bbox import bbox_xywh2xyxy
+from mmpose.core.camera import SimpleCamera
 from mmpose.datasets import DatasetInfo
 
 
@@ -127,7 +128,6 @@ def main():
     # First stage: 2D pose detection
     pose_det_results_list = []
     if args.only_second_stage:
-        from mmpose.apis.inference import _xywh2xyxy
 
         print('Stage 1: load 2D pose results from Json file.')
         for image_id, image in coco.imgs.items():
@@ -144,7 +144,7 @@ def main():
 
                 pose_det_result = {
                     'image_name': image_name,
-                    'bbox': _xywh2xyxy(bbox),
+                    'bbox': bbox_xywh2xyxy(bbox),
                     'keypoints': keypoints,
                     'keypoints_3d': keypoints_3d
                 }
