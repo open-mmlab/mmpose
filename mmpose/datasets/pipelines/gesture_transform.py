@@ -177,6 +177,8 @@ class MultiModalVideoToTensor:
         """Implement data processing similar to ToTensor."""
         for i, modality in enumerate(results['modalities']):
             video = results['video'][i].transpose(3, 0, 1, 2)
+            if modality == 'rgb':
+                video = video[::-1, ...]
             results['video'][i] = torch.tensor(
                 np.ascontiguousarray(video), dtype=torch.float) / 255.0
         return results
