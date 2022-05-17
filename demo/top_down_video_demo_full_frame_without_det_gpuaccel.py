@@ -78,8 +78,9 @@ def prefetch_img_metas(cfg, ori_wh):
         'ann_info': {
             'image_size': np.array(cfg.data_cfg['image_size']),
             'num_joints': cfg.data_cfg['num_joints'],
-            'flip_pairs': dataset_info.flip_pairs
-        }
+        },
+        'flip_pairs':
+        dataset_info.flip_pairs
     }
     for pipeline in cfg.test_pipeline[1:]:
         if pipeline['type'] == 'NormalizeTensor':
@@ -225,8 +226,8 @@ def main():
             if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-    frame_origin.release()
-    frame_resize.release()
+    video_origin.release()
+    video_resize.release()
     if save_out_video:
         videoWriter.release()
     if args.show:
