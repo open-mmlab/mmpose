@@ -35,7 +35,7 @@
 
 Results on Shelf dataset.
 
-| Arch | Actor 1 | Actor 2 | Actor 3 | Average| ckpt | log |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [prn32_cpn48_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/shelf/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5.py) | 99.10 | 94.86 | 97.52 | 97.16| [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5-24721ec7_20220323.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5_20220323.log.json) |
-| [prn64_cpn80_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/shelf/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5.py) | 99.00 | 94.59 | 97.64 | 97.08| [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5-f406fefe_20220323.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5_20220323.log.json) |
+| Arch                                                      | Actor 1 | Actor 2 | Actor 3 | Average |                            ckpt                            |                            log                            |
+| :-------------------------------------------------------- | :-----: | :-----: | :-----: | :-----: | :--------------------------------------------------------: | :-------------------------------------------------------: |
+| [prn32_cpn48_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/shelf/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5.py) |  99.10  |  94.86  |  97.52  |  97.16  | [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5-24721ec7_20220323.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn32x32x32_cpn48x48x12_shelf_cam5_20220323.log.json) |
+| [prn64_cpn80_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/shelf/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5.py) |  99.00  |  94.59  |  97.64  |  97.08  | [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5-f406fefe_20220323.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_shelf_cam5_20220323.log.json) |

@@ -70,6 +70,6 @@ Results on WFLW dataset
 
 The model is trained on WFLW train.
 
-| Arch  | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> | ckpt | log |
-| :-----| :--------: | :------------------: | :------------------: |:---------------------------: |:------------------------: | :------------------: | :--------------: |:-------------------------: |:---: | :---: |
-| [deeppose_res50_softwingloss](/configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_softwingloss.py)  | 256x256 | 4.41 | 7.77 | 4.37 | 5.27 | 5.01 | 4.36 | 4.70 | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss-4d34f22a_20211212.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss_20211212.log.json) |
+| Arch       | Input Size | NME<sub>*test*</sub> | NME<sub>*pose*</sub> | NME<sub>*illumination*</sub> | NME<sub>*occlusion*</sub> | NME<sub>*blur*</sub> | NME<sub>*makeup*</sub> | NME<sub>*expression*</sub> |    ckpt    |    log    |
+| :--------- | :--------: | :------------------: | :------------------: | :--------------------------: | :-----------------------: | :------------------: | :--------------------: | :------------------------: | :--------: | :-------: |
+| [deeppose_res50_softwingloss](/configs/face/2d_kpt_sview_rgb_img/deeppose/wflw/res50_wflw_256x256_softwingloss.py) |  256x256   |         4.41         |         7.77         |             4.37             |           5.27            |         5.01         |          4.36          |            4.70            | [ckpt](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss-4d34f22a_20211212.pth) | [log](https://download.openmmlab.com/mmpose/face/deeppose/deeppose_res50_wflw_256x256_softwingloss_20211212.log.json) |

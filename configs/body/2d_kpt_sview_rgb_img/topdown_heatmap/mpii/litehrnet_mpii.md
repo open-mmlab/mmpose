@@ -33,7 +33,7 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [LiteHRNet-18](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py) | 256x256 | 0.859 | 0.260 | [ckpt](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_mpii_256x256-cabd7984_20210623.pth) | [log](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_mpii_256x256_20210623.log.json) |
-| [LiteHRNet-30](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_30_mpii_256x256.py) | 256x256 | 0.869 | 0.271 | [ckpt](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_mpii_256x256-faae8bd8_20210622.pth) | [log](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_mpii_256x256_20210622.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [LiteHRNet-18](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_18_mpii_256x256.py) |  256x256   | 0.859 |  0.260   | [ckpt](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_mpii_256x256-cabd7984_20210623.pth) | [log](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet18_mpii_256x256_20210623.log.json) |
+| [LiteHRNet-30](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/litehrnet_30_mpii_256x256.py) |  256x256   | 0.869 |  0.271   | [ckpt](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_mpii_256x256-faae8bd8_20210622.pth) | [log](https://download.openmmlab.com/mmpose/top_down/litehrnet/litehrnet30_mpii_256x256_20210622.log.json) |

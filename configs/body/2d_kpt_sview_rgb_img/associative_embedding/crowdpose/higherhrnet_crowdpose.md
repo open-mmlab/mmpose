@@ -50,12 +50,12 @@
 
 Results on CrowdPose test without multi-scale test
 
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
-| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py)  | 512x512 | 0.655 | 0.859 | 0.705 | 0.728 | 0.660 | 0.577 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512_20201017.log.json) |
+| Arch                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) |                      ckpt                      |                      log                      |
+| :--------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :----: | :----: | :----: | :--------------------------------------------: | :-------------------------------------------: |
+| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py) |  512x512   | 0.655 |      0.859      |      0.705      | 0.728  | 0.660  | 0.577  | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512_20201017.log.json) |
 
 Results on CrowdPose test with multi-scale test. 2 scales (\[2, 1\]) are used
 
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: | :------: |
-| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py)  | 512x512 | 0.661 | 0.864 | 0.710 | 0.742 | 0.670 | 0.566 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512_20201017.log.json) |
+| Arch                                           | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> | AP (E) | AP (M) | AP (H) |                      ckpt                      |                      log                      |
+| :--------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :----: | :----: | :----: | :--------------------------------------------: | :-------------------------------------------: |
+| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/higherhrnet_w32_crowdpose_512x512.py) |  512x512   | 0.661 |      0.864      |      0.710      | 0.742  | 0.670  | 0.566  | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512-1aa4a132_20201017.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_crowdpose_512x512_20201017.log.json) |

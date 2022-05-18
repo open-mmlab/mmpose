@@ -131,13 +131,13 @@ d. 安装其他可选依赖。
 1. 在步骤 c 中，git commit 的 id 将会被写到版本号中，如 0.6.0+2e7045c。这个版本号也会被保存到训练好的模型中。
    这里推荐用户每次在步骤 b 中对本地代码和 github 上的源码进行同步。如果 C++/CUDA 代码被修改，就必须进行这一步骤。
 
-1. 根据上述步骤，MMPose 就会以 `dev` 模式被安装，任何本地的代码修改都会立刻生效，不需要再重新安装一遍（除非用户提交了 commits，并且想更新版本号）。
+2. 根据上述步骤，MMPose 就会以 `dev` 模式被安装，任何本地的代码修改都会立刻生效，不需要再重新安装一遍（除非用户提交了 commits，并且想更新版本号）。
 
-1. 如果用户想使用 `opencv-python-headless` 而不是 `opencv-python`，可再安装 MMCV 前安装 `opencv-python-headless`。
+3. 如果用户想使用 `opencv-python-headless` 而不是 `opencv-python`，可再安装 MMCV 前安装 `opencv-python-headless`。
 
-1. 如果 mmcv 已经被安装，用户需要使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
+4. 如果 mmcv 已经被安装，用户需要使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
 
-1. 一些依赖包是可选的。运行 `python setup.py develop` 将只会安装运行代码所需的最小要求依赖包。
+5. 一些依赖包是可选的。运行 `python setup.py develop` 将只会安装运行代码所需的最小要求依赖包。
    要想使用一些可选的依赖包，如 `smplx`，用户需要通过 `pip install -r requirements/optional.txt` 进行安装，
    或者通过调用 `pip`（如 `pip install -v -e .[optional]`，这里的 `[optional]` 可替换为 `all`，`tests`，`build` 或 `optional`） 指定安装对应的依赖包，如 `pip install -v -e .[tests,build]`。
 

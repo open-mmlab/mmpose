@@ -22,13 +22,13 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/valentinemagic/v
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| l | Toggle the Valentine Magic effect on/off. |
-| v | Toggle the pose visualization on/off. |
-| h | Show help information. |
-| m | Show diagnostic information. |
-| q | Exit. |
+| Hotkey | Function                                  |
+| ------ | ----------------------------------------- |
+| l      | Toggle the Valentine Magic effect on/off. |
+| v      | Toggle the pose visualization on/off.     |
+| h      | Show help information.                    |
+| m      | Show diagnostic information.              |
+| q      | Exit.                                     |
 
 ### Configuration
 

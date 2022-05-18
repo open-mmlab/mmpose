@@ -112,4 +112,4 @@ Some tips to speed up MMPose inference:
 For 2D hand pose estimation models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [hand-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L56).
-1. set `post_process='default'` in [hand-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L57).
+2. set `post_process='default'` in [hand-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/hand/resnet/onehand10k/res50_onehand10k_256x256.py#L57).

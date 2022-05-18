@@ -37,8 +37,8 @@
 
 Results on Vinegar Fly test set
 
-|  Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
-| :-------- | :--------: | :------: | :------: | :------: |:------: |:------: |
-|[pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res50_fly_192x192.py) | 192x192 | 0.996 | 0.910 | 2.00 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_fly_192x192-5d0ee2d9_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_fly_192x192_20210407.log.json) |
-|[pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res101_fly_192x192.py) | 192x192 | 0.996 | 0.912 | 1.95 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_fly_192x192-41a7a6cc_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_fly_192x192_20210407.log.json) |
-|[pose_resnet_152](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py) | 192x192 | 0.997 | 0.917 | 1.78 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192_20210407.log.json) |
+| Arch                                                       | Input Size | PCK@0.2 |  AUC  | EPE  |                            ckpt                            |                            log                             |
+| :--------------------------------------------------------- | :--------: | :-----: | :---: | :--: | :--------------------------------------------------------: | :--------------------------------------------------------: |
+| [pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res50_fly_192x192.py) |  192x192   |  0.996  | 0.910 | 2.00 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_fly_192x192-5d0ee2d9_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_fly_192x192_20210407.log.json) |
+| [pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res101_fly_192x192.py) |  192x192   |  0.996  | 0.912 | 1.95 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_fly_192x192-41a7a6cc_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_fly_192x192_20210407.log.json) |
+| [pose_resnet_152](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/fly/res152_fly_192x192.py) |  192x192   |  0.997  | 0.917 | 1.78 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192-fcafbd5a_20210407.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res152_fly_192x192_20210407.log.json) |

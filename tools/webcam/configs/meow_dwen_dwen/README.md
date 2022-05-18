@@ -30,12 +30,12 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/meow_dwen_dwen/m
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| s | Change the background. |
-| h | Show help information. |
-| m | Show diagnostic information. |
-| q | Exit. |
+| Hotkey | Function                     |
+| ------ | ---------------------------- |
+| s      | Change the background.       |
+| h      | Show help information.       |
+| m      | Show diagnostic information. |
+| q      | Exit.                        |
 
 ### Configuration
 
