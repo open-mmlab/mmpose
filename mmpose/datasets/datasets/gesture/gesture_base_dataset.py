@@ -28,11 +28,11 @@ class GestureBaseDataset(Dataset, metaclass=ABCMeta):
         self.test_mode = test_mode
 
         self.ann_info['video_size'] = np.array(data_cfg['video_size'])
-        self.modalities = data_cfg['modalities']
-        if isinstance(self.modalities, (list, tuple)):
-            self.modalities = self.modalities
+        self.modality = data_cfg['modality']
+        if isinstance(self.modality, (list, tuple)):
+            self.modality = self.modality
         else:
-            self.modalities = (self.modalities, )
+            self.modality = (self.modality, )
         self.dataset_name = dataset_info.dataset_name
         self.pipeline = Compose(self.pipeline)
 
@@ -40,6 +40,10 @@ class GestureBaseDataset(Dataset, metaclass=ABCMeta):
     def _get_single(self, idx):
         """Get anno for a single video."""
         raise NotImplementedError
+
+    @abstractmethod
+    def evaluate(self, results, *args, **kwargs):
+        """Evaluate recognition results."""
 
     def prepare_train_vid(self, idx):
         """Prepare video for training given the index."""
