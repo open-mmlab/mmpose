@@ -47,6 +47,8 @@ extensions = [
     'sphinx_markdown_tables', 'sphinx_copybutton', 'myst_parser'
 ]
 
+myst_heading_anchors = 3
+
 autodoc_mock_imports = ['json_tricks', 'mmpose.version']
 
 # Ignore >>> when copying code
