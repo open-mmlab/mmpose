@@ -16,7 +16,8 @@ try:
     import ffmpegcv
 except ImportError:
     raise ImportError(
-        'Please install ffmpegcv with:\n\n    pip install ffmpegcv')
+        'Please install the ffmpeg: \n\n    apt install ffmpeg \n\n'
+        'And please install ffmpegcv with:\n\n    pip install ffmpegcv')
 
 
 def box2cs(box, image_size):
@@ -188,6 +189,7 @@ def main():
         videoWriter = ffmpegcv.VideoWriter(
             os.path.join(args.out_video_root,
                          f'vis_{os.path.basename(args.video_path)}'),
+            codec='mpeg4',
             fps=video_origin.fps)
 
     with torch.no_grad():
