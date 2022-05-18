@@ -1,8 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
+import os.path as osp
 import warnings
 from collections import defaultdict
 
+import json_tricks as json
+import torch
 from mmcv import Config
 
 from ...builder import DATASETS
@@ -77,11 +80,36 @@ class NVGestureDataset(GestureBaseDataset):
         sample = self.db[self.vid_ids[idx]]
 
         anno['label'] = sample['label']
-        anno['modalities'] = self.modalities
+        anno['modality'] = self.modality
 
-        for modality in self.modalities:
+        for modal in self.modality:
             anno['video_file'].append(
-                os.path.join(self.vid_prefix, sample[modality]['path']))
-            anno['valid_frames'].append(sample[modality]['valid_frames'])
+                os.path.join(self.vid_prefix, sample[modal]['path']))
+            anno['valid_frames'].append(sample[modal]['valid_frames'])
 
         return anno
+
+    def evaluate(self, results, res_folder=None, metric='AP', **kwargs):
+        if metric != 'AP':
+            raise ValueError(f'Metric {metric} is invalid. Pls use \'AP\'.')
+
+        logits = defaultdict(list)
+        labels = []
+        for result in results:
+            for modal in result['logits']:
+                logits[modal].append(result['logits'][modal].mean(dim=2))
+            labels.append(result['label'])
+        logits = {modal: torch.cat(logits[modal]) for modal in logits}
+        labels = torch.cat(labels)
+
+        accuracy = dict()
+        for modal in logits:
+            acc = (logits[modal].argmax(dim=1) == labels).float().mean()
+            accuracy[f'AP_{modal}'] = acc.item()
+        accuracy['mAP'] = sum(accuracy.values()) / len(accuracy)
+
+        if res_folder is not None:
+            with open(osp.join(res_folder, 'accuracy.json'), 'w') as f:
+                json.dump(accuracy, f, indent=4)
+
+        return accuracy

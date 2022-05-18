@@ -10,7 +10,7 @@ from mmpose.datasets.builder import PIPELINES
 class CropValidClip:
     """Generate the clip from complete video with valid frames.
 
-    Required keys: 'video', 'modalities', 'valid_frames', 'num_frames'.
+    Required keys: 'video', 'modality', 'valid_frames', 'num_frames'.
 
     Modified keys: 'video', 'valid_frames', 'num_frames'.
     """
@@ -21,8 +21,8 @@ class CropValidClip:
     def __call__(self, results):
         """Crop the valid part from the video."""
         lengths = [(end - start) for start, end in results['valid_frames']]
-        length = min(lengths) + 1
-        for i, modality in enumerate(results['modalities']):
+        length = min(lengths)
+        for i, modal in enumerate(results['modality']):
             start = results['valid_frames'][i][0]
             results['video'][i] = results['video'][i][start:start + length]
             results['num_frames'] = length
@@ -34,7 +34,7 @@ class CropValidClip:
 class RandomTemporalCrop:
     """Data augmentation with random temporal crop.
 
-    Required keys: 'video', 'modalities', 'num_frames'.
+    Required keys: 'video', 'modality', 'num_frames'.
 
     Modified keys: 'video', 'num_frames'.
     """
@@ -47,7 +47,7 @@ class RandomTemporalCrop:
         diff = self.length - results['num_frames']
         start = np.random.randint(
             max(results['num_frames'] - self.length + 1, 1))
-        for i, modality in enumerate(results['modalities']):
+        for i, modal in enumerate(results['modality']):
             video = results['video'][i]
             if diff > 0:
                 video = np.pad(video, ((diff // 2, diff - (diff // 2)),
@@ -62,7 +62,7 @@ class RandomTemporalCrop:
 class ResizeGivenShortEdge:
     """Resize the video to make its short edge have given length.
 
-    Required keys: 'video', 'modalities', 'width', 'height'.
+    Required keys: 'video', 'modality', 'width', 'height'.
 
     Modified keys: 'video', 'width', 'height'.
     """
@@ -72,7 +72,7 @@ class ResizeGivenShortEdge:
 
     def __call__(self, results):
         """Implement data processing with resize given short edge."""
-        for i, modality in enumerate(results['modalities']):
+        for i, modal in enumerate(results['modality']):
             width, height = results['width'][i], results['height'][i]
             video = results['video'][i].transpose(1, 2, 3, 0)
             num_frames = video.shape[-1]
@@ -94,7 +94,7 @@ class ResizeGivenShortEdge:
 class RandomAlignedSpatialCrop:
     """Data augmentation with random spatial crop for spatially aligned videos.
 
-    Required keys: 'video', 'modalities', 'width', 'height'.
+    Required keys: 'video', 'modality', 'width', 'height'.
 
     Modified keys: 'video', 'width', 'height'.
     """
@@ -109,7 +109,7 @@ class RandomAlignedSpatialCrop:
         assert len(set(results['width'])) == 1, \
             f"the widths {results['width']} are not identical."
         height, width = results['height'][0], results['width'][0]
-        for i, modality in enumerate(results['modalities']):
+        for i, modal in enumerate(results['modality']):
             video = results['video'][i].transpose(1, 2, 3, 0)
             num_frames = video.shape[-1]
             video = video.reshape(height, width, -1)
@@ -132,7 +132,7 @@ class RandomAlignedSpatialCrop:
 class CenterSpatialCrop:
     """Data processing by crop the center region of a video.
 
-    Required keys: 'video', 'modalities', 'width', 'height'.
+    Required keys: 'video', 'modality', 'width', 'height'.
 
     Modified keys: 'video', 'width', 'height'.
     """
@@ -142,7 +142,7 @@ class CenterSpatialCrop:
 
     def __call__(self, results):
         """Implement data processing with center crop."""
-        for i, modality in enumerate(results['modalities']):
+        for i, modal in enumerate(results['modality']):
             height, width = results['height'][i], results['width'][i]
             video = results['video'][i].transpose(1, 2, 3, 0)
             num_frames = video.shape[-1]
@@ -162,10 +162,39 @@ class CenterSpatialCrop:
 
 
 @PIPELINES.register_module()
+class ModalWiseChannelProcess:
+    """Video channel processing according to modality.
+
+    Required keys: 'video', 'modality'.
+
+    Modified keys: 'video'.
+    """
+
+    def __init__(self):
+        pass
+
+    def __call__(self, results):
+        """Implement channel processing for video array."""
+        for i, modal in enumerate(results['modality']):
+            if modal == 'rgb':
+                results['video'][i] = results['video'][i][..., ::-1]
+            elif modal == 'depth':
+                if results['video'][i].ndim == 4:
+                    results['video'][i] = results['video'][i][..., :1]
+                elif results['video'][i].ndim == 3:
+                    results['video'][i] = results['video'][i][..., None]
+            elif modal == 'flow':
+                results['video'][i] = results['video'][i][..., :2]
+            else:
+                raise ValueError(f'modality {modal} is invalid.')
+        return results
+
+
+@PIPELINES.register_module()
 class MultiModalVideoToTensor:
     """Data processing by converting video arrays to pytorch tensors.
 
-    Required keys: 'video', 'modalities'.
+    Required keys: 'video', 'modality'.
 
     Modified keys: 'video'.
     """
@@ -175,10 +204,8 @@ class MultiModalVideoToTensor:
 
     def __call__(self, results):
         """Implement data processing similar to ToTensor."""
-        for i, modality in enumerate(results['modalities']):
+        for i, modal in enumerate(results['modality']):
             video = results['video'][i].transpose(3, 0, 1, 2)
-            if modality == 'rgb':
-                video = video[::-1, ...]
             results['video'][i] = torch.tensor(
                 np.ascontiguousarray(video), dtype=torch.float) / 255.0
         return results
@@ -188,7 +215,7 @@ class MultiModalVideoToTensor:
 class VideoNormalizeTensor:
     """Data processing by converting video arrays to pytorch tensors.
 
-    Required keys: 'video', 'modalities'.
+    Required keys: 'video', 'modality'.
 
     Modified keys: 'video'.
     """
@@ -199,8 +226,8 @@ class VideoNormalizeTensor:
 
     def __call__(self, results):
         """Implement data normalization."""
-        for i, modality in enumerate(results['modalities']):
-            if modality == 'rgb':
+        for i, modal in enumerate(results['modality']):
+            if modal == 'rgb':
                 video = results['video'][i]
                 dim = video.ndim - 1
                 video = video.sub(self.mean.view(3, *((1, ) * dim)))
