@@ -5,7 +5,6 @@ import warnings
 from collections import defaultdict
 
 import json_tricks as json
-import torch
 from mmcv import Config
 
 from ...builder import DATASETS
@@ -93,19 +92,19 @@ class NVGestureDataset(GestureBaseDataset):
         if metric != 'AP':
             raise ValueError(f'Metric {metric} is invalid. Pls use \'AP\'.')
 
-        logits = defaultdict(list)
-        labels = []
+        accuracy_buffer = defaultdict(list)
+        num_samples = 0
         for result in results:
             for modal in result['logits']:
-                logits[modal].append(result['logits'][modal].mean(dim=2))
-            labels.append(result['label'])
-        logits = {modal: torch.cat(logits[modal]) for modal in logits}
-        labels = torch.cat(labels)
+                logit = result['logits'][modal].mean(dim=2)
+                acc = (logit.argmax(dim=1) == result['label']).int().sum()
+                accuracy_buffer[modal].append(acc.item())
+            num_samples += len(result['label'])
 
         accuracy = dict()
-        for modal in logits:
-            acc = (logits[modal].argmax(dim=1) == labels).float().mean()
-            accuracy[f'AP_{modal}'] = acc.item()
+        for modal in accuracy_buffer:
+            correct = sum(accuracy_buffer[modal])
+            accuracy[f'AP_{modal}'] = correct / num_samples
         accuracy['mAP'] = sum(accuracy.values()) / len(accuracy)
 
         if res_folder is not None:
