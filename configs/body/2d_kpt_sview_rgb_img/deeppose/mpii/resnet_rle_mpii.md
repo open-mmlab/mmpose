@@ -68,6 +68,6 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [deeppose_resnet_50_rle](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256_rle.py) | 256x256 | 0.860 | 0.263 | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle-5f92a619_20220504.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle_20220504.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [deeppose_resnet_50_rle](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256_rle.py) |  256x256   | 0.860 |  0.263   | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle-5f92a619_20220504.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_rle_20220504.log.json) |

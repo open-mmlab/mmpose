@@ -34,6 +34,6 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [cpm](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py) | 368x368 | 0.876 | 0.285 | [ckpt](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth) | [log](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368_20200822.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [cpm](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/cpm_mpii_368x368.py) |  368x368   | 0.876 |  0.285   | [ckpt](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368-116e62b8_20200822.pth) | [log](https://download.openmmlab.com/mmpose/top_down/cpm/cpm_mpii_368x368_20200822.log.json) |

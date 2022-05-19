@@ -89,7 +89,7 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] \
        --eval mAP
    ```
 
-1. 使用 8 块 GPU 在 COCO 数据集下测试 ResNet。在线下载模型权重，并验证 `mAP` 指标。
+2. 使用 8 块 GPU 在 COCO 数据集下测试 ResNet。在线下载模型权重，并验证 `mAP` 指标。
 
    ```shell
    ./tools/dist_test.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
@@ -97,7 +97,7 @@ python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [--out ${RESULT_FILE}] \
        --eval mAP
    ```
 
-1. 在 slurm 分布式环境中测试 ResNet50 在 COCO 数据集下的 `mAP` 指标
+3. 在 slurm 分布式环境中测试 ResNet50 在 COCO 数据集下的 `mAP` 指标
 
    ```shell
    ./tools/slurm_test.sh slurm_partition test_job \

@@ -102,4 +102,4 @@ Some tips to speed up MMPose inference:
 For 2D face keypoint estimation models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [face-hrnetv2_w18](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/face/hrnetv2/aflw/hrnetv2_w18_aflw_256x256.py#L83).
-1. set `post_process='default'` in [face-hrnetv2_w18](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/face/hrnetv2/aflw/hrnetv2_w18_aflw_256x256.py#L84).
+2. set `post_process='default'` in [face-hrnetv2_w18](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/face/hrnetv2/aflw/hrnetv2_w18_aflw_256x256.py#L84).

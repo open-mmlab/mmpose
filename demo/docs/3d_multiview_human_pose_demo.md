@@ -32,7 +32,7 @@ python demo/body3d_multiview_detect_and_regress_img_demo.py \
 
 ##### Data Preparation
 
-Currently, we only support CMU Panoptic data format. Users can leave the argument `--img-root` unset to automatically download our [default demo data](https://download.openmmlab.com/mmpose/demo/panoptic_body3d_demo.tar) (\~6M). Users can also use custom data, which should be organized as follow:
+Currently, we only support CMU Panoptic data format. Users can leave the argument `--img-root` unset to automatically download our [default demo data](https://download.openmmlab.com/mmpose/demo/panoptic_body3d_demo.tar) (~6M). Users can also use custom data, which should be organized as follow:
 
 ```text
 ├── ${IMG_ROOT}

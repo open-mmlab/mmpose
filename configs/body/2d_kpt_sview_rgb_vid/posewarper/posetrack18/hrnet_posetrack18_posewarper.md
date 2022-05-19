@@ -1,4 +1,3 @@
-
 <!-- [ALGORITHM] -->
 
 <details>
@@ -75,14 +74,14 @@ The second-stage is trained with the last [checkpoint](https://download.openmmla
 
 Results on PoseTrack2018 val with ground-truth bounding boxes
 
-| Arch  | Input Size | Head | Shou | Elb | Wri | Hip | Knee | Ankl | Total  | ckpt    | log     |
-| :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
-| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py) | 384x288 | 88.2 | 90.3 | 86.1 | 81.6 | 81.8 | 83.8 | 81.5 | 85.0 | [ckpt](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth) | [log](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2_20211130.log.json) |
+| Arch                                                 | Input Size | Head | Shou | Elb  | Wri  | Hip  | Knee | Ankl | Total |                         ckpt                          |                         log                          |
+| :--------------------------------------------------- | :--------: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :---: | :---------------------------------------------------: | :--------------------------------------------------: |
+| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py) |  384x288   | 88.2 | 90.3 | 86.1 | 81.6 | 81.8 | 83.8 | 81.5 | 85.0  | [ckpt](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth) | [log](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2_20211130.log.json) |
 
 Results on PoseTrack2018 val with precomputed human bounding boxes from PoseWarper supplementary data files from [this link](https://www.dropbox.com/s/ygfy6r8nitoggfq/PoseWarper_supp_files.zip?dl=0)<sup>1</sup>.
 
-| Arch  | Input Size | Head | Shou | Elb | Wri | Hip | Knee | Ankl | Total  | ckpt    | log     |
-| :--- | :--------: | :------: |:------: |:------: |:------: |:------: |:------: | :------: | :------: |:------: |:------: |
-| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py) | 384x288 | 81.8 | 85.6 | 82.7 | 77.2 | 76.8 | 79.0 | 74.4 | 79.8 | [ckpt](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth) | [log](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2_20211130.log.json) |
+| Arch                                                 | Input Size | Head | Shou | Elb  | Wri  | Hip  | Knee | Ankl | Total |                         ckpt                          |                         log                          |
+| :--------------------------------------------------- | :--------: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :---: | :---------------------------------------------------: | :--------------------------------------------------: |
+| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py) |  384x288   | 81.8 | 85.6 | 82.7 | 77.2 | 76.8 | 79.0 | 74.4 | 79.8  | [ckpt](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2-4abf88db_20211130.pth) | [log](https://download.openmmlab.com/mmpose/top_down/posewarper/hrnet_w48_posetrack18_384x288_posewarper_stage2_20211130.log.json) |
 
 <sup>1</sup> Please download the precomputed human bounding boxes on PoseTrack2018 val from `$PoseWarper_supp_files/posetrack18_precomputed_boxes/val_boxes.json` and place it here: `$mmpose/data/posetrack18/posetrack18_precomputed_boxes/val_boxes.json` to be consistent with the [config](/configs/body/2d_kpt_sview_rgb_vid/posewarper/posetrack18/hrnet_w48_posetrack18_384x288_posewarper_stage2.py). Please refer to [DATA Preparation](/docs/en/tasks/2d_body_keypoint.md) for more detail about data preparation.

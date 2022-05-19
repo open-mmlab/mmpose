@@ -18,12 +18,12 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/examples/pose_es
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| v | Toggle the pose visualization on/off. |
-| h | Show help information. |
-| m | Show the monitoring information. |
-| q | Exit. |
+| Hotkey | Function                              |
+| ------ | ------------------------------------- |
+| v      | Toggle the pose visualization on/off. |
+| h      | Show help information.                |
+| m      | Show the monitoring information.      |
+| q      | Exit.                                 |
 
 Note that the demo will automatically save the output video into a file `record.mp4`.
 

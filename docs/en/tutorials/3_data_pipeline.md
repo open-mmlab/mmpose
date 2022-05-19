@@ -120,13 +120,13 @@ For each operation, we list the related dict fields that are added/updated/remov
           return results
    ```
 
-1. Import the new class.
+2. Import the new class.
 
    ```python
    from .my_pipeline import MyTransform
    ```
 
-1. Use it in config files.
+3. Use it in config files.
 
    ```python
    train_pipeline = [

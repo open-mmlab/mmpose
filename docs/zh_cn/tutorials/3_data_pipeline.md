@@ -118,13 +118,13 @@ val_pipeline = [
           return results
    ```
 
-1. 导入定义好的新类。
+2. 导入定义好的新类。
 
    ```python
    from .my_pipeline import MyTransform
    ```
 
-1. 在配置文件中使用它。
+3. 在配置文件中使用它。
 
    ```python
    train_pipeline = [

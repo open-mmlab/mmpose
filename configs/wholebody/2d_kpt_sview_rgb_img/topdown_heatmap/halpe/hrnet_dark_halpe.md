@@ -50,8 +50,8 @@
 
 Results on Halpe v1.0 val with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch  | Input Size |  Whole AP | Whole AR | ckpt | log |
-| :---- | :--------: | :------: |:-------: |:------: | :------: |
-| [pose_hrnet_w48_dark+](/configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_w48_halpe_384x288_dark_plus.py)  | 384x288 | 0.527 | 0.620 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_halpe_384x288_dark_plus-d13c2588_20211021.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_halpe_384x288_dark_plus_20211021.log.json) |
+| Arch                                                       | Input Size | Whole AP | Whole AR |                            ckpt                            |                            log                             |
+| :--------------------------------------------------------- | :--------: | :------: | :------: | :--------------------------------------------------------: | :--------------------------------------------------------: |
+| [pose_hrnet_w48_dark+](/configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_w48_halpe_384x288_dark_plus.py) |  384x288   |  0.527   |  0.620   | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_halpe_384x288_dark_plus-d13c2588_20211021.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_halpe_384x288_dark_plus_20211021.log.json) |
 
 Note: `+` means the model is first pre-trained on original COCO dataset, and then fine-tuned on Halpe dataset. We find this will lead to better performance.

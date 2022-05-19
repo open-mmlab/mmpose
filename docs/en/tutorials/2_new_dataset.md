@@ -74,7 +74,7 @@ An example of the dataset config is as follows.
 
 1. `name`: the keypoint name. The keypoint name must be unique.
 2. `id`: the keypoint id.
-3. `color`: ([B, G, R]) is used for keypoint visualization.
+3. `color`: (\[B, G, R\]) is used for keypoint visualization.
 4. `type`: 'upper' or 'lower', will be used in data augmetation.
 5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
 
@@ -274,10 +274,10 @@ dataset_info = dict(
 
 2. Create a class definition of your dataset in the package folder and register it in the registry with a name. Without a name, it will keep giving the error. `KeyError: 'XXXXX is not in the dataset registry'`
 
-    ```
-    @DATASETS.register_module(name='MyCustomDataset')
-    class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
-    ```
+   ```
+   @DATASETS.register_module(name='MyCustomDataset')
+   class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
+   ```
 
 3. Make sure you have updated the `__init__.py` of your package folder
 

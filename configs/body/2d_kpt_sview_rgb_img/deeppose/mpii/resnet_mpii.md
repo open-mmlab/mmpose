@@ -51,8 +51,8 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [deeppose_resnet_50](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256.py) | 256x256 | 0.825 | 0.174 | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256-c63cd0b6_20210203.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_20210203.log.json) |
-| [deeppose_resnet_101](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res101_mpii_256x256.py) | 256x256 | 0.841 | 0.193 | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256-87516a90_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256_20210205.log.json) |
-| [deeppose_resnet_152](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res152_mpii_256x256.py) | 256x256 | 0.850 | 0.198 | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256-15f5e6f9_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256_20210205.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [deeppose_resnet_50](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res50_mpii_256x256.py) |  256x256   | 0.825 |  0.174   | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256-c63cd0b6_20210203.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_mpii_256x256_20210203.log.json) |
+| [deeppose_resnet_101](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res101_mpii_256x256.py) |  256x256   | 0.841 |  0.193   | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256-87516a90_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_mpii_256x256_20210205.log.json) |
+| [deeppose_resnet_152](/configs/body/2d_kpt_sview_rgb_img/deeppose/mpii/res152_mpii_256x256.py) |  256x256   | 0.850 |  0.198   | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256-15f5e6f9_20210205.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_mpii_256x256_20210205.log.json) |

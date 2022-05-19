@@ -18,13 +18,13 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/eyes/eyes.py
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| s | Toggle the sunglasses effect on/off. |
-| b | Toggle the bug-eye effect on/off. |
-| h | Show help information. |
-| m | Show the monitoring information. |
-| q | Exit. |
+| Hotkey | Function                             |
+| ------ | ------------------------------------ |
+| s      | Toggle the sunglasses effect on/off. |
+| b      | Toggle the bug-eye effect on/off.    |
+| h      | Show help information.               |
+| m      | Show the monitoring information.     |
+| q      | Exit.                                |
 
 ### Configuration
 

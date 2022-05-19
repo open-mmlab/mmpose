@@ -1,6 +1,6 @@
 exclude: ^tests/data/
 repos:
-  - repo: https://gitlab.com/pycqa/flake8
+  - repo: https://github.com/PyCQA/flake8
     rev: 3.8.3
     hooks:
       - id: flake8
@@ -25,11 +25,6 @@ repos:
         args: ["--remove"]
       - id: mixed-line-ending
         args: ["--fix=lf"]
-  - repo: https://github.com/markdownlint/markdownlint
-    rev: v0.11.0
-    hooks:
-      - id: markdownlint
-        args: [ "-r", "~MD002,~MD007,~MD013,~MD024,~MD029,~MD033,~MD034,~MD036,~MD041" ]
   - repo: https://github.com/myint/docformatter
     rev: v1.3.1
     hooks:
@@ -40,6 +35,16 @@ repos:
     hooks:
       - id: codespell
         args: ["--skip", "*.ipynb", "-L", "mot"]
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.14
+    hooks:
+      - id: mdformat
+        args: ["--number"]
+        additional_dependencies:
+          - git+https://github.com/mzr1996/mdformat-tables.git#egg=mdformat-tables
+          - mdformat-gfm
+          - mdformat_frontmatter
+          - linkify-it-py
   - repo: local
     hooks:
       - id: update-model-index

@@ -34,6 +34,6 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mobilenet_v2/mpii/mobilenet_v2_mpii_256x256.py) | 256x256 | 0.854 | 0.235 | [ckpt](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_mpii_256x256-e068afa7_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_mpii_256x256_20200812.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mobilenet_v2/mpii/mobilenet_v2_mpii_256x256.py) |  256x256   | 0.854 |  0.235   | [ckpt](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_mpii_256x256-e068afa7_20200812.pth) | [log](https://download.openmmlab.com/mmpose/top_down/mobilenetv2/mobilenetv2_mpii_256x256_20200812.log.json) |

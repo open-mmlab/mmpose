@@ -258,7 +258,7 @@ mmpose
 
 ## COCO-WholeBody (Face)
 
-[DATASET]
+<!-- [DATASET] -->
 
 ```bibtex
 @inproceedings{jin2020whole,

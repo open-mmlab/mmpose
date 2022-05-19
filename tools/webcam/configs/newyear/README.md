@@ -18,13 +18,13 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/newyear/new_year
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| t | Toggle the hat effect on/off. |
-| f | Toggle the firecracker effect on/off. |
-| h | Show help information. |
-| m | Show the monitoring information. |
-| q | Exit. |
+| Hotkey | Function                              |
+| ------ | ------------------------------------- |
+| t      | Toggle the hat effect on/off.         |
+| f      | Toggle the firecracker effect on/off. |
+| h      | Show help information.                |
+| m      | Show the monitoring information.      |
+| q      | Exit.                                 |
 
 ### Configuration
 

@@ -35,7 +35,7 @@
 
 Results on AP-10K validation set
 
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AP<sup>M</sup> | AP<sup>L</sup> | ckpt | log |
-| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res50_ap10k_256x256.py)  | 256x256 | 0.681 | 0.923 | 0.740 | 0.510 | 0.688 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.log.json) |
-| [pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res101_ap10k_256x256.py) | 256x256 | 0.681 | 0.922 | 0.742 | 0.534 | 0.688 | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.log.json) |
+| Arch                                       | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> | AP<sup>M</sup> | AP<sup>L</sup> |                    ckpt                     |                    log                     |
+| :----------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :------------: | :------------: | :-----------------------------------------: | :----------------------------------------: |
+| [pose_resnet_50](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res50_ap10k_256x256.py) |  256x256   | 0.681 |      0.923      |      0.740      |     0.510      |     0.688      | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res50_ap10k_256x256-35760eb8_20211029.log.json) |
+| [pose_resnet_101](/configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/ap10k/res101_ap10k_256x256.py) |  256x256   | 0.681 |      0.922      |      0.742      |     0.534      |     0.688      | [ckpt](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.pth) | [log](https://download.openmmlab.com/mmpose/animal/resnet/res101_ap10k_256x256-9edfafb9_20211029.log.json) |

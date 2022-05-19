@@ -50,12 +50,12 @@
 
 Results on AIC validation set without multi-scale test
 
-| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py)  | 512x512 | 0.315 | 0.710 | 0.243 | 0.379 | 0.757 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512_20210130.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py) |  512x512   | 0.315 |      0.710      |      0.243      | 0.379 |      0.757      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512_20210130.log.json) |
 
 Results on AIC validation set with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
-| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py)  | 512x512 | 0.323 | 0.718 | 0.254 | 0.379 | 0.758 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512_20210130.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [HigherHRNet-w32](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/aic/higherhrnet_w32_aic_512x512.py) |  512x512   | 0.323 |      0.718      |      0.254      | 0.379 |      0.758      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512-9a674c33_20210130.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/higher_hrnet32_aic_512x512_20210130.log.json) |

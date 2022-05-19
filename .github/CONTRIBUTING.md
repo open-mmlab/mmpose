@@ -8,9 +8,9 @@ All kinds of contributions are welcome, including but not limited to the followi
 ## Workflow
 
 1. Fork and pull the latest mmpose
-1. Checkout a new branch with a meaningful name (do not use master branch for PRs)
-1. Commit your changes
-1. Create a PR
+2. Checkout a new branch with a meaningful name (do not use master branch for PRs)
+3. Commit your changes
+4. Create a PR
 
 ```{note}
 - If you plan to add some new features that involve large changes, it is encouraged to open an issue for discussion first.
@@ -45,19 +45,6 @@ From the repository folder
 
 ```
 pre-commit install
-```
-
-If you are facing an issue when installing markdown lint, you may install ruby for markdown lint by
-referring to [this repo](https://github.com/innerlee/setup) by following the usage and taking [`zzruby.sh`](https://github.com/innerlee/setup/blob/master/zzruby.sh)
-
- or by the following steps
-
- ```shell
-# install rvm
-curl -L https://get.rvm.io | bash -s -- --autolibs=read-fail
-rvm autolibs disable
- # install ruby
-rvm install 2.7.1
 ```
 
 After this on every commit check code linters and formatter will be enforced.

@@ -18,10 +18,10 @@ It will launch a window to display the webcam video steam with detection and pos
 
   Please check the following default arguments in the script. You can also choose other models from the [MMDetection Model Zoo](https://github.com/open-mmlab/mmdetection/blob/master/docs/model_zoo.md) and [MMPose Model Zoo](https://mmpose.readthedocs.io/en/latest/modelzoo.html#) or use your own models.
 
-  | Model | Arguments |
-  | :--: | :--  |
-  | Detection | `--det-config`, `--det-checkpoint` |
-  | Human Pose | `--human-pose-config`, `--human-pose-checkpoint` |
+  |    Model    | Arguments                                          |
+  | :---------: | :------------------------------------------------- |
+  |  Detection  | `--det-config`, `--det-checkpoint`                 |
+  | Human Pose  | `--human-pose-config`, `--human-pose-checkpoint`   |
   | Animal Pose | `--animal-pose-config`, `--animal-pose-checkpoint` |
 
 - **Can this tool run without GPU?**

@@ -16,9 +16,6 @@ jobs:
       - run:
           name: Install pre-commit hook
           command: |
-            sudo apt-add-repository ppa:brightbox/ruby-ng -y
-            sudo apt-get update
-            sudo apt-get install -y ruby2.7
             pip install pre-commit
             pre-commit install
       - run:
