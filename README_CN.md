@@ -88,7 +88,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 ## 安装
 
 MMPose 依赖 [PyTorch](https://pytorch.org/) 和 [MMCV](https://github.com/open-mmlab/mmcv)，以下是安装的简要步骤。
-更详细的安装指南请参考 [install.md](docs/zh_cn/install.rst)。
+更详细的安装指南请参考 [install.md](docs/zh_cn/install.md)。
 
 ```shell
 conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y
