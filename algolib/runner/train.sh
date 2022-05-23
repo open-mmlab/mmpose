@@ -1,7 +1,6 @@
 #!/bin/bash
 set -x
 set -o pipefail
-set -e
 
 # 0. check the most important SMART_ROOT
 echo  "!!!!!SMART_ROOT is" $SMART_ROOT
