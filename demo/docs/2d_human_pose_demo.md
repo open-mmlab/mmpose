@@ -119,6 +119,53 @@ python demo/top_down_video_demo_with_mmdet.py \
     --use-multi-frames --online
 ```
 
+#### Using the full image as input
+
+We also provide a video demo which does not require human bounding box detection. If the video is cropped with the human centered in the screen, we can simply use the full image as the model input.
+
+```shell
+python demo/top_down_video_demo_full_frame_without_det.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --video-path ${VIDEO_PATH} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID or CPU}] \
+    [--kpt-thr ${KPT_SCORE_THR}]
+```
+
+Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
+
+Examples:
+
+```shell
+python demo/top_down_video_demo_full_frame_without_det.py \
+    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_res50_coco_256x192.py \
+     https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192-cc43b466_20210624.pth \
+    --video-path https://user-images.githubusercontent.com/87690686/169808764-29e5678c-6762-4f43-8666-c3e60f94338f.mp4 \
+    --show
+```
+
+We also provide a GPU version which can accelerate inference and save CPU workload. Assume that you have already installed [ffmpegcv](https://github.com/chenxinfeng4/ffmpegcv). If the `--nvdecode` option is turned on, the video reader can support NVIDIA-VIDEO-DECODING for some qualified Nvidia GPUs, which can further accelerate the inference.
+
+```shell
+python demo/top_down_video_demo_full_frame_without_det_gpuaccel.py \
+    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --video-path ${VIDEO_PATH} \
+    --out-video-root ${OUTPUT_VIDEO_ROOT} \
+    [--show --device ${GPU_ID or CPU}] \
+    [--kpt-thr ${KPT_SCORE_THR}] \
+    [--nvdecode]
+```
+
+Examples:
+
+```shell
+python demo/top_down_video_demo_full_frame_without_det_gpuaccel.py \
+    configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vipnas_res50_coco_256x192.py \
+     https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_coco_256x192-cc43b466_20210624.pth \
+    --video-path https://user-images.githubusercontent.com/87690686/169808764-29e5678c-6762-4f43-8666-c3e60f94338f.mp4 \
+    --out-video-root vis_results
+```
+
 ### 2D Human Pose Bottom-Up Image Demo
 
 We provide a demo script to test a single image.

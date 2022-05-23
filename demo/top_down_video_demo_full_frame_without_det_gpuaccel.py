@@ -187,11 +187,12 @@ def main():
         save_out_video = True
 
     if save_out_video:
-        videoWriter = ffmpegcv.VideoWriter(
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        size = (video_origin.width, video_origin.height)
+        videoWriter = cv2.VideoWriter(
             os.path.join(args.out_video_root,
-                         f'vis_{os.path.basename(args.video_path)}'),
-            codec='mpeg4',
-            fps=video_origin.fps)
+                         f'vis_{os.path.basename(args.video_path)}'), fourcc,
+            video_origin.fps, size)
 
     with torch.no_grad():
         for frame_resize, frame_origin in zip(
