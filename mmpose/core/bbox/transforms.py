@@ -14,8 +14,8 @@ def bbox_xyxy2xywh(bbox_xyxy):
           shaped (n, 4) or (n, 5). (left, top, width, height, [score])
     """
     bbox_xywh = bbox_xyxy.copy()
-    bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0] + 1
-    bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1] + 1
+    bbox_xywh[:, 2] = bbox_xywh[:, 2] - bbox_xywh[:, 0]
+    bbox_xywh[:, 3] = bbox_xywh[:, 3] - bbox_xywh[:, 1]
 
     return bbox_xywh
 
@@ -31,8 +31,8 @@ def bbox_xywh2xyxy(bbox_xywh):
           (n, 5). (left, top, right, bottom, [score])
     """
     bbox_xyxy = bbox_xywh.copy()
-    bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0] - 1
-    bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1] - 1
+    bbox_xyxy[:, 2] = bbox_xyxy[:, 2] + bbox_xyxy[:, 0]
+    bbox_xyxy[:, 3] = bbox_xyxy[:, 3] + bbox_xyxy[:, 1]
 
     return bbox_xyxy
 
