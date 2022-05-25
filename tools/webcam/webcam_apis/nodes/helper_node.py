@@ -39,10 +39,10 @@ class ModelResultBindingNode(Node):
         self.result_lag = RunningAverage(window=10)
 
         # Register buffers
-        # Note that essential buffers will be set in set_runner() because
-        # it depends on the runner.synchronous attribute.
-        self.register_input_buffer(result_buffer, 'result', essential=False)
-        self.register_input_buffer(frame_buffer, 'frame', essential=False)
+        # The trigger buffer depends on the runner.synchronous attribute, thus
+        # it will be set later in ``set_runner``.
+        self.register_input_buffer(result_buffer, 'result', trigger=False)
+        self.register_input_buffer(frame_buffer, 'frame', trigger=False)
         self.register_output_buffer(output_buffer)
 
     def set_runner(self, runner):
@@ -51,15 +51,15 @@ class ModelResultBindingNode(Node):
         # Set synchronous according to the runner
         if runner.synchronous:
             self.synchronous = True
-            essential_input = 'result'
+            trigger = 'result'
         else:
             self.synchronous = False
-            essential_input = 'frame'
+            trigger = 'frame'
 
-        # Set essential input buffer according to the synchronous setting
+        # Set trigger input buffer according to the synchronous setting
         for buffer_info in self._input_buffers:
-            if buffer_info.input_name == essential_input:
-                buffer_info.essential = True
+            if buffer_info.input_name == trigger:
+                buffer_info.trigger = True
 
     def process(self, input_msgs):
         result_msg = input_msgs['result']
@@ -146,7 +146,7 @@ class MonitorNode(Node):
         else:
             self.ignore_items = ignore_items
 
-        self.register_input_buffer(frame_buffer, 'frame', essential=True)
+        self.register_input_buffer(frame_buffer, 'frame', trigger=True)
         self.register_output_buffer(output_buffer)
 
     def process(self, input_msgs):
@@ -234,7 +234,7 @@ class RecorderNode(Node):
         self.vwriter = None
 
         # Register buffers
-        self.register_input_buffer(frame_buffer, 'frame', essential=True)
+        self.register_input_buffer(frame_buffer, 'frame', trigger=True)
         self.register_output_buffer(output_buffer)
 
         # Start a new thread to write frame

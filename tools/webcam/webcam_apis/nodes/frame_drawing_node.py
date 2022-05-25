@@ -36,7 +36,7 @@ class FrameDrawingNode(Node):
         super().__init__(name=name, enable_key=enable_key)
 
         # Register buffers
-        self.register_input_buffer(frame_buffer, 'frame', essential=True)
+        self.register_input_buffer(frame_buffer, 'frame', trigger=True)
         self.register_output_buffer(output_buffer)
 
         self._enabled = enable

@@ -18,7 +18,7 @@ class BufferInfo():
     """Dataclass for buffer information."""
     buffer_name: str
     input_name: Optional[str] = None
-    essential: bool = False
+    trigger: bool = False
 
 
 @dataclass
@@ -119,7 +119,7 @@ class Node(Thread, metaclass=ABCMeta):
     def register_input_buffer(self,
                               buffer_name: str,
                               input_name: str,
-                              essential: bool = False):
+                              trigger: bool = False):
         """Register an input buffer, so that Node can automatically check if
         data is ready, fetch data from the buffers and format the inputs to
         feed into `process` method.
@@ -134,12 +134,12 @@ class Node(Thread, metaclass=ABCMeta):
             buffer_name (str): The name of the buffer
             input_name (str): The name of the fetched message from the
                 corresponding buffer
-            essential (bool): An essential input means the node will wait
+            trigger (bool): An trigger input means the node will wait
                 until the input is ready before processing. Otherwise, an
                 inessential input will not block the processing, instead
                 a None will be fetched if the buffer is not ready.
         """
-        buffer_info = BufferInfo(buffer_name, input_name, essential)
+        buffer_info = BufferInfo(buffer_name, input_name, trigger)
         self._input_buffers.append(buffer_info)
 
     def register_output_buffer(self, buffer_name: Union[str, List[str]]):
@@ -213,9 +213,9 @@ class Node(Thread, metaclass=ABCMeta):
         if buffer_manager is None:
             raise ValueError(f'{self.name}: Runner not set!')
 
-        # Check that essential buffers are ready
+        # Check that trigger buffers are ready
         for buffer_info in self._input_buffers:
-            if buffer_info.essential and buffer_manager.is_empty(
+            if buffer_info.trigger and buffer_manager.is_empty(
                     buffer_info.buffer_name):
                 return False, None
 
@@ -230,9 +230,9 @@ class Node(Thread, metaclass=ABCMeta):
                 result[buffer_info.input_name] = buffer_manager.get(
                     buffer_info.buffer_name, block=False)
             except Empty:
-                if buffer_info.essential:
+                if buffer_info.trigger:
                     # Return unsuccessful flag if any
-                    # essential input is unready
+                    # trigger input is unready
                     return False, None
 
         return True, result

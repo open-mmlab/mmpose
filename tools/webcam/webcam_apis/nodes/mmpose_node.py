@@ -1,11 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 from mmpose.apis import (get_track_id, inference_top_down_pose_model,
                          init_pose_model)
 from mmpose.core import Smoother
-from ..utils import Message
 from .builder import NODES
 from .node import Node
 
@@ -51,21 +50,19 @@ class TopDownPoseEstimatorNode(Node):
             self.smoother = None
         # Init model
         self.model = init_pose_model(
-            self.model_config,
-            self.model_checkpoint,
-            device=self.device.lower())
+            self.model_config, self.model_checkpoint, device=self.device)
 
         # Store history for pose tracking
         self.track_info = TrackInfo()
 
         # Register buffers
-        self.register_input_buffer(input_buffer, 'input', essential=True)
+        self.register_input_buffer(input_buffer, 'input', trigger=True)
         self.register_output_buffer(output_buffer)
 
     def bypass(self, input_msgs):
         return input_msgs['input']
 
-    def process(self, input_msgs: Dict[str, Message]) -> Message:
+    def process(self, input_msgs):
 
         input_msg = input_msgs['input']
         img = input_msg.get_image()
