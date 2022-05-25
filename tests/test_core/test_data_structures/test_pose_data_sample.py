@@ -22,12 +22,12 @@ class TestPoseDataSample(TestCase):
         gt_instances = InstanceData()
         gt_instances.bboxes = torch.rand(1, 4)
         gt_instances.keypoints = torch.rand(1, 17, 2)
-        gt_instances.visibility = torch.rand(1, 17)
+        gt_instances.keypoints_visible = torch.rand(1, 17, 1)
 
         # pred_instances
         pred_instances = InstanceData()
         pred_instances.keypoints = torch.rand(1, 17, 2)
-        pred_instances.scores = torch.rand(1, 17)
+        pred_instances.scores = torch.rand(1, 17, 1)
 
         # gt_fields
         gt_fields = PixelData()
@@ -75,7 +75,7 @@ class TestPoseDataSample(TestCase):
 
         # test pred_instances as pytorch tensor
         pred_instances_data = dict(
-            keypoints=torch.rand(1, 17, 2), scores=torch.rand(1, 17))
+            keypoints=torch.rand(1, 17, 2), scores=torch.rand(1, 17, 1))
         data_sample.pred_instances = InstanceData(**pred_instances_data)
 
         self.assertTrue(
