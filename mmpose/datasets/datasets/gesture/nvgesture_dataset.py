@@ -48,17 +48,23 @@ class NVGestureDataset(GestureBaseDataset):
         db = []
         with open(self.ann_file, 'r') as f:
             samples = f.readlines()
+
+        use_bbox = bool(self.bbox_file)
+        if use_bbox:
+            with open(self.bbox_file, 'r') as f:
+                bboxes = json.load(f)
+
         for sample in samples:
             sample = sample.strip().split()
             sample = {
                 item.split(':', 1)[0]: item.split(':', 1)[1]
                 for item in sample
             }
-
+            path = sample['path'][2:]
             for key in ('depth', 'color'):
                 fname, start, end = sample[key].split(':')
                 sample[key] = {
-                    'path': os.path.join(sample['path'][2:], fname + '.avi'),
+                    'path': os.path.join(path, fname + '.avi'),
                     'valid_frames': (eval(start), eval(end))
                 }
             sample['flow'] = {
@@ -67,6 +73,9 @@ class NVGestureDataset(GestureBaseDataset):
             }
             sample['rgb'] = sample['color']
             sample['label'] = eval(sample['label']) - 1
+
+            if use_bbox:
+                sample['bbox'] = bboxes[path]
 
             del sample['path'], sample['duo_left'], sample['color']
             db.append(sample)
@@ -80,6 +89,8 @@ class NVGestureDataset(GestureBaseDataset):
 
         anno['label'] = sample['label']
         anno['modality'] = self.modality
+        if 'bbox' in sample:
+            anno['bbox'] = sample['bbox']
 
         for modal in self.modality:
             anno['video_file'].append(

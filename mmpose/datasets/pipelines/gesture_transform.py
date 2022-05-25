@@ -3,6 +3,7 @@ import mmcv
 import numpy as np
 import torch
 
+from mmpose.core import bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.datasets.builder import PIPELINES
 
 
@@ -27,6 +28,8 @@ class CropValidClip:
             results['video'][i] = results['video'][i][start:start + length]
             results['num_frames'] = length
         del results['valid_frames']
+        if 'bbox' in results:
+            results['bbox'] = results['bbox'][start:start + length]
         return results
 
 
@@ -39,22 +42,34 @@ class RandomTemporalCrop:
     Modified keys: 'video', 'num_frames'.
     """
 
-    def __init__(self, length: int = 64):
+    def __init__(self, length=64, stride=2):
         self.length = length
+        self.stride = stride
 
     def __call__(self, results):
         """Implement data aumentation with random temporal crop."""
-        diff = self.length - results['num_frames']
-        start = np.random.randint(
-            max(results['num_frames'] - self.length + 1, 1))
+        if self.length < 0:
+            length = results['num_frames']
+            num_frames = (results['num_frames'] - 1) // self.stride + 1
+        else:
+            length = (self.length - 1) * self.stride + 1
+            num_frames = self.length
+
+        diff = length - results['num_frames']
+        start = np.random.randint(max(1 - diff, 1))
+
         for i, modal in enumerate(results['modality']):
             video = results['video'][i]
             if diff > 0:
                 video = np.pad(video, ((diff // 2, diff - (diff // 2)),
                                        *(((0, 0), ) * (video.ndim - 1))),
                                'edge')
-            results['video'][i] = video[start:start + self.length]
-        results['num_frames'] = self.length
+            results['video'][i] = video[start:start + length:self.stride]
+            assert results['video'][i].shape[0] == num_frames
+
+        results['num_frames'] = num_frames
+        if 'bbox' in results:
+            results['bbox'] = results['bbox'][start:start + length:self.stride]
         return results
 
 
@@ -87,6 +102,128 @@ class ResizeGivenShortEdge:
                                                     num_frames)
             results['video'][i] = video.transpose(3, 0, 1, 2)
             results['width'][i], results['height'][i] = width, height
+        return results
+
+
+@PIPELINES.register_module()
+class MultiFrameBBoxMerge:
+    """Compute the union of bboxes in selected frames.
+
+    Required keys: 'bbox'.
+
+    Modified keys: 'bbox'.
+    """
+
+    def __init__(self):
+        pass
+
+    def __call__(self, results):
+        if 'bbox' not in results:
+            return results
+
+        bboxes = list(filter(lambda x: len(x), results['bbox']))
+        if len(bboxes) == 0:
+            bbox_xyxy = np.array(
+                (0, 0, results['width'][0] - 1, results['height'][0] - 1))
+        else:
+            bboxes_xyxy = np.stack([b[0]['bbox'] for b in bboxes])
+            bbox_xyxy = np.array((
+                bboxes_xyxy[:, 0].min(),
+                bboxes_xyxy[:, 1].min(),
+                bboxes_xyxy[:, 2].max(),
+                bboxes_xyxy[:, 3].max(),
+            ))
+        results['bbox'] = bbox_xyxy
+        return results
+
+
+@PIPELINES.register_module()
+class RandomResizedCropByBBox:
+    """Data augmentation with random spatial crop for spatially aligned videos
+    by bounding box.
+
+    Required keys: 'video', 'modality', 'width', 'height', 'bbox'.
+
+    Modified keys: 'video', 'width', 'height'.
+    """
+
+    def __init__(self, size, scale=(0.8, 1.25), ratio=(0.75, 1.33), shift=0.3):
+        self.size = size if isinstance(size, (tuple, list)) else (size, size)
+        self.scale = scale
+        self.ratio = ratio
+        self.shift = shift
+
+    def __call__(self, results):
+        bbox_xywh = bbox_xyxy2xywh(results['bbox'][None, :])[0]
+        length = bbox_xywh[2:].max()
+        length = length * np.random.uniform(*self.scale)
+        x = bbox_xywh[0] + np.random.uniform(-self.shift, self.shift) * length
+        y = bbox_xywh[1] + np.random.uniform(-self.shift, self.shift) * length
+        w, h = length, length * np.random.uniform(*self.ratio)
+
+        bbox_xyxy = bbox_xywh2xyxy(np.array([[x, y, w, h]]))[0]
+        bbox_xyxy = bbox_xyxy.clip(min=0)
+        bbox_xyxy[2] = min(bbox_xyxy[2], results['width'][0])
+        bbox_xyxy[3] = min(bbox_xyxy[3], results['height'][0])
+        bbox_xyxy = bbox_xyxy.astype(np.int32)
+
+        for i in range(len(results['video'])):
+            video = results['video'][i].transpose(1, 2, 3, 0)
+            num_frames = video.shape[-1]
+            video = video.reshape(video.shape[0], video.shape[1], -1)
+            video = mmcv.imcrop(video, bbox_xyxy)
+            video = mmcv.imresize(video, self.size)
+
+            results['video'][i] = video.reshape(video.shape[0], video.shape[1],
+                                                -1, num_frames)
+            results['video'][i] = results['video'][i].transpose(3, 0, 1, 2)
+            results['width'][i], results['height'][i] = video.shape[
+                1], video.shape[0]
+
+        return results
+
+
+@PIPELINES.register_module()
+class NVGestureRandomFlip:
+
+    def __init__(self, prob=0.5):
+        self.flip_prob = prob
+
+    def __call__(self, results):
+        flip = np.random.rand() < self.flip_prob
+        if flip:
+            for i in range(len(results['video'])):
+                results['video'][i] = results['video'][i][:, :, ::-1, :]
+            if results['label'] in (0, 1):
+                results['label'] = 1 - results['label']
+            elif results['label'] in (4, 5):
+                results['label'] = 9 - results['label']
+            elif results['label'] in (19, 20):
+                results['label'] = 39 - results['label']
+        return results
+
+
+@PIPELINES.register_module()
+class VideoColorJitter:
+
+    def __init__(self, brightness=0, contrast=0):
+        self.brightness = brightness
+        self.contrast = contrast
+
+    def __call__(self, results):
+        for i, modal in enumerate(results['modality']):
+            if modal == 'rgb':
+                video = results['video'][i]
+                bright = np.random.uniform(
+                    max(0, 1 - self.brightness), 1 + self.brightness)
+                contrast = np.random.uniform(
+                    max(0, 1 - self.contrast), 1 + self.contrast)
+                video = mmcv.adjust_brightness(video.astype(np.int32), bright)
+                num_frames = video.shape[0]
+                video = video.astype(np.uint8).reshape(-1, video.shape[2], 3)
+                video = mmcv.adjust_contrast(video, contrast).reshape(
+                    num_frames, -1, video.shape[1], 3)
+                results['video'][i] = video
         return results
 
 

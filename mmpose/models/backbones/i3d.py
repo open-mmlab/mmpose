@@ -24,9 +24,12 @@ class Conv3dBlock(nn.Module):
                  use_relu=True):
         super().__init__()
 
+        in_channels = int(in_channels * expansion)
+        out_channels = int(out_channels * expansion)
+
         self.conv3d = nn.Conv3d(
-            int(in_channels * expansion),
-            int(out_channels * expansion),
+            in_channels,
+            out_channels,
             kernel_size,
             padding=padding,
             stride=stride,

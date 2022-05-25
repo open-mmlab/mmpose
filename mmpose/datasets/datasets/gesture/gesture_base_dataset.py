@@ -33,6 +33,7 @@ class GestureBaseDataset(Dataset, metaclass=ABCMeta):
             self.modality = self.modality
         else:
             self.modality = (self.modality, )
+        self.bbox_file = data_cfg.get('bbox_file', None)
         self.dataset_name = dataset_info.dataset_name
         self.pipeline = Compose(self.pipeline)
 
