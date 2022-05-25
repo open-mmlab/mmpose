@@ -154,15 +154,15 @@ class PoseTrackerNode(Node):
 
         scale = self.kpt2bbox_cfg.get('scale', 1.5)
         kpt_thr = self.kpt2bbox_cfg.get('kpt_thr', 0.3)
-        val = keypoints[:, 2] > kpt_thr
+        valid = keypoints[:, 2] > kpt_thr
 
-        if not val.any():
+        if not valid.any():
             return None
 
-        x1 = np.min(keypoints[val, 0])
-        y1 = np.min(keypoints[val, 1])
-        x2 = np.max(keypoints[val, 0])
-        y2 = np.max(keypoints[val, 1])
+        x1 = np.min(keypoints[valid, 0])
+        y1 = np.min(keypoints[valid, 1])
+        x2 = np.max(keypoints[valid, 0])
+        y2 = np.max(keypoints[valid, 1])
 
         xc = 0.5 * (x1 + x2)
         yc = 0.5 * (y1 + y2)
