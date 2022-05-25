@@ -84,9 +84,9 @@ class MultiModalSSAHead(nn.Module):
             for idx1, idx2 in itertools.combinations(range(len(fmaps)), 2):
                 for i, j in ((idx1, idx2), (idx2, idx1)):
                     rho = (ce_loss[i] - ce_loss[j]).clamp(min=0)
-                    rho = torch.exp(self.beta * rho) - 1
+                    rho = (torch.exp(self.beta * rho) - 1).detach()
                     ssa = corrs[i] - corrs[j].detach()
-                    ssa = rho * ssa.pow(2).sum(dim=1).pow(0.5)
+                    ssa = rho * ssa.pow(2).mean(dim=1).pow(0.5)
                     ssa_loss.append(ssa.mean())
             losses['ssa_loss'] = sum(ssa_loss) * self.lambda_
         ce_loss = [loss.mean() for loss in ce_loss]

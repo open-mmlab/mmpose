@@ -9,5 +9,5 @@ class ModelSetEpochHook(Hook):
     def __init__(self):
         pass
 
-    def after_epoch(self, runner):
-        runner.model.set_train_epoch(runner.epoch)
+    def before_epoch(self, runner):
+        runner.model.module.set_train_epoch(runner.epoch + 1)
