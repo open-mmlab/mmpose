@@ -37,6 +37,29 @@ def test_top_down_demo():
     vis_pose_result(
         pose_model, image_name, pose_results, dataset_info=dataset_info)
 
+    # MPII demo
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/body/2d_kpt_sview_rgb_img/deeppose/'
+        'mpii/res50_mpii_256x256.py',
+        None,
+        device='cpu')
+    image_name = 'tests/data/mpii/004645041.jpg'
+    dataset_info = DatasetInfo(pose_model.cfg.data['test'].get(
+        'dataset_info', None))
+    person_result = []
+    person_result.append({'bbox': [50, 50, 50, 100]})
+    # test a single image, with a list of bboxes.
+    pose_results, _ = inference_top_down_pose_model(
+        pose_model,
+        image_name,
+        person_result,
+        format='xywh',
+        dataset_info=dataset_info)
+    # show the results
+    vis_pose_result(
+        pose_model, image_name, pose_results, dataset_info=dataset_info)
+
     # AIC demo
     pose_model = init_pose_model(
         'configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/'
