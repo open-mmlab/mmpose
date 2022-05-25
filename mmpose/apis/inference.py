@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os
 import warnings
 
@@ -109,7 +110,17 @@ def _inference_single_pose_model(model,
             cfg.data.test.data_cfg.frame_weight_test)
 
     # build the data pipeline
-    test_pipeline = Compose(cfg.test_pipeline)
+    _test_pipeline = copy.deepcopy(cfg.test_pipeline)
+
+    has_bbox_xywh2cs = False
+    for transform in _test_pipeline:
+        if transform['type'] == 'TopDownGetBboxCenterScale':
+            has_bbox_xywh2cs = True
+            break
+    if not has_bbox_xywh2cs:
+        _test_pipeline.insert(
+            0, dict(type='TopDownGetBboxCenterScale', padding=1.25))
+    test_pipeline = Compose(_test_pipeline)
     _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     assert len(bboxes[0]) in [4, 5]

@@ -21,10 +21,13 @@ class DetectorNode(Node):
                  input_buffer: str,
                  output_buffer: Union[str, List[str]],
                  enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
                  device: str = 'cuda:0'):
         # Check mmdetection is installed
-        assert has_mmdet, 'Please install mmdet to run the demo.'
-        super().__init__(name=name, enable_key=enable_key, enable=True)
+        assert has_mmdet, \
+            f'MMDetection is required for {self.__class__.__name__}.'
+
+        super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         self.model_config = model_config
         self.model_checkpoint = model_checkpoint
@@ -32,12 +35,10 @@ class DetectorNode(Node):
 
         # Init model
         self.model = init_detector(
-            self.model_config,
-            self.model_checkpoint,
-            device=self.device.lower())
+            self.model_config, self.model_checkpoint, device=self.device)
 
         # Register buffers
-        self.register_input_buffer(input_buffer, 'input', essential=True)
+        self.register_input_buffer(input_buffer, 'input', trigger=True)
         self.register_output_buffer(output_buffer)
 
     def bypass(self, input_msgs):
