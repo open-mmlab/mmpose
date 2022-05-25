@@ -64,7 +64,7 @@ class GestureRecognizer(BasePose):
         cls_head['modality'] = self.modality
         self.cls_head = builder.build_head(cls_head)
 
-        self.pretrained = pretrained
+        self.pretrained = dict() if pretrained is None else pretrained
         self.init_weights()
 
     def init_weights(self, pretrained=None):
@@ -72,7 +72,8 @@ class GestureRecognizer(BasePose):
         if pretrained is not None:
             self.pretrained = pretrained
         for modal in self.modality:
-            getattr(self.backbone, modal).init_weights(self.pretrained[modal])
+            getattr(self.backbone,
+                    modal).init_weights(self.pretrained.get(modal, None))
         if hasattr(self, 'neck'):
             self.neck.init_weights()
         if hasattr(self, 'cls_head'):
