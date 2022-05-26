@@ -1,7 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .builder import NODES
 from .faceswap_node import FaceSwapNode
-from .frame_effect_node import (BackgroundNode, BugEyeNode, MoustacheNode,
+from .frame_effect_node import (BackgroundNode, BugEyeNode,
+                                GestureVisualizerNode, MoustacheNode,
                                 NoticeBoardNode, PoseVisualizerNode,
                                 SaiyanNode, SunglassesNode)
 from .helper_node import ModelResultBindingNode, MonitorNode, RecorderNode
@@ -16,5 +17,6 @@ __all__ = [
     'TopDownPoseEstimatorNode', 'MonitorNode', 'BugEyeNode', 'SunglassesNode',
     'ModelResultBindingNode', 'NoticeBoardNode', 'RecorderNode',
     'FaceSwapNode', 'MoustacheNode', 'SaiyanNode', 'BackgroundNode',
-    'XDwenDwenNode', 'ValentineMagicNode', 'PoseTrackerNode'
+    'XDwenDwenNode', 'ValentineMagicNode', 'GestureVisualizerNode',
+    'PoseTrackerNode'
 ]
