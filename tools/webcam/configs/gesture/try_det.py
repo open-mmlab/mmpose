@@ -3,10 +3,10 @@ runner = dict(
     # Basic configurations of the runner
     name='Pose Estimation',
     camera_id=0,
-    camera_fps=30,
+    camera_fps=15,
     synchronous=False,
     # camera_frame_shape=[640, 480],
-    buffer_sizes=dict(_input_=20),
+    buffer_sizes=dict(_input_=20, det_result=10),
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -31,25 +31,37 @@ runner = dict(
             inference_frame='mid',
             input_buffer='_input_',  # `_input_` is a runner-reserved buffer
             output_buffer='det_result'),
+        dict(
+            type='HandGestureRecognizerNode',
+            name='GestureRecognizer',
+            model_config='configs/gesture/mtut/'
+            'nvgesture/i3d_nvgesture_bbox_rgb.py',
+            model_checkpoint='~/.cache/torch/hub/checkpoints/'
+            'i3d_nvgesture_20220523.pth',
+            device='cpu',
+            input_buffer='det_result',
+            output_buffer='gesture',
+            fps=15,
+            score_thr=0.7),
         # 'ModelResultBindingNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
         # asynchronous).
-        # dict(
-        #     type='ModelResultBindingNode',
-        #     name='ResultBinder',
-        #     frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
-        #     result_buffer='det_result',
-        #     output_buffer='frame'),
+        dict(
+            type='ModelResultBindingNode',
+            name='ResultBinder',
+            frame_buffer='_frame_',  # `_frame_` is a runner-reserved buffer
+            result_buffer='gesture',
+            output_buffer='frame'),
         # 'PoseVisualizerNode':
         # This node draw the pose visualization result in the frame image.
         # Pose results is needed.
-        # dict(
-        #     type='PoseVisualizerNode',
-        #     name='Visualizer',
-        #     enable_key='v',
-        #     frame_buffer='frame',
-        #     output_buffer='vis'),
+        dict(
+            type='GestureVisualizerNode',
+            name='Visualizer',
+            enable_key='v',
+            frame_buffer='frame',
+            output_buffer='vis'),
         # 'NoticeBoardNode':
         # This node show a notice board with given content, e.g. help
         # information.
