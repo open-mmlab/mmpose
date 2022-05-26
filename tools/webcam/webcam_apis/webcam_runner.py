@@ -130,11 +130,9 @@ class WebcamRunner():
 
         # Build video capture
         if is_image_file(camera_id):
-            # 这里假设camera_id是一个图片的地址，那么就会伪造一个cv2.VideoCapture，输出都是同一张图片
             self.vcap = ImageCapture(camera_id)
         else:
             self.vcap = cv2.VideoCapture(camera_id)
-            # 视频的长、宽都可以重新设定
             if self.camera_frame_shape is not None:
                 width, height = self.camera_frame_shape
                 self.vcap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
