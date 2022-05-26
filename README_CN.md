@@ -35,9 +35,13 @@
 
 </div>
 
-## Introduction
+<div align="center">
 
-[English](./README.md) | 简体中文
+[English](README.md) | 简体中文
+
+</div>
+
+## Introduction
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
