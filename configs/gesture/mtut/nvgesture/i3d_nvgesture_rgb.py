@@ -33,8 +33,8 @@ custom_hooks = [dict(type='ModelSetEpochHook')]
 model = dict(
     type='GestureRecognizer',
     modality='rgb',
-    pretrained=
-    'https://github.com/hassony2/kinetics_i3d_pytorch/raw/master/model/model_rgb.pth',
+    pretrained='https://github.com/hassony2/kinetics_i3d_pytorch/'
+    'raw/master/model/model_rgb.pth',
     backbone=dict(
         type='I3D',
         in_channels=3,
@@ -106,16 +106,16 @@ data = dict(
     test_dataloader=dict(samples_per_gpu=6),
     train=dict(
         type='NVGestureDataset',
-        ann_file=
-        f'{data_root}/annotations/nvgesture_train_correct_cvpr2016_v2.lst',
+        ann_file=f'{data_root}/annotations/'
+        'nvgesture_train_correct_cvpr2016_v2.lst',
         vid_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='NVGestureDataset',
-        ann_file=
-        f'{data_root}/annotations/nvgesture_test_correct_cvpr2016_v2.lst',
+        ann_file=f'{data_root}/annotations/'
+        'nvgesture_test_correct_cvpr2016_v2.lst',
         vid_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
@@ -123,8 +123,8 @@ data = dict(
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='NVGestureDataset',
-        ann_file=
-        f'{data_root}/annotations/nvgesture_test_correct_cvpr2016_v2.lst',
+        ann_file=f'{data_root}/annotations/'
+        'nvgesture_test_correct_cvpr2016_v2.lst',
         vid_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,
