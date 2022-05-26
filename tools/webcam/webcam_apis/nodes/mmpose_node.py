@@ -256,6 +256,7 @@ class HandGestureRecognizerNode(TopDownPoseEstimatorNode, MultiInputNode):
         input_msg = input_msgs['input']
         self._add_clips(input_msg)
         video, bboxes = self._merge_clips()
+        msg = input_msg[-1]
 
         gesture_result = {
             'preds': [],
@@ -271,10 +272,13 @@ class HandGestureRecognizerNode(TopDownPoseEstimatorNode, MultiInputNode):
                 dataset_info=dict(
                     name='camera', fps=self.fps, modality=['rgb']))
             for i in range(len(pred_label)):
+                result = bboxes[-1][0].copy()
                 if pred_score[i] > self.score_thr:
-                    gesture_result['preds'].append(pred_label[i].item())
+                    label = pred_label[i].item()
+                    label = self.model.cfg.dataset_info.category_info[label]
+                    result['label'] = label
+                gesture_result['preds'].append(result)
 
-        msg = input_msg[-1]
         msg.add_pose_result(gesture_result, tag=self.name)
 
         return msg
