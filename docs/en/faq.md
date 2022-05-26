@@ -6,6 +6,34 @@ If the contents here do not cover your issue, please create an issue using the [
 
 ## Installation
 
+- Compatibility issue between MMCV and MMPose; "AssertionError: MMCV==xxx is used but incompatible. Please install mmcv>=xxx, \<=xxx."
+
+  Compatible MMPose and MMCV versions are shown as below. Please choose the correct version of MMCV to avoid installation issues.
+
+| MMPose version |       MMCV version        |
+| :------------: | :-----------------------: |
+|     master     | mmcv-full>=1.3.8, \<1.6.0 |
+|     0.26.0     | mmcv-full>=1.3.8, \<1.6.0 |
+|     0.25.1     | mmcv-full>=1.3.8, \<1.6.0 |
+|     0.25.0     | mmcv-full>=1.3.8, \<1.5.0 |
+|     0.24.0     | mmcv-full>=1.3.8, \<1.5.0 |
+|     0.23.0     | mmcv-full>=1.3.8, \<1.5.0 |
+|     0.22.0     | mmcv-full>=1.3.8, \<1.5.0 |
+|     0.21.0     | mmcv-full>=1.3.8, \<1.5.0 |
+|     0.20.0     | mmcv-full>=1.3.8, \<1.4.0 |
+|     0.19.0     | mmcv-full>=1.3.8, \<1.4.0 |
+|     0.18.0     | mmcv-full>=1.3.8, \<1.4.0 |
+|     0.17.0     | mmcv-full>=1.3.8, \<1.4.0 |
+|     0.16.0     | mmcv-full>=1.3.8, \<1.4.0 |
+|     0.14.0     | mmcv-full>=1.1.3, \<1.4.0 |
+|     0.13.0     | mmcv-full>=1.1.3, \<1.4.0 |
+|     0.12.0     |  mmcv-full>=1.1.3, \<1.3  |
+|     0.11.0     |  mmcv-full>=1.1.3, \<1.3  |
+|     0.10.0     |  mmcv-full>=1.1.3, \<1.3  |
+|     0.9.0      |  mmcv-full>=1.1.3, \<1.3  |
+|     0.8.0      |  mmcv-full>=1.1.1, \<1.2  |
+|     0.7.0      |  mmcv-full>=1.1.1, \<1.2  |
+
 - **Unable to install xtcocotools**
 
   1. Try to install it using pypi manually `pip install xtcocotools`.
@@ -32,6 +60,22 @@ If the contents here do not cover your issue, please create an issue using the [
 
   1. Uninstall existing mmcv in the environment using `pip uninstall mmcv`.
   2. Install mmcv-full following the [installation instruction](https://mmcv.readthedocs.io/en/latest/#installation).
+
+## Coding
+
+- Do I need to reinstall mmpose after some code modifications?
+
+  If you follow [the best practice](install.md) and install mmpose from source, any local modifications made to the code will take effect without reinstallation.
+
+- How to develop with multiple `MMPose` versions?
+
+  Generally speaking, we recommend to use different virtual environments to manage `MMPose` in different working directories. However, you can also use the same environment to develop `MMPose` in different folders, like `mmpose-0.26.0`, `mmpose-0.25.0`. When you run the train or test shell script, it will adopt the `mmpose` package in the current folder. And when you run other Python script, you can also add `` PYTHONPATH=`pwd`  `` at the beginning of your command to use the package in the current folder.
+
+  Conversely, to use the default `MMPose` installed in the environment rather than the one you are working with, you can remove the following line in those shell scripts:
+
+  ```shell
+  PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
+  ```
 
 ## Data
 
