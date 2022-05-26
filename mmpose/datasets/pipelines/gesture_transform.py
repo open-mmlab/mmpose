@@ -21,6 +21,9 @@ class CropValidClip:
 
     def __call__(self, results):
         """Crop the valid part from the video."""
+        if 'valid_frames' not in results:
+            results['valid_frames'] = [[0, n - 1]
+                                       for n in results['num_frames']]
         lengths = [(end - start) for start, end in results['valid_frames']]
         length = min(lengths)
         for i, modal in enumerate(results['modality']):
@@ -42,17 +45,24 @@ class RandomTemporalCrop:
     Modified keys: 'video', 'num_frames'.
     """
 
-    def __init__(self, length=64, stride=2):
+    def __init__(self, length=64, stride=1, ref_fps=-1):
         self.length = length
         self.stride = stride
+        self.ref_fps = ref_fps
 
     def __call__(self, results):
         """Implement data aumentation with random temporal crop."""
+
+        if self.ref_fps > 0 and 'fps' in results:
+            stride = results['fps'][0] // self.ref_fps
+        else:
+            stride = self.stride
+
         if self.length < 0:
             length = results['num_frames']
-            num_frames = (results['num_frames'] - 1) // self.stride + 1
+            num_frames = (results['num_frames'] - 1) // stride + 1
         else:
-            length = (self.length - 1) * self.stride + 1
+            length = (self.length - 1) * stride + 1
             num_frames = self.length
 
         diff = length - results['num_frames']
@@ -64,12 +74,12 @@ class RandomTemporalCrop:
                 video = np.pad(video, ((diff // 2, diff - (diff // 2)),
                                        *(((0, 0), ) * (video.ndim - 1))),
                                'edge')
-            results['video'][i] = video[start:start + length:self.stride]
+            results['video'][i] = video[start:start + length:stride]
             assert results['video'][i].shape[0] == num_frames
 
         results['num_frames'] = num_frames
         if 'bbox' in results:
-            results['bbox'] = results['bbox'][start:start + length:self.stride]
+            results['bbox'] = results['bbox'][start:start + length:stride]
         return results
 
 

@@ -56,7 +56,7 @@ model = dict(
 data_root = 'data/nvgesture'
 data_cfg = dict(
     video_size=[320, 240],
-    modality='rgb',
+    modality=['rgb'],
     bbox_file=f'{data_root}/annotations/bboxes.json',
 )
 
@@ -64,7 +64,7 @@ train_pipeline = [
     dict(type='LoadVideoFromFile'),
     dict(type='ModalWiseChannelProcess'),
     dict(type='CropValidClip'),
-    dict(type='RandomTemporalCrop', length=24),
+    dict(type='RandomTemporalCrop', length=16, ref_fps=15),
     dict(type='MultiFrameBBoxMerge'),
     dict(type='RandomResizedCropByBBox', size=112),
     dict(type='NVGestureRandomFlip'),
@@ -74,16 +74,14 @@ train_pipeline = [
         type='VideoNormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
-    dict(
-        type='Collect',
-        keys=['video', 'label'],
-        meta_keys=['video_file', 'modality']),
+    dict(type='Collect', keys=['video', 'label'], meta_keys=['modality']),
 ]
 
 val_pipeline = [
     dict(type='LoadVideoFromFile'),
     dict(type='ModalWiseChannelProcess'),
     dict(type='CropValidClip'),
+    dict(type='RandomTemporalCrop', length=-1, ref_fps=15),
     dict(type='MultiFrameBBoxMerge'),
     dict(
         type='RandomResizedCropByBBox',
@@ -99,7 +97,7 @@ val_pipeline = [
     dict(
         type='Collect',
         keys=['video', 'label'],
-        meta_keys=['video_file', 'num_frames', 'modality']),
+        meta_keys=['num_frames', 'modality']),
 ]
 
 test_pipeline = val_pipeline

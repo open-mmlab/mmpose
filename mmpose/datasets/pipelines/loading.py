@@ -155,8 +155,21 @@ class LoadVideoFromFile:
             # Load single video from path
             results.update(self._read_video(video_file))
         else:
-            raise KeyError('Key `videofile` should exist in results.')
+            if 'video' not in results:
+                # If `video_file`` is not in results, check the `video` exists
+                # and format the image. This for compatibility when the image
+                # is manually set outside the pipeline.
+                raise KeyError('Either `video_file` or `video` should exist '
+                               'in results.')
+            if isinstance(results['video'], (list, tuple)):
+                assert isinstance(results['video'][0], np.ndarray)
+            else:
+                assert isinstance(results['video'], np.ndarray)
+                results['video'] = [results['video']]
 
+            results['num_frames'] = [v.shape[0] for v in results['video']]
+            results['height'] = [v.shape[1] for v in results['video']]
+            results['width'] = [v.shape[2] for v in results['video']]
         return results
 
     def __repr__(self):
