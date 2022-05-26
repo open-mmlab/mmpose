@@ -107,7 +107,7 @@ pip3 install -e .
 
 ## Getting Started
 
-Please see [getting_started.md](docs/en/getting_started.md) for the basic usage of MMPose.
+Please see [get_started.md](docs/en/get_started.md) for the basic usage of MMPose.
 There are also tutorials:
 
 - [learn about configs](docs/en/tutorials/0_config.md)

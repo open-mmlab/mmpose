@@ -106,7 +106,7 @@ pip3 install -e .
 
 ## 教程
 
-请参考 [getting_started.md](docs/zh_cn/getting_started.md) 了解 MMPose 的基本使用。
+请参考 [get_started.md](docs/zh_cn/get_started.md) 了解 MMPose 的基本使用。
 MMPose 也提供了其他更详细的教程:
 
 - [如何编写配置文件](docs/zh_cn/tutorials/0_config.md)

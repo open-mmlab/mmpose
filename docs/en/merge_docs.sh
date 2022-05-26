@@ -10,7 +10,7 @@ sed -i 's=](/docs/en/=](=g' ./tasks/*.md
 sed -i 's=](/docs/en/=](=g' ./papers/*.md
 sed -i 's=](/docs/en/=](=g' ./topics/*.md
 sed -i 's=](/docs/en/=](=g' data_preparation.md
-sed -i 's=](/docs/en/=](=g' getting_started.md
+sed -i 's=](/docs/en/=](=g' get_started.md
 sed -i 's=](/docs/en/=](=g' install.md
 sed -i 's=](/docs/en/=](=g' benchmark.md
 sed -i 's=](/docs/en/=](=g' changelog.md
@@ -21,7 +21,7 @@ sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tasks/*.m
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./papers/*.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./topics/*.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' data_preparation.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' getting_started.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' get_started.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' install.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' benchmark.md
 sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
