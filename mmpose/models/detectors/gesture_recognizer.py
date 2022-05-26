@@ -120,6 +120,8 @@ class GestureRecognizer(BasePose):
                 Otherwise, return predicted poses, boxes, image paths \
                 and heatmaps.
         """
+        if not isinstance(img_metas, (tuple, list)):
+            img_metas = [img_metas.data]
         if return_loss:
             return self.forward_train(video, label, img_metas[0], **kwargs)
         return self.forward_test(video, label, img_metas[0], **kwargs)
