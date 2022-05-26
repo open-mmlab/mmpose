@@ -10,4 +10,31 @@ dataset_info = dict(
         year='2016',
         homepage='https://research.nvidia.com/publication/2016-06_online-'
         'detection-and-classification-dynamic-hand-gestures-recurrent-3d',
-    ))
+    ),
+    category_info={
+        0: 'five fingers move right',
+        1: 'five fingers move left',
+        2: 'five fingers move up',
+        3: 'five fingers move down',
+        4: 'two fingers move right',
+        5: 'two fingers move left',
+        6: 'two fingers move up',
+        7: 'two fingers move down',
+        8: 'click',
+        9: 'beckoned',
+        10: 'stretch hand',
+        11: 'shake hand',
+        12: 'one',
+        13: 'two',
+        14: 'three',
+        15: 'lift up',
+        16: 'press down',
+        17: 'push',
+        18: 'shrink',
+        19: 'levorotation',
+        20: 'dextrorotation',
+        21: 'two fingers prod',
+        22: 'grab',
+        23: 'thumbs up',
+        24: 'OK'
+    })
