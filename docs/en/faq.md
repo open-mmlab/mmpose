@@ -1,3 +1,16 @@
+<!-- TOC -->
+
+- [FAQ](#faq)
+  - [Installation](#installation)
+  - [Coding](#coding)
+  - [Data](#data)
+  - [Training](#training)
+  - [Evaluation](#evaluation)
+  - [Inference](#inference)
+  - [Deployment](#deployment)
+
+<!-- TOC -->
+
 # FAQ
 
 We list some common issues faced by many users and their corresponding solutions here.
