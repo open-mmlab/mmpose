@@ -96,7 +96,7 @@
 
   您可以参考这个[转换工具](https://github.com/open-mmlab/mmpose/blob/master/tools/dataset/parse_macaquepose_dataset.py) 来准备您的数据。
   这是一个关于 COCO 格式 json 文件的[示例](https://github.com/open-mmlab/mmpose/blob/master/tests/data/macaque/test_macaque.json)。
-  在 COCO 格式的 json 文件中，需要这些字段信息: "`categories`", "`annotations`" and "`images`".
+  COCO 格式的 json 文件需要这些字段信息: "`categories`", "`annotations`" and "`images`".
   "`categories`" 包括了数据集的一些基本信息，如类别名称和关键点名称。"`images`" 包含了图片级别的信息，需要这些字段的信息："`id`", "`file_name`", "`height`", "`width`". 其他字段是可选的。
   注： "`id`" 可以是不连续或者没有排序好的（如 1000, 40, 352, 333 ...）。
 
@@ -114,7 +114,7 @@
   - **`COCO_val2017_detections_AP_H_56_person.json` 是什么文件？可以不使用它来训练姿态估计的模型吗？**
 
   `COCO_val2017_detections_AP_H_56_person.json` 包含了在 COCO 验证集上**检测**到的人体边界框，是使用 FasterRCNN 生成的。
-  您可以使用真实的标记边界框来评测模型，只要设置 `use_gt_bbox=True` 和 `bbox_file=''` 即可。
+  您可以使用真实标记的边界框来评测模型，设置 `use_gt_bbox=True` 和 `bbox_file=''` 即可。
   或者您可以使用**检测**到的边界框来评测模型的泛化性，只要设置 `use_gt_bbox=False` 和 `bbox_file='COCO_val2017_detections_AP_H_56_person.json'` 即可。
 
   ## 训练
@@ -130,37 +130,37 @@
 
 - **怎么使用经过训练的模型作为主干网络的预训练**
 
-如果要对整个网络（主干网络 + 头部网络）使用预训练模型，
-请参考教程文档：[使用预训练模型](/docs/zh_CN/tutorials/1_finetune.md#使用预训练模型)，配置文件中的 `load_from` 字段指明了预训练模型的链接。
+  如果要对整个网络（主干网络 + 头部网络）使用预训练模型，
+  请参考教程文档：[使用预训练模型](/docs/zh_CN/tutorials/1_finetune.md#使用预训练模型)，配置文件中的 `load_from` 字段指明了预训练模型的链接。
 
-如果要使用主干网进行预训练，可以将配置文件中主干网络的 "`pretrained`" 值改为模型权重文件的路径或者 URL 。
-训练时，将忽略意外的键值。
+  如果要使用主干网进行预训练，可以将配置文件中主干网络的 "`pretrained`" 值改为模型权重文件的路径或者 URL 。
+  训练时，将忽略意外的键值。
 
 - **怎么实时地可视化训练的准确率/损失函数曲线？**
 
-在 `log_config` 中使用 `TensorboardLoggerHook`，如：
+  在 `log_config` 中使用 `TensorboardLoggerHook`，如：
 
-```python
-log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
-```
+  ```python
+  log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
+  ```
 
-您还可以参考教程文档:[自定义运行配置](tutorials/6_customize_runtime.md#日志配置) 以及配置文件的[例子](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L26)。
+  您还可以参考教程文档:[自定义运行配置](tutorials/6_customize_runtime.md#日志配置) 以及配置文件的[例子](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L26)。
 
 - **没有打印日志信息**
 
-使用更小的日志打印间隔。例如，将这个[配置文件](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L23)的 `interval=50` 改为`interval=1`.
+  使用更小的日志打印间隔。例如，将这个[配置文件](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L23)的 `interval=50` 改为`interval=1`.
 
 - **微调模型的时候怎么固定主干网络多个阶段的网络参数？**
 
-您可以参考这个函数: [`def _freeze_stages()`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L618) 以及这个参数：[`frozen_stages`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L498)。
-如果使用分布式训练或者测试，请在配置文件中设置 `find_unused_parameters = True`。
+  您可以参考这个函数: [`def _freeze_stages()`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L618) 以及这个参数：[`frozen_stages`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L498)。
+  如果使用分布式训练或者测试，请在配置文件中设置 `find_unused_parameters = True`。
 
 ## 评测
 
 - **怎么在 MPII 测试集上运行评测？**
 
-因为我们没有 MPII 测试集上的真实标注信息，我们不能在**本地**评测。
-如果您获得在测试集上的评测结果，根据 [MPII 指南](http://human-pose.mpi-inf.mpg.de/#evaluation)，您需要通过邮件上传这个文件 `pred.mat` （在测试过程中生成）到官方的服务器。
+  因为我们没有 MPII 测试集上的真实标注信息，我们不能在**本地**评测。
+  如果您获得在测试集上的评测结果，根据 [MPII 指南](http://human-pose.mpi-inf.mpg.de/#evaluation)，您需要通过邮件上传这个文件 `pred.mat` （在测试过程中生成）到官方的服务器。
 
 - **对于自顶向下的 2D 姿态估计方法，为什么预测的关键点坐标可以超出边界框？**
 
@@ -170,22 +170,22 @@ log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
 
 - **怎么在 CPU 上运行 MMPose ？**
 
-运行示例的时候设置: `--device=cpu`.
+  运行示例的时候设置: `--device=cpu`.
 
 - **怎么加快推理速度？**
 
-对于自顶向下的模型，可以尝试修改配置文件。例如：
+  对于自顶向下的模型，可以尝试修改配置文件。例如：
 
-1. 在 [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51) 中设置 `flip_test=False`。
-2. 在 [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L52) 中设置 `post_process='default'`。
-3. 使用更快的人体边界框检测器，可参考 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/latest/model_zoo.html)。
+  1. 在 [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51) 中设置 `flip_test=False`。
+  2. 在 [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L52) 中设置 `post_process='default'`。
+  3. 使用更快的人体边界框检测器，可参考 [MMDetection](https://mmdetection.readthedocs.io/zh_CN/latest/model_zoo.html)。
 
-对于自底向上的模型，也可以尝试修改配置文件。例如：
+  对于自底向上的模型，也可以尝试修改配置文件。例如：
 
-1. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91) 中设置 `flip_test=False`。
-2. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89) 中设置 `adjust=False`。
-3. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90) 中设置 `refine=False`。
-4. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39) 中使用更小的输入图片尺寸。
+  1. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91) 中设置 `flip_test=False`。
+  2. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89) 中设置 `adjust=False`。
+  3. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90) 中设置 `refine=False`。
+  4. 在 [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39) 中使用更小的输入图片尺寸。
 
 ## 部署
 
