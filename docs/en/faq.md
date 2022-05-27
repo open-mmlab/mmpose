@@ -144,7 +144,7 @@ If the contents here do not cover your issue, please create an issue using the [
   log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
   ```
 
-  You can refer to [tutorials/6_customize_runtime.md](/tutorials/6_customize_runtime.md#log-config) and the example [config](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
+  You can refer to [customize_runtime.md](/docs/en/tutorials/6_customize_runtime.md#log-config) and the example [config](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L26).
 
 - **Log info is NOT printed**
 
@@ -158,11 +158,13 @@ If the contents here do not cover your issue, please create an issue using the [
 ## Evaluation
 
 - **How to evaluate on MPII test dataset?**
+
   Since we do not have the ground-truth for test dataset, we cannot evaluate it 'locally'.
-  If you would like to evaluate the performance on test set, you have to upload the pred.mat (which is generated during testing) to the official server via email, according to [the MPII guideline](http://human-pose.mpi-inf.mpg.de/#evaluation).
+  If you would like to evaluate the performance on test set, you have to upload the `pred.mat` (which is generated during testing) to the official server via email, according to [the MPII guideline](http://human-pose.mpi-inf.mpg.de/#evaluation).
 
 - **For top-down 2d pose estimation, why predicted joint coordinates can be out of the bounding box (bbox)?**
-  We do not directly use the bbox to crop the image. bbox will be first transformed to center & scale, and the scale will be multiplied by a factor (1.25) to include some context. If the ratio of width/height is different from that of model input (possibly 192/256), we will adjust the bbox.
+
+  We do not directly use the bbox to crop the image. Bbox will be first transformed to center & scale, and the scale will be multiplied by a factor (1.25) to include some context. If the ratio of width/height is different from that of model input (possibly 192/256), we will adjust the bbox. You can refer to [the code](https://github.com/open-mmlab/mmpose/blob/master/mmpose/datasets/pipelines/top_down_transform.py#L15) for more details.
 
 ## Inference
 
@@ -175,7 +177,7 @@ If the contents here do not cover your issue, please create an issue using the [
   For top-down models, try to edit the config file. For example,
 
   1. set `flip_test=False` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-  2. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+  2. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L52).
   3. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
   For bottom-up models, try to edit the config file. For example,
@@ -189,4 +191,6 @@ If the contents here do not cover your issue, please create an issue using the [
 
 - **Why is the onnx model converted by mmpose throwing error when converting to other frameworks such as TensorRT?**
 
-  For now, we can only make sure that models in mmpose are onnx-compatible. However, some operations in onnx may be unsupported by your target framework for deployment, e.g. TensorRT in [this issue](https://github.com/open-mmlab/mmaction2/issues/414). When such situation occurs, we suggest you raise an issue and ask the community to help as long as `pytorch2onnx.py` works well and is verified numerically.
+  For now, we can only make sure that models in mmpose are onnx-compatible. However, some operations in onnx may be unsupported by your target framework for deployment, e.g. TensorRT in [this issue](https://github.com/open-mmlab/mmaction2/issues/414).
+
+  And please note that `pytorch2onnx` in `MMPose` is no longer maintained and will be deprecated in the future. We have [MMDeploy](https://github.com/open-mmlab/mmdeploy) to support model deployment for all `OpenMMLab` codebases including `MMPose`. You can find details about supported models and user guides in their [documentation](https://mmdeploy.readthedocs.io/en/latest/), and raise issues to request support for the models you would like to use.
