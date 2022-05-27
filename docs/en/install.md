@@ -1,3 +1,19 @@
+<!-- TOC -->
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+  - [Best Practices](#best-practices)
+  - [Verify the installation](#verify-the-installation)
+  - [Customize Installation](#customize-installation)
+    - [CUDA versions](#cuda-versions)
+    - [Install MMCV without MIM](#install-mmcv-without-mim)
+    - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
+    - [Install on Google Colab](#install-on-google-colab)
+    - [Using MMPose with Docker](#using-mmpose-with-docker)
+  - [Trouble shooting](#trouble-shooting)
+
+<!-- TOC -->
+
 # Prerequisites
 
 In this section we demonstrate how to prepare an environment with PyTorch.
