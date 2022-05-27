@@ -41,7 +41,7 @@
 
 </div>
 
-## Introduction
+## 简介
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
@@ -116,6 +116,7 @@ MMPose 也提供了其他更详细的教程:
 - [如何增加新模块](docs/zh_cn/tutorials/4_new_modules.md)
 - [如何导出模型为 onnx 格式](docs/zh_cn/tutorials/5_export_model.md)
 - [如何自定义运行配置](docs/zh_cn/tutorials/6_customize_runtime.md)
+- [如何使用摄像头应用接口（Webcam API）](docs/zh_cn/tutorials/7_webcam_api.md)
 
 ## 模型库
 

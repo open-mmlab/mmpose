@@ -4,3 +4,7 @@
     height: 50px;
     width: 120px;
 }
+
+table.colwidths-auto td {
+    width: 50%
+}
