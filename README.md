@@ -35,9 +35,13 @@
 
 </div>
 
-## Introduction
+<div align="center">
 
 English | [简体中文](README_CN.md)
+
+</div>
+
+## Introduction
 
 MMPose is an open-source toolbox for pose estimation based on PyTorch.
 It is a part of the [OpenMMLab project](https://github.com/open-mmlab).
@@ -72,7 +76,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 </details>
 
-## News
+## What's New
 
 - 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) is released. Major updates include:
   - Support [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
@@ -103,7 +107,7 @@ pip3 install -e .
 
 ## Getting Started
 
-Please see [getting_started.md](docs/en/getting_started.md) for the basic usage of MMPose.
+Please see [get_started.md](docs/en/get_started.md) for the basic usage of MMPose.
 There are also tutorials:
 
 - [learn about configs](docs/en/tutorials/0_config.md)

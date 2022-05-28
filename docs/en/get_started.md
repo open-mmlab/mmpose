@@ -1,4 +1,4 @@
-# Getting Started
+# Get Started
 
 This page provides basic tutorials about the usage of MMPose.
 For installation instructions, please see [install.md](install.md).

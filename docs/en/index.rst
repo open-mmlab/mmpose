@@ -9,7 +9,7 @@ You can change the documentation language at the lower-left corner of the page.
    :maxdepth: 2
 
    install.md
-   getting_started.md
+   get_started.md
    demo.md
    benchmark.md
    inference_speed_summary.md
