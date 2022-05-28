@@ -83,7 +83,7 @@ pip install mmpose
 
 ## Verify the installation
 
-To verify whether MMPose is installed correctly, we provide some sample codes to run an inference demo.
+To verify that MMPose is installed correctly, you can run an inference demo with the following steps.
 
 **Step 1.** We need to download config and checkpoint files.
 
