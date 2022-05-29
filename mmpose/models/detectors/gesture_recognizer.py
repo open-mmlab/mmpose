@@ -21,6 +21,7 @@ class GestureRecognizer(BasePose):
 
     Args:
         backbone (dict): Backbone modules to extract feature.
+        neck (dict): Neck Modules to process feature.
         cls_head (dict): Classification head to process feature.
         train_cfg (dict): Config for training. Default: None.
         test_cfg (dict): Config for testing. Default: None.
@@ -89,36 +90,28 @@ class GestureRecognizer(BasePose):
         """Calls either forward_train or forward_test depending on whether
         return_loss=True. Note this setting will change the expected inputs.
 
-        Note:
-            - batch_size: N
-            - num_keypoints: K
-            - num_img_channel: C (Default: 3)
-            - img height: imgH
-            - img width: imgW
-            - heatmaps height: H
-            - heatmaps weight: W
+            Note:
+                - batch_size: N
+                - num_vid_channel: C (Default: 3)
+                - video height: vidH
+                - video width: vidW
+                - video length: vidL
 
-        Args:
-            img (torch.Tensor[NxCximgHximgW]): Input images.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]): Weights across
-                different joint types.
-            img_metas (list(dict)): Information about data augmentation
-                By default this includes:
+            Args:
+                video (list[torch.Tensor[NxCxvidLxvidHxvidW]]): Input videos.
+                label (torch.Tensor[N]): Category label of videos.
+                img_metas (list(dict)): Information about data.
+                    By default this includes:
+                    - "fps: video frame rate
+                    - "modality": modality of input videos
+                return_loss (bool): Option to `return loss`. `return loss=True`
+                    for training, `return loss=False` for validation & test.
 
-                - "image_file: path to the image file
-                - "center": center of the bbox
-                - "scale": scale of the bbox
-                - "rotation": rotation of the bbox
-                - "bbox_score": score of bbox
-            return_loss (bool): Option to `return loss`. `return loss=True`
-                for training, `return loss=False` for validation & test.
-            return_heatmap (bool) : Option to return heatmap.
-
-        Returns:
-            dict|tuple: if `return loss` is true, then return losses. \
-                Otherwise, return predicted poses, boxes, image paths \
-                and heatmaps.
+            Returns:
+                dict|tuple: if `return loss` is true, then return losses. \
+                    Otherwise, return predicted gestures for clips with \
+                    a certain length. \
+        .
         """
         if not isinstance(img_metas, (tuple, list)):
             img_metas = [img_metas.data]
@@ -127,6 +120,25 @@ class GestureRecognizer(BasePose):
         return self.forward_test(video, label, img_metas[0], **kwargs)
 
     def _feed_forward(self, video, img_metas):
+        """Feed videos into network to compute feature maps and logits.
+
+        Note:
+            - batch_size: N
+            - num_vid_channel: C (Default: 3)
+            - video height: vidH
+            - video width: vidW
+            - video length: vidL
+
+        Args:
+            video (list[torch.Tensor[NxCxvidLxvidHxvidW]]): Input videos.
+            img_metas (list(dict)): Information about data.
+                By default this includes:
+                - "fps: video frame rate
+                - "modality": modality of input videos
+
+        Returns:
+            tuple[Tensor, Tensor]: output logit and feature map.
+        """
         fmaps = []
         for i, modal in enumerate(img_metas['modality']):
             fmaps.append(getattr(self.backbone, modal)(video[i]))
@@ -165,6 +177,7 @@ class GestureRecognizer(BasePose):
         return results
 
     def set_train_epoch(self, epoch: int):
+        """set the training epoch of heads to support customized behaviour."""
         if hasattr(self, 'cls_head'):
             self.cls_head.set_train_epoch(epoch)
 

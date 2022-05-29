@@ -13,7 +13,24 @@ from .gesture_base_dataset import GestureBaseDataset
 
 @DATASETS.register_module()
 class NVGestureDataset(GestureBaseDataset):
-    """NVGesture dataset for gesture recognition."""
+    """NVGesture dataset for gesture recognition.
+
+    "Online Detection and Classification of Dynamic Hand Gestures
+    With Recurrent 3D Convolutional Neural Network",
+    Conference on Computer Vision and Pattern Recognition (CVPR) 2016.
+
+    The dataset loads raw videos and apply specified transforms
+    to return a dict containing the image tensors and other information.
+
+    Args:
+        ann_file (str): Path to the annotation file.
+        vid_prefix (str): Path to a directory where videos are held.
+        data_cfg (dict): config
+        pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
+        test_mode (bool): Store True when building test or
+            validation dataset. Default: False.
+    """
 
     def __init__(self,
                  ann_file,
@@ -100,6 +117,32 @@ class NVGestureDataset(GestureBaseDataset):
         return anno
 
     def evaluate(self, results, res_folder=None, metric='AP', **kwargs):
+        """Evaluate nvgesture recognition results. The gesture prediction
+        results will be saved in ``${res_folder}/result_accuracy.json``.
+
+        Note:
+            - batch_size: N
+            - heatmap length: L
+
+        Args:
+            results (dict): Testing results containing the following
+                items:
+                - logits (dict[str, torch.tensor[N,25,L]]): For each item, \
+                    the key represents the modality of input video, while \
+                    the value represents the prediction of gesture. Three \
+                    dimensions represent batch, category and temporal \
+                    length, respectively.
+                - label (np.ndarray[N]): [center[0], center[1], scale[0], \
+                    scale[1],area, score]
+            res_folder (str, optional): The folder to save the testing
+                results. If not specified, a temp folder will be created.
+                Default: None.
+            metric (str | list[str]): Metric to be performed.
+                Options: 'AP'.
+
+        Returns:
+            dict: Evaluation results for evaluation metric.
+        """
         if metric != 'AP':
             raise ValueError(f'Metric {metric} is invalid. Pls use \'AP\'.')
 
@@ -119,7 +162,7 @@ class NVGestureDataset(GestureBaseDataset):
         accuracy['mAP'] = sum(accuracy.values()) / len(accuracy)
 
         if res_folder is not None:
-            with open(osp.join(res_folder, 'accuracy.json'), 'w') as f:
+            with open(osp.join(res_folder, 'result_accuracy.json'), 'w') as f:
                 json.dump(accuracy, f, indent=4)
 
         return accuracy

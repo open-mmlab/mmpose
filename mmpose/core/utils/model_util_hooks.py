@@ -4,7 +4,7 @@ from mmcv.runner import HOOKS, Hook
 
 @HOOKS.register_module()
 class ModelSetEpochHook(Hook):
-    """Set `epoch` attribute for model while training."""
+    """The hook that tells model the current epoch in training."""
 
     def __init__(self):
         pass
