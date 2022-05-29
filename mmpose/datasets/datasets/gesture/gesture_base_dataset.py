@@ -9,7 +9,22 @@ from mmpose.datasets.pipelines import Compose
 
 
 class GestureBaseDataset(Dataset, metaclass=ABCMeta):
-    """Base class for gesture recognition datasets."""
+    """Base class for gesture recognition datasets with Multi-Modal video as
+    the input.
+
+    All gesture datasets should subclass it.
+    All subclasses should overwrite:
+        Methods:`_get_single`, 'evaluate'
+
+    Args:
+        ann_file (str): Path to the annotation file.
+        vid_prefix (str): Path to a directory where videos are held.
+        data_cfg (dict): config
+        pipeline (list[dict | callable]): A sequence of data transforms.
+        dataset_info (DatasetInfo): A class containing all dataset info.
+        test_mode (bool): Store True when building test or
+            validation dataset. Default: False.
+    """
 
     def __init__(self,
                  ann_file,

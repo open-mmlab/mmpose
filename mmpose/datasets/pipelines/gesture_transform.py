@@ -37,15 +37,15 @@ class CropValidClip:
 
 
 @PIPELINES.register_module()
-class RandomTemporalCrop:
-    """Data augmentation with random temporal crop.
+class TemporalPooling:
+    """Pick frames according to either stride or reference fps.
 
-    Required keys: 'video', 'modality', 'num_frames'.
+    Required keys: 'video', 'modality', 'num_frames', 'fps'.
 
     Modified keys: 'video', 'num_frames'.
     """
 
-    def __init__(self, length=64, stride=1, ref_fps=-1):
+    def __init__(self, length: int = 64, stride: int = 1, ref_fps: int = -1):
         self.length = length
         self.stride = stride
         self.ref_fps = ref_fps
@@ -54,7 +54,12 @@ class RandomTemporalCrop:
         """Implement data aumentation with random temporal crop."""
 
         if self.ref_fps > 0 and 'fps' in results:
+            assert len(set(results['fps'])) == 1, 'Videos of different '
+            'modality have different rate. May be misaligned after pooling.'
             stride = results['fps'][0] // self.ref_fps
+            if stride < 1:
+                raise ValueError(f'`ref_fps` must be smaller than video '
+                                 f"fps {results['fps'][0]}")
         else:
             stride = self.stride
 
@@ -148,16 +153,15 @@ class MultiFrameBBoxMerge:
 
 
 @PIPELINES.register_module()
-class RandomResizedCropByBBox:
-    """Data augmentation with random spatial crop for spatially aligned videos
-    by bounding box.
+class ResizedCropByBBox:
+    """Spatial crop for spatially aligned videos by bounding box.
 
     Required keys: 'video', 'modality', 'width', 'height', 'bbox'.
 
     Modified keys: 'video', 'width', 'height'.
     """
 
-    def __init__(self, size, scale=(0.8, 1.25), ratio=(0.75, 1.33), shift=0.3):
+    def __init__(self, size, scale=(1, 1), ratio=(1, 1), shift=0):
         self.size = size if isinstance(size, (tuple, list)) else (size, size)
         self.scale = scale
         self.ratio = ratio
@@ -195,6 +199,13 @@ class RandomResizedCropByBBox:
 
 @PIPELINES.register_module()
 class NVGestureRandomFlip:
+    """Data augmentation by randomly horizontal flip the video. The label will
+    be alternated simultaneously.
+
+    Required keys: 'video', 'label'.
+
+    Modified keys: 'video', 'label'.
+    """
 
     def __init__(self, prob=0.5):
         self.flip_prob = prob
@@ -215,6 +226,12 @@ class NVGestureRandomFlip:
 
 @PIPELINES.register_module()
 class VideoColorJitter:
+    """Data augmentation with random color transformations.
+
+    Required keys: 'video', 'modality'.
+
+    Modified keys: 'video'.
+    """
 
     def __init__(self, brightness=0, contrast=0):
         self.brightness = brightness

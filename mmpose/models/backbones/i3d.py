@@ -10,7 +10,24 @@ from .base_backbone import BaseBackbone
 
 
 class Conv3dBlock(nn.Module):
-    """Basic 3d convolution block for I3D."""
+    """Basic 3d convolution block for I3D.
+
+    Args:
+    in_channels (int): Input channels of this block.
+    out_channels (int): Output channels of this block.
+    expansion (float): The multiplier of in_channels and out_channels.
+        Default: 1.
+    kernel_size (tuple[int]): kernel size of the 3d convolution layer.
+        Default: (1, 1, 1).
+    stride (tuple[int]): stride of the block. Default: (1, 1, 1)
+    padding (tuple[int]): padding of the input tensor. Default: (0, 0, 0)
+    use_bias (bool): whether to enable bias in 3d convolution layer.
+        Default: False
+    use_bn (bool): whether to use Batch Normalization after 3d convolution
+        layer. Default: True
+    use_relu (bool): whether to use ReLU after Batch Normalization layer.
+        Default: True
+    """
 
     def __init__(self,
                  in_channels,
@@ -55,7 +72,14 @@ class Conv3dBlock(nn.Module):
 
 
 class Mixed(nn.Module):
-    """Inception block for I3D."""
+    """Inception block for I3D.
+
+    Args:
+    in_channels (int): Input channels of this block.
+    out_channels (int): Output channels of this block.
+    expansion (float): The multiplier of in_channels and out_channels.
+        Default: 1.
+    """
 
     def __init__(self, in_channels, out_channels, expansion=1.0):
         super(Mixed, self).__init__()
@@ -111,6 +135,12 @@ class I3D(BaseBackbone):
 
     Please refer to the `paper <https://arxiv.org/abs/1705.07750>`__ for
     details.
+
+    Args:
+    in_channels (int): Input channels of the backbone, which is decided
+        on the input modality.
+    expansion (float): The multiplier of in_channels and out_channels.
+        Default: 1.
     """
 
     def __init__(self, in_channels=3, expansion=1.0):
