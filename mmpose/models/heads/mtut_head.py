@@ -16,6 +16,17 @@ class MultiModalSSAHead(nn.Module):
 
     Please refer to the `paper <https://arxiv.org/abs/1812.06145>`__ for
     details.
+
+    Args:
+        num_classes (int): number of classes.
+        modality (list[str]): modalities of input videos for backbone.
+        in_channels (int): number of channels of feature maps. Default: 1024
+        avg_pool_kernel (tuple[int]): kernel size of pooling layer.
+            Default: (1, 7, 7)
+        dropout_prob (float): probablity to use dropout on input feature map.
+            Default: 0
+        train_cfg (dict): training config.
+        test_cfg (dict): testing config.
     """
 
     def __init__(self,
@@ -55,9 +66,11 @@ class MultiModalSSAHead(nn.Module):
                 xavier_init(m)
 
     def set_train_epoch(self, epoch: int):
+        """set the epoch to control the activation of SSA loss."""
         self._train_epoch = epoch
 
     def forward(self, x, img_metas):
+        """Forward function."""
         logits = []
         for i, modal in enumerate(img_metas['modality']):
             out = self.avg_pool(x[i])
@@ -69,12 +82,33 @@ class MultiModalSSAHead(nn.Module):
 
     @staticmethod
     def _compute_corr(fmap):
+        """compute the self-correlation matrix of feature map."""
         fmap = fmap.view(fmap.size(0), fmap.size(1), -1)
         fmap = nn.functional.normalize(fmap, dim=2, eps=1e-8)
         corr = torch.bmm(fmap.permute(0, 2, 1), fmap)
         return corr.view(corr.size(0), -1)
 
     def get_loss(self, logits, label, fmaps=None):
+        """Compute the Cross Entropy loss and SSA loss.
+
+        Note:
+            - batch_size: N
+            - number of classes: nC
+            - feature map channel: C
+            - feature map height: H
+            - feature map width: W
+            - feature map length: L
+            - logit length: Lg
+
+        Args:
+            logits (list[NxnCxLg]): predicted logits for each modality.
+            label (list(dict)): Category label.
+            fmaps (list[torch.Tensor[NxCxLxHxW]]): feature maps for each
+                modality.
+
+        Returns:
+            dict[str, torch.tensor]: computed losses.
+        """
         losses = {}
         ce_loss = [self.loss(logit.mean(dim=2), label) for logit in logits]
 
@@ -95,6 +129,24 @@ class MultiModalSSAHead(nn.Module):
         return losses
 
     def get_accuracy(self, logits, label, img_metas):
+        """Compute the accuracy of predicted gesture.
+
+        Note:
+            - batch_size: N
+            - number of classes: nC
+            - logit length: L
+
+        Args:
+            logits (list[NxnCxL]): predicted logits for each modality.
+            label (list(dict)): Category label.
+            img_metas (list(dict)): Information about data.
+                By default this includes:
+                - "fps: video frame rate
+                - "modality": modality of input videos
+
+        Returns:
+            dict[str, torch.tensor]: computed accuracy for each modality.
+        """
         results = {}
         for i, modal in enumerate(img_metas['modality']):
             logit = logits[i].mean(dim=2)
