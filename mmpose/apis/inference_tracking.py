@@ -182,7 +182,7 @@ def get_track_id(results,
             equivalent to an empty result list. Default: None
         next_id (int): The track id for the new person instance.
         min_keypoints (int): Minimum number of keypoints recognized as person.
-            default: 3.
+            0 means no minimum threshold required. Default: 3.
         use_oks (bool): Flag to using oks tracking. default: False.
         tracking_thr (float): The threshold for tracking.
         use_one_euro (bool): Option to use one-euro-filter. default: False.
@@ -218,7 +218,7 @@ def get_track_id(results,
         track_id, results_last, match_result = _track(result, results_last,
                                                       tracking_thr)
         if track_id == -1:
-            if np.count_nonzero(result['keypoints'][:, 1]) > min_keypoints:
+            if np.count_nonzero(result['keypoints'][:, 1]) >= min_keypoints:
                 result['track_id'] = next_id
                 next_id += 1
             else:
