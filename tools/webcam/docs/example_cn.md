@@ -89,9 +89,9 @@ class SunglassesNode(FrameDrawingNode):
 2. `load_image_from_disk_or_url`：用来从本地路径或 url 读取图片
 3. `get_eye_keypoint_ids`：根据模型配置文件（model_cfg）中记录的数据集信息，返回双眼关键点的索引。如 COCO 格式对应的左右眼索引为 $(1,2)$
 4. `apply_sunglasses_effect`：将太阳镜绘制到原图中的合适位置，具体步骤为：
-    - 在素材图片上定义一组源锚点 $(s_1, s_2, s_3, s_4)$
-    - 根据目标左右眼关键点位置 $(k_1, k_2)$，计算目标锚点 $(t_1, t_2, t_3, t_4)$
-    - 通过源锚点和目标锚点，计算几何变换矩阵（平移，缩放，旋转），将素材图片做变换后贴入原图片。即可将太阳镜绘制在合适的位置。
+   - 在素材图片上定义一组源锚点 $(s_1, s_2, s_3, s_4)$
+   - 根据目标左右眼关键点位置 $(k_1, k_2)$，计算目标锚点 $(t_1, t_2, t_3, t_4)$
+   - 通过源锚点和目标锚点，计算几何变换矩阵（平移，缩放，旋转），将素材图片做变换后贴入原图片。即可将太阳镜绘制在合适的位置。
 
 <div align=center>
 <img src="https://user-images.githubusercontent.com/15977946/153773612-bcf86b91-31a3-47b5-886d-e33577016f85.png">
@@ -106,12 +106,12 @@ class SunglassesNode(FrameDrawingNode):
 
 1. 当 buffer 中有数据时，会触发一次运行
 2. 调用`process()`来执行具体的功能。`process()`是一个抽象接口，由子类具体实现
-    - 特别地，如果节点需要实现“开/关”功能，则还需要实现`bypass()`方法，以定义节点“关”时的行为。`bypass()`与`process()`的输入输出接口完全相同。在run()中会根据`Node.enable`的状态，调用`process()`或`bypass()`
+   - 特别地，如果节点需要实现“开/关”功能，则还需要实现`bypass()`方法，以定义节点“关”时的行为。`bypass()`与`process()`的输入输出接口完全相同。在run()中会根据`Node.enable`的状态，调用`process()`或`bypass()`
 3. 将运行结果发送到输出 buffer
 
 在继承 Node 类实现具体的节点类时，通常需要完成以下工作：
 
-1. 在__init__()中注册输入、输出 buffer，并调用基类的__init__()方法
+1. 在\_\_init\_\_()中注册输入、输出 buffer，并调用基类的\_\_init\_\_()方法
 2. 实现process()和bypass()（如需要）方法
 
 [FrameDrawingNode 类](/tools/webcam/webcam_apis/nodes/frame_drawing_node.py) ：继承自 Node 类，对`process()`和`bypass()`方法做了进一步封装：

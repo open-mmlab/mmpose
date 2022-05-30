@@ -18,7 +18,7 @@ class BufferInfo():
     """Dataclass for buffer information."""
     buffer_name: str
     input_name: Optional[str] = None
-    essential: bool = False
+    trigger: bool = False
 
 
 @dataclass
@@ -119,7 +119,7 @@ class Node(Thread, metaclass=ABCMeta):
     def register_input_buffer(self,
                               buffer_name: str,
                               input_name: str,
-                              essential: bool = False):
+                              trigger: bool = False):
         """Register an input buffer, so that Node can automatically check if
         data is ready, fetch data from the buffers and format the inputs to
         feed into `process` method.
@@ -134,12 +134,12 @@ class Node(Thread, metaclass=ABCMeta):
             buffer_name (str): The name of the buffer
             input_name (str): The name of the fetched message from the
                 corresponding buffer
-            essential (bool): An essential input means the node will wait
+            trigger (bool): An trigger input means the node will wait
                 until the input is ready before processing. Otherwise, an
                 inessential input will not block the processing, instead
                 a None will be fetched if the buffer is not ready.
         """
-        buffer_info = BufferInfo(buffer_name, input_name, essential)
+        buffer_info = BufferInfo(buffer_name, input_name, trigger)
         self._input_buffers.append(buffer_info)
 
     def register_output_buffer(self, buffer_name: Union[str, List[str]]):
@@ -213,9 +213,9 @@ class Node(Thread, metaclass=ABCMeta):
         if buffer_manager is None:
             raise ValueError(f'{self.name}: Runner not set!')
 
-        # Check that essential buffers are ready
+        # Check that trigger buffers are ready
         for buffer_info in self._input_buffers:
-            if buffer_info.essential and buffer_manager.is_empty(
+            if buffer_info.trigger and buffer_manager.is_empty(
                     buffer_info.buffer_name):
                 return False, None
 
@@ -230,9 +230,9 @@ class Node(Thread, metaclass=ABCMeta):
                 result[buffer_info.input_name] = buffer_manager.get(
                     buffer_info.buffer_name, block=False)
             except Empty:
-                if buffer_info.essential:
+                if buffer_info.trigger:
                     # Return unsuccessful flag if any
-                    # essential input is unready
+                    # trigger input is unready
                     return False, None
 
         return True, result
@@ -370,60 +370,3 @@ class Node(Thread, metaclass=ABCMeta):
                 self._send_output_to_buffers(output_msg)
 
         logging.info(f'{self.name}: process ending.')
-
-
-class MultiInputNode(Node):
-    """Base interface of functional module which accept multiple inputs."""
-
-    def _get_input_from_buffer(self) -> Tuple[bool, Optional[Dict]]:
-        """Get and pack input data if it's ready. The function returns a tuple
-        of a status flag and a packed data dictionary. If input_buffer is
-        ready, the status flag will be True, and the packed data is a dict
-        whose items are buffer names and corresponding messages (unready
-        additional buffers will give a `None`). Otherwise, the status flag is
-        False and the packed data is None.
-
-        Returns:
-            bool: status flag
-            dict[str, Message|list[Message]]: the packed inputs where the key
-                is the buffer name and the value is the Message got from the
-                corresponding buffer.
-        """
-        buffer_manager = self._buffer_manager
-
-        if buffer_manager is None:
-            raise ValueError(f'{self.name}: Runner not set!')
-
-        # Check that essential buffers are ready
-        for buffer_info in self._input_buffers:
-            if buffer_info.essential and buffer_manager.is_empty(
-                    buffer_info.buffer_name):
-                return False, None
-
-        # Default input
-        result = {
-            buffer_info.input_name: None
-            for buffer_info in self._input_buffers
-        }
-
-        for buffer_info in self._input_buffers:
-            if buffer_info.input_name != 'input':
-                try:
-                    result[buffer_info.input_name] = buffer_manager.get(
-                        buffer_info.buffer_name, block=False)
-                except Empty:
-                    pass
-
-            else:
-                while not buffer_manager.is_empty(buffer_info.buffer_name):
-                    if result[buffer_info.input_name] is None:
-                        result[buffer_info.input_name] = []
-                    result[buffer_info.input_name].append(
-                        buffer_manager.get(
-                            buffer_info.buffer_name, block=False))
-
-            if buffer_info.essential and result[
-                    buffer_info.input_name] is None:
-                return False, None
-
-        return True, result

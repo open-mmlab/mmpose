@@ -18,13 +18,13 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/face_swap/face_s
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| s | Switch between modes <ul><li>Shuffle: Randomly shuffle all faces</li><li>Clone: Choose one face and clone it for everyone</li><li>None: Nothing happens and everyone is safe :)</li></ul>|
-| v | Toggle the pose visualization on/off. |
-| h | Show help information. |
-| m | Show diagnostic information. |
-| q | Exit. |
+| Hotkey | Function                                                                                                                                                                                  |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| s      | Switch between modes <ul><li>Shuffle: Randomly shuffle all faces</li><li>Clone: Choose one face and clone it for everyone</li><li>None: Nothing happens and everyone is safe :)</li></ul> |
+| v      | Toggle the pose visualization on/off.                                                                                                                                                     |
+| h      | Show help information.                                                                                                                                                                    |
+| m      | Show diagnostic information.                                                                                                                                                              |
+| q      | Exit.                                                                                                                                                                                     |
 
 ### Configuration
 

@@ -16,12 +16,12 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/supersaiyan/saiy
 
 ### Hotkeys
 
-| Hotkey | Function |
-| -- | -- |
-| s | Toggle the Super Saiyan effect on/off. |
-| h | Show help information. |
-| m | Show the monitoring information. |
-| q | Exit. |
+| Hotkey | Function                               |
+| ------ | -------------------------------------- |
+| s      | Toggle the Super Saiyan effect on/off. |
+| h      | Show help information.                 |
+| m      | Show the monitoring information.       |
+| q      | Exit.                                  |
 
 Note that the demo will automatically save the output video into a file `record.mp4`.
 
