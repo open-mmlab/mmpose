@@ -218,8 +218,7 @@ def get_track_id(results,
         track_id, results_last, match_result = _track(result, results_last,
                                                       tracking_thr)
         if track_id == -1:
-            if min_keypoints <= 0 or np.count_nonzero(
-                    result['keypoints'][:, 1]) >= min_keypoints:
+            if np.count_nonzero(result['keypoints'][:, 1]) >= min_keypoints:
                 result['track_id'] = next_id
                 next_id += 1
             else:
