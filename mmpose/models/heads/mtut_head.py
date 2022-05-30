@@ -121,8 +121,8 @@ class MultiModalSSAHead(nn.Module):
                     rho = (torch.exp(self.beta * rho) - 1).detach()
                     ssa = corrs[i] - corrs[j].detach()
                     ssa = rho * ssa.pow(2).mean(dim=1).pow(0.5)
-                    ssa_loss.append(ssa.mean())
-            losses['ssa_loss'] = sum(ssa_loss) * self.lambda_
+                    ssa_loss.append((ssa.mean() * self.lambda_).clamp(max=10))
+            losses['ssa_loss'] = sum(ssa_loss)
         ce_loss = [loss.mean() for loss in ce_loss]
         losses['ce_loss'] = sum(ce_loss)
 
