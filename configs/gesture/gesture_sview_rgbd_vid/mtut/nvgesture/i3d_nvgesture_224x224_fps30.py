@@ -1,32 +1,21 @@
 _base_ = [
-    '../../../_base_/default_runtime.py',
-    '../../../_base_/datasets/nvgesture.py'
+    '../../../../_base_/default_runtime.py',
+    '../../../../_base_/datasets/nvgesture.py'
 ]
 
-checkpoint_config = dict(interval=10)
-evaluation = dict(interval=10, metric='AP', save_best='AP_rgb')
+checkpoint_config = dict(interval=5)
+evaluation = dict(interval=5, metric='AP', save_best='AP_rgb')
 
 optimizer = dict(
     type='SGD',
-    lr=1e-1,
+    lr=1e-2,
     momentum=0.9,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
-lr_config = dict(
-    policy='step',
-    gamma=0.1,
-    warmup='linear',
-    warmup_iters=100,
-    warmup_ratio=0.01,
-    step=[30, 60, 90, 110])
-total_epochs = 140
-log_config = dict(
-    interval=5,
-    hooks=[
-        dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
-    ])
+lr_config = dict(policy='step', gamma=0.1, step=[30, 50])
+total_epochs = 75
+log_config = dict(interval=10)
 
 custom_hooks_config = [dict(type='ModelSetEpochHook')]
 
@@ -53,70 +42,59 @@ model = dict(
     ),
     cls_head=dict(
         type='MultiModalSSAHead',
-        in_channels=1024,
         num_classes=25,
-        avg_pool_kernel=(1, 2, 2),
     ),
     train_cfg=dict(
         beta=2,
-        lambda_=1e-3,
-        ssa_start_epoch=121,
+        lambda_=5e-3,
+        ssa_start_epoch=61,
     ),
     test_cfg=dict(),
 )
 
-data_root = 'data/nvgesture'
 data_cfg = dict(
     video_size=[320, 240],
     modality=['rgb', 'depth'],
-    bbox_file=f'{data_root}/annotations/bboxes.json',
 )
 
 train_pipeline = [
     dict(type='LoadVideoFromFile'),
     dict(type='ModalWiseChannelProcess'),
     dict(type='CropValidClip'),
-    dict(type='RandomTemporalCrop', length=16, stride=2),
-    dict(type='MultiFrameBBoxMerge'),
-    dict(type='RandomResizedCropByBBox', size=112),
+    dict(type='TemporalPooling', length=64, ref_fps=30),
+    dict(type='ResizeGivenShortEdge', length=256),
+    dict(type='RandomAlignedSpatialCrop', length=224),
     dict(type='NVGestureRandomFlip'),
-    dict(type='VideoColorJitter', brightness=0.4, contrast=0.3),
     dict(type='MultiModalVideoToTensor'),
     dict(
         type='VideoNormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
     dict(
-        type='Collect',
-        keys=['video', 'label'],
-        meta_keys=['video_file', 'modality']),
+        type='Collect', keys=['video', 'label'], meta_keys=['fps',
+                                                            'modality']),
 ]
 
 val_pipeline = [
     dict(type='LoadVideoFromFile'),
     dict(type='ModalWiseChannelProcess'),
     dict(type='CropValidClip'),
-    dict(type='RandomTemporalCrop', length=-1, stride=2),
-    dict(type='MultiFrameBBoxMerge'),
-    dict(
-        type='RandomResizedCropByBBox',
-        size=112,
-        scale=(1, 1),
-        ratio=(1, 1),
-        shift=0),
+    dict(type='TemporalPooling', length=-1, ref_fps=30),
+    dict(type='ResizeGivenShortEdge', length=256),
+    dict(type='CenterSpatialCrop', length=224),
     dict(type='MultiModalVideoToTensor'),
     dict(
         type='VideoNormalizeTensor',
         mean=[0.485, 0.456, 0.406],
         std=[0.229, 0.224, 0.225]),
     dict(
-        type='Collect',
-        keys=['video', 'label'],
-        meta_keys=['video_file', 'num_frames', 'modality']),
+        type='Collect', keys=['video', 'label'], meta_keys=['fps',
+                                                            'modality']),
 ]
 
 test_pipeline = val_pipeline
 
+data_root = 'data/nvgesture'
 data = dict(
     samples_per_gpu=6,
     workers_per_gpu=2,

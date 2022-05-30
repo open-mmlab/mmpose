@@ -11,8 +11,9 @@ runner = dict(
             name='Detector',
             model_config='demo/mmdetection_cfg/'
             'ssdlite_mobilenetv2_scratch_600e_onehand.py',
-            model_checkpoint='~/.cache/torch/hub/checkpoints/'
-            'ssdlite_mobilenetv2_scratch_600e_onehand_20220523.pth',
+            model_checkpoint='https://download.openmmlab.com/mmpose/'
+            'mmdet_pretrained/'
+            'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
             device='cpu',
             inference_frame='last',
             input_buffer='_input_',
@@ -20,10 +21,10 @@ runner = dict(
         dict(
             type='HandGestureRecognizerNode',
             name='GestureRecognizer',
-            model_config='configs/gesture/mtut/'
-            'nvgesture/i3d_nvgesture_bbox_rgb.py',
-            model_checkpoint='~/.cache/torch/hub/checkpoints/'
-            'i3d_nvgesture_20220523.pth',
+            model_config='demo/gesture_mtut_vid_demo.py',
+            model_checkpoint='https://download.openmmlab.com/mmpose/'
+            'gesture/mtut/i3d_nvgesture/'
+            'i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth',
             device='cpu',
             input_buffer='det_result',
             output_buffer='gesture',
