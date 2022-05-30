@@ -69,6 +69,7 @@ Case a: If you develop and run mmpose directly, install it from source:
 ```shell
 git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
+pip install -r requirements.txt
 pip install -v -e .
 # "-v" means verbose, or more output
 # "-e" means installing a project in editable mode,

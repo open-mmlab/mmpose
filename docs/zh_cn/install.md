@@ -82,6 +82,7 @@ mim install mmcv-full
 ```shell
 git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
+pip install -r requirements.txt
 pip install -v -e .
 # "-v" 表示输出更多安装相关的信息
 # "-e" 表示以可编辑形式安装，这样可以在不重新安装的情况下，让本地修改直接生效
