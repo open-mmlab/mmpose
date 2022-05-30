@@ -16,10 +16,10 @@ MMPose Webcam API 框架概览
 我们将从一个简单的 Demo 开始，向您介绍 MMPose WebcamAPI 的功能和特性，并详细展示如何基于这个 API 搭建自己的应用。为了使用 MMPose WebcamAPI，您只需要做简单的准备：
 
 1. 一台计算机（最好有 GPU 和 CUDA 环境，但这并不是必须的）
-1. 一个摄像头。计算机自带摄像头或者外接 USB 摄像头均可
-1. 安装 MMPose
-    - 在 OpenMMLab [官方仓库](https://github.com/open-mmlab/mmpose) fork MMPose 到自己的 github，并 clone 到本地
-    - 安装 MMPose，只需要按照我们的 [安装文档](https://mmpose.readthedocs.io/zh_CN/latest/install.html) 中的步骤操作即可
+2. 一个摄像头。计算机自带摄像头或者外接 USB 摄像头均可
+3. 安装 MMPose
+   - 在 OpenMMLab [官方仓库](https://github.com/open-mmlab/mmpose) fork MMPose 到自己的 github，并 clone 到本地
+   - 安装 MMPose，只需要按照我们的 [安装文档](https://mmpose.readthedocs.io/zh_CN/latest/install.html) 中的步骤操作即可
 
 完成准备工作后，请在命令行进入 MMPose 根目录，执行以下指令，即可运行 demo：
 
@@ -126,6 +126,6 @@ Runner 和 Node 逻辑关系示意
 
 #### Get Advanced: 关于 buffer
 
-- Buffer 本质是一个有限长度的队列，在 runner 中会包含一个 BufferManager 实例（见`mmpose/tools/webcam/webcam_apis/buffer.py'）来生成和管理所有 buffer。Node 会按照 config 从对应的 buffer 中读出或写入数据。
+- Buffer 本质是一个有限长度的队列，在 runner 中会包含一个 BufferManager 实例（见\`mmpose/tools/webcam/webcam_apis/buffer.py'）来生成和管理所有 buffer。Node 会按照 config 从对应的 buffer 中读出或写入数据。
 - 当一个 buffer 已满（达到最大长度）时，写入数据的操作通常不会被 block，而是会将 buffer 中已有的最早一条数据“挤出去”。
 - 为什么有_input_和_frame_两个输入呢？因为有些 Node 的操作较为耗时（如目标检测，姿态估计等需要模型推理的 Node）。为了保证显示的流畅，我们通常用_input_来作为这类耗时较大的操作的输入，而用_frame_来实时绘制可视化的结果。因为各个节点是异步运行的，这样就可以保证可视化的实时和流畅。
