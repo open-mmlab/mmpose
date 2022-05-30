@@ -15,7 +15,6 @@
 
 </details>
 
-
 <!-- [BACKBONE] -->
 
 <details>
@@ -50,11 +49,10 @@
 
 </details>
 
-
 Results on NVGesture test set
 
 | Arch  | Input Size | fps | bbox |  AP_rgb  |  AP_depth  | ckpt    | log     |
 | :--- | :---: | :--------: | :------: | :------: | :------: |:------: |:------: |
-| [I3D](/configs/gesture/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_bbox_112x112_fps15.py) | 112x112 | 15 | $\surd$ | 0.725 | 0.730 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_112x112_fps15-20220530.log.json) |
-| [I3D](/configs/gesture/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_bbox_224x224_fps30.py) | 224x224 | 30 | $\surd$ | 0.782 | 0.811 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_224x224_fps30-98a8f288_20220530.pthh) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_224x224_fps30-20220530.log.json) |
-| [I3D](/configs/gesture/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_224x224_fps30.py)  | 224x224 | 30 | $\times$ | 0.739 | 0.809 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_224x224_fps30-b7abf574_20220530.pth) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_224x224_fps30-20220530.log.json) |
+| [I3D](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_bbox_112x112_fps15.py) | 112x112 | 15 | $\surd$ | 0.725 | 0.730 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_112x112_fps15-20220530.log.json) |
+| [I3D](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_bbox_224x224_fps30.py) | 224x224 | 30 | $\surd$ | 0.782 | 0.811 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_224x224_fps30-98a8f288_20220530.pthh) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_224x224_fps30-20220530.log.json) |
+| [I3D](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_224x224_fps30.py)  | 224x224 | 30 | $\times$ | 0.739 | 0.809 | [ckpt](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_224x224_fps30-b7abf574_20220530.pth) | [log](https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_224x224_fps30-20220530.log.json) |
