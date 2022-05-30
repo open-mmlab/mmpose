@@ -373,6 +373,7 @@ class Node(Thread, metaclass=ABCMeta):
 
 
 class MultiInputNode(Node):
+    """Base interface of functional module which accept multiple inputs."""
 
     def _get_input_from_buffer(self) -> Tuple[bool, Optional[Dict]]:
         """Get and pack input data if it's ready. The function returns a tuple
@@ -384,9 +385,9 @@ class MultiInputNode(Node):
 
         Returns:
             bool: status flag
-            dict[str, Message]: the packed inputs where the key is the buffer
-                name and the value is the Message got from the corresponding
-                buffer.
+            dict[str, Message|list[Message]]: the packed inputs where the key
+                is the buffer name and the value is the Message got from the
+                corresponding buffer.
         """
         buffer_manager = self._buffer_manager
 
