@@ -7,7 +7,7 @@ from .frame_effect_node import (BackgroundNode, BugEyeNode,
                                 SaiyanNode, SunglassesNode)
 from .helper_node import ModelResultBindingNode, MonitorNode, RecorderNode
 from .mmdet_node import DetectorNode, MultiFrameDetectorNode
-from .mmpose_node import TopDownPoseEstimatorNode
+from .mmpose_node import HandGestureRecognizerNode, TopDownPoseEstimatorNode
 from .valentinemagic_node import ValentineMagicNode
 from .xdwendwen_node import XDwenDwenNode
 
@@ -16,5 +16,6 @@ __all__ = [
     'TopDownPoseEstimatorNode', 'MonitorNode', 'BugEyeNode', 'SunglassesNode',
     'ModelResultBindingNode', 'NoticeBoardNode', 'RecorderNode',
     'FaceSwapNode', 'MoustacheNode', 'SaiyanNode', 'BackgroundNode',
-    'XDwenDwenNode', 'ValentineMagicNode', 'GestureVisualizerNode'
+    'XDwenDwenNode', 'ValentineMagicNode', 'GestureVisualizerNode',
+    'HandGestureRecognizerNode'
 ]
