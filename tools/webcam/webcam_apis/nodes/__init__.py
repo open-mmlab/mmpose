@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .builder import NODES
 from .faceswap_node import FaceSwapNode
-from .frame_effect_node import (BackgroundNode, BugEyeNode,
-                                GestureVisualizerNode, MoustacheNode,
+from .frame_effect_node import (BackgroundNode, BugEyeNode, MoustacheNode,
                                 NoticeBoardNode, PoseVisualizerNode,
                                 SaiyanNode, SunglassesNode)
 from .helper_node import ModelResultBindingNode, MonitorNode, RecorderNode
-from .mmdet_node import DetectorNode, MultiFrameDetectorNode
+from .mmdet_node import DetectorNode
 from .mmpose_node import TopDownPoseEstimatorNode
 from .pose_tracker_node import PoseTrackerNode
 from .valentinemagic_node import ValentineMagicNode

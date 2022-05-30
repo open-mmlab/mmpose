@@ -1,10 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import List, Optional, Union
 
-import numpy as np
-
 from .builder import NODES
-from .node import MultiInputNode, Node
+from .node import Node
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -89,43 +87,3 @@ class DetectorNode(Node):
             result['preds'].extend(preds_i)
 
         return result
-
-
-@NODES.register_module()
-class MultiFrameDetectorNode(DetectorNode, MultiInputNode):
-
-    def __init__(self,
-                 name: str,
-                 model_config: str,
-                 model_checkpoint: str,
-                 input_buffer: str,
-                 output_buffer: Union[str, List[str]],
-                 inference_frame: str = 'mid',
-                 enable_key: Optional[Union[str, int]] = None,
-                 device: str = 'cuda:0'):
-        super(MultiFrameDetectorNode,
-              self).__init__(name, model_config, model_checkpoint,
-                             input_buffer, output_buffer, enable_key, device)
-        self.inference_frame = inference_frame
-
-    def process(self, input_msgs):
-        input_msg = input_msgs['input']
-        if self.inference_frame == 'last':
-            key_frame = input_msg[-1]
-        elif self.inference_frame == 'mid':
-            key_frame = input_msg[len(input_msg) // 2]
-        elif self.inference_frame == 'begin':
-            key_frame = input_msg[0]
-        else:
-            raise ValueError(f'Invalid inference_frame {self.inference_frame}')
-
-        img = key_frame.get_image()
-
-        preds = inference_detector(self.model, img)
-        det_result = self._post_process(preds)
-
-        imgs = [frame.get_image() for frame in input_msg]
-        key_frame.set_image(np.stack(imgs, axis=0))
-
-        key_frame.add_detection_result(det_result, tag=self.name)
-        return key_frame
