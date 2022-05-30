@@ -151,6 +151,7 @@ def parse_config_path(path):
         '3d_kpt_mview_rgb_img': '3D Keypoint',
         '3d_kpt_sview_rgb_vid': '3D Keypoint',
         '3d_mesh_sview_rgb_img': '3D Mesh',
+        'gesture_sview_rgbd_vid': 'Gesture',
         None: None
     }
     task_readable = task2readable.get(task)
