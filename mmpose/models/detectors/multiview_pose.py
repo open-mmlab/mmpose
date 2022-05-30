@@ -53,7 +53,7 @@ class ProjectLayer(nn.Module):
             grid_1D_x + box_center[0],
             grid_1D_y + box_center[1],
             grid_1D_z + box_center[2],
-        )
+            indexing='ij')
         grid_x = grid_x.contiguous().view(-1, 1)
         grid_y = grid_y.contiguous().view(-1, 1)
         grid_z = grid_z.contiguous().view(-1, 1)
