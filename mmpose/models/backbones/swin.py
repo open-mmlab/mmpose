@@ -14,9 +14,9 @@ from mmcv.utils import to_2tuple
 
 from ...utils import get_root_logger
 from ..builder import BACKBONES
+from ..utils.transformer import PatchEmbed, PatchMerging
 from .base_backbone import BaseBackbone
 from .utils.ckpt_convert import swin_converter
-from .utils.transformer import PatchEmbed, PatchMerging
 
 
 class WindowMSA(nn.Module):
