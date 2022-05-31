@@ -180,6 +180,6 @@ class NVGestureDataset(GestureBaseDataset):
             for modal in predictions:
                 results[f'AP_{modal}'] = (predictions[modal] == label).mean()
                 APs.append(results[f'AP_{modal}'])
-            results['mAP'] = sum(APs) / len(APs)
+            results['AP_mean'] = sum(APs) / len(APs)
 
         return results

@@ -43,10 +43,24 @@ class TemporalPooling:
     Required keys: 'video', 'modality', 'num_frames', 'fps'.
 
     Modified keys: 'video', 'num_frames'.
+
+    Args:
+        length (int): output video length. If unset, the entire video will
+            be pooled.
+        stride (int): temporal pooling stride. If unset, the stride will be
+            computed with video fps and `ref_fps`. If both `stride` and
+            `ref_fps` are unset, the stride will be 1.
+        ref_fps (int): expected fps of output video. If unset, the video will
+            be pooling with `stride`.
     """
 
-    def __init__(self, length: int = 64, stride: int = 1, ref_fps: int = -1):
+    def __init__(self, length: int = -1, stride: int = -1, ref_fps: int = -1):
         self.length = length
+        if stride == -1 and ref_fps == -1:
+            stride = 1
+        elif stride != -1 and ref_fps != -1:
+            raise ValueError('`stride` and `ref_fps` can not be assigned '
+                             'simultaneously, as they might conflict.')
         self.stride = stride
         self.ref_fps = ref_fps
 
@@ -377,7 +391,7 @@ class MultiModalVideoToTensor:
 
 @PIPELINES.register_module()
 class VideoNormalizeTensor:
-    """Data processing by converting video arrays to pytorch tensors.
+    """Data processing by normalizing video tensors with mean and std.
 
     Required keys: 'video', 'modality'.
 
@@ -394,7 +408,7 @@ class VideoNormalizeTensor:
             if modal == 'rgb':
                 video = results['video'][i]
                 dim = video.ndim - 1
-                video = video.sub(self.mean.view(3, *((1, ) * dim)))
-                video = video.div(self.std.view(3, *((1, ) * dim)))
+                video = video - self.mean.view(3, *((1, ) * dim))
+                video = video / self.std.view(3, *((1, ) * dim))
                 results['video'][i] = video
         return results
