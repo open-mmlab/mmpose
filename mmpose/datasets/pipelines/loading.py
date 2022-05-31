@@ -128,10 +128,10 @@ class LoadVideoFromFile:
     def _read_video(self, path):
         container = mmcv.VideoReader(path)
         sample = dict(
-            height=container.height,
-            width=container.width,
-            fps=container.fps,
-            num_frames=container.frame_cnt,
+            height=int(container.height),
+            width=int(container.width),
+            fps=int(container.fps),
+            num_frames=int(container.frame_cnt),
             video=[])
         for _ in range(container.frame_cnt):
             sample['video'].append(container.read())

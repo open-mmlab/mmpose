@@ -1,10 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import tempfile
 import warnings
 from collections import defaultdict
 
 import json_tricks as json
+import numpy as np
 from mmcv import Config
 
 from ...builder import DATASETS
@@ -118,7 +120,7 @@ class NVGestureDataset(GestureBaseDataset):
 
     def evaluate(self, results, res_folder=None, metric='AP', **kwargs):
         """Evaluate nvgesture recognition results. The gesture prediction
-        results will be saved in ``${res_folder}/result_accuracy.json``.
+        results will be saved in ``${res_folder}/result_gesture.json``.
 
         Note:
             - batch_size: N
@@ -143,26 +145,41 @@ class NVGestureDataset(GestureBaseDataset):
         Returns:
             dict: Evaluation results for evaluation metric.
         """
-        if metric != 'AP':
-            raise ValueError(f'Metric {metric} is invalid. Pls use \'AP\'.')
-
-        accuracy_buffer = defaultdict(list)
-        num_samples = 0
-        for result in results:
-            for modal in result['logits']:
-                logit = result['logits'][modal].mean(dim=2)
-                acc = (logit.argmax(dim=1) == result['label']).int().sum()
-                accuracy_buffer[modal].append(acc.item())
-            num_samples += len(result['label'])
-
-        accuracy = dict()
-        for modal in accuracy_buffer:
-            correct = sum(accuracy_buffer[modal])
-            accuracy[f'AP_{modal}'] = correct / num_samples
-        accuracy['mAP'] = sum(accuracy.values()) / len(accuracy)
+        metrics = metric if isinstance(metric, list) else [metric]
+        allowed_metrics = ['AP']
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
 
         if res_folder is not None:
-            with open(osp.join(res_folder, 'result_accuracy.json'), 'w') as f:
-                json.dump(accuracy, f, indent=4)
+            tmp_folder = None
+            res_file = osp.join(res_folder, 'result_gesture.json')
+        else:
+            tmp_folder = tempfile.TemporaryDirectory()
+            res_file = osp.join(tmp_folder.name, 'result_gesture.json')
 
-        return accuracy
+        predictions = defaultdict(list)
+        label = []
+        for result in results:
+            label.append(result['label'].cpu().numpy())
+            for modal in result['logits']:
+                logit = result['logits'][modal].mean(dim=2)
+                pred = logit.argmax(dim=1).cpu().numpy()
+                predictions[modal].append(pred)
+
+        label = np.concatenate(label, axis=0)
+        for modal in predictions:
+            predictions[modal] = np.concatenate(predictions[modal], axis=0)
+
+        with open(res_file, 'w') as f:
+            json.dump(predictions, f, indent=4)
+
+        results = dict()
+        if 'AP' in metrics:
+            APs = []
+            for modal in predictions:
+                results[f'AP_{modal}'] = (predictions[modal] == label).mean()
+                APs.append(results[f'AP_{modal}'])
+            results['mAP'] = sum(APs) / len(APs)
+
+        return results
