@@ -212,11 +212,11 @@ class ResizedCropByBBox:
 
 
 @PIPELINES.register_module()
-class NVGestureRandomFlip:
+class GestureRandomFlip:
     """Data augmentation by randomly horizontal flip the video. The label will
     be alternated simultaneously.
 
-    Required keys: 'video', 'label'.
+    Required keys: 'video', 'label', 'ann_info'.
 
     Modified keys: 'video', 'label'.
     """
@@ -229,12 +229,10 @@ class NVGestureRandomFlip:
         if flip:
             for i in range(len(results['video'])):
                 results['video'][i] = results['video'][i][:, :, ::-1, :]
-            if results['label'] in (0, 1):
-                results['label'] = 1 - results['label']
-            elif results['label'] in (4, 5):
-                results['label'] = 9 - results['label']
-            elif results['label'] in (19, 20):
-                results['label'] = 39 - results['label']
+            results['label'] = results['ann_info']['flip_pairs'].get(
+                results['label'], results['label'])
+
+        results['flipped'] = flip
         return results
 
 

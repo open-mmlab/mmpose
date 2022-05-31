@@ -37,4 +37,5 @@ dataset_info = dict(
         22: 'grab',
         23: 'thumbs up',
         24: 'OK'
-    })
+    },
+    flip_pairs=[(0, 1), (4, 5), (19, 20)])

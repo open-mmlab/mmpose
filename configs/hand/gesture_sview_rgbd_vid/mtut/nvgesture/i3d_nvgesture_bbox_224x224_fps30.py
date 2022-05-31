@@ -71,7 +71,7 @@ train_pipeline = [
         scale=(0.8, 1.25),
         ratio=(0.75, 1.33),
         shift=0.3),
-    dict(type='NVGestureRandomFlip'),
+    dict(type='GestureRandomFlip'),
     dict(type='MultiModalVideoToTensor'),
     dict(
         type='VideoNormalizeTensor',

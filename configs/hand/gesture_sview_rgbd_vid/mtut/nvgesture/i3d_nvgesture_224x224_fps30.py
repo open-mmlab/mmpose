@@ -64,7 +64,7 @@ train_pipeline = [
     dict(type='TemporalPooling', length=64, ref_fps=30),
     dict(type='ResizeGivenShortEdge', length=256),
     dict(type='RandomAlignedSpatialCrop', length=224),
-    dict(type='NVGestureRandomFlip'),
+    dict(type='GestureRandomFlip'),
     dict(type='MultiModalVideoToTensor'),
     dict(
         type='VideoNormalizeTensor',
