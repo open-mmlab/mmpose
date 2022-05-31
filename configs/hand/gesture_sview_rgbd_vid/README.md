@@ -1,6 +1,6 @@
 # Gesture Recognition
 
-Gesture recognition aims to recognition the hand gesture in the video, for example lifting up the thumb.
+Gesture recognition aims to recognize the hand gestures in the video, such as thumbs up.
 
 ## Data preparation
 

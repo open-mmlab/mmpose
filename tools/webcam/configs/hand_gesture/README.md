@@ -16,11 +16,11 @@ python tools/webcam/run_webcam.py --config tools/webcam/configs/hand_gesture/han
 
 ### Hotkeys
 
-| Hotkey | Function                              |
-| ------ | ------------------------------------- |
-| m      | Show the monitoring information.      |
-| q      | Exit.                                 |
+| Hotkey | Function                         |
+| ------ | -------------------------------- |
+| m      | Show the monitoring information. |
+| q      | Exit.                            |
 
 ### Configuration
 
-See the [README](/tools/webcam/configs/examples/README.md#configuration) of pose estimation demo for model configurations.
+See the [README](/tools/webcam/configs/examples/README.md#configuration) for model configurations.
