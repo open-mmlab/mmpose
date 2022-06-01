@@ -106,7 +106,7 @@ pip install mmpose
 mim download mmpose --config associative_embedding_hrnet_w32_coco_512x512  --dest .
 ```
 
-下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`associative_embedding_hrnet_w32_coco_512x512.py`, `hrnet_w32_coco_512x512-bcb8c247_20200816.pth`, 分别是配置文件和对应的模型权重文件
+下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`associative_embedding_hrnet_w32_coco_512x512.py`, `hrnet_w32_coco_512x512-bcb8c247_20200816.pth`, 分别是配置文件和对应的模型权重文件。
 
 **第 2 步** 验证推理示例
 
@@ -173,7 +173,7 @@ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.1
 
 MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训练（需要 MMCV 版本 >= 1.4.4）、测试和模型推理等所有操作。
 
-在 CPU 模式下，MMCV 的部分功能将不可用，通常是一些 GPU 编译的算子,，如 `Deformable Convolution`。MMPose 中大部分的模型都不会依赖这些算子，但是如果您尝试使用包含这些算子的模型来运行训练、测试或推理，将会报错。
+在 CPU 模式下，MMCV 的部分功能将不可用，通常是一些 GPU 编译的算子，如 `Deformable Convolution`。MMPose 中大部分的模型都不会依赖这些算子，但是如果您尝试使用包含这些算子的模型来运行训练、测试或推理，将会报错。
 
 ### 在 Google Colab 中安装
 

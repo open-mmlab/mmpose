@@ -40,7 +40,7 @@ conda install pytorch torchvision -c pytorch
 ```
 
 ```{warning}
-This command will automatically install the latest version PyTorch and cudatoolkit, please check whether they matches your environment.
+This command will automatically install the latest version PyTorch and cudatoolkit, please check whether they match your environment.
 ```
 
 On CPU platforms:
@@ -102,7 +102,7 @@ Option (a). If you install mmpose from source, just run the following command.
 python demo/bottom_up_img_demo.py associative_embedding_hrnet_w32_coco_512x512.py hrnet_w32_coco_512x512-bcb8c247_20200816.pth --img-path tests/data/coco/ --out-img-root vis_results
 ```
 
-You will see several images on this folder: `vis_results`, where the human pose estimation results are plotted on the images.
+You will see several images in this folder: `vis_results`, where the human pose estimation results are plotted on the images.
 
 Option (b). If you install mmpose with pip, open you python interpreter and copy&paste the following codes.
 
@@ -152,7 +152,7 @@ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.1
 
 MMPose can be built for CPU only environment. In CPU mode you can train (requires MMCV version >= 1.4.4), test or inference a model.
 
-However, some functionalities are gone in this mode, usually GPU-compiled ops like `Deformable Convolution`. Most models in MMPose don't depends on these ops, but if you try to train/test/inference a model containing these ops, an error will be raised.
+However, some functionalities are missing in this mode, usually GPU-compiled ops like `Deformable Convolution`. Most models in MMPose don't depend on these ops, but if you try to train/test/infer a model containing these ops, an error will be raised.
 
 ### Install on Google Colab
 
