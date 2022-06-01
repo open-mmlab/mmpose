@@ -43,10 +43,7 @@ class GestureBaseDataset(Dataset, metaclass=ABCMeta):
         self.test_mode = test_mode
 
         self.ann_info['video_size'] = np.array(data_cfg['video_size'])
-        self.ann_info['flip_pairs'] = dict()
-        for label1, label2 in dataset_info.flip_pairs:
-            self.ann_info['flip_pairs'][label1] = label2
-            self.ann_info['flip_pairs'][label2] = label1
+        self.ann_info['flip_pairs'] = dataset_info.flip_pairs
         self.modality = data_cfg['modality']
         if isinstance(self.modality, (list, tuple)):
             self.modality = self.modality

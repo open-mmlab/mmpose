@@ -229,8 +229,10 @@ class GestureRandomFlip:
         if flip:
             for i in range(len(results['video'])):
                 results['video'][i] = results['video'][i][:, :, ::-1, :]
-            results['label'] = results['ann_info']['flip_pairs'].get(
-                results['label'], results['label'])
+            for flip_pairs in results['ann_info']['flip_pairs']:
+                if results['label'] in flip_pairs:
+                    results['label'] = sum(flip_pairs) - results['label']
+                    break
 
         results['flipped'] = flip
         return results
