@@ -27,7 +27,7 @@ def test_multi_modal_ssa_head():
     losses = head.get_loss(logits, labels, feats)
     assert 'ce_loss' in losses
     assert 'ssa_loss' in losses
-    assert not losses['ssa_loss'].isnan().any()
+    assert (losses['ssa_loss'] == losses['ssa_loss']).all()  # check nan
 
     logits[0][0, 1], logits[1][0, 1], labels[0] = 1e5, 1e5, 1
     logits[0][1, 4], logits[1][1, 8], labels[1] = 1e5, 1e5, 8
