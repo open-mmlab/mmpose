@@ -1,202 +1,233 @@
-# 安装
+<!-- TOC -->
 
-本文档提供了安装 MMPose 的相关步骤。
+- [依赖环境](#依赖环境)
+- [安装](#安装)
+  - [最佳实践](#最佳实践)
+    - [从源码安装](#从源码安装)
+    - [作为 Python 包安装](#作为-python-包安装)
+  - [验证安装](#验证安装)
+  - [自定义安装](#自定义安装)
+    - [CUDA 版本](#cuda-版本)
+    - [不使用 MIM 安装 MMCV](#不使用-mim-安装-mmcv)
+    - [在 CPU 环境中安装](#在-cpu-环境中安装)
+    - [在 Google Colab 中安装](#在-google-colab-中安装)
+    - [通过 Docker 使用 MMPose](#通过-docker-使用-mmpose)
+  - [故障解决](#故障解决)
 
 <!-- TOC -->
 
-- [安装依赖包](#安装依赖包)
-- [准备环境](#准备环境)
-- [MMPose 的安装步骤](#MMPose-的安装步骤)
-- [CPU 环境下的安装步骤](#CPU-环境下的安装步骤)
-- [利用 Docker 镜像安装 MMPose](#利用-Docker-镜像安装-MMPose)
-- [源码安装 MMPose](#源码安装-MMPose)
-- [在多个 MMPose 版本下进行开发](#在多个-MMPose-版本下进行开发)
+# 依赖环境
 
-<!-- TOC -->
+在本节中，我们将演示如何准备 PyTorch 相关的依赖环境。
 
-## 安装依赖包
+MMPose 适用于 Linux、Windows 和 macOS。它需要 Python 3.6+、CUDA 9.2+ 和 PyTorch 1.5+。
 
-- Linux | Windows | macOS
-- Python 3.6+
-- PyTorch 1.5+
-- CUDA 9.2+ (如果从源码编译 PyTorch,则可以兼容 CUDA 9.0 版本)
-- GCC 5+
-- [mmcv](https://github.com/open-mmlab/mmcv) 请安装最新版本的 mmcv-full
-- Numpy
-- cv2
-- json_tricks
-- [xtcocotools](https://github.com/jin-s13/xtcocoapi)
-
-可选项：
-
-- [mmdet](https://github.com/open-mmlab/mmdetection) (用于“姿态估计”)
-- [mmtrack](https://github.com/open-mmlab/mmtracking) (用于“姿态跟踪”)
-- [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (用于“三维人体形状恢复”)
-- [smplx](https://github.com/vchoutas/smplx) (用于“三维人体形状恢复”)
-
-## 准备环境
-
-a. 创建并激活 conda 虚拟环境，如：
-
-```shell
-conda create -n open-mmlab python=3.7 -y
-conda activate open-mmlab
+```{note}
+如果您对配置 PyTorch 环境已经很熟悉，并且已经完成了配置，可以直接进入[下一节](#安装)。
+否则，请依照以下步骤完成配置。
 ```
 
-b. 参考 [官方文档](https://pytorch.org/) 安装 PyTorch 和 torchvision ，如：
+**第 1 步** 从[官网](https://docs.conda.io/en/latest/miniconda.html) 下载并安装 Miniconda。
+
+**第 2 步** 创建一个 conda 虚拟环境并激活它。
+
+```shell
+conda create --name openmmlab python=3.8 -y
+conda activate openmmlab
+```
+
+**第 3 步** 按照[官方指南](https://pytorch.org/get-started/locally/) 安装 PyTorch。例如：
+
+在 GPU 平台：
 
 ```shell
 conda install pytorch torchvision -c pytorch
 ```
 
-**注**：确保 CUDA 的编译版本和 CUDA 的运行版本相匹配。
-用户可以参照 [PyTorch 官网](https://pytorch.org/) 对预编译包所支持的 CUDA 版本进行核对。
-
-`例 1`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 10.2 版本，并且想要安装 PyTorch 1.8.0 版本，
-则需要安装 CUDA 10.2 下预编译的 PyTorch。
-
-```shell
-conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch
+```{warning}
+以上命令会自动安装最新版的 PyTorch 与对应的 cudatoolkit，请检查它们是否与您的环境匹配。
 ```
 
-`例 2`：如果用户的 `/usr/local/cuda` 文件夹下已安装 CUDA 9.2 版本，并且想要安装 PyTorch 1.7.0 版本，
-则需要安装 CUDA 9.2 下预编译的 PyTorch。
+在 CPU 平台：
 
 ```shell
-conda install pytorch==1.7.0 torchvision==0.8.0 cudatoolkit=9.2 -c pytorch
+conda install pytorch torchvision cpuonly -c pytorch
 ```
 
-如果 PyTorch 是由源码进行编译安装（而非直接下载预编译好的安装包），则可以使用更多的 CUDA 版本（如 9.0 版本）。
+# 安装
 
-## MMPose 的安装步骤
+我们推荐用户按照我们的最佳实践来安装 MMPose。但除此之外，如果您想根据
+您的习惯完成安装流程，也可以参见[自定义安装](#自定义安装)一节来获取更多信息。
 
-a. 安装最新版本的 mmcv-full。MMPose 推荐用户使用如下的命令安装预编译好的 mmcv。
+## 最佳实践
+
+**第 1 步** 使用 [MIM](https://github.com/open-mmlab/mim) 安装 [MMCV](https://github.com/open-mmlab/mmcv)
 
 ```shell
-# pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9.0/index.html
-# 我们可以忽略 PyTorch 的小版本号
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.9/index.html
+pip install -U openmim
+mim install mmcv-full
 ```
 
-PyTorch 在 1.x.0 和 1.x.1 之间通常是兼容的，故 mmcv-full 只提供 1.x.0 的编译包。如果你的 PyTorch 版本是 1.x.1，你可以放心地安装在 1.x.0 版本编译的 mmcv-full。
+**第 2 步** 安装 MMPose
 
-可查阅 [这里](https://github.com/open-mmlab/mmcv#installation) 以参考不同版本的 MMCV 所兼容的 PyTorch 和 CUDA 版本。
+根据具体需求，我们支持两种安装模式：
 
-另外，用户也可以通过使用以下命令从源码进行编译：
+- [从源码安装（推荐）](#从源码安装)：如果基于 MMPose 框架开发自己的任务，需要添加新的功能，比如新的模型或是数据集，或者使用我们提供的各种工具。
+- [作为 Python 包安装](#作为-python-包安装)：只是希望调用 MMPose 的接口，或者在自己的项目中导入 MMPose 中的模块。
 
-```shell
-git clone https://github.com/open-mmlab/mmcv.git
-cd mmcv
-MMCV_WITH_OPS=1 pip install -e .  # mmcv-full 包含一些 cuda 算子，执行该步骤会安装 mmcv-full（而非 mmcv）
-# 或者使用 pip install -e .  # 这个命令安装的 mmcv 将不包含 cuda ops，通常适配 CPU（无 GPU）环境
-cd ..
-```
+### 从源码安装
 
-**注意**：如果之前安装过 mmcv，那么需要先使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
-
-b. 克隆 MMPose 库。
+这种情况下，从源码按如下方式安装 mmpose：
 
 ```shell
 git clone https://github.com/open-mmlab/mmpose.git
 cd mmpose
-```
-
-c. 安装依赖包和 MMPose。
-
-```shell
 pip install -r requirements.txt
-pip install -v -e .  # or "python setup.py develop"
+pip install -v -e .
+# "-v" 表示输出更多安装相关的信息
+# "-e" 表示以可编辑形式安装，这样可以在不重新安装的情况下，让本地修改直接生效
 ```
 
-如果是在 macOS 环境安装 MMPose，则需使用如下命令：
+### 作为 Python 包安装
+
+直接使用 pip 安装即可。
 
 ```shell
-CC=clang CXX=clang++ CFLAGS='-stdlib=libc++' pip install -e .
+pip install mmpose
 ```
 
-d. 安装其他可选依赖。
+## 验证安装
 
-如果用户不需要做相关任务，这部分步骤可以选择跳过。
+为了验证 MMPose 的安装是否正确，我们提供了一些示例代码来执行模型推理。
 
-可选项：
-
-- [mmdet](https://github.com/open-mmlab/mmdetection) (用于“姿态估计”)
-- [mmtrack](https://github.com/open-mmlab/mmtracking) (用于“姿态跟踪”)
-- [pyrender](https://pyrender.readthedocs.io/en/latest/install/index.html) (用于“三维人体形状恢复”)
-- [smplx](https://github.com/vchoutas/smplx) (用于“三维人体形状恢复”)
-
-注意：
-
-1. 在步骤 c 中，git commit 的 id 将会被写到版本号中，如 0.6.0+2e7045c。这个版本号也会被保存到训练好的模型中。
-   这里推荐用户每次在步骤 b 中对本地代码和 github 上的源码进行同步。如果 C++/CUDA 代码被修改，就必须进行这一步骤。
-
-2. 根据上述步骤，MMPose 就会以 `dev` 模式被安装，任何本地的代码修改都会立刻生效，不需要再重新安装一遍（除非用户提交了 commits，并且想更新版本号）。
-
-3. 如果用户想使用 `opencv-python-headless` 而不是 `opencv-python`，可再安装 MMCV 前安装 `opencv-python-headless`。
-
-4. 如果 mmcv 已经被安装，用户需要使用 `pip uninstall mmcv` 命令进行卸载。如果 mmcv 和 mmcv-full 同时被安装, 会报 `ModuleNotFoundError` 的错误。
-
-5. 一些依赖包是可选的。运行 `python setup.py develop` 将只会安装运行代码所需的最小要求依赖包。
-   要想使用一些可选的依赖包，如 `smplx`，用户需要通过 `pip install -r requirements/optional.txt` 进行安装，
-   或者通过调用 `pip`（如 `pip install -v -e .[optional]`，这里的 `[optional]` 可替换为 `all`，`tests`，`build` 或 `optional`） 指定安装对应的依赖包，如 `pip install -v -e .[tests,build]`。
-
-## CPU 环境下的安装步骤
-
-MMPose 可以在只有 CPU 的环境下安装（即无法使用 GPU 的环境）。
-
-在 CPU 模式下，用户可以运行 `demo/demo.py` 的代码。
-
-## 源码安装 MMPose
-
-这里提供了 conda 下安装 MMPose 并链接 COCO 数据集路径的完整脚本（假设 COCO 数据的路径在 $COCO_ROOT）。
+**第 1 步** 我们需要下载配置文件和模型权重文件
 
 ```shell
-conda create -n open-mmlab python=3.7 -y
-conda activate open-mmlab
-
-# 安装最新的，使用默认版本的 CUDA 版本（一般为最新版本）预编译的 PyTorch 包
-conda install -c pytorch pytorch torchvision -y
-
-# 安装 mmcv-full。其中，命令里 url 的 ``{cu_version}`` 和 ``{torch_version}`` 变量需由用户进行指定。
-# 可查阅 [这里](https://github.com/open-mmlab/mmcv#installation) 以参考不同版本的 MMCV 所兼容的 PyTorch 和 CUDA 版本。
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/{cu_version}/{torch_version}/index.html
-
-# 安装 mmpose
-git clone git@github.com:open-mmlab/mmpose.git
-cd mmpose
-pip install -r requirements.txt
-python setup.py develop
-
-mkdir data
-ln -s $COCO_ROOT data/coco
+mim download mmpose --config associative_embedding_hrnet_w32_coco_512x512  --dest .
 ```
 
-## 利用 Docker 镜像安装 MMPose
+下载过程往往需要几秒或更多的时间，这取决于您的网络环境。完成之后，您会在当前目录下找到这两个文件：`associative_embedding_hrnet_w32_coco_512x512.py`, `hrnet_w32_coco_512x512-bcb8c247_20200816.pth`, 分别是配置文件和对应的模型权重文件。
 
-MMPose 提供一个 [Dockerfile](/docker/Dockerfile) 用户创建 docker 镜像。
+**第 2 步** 验证推理示例
+
+如果您是**从源码安装**的 mmpose，那么直接运行以下命令进行验证：
 
 ```shell
-# 创建拥有 PyTorch 1.6.0, CUDA 10.1, CUDNN 7 配置的 docker 镜像.
-docker build -f ./docker/Dockerfile --rm -t mmpose .
+python demo/bottom_up_img_demo.py associative_embedding_hrnet_w32_coco_512x512.py hrnet_w32_coco_512x512-bcb8c247_20200816.pth --img-path tests/data/coco/ --out-img-root vis_results
 ```
 
-**注意**：用户需要确保已经安装了 [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker)。
+您可以在 `vis_results` 这个目录下看到输出的图片，这些图片展示了人体姿态估计的结果。
 
-运行以下命令：
+如果您是**作为 PyThon 包安装**，那么可以打开您的 Python 解释器，复制并粘贴如下代码：
+
+```python
+from mmpose.apis import (init_pose_model, inference_bottom_up_pose_model, vis_pose_result)
+
+config_file = 'associative_embedding_hrnet_w32_coco_512x512.py'
+checkpoint_file = 'hrnet_w32_coco_512x512-bcb8c247_20200816.pth'
+pose_model = init_pose_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
+
+image_name = 'demo/persons.jpg'
+# test a single image
+pose_results, _ = inference_bottom_up_pose_model(pose_model, image_name)
+
+# show the results
+vis_pose_result(pose_model, image_name, pose_results, out_file='demo/vis_persons.jpg')
+```
+
+准备好一张带有人的图片，并放置在合适的位置，然后运行以上代码，您将会在输出的图片上看到检测到的人体姿态结果。
+
+## 自定义安装
+
+### CUDA 版本
+
+安装 PyTorch 时，需要指定 CUDA 版本。如果您不清楚选择哪个，请遵循我们的建议：
+
+- 对于 Ampere 架构的 NVIDIA GPU，例如 GeForce 30 系列 以及 NVIDIA A100，CUDA 11 是必需的。
+- 对于更早的 NVIDIA GPU，CUDA 11 是向后兼容 (backward compatible) 的，但 CUDA 10.2 能够提供更好的兼容性，也更加轻量。
+
+请确保您的 GPU 驱动版本满足最低的版本需求，参阅[这张表](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-major-component-versions__table-cuda-toolkit-driver-versions)。
+
+```{note}
+如果按照我们的最佳实践进行安装，CUDA 运行时库就足够了，因为我们提供相关 CUDA 代码的预编译，您不需要进行本地编译。
+但如果您希望从源码进行 MMCV 的编译，或是进行其他 CUDA 算子的开发，那么就必须安装完整的 CUDA 工具链，参见
+[NVIDIA 官网](https://developer.nvidia.com/cuda-downloads)，另外还需要确保该 CUDA 工具链的版本与 PyTorch 安装时
+的配置相匹配（如用 `conda install` 安装 PyTorch 时指定的 cudatoolkit 版本）。
+```
+
+### 不使用 MIM 安装 MMCV
+
+MMCV 包含 C++ 和 CUDA 扩展，因此其对 PyTorch 的依赖比较复杂。MIM 会自动解析这些
+依赖，选择合适的 MMCV 预编译包，使安装更简单，但它并不是必需的。
+
+要使用 pip 而不是 MIM 来安装 MMCV，请遵照 [MMCV 安装指南](https://mmcv.readthedocs.io/zh_CN/latest/get_started/installation.html)。
+它需要您用指定 url 的形式手动指定对应的 PyTorch 和 CUDA 版本。
+
+举个例子，如下命令将会安装基于 PyTorch 1.10.x 和 CUDA 11.3 编译的 mmcv-full。
 
 ```shell
-docker run --gpus all\
- --shm-size=8g \
- -it -v {DATA_DIR}:/mmpose/data mmpose
+pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
-## 在多个 MMPose 版本下进行开发
+### 在 CPU 环境中安装
 
-MMPose 的训练和测试脚本已经修改了 `PYTHONPATH` 变量，以确保其能够运行当前目录下的 MMPose。
+MMPose 可以仅在 CPU 环境中安装，在 CPU 模式下，您可以完成训练（需要 MMCV 版本 >= 1.4.4）、测试和模型推理等所有操作。
 
-如果想要运行环境下默认的 MMPose，用户需要在训练和测试脚本中去除这一行：
+在 CPU 模式下，MMCV 的部分功能将不可用，通常是一些 GPU 编译的算子，如 `Deformable Convolution`。MMPose 中大部分的模型都不会依赖这些算子，但是如果您尝试使用包含这些算子的模型来运行训练、测试或推理，将会报错。
+
+### 在 Google Colab 中安装
+
+[Google Colab](https://colab.research.google.com/) 通常已经包含了 PyTorch 环境，因此我们只需要安装 MMCV 和 MMPose 即可，命令如下：
+
+**第 1 步** 使用 [MIM](https://github.com/open-mmlab/mim) 安装 [MMCV](https://github.com/open-mmlab/mmcv)
 
 ```shell
-PYTHONPATH="$(dirname $0)/..":$PYTHONPATH
+!pip3 install openmim
+!mim install mmcv-full
 ```
+
+**第 2 步** 从源码安装 mmpose
+
+```shell
+!git clone https://github.com/open-mmlab/mmpose.git
+%cd mmpose
+!pip install -e .
+```
+
+**第 3 步** 验证
+
+```python
+import mmpose
+print(mmpose.__version__)
+# 预期输出： 0.26.0 或其他版本号
+```
+
+```{note}
+在 Jupyter 中，感叹号 `!` 用于执行外部命令，而 `%cd` 是一个[魔术命令](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-cd)，用于切换 Python 的工作路径。
+```
+
+### 通过 Docker 使用 MMPose
+
+MMPose 提供 [Dockerfile](https://github.com/open-mmlab/mmpose/blob/master/docker/Dockerfile)
+用于构建镜像。请确保您的 [Docker 版本](https://docs.docker.com/engine/install/) >=19.03。
+
+```shell
+# 构建默认的 PyTorch 1.6.0，CUDA 10.1 版本镜像
+# 如果您希望使用其他版本，请修改 Dockerfile
+docker build -t mmpose docker/
+```
+
+**注意**：请确保您已经安装了 [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker)。
+
+用以下命令运行 Docker 镜像：
+
+```shell
+docker run --gpus all --shm-size=8g -it -v {DATA_DIR}:/mmpose/data mmpose
+```
+
+`{DATA_DIR}` 是您本地存放用于 MMPose 训练、测试、推理等流程的数据目录。
+
+## 故障解决
+
+如果您在安装过程中遇到了什么问题，请先查阅[常见问题](faq.md)。如果没有找到解决方法，可以在 GitHub
+上[提出 issue](https://github.com/open-mmlab/mmpose/issues/new/choose)。
