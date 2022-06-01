@@ -193,4 +193,4 @@
 
   目前，我们只能确保 `MMPose` 中的模型与 onnx 兼容。但是您的目标部署框架可能不支持 onnx 中的某些操作，例如这个[问题](https://github.com/open-mmlab/mmaction2/issues/414) 中提到的 TensorRT 。
 
-  请注意，`MMPose` 中的 `pytorch2onnx` 将不再维护，将来将不再保留。我们有 [MMDeploy](https://github.com/open-mmlab/mmdeploy) 支持所有 `OpenMMLab` 代码库的模型部署，包括 `MMPose`。您可以在其[文档](https://mmdeploy.readthedocs.io/en/latest/)中找到有关受支持模型和用户指南的详细信息，并提出问题以请求支持您要使用的模型。
+  请注意，`MMPose` 中的 `pytorch2onnx` 将不再维护，未来将不再保留。我们将在 [MMDeploy](https://github.com/open-mmlab/mmdeploy) 中支持所有 `OpenMMLab` 代码库的模型部署，包括 `MMPose`。您可以在其[文档](https://mmdeploy.readthedocs.io/en/latest/)中找到有关受支持模型和用户指南的详细信息，并提出问题以请求支持您要使用的模型。
