@@ -325,7 +325,7 @@ def test_hand_gesture_demo():
         'tests/data/nvgesture/sk_depth.avi'
     ]
     with open('tests/data/nvgesture/bboxes.json', 'r') as f:
-        bbox = json.load(f)
+        bbox = next(iter(json.load(f).values()))
 
     pred_label, _ = inference_gesture_model(pose_model, video_files, bbox,
                                             dataset_info)
