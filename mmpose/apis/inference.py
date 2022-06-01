@@ -2,6 +2,7 @@
 import copy
 import os
 import warnings
+from collections import defaultdict
 
 import mmcv
 import numpy as np
@@ -817,7 +818,8 @@ def inference_gesture_model(
     _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
 
     # data preprocessing
-    data = dict(label=-1)
+    data = defaultdict(list)
+    data['label'] = -1
 
     if not isinstance(videos_or_paths, (tuple, list)):
         videos_or_paths = [videos_or_paths]

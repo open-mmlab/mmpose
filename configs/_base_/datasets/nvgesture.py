@@ -38,4 +38,5 @@ dataset_info = dict(
         23: 'thumbs up',
         24: 'OK'
     },
-    flip_pairs=[(0, 1), (4, 5), (19, 20)])
+    flip_pairs=[(0, 1), (4, 5), (19, 20)],
+    fps=30)
