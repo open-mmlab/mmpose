@@ -77,7 +77,7 @@ def test_gesture_pipeline():
     results['modality'] = ['rgb', 'depth']
     results['label'] = 4
     with open(osp.join(data_prefix, 'bboxes.json'), 'r') as f:
-        results['bbox'] = json.load(f)
+        results['bbox'] = next(iter(json.load(f).values()))
     results['ann_info'] = dict(flip_pairs=((0, 1), (4, 5), (19, 20)))
 
     results['video_file'] = [
