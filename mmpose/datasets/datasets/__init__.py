@@ -13,6 +13,7 @@ from .bottom_up import (BottomUpAicDataset, BottomUpCocoDataset,
 from .face import (Face300WDataset, FaceAFLWDataset, FaceCocoWholeBodyDataset,
                    FaceCOFWDataset, FaceWFLWDataset)
 from .fashion import DeepFashionDataset
+from .gesture import NVGestureDataset
 from .hand import (FreiHandDataset, HandCocoWholeBodyDataset,
                    InterHand2DDataset, InterHand3DDataset, OneHand10KDataset,
                    PanopticDataset)
@@ -44,5 +45,5 @@ __all__ = [
     'AnimalATRWDataset', 'AnimalPoseDataset', 'TopDownH36MDataset',
     'TopDownHalpeDataset', 'TopDownPoseTrack18VideoDataset',
     'Body3DMviewDirectPanopticDataset', 'Body3DMviewDirectShelfDataset',
-    'Body3DMviewDirectCampusDataset'
+    'Body3DMviewDirectCampusDataset', 'NVGestureDataset'
 ]

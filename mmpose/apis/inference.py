@@ -2,6 +2,7 @@
 import copy
 import os
 import warnings
+from collections import defaultdict
 
 import mmcv
 import numpy as np
@@ -798,6 +799,61 @@ def vis_pose_result(model,
         out_file=out_file)
 
     return img
+
+
+def inference_gesture_model(
+    model,
+    videos_or_paths,
+    bboxes=None,
+    dataset_info=None,
+):
+
+    cfg = model.cfg
+    device = next(model.parameters()).device
+    if device.type == 'cpu':
+        device = -1
+
+    # build the data pipeline
+    test_pipeline = Compose(cfg.test_pipeline)
+    _pipeline_gpu_speedup(test_pipeline, next(model.parameters()).device)
+
+    # data preprocessing
+    data = defaultdict(list)
+    data['label'] = -1
+
+    if not isinstance(videos_or_paths, (tuple, list)):
+        videos_or_paths = [videos_or_paths]
+    if isinstance(videos_or_paths[0], str):
+        data['video_file'] = videos_or_paths
+    else:
+        data['video'] = videos_or_paths
+
+    if bboxes is not None:
+        data['bbox'] = bboxes
+
+    if isinstance(dataset_info, dict):
+        data['modality'] = dataset_info.get('modality', ['rgb'])
+        data['fps'] = dataset_info.get('fps', None)
+        if not isinstance(data['fps'], (tuple, list)):
+            data['fps'] = [data['fps']]
+
+    data = test_pipeline(data)
+    batch_data = collate([data], samples_per_gpu=1)
+    batch_data = scatter(batch_data, [device])[0]
+
+    # inference
+    with torch.no_grad():
+        output = model.forward(return_loss=False, **batch_data)
+        scores = []
+        for modal, logit in output['logits'].items():
+            while logit.ndim > 2:
+                logit = logit.mean(dim=2)
+            score = torch.softmax(logit, dim=1)
+            scores.append(score)
+        score = torch.stack(scores, dim=2).mean(dim=2)
+        pred_score, pred_label = torch.max(score, dim=1)
+
+    return pred_label, pred_score
 
 
 def process_mmdet_results(mmdet_results, cat_id=1):

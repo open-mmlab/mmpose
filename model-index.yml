@@ -134,6 +134,7 @@ Import:
 - configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/mobilenetv2_rhd2d.yml
 - configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/rhd2d/resnet_rhd2d.yml
 - configs/hand/3d_kpt_sview_rgb_img/internet/interhand3d/internet_interhand3d.yml
+- configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/higherhrnet_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/associative_embedding/coco-wholebody/hrnet_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.yml

@@ -3,10 +3,12 @@ import copy
 import os.path as osp
 from glob import glob
 
+import json_tricks as json
 import mmcv
 import numpy as np
 
 from mmpose.apis import (collect_multi_frames, inference_bottom_up_pose_model,
+                         inference_gesture_model,
                          inference_top_down_pose_model, init_pose_model,
                          process_mmdet_results, vis_pose_result)
 from mmpose.datasets import DatasetInfo
@@ -306,3 +308,24 @@ def test_collect_multi_frames():
     _ = collect_multi_frames(video, frame_id, indices, online=True)
 
     _ = collect_multi_frames(video, frame_id, indices, online=False)
+
+
+def test_hand_gesture_demo():
+
+    # build the pose model from a config file and a checkpoint file
+    pose_model = init_pose_model(
+        'configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/'
+        'i3d_nvgesture_bbox_112x112_fps15.py',
+        None,
+        device='cpu')
+
+    dataset_info = pose_model.cfg.data['test'].get('dataset_info', None)
+    video_files = [
+        'tests/data/nvgesture/sk_color.avi',
+        'tests/data/nvgesture/sk_depth.avi'
+    ]
+    with open('tests/data/nvgesture/bboxes.json', 'r') as f:
+        bbox = next(iter(json.load(f).values()))
+
+    pred_label, _ = inference_gesture_model(pose_model, video_files, bbox,
+                                            dataset_info)

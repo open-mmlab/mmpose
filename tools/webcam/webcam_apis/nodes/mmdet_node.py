@@ -1,8 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import List, Optional, Union
 
+import numpy as np
+
 from .builder import NODES
-from .node import Node
+from .node import MultiInputNode, Node
 
 try:
     from mmdet.apis import inference_detector, init_detector
@@ -32,7 +34,6 @@ class DetectorNode(Node):
         self.model_config = model_config
         self.model_checkpoint = model_checkpoint
         self.device = device.lower()
-
         # Init model
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
@@ -87,3 +88,58 @@ class DetectorNode(Node):
             result['preds'].extend(preds_i)
 
         return result
+
+
+@NODES.register_module()
+class MultiFrameDetectorNode(DetectorNode, MultiInputNode):
+    """Detect hand with one frame in a video clip. The length of clip is
+    decided on the frame rate and the inference speed of detector.
+
+    Parameters:
+        inference_frame (str): indicate the frame selected in a clip to run
+            detect hand. Can be set to ('begin', 'mid', 'last').
+            Default: 'mid'.
+    """
+
+    def __init__(self,
+                 name: str,
+                 model_config: str,
+                 model_checkpoint: str,
+                 input_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 inference_frame: str = 'mid',
+                 enable_key: Optional[Union[str, int]] = None,
+                 device: str = 'cuda:0'):
+        DetectorNode.__init__(
+            self,
+            name,
+            model_config,
+            model_checkpoint,
+            input_buffer,
+            output_buffer,
+            enable_key,
+            device=device)
+        self.inference_frame = inference_frame
+
+    def process(self, input_msgs):
+        """Select frame and detect hand."""
+        input_msg = input_msgs['input']
+        if self.inference_frame == 'last':
+            key_frame = input_msg[-1]
+        elif self.inference_frame == 'mid':
+            key_frame = input_msg[len(input_msg) // 2]
+        elif self.inference_frame == 'begin':
+            key_frame = input_msg[0]
+        else:
+            raise ValueError(f'Invalid inference_frame {self.inference_frame}')
+
+        img = key_frame.get_image()
+
+        preds = inference_detector(self.model, img)
+        det_result = self._post_process(preds)
+
+        imgs = [frame.get_image() for frame in input_msg]
+        key_frame.set_image(np.stack(imgs, axis=0))
+
+        key_frame.add_detection_result(det_result, tag=self.name)
+        return key_frame

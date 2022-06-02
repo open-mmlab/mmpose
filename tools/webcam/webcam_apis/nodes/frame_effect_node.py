@@ -915,3 +915,89 @@ class FirecrackerNode(FrameDrawingNode):
             self.num_frames * self.frame_period)
 
         return canvas
+
+
+@NODES.register_module()
+class GestureVisualizerNode(FrameDrawingNode):
+    """Draw the bbox and gesture recognition results.
+
+    Args:
+        name (str, optional): The node name (also thread name).
+        frame_buffer (str): The name of the input buffer.
+        output_buffer (str|list): The name(s) of the output buffer(s).
+        enable_key (str|int, optional): Set a hot-key to toggle enable/disable
+            of the node. If an int value is given, it will be treated as an
+            ascii code of a key. Please note:
+                1. If enable_key is set, the bypass method need to be
+                    overridden to define the node behavior when disabled
+                2. Some hot-key has been use for particular use. For example:
+                    'q', 'Q' and 27 are used for quit
+            Default: None
+        enable (bool): Default enable/disable status. Default: True.
+        bbox_color (str|tuple|dict): If a single color (a str like 'green' or
+            a tuple like (0, 255, 0)), it will used to draw the bbox.
+            Optionally, a dict can be given as a map from class labels to
+            colors.
+    """
+
+    default_bbox_color = {
+        'hand': (148, 139, 255),
+    }
+
+    def __init__(self,
+                 name: str,
+                 frame_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 bbox_color: Optional[Union[str, Tuple, Dict]] = None):
+
+        super().__init__(name, frame_buffer, output_buffer, enable_key, enable)
+
+        if bbox_color is None:
+            self.bbox_color = self.default_bbox_color
+        elif isinstance(bbox_color, dict):
+            self.bbox_color = {k: color_val(v) for k, v in bbox_color.items()}
+        else:
+            self.bbox_color = color_val(bbox_color)
+
+    def draw(self, frame_msg):
+        canvas = frame_msg.get_image()
+        pose_results = frame_msg.get_pose_results()
+
+        if not pose_results:
+            return canvas
+
+        for pose_result in frame_msg.get_pose_results():
+
+            # Extract bboxes and poses
+            bbox_preds = []
+            bbox_labels = []
+            for pred in pose_result['preds']:
+                if 'bbox' in pred:
+                    bbox_preds.append(pred['bbox'])
+                    bbox_labels.append(pred.get('label', None))
+
+            # Get bbox colors
+            if isinstance(self.bbox_color, dict):
+                bbox_colors = [
+                    self.bbox_color.get(label, (0, 255, 0))
+                    for label in bbox_labels
+                ]
+            else:
+                bbox_labels = self.bbox_color
+
+            # Draw bboxes
+            if bbox_preds:
+                bboxes = np.vstack(bbox_preds)
+
+                imshow_bboxes(
+                    canvas,
+                    bboxes,
+                    labels=bbox_labels,
+                    colors=bbox_colors,
+                    text_color='white',
+                    font_scale=0.5,
+                    show=False)
+
+        return canvas
