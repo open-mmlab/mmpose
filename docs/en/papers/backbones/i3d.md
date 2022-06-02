@@ -1,6 +1,6 @@
 # Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset
 
-<!-- [ALGORITHM] -->
+<!-- [BACKBONE] -->
 
 <details>
 <summary align="right"><a href="https://openaccess.thecvf.com/content_cvpr_2017/html/Carreira_Quo_Vadis_Action_CVPR_2017_paper.html">I3D (CVPR'2017)</a></summary>
