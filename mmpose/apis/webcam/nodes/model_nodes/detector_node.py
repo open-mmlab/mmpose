@@ -2,6 +2,8 @@
 from itertools import zip_longest
 from typing import Dict, List, Optional, Union
 
+import numpy as np
+
 from ...utils import get_config_path
 from ..node import Node
 from ..registry import NODES
@@ -104,13 +106,15 @@ class DetectorNode(Node):
         if self.multi_input:
             imgs = [frame.get_image() for frame in input_msg]
             input_msg = input_msg[-1]
-            input_msg.set_image(np.stack(imgs, axis=0))
 
         img = input_msg.get_image()
 
         preds = inference_detector(self.model, img)
         objects = self._post_process(preds)
         input_msg.update_objects(objects)
+
+        if self.multi_input:
+            input_msg.set_image(np.stack(imgs, axis=0))
 
         return input_msg
 
