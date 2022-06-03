@@ -2,6 +2,7 @@
 import logging
 import time
 from abc import ABCMeta, abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass
 from queue import Empty
 from threading import Thread
@@ -55,6 +56,8 @@ class Node(Thread, metaclass=ABCMeta):
             checking if input is ready. Default: 0.001
         enable (bool): Default enable/disable status. Default: ``True``
         daemon (bool): Whether node is a daemon. Default: ``True``
+        multi_input (bool): Whether load all messages in buffer. If False,
+            only one message will be loaded each time. Default: ``False``
     """
 
     def __init__(self,
@@ -63,13 +66,15 @@ class Node(Thread, metaclass=ABCMeta):
                  max_fps: int = 30,
                  input_check_interval: float = 0.01,
                  enable: bool = True,
-                 daemon=False):
+                 daemon: bool = False,
+                 multi_input: bool = False):
         super().__init__(name=name, daemon=daemon)
         self._executor = None
         self._enabled = enable
         self.enable_key = enable_key
         self.max_fps = max_fps
         self.input_check_interval = input_check_interval
+        self.multi_input = multi_input
 
         # A partitioned buffer manager the executor's buffer manager that
         # only accesses the buffers related to the node
@@ -232,20 +237,25 @@ class Node(Thread, metaclass=ABCMeta):
                 return False, None
 
         # Default input
-        result = {
+        result = defaultdict(list)
+        result.update({
             buffer_info.input_name: None
             for buffer_info in self._input_buffers
-        }
+        })
 
         for buffer_info in self._input_buffers:
-            try:
-                result[buffer_info.input_name] = buffer_manager.get(
-                    buffer_info.buffer_name, block=False)
-            except Empty:
-                if buffer_info.trigger:
-                    # Return unsuccessful flag if any
-                    # trigger input is unready
-                    return False, None
+
+            while not buffer_manager.is_empty(buffer_info.buffer_name):
+                msg = buffer_manager.get(buffer_info.buffer_name, block=False)
+                if self.multi_input:
+                    result[buffer_info.input_name].append(msg)
+                else:
+                    result[buffer_info.input_name] = msg
+                    break
+
+            # Return unsuccessful flag if any trigger input is unready
+            if buffer_info.trigger and result[buffer_info.input_name] == []:
+                return False, None
 
         return True, result
 

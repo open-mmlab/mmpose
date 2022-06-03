@@ -39,6 +39,9 @@ class DetectorNode(Node):
             the model. Default: ``'cuda:0'``
         bbox_thr (float): Set a threshold to filter out objects with low bbox
             scores. Default: 0.5
+        multi_input (bool): Whether load all frames in input buffer. If True,
+            all frames in buffer will be loaded and stacked. The latest frame
+            is used to detect objects of interest. Default: False
 
     Example::
         >>> cfg = dict(
@@ -67,12 +70,17 @@ class DetectorNode(Node):
                  enable_key: Optional[Union[str, int]] = None,
                  enable: bool = True,
                  device: str = 'cuda:0',
-                 bbox_thr: float = 0.5):
+                 bbox_thr: float = 0.5,
+                 multi_input: bool = False):
         # Check mmdetection is installed
         assert has_mmdet, \
             f'MMDetection is required for {self.__class__.__name__}.'
 
-        super().__init__(name=name, enable_key=enable_key, enable=enable)
+        super().__init__(
+            name=name,
+            enable_key=enable_key,
+            enable=enable,
+            multi_input=multi_input)
 
         self.model_config = get_config_path(model_config, 'mmdet')
         self.model_checkpoint = model_checkpoint
@@ -92,6 +100,11 @@ class DetectorNode(Node):
 
     def process(self, input_msgs):
         input_msg = input_msgs['input']
+
+        if self.multi_input:
+            imgs = [frame.get_image() for frame in input_msg]
+            input_msg = input_msg[-1]
+            input_msg.set_image(np.stack(imgs, axis=0))
 
         img = input_msg.get_image()
 
