@@ -15,6 +15,7 @@ from mmpose.core.post_processing.post_transforms import (
     affine_transform_torch, get_affine_transform)
 from .. import builder
 from ..builder import POSENETS
+from ..utils.misc import torch_meshgrid_ij
 from .base import BasePose
 
 
@@ -49,11 +50,9 @@ class ProjectLayer(nn.Module):
             -box_size[1] / 2, box_size[1] / 2, num_bins[1], device=device)
         grid_1D_z = torch.linspace(
             -box_size[2] / 2, box_size[2] / 2, num_bins[2], device=device)
-        grid_x, grid_y, grid_z = torch.meshgrid(
-            grid_1D_x + box_center[0],
-            grid_1D_y + box_center[1],
-            grid_1D_z + box_center[2],
-        )
+        grid_x, grid_y, grid_z = torch_meshgrid_ij(grid_1D_x + box_center[0],
+                                                   grid_1D_y + box_center[1],
+                                                   grid_1D_z + box_center[2])
         grid_x = grid_x.contiguous().view(-1, 1)
         grid_y = grid_y.contiguous().view(-1, 1)
         grid_z = grid_z.contiguous().view(-1, 1)
