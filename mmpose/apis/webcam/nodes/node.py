@@ -2,9 +2,7 @@
 import logging
 import time
 from abc import ABCMeta, abstractmethod
-from collections import defaultdict
 from dataclasses import dataclass
-from queue import Empty
 from threading import Thread
 from typing import Callable, Dict, List, Optional, Tuple, Union
 

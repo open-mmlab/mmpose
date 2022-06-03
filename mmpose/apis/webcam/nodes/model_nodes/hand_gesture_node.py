@@ -3,19 +3,18 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 
-from mmpose.apis import (get_track_id, inference_gesture_model,
-                         init_pose_model)
-from mmpose.core import Smoother
+from mmpose.apis import inference_gesture_model, init_pose_model
 from ...utils import Message
-from ..registry import NODES
 from ..node import Node
+from ..registry import NODES
+
 
 def _compute_area(bbox):
     """Compute the area of bounding box in the format 'xxyy'."""
-    area = abs(bbox['bbox'][2] -
-                bbox['bbox'][0]) * abs(bbox['bbox'][3] -
-                                        bbox['bbox'][1])
+    area = abs(bbox['bbox'][2] - bbox['bbox'][0]) * abs(bbox['bbox'][3] -
+                                                        bbox['bbox'][1])
     return area
+
 
 def _merge_bbox(bboxes: List[Dict], ratio=0.5):
     """Merge bboxes in a video to create a new bbox that covers the region
@@ -35,13 +34,13 @@ def _merge_bbox(bboxes: List[Dict], ratio=0.5):
         area_ratio = (abs(x2 - x1) * abs(y2 - y1)) / small_area
         if area_ratio > ratio:
             bboxes[0]['bbox'][0] = min(bboxes[0]['bbox'][0],
-                                        bboxes[i]['bbox'][0])
+                                       bboxes[i]['bbox'][0])
             bboxes[0]['bbox'][1] = min(bboxes[0]['bbox'][1],
-                                        bboxes[i]['bbox'][1])
+                                       bboxes[i]['bbox'][1])
             bboxes[0]['bbox'][2] = max(bboxes[0]['bbox'][2],
-                                        bboxes[i]['bbox'][2])
+                                       bboxes[i]['bbox'][2])
             bboxes[0]['bbox'][3] = max(bboxes[0]['bbox'][3],
-                                        bboxes[i]['bbox'][3])
+                                       bboxes[i]['bbox'][3])
             merged = True
             break
 
@@ -75,11 +74,11 @@ class HandGestureRecognizerNode(Node):
         enable (bool): Default enable/disable status. Default: ``True``
         device (str): Specify the device to hold model weights and inference
             the model. Default: ``'cuda:0'``
-        min_frame (int): Set the lower bound of clip length for gesture recognition.
-            Default: 16
+        min_frame (int): Set the lower bound of clip length for gesture
+            recognition. Default: 16
         fps (int): Camera fps. Default: 30
-        score_thr (float): Threshold of probability to recognize salient gesture.
-            Default: 0.7
+        score_thr (float): Threshold of probability to recognize salient
+            gesture. Default: 0.7
 
     Example::
         >>> cfg = dict(
@@ -146,7 +145,7 @@ class HandGestureRecognizerNode(Node):
         for clip in clips:
             clip_length = clip.get_image().shape[0]
             self._clip_buffer.append((clip, clip_length))
-            
+
         total_length = 0
         for i in range(-2, -len(self._clip_buffer) - 1, -1):
             total_length += self._clip_buffer[i][1]
@@ -161,7 +160,7 @@ class HandGestureRecognizerNode(Node):
 
         bboxes = []
         for clip in self._clip_buffer:
-            objects = clip[0].get_objects(lambda x: x.get('label') == 'hand') 
+            objects = clip[0].get_objects(lambda x: x.get('label') == 'hand')
             bboxes.append(_merge_bbox(objects))
         bboxes = list(filter(len, bboxes))
         return video, bboxes

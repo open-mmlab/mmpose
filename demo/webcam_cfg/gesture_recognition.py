@@ -5,7 +5,19 @@ executor_cfg = dict(
     camera_max_fps=15,
     synchronous=False,
     buffer_sizes=dict(_input_=20, det_result=10),
+    # Define nodes.
+    # The configuration of a node usually includes:
+    #   1. 'type': Node class name
+    #   2. 'name': Node name
+    #   3. I/O buffers (e.g. 'input_buffer', 'output_buffer'): specify the
+    #       input and output buffer names. This may depend on the node class.
+    #   4. 'enable_key': assign a hot-key to toggle enable/disable this node.
+    #       This may depend on the node class.
+    #   5. Other class-specific arguments
     nodes=[
+        # 'DetectorNode':
+        # This node performs object detection from the frame image using an
+        # MMDetection model.
         dict(
             type='DetectorNode',
             name='detector',
@@ -14,10 +26,12 @@ executor_cfg = dict(
             model_checkpoint='https://download.openmmlab.com/mmpose/'
             'mmdet_pretrained/'
             'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
-            device='cpu',
             input_buffer='_input_',
             output_buffer='det_result',
             multi_input=True),
+        # 'HandGestureRecognizerNode':
+        # This node performs gesture recognition from the video clip using an
+        # MMPose gesture recognition model. Hand detection results is needed.
         dict(
             type='HandGestureRecognizerNode',
             name='gesture recognizer',
@@ -26,7 +40,6 @@ executor_cfg = dict(
             model_checkpoint='https://download.openmmlab.com/mmpose/'
             'gesture/mtut/i3d_nvgesture/'
             'i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth',
-            device='cpu',
             input_buffer='det_result',
             output_buffer='gesture',
             fps=15,
