@@ -20,7 +20,7 @@ Models:
       AP depth: 0.73
       AP rgb: 0.725
     Task: Hand Gesture
-  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth
+  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth
 - Config: configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_bbox_224x224_fps30.py
   In Collection: MTUT
   Metadata:
@@ -33,7 +33,7 @@ Models:
       AP depth: 0.811
       AP rgb: 0.782
     Task: Hand Gesture
-  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_bbox_224x224_fps30-98a8f288_20220530.pthh
+  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture_bbox_224x224_fps30-98a8f288_20220530.pthh
 - Config: configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture_224x224_fps30.py
   In Collection: MTUT
   Metadata:
@@ -46,4 +46,4 @@ Models:
       AP depth: 0.809
       AP rgb: 0.739
     Task: Hand Gesture
-  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture/i3d_nvgesture_224x224_fps30-b7abf574_20220530.pth
+  Weights: https://download.openmmlab.com/mmpose/gesture/mtut/i3d_nvgesture_224x224_fps30-b7abf574_20220530.pth

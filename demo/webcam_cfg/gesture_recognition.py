@@ -1,9 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 executor_cfg = dict(
-    # Basic configurations of the executor
-    name='Pose Estimation',
+    name='Gesture Recognition',
     camera_id=0,
+    camera_max_fps=15,
     synchronous=False,
+    buffer_sizes=dict(_input_=20, det_result=10),
     # Define nodes.
     # The configuration of a node usually includes:
     #   1. 'type': Node class name
@@ -14,32 +15,35 @@ executor_cfg = dict(
     #       This may depend on the node class.
     #   5. Other class-specific arguments
     nodes=[
-        # 'PoseTrackerNode':
-        # This node performs object detection and pose tracking. Object
-        # detection is performed every several frames. Pose estimation
-        # is performed for every frame to get the keypoint as well as the
-        # interval bbox when object detection is not performed.
+        # 'DetectorNode':
+        # This node performs object detection from the frame image using an
+        # MMDetection model.
         dict(
-            type='PoseTrackerNode',
-            name='pose tracker',
-            det_model_config='demo/mmdetection_cfg/'
-            'ssdlite_mobilenetv2_scratch_600e_coco.py',
-            det_model_checkpoint='https://download.openmmlab.com'
-            '/mmdetection/v2.0/ssd/'
-            'ssdlite_mobilenetv2_scratch_600e_coco/ssdlite_mobilenetv2_'
-            'scratch_600e_coco_20210629_110627-974d9307.pth',
-            pose_model_config='configs/wholebody/2d_kpt_sview_rgb_img/'
-            'topdown_heatmap/coco-wholebody/'
-            'vipnas_mbv3_coco_wholebody_256x192_dark.py',
-            pose_model_checkpoint='https://download.openmmlab.com/mmpose/'
-            'top_down/vipnas/vipnas_mbv3_coco_wholebody_256x192_dark'
-            '-e2158108_20211205.pth',
-            det_interval=10,
-            labels=['person'],
-            smooth=True,
-            device='cuda:0',
-            input_buffer='_input_',  # `_input_` is an executor-reserved buffer
-            output_buffer='human_pose'),
+            type='DetectorNode',
+            name='detector',
+            model_config='demo/mmdetection_cfg/'
+            'ssdlite_mobilenetv2_scratch_600e_onehand.py',
+            model_checkpoint='https://download.openmmlab.com/mmpose/'
+            'mmdet_pretrained/'
+            'ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth',
+            input_buffer='_input_',
+            output_buffer='det_result',
+            multi_input=True),
+        # 'HandGestureRecognizerNode':
+        # This node performs gesture recognition from the video clip using an
+        # MMPose gesture recognition model. Hand detection results is needed.
+        dict(
+            type='HandGestureRecognizerNode',
+            name='gesture recognizer',
+            model_config='configs/hand/gesture_sview_rgbd_vid/mtut/'
+            'nvgesture/i3d_nvgesture_bbox_112x112_fps15_rgb.py',
+            model_checkpoint='https://download.openmmlab.com/mmpose/'
+            'gesture/mtut/'
+            'i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth',
+            input_buffer='det_result',
+            output_buffer='gesture',
+            fps=15,
+            multi_input=True),
         # 'ObjectAssignerNode':
         # This node binds the latest model inference result with the current
         # frame. (This means the frame image and inference result may be
@@ -48,7 +52,7 @@ executor_cfg = dict(
             type='ObjectAssignerNode',
             name='object assigner',
             frame_buffer='_frame_',  # `_frame_` is an executor-reserved buffer
-            object_buffer='human_pose',
+            object_buffer='gesture',
             output_buffer='frame'),
         # 'ObjectVisualizerNode':
         # This node draw the pose visualization result in the frame image.
@@ -57,6 +61,10 @@ executor_cfg = dict(
             type='ObjectVisualizerNode',
             name='object visualizer',
             enable_key='v',
+            enable=True,
+            show_bbox=True,
+            must_have_keypoint=False,
+            show_keypoint=False,
             input_buffer='frame',
             output_buffer='vis'),
         # 'NoticeBoardNode':
@@ -70,9 +78,9 @@ executor_cfg = dict(
             input_buffer='vis',
             output_buffer='vis_notice',
             content_lines=[
-                'This is a demo for pose visualization and simple image '
-                'effects. Have fun!', '', 'Hot-keys:',
-                '"v": Pose estimation result visualization',
+                'This is a demo for gesture visualization. '
+                'Have fun!', '', 'Hot-keys:',
+                '"v": Hand bbox & Gesture visualization',
                 '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],
