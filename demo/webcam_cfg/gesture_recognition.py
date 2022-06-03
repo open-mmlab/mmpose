@@ -38,7 +38,7 @@ executor_cfg = dict(
             model_config='configs/hand/gesture_sview_rgbd_vid/mtut/'
             'nvgesture/i3d_nvgesture_bbox_112x112_fps15_rgb.py',
             model_checkpoint='https://download.openmmlab.com/mmpose/'
-            'gesture/mtut/i3d_nvgesture/'
+            'gesture/mtut/'
             'i3d_nvgesture_bbox_112x112_fps15-363b5956_20220530.pth',
             input_buffer='det_result',
             output_buffer='gesture',
