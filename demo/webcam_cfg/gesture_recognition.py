@@ -80,7 +80,7 @@ executor_cfg = dict(
             content_lines=[
                 'This is a demo for gesture visualization. '
                 'Have fun!', '', 'Hot-keys:',
-                '"v": Pose estimation result visualization',
+                '"v": Hand bbox & Gesture visualization',
                 '"h": Show help information',
                 '"m": Show diagnostic information', '"q": Exit'
             ],
