@@ -13,9 +13,9 @@ from mmpose.core import imshow_keypoints, imshow_multiview_keypoints_3d
 from mmpose.core.camera import SimpleCamera, SimpleCameraTorch
 from mmpose.core.post_processing.post_transforms import (
     affine_transform_torch, get_affine_transform)
-from mmpose.utils.misc import torch_meshgrid_ij
 from .. import builder
 from ..builder import POSENETS
+from ..utils.misc import torch_meshgrid_ij
 from .base import BasePose
 
 
