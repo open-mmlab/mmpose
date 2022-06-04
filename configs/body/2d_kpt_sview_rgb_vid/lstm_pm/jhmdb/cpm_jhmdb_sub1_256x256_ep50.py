@@ -55,14 +55,14 @@ model = dict(
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
     train_cfg=dict(),
     test_cfg=dict(
-        flip_test=True,
+        flip_test=False,
         post_process='default',
         shift_heatmap=True,
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[368, 368],
-    heatmap_size=[46, 46],
+    image_size=[256, 256],
+    heatmap_size=[32, 32],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
