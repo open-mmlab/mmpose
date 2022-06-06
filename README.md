@@ -82,7 +82,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - Support hand gesture recognition
     - Try the [demo](/demo/docs/gesture_recognition_demo.md) for gesture recognition
     - Learn more about the [algorithm](/docs/en/papers/algorithms/mtut.md), [dataset](/docs/en/papers/datasets/nvgesture.md) and [experiment results](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture.md)
-  - Major upgrade to MMPose Webcam API towards better efficiency and user-friendliness in developing pose-enpowered applications
+  - Major upgrade to MMPose Webcam API towards simpler and more efficient development of pose-enpowered applications
     - Tutorials ([EN](/docs/en/tutorials/7_webcam_api.md)|[zh_CN](/docs/zh_cn/tutorials/7_webcam_api.md))
     - [API Reference](https://mmpose.readthedocs.io/en/latest/api.html#mmpose-apis-webcam)
     - [Demo](/demo/docs/webcam_demo.md)
