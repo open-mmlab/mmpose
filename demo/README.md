@@ -82,3 +82,10 @@ This page provides tutorials about running demos. Please click the caption for m
 [Webcam demo](docs/webcam_demo.md)
 
 </div>
+
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/15977946/172213082-afb9d71a-f2df-4509-932c-e47dc61ec7d7.gif" width="600px" alt><br>
+
+[Gesture recognition demo](docs/gesture_recognition_demo.md)
+
+</div>

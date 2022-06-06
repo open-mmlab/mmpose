@@ -100,7 +100,7 @@ executor_cfg = dict(
         dict(
             type='RecorderNode',
             name='recorder',
-            out_video_file='webcam_demo.mp4',
+            out_video_file='gesture.mp4',
             input_buffer='display',
             output_buffer='_display_'
             # `_display_` is an executor-reserved buffer
