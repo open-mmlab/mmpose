@@ -53,7 +53,7 @@ class NoticeBoardNode(BaseVisualizerNode):
         ...         'This is a demo for pose visualization and simple image '
         ...         'effects. Have fun!', '', 'Hot-keys:',
         ...         '"v": Pose estimation result visualization',
-        ...         '"s": Sunglasses effect B-)', '"b": Bug-eye effect 0_0',
+        ...         '"s": Sunglasses effect B-)', '"b": Big-eye effect 0_0',
         ...         '"h": Show help information',
         ...         '"m": Show diagnostic information', '"q": Exit'
         ...     ],

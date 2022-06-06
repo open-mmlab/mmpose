@@ -27,7 +27,7 @@ python demo/webcam_demo.py --config demo/webcam_cfg/pose_tracking.py
 | ------ | ---------------------------------------------------------------- |
 | v      | Toggle the pose visualization on/off.                            |
 | s      | Toggle the sunglasses effect on/off. (NA for `pose_trakcing.py`) |
-| b      | Toggle the bug-eye effect on/off. (NA for `pose_trakcing.py`)    |
+| b      | Toggle the big-eye effect on/off. (NA for `pose_trakcing.py`)    |
 | h      | Show help information.                                           |
 | m      | Show the monitoring information.                                 |
 | q      | Exit.                                                            |
