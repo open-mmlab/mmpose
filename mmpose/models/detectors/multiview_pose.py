@@ -964,3 +964,16 @@ class VoxelCenterDetector(BasePose):
         initial_cubes = feature_maps[0].new_zeros(batch_size, num_channels,
                                                   *self.cube_size)
         _ = self.center_net(initial_cubes)
+
+
+@POSENETS.register_module()
+class AlgebraicTriangulation(BasePose):
+    """Estimate 3D human pose using learnable weighted triangulation.
+
+    Please refer to the
+    `paper <https://arxiv.org/abs/1905.05754>` for details.
+    Args:
+    """
+
+    def __init__(self):
+        pass
