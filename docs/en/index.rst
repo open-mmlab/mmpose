@@ -67,6 +67,7 @@ You can change the documentation language at the lower-left corner of the page.
    tutorials/4_new_modules.md
    tutorials/5_export_model.md
    tutorials/6_customize_runtime.md
+   tutorials/7_webcam_api.md
 
 .. toctree::
    :maxdepth: 2
