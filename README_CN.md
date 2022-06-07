@@ -82,9 +82,9 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
   - 支持了手势识别功能
     - 试用手势识别 [demo](/demo/docs/gesture_recognition_demo.md)
     - 了解更多关于 [算法](/docs/en/papers/algorithms/mtut.md)，[数据集](/docs/en/papers/datasets/nvgesture.md) 和 [预训练模型](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture.md) 的信息
-  - 升级了 MMPose 摄像头应用接口（Webcam API），帮助用户更简捷高效地开发基于姿态识别的应用
+  - 升级了 MMPose 摄像头应用接口（Webcam API），帮助用户更简捷高效地开发基于姿态估计的应用
     - 教程 （[中文](/docs/zh_cn/tutorials/7_webcam_api.md)|[英文](/docs/en/tutorials/7_webcam_api.md)）
-    - [API 查询](https://mmpose.readthedocs.io/en/latest/api.html#mmpose-apis-webcam)
+    - [API 查询](https://mmpose.readthedocs.io/zh_CN/latest/api.html#mmpose-apis-webcam)
     - [Demo](/demo/docs/webcam_demo.md)
 - 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
 - 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
