@@ -86,11 +86,8 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
     - 教程 （[中文](/docs/zh_cn/tutorials/7_webcam_api.md)|[英文](/docs/en/tutorials/7_webcam_api.md)）
     - [API 查询](https://mmpose.readthedocs.io/en/latest/api.html#mmpose-apis-webcam)
     - [Demo](/demo/docs/webcam_demo.md)
-- 2022-04: MMPose is available on [Gitee](https://gitee.com/open-mmlab/mmpose)
 - 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
 - 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
-- 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
-  MMPose Webcam API 用于快速开发基于 MMPose 的视频交互应用，具有上手简单、易于扩展的特点
 - 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装
