@@ -71,7 +71,7 @@ for subtopic, topic, task in sorted(subtopics):
         for file in glob(f'../../configs/{topic}/{task}/*/{dataset}/*.md'):
             keywords = (file.split(osp.sep)[-3],
                         *file.split(osp.sep)[-1].split('_')[:-1])
-            with open(file, 'r') as f:
+            with open(file, 'r', encoding='utf-8') as f:
                 contents[subtopic][dataset][keywords] = f.read()
 
 # Step 4: write files by topic
@@ -91,7 +91,7 @@ for subtopic, datasets in contents.items():
                  f' on {titlecase(dataset)}'), '', info, ''
             ]
 
-    with open(f'topics/{subtopic.lower()}.md', 'w') as f:
+    with open(f'topics/{subtopic.lower()}.md', 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
 # Step 5: write files by paper
@@ -101,7 +101,8 @@ for section in sections:
     lines = [f'# {titlecase(section)}', '']
     files = [f for s, f in allfiles if s == section]
     for file in files:
-        with open(f'../en/papers/{section}/{file}', 'r') as f:
+        with open(
+                f'../en/papers/{section}/{file}', 'r', encoding='utf-8') as f:
             keyline = [
                 line for line in f.readlines() if line.startswith('<summary')
             ][0]
@@ -125,5 +126,5 @@ for section in sections:
             lines += ['<hr/>', '<br/><br/>', '', f'## {papername}', '']
             lines += paperlines
 
-    with open(f'papers/{section}.md', 'w') as f:
+    with open(f'papers/{section}.md', 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
