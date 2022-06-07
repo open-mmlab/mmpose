@@ -21,7 +21,7 @@ files = sorted(glob.glob('topics/*.md'))
 stats = []
 
 for f in files:
-    with open(f, 'r') as content_file:
+    with open(f, 'r', encoding='utf-8') as content_file:
         content = content_file.read()
 
     # title
@@ -94,7 +94,7 @@ modelzoo = f"""
 
 """
 
-with open('modelzoo.md', 'w') as f:
+with open('modelzoo.md', 'w', encoding='utf-8') as f:
     f.write(modelzoo)
 
 # Count datasets
@@ -105,7 +105,7 @@ files = sorted(glob.glob('tasks/*.md'))
 datastats = []
 
 for f in files:
-    with open(f, 'r') as content_file:
+    with open(f, 'r', encoding='utf-8') as content_file:
         content = content_file.read()
 
     # title
@@ -172,5 +172,5 @@ modelzoo = f"""
 {datamsglist}
 """
 
-with open('datasets.md', 'w') as f:
+with open('datasets.md', 'w', encoding='utf-8') as f:
     f.write(modelzoo)
