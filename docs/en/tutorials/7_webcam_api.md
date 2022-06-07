@@ -109,7 +109,7 @@ The hot-key response is supported by the event mechanism. The executor has a **E
 
 ### Architecture of a webcam application
 
-Now we have introduced the concept of WebcamExecutor, Node, Buffer, and Event. We can summarize the program architecture of a webcam application built by Webcam API as Fig. 2.
+Now we have introduced the concept of WebcamExecutor, Node, Buffer, and Event. The architecture of a webcam application can be illustrated as shown in Fig. 2.
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/15977946/171552368-f961dc13-cc70-4960-bbfd-5ec791cf3b9b.png">

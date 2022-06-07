@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.26.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.26.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.26.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.27.0/) |
+[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.27.0/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.27.0/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.27.0/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/v0.27.0/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -78,15 +78,16 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) 已经发布. 主要更新包括:
-  - 新增算法 [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
-  - 新增主干网络 [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021
-  - 新增主干网络 [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 和 [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022
-  - 优化了推理速度和 CPU 占用率
+- 2022-06-07: MMPose [v0.27.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.27.0) 已经发布. 主要更新包括:
+  - 支持了手势识别功能
+    - 试用手势识别 [demo](/demo/docs/gesture_recognition_demo.md)
+    - 了解更多关于 [算法](/docs/en/papers/algorithms/mtut.md)，[数据集](/docs/en/papers/datasets/nvgesture.md) 和 [预训练模型](/configs/hand/gesture_sview_rgbd_vid/mtut/nvgesture/i3d_nvgesture.md) 的信息
+  - 升级了 MMPose 摄像头应用接口（Webcam API），帮助用户更简捷高效地开发基于姿态识别的应用
+    - 教程 （[中文](/docs/zh_cn/tutorials/7_webcam_api.md)|[英文](/docs/en/tutorials/7_webcam_api.md)）
+    - [API 查询](https://mmpose.readthedocs.io/en/latest/api.html#mmpose-apis-webcam)
+    - [Demo](/demo/docs/webcam_demo.md)
 - 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
 - 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
-- 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
-  MMPose Webcam API 用于快速开发基于 MMPose 的视频交互应用，具有上手简单、易于扩展的特点
 - 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
 
 ## 安装
