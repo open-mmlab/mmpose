@@ -26,7 +26,7 @@ else
 fi
  
 # 2. build file folder for save log and set time
-mkdir -p algolib_gen/mmdet/$3
+mkdir -p algolib_gen/mmpose/$3
 now=$(date +"%Y%m%d_%H%M%S")
  
 # 3. set env variables
