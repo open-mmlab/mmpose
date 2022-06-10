@@ -83,7 +83,7 @@ mmpose
 
 For [FreiHAND](https://lmb.informatik.uni-freiburg.de/projects/freihand/) data, please download from [FreiHand Dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html).
 Since the official dataset does not provide validation set, we randomly split the training data into 8:1:1 for train/val/test.
-Please download the annotation files from [freihand_annotations](https://download.openmmlab.com/mmpose/datasets/frei_annotations.tar).
+Please download the annotation files from [freihand_annotations](https://download.openmmlab.com/mmpose/datasets/frei_annotations.zip).
 Extract them under {MMPose}/data, and make them look like this:
 
 ```text
