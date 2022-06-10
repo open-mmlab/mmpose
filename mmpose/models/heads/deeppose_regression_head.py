@@ -172,6 +172,9 @@ class DeepposeRegressionHead(nn.Module):
 
         preds, maxvals = keypoints_from_regression(output, c, s,
                                                    kwargs['img_size'])
+        if self.out_sigma:
+            maxvals = (1 - output[:, :, 2:].sigmoid())\
+                .mean(dim=2, keepdim=True).cpu().numpy()
 
         all_preds = np.zeros((batch_size, preds.shape[1], 3), dtype=np.float32)
         all_boxes = np.zeros((batch_size, 6), dtype=np.float32)
