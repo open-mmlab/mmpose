@@ -170,7 +170,7 @@ class ToyMAE(nn.Module):
             self.layers.append(layer)
 
 
-class ToySegmentor(nn.Module):
+class ToyPoseDetector(nn.Module):
 
     def __init__(self, backbone):
         super().__init__()
@@ -208,7 +208,7 @@ def test_learning_rate_decay_optimizer_constructor():
 
     # Test lr wd for ConvNeXT
     backbone = ToyConvNeXt()
-    model = PseudoDataParallel(ToySegmentor(backbone))
+    model = PseudoDataParallel(ToyPoseDetector(backbone))
     optimizer_cfg = dict(
         type='AdamW', lr=base_lr, betas=(0.9, 0.999), weight_decay=0.05)
     # stagewise decay
@@ -228,7 +228,7 @@ def test_learning_rate_decay_optimizer_constructor():
 
     # Test lr wd for BEiT
     backbone = ToyBEiT()
-    model = PseudoDataParallel(ToySegmentor(backbone))
+    model = PseudoDataParallel(ToyPoseDetector(backbone))
 
     layerwise_paramwise_cfg = dict(
         decay_rate=decay_rate, decay_type='layer_wise', num_layers=3)
@@ -239,7 +239,7 @@ def test_learning_rate_decay_optimizer_constructor():
 
     # Test invalidation of lr wd for Vit
     backbone = ToyViT()
-    model = PseudoDataParallel(ToySegmentor(backbone))
+    model = PseudoDataParallel(ToyPoseDetector(backbone))
     with pytest.raises(NotImplementedError):
         optim_constructor = LearningRateDecayOptimizerConstructor(
             optimizer_cfg, layerwise_paramwise_cfg)
@@ -251,7 +251,7 @@ def test_learning_rate_decay_optimizer_constructor():
 
     # Test lr wd for MAE
     backbone = ToyMAE()
-    model = PseudoDataParallel(ToySegmentor(backbone))
+    model = PseudoDataParallel(ToyPoseDetector(backbone))
 
     layerwise_paramwise_cfg = dict(
         decay_rate=decay_rate, decay_type='layer_wise', num_layers=3)
@@ -265,7 +265,7 @@ def test_beit_layer_decay_optimizer_constructor():
 
     # paramwise_cfg with BEiTExampleModel
     backbone = ToyBEiT()
-    model = PseudoDataParallel(ToySegmentor(backbone))
+    model = PseudoDataParallel(ToyPoseDetector(backbone))
     optimizer_cfg = dict(
         type='AdamW', lr=1, betas=(0.9, 0.999), weight_decay=0.05)
     paramwise_cfg = dict(layer_decay_rate=2, num_layers=3)
