@@ -12,10 +12,8 @@ class ExampleModel(nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.param1 = nn.Parameter(torch.ones(1))
-        self.conv1 = nn.Conv2d(3, 4, kernel_size=1, bias=False)
-        self.conv2 = nn.Conv2d(4, 2, kernel_size=1)
-        self.bn = nn.BatchNorm2d(2)
+        self.model1 = nn.Conv2d(3, 8, kernel_size=3)
+        self.model2 = nn.Conv2d(3, 4, kernel_size=3)
 
     def forward(self, x):
         return x
