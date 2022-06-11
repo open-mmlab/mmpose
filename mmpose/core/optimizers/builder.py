@@ -1,8 +1,22 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.runner import build_optimizer
-from mmcv.utils import Registry
+from mmcv.runner.optimizer import OPTIMIZER_BUILDERS as MMCV_OPTIMIZER_BUILDERS
+from mmcv.utils import Registry, build_from_cfg
 
 OPTIMIZERS = Registry('optimizers')
+OPTIMIZER_BUILDERS = Registry(
+    'optimizer builder', parent=MMCV_OPTIMIZER_BUILDERS)
+
+
+def build_optimizer_constructor(cfg):
+    constructor_type = cfg.get('type')
+    if constructor_type in OPTIMIZER_BUILDERS:
+        return build_from_cfg(cfg, OPTIMIZER_BUILDERS)
+    elif constructor_type in MMCV_OPTIMIZER_BUILDERS:
+        return build_from_cfg(cfg, MMCV_OPTIMIZER_BUILDERS)
+    else:
+        raise KeyError(f'{constructor_type} is not registered '
+                       'in the optimizer builder registry.')
 
 
 def build_optimizers(model, cfgs):
