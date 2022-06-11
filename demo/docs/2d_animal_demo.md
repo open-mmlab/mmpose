@@ -2,7 +2,7 @@
 
 ### 2D Animal Pose Image Demo
 
-#### Using gt hand bounding boxes as input
+#### Using gt bounding boxes as input
 
 We provide a demo script to test a single image, given gt json file.
 
@@ -101,14 +101,14 @@ python demo/top_down_video_demo_with_mmdet.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_2x_coco/faster_rcnn_r50_fpn_2x_coco_bbox_mAP-0.384_20200504_210434-a5d8aa15.pth \
     configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/horse10/res50_horse10_256x256-split1.py \
     https://download.openmmlab.com/mmpose/animal/resnet/res50_horse10_256x256_split1-3a3dc37e_20210405.pth \
-    --video-path demo/resources/<demo_horse.mp4> \
+    --video-path https://user-images.githubusercontent.com/15977946/173124855-c626835e-1863-4003-8184-315bc0b7b561.mp4 \
     --out-video-root vis_results \
     --bbox-thr 0.1 \
     --kpt-thr 0.4 \
     --det-cat-id 18
 ```
 
-<img src="https://user-images.githubusercontent.com/11788150/114201893-4446ec00-9989-11eb-808b-5718c47c7b23.gif" height="140px" alt><br>
+<img src="https://user-images.githubusercontent.com/15977946/173134365-ac48bf1d-ea64-4305-9811-07b2b6dcb826.gif" height="320px" alt><br>
 
 **Other Animals**
 
@@ -130,19 +130,21 @@ Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
-```shell
+```
 python demo/top_down_video_demo_with_mmdet.py \
     demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py \
-    https://openmmlab.oss-cn-hangzhou.aliyuncs.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_macaque-e45e36f5_20210409.pth \
-    configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/res152_macaque_256x192.py \
-    https://download.openmmlab.com/mmpose/animal/resnet/res152_macaque_256x192-c42abc02_20210407.pth \
-    --video-path demo/resources/<demo_macaque.mp4> \
+    https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_macaque-e45e36f5_20210409.pth \
+    configs/animal/2d_kpt_sview_rgb_img/topdown_heatmap/macaque/hrnet_w32_macaque_256x192.py \
+    https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_macaque_256x192-f7e9e04f_20210407.pth \
+    --video-path https://user-images.githubusercontent.com/15977946/173135633-1c54a944-4f01-4747-8c2e-55b8c83be533.mp4 \
     --out-video-root vis_results \
     --bbox-thr 0.5 \
     --kpt-thr 0.3 \
+    --radius 9 \
+    --thickness 3
 ```
 
-<img src="https://user-images.githubusercontent.com/11788150/114205282-b5d46980-998c-11eb-9d6b-85ba47f81252.gif" height="140px" alt><br>
+<img src="https://user-images.githubusercontent.com/15977946/173139730-32ce89a0-9a09-4f07-b39f-8e794a8b2630.gif" height="270px" alt><br>
 
 ### Speed Up Inference
 
