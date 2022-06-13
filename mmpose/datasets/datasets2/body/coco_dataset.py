@@ -224,6 +224,7 @@ class CocoDataset(BasePoseDataset):
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
+            'sigmas': self.metainfo['sigmas']
         }
 
         return data_info
@@ -276,12 +277,14 @@ class CocoDataset(BasePoseDataset):
 
             image_file = data_infos_valid[0]['image_file']
             image_shape = data_infos_valid[0]['image_shape']
+            sigmas = data_infos_valid[0]['sigmas']
 
             # image data
             data_info_bu = {
                 'image_id': image_id,
                 'image_file': image_file,
-                'image_shape': image_shape
+                'image_shape': image_shape,
+                'sigmas': sigmas
             }
             # instance data
             for key in data_infos_valid[0].keys():

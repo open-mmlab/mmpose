@@ -7,7 +7,11 @@ https://mmengine.readthedocs.io/en/latest/tutorials/registry.html.
 """
 
 from mmengine.registry import DATASETS as MMENGINE_DATASETS
+from mmengine.registry import METRICS as MMENGINE_METRICS
 from mmengine.registry import Registry
 
 # manage data-related modules
 DATASETS = Registry('dataset', parent=MMENGINE_DATASETS)
+
+# manage all kinds of metrics
+METRICS = Registry('metric', parent=MMENGINE_METRICS)
