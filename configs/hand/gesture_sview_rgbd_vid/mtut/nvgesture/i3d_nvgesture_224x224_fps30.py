@@ -17,7 +17,7 @@ lr_config = dict(policy='step', gamma=0.1, step=[30, 50])
 total_epochs = 75
 log_config = dict(interval=10)
 
-custom_hooks_config = [dict(type='ModelSetEpochHook')]
+custom_hooks = [dict(type='ModelSetEpochHook')]
 
 model = dict(
     type='GestureRecognizer',
