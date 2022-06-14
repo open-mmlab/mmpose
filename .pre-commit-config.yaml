@@ -39,10 +39,9 @@ repos:
     rev: 0.7.14
     hooks:
       - id: mdformat
-        args: ["--number"]
+        args: ["--number", "--table-width", "200"]
         additional_dependencies:
-          - git+https://github.com/mzr1996/mdformat-tables.git#egg=mdformat-tables
-          - mdformat-gfm
+          - mdformat-openmmlab
           - mdformat_frontmatter
           - linkify-it-py
   - repo: local
