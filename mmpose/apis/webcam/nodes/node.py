@@ -114,6 +114,9 @@ class Node(Thread, metaclass=ABCMeta):
                 handler_func=self._toggle_enable,
             )
 
+        # Logger
+        self.logger = logging.getLogger(f'Node "{self.name}"')
+
     @property
     def registered_buffers(self):
         return self._input_buffers + self._output_buffers
@@ -336,7 +339,7 @@ class Node(Thread, metaclass=ABCMeta):
         subclasses.
         """
 
-        logging.info(f'Node {self.name} starts')
+        self.logger.info('Process starts.')
 
         # Create event listener threads
         for event_info in self._registered_events:
@@ -401,4 +404,4 @@ class Node(Thread, metaclass=ABCMeta):
             if output_msg is not None:
                 self._send_output_to_buffers(output_msg)
 
-        logging.info(f'Node "{self.name}": process ending.')
+        self.logger.info('Process ends.')

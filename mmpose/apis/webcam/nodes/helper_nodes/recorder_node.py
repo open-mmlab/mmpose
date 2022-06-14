@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import logging
 from queue import Full, Queue
 from threading import Thread
 from typing import List, Union
@@ -80,10 +79,9 @@ class RecorderNode(Node):
             try:
                 self.queue.put(img, timeout=1)
                 img_queued = True
-                logging.info(
-                    f'Node "{self.name}": recorder received one frame!')
+                self.logger.info('Recorder received one frame.')
             except Full:
-                logging.info(f'Node "{self.name}": recorder jamed!')
+                self.logger.warn('Recorder jamed!')
 
         return input_msg
 
@@ -108,7 +106,7 @@ class RecorderNode(Node):
 
             self.vwriter.write(img)
 
-        logging.info('Video recorder released!')
+        self.logger.info('Recorder released.')
         if self.vwriter is not None:
             self.vwriter.release()
 
@@ -123,6 +121,6 @@ class RecorderNode(Node):
 
         if self.t_record.is_alive():
             # Force to release self.vwriter
-            logging.info('Video recorder forced release!')
+            self.logger.warn('Recorder forced release!')
             if self.vwriter is not None:
                 self.vwriter.release()

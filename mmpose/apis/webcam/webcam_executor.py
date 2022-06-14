@@ -18,6 +18,8 @@ DEFAULT_INPUT_BUFFER_SIZE = 1
 DEFAULT_DISPLAY_BUFFER_SIZE = 0
 DEFAULT_USER_BUFFER_SIZE = 1
 
+logger = logging.getLogger('Executor')
+
 
 class WebcamExecutor():
     """The interface to build and execute webcam applications from configs.
@@ -115,7 +117,7 @@ class WebcamExecutor():
 
         # Build all nodes:
         for node_cfg in nodes:
-            logging.info(f'Create node: {node_cfg.name}({node_cfg.type})')
+            logger.info(f'Create node: {node_cfg.name}({node_cfg.type})')
             node = NODES.build(node_cfg)
 
             # Register node
@@ -129,7 +131,7 @@ class WebcamExecutor():
                 buffer_size = buffer_sizes.get(buffer_name,
                                                DEFAULT_USER_BUFFER_SIZE)
                 self.buffer_manager.register_buffer(buffer_name, buffer_size)
-                logging.info(
+                logger.info(
                     f'Register user buffer: {buffer_name}({buffer_size})')
 
             # Register events
@@ -137,13 +139,13 @@ class WebcamExecutor():
                 self.event_manager.register_event(
                     event_name=event_info.event_name,
                     is_keyboard=event_info.is_keyboard)
-                logging.info(f'Register event: {event_info.event_name}')
+                logger.info(f'Register event: {event_info.event_name}')
 
         # Set executor for nodes
         # This step is performed after node building when the executor has
         # create full buffer/event managers and can
         for node in self.node_list:
-            logging.info(f'Set executor for node: {node.name})')
+            logger.info(f'Set executor for node: {node.name})')
             node.set_executor(self)
 
     def _read_camera(self):
@@ -198,10 +200,15 @@ class WebcamExecutor():
                         node_type='none',
                         info=self._get_camera_info())
                     self.buffer_manager.put_force('_input_', input_msg)
-
+                    logger.info('Read one frame.')
                 else:
+                    logger.info('Reached the end of the video.')
                     # Put a video ending signal
                     self.buffer_manager.put('_frame_', VideoEndingMessage())
+                    self.buffer_manager.put('_input_', VideoEndingMessage())
+                    # Wait for `_exit_` event util a timeout occurs
+                    if not self.event_manager.wait('_exit_', timeout=5.0):
+                        break
 
         self.vcap.release()
 
@@ -239,6 +246,10 @@ class WebcamExecutor():
 
         cv2.destroyAllWindows()
 
+        # Avoid dead lock
+        if self.synchronous:
+            self.event_manager.set('_idle_')
+
     def _on_keyboard_input(self, key):
         """Handle the keyboard input.
 
@@ -250,10 +261,10 @@ class WebcamExecutor():
         """
 
         if key in (27, ord('q'), ord('Q')):
-            logging.info(f'Exit event captured: {key}')
+            logger.info(f'Exit event captured: {key}')
             self.event_manager.set('_exit_')
         else:
-            logging.info(f'Keyboard event captured: {key}')
+            logger.info(f'Keyboard event captured: {key}')
             self.event_manager.set(key, is_keyboard=True)
 
     def _get_camera_info(self):
@@ -291,15 +302,16 @@ class WebcamExecutor():
 
             # Run display in the main thread
             self._display()
-            logging.info('Display shut down')
+            logger.info('Display has stopped.')
 
             # joint non-daemon nodes and executor threads
-            logging.info('Camera reading about to join')
+            logger.info('Camera reading is about to join.')
             t_read.join()
 
             for node in non_daemon_nodes:
-                logging.info(f'Node {node.name} about to join')
+                logger.info(f'Node {node.name} is about to join.')
                 node.join()
+            logger.info('All nodes jointed successfully.')
 
         except KeyboardInterrupt:
             pass
