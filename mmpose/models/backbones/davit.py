@@ -5,8 +5,10 @@ from typing import Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from mmcv.cnn.bricks.transformer import build_dropout
+from mmcv.cnn.utils.weight_init import trunc_normal_
+from mmcv.utils import to_2tuple
 from mmcv_custom import load_checkpoint
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
 from mmpose.utils import get_root_logger
 from ..builder import BACKBONES
@@ -168,7 +170,7 @@ class ChannelBlock(nn.Module):
                  num_heads,
                  mlp_ratio=4.,
                  qkv_bias=False,
-                 drop_path=0.,
+                 drop_path_rate=0.,
                  act_layer=nn.GELU,
                  norm_layer=nn.LayerNorm,
                  ffn=True,
@@ -183,8 +185,9 @@ class ChannelBlock(nn.Module):
         self.norm1 = norm_layer(dim)
         self.attn = ChannelAttention(
             dim, num_heads=num_heads, qkv_bias=qkv_bias)
-        self.drop_path = DropPath(
-            drop_path) if drop_path > 0. else nn.Identity()
+        self.drop_path = build_dropout(
+            dict(type='DropPath', drop_prob=drop_path_rate)
+        ) if drop_path_rate > 0. else nn.Identity()
 
         if self.ffn:
             self.norm2 = norm_layer(dim)
@@ -293,7 +296,7 @@ class SpatialBlock(nn.Module):
         mlp_ratio (float): Ratio of mlp hidden dim to embedding dim.
         qkv_bias (bool, optional): If True, add a learnable bias to
             query, key, value. Default: True
-        drop_path (float, optional): Stochastic depth rate. Default: 0.0
+        drop_path_rate (float, optional): Stochastic depth rate. Default: 0.0
         act_layer (nn.Module, optional): Activation layer. Default: nn.GELU
         norm_layer (nn.Module, optional): Normalization layer.
             Default: nn.LayerNorm
@@ -305,7 +308,7 @@ class SpatialBlock(nn.Module):
                  window_size=7,
                  mlp_ratio=4.,
                  qkv_bias=True,
-                 drop_path=0.,
+                 drop_path_rate=0.,
                  act_layer=nn.GELU,
                  norm_layer=nn.LayerNorm,
                  ffn=True,
@@ -328,8 +331,9 @@ class SpatialBlock(nn.Module):
             num_heads=num_heads,
             qkv_bias=qkv_bias)
 
-        self.drop_path = DropPath(
-            drop_path) if drop_path > 0. else nn.Identity()
+        self.drop_path = build_dropout(
+            dict(type='DropPath', drop_prob=drop_path_rate)
+        ) if drop_path_rate > 0. else nn.Identity()
 
         if self.ffn:
             self.norm2 = norm_layer(dim)
@@ -450,8 +454,8 @@ class DaViT(nn.Module):
                         num_heads=self.num_heads[item],
                         mlp_ratio=mlp_ratio,
                         qkv_bias=qkv_bias,
-                        drop_path=dpr[2 * (layer_id + layer_offset_id) +
-                                      attention_id],
+                        drop_path_rate=dpr[2 * (layer_id + layer_offset_id) +
+                                           attention_id],
                         norm_layer=nn.LayerNorm,
                         ffn=ffn,
                         cpe_act=cpe_act) if attention_type ==
@@ -460,8 +464,8 @@ class DaViT(nn.Module):
                         num_heads=self.num_heads[item],
                         mlp_ratio=mlp_ratio,
                         qkv_bias=qkv_bias,
-                        drop_path=dpr[2 * (layer_id + layer_offset_id) +
-                                      attention_id],
+                        drop_path_rate=dpr[2 * (layer_id + layer_offset_id) +
+                                           attention_id],
                         norm_layer=nn.LayerNorm,
                         ffn=ffn,
                         cpe_act=cpe_act,
