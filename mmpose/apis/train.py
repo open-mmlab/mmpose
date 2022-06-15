@@ -168,6 +168,14 @@ def train_model(model,
         else:
             optimizer_config = cfg.optimizer_config
 
+    custom_hooks_cfg = cfg.get('custom_hooks', None)
+    if custom_hooks_cfg is None:
+        custom_hooks_cfg = cfg.get('custom_hooks_config', None)
+        if custom_hooks_cfg is not None:
+            warnings.warn(
+                '"custom_hooks_config" is deprecated, please use '
+                '"custom_hooks" instead.', DeprecationWarning)
+
     # register hooks
     runner.register_training_hooks(
         cfg.lr_config,
@@ -175,7 +183,7 @@ def train_model(model,
         cfg.checkpoint_config,
         cfg.log_config,
         cfg.get('momentum_config', None),
-        custom_hooks_config=cfg.get('custom_hooks_config', None))
+        custom_hooks_config=custom_hooks_cfg)
 
     if distributed:
         runner.register_hook(DistSamplerSeedHook())
