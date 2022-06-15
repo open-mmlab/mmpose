@@ -86,7 +86,7 @@ from .my_optimizer import MyOptimizer
 - Use `custom_imports` in the config to manually import it
 
 ```python
-custom_imports = dict(imports=['mmpose.core.optimizer.my_optimizer'], allow_failed_imports=False)
+custom_imports = dict(imports=['mmpose.core.optimizers.my_optimizer'], allow_failed_imports=False)
 ```
 
 The module `mmpose.core.optimizer.my_optimizer` will be imported at the beginning of the program and the class `MyOptimizer` is then automatically registered.

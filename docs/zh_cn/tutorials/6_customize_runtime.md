@@ -81,7 +81,7 @@ from .my_optimizer import MyOptimizer
 - 在配置文件中使用 `custom_imports` 手动导入
 
 ```python
-custom_imports = dict(imports=['mmpose.core.optimizer.my_optimizer'], allow_failed_imports=False)
+custom_imports = dict(imports=['mmpose.core.optimizers.my_optimizer'], allow_failed_imports=False)
 ```
 
 在程序运行之初，库 `mmpose.core.optimizer.my_optimizer` 将会被导入。此时类 `MyOptimizer` 会自动注册。
