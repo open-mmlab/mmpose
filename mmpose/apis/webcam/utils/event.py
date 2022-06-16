@@ -1,8 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import logging
 from collections import defaultdict
 from contextlib import contextmanager
 from threading import Event
 from typing import Optional
+
+logger = logging.getLogger('Event')
 
 
 class EventManager():
@@ -43,6 +46,7 @@ class EventManager():
         if is_keyboard:
             event_name = self._get_keyboard_event_name(event_name)
         self._events[event_name].set()
+        logger.info(f'Event {event_name} is set.')
 
     def wait(self,
              event_name: str = None,
@@ -93,6 +97,7 @@ class EventManager():
         if is_keyboard:
             event_name = self._get_keyboard_event_name(event_name)
         self._events[event_name].clear()
+        logger.info(f'Event {event_name} is cleared.')
 
     @staticmethod
     def _get_keyboard_event_name(key):

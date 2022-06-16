@@ -33,8 +33,7 @@ def run():
     cfg.merge_from_dict(args.cfg_options)
 
     if args.debug:
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
 
     webcam_exe = WebcamExecutor(**cfg.executor_cfg)
     webcam_exe.run()
