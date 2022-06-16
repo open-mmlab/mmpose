@@ -7,6 +7,7 @@ from unittest import TestCase
 import json_tricks as json
 import torch
 
+from mmpose.datasets.datasets2.utils import parse_pose_metainfo
 from mmpose.metrics import CocoMetric
 
 
@@ -20,6 +21,8 @@ class TestCocoMetric(TestCase):
         """
         self.tmp_dir = tempfile.TemporaryDirectory()
         self.ann_file = 'tests/data/coco/test_coco.json'
+        coco_meta_info = dict(from_config='configs/_base_/datasets/coco.py')
+        self.coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
 
         with open(self.ann_file, 'r') as f:
             self.db = json.load(f)
@@ -50,7 +53,6 @@ class TestCocoMetric(TestCase):
             data_batch['data_sample'] = {
                 'id': ann['id'],
                 'image_id': ann['image_id'],
-                'sigmas': None
             }
             predictions = {}
             predictions['pred_instances'] = {
@@ -77,7 +79,6 @@ class TestCocoMetric(TestCase):
             data_batch['data_sample'] = {
                 'id': [ann['id'] for ann in anns],
                 'image_id': image_id,
-                'sigmas': None
             }
             predictions = {}
             predictions['pred_instances'] = {
@@ -109,6 +110,7 @@ class TestCocoMetric(TestCase):
         """test topdown-style COCO metric evaluation."""
         coco_metric = CocoMetric(
             ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
+        coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
         for batch, preds in self.topdown_data:
@@ -124,6 +126,7 @@ class TestCocoMetric(TestCase):
         """test bottomup-style COCO metric evaluation."""
         coco_metric = CocoMetric(
             ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
+        coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
         for batch, preds in self.bottomup_data:
@@ -138,6 +141,7 @@ class TestCocoMetric(TestCase):
         """test other useful methods."""
         # test `_sort_and_unique_bboxes` method
         coco_metric = CocoMetric(ann_file=self.ann_file)
+        coco_metric.dataset_meta = self.coco_dataset_meta
         # process samples
         for batch, preds in self.topdown_data:
             coco_metric.process(batch, preds)
@@ -153,6 +157,7 @@ class TestCocoMetric(TestCase):
             ann_file=self.ann_file,
             format_only=True,
             outfile_prefix=f'{self.tmp_dir.name}/test')
+        coco_metric.dataset_meta = self.coco_dataset_meta
         # process one sample
         batch, preds = self.topdown_data[0]
         coco_metric.process(batch, preds)
@@ -163,6 +168,7 @@ class TestCocoMetric(TestCase):
 
         # test when gt annotations are absent
         coco_metric = CocoMetric(ann_file=self.ann_file, format_only=False)
+        coco_metric.dataset_meta = self.coco_dataset_meta
         # process one sample
         batch, preds = self.topdown_data[0]
         coco_metric.process(batch, preds)
