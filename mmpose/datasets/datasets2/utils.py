@@ -70,7 +70,7 @@ def parse_pose_metainfo(metainfo: dict):
     Returns:
         Dict: pose meta information that contains following contents:
 
-        - "dataset_name" (str): Same as "dataset_name" in the input
+        - "dataset_name" (str): Same as ``"dataset_name"`` in the input
         - "num_keypoints" (int): Number of keypoints
         - "keypoint_id2name" (dict): Mapping from keypoint id to name
         - "keypoint_name2id" (dict): Mapping from keypoint name to id
@@ -84,9 +84,9 @@ def parse_pose_metainfo(metainfo: dict):
         - "skeleton_links" (list): The links represented by Id pairs of start
              and end points
         - "skeleton_link_colors" (numpy.ndarray): The link color matrix
-        - "keypoint_weights" (numpy.ndarray): Same as the "joint_weights" in
-            the input
-        - "sigmas" (numpy.ndarray): Same as the "sigmas" in the input
+        - "keypoint_weights" (numpy.ndarray): Same as the ``"joint_weights"``
+            in the input
+        - "sigmas" (numpy.ndarray): Same as the ``"sigmas"`` in the input
     """
 
     if 'from_config' in metainfo:

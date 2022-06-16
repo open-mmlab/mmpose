@@ -4,32 +4,48 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class FlyDataset(BaseCocoDataset):
+    """FlyDataset for animal pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    "Fast animal pose estimation using deep neural networks"
+    Nature methods'2019. More details can be found in the `paper
+    <https://www.biorxiv.org/content/biorxiv/\
+    early/2018/05/25/331181.full.pdf>`__ .
 
-    COCO keypoints::
+    Vinegar Fly keypoints::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: "head",
+        1: "eyeL",
+        2: "eyeR",
+        3: "neck",
+        4: "thorax",
+        5: "abdomen",
+        6: "forelegR1",
+        7: "forelegR2",
+        8: "forelegR3",
+        9: "forelegR4",
+        10: "midlegR1",
+        11: "midlegR2",
+        12: "midlegR3",
+        13: "midlegR4",
+        14: "hindlegR1",
+        15: "hindlegR2",
+        16: "hindlegR3",
+        17: "hindlegR4",
+        18: "forelegL1",
+        19: "forelegL2",
+        20: "forelegL3",
+        21: "forelegL4",
+        22: "midlegL1",
+        23: "midlegL2",
+        24: "midlegL3",
+        25: "midlegL4",
+        26: "hindlegL1",
+        27: "hindlegL2",
+        28: "hindlegL3",
+        29: "hindlegL4",
+        30: "wingL",
+        31: "wingR"
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +85,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/fly.py')

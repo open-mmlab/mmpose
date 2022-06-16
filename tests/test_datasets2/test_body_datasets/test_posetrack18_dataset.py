@@ -3,23 +3,23 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import CocoDataset
+from mmpose.datasets.datasets2.body import PoseTrack18Dataset
 
 
-class TestCocoDataset(TestCase):
+class TestPoseTrack18Dataset(TestCase):
 
-    def build_coco_dataset(self, **kwargs):
+    def build_posetrack18_dataset(self, **kwargs):
 
         cfg = dict(
-            ann_file='test_coco.json',
+            ann_file='annotations/test_posetrack18_val.json',
             bbox_file=None,
             data_mode='topdown',
-            data_root='tests/data/coco',
+            data_root='tests/data/posetrack18',
             pipeline=[],
             test_mode=False)
 
         cfg.update(kwargs)
-        return CocoDataset(**cfg)
+        return PoseTrack18Dataset(**cfg)
 
     def check_data_info_keys(self,
                              data_info: dict,
@@ -73,10 +73,10 @@ class TestCocoDataset(TestCase):
             self.assertIsInstance(metainfo[key], type_)
 
     def test_metainfo(self):
-        dataset = self.build_coco_dataset()
+        dataset = self.build_posetrack18_dataset()
         self.check_metainfo_keys(dataset.metainfo)
         # test dataset_name
-        self.assertEqual(dataset.metainfo['dataset_name'], 'coco')
+        self.assertEqual(dataset.metainfo['dataset_name'], 'posetrack18')
 
         # test number of keypoints
         num_keypoints = 17
@@ -95,66 +95,68 @@ class TestCocoDataset(TestCase):
 
     def test_top_down(self):
         # test topdown training
-        dataset = self.build_coco_dataset(data_mode='topdown')
-        self.assertEqual(len(dataset), 12)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
+        dataset = self.build_posetrack18_dataset(data_mode='topdown')
+        self.assertEqual(len(dataset), 14)
+        self.check_data_info_keys(dataset[0])
 
         # test topdown testing
-        dataset = self.build_coco_dataset(data_mode='topdown', test_mode=True)
-        self.assertEqual(len(dataset), 12)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
+        dataset = self.build_posetrack18_dataset(
+            data_mode='topdown', test_mode=True)
+        self.assertEqual(len(dataset), 14)
+        self.check_data_info_keys(dataset[0])
 
         # test topdown testing with bbox file
-        dataset = self.build_coco_dataset(
-            data_mode='topdown',
+        dataset = self.build_posetrack18_dataset(
             test_mode=True,
-            bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
-        self.assertEqual(len(dataset), 118)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
+            bbox_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_human_detections.json')
+        self.assertEqual(len(dataset), 278)
+        self.check_data_info_keys(dataset[0])
 
         # test topdown testing with filter config
-        dataset = self.build_coco_dataset(
-            data_mode='topdown',
+        dataset = self.build_posetrack18_dataset(
             test_mode=True,
-            bbox_file='tests/data/coco/test_coco_det_AP_H_56.json',
+            bbox_file='tests/data/posetrack18/annotations/'
+            'test_posetrack18_human_detections.json',
             filter_cfg=dict(bbox_score_thr=0.3))
-        self.assertEqual(len(dataset), 33)
+        self.assertEqual(len(dataset), 119)
 
     def test_bottom_up(self):
         # test bottomup training
-        dataset = self.build_coco_dataset(data_mode='bottomup')
-        self.assertEqual(len(dataset), 4)
+        dataset = self.build_posetrack18_dataset(data_mode='bottomup')
+        self.assertEqual(len(dataset), 3)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
         # test bottomup testing
-        dataset = self.build_coco_dataset(data_mode='bottomup', test_mode=True)
-        self.assertEqual(len(dataset), 4)
+        dataset = self.build_posetrack18_dataset(
+            data_mode='bottomup', test_mode=True)
+        self.assertEqual(len(dataset), 3)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
     def test_exceptions_and_warnings(self):
-
         with self.assertRaisesRegex(ValueError, 'got invalid data_mode'):
-            _ = self.build_coco_dataset(data_mode='invalid')
+            _ = self.build_posetrack18_dataset(data_mode='invalid')
 
         with self.assertRaisesRegex(
                 ValueError,
                 '"bbox_file" is only supported when `test_mode==True`'):
-            _ = self.build_coco_dataset(
-                data_mode='topdown',
+            _ = self.build_posetrack18_dataset(
                 test_mode=False,
-                bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
+                bbox_file='tests/data/posetrack18/annotations/'
+                'test_posetrack18_human_detections.json')
 
         with self.assertRaisesRegex(
                 ValueError, '"bbox_file" is only supported in topdown mode'):
-            _ = self.build_coco_dataset(
+            _ = self.build_posetrack18_dataset(
                 data_mode='bottomup',
                 test_mode=True,
-                bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
+                bbox_file='tests/data/posetrack18/annotations/'
+                'test_posetrack18_human_detections.json')
 
         with self.assertRaisesRegex(
                 ValueError,
                 '"bbox_score_thr" is only supported in topdown mode'):
-            _ = self.build_coco_dataset(
+            _ = self.build_posetrack18_dataset(
                 data_mode='bottomup',
                 test_mode=True,
                 filter_cfg=dict(bbox_score_thr=0.3))

@@ -4,32 +4,32 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class MhpDataset(BaseCocoDataset):
+    """MHPv2.0 dataset for pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "Understanding Humans in Crowded Scenes: Deep Nested Adversarial
+    Learning and A New Benchmark for Multi-Human Parsing", ACM MM'2018.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/1804.03287>`__
 
-    COCO keypoints::
+    MHP keypoints::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: "right ankle",
+        1: "right knee",
+        2: "right hip",
+        3: "left hip",
+        4: "left knee",
+        5: "left ankle",
+        6: "pelvis",
+        7: "thorax",
+        8: "upper neck",
+        9: "head top",
+        10: "right wrist",
+        11: "right elbow",
+        12: "right shoulder",
+        13: "left shoulder",
+        14: "left elbow",
+        15: "left wrist",
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +69,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/mhp.py')
