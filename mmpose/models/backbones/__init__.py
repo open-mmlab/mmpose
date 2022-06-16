@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .alexnet import AlexNet
 from .cpm import CPM
+from .davit import DaViT
 from .hourglass import HourglassNet
 from .hourglass_ae import HourglassAENet
 from .hrformer import HRFormer
@@ -34,5 +35,5 @@ __all__ = [
     'SEResNet', 'SEResNeXt', 'ShuffleNetV1', 'ShuffleNetV2', 'CPM', 'RSN',
     'MSPN', 'ResNeSt', 'VGG', 'TCN', 'ViPNAS_ResNet', 'ViPNAS_MobileNetV3',
     'LiteHRNet', 'V2VNet', 'HRFormer', 'PyramidVisionTransformer',
-    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D'
+    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D', 'DaViT'
 ]
