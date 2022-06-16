@@ -92,8 +92,6 @@ class CocoMetric(BaseMetric):
             result = dict()
             result['id'] = data['data_sample']['id']
             result['image_id'] = data['data_sample']['image_id']
-            # get ``'sigmas'`` from data_sample
-            result['sigmas'] = data['data_sample']['sigmas']
             result['keypoints'] = keypoints
             result['scores'] = scores
             # add converted result to the results list
@@ -119,8 +117,6 @@ class CocoMetric(BaseMetric):
             outfile_prefix = self.outfile_prefix
 
         kpts = defaultdict(list)
-
-        self.sigmas = results[0]['sigmas']
 
         # group the results by image_id
         for result in results:
@@ -210,7 +206,8 @@ class CocoMetric(BaseMetric):
             name and corresponding stats value.
         """
         coco_det = self.coco.loadRes(res_file)
-        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', self.sigmas,
+        sigmas = self.dataset_meta['sigmas']
+        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', sigmas,
                              self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
@@ -230,7 +227,7 @@ class CocoMetric(BaseMetric):
                                 kpts: Dict[int, list],
                                 key: str = 'id') -> Dict[int, list]:
         """Sort keypoint detection results in each image and remove the
-        duplicate ones.
+        duplicate ones. Usually performed in multi-batch testing.
 
         Args:
             kpts (Dict[int, list]): keypoint prediction results. The keys are
