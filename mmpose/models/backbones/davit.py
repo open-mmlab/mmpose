@@ -151,7 +151,8 @@ class ChannelAttention(nn.Module):
         B, N, C = x.shape
 
         qkv = self.qkv(x).reshape(B, N, 3, self.num_heads,
-                                  C // self.num_heads).permute(2, 0, 3, 1, 4)
+                                  C // self.num_heads).permute(2, 0, 3, 1,
+                                                               4).contiguous()
         q, k, v = qkv[0], qkv[1], qkv[2]
 
         k = k * self.scale
@@ -274,7 +275,8 @@ class WindowAttention(nn.Module):
     def forward(self, x):
         B_, N, C = x.shape
         qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads,
-                                  C // self.num_heads).permute(2, 0, 3, 1, 4)
+                                  C // self.num_heads).permute(2, 0, 3, 1,
+                                                               4).contiguous()
         q, k, v = qkv[0], qkv[1], qkv[2]
 
         q = q * self.scale
