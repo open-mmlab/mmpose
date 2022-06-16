@@ -70,7 +70,7 @@ class ConvPosEnc(nn.Module):
         H, W = size
         assert N == H * W
 
-        feat = x.transpose(1, 2).view(B, C, H, W)
+        feat = x.transpose(1, 2).view(B, C, H, W).contiguous()
         feat = self.proj(feat)
         if self.normtype == 'batch':
             feat = self.norm(feat).flatten(2).transpose(1, 2)
@@ -221,9 +221,10 @@ def window_partition(x, window_size: int):
     """
     B, H, W, C = x.shape
     x = x.view(B, H // window_size, window_size, W // window_size, window_size,
-               C)
+               C).contiguous()
     windows = x.permute(0, 1, 3, 2, 4,
-                        5).contiguous().view(-1, window_size, window_size, C)
+                        5).contiguous().view(-1, window_size, window_size,
+                                             C).contiguous()
     return windows
 
 
@@ -240,8 +241,8 @@ def window_reverse(windows, window_size: int, H: int, W: int):
     """
     B = int(windows.shape[0] / (H * W / window_size / window_size))
     x = windows.view(B, H // window_size, W // window_size, window_size,
-                     window_size, -1)
-    x = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(B, H, W, -1)
+                     window_size, -1).contiguous()
+    x = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(B, H, W, -1).contiguous()
     return x
 
 
@@ -361,20 +362,21 @@ class SpatialBlock(nn.Module):
         _, Hp, Wp, _ = x.shape
 
         x_windows = window_partition(x, self.window_size)
-        x_windows = x_windows.view(-1, self.window_size * self.window_size, C)
+        x_windows = x_windows.view(-1, self.window_size * self.window_size,
+                                   C).contiguous()
 
         # W-MSA/SW-MSA
         attn_windows = self.attn(x_windows)
 
         # merge windows
         attn_windows = attn_windows.view(-1, self.window_size,
-                                         self.window_size, C)
+                                         self.window_size, C).contiguous()
         x = window_reverse(attn_windows, self.window_size, Hp, Wp)
 
         if pad_r > 0 or pad_b > 0:
             x = x[:, :H, :W, :].contiguous()
 
-        x = x.view(B, H * W, C)
+        x = x.view(B, H * W, C).contiguous()
         x = shortcut + self.drop_path(x)
 
         x = self.cpe[1](x, size)
