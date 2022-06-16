@@ -1,35 +1,22 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os.path as osp
+from typing import Optional
+
+import numpy as np
+
 from mmpose.registry import DATASETS
 from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class CocoWholeBodyFaceDataset(BaseCocoDataset):
+    """CocoWholeBodyDataset for face keypoint localization.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    `Whole-Body Human Pose Estimation in the Wild', ECCV'2020.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/2007.11858>`__ .
 
-    COCO keypoints::
-
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    The face landmark annotations follow the 68 points mark-up.
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +56,63 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(
+        from_config='configs/_base_/datasets/coco_wholebody_face.py')
+
+    def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
+        """Parse raw CocoWholeBody Face annotation of an instance.
+
+        Args:
+            raw_data_info (dict): Raw data information loaded from
+                ``ann_file``. It should have following contents:
+
+                - ``'raw_ann_info'``: Raw annotation of an instance
+                - ``'raw_img_info'``: Raw information of the image that
+                    contains the instance
+
+        Returns:
+            dict: Parsed instance annotation
+        """
+
+        ann = raw_data_info['raw_ann_info']
+        img = raw_data_info['raw_img_info']
+
+        # filter invalid instance
+        if not ann['face_valid'] or max(ann['face_kpts']) <= 0:
+            return None
+
+        image_file = osp.join(self.img_prefix, img['file_name'])
+        img_w, img_h = img['width'], img['height']
+
+        # get bbox in shape [1, 4], formatted as xywh
+        x, y, w, h = ann['face_box']
+        x1 = np.clip(x, 0, img_w - 1)
+        y1 = np.clip(y, 0, img_h - 1)
+        x2 = np.clip(x + w, 0, img_w - 1)
+        y2 = np.clip(y + h, 0, img_h - 1)
+
+        bbox = np.array([x1, y1, x2 - x1, y2 - y1],
+                        dtype=np.float32).reshape(1, 4)
+
+        # keypoints in shape [1, K, 2] and
+        # keypoints_visible in [1, K, 1]
+        _keypoints = np.array(
+            ann['face_kpts'], dtype=np.float32).reshape(1, -1, 3)
+        keypoints = _keypoints[..., :2]
+        keypoints_visible = np.minimum(1, _keypoints[..., 2:3])
+
+        num_keypoints = np.count_nonzero(keypoints.max(axis=2))
+
+        data_info = {
+            'image_id': ann['image_id'],
+            'image_file': image_file,
+            'image_shape': (img_h, img_w, 3),
+            'bbox': bbox,
+            'bbox_score': np.ones(1, dtype=np.float32),
+            'num_keypoints': num_keypoints,
+            'keypoints': keypoints,
+            'keypoints_visible': keypoints_visible,
+            'iscrowd': ann['iscrowd'],
+            'id': ann['id'],
+        }
+        return data_info

@@ -1,17 +1,19 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+
 from mmpose.registry import DATASETS
 from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class MacaqueDataset(BaseCocoDataset):
+    """MacaquePose dataset for animal pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "MacaquePose: A novel 'in the wild' macaque monkey pose dataset
+    for markerless motion capture" bioRxiv'2020.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://www.biorxiv.org/content/10.1101/2020.07.30.229989v1>`__ .
 
-    COCO keypoints::
+    Macaque keypoints::
 
         0: 'nose',
         1: 'left_eye',
@@ -69,4 +71,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/macaque.py')

@@ -4,18 +4,18 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class PoseTrack18Dataset(BaseCocoDataset):
+    """PoseTrack18 dataset for pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "Posetrack: A benchmark for human pose estimation and tracking", CVPR'2018.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/1710.10000>`__ .
 
-    COCO keypoints::
+    PoseTrack2018 keypoints::
 
         0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
+        1: 'head_bottom',
+        2: 'head_top',
         3: 'left_ear',
         4: 'right_ear',
         5: 'left_shoulder',
@@ -69,4 +69,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/posetrack18.py')

@@ -1,35 +1,22 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import os.path as osp
+from typing import Optional
+
+import numpy as np
+
 from mmpose.registry import DATASETS
 from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class Face300WDataset(BaseCocoDataset):
+    """300W dataset for face keypoint localization.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    "300 faces In-the-wild challenge: Database and results",
+    Image and Vision Computing (IMAVIS) 2019.
 
-    COCO keypoints::
-
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+    The landmark annotations follow the 68 points mark-up. The definition
+    can be found in `https://ibug.doc.ic.ac.uk/resources/300-W/`.
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +56,52 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/300w.py')
+
+    def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
+        """Parse raw Face300W annotation of an instance.
+
+        Args:
+            raw_data_info (dict): Raw data information loaded from
+                ``ann_file``. It should have following contents:
+
+                - ``'raw_ann_info'``: Raw annotation of an instance
+                - ``'raw_img_info'``: Raw information of the image that
+                    contains the instance
+
+        Returns:
+            dict: Parsed instance annotation
+        """
+
+        ann = raw_data_info['raw_ann_info']
+        img = raw_data_info['raw_img_info']
+
+        image_file = osp.join(self.img_prefix, img['file_name'])
+        img_w, img_h = img['width'], img['height']
+
+        center = np.array(ann['center'], dtype=np.float32)
+        scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
+
+        # keypoints in shape [1, K, 2] and
+        # keypoints_visible in [1, K, 1]
+        _keypoints = np.array(
+            ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
+        keypoints = _keypoints[..., :2]
+        keypoints_visible = np.minimum(1, _keypoints[..., 2:3])
+
+        num_keypoints = ann['num_keypoints']
+
+        data_info = {
+            'image_id': ann['image_id'],
+            'image_file': image_file,
+            'image_shape': (img_h, img_w, 3),
+            'bbox_center': center,
+            'bbox_scale': scale,
+            'bbox_score': np.ones(1, dtype=np.float32),
+            'num_keypoints': num_keypoints,
+            'keypoints': keypoints,
+            'keypoints_visible': keypoints_visible,
+            'iscrowd': ann['iscrowd'],
+            'id': ann['id'],
+        }
+        return data_info
