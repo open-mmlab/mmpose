@@ -4,32 +4,33 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class AP10KDataset(BaseCocoDataset):
+    """AP-10K dataset for animal pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "AP-10K: A Benchmark for Animal Pose Estimation in the Wild"
+    Neurips Dataset Track'2021.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/2108.12617>`__ .
 
-    COCO keypoints::
+    AP-10K keypoints::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: 'L_Eye',
+        1: 'R_Eye',
+        2: 'Nose',
+        3: 'Neck',
+        4: 'root of tail',
+        5: 'L_Shoulder',
+        6: 'L_Elbow',
+        7: 'L_F_Paw',
+        8: 'R_Shoulder',
+        9: 'R_Elbow',
+        10: 'R_F_Paw,
+        11: 'L_Hip',
+        12: 'L_Knee',
+        13: 'L_B_Paw',
+        14: 'R_Hip',
+        15: 'R_Knee',
+        16: 'R_B_Paw'
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +70,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/ap10k.py')

@@ -3,23 +3,24 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import CocoDataset
+from mmpose.datasets.datasets2.fashion import DeepFashionDataset
 
 
-class TestCocoDataset(TestCase):
+class TestDeepFashionDataset(TestCase):
 
-    def build_coco_dataset(self, **kwargs):
+    def build_deepfashion_dataset(self, **kwargs):
 
         cfg = dict(
-            ann_file='test_coco.json',
+            ann_file='test_fld.json',
+            subset='',
             bbox_file=None,
             data_mode='topdown',
-            data_root='tests/data/coco',
+            data_root='tests/data/fld',
             pipeline=[],
             test_mode=False)
 
         cfg.update(kwargs)
-        return CocoDataset(**cfg)
+        return DeepFashionDataset(**cfg)
 
     def check_data_info_keys(self,
                              data_info: dict,
@@ -47,7 +48,6 @@ class TestCocoDataset(TestCase):
                 id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')
-
         for key, type_ in expected_keys.items():
             self.assertIn(key, data_info)
             self.assertIsInstance(data_info[key], type_)
@@ -73,88 +73,101 @@ class TestCocoDataset(TestCase):
             self.assertIsInstance(metainfo[key], type_)
 
     def test_metainfo(self):
-        dataset = self.build_coco_dataset()
+        # test subset = 'full'
+        dataset = self.build_deepfashion_dataset()
         self.check_metainfo_keys(dataset.metainfo)
         # test dataset_name
-        self.assertEqual(dataset.metainfo['dataset_name'], 'coco')
+        self.assertEqual(dataset.metainfo['dataset_name'], 'deepfashion_full')
 
         # test number of keypoints
-        num_keypoints = 17
+        num_keypoints = 8
         self.assertEqual(dataset.metainfo['num_keypoints'], num_keypoints)
         self.assertEqual(
             len(dataset.metainfo['keypoint_colors']), num_keypoints)
         self.assertEqual(
             len(dataset.metainfo['keypoint_weights']), num_keypoints)
-        # note that len(sigmas) may be zero if dataset.metainfo['sigmas] = []
-        self.assertEqual(len(dataset.metainfo['sigmas']), num_keypoints)
 
-        # test some extra metainfo
+        # test subset = 'upper'
+        dataset = self.build_deepfashion_dataset(subset='upper')
+        self.check_metainfo_keys(dataset.metainfo)
+        # test dataset_name
+        self.assertEqual(dataset.metainfo['dataset_name'], 'deepfashion_upper')
+        # test number of keypoints
+        num_keypoints = 6
+        self.assertEqual(dataset.metainfo['num_keypoints'], num_keypoints)
         self.assertEqual(
-            len(dataset.metainfo['skeleton_links']),
-            len(dataset.metainfo['skeleton_link_colors']))
+            len(dataset.metainfo['keypoint_colors']), num_keypoints)
+        self.assertEqual(
+            len(dataset.metainfo['keypoint_weights']), num_keypoints)
+
+        # test subset = 'upper'
+        dataset = self.build_deepfashion_dataset(subset='lower')
+        self.check_metainfo_keys(dataset.metainfo)
+        # test dataset_name
+        self.assertEqual(dataset.metainfo['dataset_name'], 'deepfashion_lower')
+        # test number of keypoints
+        num_keypoints = 4
+        self.assertEqual(dataset.metainfo['num_keypoints'], num_keypoints)
+        self.assertEqual(
+            len(dataset.metainfo['keypoint_colors']), num_keypoints)
+        self.assertEqual(
+            len(dataset.metainfo['keypoint_weights']), num_keypoints)
 
     def test_top_down(self):
-        # test topdown training
-        dataset = self.build_coco_dataset(data_mode='topdown')
-        self.assertEqual(len(dataset), 12)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
+        # test subset = 'full' topdown training
+        dataset = self.build_deepfashion_dataset(data_mode='topdown')
+        self.assertEqual(dataset.data_mode, 'topdown')
+        self.assertEqual(dataset.bbox_file, None)
+        self.assertEqual(len(dataset), 2)
+        self.check_data_info_keys(dataset[0])
 
-        # test topdown testing
-        dataset = self.build_coco_dataset(data_mode='topdown', test_mode=True)
-        self.assertEqual(len(dataset), 12)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
-
-        # test topdown testing with bbox file
-        dataset = self.build_coco_dataset(
-            data_mode='topdown',
-            test_mode=True,
-            bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
-        self.assertEqual(len(dataset), 118)
-        self.check_data_info_keys(dataset[0], data_mode='topdown')
-
-        # test topdown testing with filter config
-        dataset = self.build_coco_dataset(
-            data_mode='topdown',
-            test_mode=True,
-            bbox_file='tests/data/coco/test_coco_det_AP_H_56.json',
-            filter_cfg=dict(bbox_score_thr=0.3))
-        self.assertEqual(len(dataset), 33)
+        # test subset = 'full' topdown testing
+        dataset = self.build_deepfashion_dataset(
+            data_mode='topdown', test_mode=True)
+        self.assertEqual(dataset.data_mode, 'topdown')
+        self.assertEqual(dataset.bbox_file, None)
+        self.assertEqual(len(dataset), 2)
+        self.check_data_info_keys(dataset[0])
 
     def test_bottom_up(self):
-        # test bottomup training
-        dataset = self.build_coco_dataset(data_mode='bottomup')
-        self.assertEqual(len(dataset), 4)
+        # test subset = 'full' bottomup training
+        dataset = self.build_deepfashion_dataset(data_mode='bottomup')
+        self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
-        # test bottomup testing
-        dataset = self.build_coco_dataset(data_mode='bottomup', test_mode=True)
-        self.assertEqual(len(dataset), 4)
+        # test subset = 'full' bottomup testing
+        dataset = self.build_deepfashion_dataset(
+            data_mode='bottomup', test_mode=True)
+        self.assertEqual(len(dataset), 2)
         self.check_data_info_keys(dataset[0], data_mode='bottomup')
 
     def test_exceptions_and_warnings(self):
 
         with self.assertRaisesRegex(ValueError, 'got invalid data_mode'):
-            _ = self.build_coco_dataset(data_mode='invalid')
+            _ = self.build_deepfashion_dataset(data_mode='invalid')
+
+        with self.assertRaisesRegex(ValueError, 'got invalid subset'):
+            _ = self.build_deepfashion_dataset(subset='invalid')
 
         with self.assertRaisesRegex(
                 ValueError,
                 '"bbox_file" is only supported when `test_mode==True`'):
-            _ = self.build_coco_dataset(
+            _ = self.build_deepfashion_dataset(
                 data_mode='topdown',
                 test_mode=False,
-                bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
+                bbox_file='temp_bbox_file.json')
 
         with self.assertRaisesRegex(
                 ValueError, '"bbox_file" is only supported in topdown mode'):
-            _ = self.build_coco_dataset(
+            _ = self.build_deepfashion_dataset(
                 data_mode='bottomup',
                 test_mode=True,
-                bbox_file='tests/data/coco/test_coco_det_AP_H_56.json')
+                bbox_file='temp_bbox_file.json')
 
         with self.assertRaisesRegex(
                 ValueError,
                 '"bbox_score_thr" is only supported in topdown mode'):
-            _ = self.build_coco_dataset(
+            _ = self.build_deepfashion_dataset(
                 data_mode='bottomup',
                 test_mode=True,
                 filter_cfg=dict(bbox_score_thr=0.3))

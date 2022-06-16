@@ -4,32 +4,37 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class Rhd2DDataset(BaseCocoDataset):
+    """Rendered Handpose Dataset for hand pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "Learning to Estimate 3D Hand Pose from Single RGB Images",
+    ICCV'2017.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/pdf/1705.01389.pdf>`__ .
 
-    COCO keypoints::
+    Rhd keypoints::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: 'wrist',
+        1: 'thumb4',
+        2: 'thumb3',
+        3: 'thumb2',
+        4: 'thumb1',
+        5: 'forefinger4',
+        6: 'forefinger3',
+        7: 'forefinger2',
+        8: 'forefinger1',
+        9: 'middle_finger4',
+        10: 'middle_finger3',
+        11: 'middle_finger2',
+        12: 'middle_finger1',
+        13: 'ring_finger4',
+        14: 'ring_finger3',
+        15: 'ring_finger2',
+        16: 'ring_finger1',
+        17: 'pinky_finger4',
+        18: 'pinky_finger3',
+        19: 'pinky_finger2',
+        20: 'pinky_finger1'
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +74,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/rhd2d.py')
