@@ -4,14 +4,20 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class OCHumanDataset(BaseCocoDataset):
+    """OChuman dataset for pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
+    "Pose2Seg: Detection Free Human Instance Segmentation", CVPR'2019.
     More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    <https://arxiv.org/abs/1803.10683>`__ .
 
-    COCO keypoints::
+    "Occluded Human (OCHuman)" dataset contains 8110 heavily occluded
+    human instances within 4731 images. OCHuman dataset is designed for
+    validation and testing. To evaluate on OCHuman, the model should be
+    trained on COCO training set, and then test the robustness of the
+    model to occlusion using OCHuman.
+
+    OCHuman keypoints (same as COCO)::
 
         0: 'nose',
         1: 'left_eye',
@@ -69,4 +75,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/ochuman.py')

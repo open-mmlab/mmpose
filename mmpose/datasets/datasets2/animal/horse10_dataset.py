@@ -4,32 +4,37 @@ from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
-    """COCO dataset for pose estimation.
+class Horse10Dataset(BaseCocoDataset):
+    """Horse10Dataset for animal pose estimation.
 
-    "Microsoft COCO: Common Objects in Context", ECCV'2014.
-    More details can be found in the `paper
-    <https://arxiv.org/abs/1405.0312>`__ .
+    "Pretraining boosts out-of-domain robustness for pose estimation"
+    WACV'2021. More details can be found in the `paper
+    <https://arxiv.org/pdf/1909.11229.pdf>`__ .
 
-    COCO keypoints::
+    Horse-10 keypoints::
 
-        0: 'nose',
-        1: 'left_eye',
-        2: 'right_eye',
-        3: 'left_ear',
-        4: 'right_ear',
-        5: 'left_shoulder',
-        6: 'right_shoulder',
-        7: 'left_elbow',
-        8: 'right_elbow',
-        9: 'left_wrist',
-        10: 'right_wrist',
-        11: 'left_hip',
-        12: 'right_hip',
-        13: 'left_knee',
-        14: 'right_knee',
-        15: 'left_ankle',
-        16: 'right_ankle'
+        0: 'Nose',
+        1: 'Eye',
+        2: 'Nearknee',
+        3: 'Nearfrontfetlock',
+        4: 'Nearfrontfoot',
+        5: 'Offknee',
+        6: 'Offfrontfetlock',
+        7: 'Offfrontfoot',
+        8: 'Shoulder',
+        9: 'Midshoulder',
+        10: 'Elbow',
+        11: 'Girth',
+        12: 'Wither',
+        13: 'Nearhindhock',
+        14: 'Nearhindfetlock',
+        15: 'Nearhindfoot',
+        16: 'Hip',
+        17: 'Stifle',
+        18: 'Offhindhock',
+        19: 'Offhindfetlock',
+        20: 'Offhindfoot',
+        21: 'Ischium'
 
     Args:
         ann_file (str): Annotation file path. Default: ''.
@@ -69,4 +74,4 @@ class CocoDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/coco.py')
+    METAINFO: dict = dict(from_config='configs/_base_/datasets/horse10.py')
