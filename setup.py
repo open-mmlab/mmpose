@@ -188,6 +188,7 @@ if __name__ == '__main__':
         extras_require={
             'tests': parse_requirements('requirements/tests.txt'),
             'build': parse_requirements('requirements/build.txt'),
-            'runtime': parse_requirements('requirements/runtime.txt')
+            'runtime': parse_requirements('requirements/runtime.txt'),
+            'mim': parse_requirements('requirements/mminstall.txt'),
         },
         zip_safe=False)
