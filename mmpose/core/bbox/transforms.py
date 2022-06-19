@@ -1,8 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import math
+from typing import Tuple
+
+import cv2
 import numpy as np
 
 
-def bbox_xyxy2xywh(bbox_xyxy):
+def bbox_xyxy2xywh(bbox_xyxy: np.ndarray) -> np.ndarray:
     """Transform the bbox format from x1y1x2y2 to xywh.
 
     Args:
@@ -20,7 +24,7 @@ def bbox_xyxy2xywh(bbox_xyxy):
     return bbox_xywh
 
 
-def bbox_xywh2xyxy(bbox_xywh):
+def bbox_xywh2xyxy(bbox_xywh: np.ndarray) -> np.ndarray:
     """Transform the bbox format from xywh to x1y1x2y2.
 
     Args:
@@ -37,11 +41,15 @@ def bbox_xywh2xyxy(bbox_xywh):
     return bbox_xyxy
 
 
-def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
+def bbox_xywh2cs(bbox: np.ndarray,
+                 aspect_ratio: float,
+                 padding: float = 1.,
+                 pixel_std: float = 200.) -> Tuple[np.ndarray, np.ndarray]:
     """Transform the bbox format from (x,y,w,h) into (center, scale)
 
     Args:
-        bbox (ndarray): Single bbox in (x, y, w, h)
+        bbox (ndarray): Bounding box(es) in shape (4,) or (n, 4), formatted
+            as (x, y, h, w)
         aspect_ratio (float): The expected bbox aspect ratio (w over h)
         padding (float): Bbox padding factor that will be multilied to scale.
             Default: 1.0
@@ -49,40 +57,256 @@ def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
 
     Returns:
         tuple: A tuple containing center and scale.
-        - np.ndarray[float32](2,): Center of the bbox (x, y).
-        - np.ndarray[float32](2,): Scale of the bbox w & h.
+        - np.ndarray[float32]: Center (x, y) of the bbox in shape (2,) or
+            (n, 2)
+        - np.ndarray[float32]: Scale (w, h) of the bbox in shape (2,) or
+            (n, 2)
     """
 
-    x, y, w, h = bbox[:4]
+    dim = bbox.ndim
+    if dim == 1:
+        bbox = bbox[None, :]
+
+    x, y, w, h = np.hsplit(bbox, [1, 2, 3])
+    center = np.hstack([x + w * 0.5, y + h * 0.5])
+
+    x, y, w, h = bbox[:, :4]
     center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
 
-    if w > aspect_ratio * h:
-        h = w * 1.0 / aspect_ratio
-    elif w < aspect_ratio * h:
-        w = h * aspect_ratio
+    scale = np.where(w > aspect_ratio * h, np.hstack([w, w / aspect_ratio]),
+                     np.hstack([h * aspect_ratio, h]))
+    scale = scale * padding / pixel_std
 
-    scale = np.array([w, h], dtype=np.float32) / pixel_std
-    scale = scale * padding
+    if dim == 1:
+        center = center[0]
+        scale = scale[0]
 
     return center, scale
 
 
-def bbox_cs2xywh(center, scale, padding=1., pixel_std=200.):
+def bbox_cs2xywh(center: np.ndarray,
+                 scale: np.ndarray,
+                 padding: float = 1.,
+                 pixel_std: float = 200.) -> np.ndarray:
     """Transform the bbox format from (center, scale) to (x,y,w,h). Note that
     this is not an exact inverse operation of ``bbox_xywh2cs`` because the
     normalization of aspect ratio in ``bbox_xywh2cs`` is irreversible.
 
     Args:
-        center (ndarray): Single bbox center in (x, y)
-        scale (ndarray): Single bbox scale in (scale_x, scale_y)
+        center (ndarray): Bbox center (x, y) in shape (2,) or (n, 2)
+        scale (ndarray): Bbox scale (w, h) in shape (2,) or (n, 2)
         padding (float): Bbox padding factor that will be multilied to scale.
             Default: 1.0
         pixel_std (float): The scale normalization factor. Default: 200.0
 
     Returns:
-        ndarray: Single bbox in (x, y, w, h)
+        ndarray[float32]: Bbox (x, y, w, h) in shape (4, ) or (n, 4)
     """
+
+    dim = center.ndim
+    assert scale.ndim == dim
+
+    if dim == 1:
+        center = center[None, :]
+        scale = scale[None, :]
 
     wh = scale / padding * pixel_std
     xy = center - 0.5 * wh
-    return np.r_[xy, wh]
+    bbox = np.hstack((xy, wh))
+
+    if dim == 1:
+        bbox = bbox[0]
+
+    return bbox
+
+
+def flip_bbox(bbox: np.ndarray,
+              image_size: Tuple[int, int],
+              bbox_format: str = 'xywh',
+              direction: str = 'horizontal') -> np.ndarray:
+    """Flip the bbox in the given direction.
+
+    Args:
+        bbox (np.ndarray): The bounding boxes. The shape should be (..., 4)
+            if ``bbox_format`` is ``'xyxy'`` or ``'xywh'``, and (..., 2) if
+            ``bbox_format`` is ``'center'``
+        image_size (tuple): The image shape in [w, h]
+        bbox_format (str): The bbox format. Options are ``'xywh'``, ``'xyxy'``
+            and ``'center'``.
+        direction (str): The flip direction. Options are ``'horizontal'``,
+            ``'vertical'`` and ``'diagonal'``. Defaults to ``'horizontal'``
+
+    Returns:
+        np.ndarray: The flipped bounding boxes.
+    """
+    direction_options = {'horizontal', 'vertial', 'diagonal'}
+    assert direction in direction_options, (
+        f'Invalid flipping direction "{direction}". '
+        f'Options are {direction_options}')
+
+    format_options = {'xywh', 'xyxy', 'center'}
+    assert bbox_format in format_options, (
+        f'Invalid bbox format "{bbox_format}". '
+        f'Options are {format_options}')
+
+    bbox_flipped = bbox.copy()
+    w, h = image_size
+
+    # TODO: consider using "integer corner" coordinate system
+    if direction == 'horizontal':
+        if bbox_format == 'xywh' or bbox_format == 'center':
+            bbox_flipped[..., 0] = w - bbox[..., 0] - 1
+        elif bbox_format == 'xyxy':
+            bbox_flipped[..., ::2] = w - bbox[..., ::2] - 1
+    elif direction == 'vertical':
+        if bbox_format == 'xywh' or bbox_format == 'center':
+            bbox_flipped[..., 1] = h - bbox[..., 1] - 1
+        elif bbox_format == 'xyxy':
+            bbox_flipped[..., 1::2] = h - bbox[..., 1::2] - 1
+    elif direction == 'diagonal':
+        if bbox_format == 'xywh' or bbox_format == 'center':
+            bbox_flipped[..., :2] = [w, h] - bbox[..., :2] - 1
+        elif bbox_format == 'xyxy':
+            bbox_flipped[...] = [w, h, w, h] - bbox - 1
+
+    return bbox_flipped
+
+
+def get_udp_warp_matrix(center: np.ndarray, scale: np.ndarray, rot: float,
+                        output_size: Tuple[int, int]) -> np.ndarray:
+    """Calculate the affine transformation matrix under the unbiased
+    constraint. See `UDP (CVPR 2020)`_ for details.
+
+    Note:
+
+        - The bbox number: N
+
+    Args:
+        center (np.ndarray[2, ]): Center of the bounding box (x, y).
+        scale (np.ndarray[2, ]): Scale of the bounding box
+            wrt [width, height].
+        rot (float): Rotation angle (degree).
+        output_size (tuple): Size ([w, h]) of the output image
+
+    Returns:
+        np.ndarray: A 2x3 transformation matrix
+
+    .. _`UDP (CVPR 2020)`: https://arxiv.org/abs/1911.07524
+    """
+    assert len(center) == 2
+    assert len(scale) == 2
+    assert len(output_size) == 2
+
+    # pixel_std is 200.
+    scale = scale * 200.0
+
+    input_size = center * 2
+    theta = np.deg2rad(rot)
+    warp_mat = np.zeros((2, 3), dtype=np.float32)
+    scale_x = output_size[0] / scale[0]
+    scale_y = output_size[1] / scale[1]
+    warp_mat[0, 0] = math.cos(theta) * scale_x
+    warp_mat[0, 1] = -math.sin(theta) * scale_x
+    warp_mat[0,
+             2] = scale_x * (-0.5 * input_size[0] * math.cos(theta) + 0.5 *
+                             input_size[1] * math.sin(theta) + 0.5 * scale[0])
+    warp_mat[1, 0] = math.sin(theta) * scale_y
+    warp_mat[1, 1] = math.cos(theta) * scale_y
+    warp_mat[1,
+             2] = scale_y * (-0.5 * input_size[0] * math.sin(theta) - 0.5 *
+                             input_size[1] * math.cos(theta) + 0.5 * scale[1])
+    return warp_mat
+
+
+def get_warp_matrix(center: np.ndarray,
+                    scale: np.ndarray,
+                    rot: np.ndarray,
+                    output_size: Tuple[int, int],
+                    shift: Tuple[float, float] = (0., 0.),
+                    inv: bool = False) -> np.ndarray:
+    """Calculate the affine transformation matrix that can warp the bbox area
+    in the input image to the output size.
+
+    Args:
+        center (np.ndarray[2, ]): Center of the bounding box (x, y).
+        scale (np.ndarray[2, ]): Scale of the bounding box
+            wrt [width, height].
+        rot (float): Rotation angle (degree).
+        output_size (np.ndarray[2, ] | list(2,)): Size of the
+            destination heatmaps.
+        shift (0-100%): Shift translation ratio wrt the width/height.
+            Default (0., 0.).
+        inv (bool): Option to inverse the affine transform direction.
+            (inv=False: src->dst or inv=True: dst->src)
+
+    Returns:
+        np.ndarray: A 2x3 transformation matrix
+    """
+    assert len(center) == 2
+    assert len(scale) == 2
+    assert len(output_size) == 2
+    assert len(shift) == 2
+
+    # pixel_std is 200.
+    scale = scale * 200.0
+
+    shift = np.array(shift)
+    src_w = scale[0]
+    dst_w = output_size[0]
+    dst_h = output_size[1]
+
+    rot_rad = np.pi * rot / 180
+    src_dir = _rotate_point([0., src_w * -0.5], rot_rad)
+    dst_dir = np.array([0., dst_w * -0.5])
+
+    src = np.zeros((3, 2), dtype=np.float32)
+    src[0, :] = center + scale * shift
+    src[1, :] = center + src_dir + scale * shift
+    src[2, :] = _get_3rd_point(src[0, :], src[1, :])
+
+    dst = np.zeros((3, 2), dtype=np.float32)
+    dst[0, :] = [dst_w * 0.5, dst_h * 0.5]
+    dst[1, :] = np.array([dst_w * 0.5, dst_h * 0.5]) + dst_dir
+    dst[2, :] = _get_3rd_point(dst[0, :], dst[1, :])
+
+    if inv:
+        warp_mat = cv2.getAffineTransform(np.float32(dst), np.float32(src))
+    else:
+        warp_mat = cv2.getAffineTransform(np.float32(src), np.float32(dst))
+
+    return warp_mat
+
+
+def _rotate_point(pt: np.ndarray, angle_rad: float) -> np.ndarray:
+    """Rotate a point by an angle.
+
+    Args:
+        pt (np.ndarray): 2D point coordinates (x, y) in shape (2, )
+        angle_rad (float): rotation angle in radian
+
+    Returns:
+        np.ndarray: Rotated point in shape (2, )
+    """
+
+    sn, cs = np.sin(angle_rad), np.cos(angle_rad)
+    rot_mat = np.array([[cs, -sn], [sn, cs]])
+    return rot_mat @ pt
+
+
+def _get_3rd_point(a: np.ndarray, b: np.ndarray):
+    """To calculate the affine matrix, three pairs of points are required. This
+    function is used to get the 3rd point, given 2D points a & b.
+
+    The 3rd point is defined by rotating vector `a - b` by 90 degrees
+    anticlockwise, using b as the rotation center.
+
+    Args:
+        a (np.ndarray): The 1st point (x,y) in shape (2, )
+        b (np.ndarray): The 2nd point (x,y) in shape (2, )
+
+    Returns:
+        np.ndarray: The 3rd point.
+    """
+    direction = a - b
+    c = b + np.r_[direction[1], direction[0]]
+    return c
