@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Tuple
 
+import cv2
 import numpy as np
 
 
@@ -8,8 +9,8 @@ def generate_msra_heatmap(
     keypoints: np.ndarray,
     keypoints_visible: np.ndarray,
     sigma: float,
-    image_size: tuple[int, int],
-    heatmap_size: tuple[int, int],
+    image_size: Tuple[int, int],
+    heatmap_size: Tuple[int, int],
     unbiased: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Generate keypoint heatmap via "MSRA" approach. See the paper: `Simple
@@ -20,7 +21,6 @@ def generate_msra_heatmap(
 
         - keypoint number: K
         - keypoint dimension: C
-
 
     Args:
         keypoints (np.ndarray): Keypoint coordinates in shape (K, C)
@@ -56,7 +56,7 @@ def generate_msra_heatmap(
     if unbiased:
         for i in range(num_keypoints):
             # skip unlabled keypoints
-            if keypoints_visible[i] == 0:
+            if keypoints_visible[i] < 1:
                 continue
 
             mu = keypoints[i] / feat_stride
@@ -112,5 +112,69 @@ def generate_msra_heatmap(
             h_y2 = min(h, bottom)
 
             heatmap[i, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2, g_x1:g_x2]
+
+    return heatmap, target_weight
+
+
+def generate_megvii_heatmap(
+    keypoints: np.ndarray,
+    keypoints_visible: np.ndarray,
+    kernel_size: Tuple[int, int],
+    image_size: Tuple[int, int],
+    heatmap_size: Tuple[int, int],
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Generate keypoint heatmap via "Megvii" approach. See `MSPN`_ (2019) and
+    `CPN`_ (2018) for details.
+
+    Note:
+
+        - keypoint number: K
+        - keypoint dimension: C
+
+    Args:
+        keypoints (np.ndarray): Keypoint coordinates in shape (K, C)
+        keypoints_visible (np.ndarray): Keypoint visibility in shape (K, 1)
+        kernel_size (tuple): The kernel size of the heatmap gaussian in
+            [ks_x, ks_y]
+        image_size (tuple): Image size in [w, h]
+        heatmap_size (tuple): Heatmap size in [w, h]
+
+    Returns:
+        tuple:
+        - heatmap (np.ndarray): The generated heatmap in shape (K, h, w) where
+            [w, h] is the `heatmap_size`
+        - target_weight (np.ndarray): The target weights in shape (K, 1)
+
+    .. _`MSPN`: https://arxiv.org/abs/1901.00148
+    .. _`CPN`: https://arxiv.org/abs/1711.07319
+    """
+
+    num_keypoints = keypoints.shape[0]
+    image_size = np.array(image_size)
+    w, h = heatmap_size
+    feat_stride = image_size / [w, h]
+
+    heatmap = np.zeros((num_keypoints, h, w), dtype=np.float32)
+    target_weight = keypoints_visible.astype(np.float32, copy=True)
+
+    for i in range(num_keypoints):
+        # skip unlabled keypoints
+        if keypoints_visible < 1:
+            continue
+
+        # get center coordinates
+        kx, ky = (keypoints[i] / feat_stride).astype(np.int64)
+
+        # if (mu[0] < 0 or mu[0]>=w or mu[1]<0 or mu[1]>=h):
+
+        if kx < 0 or kx >= w or ky < 0 or ky >= h:
+            target_weight[i] = 0
+            continue
+
+        heatmap[i, ky, kx] = 1.
+        heatmap[i] = cv2.GaussianBlur(heatmap[i], kernel_size, 0)
+
+        # normalize the heatmap
+        heatmap[i] = heatmap[i] / heatmap[i, ky, kx] * 255
 
     return heatmap, target_weight
