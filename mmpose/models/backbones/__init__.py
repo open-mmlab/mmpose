@@ -7,6 +7,7 @@ from .hrformer import HRFormer
 from .hrnet import HRNet
 from .i3d import I3D
 from .litehrnet import LiteHRNet
+from .litepose import LitePose
 from .mobilenet_v2 import MobileNetV2
 from .mobilenet_v3 import MobileNetV3
 from .mspn import MSPN
@@ -35,5 +36,5 @@ __all__ = [
     'SEResNet', 'SEResNeXt', 'ShuffleNetV1', 'ShuffleNetV2', 'CPM', 'RSN',
     'MSPN', 'ResNeSt', 'VGG', 'TCN', 'ViPNAS_ResNet', 'ViPNAS_MobileNetV3',
     'LiteHRNet', 'V2VNet', 'HRFormer', 'PyramidVisionTransformer',
-    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D', 'TCFormer'
+    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D', 'TCFormer', 'LitePose'
 ]
