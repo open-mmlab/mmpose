@@ -42,7 +42,6 @@ def bbox_xywh2xyxy(bbox_xywh: np.ndarray) -> np.ndarray:
 
 
 def bbox_xywh2cs(bbox: np.ndarray,
-                 aspect_ratio: float,
                  padding: float = 1.,
                  pixel_std: float = 200.) -> Tuple[np.ndarray, np.ndarray]:
     """Transform the bbox format from (x,y,w,h) into (center, scale)
@@ -50,7 +49,6 @@ def bbox_xywh2cs(bbox: np.ndarray,
     Args:
         bbox (ndarray): Bounding box(es) in shape (4,) or (n, 4), formatted
             as (x, y, h, w)
-        aspect_ratio (float): The expected bbox aspect ratio (w over h)
         padding (float): Bbox padding factor that will be multilied to scale.
             Default: 1.0
         pixel_std (float): The scale normalization factor. Default: 200.0
@@ -62,18 +60,15 @@ def bbox_xywh2cs(bbox: np.ndarray,
         - np.ndarray[float32]: Scale (w, h) of the bbox in shape (2,) or
             (n, 2)
     """
-    # TODO: remove the follow line which is temporally added for compatibility
-    bbox = np.array(bbox)
 
+    # convert single bbox from (4, ) to (4, 1)
     dim = bbox.ndim
     if dim == 1:
         bbox = bbox[None, :]
 
     x, y, w, h = np.hsplit(bbox, [1, 2, 3])
     center = np.hstack([x + w * 0.5, y + h * 0.5])
-    scale = np.where(w > aspect_ratio * h, np.hstack([w, w / aspect_ratio]),
-                     np.hstack([h * aspect_ratio, h]))
-    scale = scale * padding / pixel_std
+    scale = np.hstack([w, h]) * padding / pixel_std
 
     if dim == 1:
         center = center[0]
@@ -86,9 +81,7 @@ def bbox_cs2xywh(center: np.ndarray,
                  scale: np.ndarray,
                  padding: float = 1.,
                  pixel_std: float = 200.) -> np.ndarray:
-    """Transform the bbox format from (center, scale) to (x,y,w,h). Note that
-    this is not an exact inverse operation of ``bbox_xywh2cs`` because the
-    normalization of aspect ratio in ``bbox_xywh2cs`` is irreversible.
+    """Transform the bbox format from (center, scale) to (x,y,w,h).
 
     Args:
         center (ndarray): Bbox center (x, y) in shape (2,) or (n, 2)
