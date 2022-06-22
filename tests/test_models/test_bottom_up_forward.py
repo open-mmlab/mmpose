@@ -3,7 +3,43 @@ import numpy as np
 import pytest
 import torch
 
+from mmpose.models.backbones.litepose import LitePose
 from mmpose.models.detectors import AssociativeEmbedding
+from mmpose.models.heads.litepose_head import LitePoseHead
+
+
+def test_litepose_forward():
+    backbone = LitePose(
+        num_blocks=(6, 8, 10, 10),
+        strides=(2, 2, 2, 1),
+        channels=(16, 32, 48, 80),
+        block_settings=(
+            [[6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7]],
+            [[6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7]],
+            [[6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7],
+             [6, 7], [6, 7]],
+            [[6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7],
+             [6, 7], [6, 7]],
+        ),
+        input_channel=16,
+    )
+    head = LitePoseHead(
+        deconv_setting=(16, 24, 24),
+        num_deconv_layers=3,
+        num_deconv_kernels=(4, 4, 4),
+        num_joints=17,  # coco
+        tag_per_joint=True,
+        with_heatmaps_loss=(True, True),
+        with_ae_loss=(True, False),
+        channels=(16, 16, 32, 48, 80))
+    x = torch.randn(4, 3, 256, 256)
+    feat = backbone(x)
+    outputs = head(feat)
+    assert len(outputs) == 2
+    assert outputs[0].shape[2] == x.shape[2] // 4
+    assert outputs[0].shape[1] == 17 * 2
+    assert outputs[1].shape[2] == x.shape[2] // 2
+    assert outputs[1].shape[1] == 17
 
 
 def test_ae_forward():

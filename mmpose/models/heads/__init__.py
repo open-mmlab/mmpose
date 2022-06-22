@@ -6,6 +6,7 @@ from .deconv_head import DeconvHead
 from .deeppose_regression_head import DeepposeRegressionHead
 from .hmr_head import HMRMeshHead
 from .interhand_3d_head import Interhand3DHead
+from .litepose_head import LitePoseHead
 from .mtut_head import MultiModalSSAHead
 from .temporal_regression_head import TemporalRegressionHead
 from .topdown_heatmap_base_head import TopdownHeatmapBaseHead
@@ -21,5 +22,5 @@ __all__ = [
     'AEHigherResolutionHead', 'AESimpleHead', 'AEMultiStageHead',
     'DeepposeRegressionHead', 'TemporalRegressionHead', 'Interhand3DHead',
     'HMRMeshHead', 'DeconvHead', 'ViPNASHeatmapSimpleHead', 'CuboidCenterHead',
-    'CuboidPoseHead', 'MultiModalSSAHead'
+    'CuboidPoseHead', 'MultiModalSSAHead', 'LitePoseHead'
 ]
