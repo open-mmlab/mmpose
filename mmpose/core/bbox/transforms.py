@@ -62,6 +62,8 @@ def bbox_xywh2cs(bbox: np.ndarray,
         - np.ndarray[float32]: Scale (w, h) of the bbox in shape (2,) or
             (n, 2)
     """
+    # TODO: remove the follow line which is temporally added for compatibility
+    bbox = np.array(bbox)
 
     dim = bbox.ndim
     if dim == 1:
@@ -69,10 +71,6 @@ def bbox_xywh2cs(bbox: np.ndarray,
 
     x, y, w, h = np.hsplit(bbox, [1, 2, 3])
     center = np.hstack([x + w * 0.5, y + h * 0.5])
-
-    x, y, w, h = bbox[:, :4]
-    center = np.array([x + w * 0.5, y + h * 0.5], dtype=np.float32)
-
     scale = np.where(w > aspect_ratio * h, np.hstack([w, w / aspect_ratio]),
                      np.hstack([h * aspect_ratio, h]))
     scale = scale * padding / pixel_std
