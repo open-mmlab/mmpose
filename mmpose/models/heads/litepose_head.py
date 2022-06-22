@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch.nn as nn
+from mmcv.cnn import constant_init, normal_init
 
 from mmpose.models.backbones.litepose import SepConv2d
-from mmpose.models.builder import HEADS
+from mmpose.models.builder import HEADS, build_loss
 
 
 @HEADS.register_module()
@@ -10,7 +11,7 @@ class LitePoseHead(nn.Module):
 
     def __init__(self, deconv_setting, num_deconv_layers, num_deconv_kernels,
                  num_joints, tag_per_joint, with_heatmaps_loss, with_ae_loss,
-                 channels):
+                 channels, loss_keypoint):
         super().__init__()
         self.deconv_setting = deconv_setting
         self.num_deconv_layers = num_deconv_layers
@@ -30,6 +31,35 @@ class LitePoseHead(nn.Module):
             )
         self.final_refined, self.final_raw, self.final_channel = \
             self._make_final_layers(self.filters)
+        self.loss = build_loss(loss_keypoint)
+
+    def init_weights(self):
+        """Initialize model weights."""
+        for _, m in self.deconv_refined.named_modules():
+            if isinstance(m, nn.ConvTranspose2d):
+                normal_init(m, std=0.001)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
+        for _, m in self.deconv_raw.named_modules():
+            if isinstance(m, nn.ConvTranspose2d):
+                normal_init(m, std=0.001)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
+        for _, m in self.deconv_bnrelu.named_modules():
+            if isinstance(m, nn.ConvTranspose2d):
+                normal_init(m, std=0.001)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
+        for m in self.final_refined.modules():
+            if isinstance(m, nn.Conv2d):
+                normal_init(m, std=0.001, bias=0)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
+        for m in self.final_raw.modules():
+            if isinstance(m, nn.Conv2d):
+                normal_init(m, std=0.001, bias=0)
+            elif isinstance(m, nn.BatchNorm2d):
+                constant_init(m, 1)
 
     def _get_deconv_cfg(self, deconv_kernel):
         if deconv_kernel == 4:
@@ -114,3 +144,49 @@ class LitePoseHead(nn.Module):
                 final_raw = self.final_raw[i - 1](input_raw)
                 final_outputs.append(final_refined + final_raw)
         return final_outputs
+
+    def get_loss(self, outputs, targets, masks, joints):
+        """Calculate bottom-up keypoint loss.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - num_outputs: O
+            - heatmaps height: H
+            - heatmaps weight: W
+
+        Args:
+            outputs (list(torch.Tensor[N,K,H,W])): Multi-scale output heatmaps.
+            targets (List(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
+            masks (List(torch.Tensor[N,H,W])): Masks of multi-scale target
+                heatmaps
+            joints(List(torch.Tensor[N,M,K,2])): Joints of multi-scale target
+                heatmaps for ae loss
+        """
+
+        losses = dict()
+
+        heatmaps_losses, push_losses, pull_losses = self.loss(
+            outputs, targets, masks, joints)
+
+        for idx in range(len(targets)):
+            if heatmaps_losses[idx] is not None:
+                heatmaps_loss = heatmaps_losses[idx].mean(dim=0)
+                if 'heatmap_loss' not in losses:
+                    losses['heatmap_loss'] = heatmaps_loss
+                else:
+                    losses['heatmap_loss'] += heatmaps_loss
+            if push_losses[idx] is not None:
+                push_loss = push_losses[idx].mean(dim=0)
+                if 'push_loss' not in losses:
+                    losses['push_loss'] = push_loss
+                else:
+                    losses['push_loss'] += push_loss
+            if pull_losses[idx] is not None:
+                pull_loss = pull_losses[idx].mean(dim=0)
+                if 'pull_loss' not in losses:
+                    losses['pull_loss'] = pull_loss
+                else:
+                    losses['pull_loss'] += pull_loss
+
+        return losses

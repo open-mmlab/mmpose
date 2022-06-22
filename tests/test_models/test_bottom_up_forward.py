@@ -9,6 +9,16 @@ from mmpose.models.heads.litepose_head import LitePoseHead
 
 
 def test_litepose_forward():
+    loss_keypoint = dict(
+        type='MultiLossFactory',
+        num_joints=17,
+        num_stages=2,
+        ae_loss_type='exp',
+        with_ae_loss=[True, False],
+        push_loss_factor=[0.001, 0.001],
+        pull_loss_factor=[0.001, 0.001],
+        with_heatmaps_loss=[True, True],
+        heatmaps_loss_factor=[1.0, 1.0])
     backbone = LitePose(
         num_blocks=(6, 8, 10, 10),
         strides=(2, 2, 2, 1),
@@ -21,8 +31,7 @@ def test_litepose_forward():
             [[6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7], [6, 7],
              [6, 7], [6, 7]],
         ),
-        input_channel=16,
-    )
+        input_channel=16)
     head = LitePoseHead(
         deconv_setting=(16, 24, 24),
         num_deconv_layers=3,
@@ -31,7 +40,8 @@ def test_litepose_forward():
         tag_per_joint=True,
         with_heatmaps_loss=(True, True),
         with_ae_loss=(True, False),
-        channels=(16, 16, 32, 48, 80))
+        channels=(16, 16, 32, 48, 80),
+        loss_keypoint=loss_keypoint)
     x = torch.randn(4, 3, 256, 256)
     feat = backbone(x)
     outputs = head(feat)
