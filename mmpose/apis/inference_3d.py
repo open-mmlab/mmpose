@@ -5,7 +5,8 @@ import numpy as np
 import torch
 from mmcv.parallel import collate, scatter
 
-from mmpose.core.bbox import bbox_xywh2cs, bbox_xywh2xyxy, bbox_xyxy2xywh
+from mmpose.core.bbox.transforms_old import (bbox_xywh2cs, bbox_xywh2xyxy,
+                                             bbox_xyxy2xywh)
 from mmpose.datasets.pipelines import Compose
 
 

@@ -29,7 +29,6 @@ class TopDownGetBboxCenterScale(BaseTransform):
     Required Keys:
 
         - bbox
-        - input_size
 
     Added Keys:
 
@@ -68,14 +67,8 @@ class TopDownGetBboxCenterScale(BaseTransform):
 
         else:
             bbox = results['bbox']
-            w, h = results['input_size']
-            aspect_ratio = w / h
-
             center, scale = bbox_xywh2cs(
-                bbox,
-                aspect_ratio=aspect_ratio,
-                padding=self.padding,
-                pixel_std=self.pixel_std)
+                bbox, padding=self.padding, pixel_std=self.pixel_std)
 
             results['bbox_center'] = center
             results['bbox_scale'] = scale
@@ -236,7 +229,6 @@ class TopDownRandomHalfBody(BaseTransform):
         - keypoints_visible
         - upper_body_ids
         - lower_body_ids
-        - input_size
 
     Modified Keys:
 
@@ -271,15 +263,13 @@ class TopDownRandomHalfBody(BaseTransform):
         self.pixel_std = pixel_std
         self.prob = prob
 
-    def _get_half_body_bbox(self, keypoints: np.ndarray, input_size: Tuple,
+    def _get_half_body_bbox(self, keypoints: np.ndarray,
                             half_body_ids: List[int]
                             ) -> Tuple[np.ndarray, np.ndarray]:
         """Get half-body bbox center and scale of a single instance.
 
         Args:
             keypoints (np.ndarray): Keypoints in shape (K, C)
-            input_size (tuple): The image size of the model input in
-                [w, h]
             upper_body_ids (list): The list of half-body keypont indices
 
         Returns:
@@ -295,12 +285,6 @@ class TopDownRandomHalfBody(BaseTransform):
         x2, y2 = selected_keypoints.max(axis=0)
         w = x2 - x1
         h = y2 - y1
-        aspect_ratio = input_size[0] / input_size[1]
-
-        if w > aspect_ratio * h:
-            h = w * 1.0 / aspect_ratio
-        elif w < aspect_ratio * h:
-            w = h * aspect_ratio
 
         scale = np.array([w, h], dtype=center.dtype)
         scale = scale * self.padding / self.pixel_std
@@ -384,7 +368,7 @@ class TopDownRandomHalfBody(BaseTransform):
                 bbox_scale.append(results['bbox_scale'][i])
             else:
                 _center, _scale = self._get_half_body_bbox(
-                    results['keypoints'][i], results['input_size'], indices)
+                    results['keypoints'][i], indices)
                 bbox_center.append(_center)
                 bbox_scale.append(_scale)
 
@@ -535,6 +519,10 @@ class TopDownAffine(BaseTransform):
         - img
         - keypoints
 
+    Added Keys:
+
+        - input_size
+
     Args:
         use_udp (bool): Whether use unbiased data processing. See
             `UDP (CVPR 2020)`_ for details. Defaults to ``False``
@@ -544,11 +532,35 @@ class TopDownAffine(BaseTransform):
     .. _`UDP (CVPR 2020)`: https://arxiv.org/abs/1911.07524
     """
 
-    def __init__(self, use_udp: bool = False, pixel_std: float = 200.) -> None:
+    def __init__(self,
+                 input_size: Tuple[int, int],
+                 use_udp: bool = False,
+                 pixel_std: float = 200.) -> None:
         super().__init__()
 
+        assert is_seq_of(input_size, int) and len(input_size) == 2, (
+            f'Invalid input_size {input_size}')
+
+        self.input_size = input_size
         self.use_udp = use_udp
         self.pixel_std = pixel_std
+
+    @staticmethod
+    def _fix_aspect_ratio(bbox_scale: np.ndarray, aspect_ratio: float):
+        """Reshape the bbox to a fixed aspect ratio.
+
+        Args:
+            bbox_scale (np.ndarray): The bbox scales (w, h) in shape (n, 2)
+            aspect_ratio (float): The ratio of ``w`` to ``h``
+
+        Returns:
+            np.darray: The reshaped bbox scales in (n, 2)
+        """
+        w, h = bbox_scale[:, 0], bbox_scale[:, 1]
+        bbox_scale = np.where(w > h * aspect_ratio,
+                              np.hstack([w, w / aspect_ratio]),
+                              np.hstack([h * aspect_ratio, h]))
+        return bbox_scale
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
@@ -563,21 +575,19 @@ class TopDownAffine(BaseTransform):
             dict: The result dict.
         """
 
-        w, h = results['input_size']
+        w, h = self.input_size
         warp_size = (int(w), int(h))
+
+        center = results['bbox_center']
+        scale = self._fix_aspect_ratio(
+            results['bbox_scale'], aspect_ratio=w / h)
+        rot = results['bbox_rotation']
 
         if self.use_udp:
             warp_mat = get_udp_warp_matrix(
-                results['bbox_center'],
-                results['bbox_scale'],
-                results['bbox_rotation'],
-                output_size=(w - 1, h - 1))
+                center, scale, rot, output_size=(w - 1, h - 1))
         else:
-            warp_mat = get_warp_matrix(
-                results['bbox_center'],
-                results['bbox_scale'],
-                results['bbox_rotation'],
-                output_size=(w, h))
+            warp_mat = get_warp_matrix(center, scale, rot, output_size=(w, h))
 
         if isinstance(results['img'], list):
             results['img'] = [
@@ -589,9 +599,11 @@ class TopDownAffine(BaseTransform):
             results['img'] = cv2.warpAffine(
                 results['img'], warp_mat, warp_size, flags=cv2.INTER_LINEAR)
 
-        # Only transform (x, y) coordinates of the keypoints
+        # Only transform (x, y) coordinates
         results['keypoints'][..., :2] = cv2.transform(
             results['keypoints'][..., :2], warp_mat)
+
+        results['input_size'] = (w, h)
 
         return results
 
