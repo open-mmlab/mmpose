@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 from mmcv.image import imflip
 from mmcv.transforms import BaseTransform
-from mmcv.transforms import RandomFlip as MMCV_RandomFlip
 from mmcv.transforms.utils import cache_randomness
 from mmengine import is_list_of, is_seq_of
 from scipy.stats import truncnorm
@@ -38,15 +37,12 @@ class TopDownGetBboxCenterScale(BaseTransform):
     Args:
         padding (float): The bbox padding scale that will be multilied to
             `bbox_scale`. Defaults to 1.25
-        pixel_std (float): The normalization factor to calculate `bbox_scale`.
-            Defaults to 200.0
     """
 
-    def __init__(self, padding: float = 1.25, pixel_std: float = 200.) -> None:
+    def __init__(self, padding: float = 1.25) -> None:
         super().__init__()
 
         self.padding = padding
-        self.pixel_std = pixel_std
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
@@ -67,8 +63,7 @@ class TopDownGetBboxCenterScale(BaseTransform):
 
         else:
             bbox = results['bbox']
-            center, scale = bbox_xywh2cs(
-                bbox, padding=self.padding, pixel_std=self.pixel_std)
+            center, scale = bbox_xywh2cs(bbox, padding=self.padding)
 
             results['bbox_center'] = center
             results['bbox_scale'] = scale
@@ -77,13 +72,13 @@ class TopDownGetBboxCenterScale(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class TopDownRandomFlip(MMCV_RandomFlip):
+class TopDownRandomFlip(BaseTransform):
     """Randomly flip the image, bbox and keypoints.
 
     Required Keys:
 
         - img
-        - image_shape
+        - img_shape
         - flip_pairs
         - bbox_center (optional)
         - keypoints (optional)
@@ -186,7 +181,7 @@ class TopDownRandomFlip(MMCV_RandomFlip):
             results['flip'] = True
             results['flip_direction'] = flip_dir
 
-            h, w = results['image_shape'][:2]
+            h, w = results['img_shape'][:2]
             # flip image
             if isinstance(results['img'], list):
                 results['img'] = [
@@ -244,8 +239,6 @@ class TopDownRandomHalfBody(BaseTransform):
             Defaults to 2
         padding (float): The bbox padding scale that will be multilied to
             `bbox_scale`. Defaults to 1.5
-        pixel_std (float): The normalization factor to calculate `bbox_scale`.
-            Defaults to 200.0
         prob (float): The probability to apply half-body transform when the
             keypoint number meets the requirement. Defaults to 0.3
     """
@@ -254,13 +247,11 @@ class TopDownRandomHalfBody(BaseTransform):
                  min_total_keypoints: int = 8,
                  min_half_keypoints: int = 2,
                  padding: float = 1.5,
-                 pixel_std: float = 200.0,
-                 prob: float = 3) -> None:
+                 prob: float = 0.3) -> None:
         super().__init__()
         self.min_total_keypoints = min_total_keypoints
         self.min_half_keypoints = min_half_keypoints
         self.padding = padding
-        self.pixel_std = pixel_std
         self.prob = prob
 
     def _get_half_body_bbox(self, keypoints: np.ndarray,
@@ -285,9 +276,7 @@ class TopDownRandomHalfBody(BaseTransform):
         x2, y2 = selected_keypoints.max(axis=0)
         w = x2 - x1
         h = y2 - y1
-
-        scale = np.array([w, h], dtype=center.dtype)
-        scale = scale * self.padding / self.pixel_std
+        scale = np.array([w, h], dtype=center.dtype) * self.padding
 
         return center, scale
 
@@ -374,6 +363,7 @@ class TopDownRandomHalfBody(BaseTransform):
 
         results['bbox_center'] = np.stack(bbox_center)
         results['bbox_scale'] = np.stack(bbox_scale)
+        return results
 
 
 @TRANSFORMS.register_module()
@@ -396,19 +386,17 @@ class TopDownRandomBboxTransform(BaseTransform):
     Args:
         shift_factor (float): Randomly shift the bbox in range
             :math:`[-dx, dx]` and :math:`[-dy, dy]` in X and Y directions,
-            where :math:`dx(y) = x(y)_scale \cdot pixel_std \cdot
-            shift_factor` in pixels. Defaults to 0.16
+            where :math:`dx(y) = x(y)_scale \cdot shift_factor` in pixels.
+            Defaults to 0.16
         shift_prob (float): Probability of applying random shift. Defaults to
             0.3
         scale_factor (float): Randomly resize the bbox in range
-            :math:`[1 - scale_factor]
+            :math:`[1 - scale_factor, 1 + scale_factor]`. Defaults to 0.5
         scale_prob (float): Probability of random resizing bbox. Defaults to:
             0.5
         rotate_factor (float): Randomly rotate the bbox in
             :math:`[-2*rotate_factor, 2*rotate_factor]` in degrees. Defaults
             to 40.0
-        pixel_std (float): The normalization factor to calculate `bbox_scale`.
-            Defaults to 200.0
     """
 
     def __init__(self,
@@ -417,9 +405,10 @@ class TopDownRandomBboxTransform(BaseTransform):
                  scale_factor: float = 0.5,
                  scale_prob: float = 1.0,
                  rotate_factor: float = 40.0,
-                 rotate_prob: float = 0.6,
-                 pixel_std: float = 200.) -> None:
+                 rotate_prob: float = 0.6) -> None:
         super().__init__()
+
+        assert 0. < scale_factor < 1.0
 
         self.shift_factor = shift_factor
         self.shift_prob = shift_prob
@@ -427,7 +416,6 @@ class TopDownRandomBboxTransform(BaseTransform):
         self.scale_prob = scale_prob
         self.rotate_factor = rotate_factor
         self.rotate_prob = rotate_prob
-        self.pixel_std = pixel_std
 
     @staticmethod
     def _truncnorm(low: float = -1.,
@@ -450,32 +438,26 @@ class TopDownRandomBboxTransform(BaseTransform):
             - rotate (np.ndarray): Rotation degree of each bbox in shape
                 (n, 1)
         """
-        if np.random.rand() > self.prob:
-            offset = np.zeros_like(bbox_scale)
-        else:
-            offset = np.random.uniform(-1, 1, bbox_scale.shape)
-            offset = offset * self.shift_factor * bbox_scale * self.pixel_std
-
         num_bbox = bbox_scale.shape[0]
 
         # Get shift parameters
         offset = self._truncnorm(size=(num_bbox, 2))
-        offset = offset * self.shift_factor * bbox_scale * self.pixel_std
+        offset = offset * self.shift_factor * bbox_scale
         offset = np.where(
             np.random.rand(num_bbox, 1) < self.shift_prob, offset, 0.)
 
         # Get scaling parameters
-        scale = self.truncnorm(size=(num_bbox, 1))
+        scale = self._truncnorm(size=(num_bbox, 1))
         scale = scale * self.scale_factor + 1.
         scale = np.where(
             np.random.rand(num_bbox, 1) < self.scale_prob, scale, 1.)
 
         # Get rotation parameters
         # TODO: check why use [-2, 2] truncation instead of [-1, 1]
-        rotate = self.truncnorm(-2, 2, size=(num_bbox, 1))
+        rotate = self._truncnorm(-2, 2, size=(num_bbox, 1))
         rotate = rotate * self.rotate_factor
         rotate = np.where(
-            np.random.rand(num_bbox) < self.rotate_factor, rotate, 0.)
+            np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)
 
         return offset, scale, rotate
 
@@ -526,16 +508,13 @@ class TopDownAffine(BaseTransform):
     Args:
         use_udp (bool): Whether use unbiased data processing. See
             `UDP (CVPR 2020)`_ for details. Defaults to ``False``
-        pixel_std (float): The normalization factor to calculate `bbox_scale`.
-            Defaults to 200.0
 
     .. _`UDP (CVPR 2020)`: https://arxiv.org/abs/1911.07524
     """
 
     def __init__(self,
                  input_size: Tuple[int, int],
-                 use_udp: bool = False,
-                 pixel_std: float = 200.) -> None:
+                 use_udp: bool = False) -> None:
         super().__init__()
 
         assert is_seq_of(input_size, int) and len(input_size) == 2, (
@@ -543,7 +522,6 @@ class TopDownAffine(BaseTransform):
 
         self.input_size = input_size
         self.use_udp = use_udp
-        self.pixel_std = pixel_std
 
     @staticmethod
     def _fix_aspect_ratio(bbox_scale: np.ndarray, aspect_ratio: float):
