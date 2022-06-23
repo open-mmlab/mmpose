@@ -42,8 +42,7 @@ def bbox_xywh2xyxy(bbox_xywh: np.ndarray) -> np.ndarray:
 
 
 def bbox_xywh2cs(bbox: np.ndarray,
-                 padding: float = 1.,
-                 pixel_std: float = 200.) -> Tuple[np.ndarray, np.ndarray]:
+                 padding: float = 1.) -> Tuple[np.ndarray, np.ndarray]:
     """Transform the bbox format from (x,y,w,h) into (center, scale)
 
     Args:
@@ -51,7 +50,6 @@ def bbox_xywh2cs(bbox: np.ndarray,
             as (x, y, h, w)
         padding (float): Bbox padding factor that will be multilied to scale.
             Default: 1.0
-        pixel_std (float): The scale normalization factor. Default: 200.0
 
     Returns:
         tuple: A tuple containing center and scale.
@@ -68,7 +66,7 @@ def bbox_xywh2cs(bbox: np.ndarray,
 
     x, y, w, h = np.hsplit(bbox, [1, 2, 3])
     center = np.hstack([x + w * 0.5, y + h * 0.5])
-    scale = np.hstack([w, h]) * padding / pixel_std
+    scale = np.hstack([w, h]) * padding
 
     if dim == 1:
         center = center[0]
@@ -79,8 +77,7 @@ def bbox_xywh2cs(bbox: np.ndarray,
 
 def bbox_cs2xywh(center: np.ndarray,
                  scale: np.ndarray,
-                 padding: float = 1.,
-                 pixel_std: float = 200.) -> np.ndarray:
+                 padding: float = 1.) -> np.ndarray:
     """Transform the bbox format from (center, scale) to (x,y,w,h).
 
     Args:
@@ -88,7 +85,6 @@ def bbox_cs2xywh(center: np.ndarray,
         scale (ndarray): Bbox scale (w, h) in shape (2,) or (n, 2)
         padding (float): Bbox padding factor that will be multilied to scale.
             Default: 1.0
-        pixel_std (float): The scale normalization factor. Default: 200.0
 
     Returns:
         ndarray[float32]: Bbox (x, y, w, h) in shape (4, ) or (n, 4)
@@ -101,7 +97,7 @@ def bbox_cs2xywh(center: np.ndarray,
         center = center[None, :]
         scale = scale[None, :]
 
-    wh = scale / padding * pixel_std
+    wh = scale / padding
     xy = center - 0.5 * wh
     bbox = np.hstack((xy, wh))
 
@@ -130,7 +126,7 @@ def flip_bbox(bbox: np.ndarray,
     Returns:
         np.ndarray: The flipped bounding boxes.
     """
-    direction_options = {'horizontal', 'vertial', 'diagonal'}
+    direction_options = {'horizontal', 'vertical', 'diagonal'}
     assert direction in direction_options, (
         f'Invalid flipping direction "{direction}". '
         f'Options are {direction_options}')
@@ -188,9 +184,6 @@ def get_udp_warp_matrix(center: np.ndarray, scale: np.ndarray, rot: float,
     assert len(scale) == 2
     assert len(output_size) == 2
 
-    # pixel_std is 200.
-    scale = scale * 200.0
-
     input_size = center * 2
     theta = np.deg2rad(rot)
     warp_mat = np.zeros((2, 3), dtype=np.float32)
@@ -237,9 +230,6 @@ def get_warp_matrix(center: np.ndarray,
     assert len(scale) == 2
     assert len(output_size) == 2
     assert len(shift) == 2
-
-    # pixel_std is 200.
-    scale = scale * 200.0
 
     shift = np.array(shift)
     src_w = scale[0]

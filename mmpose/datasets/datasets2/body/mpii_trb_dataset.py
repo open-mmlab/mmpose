@@ -113,14 +113,17 @@ class MpiiTrbDataset(BaseCocoDataset):
 
         data_list = []
 
+        # mpii-trb bbox scales are normalized with factor 200.
+        pixel_std = 200.
+
         for ann in data['annotations']:
             img_id = ann['image_id']
             img_h = imgid2info[img_id]['height']
             img_w = imgid2info[img_id]['width']
 
             center = np.array(ann['center'], dtype=np.float32)
-            # note the scale here
-            scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
+            scale = np.array([ann['scale'], ann['scale']],
+                             dtype=np.float32) * pixel_std
 
             # keypoints in shape [1, K, 2] and keypoints_visible in [1, K, 1]
             _keypoints = np.array(
