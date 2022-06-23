@@ -75,7 +75,7 @@ class MpiiDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/mpii.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/mpii.py')
 
     def _load_annotations(self) -> List[dict]:
         """Load data from annotations in MPII format."""
@@ -114,8 +114,8 @@ class MpiiDataset(BaseCocoDataset):
                                             dtype=np.float32)
             data_info = {
                 'id': ann_id,
-                'image_id': int(ann['image'].split('.')[0]),
-                'image_file': osp.join(self.img_prefix, ann['image']),
+                'img_id': int(ann['image'].split('.')[0]),
+                'img_path': osp.join(self.img_prefix, ann['image']),
                 'bbox_center': center,
                 'bbox_scale': scale,
                 'bbox_score': np.ones(1, dtype=np.float32),

@@ -164,7 +164,7 @@ class BaseCocoDataset(BasePoseDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        image_file = osp.join(self.img_prefix, img['file_name'])
+        img_path = osp.join(self.img_prefix, img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -189,9 +189,9 @@ class BaseCocoDataset(BasePoseDataset):
             num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
         data_info = {
-            'image_id': ann['image_id'],
-            'image_file': image_file,
-            'image_shape': (img_h, img_w, 3),
+            'img_id': ann['image_id'],
+            'img_path': img_path,
+            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,
@@ -240,9 +240,8 @@ class BaseCocoDataset(BasePoseDataset):
         # bottom-up data list
         data_list_bu = []
 
-        # group instances by image_file
-        for image_id, data_infos in groupby(data_list,
-                                            lambda x: x['image_id']):
+        # group instances by img_id
+        for img_id, data_infos in groupby(data_list, lambda x: x['img_id']):
             data_infos = list(data_infos)
 
             # get valid instances for keypoint annotations
@@ -251,17 +250,17 @@ class BaseCocoDataset(BasePoseDataset):
             if not data_infos_valid:
                 continue
 
-            image_file = data_infos_valid[0]['image_file']
-            if 'image_shape' in data_infos_valid[0]:
-                image_shape = data_infos_valid[0]['image_shape']
+            img_path = data_infos_valid[0]['img_path']
+            if 'img_shape' in data_infos_valid[0]:
+                img_shape = data_infos_valid[0]['img_shape']
             else:
-                image_shape = None
+                img_shape = None
 
             # image data
             data_info_bu = {
-                'image_id': image_id,
-                'image_file': image_file,
-                'image_shape': image_shape,
+                'img_id': img_id,
+                'img_path': img_path,
+                'img_shape': img_shape,
             }
             # instance data
             for key in data_infos_valid[0].keys():
@@ -282,7 +281,7 @@ class BaseCocoDataset(BasePoseDataset):
                 if not seg:
                     continue
 
-                img_h, img_w = image_shape[:2]
+                img_h, img_w = img_shape[:2]
 
                 if data_info_invalid['iscrowd']:
                     # crowd object has a unitary mask region
@@ -320,7 +319,7 @@ class BaseCocoDataset(BasePoseDataset):
 
             img = coco.loadImgs(det['image_id'])[0]
 
-            image_file = osp.join(self.img_prefix, img['file_name'])
+            img_path = osp.join(self.img_prefix, img['file_name'])
             bbox = np.array(det['bbox'][:4], dtype=np.float32).reshape(1, 4)
             bbox_score = np.array(det['score'], dtype=np.float32).reshape(1)
 
@@ -330,9 +329,9 @@ class BaseCocoDataset(BasePoseDataset):
                                         dtype=np.float32)
 
             data_list.append({
-                'image_id': det['image_id'],
-                'image_file': image_file,
-                'image_shape': (img['height'], img['width'], 3),
+                'img_id': det['image_id'],
+                'img_path': img_path,
+                'img_shape': (img['height'], img['width'], 3),
                 'bbox': bbox,
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,

@@ -91,7 +91,7 @@ class CocoMetric(BaseMetric):
 
             result = dict()
             result['id'] = data['data_sample']['id']
-            result['image_id'] = data['data_sample']['image_id']
+            result['img_id'] = data['data_sample']['img_id']
             result['keypoints'] = keypoints
             result['scores'] = scores
             # add converted result to the results list
@@ -118,13 +118,13 @@ class CocoMetric(BaseMetric):
 
         kpts = defaultdict(list)
 
-        # group the results by image_id
+        # group the results by img_id
         for result in results:
-            image_id = result['image_id']
+            img_id = result['img_id']
             for idx in range(len(result['scores'])):
-                kpts[image_id].append({
+                kpts[img_id].append({
                     'id': result['id'],
-                    'image_id': result['image_id'],
+                    'img_id': result['img_id'],
                     'keypoints': result['keypoints'][idx],
                     'score': result['scores'][idx],
                 })
@@ -181,7 +181,7 @@ class CocoMetric(BaseMetric):
             keypoints = _keypoints.reshape(-1, num_keypoints * 3)
 
             result = [{
-                'image_id': img_kpt['image_id'],
+                'image_id': img_kpt['img_id'],
                 'category_id': cat_id,
                 'keypoints': keypoint.tolist(),
                 'score': float(img_kpt['score']),
@@ -231,7 +231,7 @@ class CocoMetric(BaseMetric):
 
         Args:
             kpts (Dict[int, list]): keypoint prediction results. The keys are
-                '`image_id`' and the values are list that may contain
+                '`img_id`' and the values are list that may contain
                 keypoints of multiple persons. Each element in the list is a
                 dict containing the ``'key'`` field.
                 See the argument ``key`` for details.

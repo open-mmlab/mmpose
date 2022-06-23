@@ -60,12 +60,12 @@ def parse_pose_metainfo(metainfo: dict):
                 }
 
 
-            A special case is that `metainfo` can have the key "from_config",
+            A special case is that `metainfo` can have the key "from_file",
             which should be the path of a config file. In this case, the
             actual metainfo will be loaded by:
 
             .. code-block:: python
-                metainfo = mmengine.Config.fromfile(metainfo['from_config'])
+                metainfo = mmengine.Config.fromfile(metainfo['from_file'])
 
     Returns:
         Dict: pose meta information that contains following contents:
@@ -89,8 +89,8 @@ def parse_pose_metainfo(metainfo: dict):
         - "sigmas" (numpy.ndarray): Same as the ``"sigmas"`` in the input
     """
 
-    if 'from_config' in metainfo:
-        cfg_file = metainfo['from_config']
+    if 'from_file' in metainfo:
+        cfg_file = metainfo['from_file']
         if not osp.isfile(cfg_file):
             # Search configs in 'mmpose/.mim/configs/' in case that mmpose
             # is installed in non-editable mode.
@@ -109,7 +109,7 @@ def parse_pose_metainfo(metainfo: dict):
                     f'The metainfo config file "{cfg_file}" does not exist.')
 
         # TODO: remove the nested structure of dataset_info
-        # metainfo = Config.fromfile(metainfo['from_config'])
+        # metainfo = Config.fromfile(metainfo['from_file'])
         metainfo = Config.fromfile(cfg_file).dataset_info
 
     # check data integrity

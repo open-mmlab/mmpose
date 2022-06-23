@@ -74,4 +74,4 @@ class OneHand10KDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/onehand10k.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/onehand10k.py')
