@@ -7,7 +7,7 @@ evaluation = dict(interval=100, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.002,
+    lr=0.001,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -28,10 +28,10 @@ channel_cfg = dict(
     ])
 
 data_cfg = dict(
-    image_size=448,
-    base_size=448,
+    image_size=256,
+    base_size=256,
     base_sigma=2,
-    heatmap_size=[112, 224],
+    heatmap_size=[64, 128],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -46,19 +46,19 @@ model = dict(
         input_channel=16,
         num_blocks=(6, 8, 10, 10),
         strides=(2, 2, 2, 1),
-        channels=(16, 32, 48, 120),
+        channels=(16, 32, 48, 80),
         block_settings=([[6, 7]] * 6, [[6, 7]] * 8, [[6, 7]] * 10,
                         [[6, 7]] * 10)),
     keypoint_head=dict(
         type='LitePoseHead',
-        deconv_setting=(32, 24, 32),
+        deconv_setting=[16, 24, 24],
         num_deconv_layers=3,
-        num_deconv_kernels=(4, 4, 4),
+        num_deconv_kernels=[4, 4, 4],
         num_joints=17,
         tag_per_joint=True,
-        with_heatmaps_loss=(True, True),
-        with_ae_loss=(True, False),
-        channels=(16, 16, 32, 48, 120),
+        with_heatmaps_loss=[True, True],
+        with_ae_loss=[True, False],
+        channels=(16, 16, 32, 48, 80),
         loss_keypoint=dict(
             type='MultiLossFactory',
             num_joints=17,
@@ -139,8 +139,8 @@ test_pipeline = val_pipeline
 
 data_root = 'data/coco'
 data = dict(
-    workers_per_gpu=4,
-    train_dataloader=dict(samples_per_gpu=16),
+    workers_per_gpu=8,
+    train_dataloader=dict(samples_per_gpu=32),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(

@@ -8,10 +8,36 @@ from mmpose.models.builder import HEADS, build_loss
 
 @HEADS.register_module()
 class LitePoseHead(nn.Module):
+    """LitePose head.
 
-    def __init__(self, deconv_setting, num_deconv_layers, num_deconv_kernels,
-                 num_joints, tag_per_joint, with_heatmaps_loss, with_ae_loss,
-                 channels, loss_keypoint):
+    "Lite Pose: Efficient Architecture Design for 2D Human Pose Estimation"
+    More details can be found in the `paper
+    <https://arxiv.org/abs/2205.01271>`__ .
+
+    Args:
+        deconv_setting (list(int)): Output channel number for
+            each transpose conv.
+        num_deconv_layers (int): Transpose conv number.
+        num_deconv_kernels (list(int)): Kernel size for each transpose conv.
+        num_joints (int): Keypoint number.
+        tag_per_joint (bool): Whether each joint has its own tag.
+        with_heatmaps_loss (list(bool)): Whether apply heatmap loss
+            to the output.
+        with_ae_loss (list(bool)): Whether apply AE loss to the output.
+        channels (list(int)): Output channel for each stage
+        loss_keypoint (dict): Config for loss. Default: None.
+    """
+
+    def __init__(self,
+                 deconv_setting,
+                 num_deconv_layers,
+                 num_deconv_kernels,
+                 num_joints,
+                 tag_per_joint,
+                 with_heatmaps_loss,
+                 with_ae_loss,
+                 channels,
+                 loss_keypoint=None):
         super().__init__()
         self.deconv_setting = deconv_setting
         self.num_deconv_layers = num_deconv_layers
