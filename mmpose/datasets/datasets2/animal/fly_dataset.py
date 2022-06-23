@@ -85,4 +85,4 @@ class FlyDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/fly.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/fly.py')

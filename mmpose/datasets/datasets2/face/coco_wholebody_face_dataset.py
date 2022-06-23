@@ -57,7 +57,7 @@ class CocoWholeBodyFaceDataset(BaseCocoDataset):
     """
 
     METAINFO: dict = dict(
-        from_config='configs/_base_/datasets/coco_wholebody_face.py')
+        from_file='configs/_base_/datasets/coco_wholebody_face.py')
 
     def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
         """Parse raw CocoWholeBody Face annotation of an instance.
@@ -81,7 +81,7 @@ class CocoWholeBodyFaceDataset(BaseCocoDataset):
         if not ann['face_valid'] or max(ann['face_kpts']) <= 0:
             return None
 
-        image_file = osp.join(self.img_prefix, img['file_name'])
+        img_path = osp.join(self.img_prefix, img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -104,9 +104,9 @@ class CocoWholeBodyFaceDataset(BaseCocoDataset):
         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
         data_info = {
-            'image_id': ann['image_id'],
-            'image_file': image_file,
-            'image_shape': (img_h, img_w, 3),
+            'img_id': ann['image_id'],
+            'img_path': img_path,
+            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,

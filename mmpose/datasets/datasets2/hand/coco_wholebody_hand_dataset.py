@@ -81,7 +81,7 @@ class CocoWholeBodyHandDataset(BaseCocoDataset):
     """
 
     METAINFO: dict = dict(
-        from_config='configs/_base_/datasets/coco_wholebody_hand.py')
+        from_file='configs/_base_/datasets/coco_wholebody_hand.py')
 
     def _load_annotations(self) -> List[dict]:
         """Load data from annotations in COCO format."""
@@ -102,8 +102,7 @@ class CocoWholeBodyHandDataset(BaseCocoDataset):
                     # valid instances (left and right hand) in one image
                     if ann[f'{type}hand_valid'] and max(
                             ann[f'{type}hand_kpts']) > 0:
-                        image_file = osp.join(self.img_prefix,
-                                              img['file_name'])
+                        img_path = osp.join(self.img_prefix, img['file_name'])
                         img_w, img_h = img['width'], img['height']
 
                         bbox = np.array(
@@ -119,9 +118,9 @@ class CocoWholeBodyHandDataset(BaseCocoDataset):
                         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
                         data_info = {
-                            'image_id': ann['image_id'],
-                            'image_file': image_file,
-                            'image_shape': (img_h, img_w, 3),
+                            'img_id': ann['image_id'],
+                            'img_path': img_path,
+                            'img_shape': (img_h, img_w, 3),
                             'bbox': bbox,
                             'bbox_score': np.ones(1, dtype=np.float32),
                             'num_keypoints': num_keypoints,

@@ -26,8 +26,8 @@ class TestMpiiDataset(TestCase):
                              data_mode: str = 'topdown'):
         if data_mode == 'topdown':
             expected_keys = dict(
-                image_id=int,
-                image_file=str,
+                img_id=int,
+                img_path=str,
                 bbox_center=np.ndarray,
                 bbox_scale=np.ndarray,
                 bbox_score=np.ndarray,
@@ -36,8 +36,8 @@ class TestMpiiDataset(TestCase):
                 id=int)
         elif data_mode == 'bottomup':
             expected_keys = dict(
-                image_id=int,
-                image_file=str,
+                img_id=int,
+                img_path=str,
                 bbox_center=np.ndarray,
                 bbox_scale=np.ndarray,
                 bbox_score=np.ndarray,
