@@ -76,6 +76,24 @@ class SepConv2d(nn.Module):
 
 @BACKBONES.register_module()
 class LitePose(BaseBackbone):
+    """LitePose backbone.
+
+    "Lite Pose: Efficient Architecture Design for 2D Human Pose Estimation"
+    More details can be found in the `paper
+    <https://arxiv.org/abs/2205.01271>`__ .
+
+    Args:
+        num_blocks (list(int)): Searched block number for each stage.
+        strides (list(int)): Searched stride config for each stage.
+        channels (list(int)): Searched channel config for each stage.
+        block_settings (list(list(int))): Searched block config for each block.
+        input_channel (int): Output channel number for the first
+            input stem stage.
+        width_mult (float): width multiplier for each block.
+            Default: 1.0.
+        round_nearest (int): round to the nearest number.
+            Default: 8.
+    """
 
     def __init__(self,
                  num_blocks,
