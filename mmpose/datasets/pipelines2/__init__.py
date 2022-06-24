@@ -1,12 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .common_transforms import (GetBboxCenterScale, RandomBboxTransform,
+                                RandomFlip, RandomHalfBody)
 from .topdown_transforms import (TopDownAffine, TopDownGenerateHeatmap,
-                                 TopDownGenerateRegressionLabel,
-                                 TopDownGetBboxCenterScale,
-                                 TopDownRandomBboxTransform, TopDownRandomFlip,
-                                 TopDownRandomHalfBody)
+                                 TopDownGenerateRegressionLabel)
 
 __all__ = [
-    'TopDownAffine', 'TopDownGenerateHeatmap',
-    'TopDownGenerateRegressionLabel', 'TopDownGetBboxCenterScale',
-    'TopDownRandomBboxTransform', 'TopDownRandomFlip', 'TopDownRandomHalfBody'
+    'GetBboxCenterScale', 'RandomBboxTransform', 'RandomFlip',
+    'RandomHalfBody', 'TopDownAffine', 'TopDownGenerateHeatmap',
+    'TopDownGenerateRegressionLabel'
 ]

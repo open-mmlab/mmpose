@@ -159,8 +159,12 @@ def flip_bbox(bbox: np.ndarray,
     return bbox_flipped
 
 
-def get_udp_warp_matrix(center: np.ndarray, scale: np.ndarray, rot: float,
-                        output_size: Tuple[int, int]) -> np.ndarray:
+def get_udp_warp_matrix(
+    center: np.ndarray,
+    scale: np.ndarray,
+    rot: float,
+    output_size: Tuple[int, int],
+) -> np.ndarray:
     """Calculate the affine transformation matrix under the unbiased
     constraint. See `UDP (CVPR 2020)`_ for details.
 
@@ -185,26 +189,26 @@ def get_udp_warp_matrix(center: np.ndarray, scale: np.ndarray, rot: float,
     assert len(output_size) == 2
 
     input_size = center * 2
-    theta = np.deg2rad(rot)
+    rot_rad = np.deg2rad(rot)
     warp_mat = np.zeros((2, 3), dtype=np.float32)
-    scale_x = output_size[0] / scale[0]
-    scale_y = output_size[1] / scale[1]
-    warp_mat[0, 0] = math.cos(theta) * scale_x
-    warp_mat[0, 1] = -math.sin(theta) * scale_x
-    warp_mat[0,
-             2] = scale_x * (-0.5 * input_size[0] * math.cos(theta) + 0.5 *
-                             input_size[1] * math.sin(theta) + 0.5 * scale[0])
-    warp_mat[1, 0] = math.sin(theta) * scale_y
-    warp_mat[1, 1] = math.cos(theta) * scale_y
-    warp_mat[1,
-             2] = scale_y * (-0.5 * input_size[0] * math.sin(theta) - 0.5 *
-                             input_size[1] * math.cos(theta) + 0.5 * scale[1])
+    scale_x = (output_size[0] - 1) / scale[0]
+    scale_y = (output_size[1] - 1) / scale[1]
+    warp_mat[0, 0] = math.cos(rot_rad) * scale_x
+    warp_mat[0, 1] = -math.sin(rot_rad) * scale_x
+    warp_mat[0, 2] = scale_x * (-0.5 * input_size[0] * math.cos(rot_rad) +
+                                0.5 * input_size[1] * math.sin(rot_rad) +
+                                0.5 * scale[0])
+    warp_mat[1, 0] = math.sin(rot_rad) * scale_y
+    warp_mat[1, 1] = math.cos(rot_rad) * scale_y
+    warp_mat[1, 2] = scale_y * (-0.5 * input_size[0] * math.sin(rot_rad) -
+                                0.5 * input_size[1] * math.cos(rot_rad) +
+                                0.5 * scale[1])
     return warp_mat
 
 
 def get_warp_matrix(center: np.ndarray,
                     scale: np.ndarray,
-                    rot: np.ndarray,
+                    rot: float,
                     output_size: Tuple[int, int],
                     shift: Tuple[float, float] = (0., 0.),
                     inv: bool = False) -> np.ndarray:
@@ -236,8 +240,8 @@ def get_warp_matrix(center: np.ndarray,
     dst_w = output_size[0]
     dst_h = output_size[1]
 
-    rot_rad = np.pi * rot / 180
-    src_dir = _rotate_point([0., src_w * -0.5], rot_rad)
+    rot_rad = np.deg2rad(rot)
+    src_dir = _rotate_point(np.array([0., src_w * -0.5]), rot_rad)
     dst_dir = np.array([0., dst_w * -0.5])
 
     src = np.zeros((3, 2), dtype=np.float32)
@@ -254,7 +258,6 @@ def get_warp_matrix(center: np.ndarray,
         warp_mat = cv2.getAffineTransform(np.float32(dst), np.float32(src))
     else:
         warp_mat = cv2.getAffineTransform(np.float32(src), np.float32(dst))
-
     return warp_mat
 
 
@@ -289,5 +292,5 @@ def _get_3rd_point(a: np.ndarray, b: np.ndarray):
         np.ndarray: The 3rd point.
     """
     direction = a - b
-    c = b + np.r_[direction[1], direction[0]]
+    c = b + np.r_[-direction[1], direction[0]]
     return c

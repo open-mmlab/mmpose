@@ -82,6 +82,7 @@ def generate_msra_heatmap(
         gaussian_size = 2 * radius + 1
         x = np.arange(0, gaussian_size, 1, dtype=np.float32)
         y = x[:, None]
+        x0 = y0 = gaussian_size // 2
 
         for i in range(num_keypoints):
             # skip unlabled keypoints
@@ -89,8 +90,8 @@ def generate_msra_heatmap(
                 keypoint_weight[i] = 0
                 continue
 
-            # get integer center coordinates
-            mu = (keypoints[i] / feat_stride + 0.5).astype(np.int64)
+            # get gaussian center coordinates
+            mu = (keypoints[i] / feat_stride + 0.5)
 
             # check that the gaussian has in-bounds part
             left, top = (mu - radius).astype(np.int64)
@@ -100,7 +101,6 @@ def generate_msra_heatmap(
                 keypoint_weight[i] = 0
                 continue
 
-            x0 = y0 = gaussian_size // 2
             # The gaussian is not normalized,
             # we want the center value to equal 1
             gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) / (2 * sigma**2))
