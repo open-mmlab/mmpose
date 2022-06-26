@@ -369,9 +369,9 @@ class TopDownGenerateRegressionLabel(BaseTransform):
         keypoints_visible = results['keypoints_visible'][0]
 
         w, h = results['input_size']
-        valid = ((keypoints >= 0) &
-                 (keypoints <= [w - 1, h - 1]) & keypoints_visible > 0.5).all(
-                     axis=1)
+        valid = ((keypoints >= 0) & (keypoints <= [w - 1, h - 1]) &
+                 (keypoints_visible > 0.5)).all(
+                     axis=1, keepdims=True)
 
         target = keypoints / [w, h]
         target_weight = np.where(valid, 1., 0.).astype(np.float32)

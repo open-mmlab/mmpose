@@ -5,7 +5,8 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import Compose
 
-from mmpose.datasets.pipelines2 import TopDownAffine, TopDownGenerateHeatmap
+from mmpose.datasets.pipelines2 import (TopDownAffine, TopDownGenerateHeatmap,
+                                        TopDownGenerateRegressionLabel)
 
 
 class TestTopDownAffine(TestCase):
@@ -38,8 +39,6 @@ class TestTopDownAffine(TestCase):
         results = transform(deepcopy(self.data_info))
         self.assertEqual(results['input_size'], (192, 256))
         self.assertEqual(results['img'].shape, (256, 192, 3))
-        print(self.data_info['keypoints'])
-        print(results['keypoints'])
 
         # with udp
         transform = TopDownAffine(input_size=(192, 256), use_udp=True)
@@ -233,9 +232,6 @@ class TestTopDownGenerateHeatmap(TestCase):
 
         self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
-
-        # print(results['target_weight'])
-        # print(self.data_info['keypoint_weights'])
         self.assertTrue(
             np.allclose(results['target_weight'],
                         self.data_info['keypoint_weights'][:, None]))
@@ -249,3 +245,53 @@ class TestTopDownGenerateHeatmap(TestCase):
         # invalid heatmap size
         with self.assertRaisesRegex(AssertionError, 'heatmap_size'):
             _ = TopDownGenerateHeatmap(heatmap_size=(100, 100, 100))
+
+
+class TestTopDownGenerateRegressionLabel(TestCase):
+
+    def setUp(self):
+        # prepare dummy top-down data sample with COCO metainfo
+        self.data_info = dict(
+            img=np.zeros((480, 640, 3), dtype=np.uint8),
+            img_shape=(480, 640, 3),
+            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
+            bbox_center=np.array([[50, 50]], dtype=np.float32),
+            bbox_scale=np.array([[125, 125]], dtype=np.float32),
+            bbox_rotation=np.array([45], dtype=np.float32),
+            bbox_score=np.ones(1, dtype=np.float32),
+            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
+            keypoints_visible=np.full((1, 17, 1), 2).astype(np.float32),
+            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            lower_body_ids=[11, 12, 13, 14, 15, 16],
+            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
+                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
+                        [13, 14], [16, 15], [15, 16]],
+            keypoint_weights=np.array([
+                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
+                1.2, 1.5, 1.5
+            ]).astype(np.float32))
+
+    def test_transform(self):
+        # test w/o meta keypoint weights
+        pipeline = Compose([
+            TopDownAffine(input_size=(192, 256)),
+            TopDownGenerateRegressionLabel()
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['target_regression'].shape, (17, 2))
+        self.assertEqual(results['target_weight'].shape, (17, 1))
+        self.assertTrue(np.allclose(results['target_weight'], 1))
+
+        # test w/ meta target weights
+        pipeline = Compose([
+            TopDownAffine(input_size=(192, 256)),
+            TopDownGenerateRegressionLabel(use_meta_keypoint_weight=True)
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['target_regression'].shape, (17, 2))
+        self.assertEqual(results['target_weight'].shape, (17, 1))
+        self.assertTrue(
+            np.allclose(results['target_weight'],
+                        self.data_info['keypoint_weights'][:, None]))
