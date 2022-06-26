@@ -282,8 +282,8 @@ def generate_udp_heatmap(
 
     else:
         heatmap = np.zeros((num_keypoints, 3, h, w), dtype=np.float32)
-        x = np.arange(0, w, 1, dtype=np.float32)
-        y = np.arange(0, h, 1, dtype=np.float32)[:, None]
+        x = np.arange(0, w, 1)
+        y = np.arange(0, h, 1)[:, None]
 
         # positive area radius in the classification map
         radius = factor * max(w, h)
@@ -295,8 +295,8 @@ def generate_udp_heatmap(
 
             mu = keypoints[i] / feat_stride
 
-            x_offset = (x - mu[0]) / radius
-            y_offset = (y - mu[1]) / radius
+            x_offset = (mu[0] - x) / radius
+            y_offset = (mu[1] - y) / radius
 
             heatmap[i, 0] = np.where(x_offset**2 + y_offset**2 <= 1, 1., 0.)
             heatmap[i, 1] = x_offset

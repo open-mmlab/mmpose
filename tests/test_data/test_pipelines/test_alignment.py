@@ -5,6 +5,7 @@
 from copy import deepcopy
 from unittest import TestCase
 
+import cv2
 import numpy as np
 from mmcv.transforms import Compose
 
@@ -16,10 +17,21 @@ class TestTopDownTransformAlignment(TestCase):
 
     def setUp(self):
 
+        # generate smooth image
+        img = np.zeros((240, 320, 3), dtype=np.float32)
+        xx, yy = np.meshgrid(
+            np.arange(0, 1, 1 / 320), np.arange(0, 1, 1 / 240))
+        img[..., 0] = xx
+        img[..., 1] = yy
+        img = np.zeros((3, 3, 3), dtype=np.float32)
+        img[1, 1] = 1.0
+        img = cv2.resize(img, dsize=(640, 480), interpolation=cv2.INTER_LINEAR)
+
         # data sample for pipeline 2.0
         data_info2 = dict(
-            img=np.random.randint(0, 255, (480, 640, 3)).astype(np.uint8),
-            img_shape=(480, 640, 3),
+            # img=np.random.randint(0, 255, (480, 640, 3)).astype(np.uint8),
+            img=img,
+            img_shape=(240, 320, 3),
             bbox=np.array([[150, 150, 100, 100]], dtype=np.float32),
             bbox_rotation=np.array([15.], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
@@ -74,11 +86,6 @@ class TestTopDownTransformAlignment(TestCase):
             results1 (dict): The output of pipeline1
             results2 (dict): The output of pipeline2
         """
-        # err = results2['img'] - results1['img']
-        # print(np.where(err > 0))
-        # print(err[np.where(err > 0)])
-        self.assertTrue(
-            np.allclose(results2['img'], results1['img']), '"img" not aligned')
         self.assertTrue(
             np.allclose(results2['bbox_center'], results1['center'][None]),
             '"bbox_center" is not aligned')
@@ -94,79 +101,91 @@ class TestTopDownTransformAlignment(TestCase):
             np.allclose(results2['keypoints_visible'],
                         results1['joints_3d_visible'][None, :, :2]),
             '"keypoints_visible" not aligned')
-        self.assertTrue(
-            np.allclose(
-                results2['target_heatmap'], results1['target'], atol=1e-6),
-            '"target_heatmap" not aligned')
+
+        if 'target_heatmap' in results2:
+            self.assertTrue(
+                np.allclose(
+                    results2['target_heatmap'],
+                    results1['target'],
+                    rtol=1e-5,
+                    atol=1e-5), '"target_heatmap" not aligned')
+
+        if 'target_regression' in results2:
+            self.assertTrue(
+                np.allclose(results2['target_regression'], results1['target']),
+                '"target_regression" not aligned')
+
         self.assertTrue(
             np.allclose(results2['target_weight'], results1['target_weight']),
             '"target_weight" not aligned')
 
-    def test_alignment(self):
-        # # msra
-        # pipeline1 = Compose([
-        #     pipelines1.TopDownGetBboxCenterScale(),
-        #     pipelines1.TopDownAffine(use_udp=False),
-        #     pipelines1.TopDownGenerateTarget(encoding='MSRA')
-        # ])
+    def test_msra_heatmap(self):
+        # msra
+        pipeline1 = Compose([
+            pipelines1.TopDownGetBboxCenterScale(),
+            pipelines1.TopDownAffine(use_udp=False),
+            pipelines1.TopDownGenerateTarget(encoding='MSRA')
+        ])
 
-        # pipeline2 = Compose([
-        #     pipelines2.GetBboxCenterScale(),
-        #     pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
-        #     pipelines2.TopDownGenerateHeatmap(
-        #         heatmap_size=(48, 64),
-        #         encoding='msra',
-        #     ),
-        # ])
+        pipeline2 = Compose([
+            pipelines2.GetBboxCenterScale(),
+            pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
+            pipelines2.TopDownGenerateHeatmap(
+                heatmap_size=(48, 64),
+                encoding='msra',
+            ),
+        ])
 
-        # results1 = pipeline1(deepcopy(self.data_info1))
-        # results2 = pipeline2(deepcopy(self.data_info2))
-        # self._check_output_aligned(results1, results2)
+        results1 = pipeline1(deepcopy(self.data_info1))
+        results2 = pipeline2(deepcopy(self.data_info2))
+        self._check_output_aligned(results1, results2)
 
-        # # msra + dark
-        # pipeline1 = Compose([
-        #     pipelines1.TopDownGetBboxCenterScale(),
-        #     pipelines1.TopDownAffine(use_udp=False),
-        #     pipelines1.TopDownGenerateTarget(
-        #         encoding='MSRA',
-        #         unbiased_encoding=True,
-        #     )
-        # ])
+        # msra + dark
+        pipeline1 = Compose([
+            pipelines1.TopDownGetBboxCenterScale(),
+            pipelines1.TopDownAffine(use_udp=False),
+            pipelines1.TopDownGenerateTarget(
+                encoding='MSRA',
+                unbiased_encoding=True,
+            )
+        ])
 
-        # pipeline2 = Compose([
-        #     pipelines2.GetBboxCenterScale(),
-        #     pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
-        #     pipelines2.TopDownGenerateHeatmap(
-        #         heatmap_size=(48, 64),
-        #         encoding='msra',
-        #         unbiased=True,
-        #     ),
-        # ])
+        pipeline2 = Compose([
+            pipelines2.GetBboxCenterScale(),
+            pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
+            pipelines2.TopDownGenerateHeatmap(
+                heatmap_size=(48, 64),
+                encoding='msra',
+                unbiased=True,
+            ),
+        ])
 
-        # results1 = pipeline1(deepcopy(self.data_info1))
-        # results2 = pipeline2(deepcopy(self.data_info2))
-        # self._check_output_aligned(results1, results2)
+        results1 = pipeline1(deepcopy(self.data_info1))
+        results2 = pipeline2(deepcopy(self.data_info2))
+        self._check_output_aligned(results1, results2)
 
-        # # megvii
-        # pipeline1 = Compose([
-        #     pipelines1.TopDownGetBboxCenterScale(),
-        #     pipelines1.TopDownAffine(use_udp=False),
-        #     pipelines1.TopDownGenerateTarget(encoding='Megvii')
-        # ])
+    def test_megvii_heatmap(self):
+        # megvii
+        pipeline1 = Compose([
+            pipelines1.TopDownGetBboxCenterScale(),
+            pipelines1.TopDownAffine(use_udp=False),
+            pipelines1.TopDownGenerateTarget(encoding='Megvii')
+        ])
 
-        # pipeline2 = Compose([
-        #     pipelines2.GetBboxCenterScale(),
-        #     pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
-        #     pipelines2.TopDownGenerateHeatmap(
-        #         heatmap_size=(48, 64),
-        #         encoding='megvii',
-        #     ),
-        # ])
+        pipeline2 = Compose([
+            pipelines2.GetBboxCenterScale(),
+            pipelines2.TopDownAffine(input_size=(192, 256), use_udp=False),
+            pipelines2.TopDownGenerateHeatmap(
+                heatmap_size=(48, 64),
+                encoding='megvii',
+            ),
+        ])
 
-        # results1 = pipeline1(deepcopy(self.data_info1))
-        # results2 = pipeline2(deepcopy(self.data_info2))
-        # self._check_output_aligned(results1, results2)
+        results1 = pipeline1(deepcopy(self.data_info1))
+        results2 = pipeline2(deepcopy(self.data_info2))
+        self._check_output_aligned(results1, results2)
 
+    def test_udp_heatmap(self):
         # udp gaussian
         pipeline1 = Compose([
             pipelines1.TopDownGetBboxCenterScale(),
@@ -205,6 +224,23 @@ class TestTopDownTransformAlignment(TestCase):
                 encoding='udp',
                 udp_combined_map=True,
             ),
+        ])
+
+        results1 = pipeline1(deepcopy(self.data_info1))
+        results2 = pipeline2(deepcopy(self.data_info2))
+        self._check_output_aligned(results1, results2)
+
+    def test_regression(self):
+        pipeline1 = Compose([
+            pipelines1.TopDownGetBboxCenterScale(),
+            pipelines1.TopDownAffine(use_udp=True),
+            pipelines1.TopDownGenerateTargetRegression()
+        ])
+
+        pipeline2 = Compose([
+            pipelines2.GetBboxCenterScale(),
+            pipelines2.TopDownAffine(input_size=(192, 256), use_udp=True),
+            pipelines2.TopDownGenerateRegressionLabel()
         ])
 
         results1 = pipeline1(deepcopy(self.data_info1))
