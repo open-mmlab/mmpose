@@ -8,9 +8,9 @@ https://mmengine.readthedocs.io/en/latest/tutorials/registry.html.
 
 from mmengine.registry import DATASETS as MMENGINE_DATASETS
 from mmengine.registry import METRICS as MMENGINE_METRICS
+from mmengine.registry import TRANSFORMS as MMENGINE_TRANSFORMS
 from mmengine.registry import VISBACKENDS as MMENGINE_VISBACKENDS
 from mmengine.registry import VISUALIZERS as MMENGINE_VISUALIZERS
-from mmengine.registry import TRANSFORMS as MMENGINE_TRANSFORMS
 from mmengine.registry import Registry
 
 # manage data-related modules
@@ -21,5 +21,6 @@ TRANSFORMS = Registry('transform', parent=MMENGINE_TRANSFORMS)
 VISUALIZERS = Registry('visualizer', parent=MMENGINE_VISUALIZERS)
 # manage visualizer backend
 VISBACKENDS = Registry('vis_backend', parent=MMENGINE_VISBACKENDS)
+
 # manage all kinds of metrics
 METRICS = Registry('metric', parent=MMENGINE_METRICS)
