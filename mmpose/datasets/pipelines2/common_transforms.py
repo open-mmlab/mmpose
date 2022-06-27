@@ -66,6 +66,15 @@ class GetBboxCenterScale(BaseTransform):
 
         return results
 
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__ + f'(padding={self.padding})'
+        return repr_str
+
 
 @TRANSFORMS.register_module()
 class RandomFlip(BaseTransform):
@@ -207,6 +216,17 @@ class RandomFlip(BaseTransform):
                 results['keypoints_visible'] = keypoints_visible
 
         return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(prob={self.prob}, '
+        repr_str += f'direction={self.direction})'
+        return repr_str
 
 
 @TRANSFORMS.register_module()
@@ -361,6 +381,19 @@ class RandomHalfBody(BaseTransform):
         results['bbox_scale'] = np.stack(bbox_scale)
         return results
 
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(min_total_keypoints={self.min_total_keypoints}, '
+        repr_str += f'min_half_keypoints={self.min_half_keypoints}, '
+        repr_str += f'padding={self.padding}, '
+        repr_str += f'prob={self.prob})'
+        return repr_str
+
 
 @TRANSFORMS.register_module()
 class RandomBboxTransform(BaseTransform):
@@ -477,3 +510,18 @@ class RandomBboxTransform(BaseTransform):
         results['bbox_rotation'] = rotate
 
         return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(shift_prob={self.shift_prob}, '
+        repr_str += f'shift_factor={self.shift_factor}, '
+        repr_str += f'scale_prob={self.scale_prob}, '
+        repr_str += f'scale_factor={self.scale_factor}, '
+        repr_str += f'rotate_prob={self.rotate_prob}, '
+        repr_str += f'rotate_factor={self.rotate_factor})'
+        return repr_str

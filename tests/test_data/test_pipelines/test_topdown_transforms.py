@@ -46,6 +46,12 @@ class TestTopDownAffine(TestCase):
         self.assertEqual(results['input_size'], (192, 256))
         self.assertEqual(results['img'].shape, (256, 192, 3))
 
+    def test_repr(self):
+        transform = TopDownAffine(input_size=(192, 256), use_udp=False)
+        self.assertEqual(
+            repr(transform),
+            'TopDownAffine(input_size=(192, 256), use_udp=False)')
+
 
 class TestTopDownGenerateHeatmap(TestCase):
 
@@ -246,6 +252,51 @@ class TestTopDownGenerateHeatmap(TestCase):
         with self.assertRaisesRegex(AssertionError, 'heatmap_size'):
             _ = TopDownGenerateHeatmap(heatmap_size=(100, 100, 100))
 
+    def test_repr(self):
+        transform = TopDownGenerateHeatmap(
+            heatmap_size=(48, 64),
+            encoding='msra',
+            sigma=2,
+            unbiased=True,
+            use_meta_keypoint_weight=True)
+        self.assertEqual(
+            repr(transform),
+            'TopDownGenerateHeatmap(heatmap_size=(48, 64), encoding="msra", '
+            'sigma=2, unbiased=True, use_meta_keypoint_weight=True)')
+
+        transform = TopDownGenerateHeatmap(
+            heatmap_size=(48, 64),
+            encoding='megvii',
+            kernel_size=(11, 11),
+            use_meta_keypoint_weight=True)
+        self.assertEqual(
+            repr(transform),
+            'TopDownGenerateHeatmap(heatmap_size=(48, 64), encoding="megvii"'
+            ', kernel_size=(11, 11), use_meta_keypoint_weight=True)')
+
+        transform = TopDownGenerateHeatmap(
+            heatmap_size=(48, 64),
+            encoding='udp',
+            sigma=2,
+            udp_combined_map=False,
+            use_meta_keypoint_weight=True)
+        self.assertEqual(
+            repr(transform),
+            'TopDownGenerateHeatmap(heatmap_size=(48, 64), encoding="udp", '
+            'combined_map=False, sigma=2, use_meta_keypoint_weight=True)')
+
+        transform = TopDownGenerateHeatmap(
+            heatmap_size=(48, 64),
+            encoding='udp',
+            udp_combined_map=True,
+            udp_radius_factor=0.05,
+            use_meta_keypoint_weight=True)
+        self.assertEqual(
+            repr(transform),
+            'TopDownGenerateHeatmap(heatmap_size=(48, 64), encoding="udp", '
+            'combined_map=True, radius_factor=0.05, '
+            'use_meta_keypoint_weight=True)')
+
 
 class TestTopDownGenerateRegressionLabel(TestCase):
 
@@ -295,3 +346,10 @@ class TestTopDownGenerateRegressionLabel(TestCase):
         self.assertTrue(
             np.allclose(results['target_weight'],
                         self.data_info['keypoint_weights'][:, None]))
+
+    def test_repr(self):
+        transform = TopDownGenerateRegressionLabel(
+            use_meta_keypoint_weight=True)
+        self.assertEqual(
+            repr(transform),
+            'TopDownGenerateRegressionLabel(use_meta_keypoint_weight=True)')

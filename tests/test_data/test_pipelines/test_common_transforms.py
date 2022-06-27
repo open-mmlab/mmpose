@@ -54,6 +54,10 @@ class TestGetBboxCenterScale(TestCase):
         self.assertTrue(np.allclose(results['bbox_center'], center))
         self.assertTrue(np.allclose(results['bbox_scale'], scale))
 
+    def test_repr(self):
+        transform = GetBboxCenterScale(padding=1.25)
+        self.assertEqual(repr(transform), 'GetBboxCenterScale(padding=1.25)')
+
 
 class TestRandomFlip(TestCase):
 
@@ -163,6 +167,11 @@ class TestRandomFlip(TestCase):
         with self.assertRaises(AssertionError):
             _ = RandomFlip(direction='invalid_direction')
 
+    def test_repr(self):
+        transform = RandomFlip(prob=0.5, direction='horizontal')
+        self.assertEqual(
+            repr(transform), 'RandomFlip(prob=0.5, direction=horizontal)')
+
 
 class TestRandomHalfBody(TestCase):
 
@@ -234,6 +243,14 @@ class TestRandomHalfBody(TestCase):
             np.allclose(results['bbox_center'], self.data_info['bbox_center']))
         self.assertTrue(
             np.allclose(results['bbox_scale'], self.data_info['bbox_scale']))
+
+    def test_repr(self):
+        transform = RandomHalfBody(
+            min_total_keypoints=8, min_half_keypoints=2, padding=1.5, prob=0.3)
+        self.assertEqual(
+            repr(transform),
+            'RandomHalfBody(min_total_keypoints=8, min_half_keypoints=2, '
+            'padding=1.5, prob=0.3)')
 
 
 class TestRandomBboxTransform(TestCase):
@@ -354,3 +371,18 @@ class TestRandomBboxTransform(TestCase):
         # invalid arguments
         with self.assertRaises(AssertionError):
             _ = RandomBboxTransform(scale_factor=2.)
+
+    def test_repr(self):
+        transform = RandomBboxTransform(
+            shift_factor=0.16,
+            shift_prob=0.3,
+            scale_factor=0.5,
+            scale_prob=1.0,
+            rotate_factor=40.0,
+            rotate_prob=0.6)
+
+        self.assertEqual(
+            repr(transform),
+            'RandomBboxTransform(shift_prob=0.3, shift_factor=0.16, '
+            'scale_prob=1.0, scale_factor=0.5, rotate_prob=0.6, '
+            'rotate_factor=40.0)')

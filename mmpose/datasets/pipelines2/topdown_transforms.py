@@ -128,6 +128,17 @@ class TopDownAffine(BaseTransform):
 
         return results
 
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(input_size={self.input_size}, '
+        repr_str += f'use_udp={self.use_udp})'
+        return repr_str
+
 
 @TRANSFORMS.register_module()
 class TopDownGenerateHeatmap(BaseTransform):
@@ -324,6 +335,30 @@ class TopDownGenerateHeatmap(BaseTransform):
 
         return results
 
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += f'(heatmap_size={self.heatmap_size}, '
+        repr_str += f'encoding="{self.encoding}", '
+        if self.encoding == 'msra':
+            repr_str += f'sigma={self.sigma}, '
+            repr_str += f'unbiased={self.unbiased}, '
+        elif self.encoding == 'megvii':
+            repr_str += f'kernel_size={self.kernel_size}, '
+        elif self.encoding == 'udp':
+            repr_str += f'combined_map={self.udp_combined_map}, '
+            if self.udp_combined_map:
+                repr_str += f'radius_factor={self.udp_radius_factor}, '
+            else:
+                repr_str += f'sigma={self.sigma}, '
+        repr_str += ('use_meta_keypoint_weight='
+                     f'{self.use_meta_keypoint_weight})')
+        return repr_str
+
 
 @TRANSFORMS.register_module()
 class TopDownGenerateRegressionLabel(BaseTransform):
@@ -384,3 +419,14 @@ class TopDownGenerateRegressionLabel(BaseTransform):
         results['target_weight'] = target_weight
 
         return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += ('(use_meta_keypoint_weight='
+                     f'{self.use_meta_keypoint_weight})')
+        return repr_str
