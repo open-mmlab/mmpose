@@ -20,7 +20,7 @@ class TestGetBboxCenterScale(TestCase):
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17, 1), 2).astype(np.float32),
+            keypoints_visible=np.full((1, 17, 1), 1).astype(np.float32),
             upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             lower_body_ids=[11, 12, 13, 14, 15, 16],
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
@@ -72,7 +72,7 @@ class TestRandomFlip(TestCase):
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17, 1), 2).astype(np.float32),
+            keypoints_visible=np.full((1, 17, 1), 1).astype(np.float32),
             upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             lower_body_ids=[11, 12, 13, 14, 15, 16],
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
@@ -186,7 +186,7 @@ class TestRandomHalfBody(TestCase):
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17, 1), 2).astype(np.float32),
+            keypoints_visible=np.full((1, 17, 1), 1).astype(np.float32),
             upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             lower_body_ids=[11, 12, 13, 14, 15, 16],
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
@@ -201,7 +201,8 @@ class TestRandomHalfBody(TestCase):
         padding = 1.5
 
         # keep upper body
-        transform = RandomHalfBody(prob=1.)
+        transform = RandomHalfBody(
+            prob=1., min_total_keypoints=8, min_half_keypoints=2)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['lower_body_ids']] = 0
         results = transform(results)
@@ -213,7 +214,8 @@ class TestRandomHalfBody(TestCase):
                         (kpts.max(axis=1) - kpts.min(axis=1)) * padding))
 
         # keep lower body
-        transform = RandomHalfBody(prob=1.)
+        transform = RandomHalfBody(
+            prob=1., min_total_keypoints=6, min_half_keypoints=2)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['upper_body_ids']] = 0
         results = transform(results)
@@ -233,10 +235,26 @@ class TestRandomHalfBody(TestCase):
         self.assertTrue(
             np.allclose(results['bbox_scale'], self.data_info['bbox_scale']))
 
-        # no transform due to insufficient valid keypoints
-        transform = RandomHalfBody(prob=1.)
+        # no transform due to insufficient valid total keypoints
+        transform = RandomHalfBody(
+            prob=1., min_total_keypoints=8, min_half_keypoints=2)
         results = deepcopy(self.data_info)
         results['keypoints_visible'].fill(0)
+        results = transform(results)
+
+        self.assertTrue(
+            np.allclose(results['bbox_center'], self.data_info['bbox_center']))
+        self.assertTrue(
+            np.allclose(results['bbox_scale'], self.data_info['bbox_scale']))
+
+        # no transform due to insufficient valid half-body keypoints
+        transform = RandomHalfBody(
+            prob=1., min_total_keypoints=4, min_half_keypoints=3)
+        results = deepcopy(self.data_info)
+        results['keypoints_visible'][:,
+                                     self.data_info['upper_body_ids'][2:]] = 0
+        results['keypoints_visible'][:,
+                                     self.data_info['lower_body_ids'][2:]] = 0
         results = transform(results)
 
         self.assertTrue(
@@ -265,7 +283,7 @@ class TestRandomBboxTransform(TestCase):
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17, 1), 2).astype(np.float32),
+            keypoints_visible=np.full((1, 17, 1), 1).astype(np.float32),
             upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             lower_body_ids=[11, 12, 13, 14, 15, 16],
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],

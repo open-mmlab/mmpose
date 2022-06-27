@@ -333,14 +333,14 @@ class RandomHalfBody(BaseTransform):
                 num_upper = len(upper_valid_ids)
                 num_lower = len(lower_valid_ids)
 
-                user_upper_body = np.random.rand() < 0.5
+                select_upper = np.random.rand() < 0.5
                 if (num_upper < self.min_half_keypoints
                         and num_lower < self.min_half_keypoints):
                     indices = None
-                elif num_lower < self.min_half_keypoints or user_upper_body:
-                    indices = upper_valid_ids.copy()
+                elif num_lower < self.min_half_keypoints or select_upper:
+                    indices = upper_valid_ids
                 else:
-                    indices = lower_valid_ids.copy()
+                    indices = lower_valid_ids
 
             half_body_ids.append(indices)
 
