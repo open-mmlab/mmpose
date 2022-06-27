@@ -102,18 +102,18 @@ class TestTopDownTransformAlignment(TestCase):
                         results1['joints_3d_visible'][None, :, :2]),
             '"keypoints_visible" not aligned')
 
-        if 'target_heatmap' in results2:
+        if 'gt_heatmap' in results2:
             self.assertTrue(
                 np.allclose(
-                    results2['target_heatmap'],
+                    results2['gt_heatmap'],
                     results1['target'],
                     rtol=1e-5,
-                    atol=1e-5), '"target_heatmap" not aligned')
+                    atol=1e-5), '"gt_heatmap" not aligned')
 
-        if 'target_regression' in results2:
+        if 'gt_regression' in results2:
             self.assertTrue(
-                np.allclose(results2['target_regression'], results1['target']),
-                '"target_regression" not aligned')
+                np.allclose(results2['gt_regression'], results1['target']),
+                '"gt_regression" not aligned')
 
         self.assertTrue(
             np.allclose(results2['target_weight'], results1['target_weight']),

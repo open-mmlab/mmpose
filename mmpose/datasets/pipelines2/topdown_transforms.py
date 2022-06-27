@@ -141,7 +141,7 @@ class TopDownGenerateHeatmap(BaseTransform):
 
     Added Keys:
 
-        - target_heatmap
+        - gt_heatmap
         - target_weight
 
     Args:
@@ -319,7 +319,7 @@ class TopDownGenerateHeatmap(BaseTransform):
         if self.use_meta_keypoint_weight:
             keypoint_weight *= results['keypoint_weights'][:, None]
 
-        results['target_heatmap'] = heatmap
+        results['gt_heatmap'] = heatmap
         results['target_weight'] = keypoint_weight
 
         return results
@@ -337,7 +337,7 @@ class TopDownGenerateRegressionLabel(BaseTransform):
 
     Added Keys:
 
-        - target_regression
+        - gt_regression
         - target_weight
 
     Args:
@@ -373,14 +373,14 @@ class TopDownGenerateRegressionLabel(BaseTransform):
                  (keypoints_visible > 0.5)).all(
                      axis=1, keepdims=True)
 
-        target = keypoints / [w, h]
+        reg_label = keypoints / [w, h]
         target_weight = np.where(valid, 1., 0.).astype(np.float32)
 
         # multiply meta keypoint weight
         if self.use_meta_keypoint_weight:
             target_weight *= results['keypoint_weights'][:, None]
 
-        results['target_regression'] = target
+        results['gt_regression'] = reg_label
         results['target_weight'] = target_weight
 
         return results
