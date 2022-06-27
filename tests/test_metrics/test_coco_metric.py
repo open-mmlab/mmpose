@@ -21,7 +21,7 @@ class TestCocoMetric(TestCase):
         """
         self.tmp_dir = tempfile.TemporaryDirectory()
         self.ann_file = 'tests/data/coco/test_coco.json'
-        coco_meta_info = dict(from_config='configs/_base_/datasets/coco.py')
+        coco_meta_info = dict(from_file='configs/_base_/datasets/coco.py')
         self.coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
 
         with open(self.ann_file, 'r') as f:
@@ -52,7 +52,7 @@ class TestCocoMetric(TestCase):
             data_batch['inputs'] = None
             data_batch['data_sample'] = {
                 'id': ann['id'],
-                'image_id': ann['image_id'],
+                'img_id': ann['image_id'],
             }
             predictions = {}
             predictions['pred_instances'] = {
@@ -73,12 +73,12 @@ class TestCocoMetric(TestCase):
             img2ann[ann['image_id']].append(ann)
 
         data = []
-        for image_id, anns in img2ann.items():
+        for img_id, anns in img2ann.items():
             data_batch = {}
             data_batch['inputs'] = None
             data_batch['data_sample'] = {
                 'id': [ann['id'] for ann in anns],
-                'image_id': image_id,
+                'img_id': img_id,
             }
             predictions = {}
             predictions['pred_instances'] = {
