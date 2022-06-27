@@ -2,12 +2,14 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/coco.py'
 ]
-checkpoint_config = dict(interval=50)
-evaluation = dict(interval=100, metric='mAP', save_best='AP')
+
+log_config = dict(interval=10)
+checkpoint_config = dict(interval=25)
+evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.001,
+    lr=0.004,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -41,6 +43,8 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
+    pretrained='/home/junyan/litepose-model-zoo/'
+    'coco/coco-pretrain-XS-mmpose.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,
@@ -137,7 +141,7 @@ val_pipeline = [
 
 test_pipeline = val_pipeline
 
-data_root = 'data/coco'
+data_root = '/dev/shm/pose/data/coco'
 data = dict(
     workers_per_gpu=8,
     train_dataloader=dict(samples_per_gpu=32),
@@ -146,21 +150,21 @@ data = dict(
     train=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_train2017.json',
-        img_prefix=f'{data_root}/train2017/',
+        img_prefix=f'{data_root}/images/train2017/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        img_prefix=f'{data_root}/images/val2017/',
         data_cfg=data_cfg,
         pipeline=val_pipeline,
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='BottomUpCocoDataset',
         ann_file=f'{data_root}/annotations/person_keypoints_val2017.json',
-        img_prefix=f'{data_root}/val2017/',
+        img_prefix=f'{data_root}/images/val2017/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,
         dataset_info={{_base_.dataset_info}}),
