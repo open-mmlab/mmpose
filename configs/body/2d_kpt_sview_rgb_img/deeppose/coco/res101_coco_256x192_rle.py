@@ -6,7 +6,7 @@ evaluation = dict(interval=10, metric='mAP', save_best='AP', rle_score=True)
 
 optimizer = dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -30,8 +30,8 @@ channel_cfg = dict(
 # model settings
 model = dict(
     type='TopDown',
-    pretrained='torchvision://resnet50',
-    backbone=dict(type='ResNet', depth=50, num_stages=4, out_indices=(3, )),
+    pretrained='torchvision://resnet101',
+    backbone=dict(type='ResNet', depth=101, num_stages=4, out_indices=(3, )),
     neck=dict(type='GlobalAveragePooling'),
     keypoint_head=dict(
         type='DeepposeRegressionHead',
