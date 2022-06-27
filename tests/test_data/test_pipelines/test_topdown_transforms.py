@@ -83,7 +83,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: msra + dark
@@ -98,7 +98,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: msra (multi-scale)
@@ -113,7 +113,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (2, 17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (2, 17, 1))
 
         # encoding: megvii
@@ -127,7 +127,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: megvii (multi-scale)
@@ -141,7 +141,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (2, 17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (2, 17, 1))
 
         # encoding: udp gaussian
@@ -156,7 +156,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: udp gaussian
@@ -171,7 +171,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: udp gaussian (multi-scale)
@@ -186,7 +186,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (2, 17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (2, 17, 1))
 
         # encoding: udp combined
@@ -201,7 +201,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (51, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (51, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
         # encoding: udp combined (multi-scale)
@@ -216,7 +216,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (2, 51, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (2, 51, 64, 48))
         self.assertEqual(results['target_weight'].shape, (2, 17, 1))
 
         # test using meta keypoint weights
@@ -230,7 +230,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['target_heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
         self.assertTrue(
             np.allclose(results['target_weight'],
@@ -279,7 +279,7 @@ class TestTopDownGenerateRegressionLabel(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['target_regression'].shape, (17, 2))
+        self.assertEqual(results['gt_regression'].shape, (17, 2))
         self.assertEqual(results['target_weight'].shape, (17, 1))
         self.assertTrue(np.allclose(results['target_weight'], 1))
 
@@ -290,7 +290,7 @@ class TestTopDownGenerateRegressionLabel(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['target_regression'].shape, (17, 2))
+        self.assertEqual(results['gt_regression'].shape, (17, 2))
         self.assertEqual(results['target_weight'].shape, (17, 1))
         self.assertTrue(
             np.allclose(results['target_weight'],
