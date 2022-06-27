@@ -5,18 +5,18 @@ _base_ = [
 
 log_config = dict(interval=10)
 checkpoint_config = dict(interval=25)
-evaluation = dict(interval=50, metric='mAP', save_best='AP')
+evaluation = dict(interval=25, metric='mAP', save_best='AP')
 
-optimizer = dict(type='Adam', lr=0.006)
+optimizer = dict(type='Adam', lr=0.008)
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
-    policy='step',
+    policy='CosineAnnealing',
     warmup='linear',
     warmup_iters=500,
     warmup_ratio=0.001,
-    step=[450, 550])
-total_epochs = 600
+    min_lr=0.00001)
+total_epochs = 500
 channel_cfg = dict(
     dataset_joints=14,
     dataset_channel=[
@@ -136,10 +136,10 @@ val_pipeline = [
 test_pipeline = val_pipeline
 
 # TODO: unify dataset path
-data_root = '/dev/shm/pose/data/crowd'
+data_root = '/dev/shm/pose/data/crowdpose'
 data = dict(
-    workers_per_gpu=8,
-    train_dataloader=dict(samples_per_gpu=48),
+    workers_per_gpu=4,
+    train_dataloader=dict(samples_per_gpu=32),
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
