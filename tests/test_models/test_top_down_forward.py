@@ -240,6 +240,41 @@ def test_topdown_forward():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
         _ = detector.forward_dummy(imgs)
 
+    model_cfg = dict(
+        type='TopDown',
+        pretrained=None,
+        backbone=dict(type='ResNet', depth=18),
+        neck=dict(type='GlobalAveragePooling'),
+        keypoint_head=dict(
+            type='DeepposeRegressionHead',
+            in_channels=512,
+            num_joints=17,
+            loss_keypoint=dict(type='SmoothL1Loss', use_target_weight=True)),
+        train_cfg=dict(),
+        test_cfg=dict(
+            flip_test=True,
+            regression_flip_shift=True,
+        ))
+
+    detector = TopDown(model_cfg['backbone'], model_cfg['neck'],
+                       model_cfg['keypoint_head'], model_cfg['train_cfg'],
+                       model_cfg['test_cfg'], model_cfg['pretrained'])
+
+    with pytest.raises(TypeError):
+        detector.init_weights(pretrained=dict())
+    detector.pretrained = model_cfg['pretrained']
+    detector.init_weights()
+
+    input_shape = (1, 3, 256, 256)
+    mm_inputs = _demo_mm_inputs(input_shape)
+
+    imgs = mm_inputs.pop('imgs')
+    img_metas = mm_inputs.pop('img_metas')
+
+    # Test forward test
+    with torch.no_grad():
+        _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
+
 
 def test_posewarper_forward():
     # test PoseWarper
