@@ -27,16 +27,6 @@ class BasePoseDataset(BaseDataset):
             metainfo = parse_pose_metainfo(metainfo)
         return metainfo
 
-    @property
-    def img_prefix(self) -> str:
-        """The prefix of images.
-
-        Returns:
-            str: The prefix of images.
-        """
-        img_prefix = self.data_prefix.get('img', None)
-        return img_prefix or ''
-
     @force_full_init
     def prepare_data(self, idx) -> Any:
         """Get data processed by ``self.pipeline``.
