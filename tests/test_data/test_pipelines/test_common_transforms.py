@@ -215,7 +215,7 @@ class TestRandomHalfBody(TestCase):
 
         # keep lower body
         transform = RandomHalfBody(
-            prob=1., min_total_keypoints=6, min_half_keypoints=2)
+            prob=1., min_total_keypoints=6, min_half_keypoints=4)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['upper_body_ids']] = 0
         results = transform(results)
@@ -251,10 +251,8 @@ class TestRandomHalfBody(TestCase):
         transform = RandomHalfBody(
             prob=1., min_total_keypoints=4, min_half_keypoints=3)
         results = deepcopy(self.data_info)
-        results['keypoints_visible'][:,
-                                     self.data_info['upper_body_ids'][2:]] = 0
-        results['keypoints_visible'][:,
-                                     self.data_info['lower_body_ids'][2:]] = 0
+        results['keypoints_visible'][:, results['upper_body_ids'][2:]] = 0
+        results['keypoints_visible'][:, results['lower_body_ids'][2:]] = 0
         results = transform(results)
 
         self.assertTrue(

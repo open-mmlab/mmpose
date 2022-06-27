@@ -337,10 +337,13 @@ class RandomHalfBody(BaseTransform):
                 if (num_upper < self.min_half_keypoints
                         and num_lower < self.min_half_keypoints):
                     indices = None
-                elif num_lower < self.min_half_keypoints or select_upper:
+                elif num_lower < self.min_half_keypoints:
                     indices = upper_valid_ids
-                else:
+                elif num_upper < self.min_half_keypoints:
                     indices = lower_valid_ids
+                else:
+                    indices = (
+                        upper_body_ids if select_upper else lower_body_ids)
 
             half_body_ids.append(indices)
 
