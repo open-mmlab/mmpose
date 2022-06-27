@@ -124,13 +124,13 @@ class DeepFashionDataset(BaseCocoDataset):
         """
         if subset == '' or subset == 'full':
             cls.METAINFO = dict(
-                from_config='configs/_base_/datasets/deepfashion_full.py')
+                from_file='configs/_base_/datasets/deepfashion_full.py')
         elif subset == 'upper':
             cls.METAINFO = dict(
-                from_config='configs/_base_/datasets/deepfashion_upper.py')
+                from_file='configs/_base_/datasets/deepfashion_upper.py')
         elif subset == 'lower':
             cls.METAINFO = dict(
-                from_config='configs/_base_/datasets/deepfashion_lower.py')
+                from_file='configs/_base_/datasets/deepfashion_lower.py')
         else:
             raise ValueError(
                 f'{cls.__class__.__name__} got invalid subset: '

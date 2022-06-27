@@ -100,7 +100,7 @@ class MpiiTrbDataset(BaseCocoDataset):
             image. Default: 1000.
     """
 
-    METAINFO: dict = dict(from_config='configs/_base_/datasets/mpii_trb.py')
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/mpii_trb.py')
 
     def _load_annotations(self) -> List[dict]:
         """Load data from annotations in MPII-TRB format."""
@@ -114,9 +114,9 @@ class MpiiTrbDataset(BaseCocoDataset):
         data_list = []
 
         for ann in data['annotations']:
-            image_id = ann['image_id']
-            img_h = imgid2info[image_id]['height']
-            img_w = imgid2info[image_id]['width']
+            img_id = ann['image_id']
+            img_h = imgid2info[img_id]['height']
+            img_w = imgid2info[img_id]['width']
 
             center = np.array(ann['center'], dtype=np.float32)
             # note the scale here
@@ -131,11 +131,11 @@ class MpiiTrbDataset(BaseCocoDataset):
             data_info = {
                 'id':
                 ann['id'],
-                'image_id':
-                image_id,
-                'image_file':
-                osp.join(self.img_prefix, imgid2info[image_id]['file_name']),
-                'image_shape': (img_h, img_w, 3),
+                'img_id':
+                img_id,
+                'img_path':
+                osp.join(self.img_prefix, imgid2info[img_id]['file_name']),
+                'img_shape': (img_h, img_w, 3),
                 'bbox_center':
                 center,
                 'bbox_scale':

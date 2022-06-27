@@ -25,9 +25,9 @@ class TestHalpeDataset(TestCase):
                              data_mode: str = 'topdown'):
         if data_mode == 'topdown':
             expected_keys = dict(
-                image_id=int,
-                image_file=str,
-                image_shape=tuple,
+                img_id=int,
+                img_path=str,
+                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
@@ -35,9 +35,9 @@ class TestHalpeDataset(TestCase):
                 id=int)
         elif data_mode == 'bottomup':
             expected_keys = dict(
-                image_id=int,
-                image_file=str,
-                image_shape=tuple,
+                img_id=int,
+                img_path=str,
+                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
