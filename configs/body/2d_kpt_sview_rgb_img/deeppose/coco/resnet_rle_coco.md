@@ -65,8 +65,6 @@
 }
 ```
 
-```
-
 </details>
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
@@ -77,4 +75,3 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 | [deeppose_resnet_101_rle](/configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res101_coco_256x192_rle.py) |  256x192   | 0.722 |      0.894      |      0.794      | 0.768 |      0.930      | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192_rle-16c3d461_20220615.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res101_coco_256x192_rle_20220615.log.json) |
 | [deeppose_resnet_152_rle](/configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_256x192_rle.py) |  256x192   | 0.731 |      0.897      |      0.805      | 0.777 |      0.933      | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192_rle-c05bdccf_20220615.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_256x192_rle_20220615.log.json) |
 | [deeppose_resnet_152_rle](/configs/body/2d_kpt_sview_rgb_img/deeppose/coco/res152_coco_384x288_rle.py) |  384x288   | 0.749 |      0.901      |      0.815      | 0.793 |      0.935      | [ckpt](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_384x288_rle-b77c4c37_20220624.pth) | [log](https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res152_coco_384x288_rle_20220624.log.json) |
-```
