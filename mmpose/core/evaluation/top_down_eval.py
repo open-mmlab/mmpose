@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -7,7 +8,8 @@ import numpy as np
 from mmpose.core.post_processing import transform_preds
 
 
-def _calc_distances(preds, targets, mask, normalize):
+def _calc_distances(preds: np.ndarray, targets: np.ndarray, mask: np.ndarray,
+                    normalize: np.ndarray) -> np.ndarray:
     """Calculate the normalized distances between preds and target.
 
     Note:
@@ -39,7 +41,7 @@ def _calc_distances(preds, targets, mask, normalize):
     return distances.T
 
 
-def _distance_acc(distances, thr=0.5):
+def _distance_acc(distances: np.ndarray, thr: float = 0.5) -> float:
     """Return the percentage below the distance threshold, while ignoring
     distances values with -1.
 
@@ -60,7 +62,7 @@ def _distance_acc(distances, thr=0.5):
     return -1
 
 
-def _get_max_preds(heatmaps):
+def _get_max_preds(heatmaps: np.ndarray) -> tuple:
     """Get keypoint predictions from score maps.
 
     Note:
@@ -95,7 +97,7 @@ def _get_max_preds(heatmaps):
     return preds, maxvals
 
 
-def _get_max_preds_3d(heatmaps):
+def _get_max_preds_3d(heatmaps: np.ndarray) -> tuple:
     """Get keypoint predictions from 3D score maps.
 
     Note:
@@ -133,7 +135,11 @@ def _get_max_preds_3d(heatmaps):
     return preds, maxvals
 
 
-def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
+def pose_pck_accuracy(output: np.ndarray,
+                      target: np.ndarray,
+                      mask: np.ndarray,
+                      thr: float = 0.05,
+                      normalize: Optional[np.ndarray] = None):
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints from heatmaps.
 
@@ -176,7 +182,8 @@ def pose_pck_accuracy(output, target, mask, thr=0.05, normalize=None):
     return keypoint_pck_accuracy(pred, gt, mask, thr, normalize)
 
 
-def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
+def keypoint_pck_accuracy(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
+                          thr: np.ndarray, normalize: np.ndarray) -> tuple:
     """Calculate the pose accuracy of PCK for each individual keypoint and the
     averaged accuracy across all keypoints for coordinates.
 
@@ -215,9 +222,12 @@ def keypoint_pck_accuracy(pred, gt, mask, thr, normalize):
     return acc, avg_acc, cnt
 
 
-def keypoint_auc(pred, gt, mask, normalize, num_step=20):
-    """Calculate the pose accuracy of PCK for each individual keypoint and the
-    averaged accuracy across all keypoints for coordinates.
+def keypoint_auc(pred: np.ndarray,
+                 gt: np.ndarray,
+                 mask: np.ndarray,
+                 normalize: np.ndarray,
+                 num_step: int = 20) -> float:
+    """Calculate the Area under curve (AUC) of keypoint PCK accuracy.
 
     Note:
         - batch_size: N
@@ -230,9 +240,10 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
             joints, and True for visible. Invisible joints will be ignored for
             accuracy calculation.
         normalize (float): Normalization factor.
+        num_step (int): number of steps to calculate auc.
 
     Returns:
-        float: Area under curve.
+        float: Area under curve (AUC) of keypoint PCK accuracy.
     """
     nor = np.tile(np.array([[normalize, normalize]]), (pred.shape[0], 1))
     x = [1.0 * i / num_step for i in range(num_step)]
@@ -247,7 +258,8 @@ def keypoint_auc(pred, gt, mask, normalize, num_step=20):
     return auc
 
 
-def keypoint_nme(pred, gt, mask, normalize_factor):
+def keypoint_nme(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
+                 normalize_factor: np.ndarray) -> float:
     """Calculate the normalized mean error (NME).
 
     Note:
@@ -270,7 +282,7 @@ def keypoint_nme(pred, gt, mask, normalize_factor):
     return distance_valid.sum() / max(1, len(distance_valid))
 
 
-def keypoint_epe(pred, gt, mask):
+def keypoint_epe(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray) -> float:
     """Calculate the end-point error.
 
     Note:
@@ -295,7 +307,7 @@ def keypoint_epe(pred, gt, mask):
     return distance_valid.sum() / max(1, len(distance_valid))
 
 
-def _taylor(heatmap, coord):
+def _taylor(heatmap: np.ndarray, coord: np.ndarray) -> np.ndarray:
     """Distribution aware coordinate decoding method.
 
     Note:
@@ -332,7 +344,9 @@ def _taylor(heatmap, coord):
     return coord
 
 
-def post_dark_udp(coords, batch_heatmaps, kernel=3):
+def post_dark_udp(coords: np.ndarray,
+                  batch_heatmaps: np.ndarray,
+                  kernel: int = 3) -> np.ndarray:
     """DARK post-pocessing. Implemented by udp. Paper ref: Huang et al. The
     Devil is in the Details: Delving into Unbiased Data Processing for Human
     Pose Estimation (CVPR 2020). Zhang et al. Distribution-Aware Coordinate
@@ -396,7 +410,7 @@ def post_dark_udp(coords, batch_heatmaps, kernel=3):
     return coords
 
 
-def _gaussian_blur(heatmaps, kernel=11):
+def _gaussian_blur(heatmaps: np.ndarray, kernel: int = 11) -> np.ndarray:
     """Modulate heatmap distribution with Gaussian.
      sigma = 0.3*((kernel_size-1)*0.5-1)+0.8
      sigma~=3 if k=17
@@ -438,7 +452,8 @@ def _gaussian_blur(heatmaps, kernel=11):
     return heatmaps
 
 
-def keypoints_from_regression(regression_preds, center, scale, img_size):
+def keypoints_from_regression(regression_preds: np.ndarray, center: np.ndarray,
+                              scale: np.ndarray, img_size: List[int]) -> tuple:
     """Get final keypoint predictions from regression vectors and transform
     them back to the image.
 
@@ -471,15 +486,15 @@ def keypoints_from_regression(regression_preds, center, scale, img_size):
     return preds, maxvals
 
 
-def keypoints_from_heatmaps(heatmaps,
-                            center,
-                            scale,
-                            unbiased=False,
-                            post_process='default',
-                            kernel=11,
-                            valid_radius_factor=0.0546875,
-                            use_udp=False,
-                            target_type='GaussianHeatmap'):
+def keypoints_from_heatmaps(heatmaps: np.ndarray,
+                            center: np.ndarray,
+                            scale: np.ndarray,
+                            unbiased: bool = False,
+                            post_process: Optional[str] = 'default',
+                            kernel: int = 11,
+                            valid_radius_factor: float = 0.0546875,
+                            use_udp: bool = False,
+                            target_type: str = 'GaussianHeatmap') -> tuple:
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
 
@@ -494,27 +509,29 @@ def keypoints_from_heatmaps(heatmaps,
         center (np.ndarray[N, 2]): Center of the bounding box (x, y).
         scale (np.ndarray[N, 2]): Scale of the bounding box
             wrt height/width.
-        post_process (str/None): Choice of methods to post-process
-            heatmaps. Currently supported: None, 'default', 'unbiased',
-            'megvii'.
         unbiased (bool): Option to use unbiased decoding. Mutually
             exclusive with megvii.
             Note: this arg is deprecated and unbiased=True can be replaced
             by post_process='unbiased'
             Paper ref: Zhang et al. Distribution-Aware Coordinate
             Representation for Human Pose Estimation (CVPR 2020).
+            Default: ``False``.
+        post_process (str, optional): Choice of methods to post-process
+            heatmaps. Currently supported: None, 'default', 'unbiased',
+            'megvii'. Default: ``'default'``.
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
-            K=17 for sigma=3 and k=11 for sigma=2.
+            K=17 for sigma=3 and k=11 for sigma=2. Default: 11.
         valid_radius_factor (float): The radius factor of the positive area
-            in classification heatmap for UDP.
-        use_udp (bool): Use unbiased data processing.
+            in classification heatmap for UDP. Default: 0.0546875.
+        use_udp (bool): Use unbiased data processing. Default: ``False``.
         target_type (str): 'GaussianHeatmap' or 'CombinedTarget'.
             GaussianHeatmap: Classification target with gaussian distribution.
             CombinedTarget: The combination of classification target
             (response map) and regression target (offset map).
             Paper ref: Huang et al. The Devil is in the Details: Delving into
             Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+            Default: ``'GaussianHeatmap'``.
 
     Returns:
         tuple: A tuple containing keypoint predictions and scores.
@@ -622,7 +639,8 @@ def keypoints_from_heatmaps(heatmaps,
     return preds, maxvals
 
 
-def keypoints_from_heatmaps3d(heatmaps, center, scale):
+def keypoints_from_heatmaps3d(heatmaps: np.ndarray, center: np.ndarray,
+                              scale: np.ndarray) -> tuple:
     """Get final keypoint predictions from 3d heatmaps and transform them back
     to the image.
 
@@ -655,7 +673,10 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
     return preds, maxvals
 
 
-def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
+def multilabel_classification_accuracy(pred: np.ndarray,
+                                       gt: np.ndarray,
+                                       mask: np.ndarray,
+                                       thr: float = 0.5) -> float:
     """Get multi-label classification accuracy.
 
     Note:
@@ -666,7 +687,8 @@ def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
         pred (np.ndarray[N, L, 2]): model predicted labels.
         gt (np.ndarray[N, L, 2]): ground-truth labels.
         mask (np.ndarray[N, 1] or np.ndarray[N, L] ): reliability of
-        ground-truth labels.
+            ground-truth labels.
+        thr (float): Threshold for calculating accuracy.
 
     Returns:
         float: multi-label classification accuracy.
