@@ -4,7 +4,7 @@ import warnings
 import cv2
 import numpy as np
 
-from mmpose.core.bbox import bbox_xywh2cs
+from mmpose.core.bbox.transforms_old import bbox_xywh2cs
 from mmpose.core.post_processing import (affine_transform, fliplr_joints,
                                          get_affine_transform, get_warp_matrix,
                                          warp_affine_joints)
@@ -410,6 +410,7 @@ class TopDownGenerateTarget:
                 feat_stride = image_size / [W, H]
                 mu_x = joints_3d[joint_id][0] / feat_stride[0]
                 mu_y = joints_3d[joint_id][1] / feat_stride[1]
+
                 # Check that any part of the gaussian is in-bounds
                 ul = [mu_x - tmp_size, mu_y - tmp_size]
                 br = [mu_x + tmp_size + 1, mu_y + tmp_size + 1]

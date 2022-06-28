@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 
-from mmpose.core.bbox.transforms import bbox_cs2xywh
+from mmpose.core.bbox.transforms_old import bbox_cs2xywh
 
 
 def convert_db_to_output(db, batch_size=2, keys=None, is_3d=False):

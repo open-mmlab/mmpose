@@ -1,5 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from mmengine.dataset import BaseDataset
+from copy import deepcopy
+from typing import Any
+
+from mmengine.dataset import BaseDataset, force_full_init
 
 from ..utils import parse_pose_metainfo
 
@@ -24,12 +27,33 @@ class BasePoseDataset(BaseDataset):
             metainfo = parse_pose_metainfo(metainfo)
         return metainfo
 
-    @property
-    def img_prefix(self) -> str:
-        """The prefix of images.
+    @force_full_init
+    def prepare_data(self, idx) -> Any:
+        """Get data processed by ``self.pipeline``.
+
+        :class:`BasePoseDataset` overrides this method from
+        :class:`mmengine.dataset.BaseDataset` to add the metainfo into
+        the data_info before it is passed to the pipeline.
+
+        Args:
+            idx (int): The index of ``data_info``.
 
         Returns:
-            str: The prefix of images.
+            Any: Depends on ``self.pipeline``.
         """
-        img_prefix = self.data_prefix.get('img', None)
-        return img_prefix or ''
+        data_info = self.get_data_info(idx)
+
+        # Add metainfo items that are required in the pipeline and the model
+        metainfo_keys = [
+            'upper_body_ids', 'lower_body_ids', 'flip_pairs',
+            'keypoint_weights'
+        ]
+
+        for key in metainfo_keys:
+            assert key not in data_info, (
+                f'"{key}" is a reserved key for `metainfo`, but already '
+                'exists in the `data_info`.')
+
+            data_info[key] = deepcopy(self._metainfo[key])
+
+        return self.pipeline(data_info)
