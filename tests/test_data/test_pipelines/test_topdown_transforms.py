@@ -165,21 +165,6 @@ class TestTopDownGenerateHeatmap(TestCase):
         self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
         self.assertEqual(results['target_weight'].shape, (17, 1))
 
-        # encoding: udp gaussian
-        pipeline = Compose([
-            TopDownAffine(input_size=(192, 256), use_udp=True),
-            TopDownGenerateHeatmap(
-                heatmap_size=(48, 64),
-                encoding='udp',
-                sigma=2.0,
-                udp_combined_map=False,
-            )
-        ])
-        results = pipeline(deepcopy(self.data_info))
-
-        self.assertEqual(results['gt_heatmap'].shape, (17, 64, 48))
-        self.assertEqual(results['target_weight'].shape, (17, 1))
-
         # encoding: udp gaussian (multi-scale)
         pipeline = Compose([
             TopDownAffine(input_size=(192, 256), use_udp=True),

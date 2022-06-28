@@ -59,7 +59,7 @@ def bbox_xywh2cs(bbox: np.ndarray,
             (n, 2)
     """
 
-    # convert single bbox from (4, ) to (4, 1)
+    # convert single bbox from (4, ) to (1, 4)
     dim = bbox.ndim
     if dim == 1:
         bbox = bbox[None, :]
