@@ -37,6 +37,8 @@ class TopDownAffine(BaseTransform):
         - input_size
 
     Args:
+        input_size (tuple): The input image size of the model in [w, h]. The
+            bbox region will be cropped and resize to `input_size`
         use_udp (bool): Whether use unbiased data processing. See
             `UDP (CVPR 2020)`_ for details. Defaults to ``False``
 
@@ -217,7 +219,7 @@ class TopDownGenerateHeatmap(BaseTransform):
         self.use_meta_keypoint_weight = use_meta_keypoint_weight
 
         # get heatmap encoder and its arguments
-        self.encoder, self.encoder_args = self._get_encoder()
+        self.encoder, self.encoder_kwargs = self._get_encoder()
 
     def _get_encoder(self):
         """Get heatmap generation function and arguments.
@@ -225,7 +227,7 @@ class TopDownGenerateHeatmap(BaseTransform):
         Returns:
             tuple:
             - encoder [callable]: The heatmap generation function
-            - encoder_args [dict | list[dict]]: The keyword arguments of
+            - encoder_kwargs [dict | list[dict]]: The keyword arguments of
                 ``encoder``. A list means to generate multi-level
                 heatmaps where each element is the keyword arguments of
                 one level
@@ -235,22 +237,25 @@ class TopDownGenerateHeatmap(BaseTransform):
             encoder = generate_msra_heatmap
 
             if isinstance(self.sigma, (list, tuple)):
-                encoder_args = [{
+                encoder_kwargs = [{
                     'sigma': sigma,
                     'unbiased': self.unbiased
                 } for sigma in self.sigma]
             else:
-                encoder_args = {'sigma': self.sigma, 'unbiased': self.unbiased}
+                encoder_kwargs = {
+                    'sigma': self.sigma,
+                    'unbiased': self.unbiased
+                }
 
         elif self.encoding == 'megvii':
             encoder = generate_megvii_heatmap
 
             if is_list_of(self.kernel_size, (list, tuple)):
-                encoder_args = [{
+                encoder_kwargs = [{
                     'kernel_size': kernel_size
                 } for kernel_size in self.kernel_size]
             else:
-                encoder_args = {'kernel_size': self.kernel_size}
+                encoder_kwargs = {'kernel_size': self.kernel_size}
 
         elif self.encoding == 'udp':
             encoder = generate_udp_heatmap
@@ -261,12 +266,12 @@ class TopDownGenerateHeatmap(BaseTransform):
                 factor = self.sigma
 
             if isinstance(factor, (list, tuple)):
-                encoder_args = [{
+                encoder_kwargs = [{
                     'factor': _factor,
                     'combined_map': self.udp_combined_map
                 } for _factor in factor]
             else:
-                encoder_args = {
+                encoder_kwargs = {
                     'factor': factor,
                     'combined_map': self.udp_combined_map
                 }
@@ -274,7 +279,7 @@ class TopDownGenerateHeatmap(BaseTransform):
         else:
             raise ValueError(f'Invalid encoding type {self.encoding}')
 
-        return encoder, encoder_args
+        return encoder, encoder_kwargs
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
@@ -296,20 +301,20 @@ class TopDownGenerateHeatmap(BaseTransform):
         keypoints = results['keypoints'][0]
         keypoints_visible = results['keypoints_visible'][0]
 
-        encoder_args = deepcopy(self.encoder_args)
+        encoder_kwargs = deepcopy(self.encoder_kwargs)
 
-        if isinstance(encoder_args, list):
+        if isinstance(encoder_kwargs, list):
             # multi-level heatmap
             heatmaps = []
             keypoint_weights = []
 
-            for args in encoder_args:
+            for _kwargs in encoder_kwargs:
                 _heatmap, _keypoint_weight = self.encoder(
                     keypoints=keypoints,
                     keypoints_visible=keypoints_visible,
                     image_size=results['input_size'],
                     heatmap_size=self.heatmap_size,
-                    **args)
+                    **_kwargs)
 
                 heatmaps.append(_heatmap)
                 keypoint_weights.append(_keypoint_weight)
@@ -324,7 +329,7 @@ class TopDownGenerateHeatmap(BaseTransform):
                 keypoints_visible=keypoints_visible,
                 image_size=results['input_size'],
                 heatmap_size=self.heatmap_size,
-                **encoder_args)
+                **encoder_kwargs)
 
         # multiply meta keypoint weight
         if self.use_meta_keypoint_weight:
