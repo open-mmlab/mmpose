@@ -137,7 +137,8 @@ class MpiiTrbDataset(BaseCocoDataset):
                 'img_id':
                 img_id,
                 'img_path':
-                osp.join(self.img_prefix, imgid2info[img_id]['file_name']),
+                osp.join(self.data_prefix['img_path'],
+                         imgid2info[img_id]['file_name']),
                 'img_shape': (img_h, img_w, 3),
                 'bbox_center':
                 center,

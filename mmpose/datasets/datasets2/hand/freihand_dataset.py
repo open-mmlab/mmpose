@@ -99,7 +99,7 @@ class FreiHandDataset(BaseCocoDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.img_prefix, img['file_name'])
+        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # use the entire image which is 224x224
