@@ -80,3 +80,15 @@ def pvt_convert(ckpt):
         new_ckpt[new_k] = new_v
 
     return new_ckpt
+
+
+def tcformer_convert(ckpt):
+    new_ckpt = OrderedDict()
+    # Process the concat between q linear weights and kv linear weights
+    for k, v in ckpt.items():
+        if 'patch_embed' in k:
+            new_k = k.replace('.proj.', '.projection.')
+        else:
+            new_k = k
+        new_ckpt[new_k] = v
+    return new_ckpt

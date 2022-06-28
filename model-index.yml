@@ -140,6 +140,7 @@ Import:
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_dark_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/resnet_coco-wholebody.yml
+- configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/tcformer_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/vipnas_dark_coco-wholebody.yml
 - configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/halpe/hrnet_dark_halpe.yml

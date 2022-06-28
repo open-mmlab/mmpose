@@ -1,0 +1,30 @@
+Collections:
+- Name: TCFormer
+  Paper:
+    Title: 'Not All Tokens Are Equal: Human-centric Visual Analysis via Token Clustering
+      Transformer'
+    URL: https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/tcformer.md
+Models:
+- Config: configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/tcformer_coco_wholebody_256x192.py
+  In Collection: TCFormer
+  Metadata:
+    Architecture:
+    - TCFormer
+    Training Data: COCO-WholeBody
+  Name: topdown_heatmap_tcformer_coco_wholebody_256x192
+  Results:
+  - Dataset: COCO-WholeBody
+    Metrics:
+      Body AP: 0.691
+      Body AR: 0.769
+      Face AP: 0.65
+      Face AR: 0.747
+      Foot AP: 0.69
+      Foot AR: 0.809
+      Hand AP: 0.534
+      Hand AR: 0.647
+      Whole AP: 0.574
+      Whole AR: 0.678
+    Task: Wholebody 2D Keypoint
+  Weights: https://download.openmmlab.com/mmpose/top_down/tcformer/tcformer_coco-wholebody_256x192-a0720efa_20220627.pth
