@@ -64,7 +64,7 @@ class BaseCocoDataset(BasePoseDataset):
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img=None, ann=None),
+                 data_prefix: dict = dict(img_path=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,
@@ -164,7 +164,7 @@ class BaseCocoDataset(BasePoseDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.img_prefix, img['file_name'])
+        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -319,7 +319,7 @@ class BaseCocoDataset(BasePoseDataset):
 
             img = coco.loadImgs(det['image_id'])[0]
 
-            img_path = osp.join(self.img_prefix, img['file_name'])
+            img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
             bbox = np.array(det['bbox'][:4], dtype=np.float32).reshape(1, 4)
             bbox_score = np.array(det['score'], dtype=np.float32).reshape(1)
 

@@ -87,13 +87,17 @@ class MpiiDataset(BaseCocoDataset):
         data_list = []
         ann_id = 0
 
+        # mpii bbox scales are normalized with factor 200.
+        pixel_std = 200.
+
         for ann in anns:
             center = np.array(ann['center'], dtype=np.float32)
-            scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
+            scale = np.array([ann['scale'], ann['scale']],
+                             dtype=np.float32) * pixel_std
 
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:
-                center[1] = center[1] + 15 * scale[1]
+                center[1] = center[1] + 15 / pixel_std * scale[1]
 
             # MPII uses matlab format, index is 1-based,
             # we should first convert to 0-based index
@@ -115,7 +119,8 @@ class MpiiDataset(BaseCocoDataset):
             data_info = {
                 'id': ann_id,
                 'img_id': int(ann['image'].split('.')[0]),
-                'img_path': osp.join(self.img_prefix, ann['image']),
+                'img_path': osp.join(self.data_prefix['img_path'],
+                                     ann['image']),
                 'bbox_center': center,
                 'bbox_scale': scale,
                 'bbox_score': np.ones(1, dtype=np.float32),
