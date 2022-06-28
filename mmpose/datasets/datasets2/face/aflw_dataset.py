@@ -107,4 +107,11 @@ class AFLWDataset(BaseCocoDataset):
             'iscrowd': ann['iscrowd'],
             'id': ann['id'],
         }
+
+        if self.test_mode:
+            # 'box_size' is used as normalization factor
+            assert 'box_size' in ann, '"box_size" is missing in annotation, '\
+                                      'which is required for evaluation.'
+            data_info['box_size'] = ann['box_size']
+
         return data_info
