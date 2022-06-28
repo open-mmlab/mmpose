@@ -110,10 +110,10 @@ class TestTopDownTransformAlignment(TestCase):
                     rtol=1e-5,
                     atol=1e-5), '"gt_heatmap" not aligned')
 
-        if 'gt_regression' in results2:
+        if 'gt_reg_label' in results2:
             self.assertTrue(
-                np.allclose(results2['gt_regression'], results1['target']),
-                '"gt_regression" not aligned')
+                np.allclose(results2['gt_reg_label'], results1['target']),
+                '"gt_reg_label" not aligned')
 
         self.assertTrue(
             np.allclose(results2['target_weight'], results1['target_weight']),

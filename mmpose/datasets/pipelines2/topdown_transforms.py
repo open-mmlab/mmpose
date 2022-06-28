@@ -377,7 +377,7 @@ class TopDownGenerateRegressionLabel(BaseTransform):
 
     Added Keys:
 
-        - gt_regression
+        - gt_reg_label
         - target_weight
 
     Args:
@@ -420,7 +420,7 @@ class TopDownGenerateRegressionLabel(BaseTransform):
         if self.use_meta_keypoint_weight:
             target_weight *= results['keypoint_weights'][:, None]
 
-        results['gt_regression'] = reg_label
+        results['gt_reg_label'] = reg_label
         results['target_weight'] = target_weight
 
         return results

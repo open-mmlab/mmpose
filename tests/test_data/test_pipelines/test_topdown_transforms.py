@@ -315,7 +315,7 @@ class TestTopDownGenerateRegressionLabel(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['gt_regression'].shape, (17, 2))
+        self.assertEqual(results['gt_reg_label'].shape, (17, 2))
         self.assertEqual(results['target_weight'].shape, (17, 1))
         self.assertTrue(np.allclose(results['target_weight'], 1))
 
@@ -326,7 +326,7 @@ class TestTopDownGenerateRegressionLabel(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['gt_regression'].shape, (17, 2))
+        self.assertEqual(results['gt_reg_label'].shape, (17, 2))
         self.assertEqual(results['target_weight'].shape, (17, 1))
         self.assertTrue(
             np.allclose(results['target_weight'],
