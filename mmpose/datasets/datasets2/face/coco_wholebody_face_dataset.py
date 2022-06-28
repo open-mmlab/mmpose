@@ -81,7 +81,7 @@ class CocoWholeBodyFaceDataset(BaseCocoDataset):
         if not ann['face_valid'] or max(ann['face_kpts']) <= 0:
             return None
 
-        img_path = osp.join(self.img_prefix, img['file_name'])
+        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh

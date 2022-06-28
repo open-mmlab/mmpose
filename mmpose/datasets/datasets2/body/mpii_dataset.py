@@ -119,7 +119,8 @@ class MpiiDataset(BaseCocoDataset):
             data_info = {
                 'id': ann_id,
                 'img_id': int(ann['image'].split('.')[0]),
-                'img_path': osp.join(self.img_prefix, ann['image']),
+                'img_path': osp.join(self.data_prefix['img_path'],
+                                     ann['image']),
                 'bbox_center': center,
                 'bbox_scale': scale,
                 'bbox_score': np.ones(1, dtype=np.float32),
