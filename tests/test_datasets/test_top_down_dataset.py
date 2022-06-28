@@ -83,6 +83,8 @@ def test_top_down_COCO_dataset():
     results = convert_db_to_output(custom_dataset.db)
     infos = custom_dataset.evaluate(results, metric='mAP')
     assert_almost_equal(infos['AP'], 1.0)
+    infos = custom_dataset.evaluate(results, metric='mAP', rle_score=True)
+    assert_almost_equal(infos['AP'], 1.0)
 
     with pytest.raises(KeyError):
         _ = custom_dataset.evaluate(results, metric='PCK')
