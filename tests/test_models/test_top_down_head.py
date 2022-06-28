@@ -517,6 +517,12 @@ def test_fc_head():
     out = head(inputs)
     assert out.shape == torch.Size([1, 17, 4])
 
+    img_metas = [dict(center=np.zeros(2), scale=np.zeros(2), image_file='')]
+    result = head.decode(
+        img_metas, out.detach().cpu().numpy(), img_size=(64, 64))
+    assert 'preds' in result and result['preds'].shape == (1, 17, 3)
+    assert 'boxes' in result and result['boxes'].shape == (1, 6)
+
     target = out[:, :, 0:2]
 
     _ = head.get_loss(out, target, torch.ones_like(target))

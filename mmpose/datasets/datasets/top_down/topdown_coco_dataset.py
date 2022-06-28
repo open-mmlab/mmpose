@@ -295,17 +295,22 @@ class TopDownCocoDataset(Kpt2dSviewRgbImgTopDownDataset):
             img_kpts = kpts[image_id]
             for n_p in img_kpts:
                 box_score = n_p['score']
-                kpt_score = 0
-                valid_num = 0
-                for n_jt in range(0, num_joints):
-                    t_s = n_p['keypoints'][n_jt][2]
-                    if t_s > vis_thr:
-                        kpt_score = kpt_score + t_s
-                        valid_num = valid_num + 1
-                if valid_num != 0:
-                    kpt_score = kpt_score / valid_num
-                # rescoring
-                n_p['score'] = kpt_score * box_score
+                if kwargs.get('rle_score', False):
+                    pose_score = n_p['keypoints'][:, 2]
+                    n_p['score'] = float(box_score + np.mean(pose_score) +
+                                         np.max(pose_score))
+                else:
+                    kpt_score = 0
+                    valid_num = 0
+                    for n_jt in range(0, num_joints):
+                        t_s = n_p['keypoints'][n_jt][2]
+                        if t_s > vis_thr:
+                            kpt_score = kpt_score + t_s
+                            valid_num = valid_num + 1
+                    if valid_num != 0:
+                        kpt_score = kpt_score / valid_num
+                    # rescoring
+                    n_p['score'] = kpt_score * box_score
 
             if self.use_nms:
                 nms = soft_oks_nms if self.soft_nms else oks_nms
