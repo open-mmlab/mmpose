@@ -89,7 +89,7 @@ class DeepFashionDataset(BaseCocoDataset):
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img=None, ann=None),
+                 data_prefix: dict = dict(img_path=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,
