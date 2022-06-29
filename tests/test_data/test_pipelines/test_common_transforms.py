@@ -1,10 +1,14 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
+import os.path as osp
 from copy import deepcopy
 from unittest import TestCase
 
 import numpy as np
+from mmcv.transforms import LoadImageFromFile
 
-from mmpose.datasets.pipelines2 import (GetBboxCenterScale,
+from mmpose.datasets.pipelines2 import (Albumentation, GetBboxCenterScale,
+                                        PhotometricDistortion,
                                         RandomBboxTransform, RandomFlip,
                                         RandomHalfBody)
 
@@ -402,3 +406,65 @@ class TestRandomBboxTransform(TestCase):
             'RandomBboxTransform(shift_prob=0.3, shift_factor=0.16, '
             'scale_prob=1.0, scale_factor=0.5, rotate_prob=0.6, '
             'rotate_factor=40.0)')
+
+
+class TestAlbumentation(TestCase):
+
+    def setUp(self):
+        """Setup the valiables which are used in each test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        data_prefix = 'tests/data/coco'
+        results = dict(img_path=osp.join(data_prefix, '000000000785.jpg'))
+        load = LoadImageFromFile()
+        self.results = load(copy.deepcopy(results))
+
+    def test_transform(self):
+        # test when ``keymap`` is None
+        transform = Albumentation(transforms=[
+            dict(type='RandomBrightnessContrast', p=0.2),
+            dict(type='ToFloat')
+        ])
+        results_update = transform(copy.deepcopy(self.results))
+        self.assertEqual(results_update['img'].dtype, np.float32)
+
+    def test_repr(self):
+        # test when ``keymap`` is not None
+        transforms = [
+            dict(type='RandomBrightnessContrast', p=0.2),
+            dict(type='ToFloat')
+        ]
+        transform = Albumentation(
+            transforms=transforms, keymap={'img': 'image'})
+        self.assertEqual(
+            repr(transform), f'Albumentation(transforms={transforms})')
+
+
+class TestPhotometricDistortion(TestCase):
+
+    def setUp(self):
+        """Setup the valiables which are used in each test method.
+
+        TestCase calls functions in this order: setUp() -> testMethod() ->
+        tearDown() -> cleanUp()
+        """
+        data_prefix = 'tests/data/coco'
+        results = dict(img_path=osp.join(data_prefix, '000000000785.jpg'))
+        load = LoadImageFromFile()
+        self.results = load(copy.deepcopy(results))
+
+    def test_transform(self):
+        transform = PhotometricDistortion()
+        results_update = transform(copy.deepcopy(self.results))
+        self.assertEqual(results_update['img'].dtype, np.uint8)
+
+    def test_repr(self):
+        transform = PhotometricDistortion()
+        self.assertEqual(
+            repr(transform), ('PhotometricDistortion'
+                              '(brightness_delta=32, '
+                              'contrast_range=(0.5, 1.5), '
+                              'saturation_range=(0.5, 1.5), '
+                              'hue_delta=18)'))
