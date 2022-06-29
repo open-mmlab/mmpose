@@ -26,7 +26,7 @@ class PackPoseInputs(BaseTransform):
             (h, w, c).  Note that images may be zero padded on the \
             bottom/right if the batch tensor is larger than this shape.
 
-        - ``scale_factor``: a float indicating the preprocessing scale
+        - ``input_size``: the input size to the network
 
         - ``flip``: a boolean indicating if image flip transform was used
 
@@ -36,18 +36,24 @@ class PackPoseInputs(BaseTransform):
         meta_keys (Sequence[str], optional): Meta keys to be converted to
             ``mmcv.DataContainer`` and collected in ``data[img_metas]``.
             Defaults to ``('id', 'img_id', 'img_path', 'ori_shape',
-            'img_shape', 'scale_factor', 'flip', 'flip_direction')``
+            'img_shape', 'input_size', 'flip', 'flip_direction')``
     """
 
     INSTANCE_KEYS = [
-        'bbox', 'bbox_center', 'bbox_scale', 'bbox_rotation', 'bbox_score',
-        'keypoints', 'keypoints_visible', 'gt_reg_label', 'target_weight',
-        'mask_invalid_rle'
+        'bbox',
+        'bbox_center',
+        'bbox_scale',
+        'bbox_rotation',
+        'bbox_score',
+        'keypoints',
+        'keypoints_visible',
+        'gt_reg_label',
+        'target_weight',
     ]
 
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
-                            'img_shape', 'scale_factor', 'flip',
+                            'img_shape', 'input_size', 'flip',
                             'flip_direction')):
         self.meta_keys = meta_keys
 
