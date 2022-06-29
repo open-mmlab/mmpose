@@ -1,8 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-# TODO: use real PixelData once it is ready in MMEngine
-from mmengine.data import BaseDataElement
-from mmengine.data import BaseDataElement as PixelData
-from mmengine.data import InstanceData
+from mmengine.data import BaseDataElement, InstanceData, PixelData
 
 
 class PoseDataSample(BaseDataElement):

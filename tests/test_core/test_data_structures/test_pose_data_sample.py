@@ -3,8 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 import torch
-from mmengine.data import BaseDataElement as PixelData
-from mmengine.data import InstanceData
+from mmengine.data import InstanceData, PixelData
 
 from mmpose.core import PoseDataSample
 
