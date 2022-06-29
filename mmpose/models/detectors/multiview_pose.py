@@ -14,7 +14,7 @@ from mmpose.core.camera import SimpleCamera, SimpleCameraTorch
 from mmpose.core.post_processing.post_transforms import (
     affine_transform_torch, get_affine_transform)
 from .. import builder
-from ..builder import POSENETS
+from ..builder import BACKBONES, HEADS, POSENETS
 from ..utils.misc import torch_meshgrid_ij
 from .base import BasePose
 
@@ -150,6 +150,7 @@ class DetectAndRegress(BasePose):
 
     def __init__(self,
                  backbone,
+                 keypoint_head,
                  human_detector,
                  pose_regressor,
                  train_cfg=None,
@@ -158,11 +159,16 @@ class DetectAndRegress(BasePose):
                  freeze_2d=True):
         super(DetectAndRegress, self).__init__()
         if backbone is not None:
-            self.backbone = builder.build_posenet(backbone)
-            if self.training and pretrained is not None:
-                load_checkpoint(self.backbone, pretrained)
+            self.backbone = BACKBONES.build(backbone)
         else:
             self.backbone = None
+        if keypoint_head is not None:
+            self.keypoint_head = HEADS.build(keypoint_head)
+        else:
+            self.keypoint_head = None
+
+        if self.training and pretrained is not None:
+            load_checkpoint(self, pretrained)
 
         self.freeze_2d = freeze_2d
         self.human_detector = builder.MODELS.build(human_detector)
@@ -188,8 +194,11 @@ class DetectAndRegress(BasePose):
             Module: self
         """
         super().train(mode)
-        if mode and self.freeze_2d and self.backbone is not None:
-            self._freeze(self.backbone)
+        if mode and self.freeze_2d:
+            if self.backbone is not None:
+                self._freeze(self.backbone)
+            if self.keypoint_head is not None:
+                self._freeze(self.keypoint_head)
 
         return self
 
@@ -283,6 +292,12 @@ class DetectAndRegress(BasePose):
 
         return outputs
 
+    def predict_heatmap(self, img):
+        output = self.backbone(img)
+        output = self.keypoint_head(output)
+
+        return output
+
     def forward_train(self,
                       img,
                       img_metas,
@@ -331,7 +346,7 @@ class DetectAndRegress(BasePose):
             feature_maps = []
             assert isinstance(img, list)
             for img_ in img:
-                feature_maps.append(self.backbone.forward_dummy(img_)[0])
+                feature_maps.append(self.predict_heatmap(img_)[0])
 
         losses = dict()
         human_candidates, human_loss = self.human_detector.forward_train(
@@ -400,7 +415,7 @@ class DetectAndRegress(BasePose):
             feature_maps = []
             assert isinstance(img, list)
             for img_ in img:
-                feature_maps.append(self.backbone.forward_dummy(img_)[0])
+                feature_maps.append(self.predict_heatmap(img_)[0])
 
         human_candidates = self.human_detector.forward_test(
             None, img_metas, feature_maps)
