@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
+from copy import deepcopy
 from itertools import filterfalse, groupby
 from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
                     Union)
@@ -7,15 +8,16 @@ from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
 import numpy as np
 import xtcocotools.mask as cocomask
 from mmcv.fileio import load
+from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
-from .base_pose_dataset import BasePoseDataset
+from ..utils import parse_pose_metainfo
 
 
 @DATASETS.register_module()
-class BaseCocoDataset(BasePoseDataset):
+class BaseCocoDataset(BaseDataset):
     """Base class for COCO-style datasets.
 
     Args:
@@ -105,6 +107,53 @@ class BaseCocoDataset(BasePoseDataset):
             test_mode=test_mode,
             lazy_init=lazy_init,
             max_refetch=max_refetch)
+
+    @classmethod
+    def _load_metainfo(cls, metainfo: dict = None) -> dict:
+        """Collect meta information from the dictionary of meta.
+
+        Args:
+            metainfo (dict): Raw data of pose meta information.
+
+        Returns:
+            dict: Parsed meta information.
+        """
+        metainfo = super()._load_metainfo(metainfo)
+        # parse pose metainfo if it has been assigned
+        if metainfo:
+            metainfo = parse_pose_metainfo(metainfo)
+        return metainfo
+
+    @force_full_init
+    def prepare_data(self, idx) -> Any:
+        """Get data processed by ``self.pipeline``.
+
+        :class:`BaseCocoDataset` overrides this method from
+        :class:`mmengine.dataset.BaseDataset` to add the metainfo into
+        the ``data_info`` before it is passed to the pipeline.
+
+        Args:
+            idx (int): The index of ``data_info``.
+
+        Returns:
+            Any: Depends on ``self.pipeline``.
+        """
+        data_info = self.get_data_info(idx)
+
+        # Add metainfo items that are required in the pipeline and the model
+        metainfo_keys = [
+            'upper_body_ids', 'lower_body_ids', 'flip_pairs',
+            'keypoint_weights'
+        ]
+
+        for key in metainfo_keys:
+            assert key not in data_info, (
+                f'"{key}" is a reserved key for `metainfo`, but already '
+                'exists in the `data_info`.')
+
+            data_info[key] = deepcopy(self._metainfo[key])
+
+        return self.pipeline(data_info)
 
     def load_data_list(self) -> List[dict]:
         """Load data list from COCO annotation file or person detection result
