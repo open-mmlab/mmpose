@@ -1,17 +1,25 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
+import mmcv
 import numpy as np
 from mmcv.image import imflip
 from mmcv.transforms import BaseTransform
-from mmcv.transforms.utils import cache_randomness
+from mmcv.transforms.utils import avoid_cache_randomness, cache_randomness
 from mmengine import is_list_of
 from scipy.stats import truncnorm
 
 from mmpose.core.bbox import bbox_xywh2cs, flip_bbox
 from mmpose.core.keypoint import flip_keypoints
 from mmpose.registry import TRANSFORMS
+
+try:
+    import albumentations
+except ImportError:
+    albumentations = None
+
+Number = Union[int, float]
 
 
 @TRANSFORMS.register_module()
@@ -527,4 +535,321 @@ class RandomBboxTransform(BaseTransform):
         repr_str += f'scale_factor={self.scale_factor}, '
         repr_str += f'rotate_prob={self.rotate_prob}, '
         repr_str += f'rotate_factor={self.rotate_factor})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+@avoid_cache_randomness
+class Albumentation(BaseTransform):
+    """Albumentation augmentation (pixel-level transforms only).
+
+    Adds custom pixel-level transformations from Albumentations library.
+    Please visit `https://albumentations.ai/docs/`
+    to get more information.
+
+    Note: we only support pixel-level transforms.
+    Please visit `https://github.com/albumentations-team/`
+    `albumentations#pixel-level-transforms`
+    to get more information about pixel-level transforms.
+
+    Required Keys:
+
+    - img
+
+    Modified Keys:
+
+    - img
+
+    Args:
+        transforms (List[dict]): A list of Albumentation transforms.
+            An example of ``transforms`` is as followed:
+            .. code-block:: python
+
+                [
+                    dict(
+                        type='RandomBrightnessContrast',
+                        brightness_limit=[0.1, 0.3],
+                        contrast_limit=[0.1, 0.3],
+                        p=0.2),
+                    dict(type='ChannelShuffle', p=0.1),
+                    dict(
+                        type='OneOf',
+                        transforms=[
+                            dict(type='Blur', blur_limit=3, p=1.0),
+                            dict(type='MedianBlur', blur_limit=3, p=1.0)
+                        ],
+                        p=0.1),
+                ]
+        keymap (dict | None): key mapping from ``input key`` to
+            ``albumentation-style key``.
+            Defaults to None, which will use {'img': 'image'}.
+    """
+
+    def __init__(self,
+                 transforms: List[dict],
+                 keymap: Optional[dict] = None) -> None:
+        if albumentations is None:
+            raise RuntimeError('albumentations is not installed')
+
+        self.transforms = transforms
+
+        self.aug = albumentations.Compose(
+            [self.albu_builder(t) for t in self.transforms])
+
+        if not keymap:
+            self.keymap_to_albu = {
+                'img': 'image',
+            }
+        else:
+            self.keymap_to_albu = keymap
+        self.keymap_back = {v: k for k, v in self.keymap_to_albu.items()}
+
+    def albu_builder(self, cfg: dict) -> albumentations:
+        """Import a module from albumentations.
+
+        It resembles some of :func:`build_from_cfg` logic.
+
+        Args:
+            cfg (dict): Config dict. It should at least contain the key "type".
+
+        Returns:
+            albumentations.BasicTransform: The constructed transform object
+        """
+
+        assert isinstance(cfg, dict) and 'type' in cfg
+        args = cfg.copy()
+
+        obj_type = args.pop('type')
+        if mmcv.is_str(obj_type):
+            if albumentations is None:
+                raise RuntimeError('albumentations is not installed')
+            if not hasattr(albumentations.augmentations.transforms, obj_type):
+                warnings.warn('{obj_type} is not pixel-level transformations. '
+                              'Please use with caution.')
+            obj_cls = getattr(albumentations, obj_type)
+        else:
+            raise TypeError(f'type must be a str, but got {type(obj_type)}')
+
+        if 'transforms' in args:
+            args['transforms'] = [
+                self.albu_builder(transform)
+                for transform in args['transforms']
+            ]
+
+        return obj_cls(**args)
+
+    @staticmethod
+    def mapper(d: dict, keymap: dict) -> dict:
+        """Dictionary mapper.
+
+        Renames keys according to keymap provided.
+
+        Args:
+            d (dict): old dict
+            keymap (dict): key mapping like {'old_key': 'new_key'}.
+
+        Returns:
+            dict: new dict.
+        """
+
+        updated_dict = {keymap.get(k, k): v for k, v in d.items()}
+        return updated_dict
+
+    def transform(self, results: dict) -> dict:
+        """The transform function of :class:`Albumentation` to apply
+        albumentations transforms.
+
+        See ``transform()`` method of :class:`BaseTransform` for details.
+
+        Args:
+            results (dict): Result dict from the data pipeline.
+
+        Return:
+            dict: updated result dict.
+        """
+        # map result dict to albumentations format
+        results = self.mapper(results, self.keymap_to_albu)
+        # Apply albumentations transforms
+        results = self.aug(**results)
+        # map result dict back to the original format
+        results = self.mapper(results, self.keymap_back)
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__ + f'(transforms={self.transforms})'
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class PhotometricDistortion(BaseTransform):
+    """Apply photometric distortion to image sequentially, every transformation
+    is applied with a probability of 0.5. The position of random contrast is in
+    second or second to last.
+
+    1. random brightness
+    2. random contrast (mode 0)
+    3. convert color from BGR to HSV
+    4. random saturation
+    5. random hue
+    6. convert color from HSV to BGR
+    7. random contrast (mode 1)
+    8. randomly swap channels
+
+    Required Keys:
+
+    - img
+
+    Modified Keys:
+
+    - img
+
+    Args:
+        brightness_delta (int): delta of brightness.
+        contrast_range (tuple): range of contrast.
+        saturation_range (tuple): range of saturation.
+        hue_delta (int): delta of hue.
+    """
+
+    def __init__(self,
+                 brightness_delta: int = 32,
+                 contrast_range: Sequence[Number] = (0.5, 1.5),
+                 saturation_range: Sequence[Number] = (0.5, 1.5),
+                 hue_delta: int = 18) -> None:
+        self.brightness_delta = brightness_delta
+        self.contrast_lower, self.contrast_upper = contrast_range
+        self.saturation_lower, self.saturation_upper = saturation_range
+        self.hue_delta = hue_delta
+
+    @cache_randomness
+    def _random_flags(self) -> Sequence[Number]:
+        """Generate the random flags for subsequent transforms.
+
+        Returns:
+            Sequence[Number]: a sequence of numbers that indicate whether to
+                do the corresponding transforms.
+        """
+        # contrast_mode == 0 --> do random contrast first
+        # contrast_mode == 1 --> do random contrast last
+        contrast_mode = np.random.randint(2)
+        # whether to apply brightness distortion
+        brightness_flag = np.random.randint(2)
+        # whether to apply contrast distortion
+        contrast_flag = np.random.randint(2)
+        # the mode to convert color from BGR to HSV
+        hsv_mode = np.random.randint(4)
+        # whether to apply channel swap
+        swap_flag = np.random.randint(2)
+
+        # the beta in `self._convert` to be added to image array
+        # in brightness distortion
+        brightness_beta = np.random.uniform(-self.brightness_delta,
+                                            self.brightness_delta)
+        # the alpha in `self._convert` to be multiplied to image array
+        # in contrast distortion
+        contrast_alpha = np.random.uniform(self.contrast_lower,
+                                           self.contrast_upper)
+        # the alpha in `self._convert` to be multiplied to image array
+        # in saturation distortion to hsv-formatted img
+        saturation_alpha = np.random.uniform(self.saturation_lower,
+                                             self.saturation_upper)
+        # delta of hue to add to image array in hue distortion
+        hue_delta = np.random.randint(-self.hue_delta, self.hue_delta)
+        # the random permutation of channel order
+        swap_channel_order = np.random.permutation(3)
+
+        return (contrast_mode, brightness_flag, contrast_flag, hsv_mode,
+                swap_flag, brightness_beta, contrast_alpha, saturation_alpha,
+                hue_delta, swap_channel_order)
+
+    def _convert(self,
+                 img: np.ndarray,
+                 alpha: float = 1,
+                 beta: float = 0) -> np.ndarray:
+        """Multiple with alpha and add beta with clip.
+
+        Args:
+            img (np.ndarray): The image array.
+            alpha (float): The random multiplier.
+            beta (float): The random offset.
+
+        Returns:
+            np.ndarray: The updated image array.
+        """
+        img = img.astype(np.float32) * alpha + beta
+        img = np.clip(img, 0, 255)
+        return img.astype(np.uint8)
+
+    def transform(self, results: dict) -> dict:
+        """The transform function of :class:`PhotometricDistortion` to perform
+        photometric distortion on images.
+
+        See ``transform()`` method of :class:`BaseTransform` for details.
+
+
+        Args:
+            results (dict): Result dict from the data pipeline.
+
+        Returns:
+            dict: Result dict with images distorted.
+        """
+
+        assert 'img' in results, '`img` is not found in results'
+        img = results['img']
+
+        (contrast_mode, brightness_flag, contrast_flag, hsv_mode, swap_flag,
+         brightness_beta, contrast_alpha, saturation_alpha, hue_delta,
+         swap_channel_order) = self._random_flags()
+
+        # random brightness distortion
+        if brightness_flag:
+            img = self._convert(img, beta=brightness_beta)
+
+        # contrast_mode == 0 --> do random contrast first
+        # contrast_mode == 1 --> do random contrast last
+        if contrast_mode == 1:
+            if contrast_flag:
+                img = self._convert(img, alpha=contrast_alpha)
+
+        if hsv_mode:
+            # random saturation/hue distortion
+            img = mmcv.bgr2hsv(img)
+            if hsv_mode == 1 or hsv_mode == 3:
+                # apply saturation distortion to hsv-formatted img
+                img[:, :, 1] = self._convert(
+                    img[:, :, 1], alpha=saturation_alpha)
+            if hsv_mode == 2 or hsv_mode == 3:
+                # apply hue distortion to hsv-formatted img
+                img[:, :, 0] = img[:, :, 0].astype(int) + hue_delta
+            img = mmcv.hsv2bgr(img)
+
+        if contrast_mode == 1:
+            if contrast_flag:
+                img = self._convert(img, alpha=contrast_alpha)
+
+        # randomly swap channels
+        if swap_flag:
+            img = img[..., swap_channel_order]
+
+        results['img'] = img
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += (f'(brightness_delta={self.brightness_delta}, '
+                     f'contrast_range=({self.contrast_lower}, '
+                     f'{self.contrast_upper}), '
+                     f'saturation_range=({self.saturation_lower}, '
+                     f'{self.saturation_upper}), '
+                     f'hue_delta={self.hue_delta})')
         return repr_str
