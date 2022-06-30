@@ -366,8 +366,8 @@ class DetectAndRegress(BasePose):
             heatmaps_tensor = torch.cat(feature_maps, dim=0)
             targets_tensor = torch.cat(targets, dim=0)
             masks_tensor = torch.cat(masks, dim=0)
-            losses_2d_ = self.backbone.get_loss(heatmaps_tensor,
-                                                targets_tensor, masks_tensor)
+            losses_2d_ = self.keypoint_head.get_loss(heatmaps_tensor,
+                                                     targets_tensor, masks_tensor)
             for k, v in losses_2d_.items():
                 losses_2d[k + '_2d'] = v
             losses.update(losses_2d)
