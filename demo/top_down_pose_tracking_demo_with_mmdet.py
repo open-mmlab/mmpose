@@ -187,7 +187,7 @@ def main():
                                           args.online)
 
         # test a single image, with a list of bboxes.
-        pose_results, returned_outputs = inference_top_down_pose_model(
+        pose_results, _ = inference_top_down_pose_model(
             pose_model,
             frames if args.use_multi_frames else cur_frame,
             person_results,
