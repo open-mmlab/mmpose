@@ -3,11 +3,11 @@ _base_ = [
     '../../../../_base_/datasets/coco.py'
 ]
 checkpoint_config = dict(interval=50)
-evaluation = dict(interval=100, metric='mAP', save_best='AP')
+evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
 optimizer = dict(
     type='Adam',
-    lr=0.001,
+    lr=0.004,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -41,6 +41,9 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
+    # TODO: unify pretrained model path
+    pretrained='/home/junyan/litepose-model-zoo'
+    '/crowd/crowdpose-S-pretrain-epoch826-0628-mmpose.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,
@@ -51,17 +54,17 @@ model = dict(
                         [[6, 7]] * 10)),
     keypoint_head=dict(
         type='LitePoseHead',
-        deconv_setting=(32, 24, 32),
+        deconv_setting=[32, 24, 32],
         num_deconv_layers=3,
-        num_deconv_kernels=(4, 4, 4),
-        num_joints=17,
+        num_deconv_kernels=[4, 4, 4],
+        num_joints=channel_cfg['dataset_joints'],
         tag_per_joint=True,
-        with_heatmaps_loss=(True, True),
-        with_ae_loss=(True, False),
+        with_heatmaps_loss=[True, True],
+        with_ae_loss=[True, False],
         channels=(16, 16, 32, 48, 120),
         loss_keypoint=dict(
             type='MultiLossFactory',
-            num_joints=17,
+            num_joints=channel_cfg['dataset_joints'],
             num_stages=2,
             ae_loss_type='exp',
             with_ae_loss=[True, False],

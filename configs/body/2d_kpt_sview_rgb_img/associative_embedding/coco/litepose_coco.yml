@@ -1,0 +1,41 @@
+Collections:
+- Name: LitePose
+  Paper:
+    Title: 'Lite pose: Efficient architecture design for 2d human pose estimation'
+    URL: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Lite_Pose_Efficient_Architecture_Design_for_2D_Human_Pose_Estimation_CVPR_2022_paper.html
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/litepose.md
+Models:
+- Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_XS_coco_256x256.py
+  In Collection: LitePose
+  Metadata:
+    Architecture: &id001
+    - Associative Embedding
+    - LitePose
+    Training Data: COCO
+  Name: associative_embedding_litepose_XS_coco_256x256
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.412
+      AP@0.5: 0.681
+      AP@0.75: 0.42
+      AR: 0.472
+      AR@0.5: 0.711
+    Task: Body 2D Keypoint
+  Weights: <>
+- Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/litepose_S_coco_448x448.py
+  In Collection: LitePose
+  Metadata:
+    Architecture: *id001
+    Training Data: COCO
+  Name: associative_embedding_litepose_S_coco_448x448
+  Results:
+  - Dataset: COCO
+    Metrics:
+      AP: 0.572
+      AP@0.5: 0.801
+      AP@0.75: 0.621
+      AR: 0.62
+      AR@0.5: 0.82
+    Task: Body 2D Keypoint
+  Weights: <>
