@@ -125,11 +125,11 @@ class MpiiTrbDataset(BaseCocoDataset):
             scale = np.array([ann['scale'], ann['scale']],
                              dtype=np.float32) * pixel_std
 
-            # keypoints in shape [1, K, 2] and keypoints_visible in [1, K, 1]
+            # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             _keypoints = np.array(
                 ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
             keypoints = _keypoints[..., :2]
-            keypoints_visible = np.minimum(1, _keypoints[..., 2:3])
+            keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
             data_info = {
                 'id':

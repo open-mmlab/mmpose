@@ -143,7 +143,7 @@ class BaseCocoDataset(BaseDataset):
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
             'upper_body_ids', 'lower_body_ids', 'flip_pairs',
-            'keypoint_weights'
+            'dataset_keypoint_weights'
         ]
 
         for key in metainfo_keys:
@@ -226,11 +226,11 @@ class BaseCocoDataset(BaseDataset):
         bbox = np.array([x1, y1, x2 - x1, y2 - y1],
                         dtype=np.float32).reshape(1, 4)
 
-        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K, 1]
+        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(
             ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
         keypoints = _keypoints[..., :2]
-        keypoints_visible = np.minimum(1, _keypoints[..., 2:3])
+        keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
         if 'num_keypoints' in ann:
             num_keypoints = ann['num_keypoints']
@@ -374,8 +374,7 @@ class BaseCocoDataset(BaseDataset):
 
             # use dummy keypoint location and visibility
             keypoints = np.zeros((1, num_keypoints, 2), dtype=np.float32)
-            keypoints_visible = np.ones((1, num_keypoints, 1),
-                                        dtype=np.float32)
+            keypoints_visible = np.ones((1, num_keypoints), dtype=np.float32)
 
             data_list.append({
                 'img_id': det['image_id'],

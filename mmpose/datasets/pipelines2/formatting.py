@@ -39,17 +39,14 @@ class PackPoseInputs(BaseTransform):
             'img_shape', 'input_size', 'flip', 'flip_direction')``
     """
 
-    INSTANCE_KEYS = [
-        'bbox',
-        'bbox_center',
-        'bbox_scale',
-        'bbox_rotation',
-        'bbox_score',
-        'keypoints',
-        'keypoints_visible',
-        'gt_reg_label',
-        'target_weight',
-    ]
+    mapping_table = {
+        'bbox': 'bboxes',
+        'bbox_score': 'bbox_scores',
+        'keypoints': 'keypoints',
+        'keypoints_visible': 'keypoints_visible',
+        'reg_label': 'reg_labels',
+        'target_weights': 'target_weights'
+    }
 
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
@@ -81,12 +78,12 @@ class PackPoseInputs(BaseTransform):
         gt_instances = InstanceData()
         gt_fields = PixelData()
 
-        for key in self.INSTANCE_KEYS:
+        for key, packed_key in self.mapping_table.items():
             if key in results:
-                gt_instances[key] = results[key]
+                gt_instances[packed_key] = results[key]
 
-        if 'gt_heatmap' in results:
-            gt_fields.heatmaps = results['gt_heatmap']
+        if 'heatmap' in results:
+            gt_fields.heatmaps = results['heatmap']
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_fields = gt_fields
