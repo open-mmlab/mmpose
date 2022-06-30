@@ -84,8 +84,8 @@ def parse_pose_metainfo(metainfo: dict):
         - "skeleton_links" (list): The links represented by Id pairs of start
              and end points
         - "skeleton_link_colors" (numpy.ndarray): The link color matrix
-        - "keypoint_weights" (numpy.ndarray): Same as the ``"joint_weights"``
-            in the input
+        - "dataset_keypoint_weights" (numpy.ndarray): Same as the
+            ``"joint_weights"`` in the input
         - "sigmas" (numpy.ndarray): Same as the ``"sigmas"`` in the input
     """
 
@@ -133,7 +133,7 @@ def parse_pose_metainfo(metainfo: dict):
         num_skeleton_links=None,
         skeleton_links=[],
         skeleton_link_colors=[],
-        keypoint_weights=None,
+        dataset_keypoint_weights=None,
         sigmas=None,
     )
 
@@ -170,7 +170,7 @@ def parse_pose_metainfo(metainfo: dict):
         parsed['skeleton_link_colors'].append(sk.get('color', [96, 96, 255]))
 
     # parse extra information
-    parsed['keypoint_weights'] = np.array(
+    parsed['dataset_keypoint_weights'] = np.array(
         metainfo['joint_weights'], dtype=np.float32)
     parsed['sigmas'] = np.array(metainfo['sigmas'], dtype=np.float32)
 

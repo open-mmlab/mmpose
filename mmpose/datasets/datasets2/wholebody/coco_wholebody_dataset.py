@@ -97,13 +97,13 @@ class CocoWholeBodyDataset(BaseCocoDataset):
         bbox = np.array([x1, y1, x2 - x1, y2 - y1],
                         dtype=np.float32).reshape(1, 4)
 
-        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K, 1]
+        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         # COCO-Wholebody: consisting of body, foot, face and hand keypoints
         _keypoints = np.array(ann['keypoints'] + ann['foot_kpts'] +
                               ann['face_kpts'] + ann['lefthand_kpts'] +
                               ann['righthand_kpts']).reshape(1, -1, 3)
         keypoints = _keypoints[..., :2]
-        keypoints_visible = np.minimum(1, _keypoints[..., 2:3] > 0)
+        keypoints_visible = np.minimum(1, _keypoints[..., 2] > 0)
 
         num_keypoints = ann['num_keypoints']
 

@@ -114,7 +114,7 @@ class CocoWholeBodyHandDataset(BaseCocoDataset):
                             ann[f'{type}hand_kpts'],
                             dtype=np.float32).reshape(1, -1, 3)
                         keypoints = _keypoints[..., :2]
-                        keypoints_visible = np.minimum(1, _keypoints[..., 2:3])
+                        keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
                         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 

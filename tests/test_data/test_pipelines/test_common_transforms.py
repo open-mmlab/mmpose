@@ -320,7 +320,8 @@ class TestRandomBboxTransform(TestCase):
         self.assertTrue(((results['bbox_center'] > center_range[0]) &
                          (results['bbox_center'] < center_range[1])).all())
         self.assertTrue(np.allclose(results['bbox_scale'], scale))
-        self.assertTrue(np.allclose(results['bbox_rotation'], 0.))
+        self.assertTrue(
+            np.allclose(results['bbox_rotation'], np.zeros((1, 17))))
 
         # test random resizing
         transform = RandomBboxTransform(
@@ -338,7 +339,8 @@ class TestRandomBboxTransform(TestCase):
         self.assertFalse(np.allclose(results['bbox_scale'], scale))
         self.assertTrue(((results['bbox_scale'] > scale_range[0]) &
                          (results['bbox_scale'] < scale_range[1])).all())
-        self.assertTrue(np.allclose(results['bbox_rotation'], 0.))
+        self.assertTrue(
+            np.allclose(results['bbox_rotation'], np.zeros((1, 17))))
 
         # test random rotation
         transform = RandomBboxTransform(
@@ -349,13 +351,16 @@ class TestRandomBboxTransform(TestCase):
 
         results = transform(deepcopy(self.data_info))
         rotation_range = [-2 * rotate_factor, 2 * rotate_factor]
+        bbox_rotation_min = np.full((1, 17), rotation_range[0])
+        bbox_rotation_max = np.full((1, 17), rotation_range[1])
+
         self.assertTrue(
             np.allclose(results['bbox_center'], self.data_info['bbox_center']))
         self.assertTrue(
             np.allclose(results['bbox_scale'], self.data_info['bbox_scale']))
         self.assertFalse(np.allclose(results['bbox_rotation'], 0))
-        self.assertTrue(((results['bbox_rotation'] > rotation_range[0]) &
-                         (results['bbox_rotation'] < rotation_range[1])).all())
+        self.assertTrue(((results['bbox_rotation'] > bbox_rotation_min) &
+                         (results['bbox_rotation'] < bbox_rotation_max)).all())
 
         # test hybrid transform
         transform = RandomBboxTransform(

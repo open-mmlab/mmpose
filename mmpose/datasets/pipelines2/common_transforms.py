@@ -432,11 +432,13 @@ class RandomBboxTransform(BaseTransform):
             0.3
         scale_factor (float): Randomly resize the bbox in range
             :math:`[1 - scale_factor, 1 + scale_factor]`. Defaults to 0.5
-        scale_prob (float): Probability of random resizing bbox. Defaults to:
-            0.5
+        scale_prob (float): Probability of applying random resizing. Defaults
+            to 0.5
         rotate_factor (float): Randomly rotate the bbox in
             :math:`[-2*rotate_factor, 2*rotate_factor]` in degrees. Defaults
             to 40.0
+        rotate_prob (float): Probability of applying random rotation. Defaults
+            to 0.6
     """
 
     def __init__(self,
@@ -494,7 +496,7 @@ class RandomBboxTransform(BaseTransform):
 
         # Get rotation parameters
         # TODO: check why use [-2, 2] truncation instead of [-1, 1]
-        rotate = self._truncnorm(-2, 2, size=(num_bbox, 1))
+        rotate = self._truncnorm(-2, 2, size=(num_bbox, ))
         rotate = rotate * self.rotate_factor
         rotate = np.where(
             np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)

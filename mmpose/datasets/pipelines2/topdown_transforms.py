@@ -150,12 +150,12 @@ class TopDownGenerateHeatmap(BaseTransform):
 
         - keypoints
         - keypoints_visible
-        - keypoint_weights
+        - dataset_keypoint_weights
 
     Added Keys:
 
-        - gt_heatmap
-        - target_weight
+        - heatmap
+        - keypoint_weights
 
     Args:
         heatmap_size (tuple): The heatmap size in [w, h]
@@ -178,8 +178,8 @@ class TopDownGenerateHeatmap(BaseTransform):
             radius in the heatmap is calculated as
             :math:`factor \times max(w, h)` in pixels. Defaults to 0.0546875
             (equivalent to 3.5 in 48x64 heatmap and 5.25 in 72x96 heatmap)
-        use_meta_keypoint_weight (bool): Whether use the keypoint weights from
-            the dataset meta information. Defaults to ``False``
+        use_dataset_keypoint_weights (bool): Whether use the keypoint weight
+            from the dataset meta information. Defaults to ``False``
 
     .. _`Simple Baseline`: https://arxiv.org/abs/1804.06208
     .. _`MSPN`: https://arxiv.org/abs/1901.00148
@@ -196,7 +196,7 @@ class TopDownGenerateHeatmap(BaseTransform):
                  kernel_size: Union[Tuple, List[Tuple]] = (11, 11),
                  udp_combined_map: bool = False,
                  udp_radius_factor: Union[float, List[float]] = 0.0546875,
-                 use_meta_keypoint_weight: bool = False) -> None:
+                 use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
 
         encoding_options = ['msra', 'megvii', 'udp']
@@ -216,7 +216,7 @@ class TopDownGenerateHeatmap(BaseTransform):
         self.kernel_size = kernel_size
         self.udp_combined_map = udp_combined_map
         self.udp_radius_factor = udp_radius_factor
-        self.use_meta_keypoint_weight = use_meta_keypoint_weight
+        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
         # get heatmap encoder and its arguments
         self.encoder, self.encoder_kwargs = self._get_encoder()
@@ -298,45 +298,49 @@ class TopDownGenerateHeatmap(BaseTransform):
             'Top-down heatmap only supports single instance. '
             f'Got invalid shape of keypoints {results["keypoints"].shape}.')
 
+        # remove instance dim
         keypoints = results['keypoints'][0]
         keypoints_visible = results['keypoints_visible'][0]
 
         encoder_kwargs = deepcopy(self.encoder_kwargs)
 
         if isinstance(encoder_kwargs, list):
-            # multi-level heatmap
-            heatmaps = []
+            # multi-level heatmaps
+            heatmap = []
             keypoint_weights = []
 
             for _kwargs in encoder_kwargs:
-                _heatmap, _keypoint_weight = self.encoder(
+                _heatmap, _keypoint_weights = self.encoder(
                     keypoints=keypoints,
                     keypoints_visible=keypoints_visible,
                     image_size=results['input_size'],
                     heatmap_size=self.heatmap_size,
                     **_kwargs)
 
-                heatmaps.append(_heatmap)
-                keypoint_weights.append(_keypoint_weight)
+                heatmap.append(_heatmap)
+                keypoint_weights.append(_keypoint_weights)
 
-            heatmap = np.stack(heatmaps)
-            keypoint_weight = np.stack(keypoint_weights)
+            results['heatmap'] = np.stack(heatmap)
+            results['keypoint_weights'] = np.stack(keypoint_weights)
 
         else:
             # single-level heatmap
-            heatmap, keypoint_weight = self.encoder(
+            heatmap, keypoint_weights = self.encoder(
                 keypoints=keypoints,
                 keypoints_visible=keypoints_visible,
                 image_size=results['input_size'],
                 heatmap_size=self.heatmap_size,
                 **encoder_kwargs)
 
-        # multiply meta keypoint weight
-        if self.use_meta_keypoint_weight:
-            keypoint_weight *= results['keypoint_weights'][:, None]
+            results['heatmap'] = heatmap
+            results['keypoint_weights'] = keypoint_weights
 
-        results['gt_heatmap'] = heatmap
-        results['target_weight'] = keypoint_weight
+        # restore instance dim
+        results['keypoint_weights'] = results['keypoint_weights'][None]
+
+        # multiply meta keypoint weight
+        if self.use_dataset_keypoint_weights:
+            results['keypoint_weights'] *= results['dataset_keypoint_weights']
 
         return results
 
@@ -360,8 +364,8 @@ class TopDownGenerateHeatmap(BaseTransform):
                 repr_str += f'radius_factor={self.udp_radius_factor}, '
             else:
                 repr_str += f'sigma={self.sigma}, '
-        repr_str += ('use_meta_keypoint_weight='
-                     f'{self.use_meta_keypoint_weight})')
+        repr_str += ('use_dataset_keypoint_weights='
+                     f'{self.use_dataset_keypoint_weights})')
         return repr_str
 
 
@@ -374,20 +378,21 @@ class TopDownGenerateRegressionLabel(BaseTransform):
         - keypoints
         - keypoints_visible
         - image_size
+        - dataset_keypoint_weights
 
     Added Keys:
 
-        - gt_reg_label
-        - target_weight
+        - reg_label
+        - keypoint_weights
 
     Args:
-        use_meta_keypoint_weight (bool): Whether use the keypoint weights from
-            the dataset meta information. Defaults to ``False``
+        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
+            from the dataset meta information. Defaults to ``False``
     """
 
-    def __init__(self, use_meta_keypoint_weight: bool = False) -> None:
+    def __init__(self, use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
-        self.use_meta_keypoint_weight = use_meta_keypoint_weight
+        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
@@ -401,27 +406,23 @@ class TopDownGenerateRegressionLabel(BaseTransform):
         Returns:
             dict: The result dict.
         """
-        # TODO: support multi-instance regression label encoding
-        assert results['keypoints'].shape[0] == 1, (
-            'Top-down regression only supports single instance. '
-            f'Got invalid shape of keypoints {results["keypoints"].shape}.')
-        keypoints = results['keypoints'][0]
-        keypoints_visible = results['keypoints_visible'][0]
+        keypoints = results['keypoints']
+        keypoints_visible = results['keypoints_visible']
 
         w, h = results['input_size']
-        valid = ((keypoints >= 0) & (keypoints <= [w - 1, h - 1]) &
-                 (keypoints_visible > 0.5)).all(
-                     axis=1, keepdims=True)
+        valid = ((keypoints >= 0) &
+                 (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
+                     keypoints_visible > 0.5)
 
         reg_label = keypoints / [w, h]
-        target_weight = np.where(valid, 1., 0.).astype(np.float32)
+        keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
 
         # multiply meta keypoint weight
-        if self.use_meta_keypoint_weight:
-            target_weight *= results['keypoint_weights'][:, None]
+        if self.use_dataset_keypoint_weights:
+            keypoint_weights *= results['dataset_keypoint_weights']
 
-        results['gt_reg_label'] = reg_label
-        results['target_weight'] = target_weight
+        results['reg_label'] = reg_label
+        results['keypoint_weights'] = keypoint_weights
 
         return results
 
@@ -432,6 +433,6 @@ class TopDownGenerateRegressionLabel(BaseTransform):
             str: Formatted string.
         """
         repr_str = self.__class__.__name__
-        repr_str += ('(use_meta_keypoint_weight='
-                     f'{self.use_meta_keypoint_weight})')
+        repr_str += ('(use_dataset_keypoint_weights='
+                     f'{self.use_dataset_keypoint_weights})')
         return repr_str
