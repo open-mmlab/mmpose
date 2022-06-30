@@ -105,16 +105,15 @@ class MpiiDataset(BaseCocoDataset):
 
             # the ground truth keypoint information is available
             # only when ``test_mode=False``
-            # keypoints in shape [1, K, 2] and keypoints_visible in [1, K, 1]
+            # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             if not self.test_mode:
                 keypoints = np.array(ann['joints']).reshape(1, -1, 2)
-                keypoints_visible = np.array(ann['joints_vis']).reshape(
-                    1, -1, 1)
+                keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
             else:
                 # use dummy keypoint location and visibility
                 num_keypoints = self.metainfo['num_keypoints']
                 keypoints = np.zeros((1, num_keypoints, 2), dtype=np.float32)
-                keypoints_visible = np.ones((1, num_keypoints, 1),
+                keypoints_visible = np.ones((1, num_keypoints),
                                             dtype=np.float32)
             data_info = {
                 'id': ann_id,

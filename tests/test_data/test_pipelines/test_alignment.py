@@ -37,13 +37,13 @@ class TestTopDownTransformAlignment(TestCase):
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(180, 220,
                                         (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17, 1), 1).astype(np.float32),
+            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
             upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             lower_body_ids=[11, 12, 13, 14, 15, 16],
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
                         [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
                         [13, 14], [16, 15], [15, 16]],
-            keypoint_weights=np.array([
+            dataset_keypoint_weights=np.array([
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
             ]).astype(np.float32))
@@ -59,7 +59,7 @@ class TestTopDownTransformAlignment(TestCase):
 
         data_info1['joints_3d'][:, :2] = data_info2['keypoints'][0]
         data_info1['joints_3d_visible'][:, :2] = data_info2[
-            'keypoints_visible'][0]
+            'keypoints_visible'][0, :, None]
 
         data_info1['ann_info'] = dict(
             image_size=np.array([192, 256]),
@@ -98,25 +98,26 @@ class TestTopDownTransformAlignment(TestCase):
                         results1['joints_3d'][None, :, :2]),
             '"keypoints" not aligned')
         self.assertTrue(
-            np.allclose(results2['keypoints_visible'],
+            np.allclose(results2['keypoints_visible'][..., None],
                         results1['joints_3d_visible'][None, :, :2]),
             '"keypoints_visible" not aligned')
 
-        if 'gt_heatmap' in results2:
+        if 'heatmap' in results2:
             self.assertTrue(
                 np.allclose(
-                    results2['gt_heatmap'],
-                    results1['target'],
+                    results2['heatmap'],
+                    results1['target'][None],
                     rtol=1e-5,
-                    atol=1e-5), '"gt_heatmap" not aligned')
+                    atol=1e-5), '"heatmap" not aligned')
 
-        if 'gt_reg_label' in results2:
+        if 'reg_label' in results2:
             self.assertTrue(
-                np.allclose(results2['gt_reg_label'], results1['target']),
-                '"gt_reg_label" not aligned')
+                np.allclose(results2['reg_label'], results1['target'][None]),
+                '"reg_label" not aligned')
 
         self.assertTrue(
-            np.allclose(results2['target_weight'], results1['target_weight']),
+            np.allclose(results2['keypoint_weights'][..., None],
+                        results1['target_weight'][None]),
             '"target_weight" not aligned')
 
     def test_msra_heatmap(self):

@@ -38,7 +38,7 @@ def generate_msra_heatmap(
         tuple:
         - heatmap (np.ndarray): The generated heatmap in shape (K, h, w) where
             [w, h] is the `heatmap_size`
-        - keypoint_weight (np.ndarray): The target weights in shape (K, 1)
+        - keypoint_weights (np.ndarray): The target weights in shape (K,)
 
     .. _`Simple Baselines for Human Pose Estimation and Tracking`:
         https://arxiv.org/abs/1804.06208
@@ -51,7 +51,7 @@ def generate_msra_heatmap(
     feat_stride = image_size / [w, h]
 
     heatmap = np.zeros((num_keypoints, h, w), dtype=np.float32)
-    keypoint_weight = np.ones((num_keypoints, 1), dtype=np.float32)
+    keypoint_weights = np.ones(num_keypoints, dtype=np.float32)
 
     # 3-sigma rule
     radius = sigma * 3
@@ -64,7 +64,7 @@ def generate_msra_heatmap(
         for i in range(num_keypoints):
             # skip unlabled keypoints
             if keypoints_visible[i] < 0.5:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             mu = keypoints[i] / feat_stride
@@ -74,7 +74,7 @@ def generate_msra_heatmap(
             right, bottom = mu + radius + 1
 
             if left >= w or top >= h or right < 0 or bottom < 0:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             heatmap[i] = np.exp(-((x - mu[0])**2 + (y - mu[1])**2) /
@@ -90,7 +90,7 @@ def generate_msra_heatmap(
         for i in range(num_keypoints):
             # skip unlabled keypoints
             if keypoints_visible[i] < 0.5:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             # get gaussian center coordinates
@@ -101,7 +101,7 @@ def generate_msra_heatmap(
             right, bottom = (mu + radius + 1).astype(np.int64)
 
             if left >= w or top >= h or right < 0 or bottom < 0:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             # The gaussian is not normalized,
@@ -122,7 +122,7 @@ def generate_msra_heatmap(
 
             heatmap[i, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2, g_x1:g_x2]
 
-    return heatmap, keypoint_weight
+    return heatmap, keypoint_weights
 
 
 def generate_megvii_heatmap(
@@ -142,7 +142,7 @@ def generate_megvii_heatmap(
 
     Args:
         keypoints (np.ndarray): Keypoint coordinates in shape (K, C)
-        keypoints_visible (np.ndarray): Keypoint visibility in shape (K, 1)
+        keypoints_visible (np.ndarray): Keypoint visibility in shape (K,)
         kernel_size (tuple): The kernel size of the heatmap gaussian in
             [ks_x, ks_y]
         image_size (tuple): Image size in [w, h]
@@ -152,7 +152,7 @@ def generate_megvii_heatmap(
         tuple:
         - heatmap (np.ndarray): The generated heatmap in shape (K, h, w) where
             [w, h] is the `heatmap_size`
-        - keypoint_weight (np.ndarray): The target weights in shape (K, 1)
+        - keypoint_weights (np.ndarray): The target weights in shape (K,)
 
     .. _`MSPN`: https://arxiv.org/abs/1901.00148
     .. _`CPN`: https://arxiv.org/abs/1711.07319
@@ -164,12 +164,12 @@ def generate_megvii_heatmap(
     feat_stride = image_size / [w, h]
 
     heatmap = np.zeros((num_keypoints, h, w), dtype=np.float32)
-    keypoint_weight = np.ones((num_keypoints, 1), dtype=np.float32)
+    keypoint_weights = np.ones(num_keypoints, dtype=np.float32)
 
     for i in range(num_keypoints):
         # skip unlabled keypoints
         if keypoints_visible[i] < 0.5:
-            keypoint_weight[i] = 0
+            keypoint_weights[i] = 0
             continue
 
         # get center coordinates
@@ -178,7 +178,7 @@ def generate_megvii_heatmap(
         # if (mu[0] < 0 or mu[0]>=w or mu[1]<0 or mu[1]>=h):
 
         if kx < 0 or kx >= w or ky < 0 or ky >= h:
-            keypoint_weight[i] = 0
+            keypoint_weights[i] = 0
             continue
 
         heatmap[i, ky, kx] = 1.
@@ -187,7 +187,7 @@ def generate_megvii_heatmap(
         # normalize the heatmap
         heatmap[i] = heatmap[i] / heatmap[i, ky, kx] * 255
 
-    return heatmap, keypoint_weight
+    return heatmap, keypoint_weights
 
 
 def generate_udp_heatmap(
@@ -209,7 +209,7 @@ def generate_udp_heatmap(
 
     Args:
         keypoints (np.ndarray): Keypoint coordinates in shape (K, C)
-        keypoints_visible (np.ndarray): Keypoint visibility in shape (K, 1)
+        keypoints_visible (np.ndarray): Keypoint visibility in shape (K,)
         factor (float): The sigma value of the gaussian heatmap when
             ``combined_map==False``; or the valid radius factor of the binary
             heatmap map when ``combined_map==True``. See also ``combined_map``
@@ -225,7 +225,7 @@ def generate_udp_heatmap(
         - heatmap (np.ndarray): The generated heatmap in shape (K*3, h, w) if
             ``combined_map==True`` or (K, h, w) otherwise, where [w, h] is the
             `heatmap_size`
-        - keypoint_weight (np.ndarray): The target weights in shape (K, 1)
+        - keypoint_weights (np.ndarray): The target weights in shape (K,)
 
     .. _`The Devil is in the Details: Delving into Unbiased Data Processing for
     Human Pose Estimation`: https://arxiv.org/abs/1911.07524
@@ -235,7 +235,7 @@ def generate_udp_heatmap(
     image_size = np.array(image_size)
     w, h = heatmap_size
     feat_stride = (image_size - 1) / [w - 1, h - 1]
-    keypoint_weight = np.ones((num_keypoints, 1), dtype=np.float32)
+    keypoint_weights = np.ones(num_keypoints, dtype=np.float32)
 
     if not combined_map:
         heatmap = np.zeros((num_keypoints, h, w), dtype=np.float32)
@@ -251,7 +251,7 @@ def generate_udp_heatmap(
         for i in range(num_keypoints):
             # skip unlabled keypoints
             if keypoints_visible[i] < 0.5:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             mu = (keypoints[i] / feat_stride + 0.5).astype(np.int64)
@@ -260,7 +260,7 @@ def generate_udp_heatmap(
             right, bottom = (mu + radius + 1).astype(np.int64)
 
             if left >= w or top >= h or right < 0 or bottom < 0:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             mu_ac = keypoints[i] / feat_stride
@@ -293,7 +293,7 @@ def generate_udp_heatmap(
 
         for i in range(num_keypoints):
             if keypoints_visible[i] < 0.5:
-                keypoint_weight[i] = 0
+                keypoint_weights[i] = 0
                 continue
 
             mu = keypoints[i] / feat_stride
@@ -309,7 +309,7 @@ def generate_udp_heatmap(
         heatmap[:, 1:] *= heatmap[:, :1]
         heatmap = heatmap.reshape(num_keypoints * 3, h, w)
 
-    return heatmap, keypoint_weight
+    return heatmap, keypoint_weights
 
 
 def get_max_preds(heatmaps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:

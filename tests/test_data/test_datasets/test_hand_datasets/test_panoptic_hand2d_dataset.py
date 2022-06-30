@@ -71,7 +71,7 @@ class TestPanopticHand2DDataset(TestCase):
             num_skeleton_links=int,
             skeleton_links=list,
             skeleton_link_colors=np.ndarray,
-            keypoint_weights=np.ndarray)
+            dataset_keypoint_weights=np.ndarray)
 
         for key, type_ in expected_keys.items():
             self.assertIn(key, metainfo)
@@ -89,7 +89,7 @@ class TestPanopticHand2DDataset(TestCase):
         self.assertEqual(
             len(dataset.metainfo['keypoint_colors']), num_keypoints)
         self.assertEqual(
-            len(dataset.metainfo['keypoint_weights']), num_keypoints)
+            len(dataset.metainfo['dataset_keypoint_weights']), num_keypoints)
 
         # test some extra metainfo
         self.assertEqual(
