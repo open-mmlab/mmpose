@@ -7,6 +7,12 @@ import torch.nn.functional as F
 from mmcv.cnn import build_norm_layer, trunc_normal_init
 from mmcv.cnn.bricks.transformer import build_dropout
 
+try:
+    from torch.cuda.amp import autocast
+    WITH_AUTOCAST = True
+except ImportError:
+    WITH_AUTOCAST = False
+
 
 def get_grid_index(init_grid_size, map_size, device):
     """For every initial grid, get its index in the feature map.
@@ -113,7 +119,12 @@ def token2map(token_dict):
                                      torch.Size([B * H * W, B * N]))
 
         # normalize the weight for each row
-        all_weight = A @ x.new_ones(B * N, 1).type(torch.float32) + 1e-6
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                all_weight = A @ x.new_ones(B * N, 1).type(
+                    torch.float32) + 1e-6
+        else:
+            all_weight = A @ x.new_ones(B * N, 1).type(torch.float32) + 1e-6
         value = value / all_weight[idx_hw.reshape(-1), 0]
 
         # update the matrix with normalize weight
@@ -121,7 +132,11 @@ def token2map(token_dict):
                                      torch.Size([B * H * W, B * N]))
 
         # sparse matrix multiplication
-        x_out = A @ x.reshape(B * N, C).to(torch.float32)  # [B*H*W, C]
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                x_out = A @ x.reshape(B * N, C).to(torch.float32)  # [B*H*W, C]
+        else:
+            x_out = A @ x.reshape(B * N, C).to(torch.float32)  # [B*H*W, C]
 
     else:
         # use dense matrix multiplication
@@ -191,14 +206,24 @@ def map2token(feature_map, token_dict):
         # build a sparse matrix with shape [B*N, B*H*W]
         A = torch.sparse_coo_tensor(indices, value, (B * N, B * H * W))
         # normalize the matrix
-        all_weight = A @ torch.ones(
-            [B * H * W, 1], device=device, dtype=torch.float32) + 1e-6
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                all_weight = A @ torch.ones(
+                    [B * H * W, 1], device=device, dtype=torch.float32) + 1e-6
+        else:
+            all_weight = A @ torch.ones(
+                [B * H * W, 1], device=device, dtype=torch.float32) + 1e-6
         value = value / all_weight[idx_token.reshape(-1), 0]
 
         A = torch.sparse_coo_tensor(indices, value, (B * N, B * H * W))
         # out: [B*N, C]
-        out = A @ feature_map. \
-            permute(0, 2, 3, 1).contiguous().reshape(B * H * W, C).float()
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                out = A @ feature_map.permute(0, 2, 3, 1).contiguous().reshape(
+                    B * H * W, C).float()
+        else:
+            out = A @ feature_map.permute(0, 2, 3, 1).contiguous().reshape(
+                B * H * W, C).float()
     else:
         # use dense matrix multiplication
         # Flops: B * N * H * W * (C+2)
@@ -262,13 +287,23 @@ def token_interp(target_dict, source_dict):
         # build a matrix with shape [B*T, B*S]
         A = torch.sparse.FloatTensor(coor, weight, torch.Size([B * T, B * S]))
         # normalize the matrix
-        all_weight = A.type(torch.float32) @ x_s.new_ones(B * S, 1).type(
-            torch.float32) + 1e-6
-        weight = weight / all_weight[(idx_token_t).reshape(-1), 0]
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                all_weight = A.type(torch.float32) @ x_s.new_ones(
+                    B * S, 1).type(torch.float32) + 1e-6
+        else:
+            all_weight = A.type(torch.float32) @ x_s.new_ones(B * S, 1).type(
+                torch.float32) + 1e-6
+        weight = weight / all_weight[idx_token_t.reshape(-1), 0]
         A = torch.sparse.FloatTensor(coor, weight, torch.Size([B * T, B * S]))
         # sparse matmul
-        x_out = A.type(torch.float32) @ x_s.reshape(B * S, C).type(
-            torch.float32)
+        if WITH_AUTOCAST:
+            with autocast(enabled=False):
+                x_out = A.type(torch.float32) @ x_s.reshape(B * S, C).type(
+                    torch.float32)
+        else:
+            x_out = A.type(torch.float32) @ x_s.reshape(B * S, C).type(
+                torch.float32)
     else:
         # use dense matrix multiplication
         # Flops: B * T * S * (C+2)
