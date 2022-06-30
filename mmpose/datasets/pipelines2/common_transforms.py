@@ -331,12 +331,8 @@ class RandomHalfBody(BaseTransform):
             elif np.random.rand() > self.prob:
                 indices = None
             else:
-                upper_valid_ids = [
-                    i for i in upper_body_ids if visible[i, 0] > 0
-                ]
-                lower_valid_ids = [
-                    i for i in lower_body_ids if visible[i, 0] > 0
-                ]
+                upper_valid_ids = [i for i in upper_body_ids if visible[i] > 0]
+                lower_valid_ids = [i for i in lower_body_ids if visible[i] > 0]
 
                 num_upper = len(upper_valid_ids)
                 num_lower = len(lower_valid_ids)
