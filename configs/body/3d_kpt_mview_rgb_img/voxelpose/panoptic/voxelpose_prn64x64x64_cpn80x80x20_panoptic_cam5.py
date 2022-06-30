@@ -65,44 +65,30 @@ test_data_cfg.update(
         subset='validation'))
 
 # model settings
-backbone = dict(
-    type='AssociativeEmbedding',
-    pretrained=None,
-    backbone=dict(type='ResNet', depth=50),
-    keypoint_head=dict(
-        type='DeconvHead',
-        in_channels=2048,
-        out_channels=num_joints,
-        num_deconv_layers=3,
-        num_deconv_filters=(256, 256, 256),
-        num_deconv_kernels=(4, 4, 4),
-        loss_keypoint=dict(
-            type='MultiLossFactory',
-            num_joints=15,
-            num_stages=1,
-            ae_loss_type='exp',
-            with_ae_loss=[False],
-            push_loss_factor=[0.001],
-            pull_loss_factor=[0.001],
-            with_heatmaps_loss=[True],
-            heatmaps_loss_factor=[1.0],
-        )),
-    train_cfg=dict(),
-    test_cfg=dict(
-        num_joints=num_joints,
-        nms_kernel=None,
-        nms_padding=None,
-        tag_per_joint=None,
-        max_num_people=None,
-        detection_threshold=None,
-        tag_threshold=None,
-        use_detection_val=None,
-        ignore_too_much=None,
+backbone = dict(type='ResNet', depth=50)
+keypoint_head = dict(
+    type='DeconvHead',
+    in_channels=2048,
+    out_channels=num_joints,
+    num_deconv_layers=3,
+    num_deconv_filters=(256, 256, 256),
+    num_deconv_kernels=(4, 4, 4),
+    loss_keypoint=dict(
+        type='MultiLossFactory',
+        num_joints=15,
+        num_stages=1,
+        ae_loss_type='exp',
+        with_ae_loss=[False],
+        push_loss_factor=[0.001],
+        pull_loss_factor=[0.001],
+        with_heatmaps_loss=[True],
+        heatmaps_loss_factor=[1.0],
     ))
 
 model = dict(
     type='DetectAndRegress',
     backbone=backbone,
+    keypoint_head=keypoint_head,
     pretrained='checkpoints/resnet_50_deconv.pth.tar',
     human_detector=dict(
         type='VoxelCenterDetector',
