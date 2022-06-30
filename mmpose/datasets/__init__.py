@@ -23,6 +23,9 @@ from .datasets import (  # isort:skip
     Body3DMviewDirectPanopticDataset, Body3DMviewDirectShelfDataset,
     Body3DMviewDirectCampusDataset)
 
+from .datasets2 import (  # isort:skip
+    CocoDataset, )
+
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'BottomUpMhpDataset',
     'BottomUpAicDataset', 'BottomUpCocoWholeBodyDataset', 'TopDownMpiiDataset',
@@ -42,5 +45,5 @@ __all__ = [
     'TopDownPoseTrack18VideoDataset', 'build_dataloader', 'build_dataset',
     'Compose', 'DistributedSampler', 'DATASETS', 'PIPELINES', 'DatasetInfo',
     'Body3DMviewDirectPanopticDataset', 'Body3DMviewDirectShelfDataset',
-    'Body3DMviewDirectCampusDataset'
+    'Body3DMviewDirectCampusDataset', 'CocoDataset'
 ]
