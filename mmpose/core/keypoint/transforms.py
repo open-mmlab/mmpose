@@ -37,7 +37,7 @@ def flip_keypoints(keypoints: np.ndarray,
             ``keypoints_visible`` is ``None``
     """
 
-    assert keypoints.shape[:-1] == keypoints_visible.shape[:-1], (
+    assert keypoints.shape[:-1] == keypoints_visible.shape, (
         f'Unmatched shapes of keypoints {keypoints.shape} and '
         f'keypoints_visible {keypoints_visible.shape}')
 
@@ -59,8 +59,8 @@ def flip_keypoints(keypoints: np.ndarray,
 
         if keypoints_visible is not None:
             for left, right in flip_pairs:
-                keypoints_visible_flipped[..., left, :] = keypoints_visible[
-                    ..., right, :]
+                keypoints_visible_flipped[..., left] = keypoints_visible[...,
+                                                                         right]
 
     # flip the keypoints
     # TODO: consider using "integer corner" coordinate system
