@@ -26,10 +26,10 @@ channel_cfg = dict(
     inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
 data_cfg = dict(
-    image_size=256,
-    base_size=256,
+    image_size=448,
+    base_size=448,
     base_sigma=2,
-    heatmap_size=[64, 128],
+    heatmap_size=[112, 224],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
@@ -40,25 +40,25 @@ model = dict(
     type='AssociativeEmbedding',
     # TODO: unify pretrained model path
     pretrained='/home/junyan/litepose-model-zoo'
-    '/crowd/crowdpose-XS-pretrain-epoch826-0628-mmpose.pth',
+    '/crowd/crowdpose-S-pretrain-epoch826-0628-mmpose.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,
         num_blocks=(6, 8, 10, 10),
         strides=(2, 2, 2, 1),
-        channels=(16, 32, 48, 80),
+        channels=(16, 32, 48, 120),
         block_settings=([[6, 7]] * 6, [[6, 7]] * 8, [[6, 7]] * 10,
                         [[6, 7]] * 10)),
     keypoint_head=dict(
         type='LitePoseHead',
-        deconv_setting=[16, 24, 24],
+        deconv_setting=[32, 24, 32],
         num_deconv_layers=3,
         num_deconv_kernels=[4, 4, 4],
         num_joints=channel_cfg['dataset_joints'],
         tag_per_joint=True,
         with_heatmaps_loss=[True, True],
         with_ae_loss=[True, False],
-        channels=(16, 16, 32, 48, 80),
+        channels=(16, 16, 32, 48, 120),
         loss_keypoint=dict(
             type='MultiLossFactory',
             num_joints=channel_cfg['dataset_joints'],
