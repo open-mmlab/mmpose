@@ -215,7 +215,7 @@ mmpose
 
 </details>
 
-For COFW data, please download from [COFW Dataset (Color Images)](http://www.vision.caltech.edu/xpburgos/ICCV13/Data/COFW_color.zip).
+For COFW data, please download from [COFW Dataset (Color Images)](https://data.caltech.edu/records/20099).
 Move `COFW_train_color.mat` and `COFW_test_color.mat` to `data/cofw/` and make them look like:
 
 ```text
