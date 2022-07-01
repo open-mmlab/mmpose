@@ -1,6 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
-from typing import Union
 
 import torch
 from mmengine.model import BaseModel
@@ -53,7 +52,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         inputs and data samples.
 
         Note that this method doesn't handle neither back propagation nor
-        optimizer updating, which are done in the :math:`train_step`.
+        optimizer updating, which are done in the :meth:`train_step`.
 
         Args:
             batch_inputs (torch.Tensor): The input tensor with shape
@@ -83,21 +82,20 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
                                'Only supports loss, predict and tensor mode.')
 
     @abstractmethod
-    def loss(self, batch_inputs: Tensor, batch_data_samples: SampleList,
-             **kwargs) -> Union[dict, tuple]:
+    def loss(self, batch_inputs: Tensor,
+             batch_data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
     @abstractmethod
-    def predict(self, batch_inputs: Tensor, batch_data_samples: SampleList,
-                **kwargs) -> SampleList:
+    def predict(self, batch_inputs: Tensor,
+                batch_data_samples: SampleList) -> SampleList:
         """Predict results from a batch of inputs and data samples with post-
         processing."""
 
     @abstractmethod
     def _forward(self,
                  batch_inputs: Tensor,
-                 batch_data_samples: OptSampleList = None,
-                 **kwargs):
+                 batch_data_samples: OptSampleList = None):
         """Network forward process.
 
         Usually includes backbone, neck and head forward without any post-
@@ -106,5 +104,4 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
 
     @abstractmethod
     def extract_feat(self, batch_inputs: Tensor):
-        """Extract features from images."""
-        pass
+        """Extract features."""

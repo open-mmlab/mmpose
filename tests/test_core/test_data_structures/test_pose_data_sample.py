@@ -21,12 +21,12 @@ class TestPoseDataSample(TestCase):
         gt_instances = InstanceData()
         gt_instances.bboxes = torch.rand(1, 4)
         gt_instances.keypoints = torch.rand(1, 17, 2)
-        gt_instances.keypoints_visible = torch.rand(1, 17, 1)
+        gt_instances.keypoints_visible = torch.rand(1, 17)
 
         # pred_instances
         pred_instances = InstanceData()
         pred_instances.keypoints = torch.rand(1, 17, 2)
-        pred_instances.scores = torch.rand(1, 17, 1)
+        pred_instances.keypoint_scores = torch.rand(1, 17)
 
         # gt_fields
         gt_fields = PixelData()
