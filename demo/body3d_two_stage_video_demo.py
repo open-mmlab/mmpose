@@ -154,7 +154,6 @@ def main():
         default='configs/_base_/filters/one_euro.py',
         help='Config file of the filter to smooth the pose estimation '
         'results. See also --smooth.')
-
     parser.add_argument(
         '--use-multi-frames',
         action='store_true',
@@ -298,7 +297,10 @@ def main():
 
     # build pose smoother for temporal refinement
     if args.smooth:
-        smoother = Smoother(filter_cfg=args.smooth_filter_cfg, keypoint_dim=3)
+        smoother = Smoother(
+            filter_cfg=args.smooth_filter_cfg,
+            keypoint_key='keypoints_3d',
+            keypoint_dim=3)
     else:
         smoother = None
 
