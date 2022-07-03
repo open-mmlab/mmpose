@@ -32,10 +32,10 @@ Models:
   Results:
   - Dataset: CrowdPose
     Metrics:
-      AP: 0.0
-      AP@0.5: 0.0
-      AP@0.75: 0.0
-      AR: 0.0
-      AR@0.5: 0.0
+      AP: 0.582
+      AP@0.5: 0.817
+      AP@0.75: 0.613
+      AR: 0.644
+      AR@0.5: 0.853
     Task: Body 2D Keypoint
   Weights: <>
