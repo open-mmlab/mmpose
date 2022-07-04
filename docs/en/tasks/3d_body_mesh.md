@@ -52,6 +52,11 @@ mmpose
 
 ### SMPL Model
 
+<!-- [DATASET] -->
+
+<details>
+<summary align="right"><a href="https://dl.acm.org/doi/abs/10.1145/2816795.2818013">SMPL (TOG'2015)</a></summary>
+
 ```bibtex
 @article{loper2015smpl,
   title={SMPL: A skinned multi-person linear model},
@@ -64,6 +69,8 @@ mmpose
   publisher={ACM New York, NY, USA}
 }
 ```
+
+</details>
 
 For human mesh estimation, SMPL model is used to generate the human mesh.
 Please download the [gender neutral SMPL model](http://smplify.is.tue.mpg.de/),
@@ -180,17 +187,22 @@ extract the images by themselves.
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/8374605/">MPI-INF-3DHP (3DV'2017)</a></summary>
+
 ```bibtex
 @inproceedings{mono-3dhp2017,
- author = {Mehta, Dushyant and Rhodin, Helge and Casas, Dan and Fua, Pascal and Sotnychenko, Oleksandr and Xu, Weipeng and Theobalt, Christian},
- title = {Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision},
- booktitle = {3D Vision (3DV), 2017 Fifth International Conference on},
- url = {http://gvv.mpi-inf.mpg.de/3dhp_dataset},
- year = {2017},
- organization={IEEE},
- doi={10.1109/3dv.2017.00064},
+  author = {Mehta, Dushyant and Rhodin, Helge and Casas, Dan and Fua, Pascal and Sotnychenko, Oleksandr and Xu, Weipeng and Theobalt, Christian},
+  title = {Monocular 3D Human Pose Estimation In The Wild Using Improved CNN Supervision},
+  booktitle = {3D Vision (3DV), 2017 Fifth International Conference on},
+  url = {http://gvv.mpi-inf.mpg.de/3dhp_dataset},
+  year = {2017},
+  organization={IEEE},
+  doi={10.1109/3dv.2017.00064},
 }
 ```
+
+</details>
 
 For [MPI-INF-3DHP](http://gvv.mpi-inf.mpg.de/3dhp-dataset/), please follow the
 [preprocess procedure](https://github.com/nkolot/SPIN/tree/master/datasets/preprocess)
@@ -241,6 +253,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="http://www.bmva.org/bmvc/2010/conference/paper12/paper12.pdf">LSP (BMVC'2010)</a></summary>
+
 ```bibtex
 @inproceedings{johnson2010clustered,
   title={Clustered Pose and Nonlinear Appearance Models for Human Pose Estimation.},
@@ -253,6 +268,8 @@ mmpose
   organization={Citeseer}
 }
 ```
+
+</details>
 
 For [LSP](https://sam.johnson.io/research/lsp.html), please download the high resolution version
 [LSP dataset original](http://sam.johnson.io/research/lsp_dataset_original.zip).
@@ -277,6 +294,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="https://ieeexplore.ieee.org/abstract/document/5995318/">LSPET (CVPR'2011)</a></summary>
+
 ```bibtex
 @inproceedings{johnson2011learning,
   title={Learning effective human pose estimation from inaccurate annotation},
@@ -287,6 +307,8 @@ mmpose
   organization={IEEE}
 }
 ```
+
+</details>
 
 For [LSPET](https://sam.johnson.io/research/lspet.html), please download its high resolution form
 [HR-LSPET](http://datasets.d2.mpi-inf.mpg.de/hr-lspet/hr-lspet.zip).
@@ -313,6 +335,9 @@ mmpose
 
 <!-- [DATASET] -->
 
+<details>
+<summary align="right"><a href="https://openaccess.thecvf.com/content_cvpr_2018/papers/Kanazawa_End-to-End_Recovery_of_CVPR_2018_paper.pdf">CMU MoShed (CVPR'2018)</a></summary>
+
 ```bibtex
 @inproceedings{kanazawa2018end,
   title={End-to-end recovery of human shape and pose},
@@ -322,6 +347,8 @@ mmpose
   year={2018}
 }
 ```
+
+</details>
 
 Real-world SMPL parameters are used for the adversarial training in human mesh estimation.
 The MoShed data provided in [HMR](https://github.com/akanazawa/hmr) is included in this
