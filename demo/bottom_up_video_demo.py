@@ -4,6 +4,7 @@ import warnings
 from argparse import ArgumentParser
 
 import cv2
+import mmcv
 
 from mmpose.apis import (inference_bottom_up_pose_model, init_pose_model,
                          vis_pose_result)
@@ -65,7 +66,9 @@ def main():
     else:
         dataset_info = DatasetInfo(dataset_info)
 
-    cap = cv2.VideoCapture(args.video_path)
+    # read video
+    video = mmcv.VideoReader(args.video_path)
+    assert video.opened, f'Faild to load video file {args.video_path}'
 
     if args.out_video_root == '':
         save_out_video = False
@@ -74,9 +77,8 @@ def main():
         save_out_video = True
 
     if save_out_video:
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        fps = video.fps
+        size = (video.width, video.height)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         videoWriter = cv2.VideoWriter(
             os.path.join(args.out_video_root,
@@ -89,14 +91,11 @@ def main():
     # e.g. use ('backbone', ) to return backbone feature
     output_layer_names = None
 
-    while (cap.isOpened()):
-        flag, img = cap.read()
-        if not flag:
-            break
-
-        pose_results, returned_outputs = inference_bottom_up_pose_model(
+    print('Running inference...')
+    for _, cur_frame in enumerate(mmcv.track_iter_progress(video)):
+        pose_results, _ = inference_bottom_up_pose_model(
             pose_model,
-            img,
+            cur_frame,
             dataset=dataset,
             dataset_info=dataset_info,
             pose_nms_thr=args.pose_nms_thr,
@@ -104,9 +103,9 @@ def main():
             outputs=output_layer_names)
 
         # show the results
-        vis_img = vis_pose_result(
+        vis_frame = vis_pose_result(
             pose_model,
-            img,
+            cur_frame,
             pose_results,
             radius=args.radius,
             thickness=args.thickness,
@@ -116,15 +115,14 @@ def main():
             show=False)
 
         if args.show:
-            cv2.imshow('Image', vis_img)
+            cv2.imshow('Image', vis_frame)
 
         if save_out_video:
-            videoWriter.write(vis_img)
+            videoWriter.write(vis_frame)
 
         if args.show and cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    cap.release()
     if save_out_video:
         videoWriter.release()
     if args.show:
