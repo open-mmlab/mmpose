@@ -13,25 +13,28 @@ class TestSetupEnv(TestCase):
     def test_register_all_modules(self):
         from mmpose.registry import DATASETS
 
+        dataset_name = 'CocoDataset'
+        dataset_module = 'mmpose.datasets.datasets2.body.coco_dataset'
+
         # not init default scope
-        sys.modules.pop('mmpose.datasets', None)
-        for key in tuple(sys.modules.keys()):
-            if key.startswith('mmpose.datasets.datasets2'):
-                sys.modules.pop(key)
-        DATASETS._module_dict.pop('CocoDataset', None)
-        self.assertFalse('CocoDataset' in DATASETS.module_dict)
+        module = dataset_module
+        while '.' in module:
+            sys.modules.pop(module, None)
+            module = module.rsplit('.', 1)[0]
+        DATASETS._module_dict.pop(dataset_name, None)
+        self.assertFalse(dataset_name in DATASETS.module_dict)
         register_all_modules(init_default_scope=False)
-        self.assertTrue('CocoDataset' in DATASETS.module_dict)
+        self.assertTrue(dataset_name in DATASETS.module_dict)
 
         # init default scope
-        sys.modules.pop('mmpose.datasets')
-        for key in tuple(sys.modules.keys()):
-            if key.startswith('mmpose.datasets.datasets2'):
-                sys.modules.pop(key)
-        DATASETS._module_dict.pop('CocoDataset', None)
-        self.assertFalse('CocoDataset' in DATASETS.module_dict)
+        module = dataset_module
+        while '.' in module:
+            sys.modules.pop(module, None)
+            module = module.rsplit('.', 1)[0]
+        DATASETS._module_dict.pop(dataset_name, None)
+        self.assertFalse(dataset_name in DATASETS.module_dict)
         register_all_modules(init_default_scope=True)
-        self.assertTrue('CocoDataset' in DATASETS.module_dict)
+        self.assertTrue(dataset_name in DATASETS.module_dict)
         self.assertEqual(DefaultScope.get_current_instance().scope_name,
                          'mmpose')
 
