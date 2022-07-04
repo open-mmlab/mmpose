@@ -89,6 +89,8 @@ class PackPoseInputs(BaseTransform):
 
     mapping_table = {
         'bbox': 'bboxes',
+        'bbox_center': 'bbox_centers',
+        'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',

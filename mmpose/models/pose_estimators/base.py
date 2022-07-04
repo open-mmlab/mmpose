@@ -76,7 +76,7 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         elif mode == 'predict':
             return self.predict(batch_inputs, batch_data_samples)
         elif mode == 'tensor':
-            return self._forward(batch_inputs, batch_data_samples)
+            return self._forward(batch_inputs)
         else:
             raise RuntimeError(f'Invalid mode "{mode}". '
                                'Only supports loss, predict and tensor mode.')

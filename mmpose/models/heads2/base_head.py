@@ -5,7 +5,7 @@ from typing import Tuple
 from mmengine.model import BaseModule
 from torch import Tensor
 
-from mmpose.core.utils.typing import OptSampleList, SampleList
+from mmpose.core.utils.typing import ConfigType, OptSampleList, SampleList
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -17,11 +17,15 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def predict(self, feats: Tuple[Tensor],
-                batch_data_samples: OptSampleList) -> SampleList:
+    def forward(self, feats: Tuple[Tensor]):
+        """Forward the network."""
+
+    @abstractmethod
+    def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
+                test_cfg: ConfigType) -> SampleList:
         """Predict results from features."""
 
     @abstractmethod
-    def loss(self, feats: Tuple[Tensor],
-             batch_data_samples: OptSampleList) -> dict:
+    def loss(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
+             train_cfg: ConfigType) -> dict:
         """Calculate losses from a batch of inputs and data samples."""

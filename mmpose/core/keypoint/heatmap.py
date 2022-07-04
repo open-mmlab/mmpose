@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 
-from mmpose.core.post_processing import transform_preds
+from .transforms import keypoints_bbox2img
 
 
 def generate_msra_heatmap(
@@ -470,9 +470,9 @@ def keypoints_from_heatmaps(heatmaps: np.ndarray,
                             unbiased: bool = False,
                             post_process: Optional[str] = 'default',
                             kernel: int = 11,
-                            valid_radius_factor: float = 0.0546875,
+                            udp_radius_factor: float = 0.0546875,
                             use_udp: bool = False,
-                            target_type: str = 'GaussianHeatmap'
+                            udp_combined_map: bool = False
                             ) -> Tuple[np.ndarray, np.ndarray]:
     """Get final keypoint predictions from heatmaps and transform them back to
     the image.
@@ -501,9 +501,13 @@ def keypoints_from_heatmaps(heatmaps: np.ndarray,
         kernel (int): Gaussian kernel size (K) for modulation, which should
             match the heatmap gaussian sigma when training.
             K=17 for sigma=3 and k=11 for sigma=2. Default: 11.
-        valid_radius_factor (float): The radius factor of the positive area
+        udp_radius_factor (float): The radius factor of the positive area
             in classification heatmap for UDP. Default: 0.0546875.
         use_udp (bool): Use unbiased data processing. Default: ``False``.
+        udp_combined_map (bool): If ``True``, the ``heatmaps`` should be a
+            combination of a binary heatmap (for classification) and
+            an offset map (for regression). Otherwise, the generated map
+            should be a gaussian heatmap. Defaults to ``False``
         target_type (str): 'GaussianHeatmap' or 'CombinedTarget'.
             GaussianHeatmap: Classification target with gaussian distribution.
             CombinedTarget: The combination of classification target
@@ -561,16 +565,13 @@ def keypoints_from_heatmaps(heatmaps: np.ndarray,
 
     N, K, H, W = heatmaps.shape
     if use_udp:
-        if target_type.lower() == 'GaussianHeatMap'.lower():
-            preds, maxvals = get_max_preds(heatmaps)
-            preds = post_dark_udp(preds, heatmaps, kernel=kernel)
-        elif target_type.lower() == 'CombinedTarget'.lower():
+        if udp_combined_map:
             for person_heatmaps in heatmaps:
                 for i, heatmap in enumerate(person_heatmaps):
                     kt = 2 * kernel + 1 if i % 3 == 0 else kernel
                     cv2.GaussianBlur(heatmap, (kt, kt), 0, heatmap)
             # valid radius is in direct proportion to the height of heatmap.
-            valid_radius = valid_radius_factor * H
+            valid_radius = udp_radius_factor * H
             offset_x = heatmaps[:, 1::3, :].flatten() * valid_radius
             offset_y = heatmaps[:, 2::3, :].flatten() * valid_radius
             heatmaps = heatmaps[:, ::3, :]
@@ -580,8 +581,8 @@ def keypoints_from_heatmaps(heatmaps: np.ndarray,
             index = index.astype(int).reshape(N, K // 3, 1)
             preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
         else:
-            raise ValueError('target_type should be either '
-                             "'GaussianHeatmap' or 'CombinedTarget'")
+            preds, maxvals = get_max_preds(heatmaps)
+            preds = post_dark_udp(preds, heatmaps, kernel=kernel)
     else:
         preds, maxvals = get_max_preds(heatmaps)
         if post_process == 'unbiased':  # alleviate biased coordinate
@@ -609,7 +610,7 @@ def keypoints_from_heatmaps(heatmaps: np.ndarray,
 
     # Transform back to the image
     for i in range(N):
-        preds[i] = transform_preds(
+        preds[i] = keypoints_bbox2img(
             preds[i], center[i], scale[i], [W, H], use_udp=use_udp)
 
     if post_process == 'megvii':
@@ -648,8 +649,8 @@ def keypoints_from_heatmaps3d(heatmaps: np.ndarray, center: np.ndarray,
     preds, maxvals = get_max_preds_3d(heatmaps)
     # Transform back to the image
     for i in range(N):
-        preds[i, :, :2] = transform_preds(preds[i, :, :2], center[i], scale[i],
-                                          [W, H])
+        preds[i, :, :2] = keypoints_bbox2img(preds[i, :, :2], center[i],
+                                             scale[i], [W, H])
     return preds, maxvals
 
 

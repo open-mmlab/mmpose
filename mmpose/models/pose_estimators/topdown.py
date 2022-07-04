@@ -32,10 +32,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
             self.neck = MODELS.build(neck)
 
         if head is not None:
-            _head = head.copy()
-            _head.update(train_cfg=train_cfg)
-            _head.update(test_cfg=test_cfg)
-            self.head = MODELS.build(_head)
+            self.head = MODELS.build(head)
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
@@ -56,16 +53,12 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
         return x
 
-    def _forward(self,
-                 batch_inputs: Tensor,
-                 batch_data_samples: SampleList = None):
+    def _forward(self, batch_inputs: Tensor):
         """Network forward process. Usually includes backbone, neck and head
         forward without any post-processing.
 
         Args:
             batch_inputs (Tensor): Inputs with shape (N, C, H, W).
-            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
-                data samples.
 
         Returns:
             tuple: A tuple of features from ``rpn_head`` and ``roi_head``
@@ -74,7 +67,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
         x = self.extract_feat(batch_inputs)
         if self.with_head:
-            x = self.head.forward(x, batch_data_samples)
+            x = self.head.forward(x)
 
         return x
 

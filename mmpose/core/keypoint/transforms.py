@@ -73,3 +73,47 @@ def flip_keypoints(keypoints: np.ndarray,
         keypoints_flipped = [w, h] - keypoints_flipped - 1
 
     return keypoints_flipped, keypoints_visible_flipped
+
+
+def keypoints_bbox2img(coords, center, scale, output_size, use_udp=False):
+    """Get final keypoint predictions from heatmaps and apply scaling and
+    translation to map them back to the image.
+
+    Note:
+        num_keypoints: K
+
+    Args:
+        coords (np.ndarray[K, ndims]):
+
+            * If ndims=2, corrds are predicted keypoint location.
+            * If ndims=4, corrds are composed of (x, y, scores, tags)
+            * If ndims=5, corrds are composed of (x, y, scores, tags,
+              flipped_tags)
+
+        center (np.ndarray[2, ]): Center of the bounding box (x, y).
+        scale (np.ndarray[2, ]): Scale of the bounding box
+            wrt [width, height].
+        output_size (np.ndarray[2, ] | list(2,)): Size of the
+            destination heatmaps.
+        use_udp (bool): Use unbiased data processing
+
+    Returns:
+        np.ndarray: Predicted coordinates in the images.
+    """
+    assert coords.shape[1] in (2, 4, 5)
+    assert len(center) == 2
+    assert len(scale) == 2
+    assert len(output_size) == 2
+
+    if use_udp:
+        scale_x = scale[0] / (output_size[0] - 1.0)
+        scale_y = scale[1] / (output_size[1] - 1.0)
+    else:
+        scale_x = scale[0] / output_size[0]
+        scale_y = scale[1] / output_size[1]
+
+    target_coords = np.ones_like(coords)
+    target_coords[:, 0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
+    target_coords[:, 1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
+
+    return target_coords
