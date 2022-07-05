@@ -38,7 +38,7 @@ Models:
       AR: 0.798
       AR@0.5: 0.946
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/swin/
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_coco_256x192-7432be9e_20220705.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_b_p4_w7_coco_384x288.py
   In Collection: Swin
   Metadata:
@@ -54,7 +54,7 @@ Models:
       AR: 0.811
       AR@0.5: 0.946
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/swin/
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_coco_384x288-3abf54f9_20220705.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_l_p4_w7_coco_256x192.py
   In Collection: Swin
   Metadata:
@@ -70,7 +70,7 @@ Models:
       AR: 0.798
       AR@0.5: 0.943
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/swin/
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_l_p4_w7_coco_256x192-642a89db_20220705.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_l_p4_w7_coco_384x288.py
   In Collection: Swin
   Metadata:
@@ -86,7 +86,7 @@ Models:
       AR: 0.814
       AR@0.5: 0.949
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/swin/
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_l_p4_w7_coco_384x288-c36b7845_20220705.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/swin_b_p4_w7_fpn_coco_256x192.py
   In Collection: Swin
   Metadata:
@@ -102,4 +102,4 @@ Models:
       AR: 0.798
       AR@0.5: 0.946
     Task: Body 2D Keypoint
-  Weights: https://download.openmmlab.com/mmpose/top_down/swin/
+  Weights: https://download.openmmlab.com/mmpose/top_down/swin/swin_b_p4_w7_fpn_coco_256x192-a3b91c45_20220705.pth
