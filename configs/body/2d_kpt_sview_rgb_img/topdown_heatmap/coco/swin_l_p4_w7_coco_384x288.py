@@ -5,9 +5,17 @@ _base_ = [
 evaluation = dict(interval=10, metric='mAP', save_best='AP')
 
 optimizer = dict(
-    type='Adam',
+    type='AdamW',
     lr=5e-4,
-)
+    betas=(0.9, 0.999),
+    weight_decay=0.01,
+    paramwise_cfg=dict(
+        custom_keys={
+            'absolute_pos_embed': dict(decay_mult=0.),
+            'relative_position_bias_table': dict(decay_mult=0.),
+            'norm': dict(decay_mult=0.)
+        }))
+
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(
@@ -29,23 +37,23 @@ channel_cfg = dict(
 
 # model settings
 pretrained = ('https://github.com/SwinTransformer/storage/releases/download'
-              '/v1.0.0/swin_base_patch4_window7_224_22k.pth')
+              '/v1.0.0/swin_base_patch4_window12_384_22k.pth')
 
 model = dict(
     type='TopDown',
     pretrained=pretrained,
     backbone=dict(
         type='SwinTransformer',
-        embed_dims=128,
+        embed_dims=192,
         depths=[2, 2, 18, 2],
-        num_heads=[4, 8, 16, 32],
+        num_heads=[6, 12, 24, 48],
         window_size=7,
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
         drop_rate=0.,
         attn_drop_rate=0.,
-        drop_path_rate=0.3,
+        drop_path_rate=0.5,
         patch_norm=True,
         out_indices=(0, 1, 2, 3),
         with_cp=False,
@@ -53,7 +61,7 @@ model = dict(
     ),
     keypoint_head=dict(
         type='TopdownHeatmapSimpleHead',
-        in_channels=1024,
+        in_channels=1536,
         out_channels=channel_cfg['num_output_channels'],
         in_index=3,
         loss_keypoint=dict(type='JointsMSELoss', use_target_weight=True)),
@@ -65,8 +73,8 @@ model = dict(
         modulate_kernel=11))
 
 data_cfg = dict(
-    image_size=[192, 256],
-    heatmap_size=[48, 64],
+    image_size=[288, 384],
+    heatmap_size=[72, 96],
     num_output_channels=channel_cfg['num_output_channels'],
     num_joints=channel_cfg['dataset_joints'],
     dataset_channel=channel_cfg['dataset_channel'],
