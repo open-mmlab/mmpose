@@ -6,6 +6,7 @@
 
 - Support [TCFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html) backbone, CVPR'2022 ([#1447](https://github.com/open-mmlab/mmpose/pull/1447), [#1452](https://github.com/open-mmlab/mmpose/pull/1452)) @zengwang430521
 - Add [RLE](https://arxiv.org/abs/2107.11291) models on COCO dataset ([#1424](https://github.com/open-mmlab/mmpose/pull/1424)) @Indigo6, @Ben-Louis, @ly015
+- Update swin models with better performance ([#1467](https://github.com/open-mmlab/mmpose/pull/1434)) @jin-s13
 
 **New Features**
 
