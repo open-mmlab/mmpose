@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 from mmcv import Config, DictAction
 
 from mmpose.apis.webcam import WebcamExecutor
+from mmpose.apis.webcam.nodes import model_nodes
 
 
 def parse_args():
@@ -22,9 +23,31 @@ def parse_args():
         'in xxx=yyy format will be merged into config file. For example, '
         "'--cfg-options executor_cfg.camera_id=1'")
     parser.add_argument(
-        '--debug', action='store_true', help='Show debug information')
+        '--debug', action='store_true', help='Show debug information.')
+    parser.add_argument(
+        '--cpu', action='store_true', help='Use CPU for model inference.')
+    parser.add_argument(
+        '--cuda', action='store_true', help='Use GPU for model inference.')
 
     return parser.parse_args()
+
+
+def set_device(cfg: Config, device: str):
+    """Set model device in config.
+
+    Args:
+        cfg (Config): Webcam config
+        device (str): device indicator like "cpu" or "cuda:0"
+    """
+
+    device = device.lower()
+    assert device == 'cpu' or device.startswith('cuda:')
+
+    for node_cfg in cfg.executor_cfg.nodes:
+        if node_cfg.type in model_nodes.__all__:
+            node_cfg.update(device=device)
+
+    return cfg
 
 
 def run():
@@ -34,6 +57,12 @@ def run():
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+
+    if args.cpu:
+        cfg = set_device(cfg, 'cpu')
+
+    if args.cuda:
+        cfg = set_device(cfg, 'cuda:0')
 
     webcam_exe = WebcamExecutor(**cfg.executor_cfg)
     webcam_exe.run()
