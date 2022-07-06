@@ -70,6 +70,8 @@ class HeatmapHead(BaseHead):
     .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
     """
 
+    _version = 2
+
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  out_channels: int,
@@ -85,7 +87,7 @@ class HeatmapHead(BaseHead):
                  init_cfg: OptConfigType = None):
 
         if init_cfg is None:
-            return self.default_init_cfg
+            init_cfg = self.default_init_cfg
 
         super().__init__(init_cfg)
 
@@ -108,7 +110,7 @@ class HeatmapHead(BaseHead):
                     f'unmatched values {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
 
-            self.deconv_layers = self._make_decover_layers(
+            self.deconv_layers = self._make_deconv_layers(
                 in_channels=in_channels,
                 layer_out_channels=deconv_out_channels,
                 layer_kernel_sizes=deconv_kernel_sizes,
@@ -143,6 +145,9 @@ class HeatmapHead(BaseHead):
         else:
             self.final_layer = nn.Identity()
 
+        # Register the hook to automatically convert old version state dicts
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
     def _make_conv_layers(self, in_channels: int,
                           layer_out_channels: Sequence[int],
                           layer_kernel_sizes: Sequence[int]) -> nn.Module:
@@ -156,6 +161,7 @@ class HeatmapHead(BaseHead):
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
+                kernel_size=kernel_size,
                 stride=1,
                 padding=padding)
             layers.append(build_conv_layer(cfg))
@@ -358,3 +364,55 @@ class HeatmapHead(BaseHead):
         losses.update(acc_pose=float(avg_acc))
 
         return losses
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to convert old-version state dict of
+        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`HeatmapHead`.
+
+        The hook will be automatically registered during initialization.
+        """
+
+        version = local_meta.get('version', None)
+        if version >= self._version:
+            return
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for _k in keys:
+            v = state_dict.pop(_k)
+            k = _k.lstrip(prefix)
+            # In old version, "final_layer" includes both intermediate
+            # conv layers (new "conv_layers") and final conv layers (new
+            # "final_layer").
+            #
+            # If there is no intermediate conv layer, old "final_layer" will
+            # have keys like "final_layer.xxx", which should be still
+            # named "final_layer.xxx";
+            #
+            # If there are intermediate conv layerse, old "final_layer"  will
+            # have keys like "final_layer.n.xxx", where the weghts of the last
+            # one should be renamed "final_layer.xxx", and others should be
+            # renamed "conv_layers.n.xxx"
+            k_parts = _k.split('.')
+            if k_parts[0] == 'final_layer':
+                if len(k_parts) == 3:
+                    assert isinstance(self.conv_layers, nn.Sequential)
+                    idx = int(k_parts[1])
+                    if idx < len(self.conv_layers):
+                        # final_layer.n.xxx -> conv_layers.n.xxx
+                        k_new = 'conv_layers.' + '.'.join(k_parts[1:])
+                    else:
+                        # final_layer.n.xxx -> final_layer.xxx
+                        k_new = 'final_layer.' + k_parts[2]
+                else:
+                    # final_layer.xxx remains final_layer.xxx
+                    k_new = k
+            elif k_parts[0] == 'loss':
+                # loss.xxx -> loss_module.xxx
+                k_new = 'loss_module.' + '.'.join(k_parts[1:])
+            else:
+                k_new = k
+
+            state_dict[prefix + k_new] = v

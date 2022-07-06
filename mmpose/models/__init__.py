@@ -6,6 +6,7 @@ from .builder import (BACKBONES, HEADS, LOSSES, MESH_MODELS, NECKS, POSENETS,
 from .detectors import *  # noqa
 from .heads import *  # noqa
 from .losses import *  # noqa
+from .losses2 import *  # noqa
 from .necks import *  # noqa
 from .utils import *  # noqa
 
