@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.28.0 (06/07/2022)
+
+**Highlights**
+
+- Support [TCFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html) backbone, CVPR'2022 ([#1447](https://github.com/open-mmlab/mmpose/pull/1447), [#1452](https://github.com/open-mmlab/mmpose/pull/1452)) @zengwang430521
+- Add [RLE](https://arxiv.org/abs/2107.11291) models on COCO dataset ([#1424](https://github.com/open-mmlab/mmpose/pull/1424)) @Indigo6, @Ben-Louis, @ly015
+- Update swin models with better performance ([#1467](https://github.com/open-mmlab/mmpose/pull/1434)) @jin-s13
+
+**New Features**
+
+- Support [TCFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Zeng_Not_All_Tokens_Are_Equal_Human-Centric_Visual_Analysis_via_Token_CVPR_2022_paper.html) backbone, CVPR'2022 ([#1447](https://github.com/open-mmlab/mmpose/pull/1447), [#1452](https://github.com/open-mmlab/mmpose/pull/1452)) @zengwang430521
+- Add [RLE](https://arxiv.org/abs/2107.11291) models on COCO dataset ([#1424](https://github.com/open-mmlab/mmpose/pull/1424)) @Indigo6, @Ben-Louis, @ly015
+- Support layer decay optimizer conctructor and learning rate decay optimizer constructor ([#1423](https://github.com/open-mmlab/mmpose/pull/1423)) @jin-s13
+
+**Improvements**
+
+- Improve documentation quality ([#1416](https://github.com/open-mmlab/mmpose/pull/1416), [#1421](https://github.com/open-mmlab/mmpose/pull/1421), [#1423](https://github.com/open-mmlab/mmpose/pull/1423), [#1426](https://github.com/open-mmlab/mmpose/pull/1426), [#1458](https://github.com/open-mmlab/mmpose/pull/1458), [#1463](https://github.com/open-mmlab/mmpose/pull/1463)) @ly015, @liqikai9
+- Support installation by [mim](https://github.com/open-mmlab/mim) ([#1425](https://github.com/open-mmlab/mmpose/pull/1425)) @liqikai9
+- Support PAVI logger ([#1434](https://github.com/open-mmlab/mmpose/pull/1434)) @EvelynWang-0423
+- Add progress bar for some demos ([#1454](https://github.com/open-mmlab/mmpose/pull/1454)) @liqikai9
+- Webcam API supports quick device setting in terminal commands ([#1466](https://github.com/open-mmlab/mmpose/pull/1466)) @ly015
+- Update swin models with better performance ([#1467](https://github.com/open-mmlab/mmpose/pull/1434)) @jin-s13
+
+**Bug Fixes**
+
+- Rename `custom_hooks_config` to `cust_hooks` in configs to align with the documentation ([#1427](https://github.com/open-mmlab/mmpose/pull/1427)) @ly015
+- Fix deadlock issue in Webcam API ([#1430](https://github.com/open-mmlab/mmpose/pull/1430)) @ly015
+- Fix smoother configs in video 3D demo ([#1457](https://github.com/open-mmlab/mmpose/pull/1457)) @ly015
+
 ## v0.27.0 (07/06/2022)
 
 **Highlights**
