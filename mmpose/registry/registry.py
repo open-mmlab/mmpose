@@ -28,3 +28,6 @@ VISBACKENDS = Registry('vis_backend', parent=MMENGINE_VISBACKENDS)
 
 # manage all kinds of metrics
 METRICS = Registry('metric', parent=MMENGINE_METRICS)
+
+# manager keypoint encoder/decoder
+KEYPOINT_CODEC = Registry('keypoint_codec')
