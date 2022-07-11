@@ -323,7 +323,12 @@ class PoseLifter(BasePose):
             vis_height (int): The image height of the visualization. The width
                 will be N*vis_height depending on the number of visualized
                 items.
+            num_instances (int): Number of instances to be shown in 3D. If
+                smaller than 0, all the instances in the result will be shown.
+                Otherwise, pad or truncate the result to a length of
+                num_instances.
             win_name (str): The window name.
+            show (bool): Whether to directly show the visualization.
             wait_time (int): Value of waitKey param.
                 Default: 0.
             out_file (str or None): The filename to write the image.
