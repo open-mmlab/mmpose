@@ -116,7 +116,7 @@ class Interhand3D(TopDown):
                     pose_link_color=None,
                     vis_height=400,
                     num_instances=-1,
-                    axis_azimuth=None,
+                    axis_azimuth=-115,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -215,7 +215,7 @@ class Interhand3D(TopDown):
             pose_link_color,
             vis_height,
             axis_limit=300,
-            axis_azimuth=-115 if axis_azimuth is None else axis_azimuth,
+            axis_azimuth=axis_azimuth,
             axis_elev=15,
             kpt_score_thr=kpt_score_thr,
             num_instances=num_instances)

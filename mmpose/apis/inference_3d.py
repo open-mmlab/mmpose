@@ -366,7 +366,7 @@ def vis_3d_pose_result(model,
                        thickness=2,
                        vis_height=400,
                        num_instances=-1,
-                       axis_azimuth=None,
+                       axis_azimuth=70,
                        show=False,
                        out_file=None):
     """Visualize the 3D pose estimation results.
