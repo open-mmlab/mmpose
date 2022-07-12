@@ -369,12 +369,8 @@ class DetectAndRegress(BasePose):
             targets_tensor = torch.cat(targets, dim=0)
             masks_tensor = torch.cat(masks, dim=0)
             losses_2d_ = self.keypoint_head.get_loss(heatmaps_tensor,
-<<<<<<< HEAD
                                                      targets_tensor,
                                                      masks_tensor)
-=======
-                                                     targets_tensor, masks_tensor)
->>>>>>> 'rewrite_cfg'
             for k, v in losses_2d_.items():
                 losses_2d[k + '_2d'] = v
             losses.update(losses_2d)
