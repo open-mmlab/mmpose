@@ -94,6 +94,7 @@ model = dict(
     type='DetectAndRegress',
     backbone=None,
     pretrained=None,
+    keypoint_head=None,
     human_detector=dict(
         type='VoxelCenterDetector',
         image_size=image_size,
