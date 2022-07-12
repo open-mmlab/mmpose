@@ -14,6 +14,18 @@ class TopdownPoseEstimator(BasePoseEstimator):
     """Base class for top-down pose estimators.
 
     Args:
+        backbone (dict): The backbone config
+        neck (dict, optional): The neck config. Defaults to ``None``
+        head (dict, optional): The head config. Defaults to ``None``
+        train_cfg (dict, optional): The runtime config for training process.
+            Defaults to ``None``
+        test_cfg (dict, optional): The runtime config for testing process.
+            Defaults to ``None``
+        data_preprocessor (dict, optional): The data preprocessing config to
+            build the instance of :class:`BaseDataPreprocessor`. Defaults to
+            ``None``.
+        init_cfg (dict, optional): The config to control the initialization.
+            Defaults to ``None``
     """
 
     def __init__(self,

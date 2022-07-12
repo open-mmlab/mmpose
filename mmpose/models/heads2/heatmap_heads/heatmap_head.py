@@ -42,11 +42,18 @@ class HeatmapHead(BaseHead):
         out_channels (int): Number of channels in the output heatmap
         num_deconv_layers (int): Number of deconv layers. Defaults to 3
         deconv_out_channels (sequence[int]): The output channel number of each
-            deconv layer. The length should equal to ``num_deconv_layers``.
-            Defaults to ``(256, 256, 256)``
+            deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple]): The kernel size of
-            each deconv layer. Each element should be either an integer.
-            Defaults to (4, 4, 4)
+            each deconv layer. Each element should be either an integer for
+            both height and width dimensions, or a tuple of two integers for
+            the height and the width dimension respectively.Defaults to
+            ``(4, 4, 4)``
+        conv_out_channels (sequence[int], optional): The output channel number
+            of each intermediate conv layer. ``None`` means no intermediate
+            conv layer between deconv layers and the final conv layer.
+            Defaults to ``None``
+        conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+            of each intermediate conv layer. Defaults to ``None``
         input_transform (str): Transformation of input features which should
             be one of the following options:
 
