@@ -296,7 +296,7 @@ class PoseLifter(BasePose):
                     thickness=2,
                     vis_height=400,
                     num_instances=-1,
-                    axis_azimuth=70,
+                    axis_azimuth=None,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -391,7 +391,7 @@ class PoseLifter(BasePose):
             pose_link_color,
             vis_height,
             num_instances=num_instances,
-            axis_azimuth=axis_azimuth,
+            axis_azimuth=70 if axis_azimuth is None else axis_azimuth,
         )
 
         if show:
