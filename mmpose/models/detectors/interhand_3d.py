@@ -116,6 +116,7 @@ class Interhand3D(TopDown):
                     pose_link_color=None,
                     vis_height=400,
                     num_instances=-1,
+                    axis_azimuth=-115,
                     win_name='',
                     show=False,
                     wait_time=0,
@@ -150,6 +151,7 @@ class Interhand3D(TopDown):
                 smaller than 0, all the instances in the pose_result will be
                 shown. Otherwise, pad or truncate the pose_result to a length
                 of num_instances.
+            axis_azimuth (float): axis azimuth angle for 3D visualizations.
             win_name (str): The window name.
             show (bool): Whether to show the image. Default: False.
             wait_time (int): Value of waitKey param.
@@ -213,7 +215,7 @@ class Interhand3D(TopDown):
             pose_link_color,
             vis_height,
             axis_limit=300,
-            axis_azimuth=-115,
+            axis_azimuth=axis_azimuth,
             axis_elev=15,
             kpt_score_thr=kpt_score_thr,
             num_instances=num_instances)
