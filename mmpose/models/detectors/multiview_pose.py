@@ -138,7 +138,8 @@ class DetectAndRegress(BasePose):
     """DetectAndRegress approach for multiview human pose detection.
 
     Args:
-        backbone (ConfigDict): Dictionary to construct the 2D pose detector
+        backbone (ConfigDict): Dictionary to construct the backbone
+        keypoint_head (ConfigDict): Dictionary to construct the 2d keypoint head
         human_detector (ConfigDict): dictionary to construct human detector
         pose_regressor (ConfigDict): dictionary to construct pose regressor
         train_cfg (ConfigDict): Config for training. Default: None.
@@ -521,7 +522,7 @@ class DetectAndRegress(BasePose):
             feature_maps = []
             assert isinstance(img, list)
             for img_ in img:
-                feature_maps.append(self.backbone.forward_dummy(img_)[0])
+                feature_maps.append(self.predict_heatmap(img_)[0])
 
         _ = self.human_detector.forward_dummy(feature_maps)
 
