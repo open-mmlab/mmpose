@@ -146,8 +146,8 @@ def main():
     parser.add_argument(
         '--smooth',
         action='store_true',
-        help='Apply a temporal filter to smooth the pose estimation results. '
-        'See also --smooth-filter-cfg.')
+        help='Apply a temporal filter to smooth the 2D pose estimation '
+        'results. See also --smooth-filter-cfg.')
     parser.add_argument(
         '--smooth-filter-cfg',
         type=str,
@@ -299,8 +299,8 @@ def main():
     if args.smooth:
         smoother = Smoother(
             filter_cfg=args.smooth_filter_cfg,
-            keypoint_key='keypoints_3d',
-            keypoint_dim=3)
+            keypoint_key='keypoints',
+            keypoint_dim=2)
     else:
         smoother = None
 
@@ -315,6 +315,11 @@ def main():
             causal=data_cfg.causal,
             seq_len=data_cfg.seq_len,
             step=data_cfg.seq_frame_interval)
+
+        # smooth 2d results
+        if smoother:
+            pose_results_2d = smoother.smooth(pose_results_2d)
+
         # 2D-to-3D pose lifting
         pose_lift_results = inference_pose_lifter_model(
             pose_lift_model,
@@ -346,10 +351,6 @@ def main():
             res['bbox'] = det_res['bbox']
             res['track_id'] = instance_id
             pose_lift_results_vis.append(res)
-
-        # Smoothing
-        if smoother:
-            pose_lift_results = smoother.smooth(pose_lift_results)
 
         # Visualization
         if num_instances < 0:
