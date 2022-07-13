@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+# Adapted from https://github.com/mit-han-lab/litepose
+# By Junyan Li, lijunyan668@outlook.com
 import torch.nn as nn
 from mmcv.cnn import constant_init, normal_init
 
