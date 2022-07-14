@@ -655,6 +655,41 @@ def keypoints_from_heatmaps3d(heatmaps, center, scale):
     return preds, maxvals
 
 
+def keypoints_from_joint_uvd(joint_uvd, center, scale, image_size):
+    """Get final keypoint predictions from 3d heatmaps and transform them back
+    to the image.
+
+    Note:
+        - batch size: N
+        - num keypoints: K
+        - heatmap depth size: D
+        - heatmap height: H
+        - heatmap width: W
+
+    Args:
+        heatmaps (np.ndarray[N, K, D, H, W]): model predicted heatmaps.
+        center (np.ndarray[N, 2]): Center of the bounding box (x, y).
+        scale (np.ndarray[N, 2]): Scale of the bounding box
+            wrt height/width.
+
+    Returns:
+        tuple: A tuple containing keypoint predictions and scores.
+
+        - preds (np.ndarray[N, K, 3]): Predicted 3d keypoint location \
+            in images.
+        - maxvals (np.ndarray[N, K, 1]): Scores (confidence) of the keypoints.
+    """
+    N, K, D = joint_uvd.shape
+    preds = joint_uvd
+    maxvals = np.ones((N, K, 1), dtype=np.float32)
+    # Transform back to the image
+    for i in range(N):
+        preds[i, :, :2] = transform_preds(
+            (preds[i, :, :2] + 1) * image_size[i] / 2, center[i], scale[i],
+            [image_size[i, 1], image_size[i, 0]])
+    return preds, maxvals
+
+
 def multilabel_classification_accuracy(pred, gt, mask, thr=0.5):
     """Get multi-label classification accuracy.
 

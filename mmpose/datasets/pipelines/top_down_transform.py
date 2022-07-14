@@ -726,10 +726,23 @@ class TopDownGenerateTargetRegression:
 
     Required key: 'joints_3d', 'joints_3d_visible', 'ann_info'. Modified key:
     'target', and 'target_weight'.
+
+    Args:
+        use_zero_mean: (bool) If set to True, target normalize to [-1, 1],
+            otherwise [0,1]
+        joint_indices: (list): Indices of joints used for heatmap generation.
+            If None (default) is given, all joints will be used.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self,
+                 use_zero_mean=False,
+                 joint_indices=None,
+                 is_3d=False,
+                 normalize_depth=False):
+        self.use_zero_mean = use_zero_mean
+        self.joint_indices = joint_indices
+        self.is_3d = is_3d
+        self.normalize_depth = normalize_depth
 
     def _generate_target(self, cfg, joints_3d, joints_3d_visible):
         """Generate the target regression vector.
@@ -746,19 +759,40 @@ class TopDownGenerateTargetRegression:
         joint_weights = cfg['joint_weights']
         use_different_joint_weights = cfg['use_different_joint_weights']
 
+        # only preserve used joint if joint_indices is given
+        if self.joint_indices is not None and len(self.joint_indices) > 0:
+            joint_weights = joint_weights[self.joint_indices]
+            joints_3d = joints_3d[self.joint_indices]
+            joints_3d_visible = joints_3d_visible[self.joint_indices]
+
         mask = (joints_3d[:, 0] >= 0) * (
             joints_3d[:, 0] <= image_size[0] - 1) * (joints_3d[:, 1] >= 0) * (
                 joints_3d[:, 1] <= image_size[1] - 1)
 
-        target = joints_3d[:, :2] / image_size
+        keypoints_dim = 3 if self.is_3d else 2
+
+        if self.use_zero_mean:
+            target = joints_3d[:, :keypoints_dim]
+            target_2d = target[:, :2] / image_size
+            target_2d = 2 * target_2d - 1
+            target[:, :2] = target_2d
+        else:
+            target = joints_3d[:, :keypoints_dim]
+            target_2d = target[:, :2] / image_size
+            target[:, :2] = target_2d
 
         target = target.astype(np.float32)
-        target_weight = joints_3d_visible[:, :2] * mask[:, None]
+        target_weight = joints_3d_visible[:, :keypoints_dim] * mask[:, None]
 
         if use_different_joint_weights:
             target_weight = np.multiply(target_weight, joint_weights)
 
         return target, target_weight
+
+    def _normalize_target(self, joints_3d, center_depth, cube_size):
+        joints_3d[:, 2] = (joints_3d[:, 2] - center_depth) / (
+            cube_size[2] / 2.0)
+        return joints_3d
 
     def __call__(self, results):
         """Generate the target heatmap."""
@@ -769,6 +803,9 @@ class TopDownGenerateTargetRegression:
                                                       joints_3d,
                                                       joints_3d_visible)
 
+        if self.is_3d and self.normalize_depth:
+            target = self._normalize_target(target, results['center_depth'],
+                                            results['cube_size'])
         results['target'] = target
         results['target_weight'] = target_weight
 
