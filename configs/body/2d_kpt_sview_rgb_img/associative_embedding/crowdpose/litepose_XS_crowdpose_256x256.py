@@ -38,9 +38,8 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
-    # TODO: unify pretrained model path
-    pretrained='/home/junyan/litepose-model-zoo'
-    '/crowd/crowdpose-XS-pretrain-epoch826-0628-mmpose.pth',
+    pretrained='https://download.openmmlab.com/mmpose/'
+    'pretrain_models/litepose_xs_crowdpose-a8858776_20220714.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,

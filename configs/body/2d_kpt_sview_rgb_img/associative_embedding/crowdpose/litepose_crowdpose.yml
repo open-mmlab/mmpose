@@ -3,7 +3,7 @@ Collections:
   Paper:
     Title: 'Lite pose: Efficient architecture design for 2d human pose estimation'
     URL: https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Lite_Pose_Efficient_Architecture_Design_for_2D_Human_Pose_Estimation_CVPR_2022_paper.html
-  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/backbones/litepose.md
+  README: https://github.com/open-mmlab/mmpose/blob/master/docs/en/papers/algorithms/litepose.md
 Models:
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_XS_crowdpose_256x256.py
   In Collection: LitePose
@@ -22,7 +22,7 @@ Models:
       AR: 0.555
       AR@0.5: 0.785
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_xs_crowdpose_256x256-84053659_20220714.pth
 - Config: configs/body/2d_kpt_sview_rgb_img/associative_embedding/crowdpose/litepose_S_crowdpose_448x448.py
   In Collection: LitePose
   Metadata:
@@ -38,4 +38,4 @@ Models:
       AR: 0.644
       AR@0.5: 0.853
     Task: Body 2D Keypoint
-  Weights: <>
+  Weights: https://download.openmmlab.com/mmpose/bottom_up/litepose/litepose_s_crowdpose_448x448-ccd9f2a9_20220714.pth
