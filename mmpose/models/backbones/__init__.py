@@ -36,5 +36,6 @@ __all__ = [
     'SEResNet', 'SEResNeXt', 'ShuffleNetV1', 'ShuffleNetV2', 'CPM', 'RSN',
     'MSPN', 'ResNeSt', 'VGG', 'TCN', 'ViPNAS_ResNet', 'ViPNAS_MobileNetV3',
     'LiteHRNet', 'V2VNet', 'HRFormer', 'PyramidVisionTransformer',
-    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D', 'TCFormer', 'LitePose'
+    'PyramidVisionTransformerV2', 'SwinTransformer', 'I3D', 'TCFormer',
+    'LitePose'
 ]
