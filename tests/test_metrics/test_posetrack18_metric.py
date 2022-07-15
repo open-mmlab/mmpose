@@ -8,10 +8,10 @@ import torch
 from mmengine.fileio import dump, load
 
 from mmpose.datasets.datasets2.utils import parse_pose_metainfo
-from mmpose.metrics import CocoMetric
+from mmpose.metrics import PoseTrack18Metric
 
 
-class TestCocoMetric(TestCase):
+class TestPoseTrack18Metric(TestCase):
 
     def setUp(self):
         """Setup some variables which are used in every test method.
@@ -20,27 +20,28 @@ class TestCocoMetric(TestCase):
         tearDown() -> cleanUp()
         """
         self.tmp_dir = tempfile.TemporaryDirectory()
-        self.ann_file = 'tests/data/coco/test_coco.json'
-        coco_meta_info = dict(from_file='configs/_base_/datasets/coco.py')
-        self.coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
+        self.ann_file = 'tests/data/posetrack18/annotations/'\
+            'test_posetrack18_val.json'
+        posetrack18_meta_info = dict(
+            from_file='configs/_base_/datasets/posetrack18.py')
+        self.posetrack18_dataset_meta = parse_pose_metainfo(
+            posetrack18_meta_info)
 
         self.db = load(self.ann_file)
 
         self.topdown_data = self._convert_ann_to_topdown_batch_data()
         assert len(self.topdown_data) == 14
         self.bottomup_data = self._convert_ann_to_bottomup_batch_data()
-        assert len(self.bottomup_data) == 4
+        assert len(self.bottomup_data) == 3
         self.target = {
-            'coco/AP': 1.0,
-            'coco/AP .5': 1.0,
-            'coco/AP .75': 1.0,
-            'coco/AP (M)': 1.0,
-            'coco/AP (L)': 1.0,
-            'coco/AR': 1.0,
-            'coco/AR .5': 1.0,
-            'coco/AR .75': 1.0,
-            'coco/AR (M)': 1.0,
-            'coco/AR (L)': 1.0,
+            'posetrack18/Head AP': 100.0,
+            'posetrack18/Shou AP': 100.0,
+            'posetrack18/Elb AP': 100.0,
+            'posetrack18/Wri AP': 100.0,
+            'posetrack18/Hip AP': 100.0,
+            'posetrack18/Knee AP': 100.0,
+            'posetrack18/Ankl AP': 100.0,
+            'posetrack18/Total AP': 100.0,
         }
 
     def _convert_ann_to_topdown_batch_data(self):
@@ -98,73 +99,75 @@ class TestCocoMetric(TestCase):
 
     def test_init(self):
         """test metric init method."""
-        # test format_only option
+        # test `format_only` option
         with self.assertRaisesRegex(
                 AssertionError,
                 '`outfile_prefix` can not be None when `format_only` is True'):
-            CocoMetric(
+            PoseTrack18Metric(
                 ann_file=self.ann_file, format_only=True, outfile_prefix=None)
 
     def test_topdown_evaluate(self):
-        """test topdown-style COCO metric evaluation."""
-        coco_metric = CocoMetric(
+        """test topdown-style posetrack18 metric evaluation."""
+        posetrack18_metric = PoseTrack18Metric(
             ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
-        coco_metric.dataset_meta = self.coco_dataset_meta
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
 
         # process samples
         for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+            posetrack18_metric.process(batch, preds)
 
-        eval_results = coco_metric.evaluate(size=len(self.topdown_data))
+        eval_results = posetrack18_metric.evaluate(size=len(self.topdown_data))
 
         self.assertDictEqual(eval_results, self.target)
         self.assertTrue(
-            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+            osp.isfile(osp.join(self.tmp_dir.name, '003418_mpii_test.json')))
 
     def test_bottomup_evaluate(self):
-        """test bottomup-style COCO metric evaluation."""
-        coco_metric = CocoMetric(
+        """test bottomup-style posetrack18 metric evaluation."""
+        posetrack18_metric = PoseTrack18Metric(
             ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
-        coco_metric.dataset_meta = self.coco_dataset_meta
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
 
         # process samples
         for batch, preds in self.bottomup_data:
-            coco_metric.process(batch, preds)
+            posetrack18_metric.process(batch, preds)
 
-        eval_results = coco_metric.evaluate(size=len(self.bottomup_data))
+        eval_results = posetrack18_metric.evaluate(
+            size=len(self.bottomup_data))
         self.assertDictEqual(eval_results, self.target)
         self.assertTrue(
-            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+            osp.isfile(osp.join(self.tmp_dir.name, '009473_mpii_test.json')))
 
     def test_other_methods(self):
         """test other useful methods."""
         # test `_sort_and_unique_bboxes` method
-        coco_metric = CocoMetric(ann_file=self.ann_file)
-        coco_metric.dataset_meta = self.coco_dataset_meta
+        posetrack18_metric = PoseTrack18Metric(ann_file=self.ann_file)
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
         # process samples
         for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+            posetrack18_metric.process(batch, preds)
         # process one extra sample
         batch, preds = self.topdown_data[0]
-        coco_metric.process(batch, preds)
+        posetrack18_metric.process(batch, preds)
         # an extra sample
-        eval_results = coco_metric.evaluate(size=len(self.topdown_data) + 1)
+        eval_results = posetrack18_metric.evaluate(
+            size=len(self.topdown_data) + 1)
         self.assertDictEqual(eval_results, self.target)
 
     def test_format_only(self):
         """test `format_only` option."""
-        coco_metric = CocoMetric(
+        posetrack18_metric = PoseTrack18Metric(
             ann_file=self.ann_file,
             format_only=True,
             outfile_prefix=f'{self.tmp_dir.name}/test')
-        coco_metric.dataset_meta = self.coco_dataset_meta
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
         # process one sample
         batch, preds = self.topdown_data[0]
-        coco_metric.process(batch, preds)
-        eval_results = coco_metric.evaluate(size=1)
+        posetrack18_metric.process(batch, preds)
+        eval_results = posetrack18_metric.evaluate(size=1)
         self.assertDictEqual(eval_results, {})
         self.assertTrue(
-            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+            osp.isfile(osp.join(self.tmp_dir.name, '012834_mpii_test.json')))
 
         # test when gt annotations are absent
         db_ = load(self.ann_file)
@@ -174,4 +177,4 @@ class TestCocoMetric(TestCase):
         with self.assertRaisesRegex(
                 AssertionError,
                 'Ground truth annotations are required for evaluation'):
-            _ = CocoMetric(ann_file=tmp_ann_file, format_only=False)
+            _ = PoseTrack18Metric(ann_file=tmp_ann_file, format_only=False)

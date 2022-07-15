@@ -35,8 +35,8 @@ class BaseCocoDataset(BaseDataset):
             information. Default: ``None``.
         data_root (str, optional): The root directory for ``data_prefix`` and
             ``ann_file``. Default: ``None``.
-        data_prefix (dict, optional): Prefix for training data. Default:
-            ``dict(img=None, ann=None)``.
+        data_prefix (dict, optional): Prefix for training data.
+            Default: ``dict(img_path='')``.
         filter_cfg (dict, optional): Config for filter data. Default: `None`.
         indices (int or Sequence[int], optional): Support using first few
             data in annotation file to facilitate training/testing on a smaller
@@ -207,11 +207,16 @@ class BaseCocoDataset(BaseDataset):
                     contains the instance
 
         Returns:
-            dict: Parsed instance annotation
+            dict | None: Parsed instance annotation
         """
 
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
+
+        # filter invalid instance
+        if 'bbox' not in ann or 'keypoints' not in ann or max(
+                ann['keypoints']) == 0:
+            return None
 
         img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
         img_w, img_h = img['width'], img['height']
