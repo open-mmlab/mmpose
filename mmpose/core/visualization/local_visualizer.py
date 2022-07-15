@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import cv2
 import mmcv
 import numpy as np
+import torch
 from mmengine import Visualizer
 from mmengine.data import InstanceData, PixelData
 from mmengine.dist import master_only
@@ -26,14 +27,11 @@ class PoseLocalVisualizer(Visualizer):
         save_dir (str, optional): Save file dir for all storage backends.
             If it is None, the backend storage will not save any data.
         bbox_color (str, tuple(int), optional): Color of bbox lines.
-            The tuple of color should be in BGR order. Defaults to None.
-        text_color (str, tuple(int), optional): Color of texts.
+            The tuple of color should be in BGR order. Defaults to 'green'.
+        kpt_color (str, tuple(tuple(int)), optional): Color of keypoints.
             The tuple of color should be in BGR order.
-            Defaults to (200, 200, 200).
-        kpt_color (str, tuple(int), optional): Color of keypoints.
-            The tuple of color should be in BGR order.
-            Defaults to None.
-        link_color (str, tuple(int), optional): Color of skeleton.
+            Defaults to 'red'.
+        link_color (str, tuple(tuple(int)), optional): Color of skeleton.
             The tuple of color should be in BGR order.
             Defaults to None.
         line_width (int, float): The width of lines.
@@ -59,8 +57,8 @@ class PoseLocalVisualizer(Visualizer):
         ...                                          [8, 8]]])
         >>> gt_pose_data_sample = PoseDataSample()
         >>> gt_pose_data_sample.gt_instances = gt_instances
-        >>> pose_local_visualizer.dataset_meta = {'SKELETON': [[0, 1], [1, 2],
-        ...                                                    [2, 3]]}
+        >>> dataset_meta = {'skeleton_links': [[0, 1], [1, 2], [2, 3]]}
+        >>> pose_local_visualizer.set_dataset_meta(dataset_meta)
         >>> pose_local_visualizer.add_datasample('image', image,
         ...                         gt_pose_data_sample)
         >>> pose_local_visualizer.add_datasample(
@@ -86,29 +84,39 @@ class PoseLocalVisualizer(Visualizer):
                  vis_backends: Optional[Dict] = None,
                  save_dir: Optional[str] = None,
                  bbox_color: Optional[Union[str, Tuple[int]]] = 'green',
-                 text_color: Optional[Union[str,
-                                            Tuple[int]]] = (200, 200, 200),
-                 kpt_color: Optional[Union[str, Tuple[int]]] = None,
-                 link_color: Optional[Union[str, Tuple[int]]] = None,
-                 mask_color: Optional[Union[str, Tuple[int]]] = None,
+                 kpt_color: Optional[Union[str, Tuple[Tuple[int]]]] = 'red',
+                 link_color: Optional[Union[str, Tuple[Tuple[int]]]] = None,
+                 skeleton: Optional[Union[List, Tuple]] = None,
                  line_width: Union[int, float] = 1,
-                 radius: Union[int, float] = 4,
+                 radius: Union[int, float] = 3,
                  show_keypoint_weight: bool = False,
                  alpha: float = 0.8):
         super().__init__(name, image, vis_backends, save_dir)
         self.bbox_color = bbox_color
-        self.text_color = text_color
-        self.mask_color = mask_color
         self.kpt_color = kpt_color
         self.link_color = link_color
         self.line_width = line_width
+        self.skeleton = skeleton
         self.radius = radius
         self.alpha = alpha
         self.show_keypoint_weight = show_keypoint_weight
         # Set default value. When calling
-        # `PoseLocalVisualizer().dataset_meta=xxx`,
+        # `PoseLocalVisualizer().set_dataset_meta(xxx)`,
         # it will override the default value.
         self.dataset_meta = {}
+
+    def set_dataset_meta(self, dataset_meta: Dict):
+        """Assign dataset_meta to the visualizer. The default visualization
+        settings will be overridden.
+
+        Args:
+            dataset_meta (dict): meta information of dataset.
+        """
+        self.dataset_meta = dataset_meta
+        self.kpt_color = dataset_meta.get('keypoint_colors', self.kpt_color)
+        self.link_color = dataset_meta.get('skeleton_link_colors',
+                                           self.link_color)
+        self.skeleton = self.dataset_meta.get('skeleton_links', None)
 
     def _draw_instances_bbox(self, image: np.ndarray,
                              instances: ['InstanceData']) -> np.ndarray:
@@ -136,7 +144,6 @@ class PoseLocalVisualizer(Visualizer):
     def _draw_instances_kpts(self,
                              image: np.ndarray,
                              instances: ['InstanceData'],
-                             skeleton: Optional[Union[List, Tuple]] = None,
                              kpt_score_thr: float = 0.3):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
@@ -144,8 +151,6 @@ class PoseLocalVisualizer(Visualizer):
             image (np.ndarray): The image to draw.
             instances (:obj:`InstanceData`): Data structure for
                 instance-level annotations or predictions.
-            skeleton (tuple or list, optional): Composed of keypoint index
-                pairs that need to be plotted.
             kpt_score_thr (float, optional): Minimum score of keypoints
                 to be shown. Default: 0.3.
 
@@ -158,42 +163,66 @@ class PoseLocalVisualizer(Visualizer):
 
         if 'keypoints' in instances:
             keypoints = instances.keypoints
+
             if 'scores' in instances and self.show_keypoint_weight:
                 scores = instances.scores
             else:
                 scores = [np.ones(len(kpts)) for kpts in keypoints]
 
-            for kpts, score in zip(keypoints, scores):
+            if 'keypoints_visible' in instances:
+                keypoints_visible = instances.keypoints_visible
+            else:
+                keypoints_visible = [np.ones(len(kpts)) for kpts in keypoints]
+
+            for kpts, score, visible in zip(keypoints, scores,
+                                            keypoints_visible):
                 kpts = np.array(kpts, copy=False)
 
+                if self.kpt_color is None or isinstance(self.kpt_color, str):
+                    kpt_color = [self.kpt_color] * len(kpts)
+                elif len(self.kpt_color) == len(kpts):
+                    kpt_color = self.kpt_color
+                else:
+                    raise ValueError(
+                        f'the length of kpt_color '
+                        f'({len(self.kpt_color)}) does not matches '
+                        f'that of keypoints ({len(kpts)})')
+
                 # draw each point on image
-                if self.kpt_color is not None:
-                    assert len(self.kpt_color) == len(kpts)
+                for kid, kpt in enumerate(kpts):
+                    if score[kid] < kpt_score_thr or not visible[
+                            kid] or kpt_color[kid] is None:
+                        # skip the point that should not be drawn
+                        continue
 
-                    for kid, kpt in enumerate(kpts):
-
-                        if score[kid] < kpt_score_thr or self.kpt_color[
-                                kid] is None:
-                            # skip the point that should not be drawn
-                            continue
-
-                        color = tuple(int(c) for c in self.kpt_color[kid])
-                        transparency = max(0, min(1, score[kid]))
-                        self.draw_circles(
-                            kpt,
-                            radius=np.array([self.radius]),
-                            face_colors=color,
-                            edge_colors=color,
-                            alpha=transparency,
-                            line_widths=self.radius)
+                    color = tuple(int(c) for c in kpt_color[kid])
+                    transparency = max(0, min(1, score[kid])) * self.alpha
+                    self.draw_circles(
+                        kpt,
+                        radius=np.array([self.radius]),
+                        face_colors=color,
+                        edge_colors=color,
+                        alpha=transparency,
+                        line_widths=self.radius)
 
                 # draw links
-                if skeleton is not None and self.link_color is not None:
-                    assert len(self.link_color) == len(skeleton)
+                if self.skeleton is not None and self.link_color is not None:
+                    if self.link_color is None or isinstance(
+                            self.link_color, str):
+                        link_color = [self.link_color] * len(self.skeleton)
+                    elif len(self.link_color) == len(self.skeleton):
+                        link_color = self.link_color
+                    else:
+                        raise ValueError(
+                            f'the length of link_color '
+                            f'({len(self.link_color)}) does not matches '
+                            f'that of skeleton ({len(self.skeleton)})')
 
-                    for sk_id, sk in enumerate(skeleton):
+                    for sk_id, sk in enumerate(self.skeleton):
                         pos1 = (int(kpts[sk[0], 0]), int(kpts[sk[0], 1]))
                         pos2 = (int(kpts[sk[1], 0]), int(kpts[sk[1], 1]))
+                        if not (visible[sk[0]] and visible[sk[1]]):
+                            continue
 
                         if (pos1[0] <= 0 or pos1[0] >= img_w or pos1[1] <= 0
                                 or pos1[1] >= img_h or pos2[0] <= 0
@@ -201,12 +230,12 @@ class PoseLocalVisualizer(Visualizer):
                                 or pos2[1] >= img_h
                                 or score[sk[0]] < kpt_score_thr
                                 or score[sk[1]] < kpt_score_thr
-                                or self.link_color[sk_id] is None):
+                                or link_color[sk_id] is None):
                             # skip the link that should not be drawn
                             continue
                         X = np.array((pos1[0], pos2[0]))
                         Y = np.array((pos1[1], pos2[1]))
-                        color = tuple(int(c) for c in self.link_color[sk_id])
+                        color = tuple(int(c) for c in link_color[sk_id])
                         if self.show_keypoint_weight:
 
                             mX = np.mean(X)
@@ -220,7 +249,8 @@ class PoseLocalVisualizer(Visualizer):
                                 (int(length / 2), int(stickwidth)), int(angle),
                                 0, 360, 1)
                             transparency = max(
-                                0, min(1, 0.5 * (score[sk[0]] + score[sk[1]])))
+                                0, min(1, 0.5 * (score[sk[0]] +
+                                                 score[sk[1]]))) * self.alpha
                             self.draw_polygons(
                                 polygons,
                                 edge_colors=color,
@@ -236,7 +266,7 @@ class PoseLocalVisualizer(Visualizer):
     def _draw_instance_heatmap(
         self,
         fields: PixelData,
-        overlaid_image: Optional[Union[np.ndarray]] = None,
+        overlaid_image: Optional[np.ndarray] = None,
     ):
         """Draw heatmaps of GT or prediction.
 
@@ -248,7 +278,12 @@ class PoseLocalVisualizer(Visualizer):
         Returns:
             np.ndarray: the drawn image which channel is RGB.
         """
-        out_image = self.draw_featmap(fields.heatmaps, overlaid_image)
+        if 'heatmaps' not in fields:
+            return None
+        heatmaps = fields.heatmaps
+        if isinstance(heatmaps, np.ndarray):
+            heatmaps = torch.from_numpy(heatmaps)
+        out_image = self.draw_featmap(heatmaps, overlaid_image)
         return out_image
 
     @master_only
@@ -298,7 +333,6 @@ class PoseLocalVisualizer(Visualizer):
                 and masks. Defaults to 0.3.
             step (int): Global step value to record. Defaults to 0.
         """
-        skeleton = self.dataset_meta.get('SKELETON', None)
 
         gt_img_data = None
         pred_img_data = None
@@ -308,8 +342,7 @@ class PoseLocalVisualizer(Visualizer):
             gt_img_heatmap = None
             if 'gt_instances' in gt_sample:
                 gt_img_data = self._draw_instances_kpts(
-                    gt_img_data, gt_sample.gt_instances, skeleton,
-                    kpt_score_thr)
+                    gt_img_data, gt_sample.gt_instances, kpt_score_thr)
             if 'gt_instances' in gt_sample and draw_bbox:
                 gt_img_data = self._draw_instances_bbox(
                     gt_img_data, gt_sample.gt_instances)
@@ -317,24 +350,25 @@ class PoseLocalVisualizer(Visualizer):
             if 'gt_fields' in gt_sample and draw_heatmap:
                 gt_img_heatmap = self._draw_instance_heatmap(
                     gt_sample.gt_fields, image)
-                gt_img_data = np.concatenate((gt_img_data, gt_img_heatmap),
-                                             axis=0)
+                if gt_img_heatmap is not None:
+                    gt_img_data = np.concatenate((gt_img_data, gt_img_heatmap),
+                                                 axis=0)
 
         if draw_pred and pred_sample is not None:
             pred_img_data = image.copy()
             pred_img_heatmap = None
             if 'pred_instances' in pred_sample:
                 pred_img_data = self._draw_instances_kpts(
-                    pred_img_data, pred_sample.pred_instances, skeleton,
-                    kpt_score_thr)
+                    pred_img_data, pred_sample.pred_instances, kpt_score_thr)
             if 'pred_instances' in pred_sample and draw_bbox:
                 pred_img_data = self._draw_instances_bbox(
                     pred_img_data, pred_sample.pred_instances)
             if 'pred_fields' in pred_sample and draw_heatmap:
                 pred_img_heatmap = self._draw_instance_heatmap(
                     pred_sample.pred_fields, image)
-                pred_img_data = np.concatenate(
-                    (pred_img_data, pred_img_heatmap), axis=0)
+                if pred_img_heatmap is not None:
+                    pred_img_data = np.concatenate(
+                        (pred_img_data, pred_img_heatmap), axis=0)
 
         if gt_img_data is not None and pred_img_data is not None:
             if gt_img_heatmap is None and pred_img_heatmap is not None:
