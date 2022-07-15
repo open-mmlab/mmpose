@@ -1,10 +1,58 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import List, Tuple, Union
+
 import numpy as np
+import torch
 from mmcv.transforms import BaseTransform, to_tensor
 from mmengine.data import InstanceData, PixelData
 
 from mmpose.core import PoseDataSample
 from mmpose.registry import TRANSFORMS
+
+
+def image_to_tensor(img: np.ndarray) -> torch.Tensor:
+    """Trans image to tensor.
+
+    Args:
+        img (np.ndarray): The original image.
+
+    Returns:
+        torch.Tensor: The output tensor.
+    """
+
+    if len(img.shape) < 3:
+        img = np.expand_dims(img, -1)
+    img = np.ascontiguousarray(img.transpose(2, 0, 1))
+    tensor = to_tensor(img)
+
+    return tensor
+
+
+def images_to_tensor(
+    value: Union[np.ndarray, List[np.ndarray], Tuple[np.ndarray, np.ndarray]]
+) -> torch.Tensor:
+    """Translate image or sequence of frames to tensor.
+
+    Args:
+        value (np.ndarray | List[np.ndarray] | Tuple[np.ndarray, np.ndarray]):
+            The original image or list of frames.
+
+    Returns:
+        torch.Tensor: The output tensor.
+    """
+
+    if isinstance(value, (List, Tuple)):
+        frames = [image_to_tensor(v) for v in value]
+        # stack sequence of frames
+        # List[Tensor[c, h, w]] -> Tensor[len_seq, c, h, w]
+        tensor = torch.stack(frames, dim=0)
+    elif isinstance(value, np.ndarray):
+        tensor = image_to_tensor(value)
+    else:
+        # Maybe the data has been converted to Tensor.
+        tensor = to_tensor(value)
+
+    return tensor
 
 
 @TRANSFORMS.register_module()
@@ -69,10 +117,7 @@ class PackPoseInputs(BaseTransform):
         """
         if 'img' in results:
             img = results['img']
-            if len(img.shape) < 3:
-                img = np.expand_dims(img, -1)
-            img = np.ascontiguousarray(img.transpose(2, 0, 1))
-            img = to_tensor(img)
+            img_tensor = images_to_tensor(img)
 
         data_sample = PoseDataSample()
         gt_instances = InstanceData()
@@ -92,7 +137,7 @@ class PackPoseInputs(BaseTransform):
         data_sample.set_metainfo(img_meta)
 
         packed_results = dict()
-        packed_results['inputs'] = img
+        packed_results['inputs'] = img_tensor
         packed_results['data_sample'] = data_sample
 
         return packed_results
