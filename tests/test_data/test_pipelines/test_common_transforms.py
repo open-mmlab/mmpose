@@ -30,7 +30,7 @@ class TestGetBboxCenterScale(TestCase):
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
                         [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
                         [13, 14], [16, 15], [15, 16]],
-            keypoint_weights=np.array([
+            dataset_keypoint_weights=np.array([
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
             ]).astype(np.float32))
@@ -82,7 +82,7 @@ class TestRandomFlip(TestCase):
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
                         [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
                         [13, 14], [16, 15], [15, 16]],
-            keypoint_weights=np.array([
+            dataset_keypoint_weights=np.array([
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
             ]).astype(np.float32))
@@ -196,7 +196,7 @@ class TestRandomHalfBody(TestCase):
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
                         [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
                         [13, 14], [16, 15], [15, 16]],
-            keypoint_weights=np.array([
+            dataset_keypoint_weights=np.array([
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
             ]).astype(np.float32))
@@ -291,7 +291,7 @@ class TestRandomBboxTransform(TestCase):
             flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
                         [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
                         [13, 14], [16, 15], [15, 16]],
-            keypoint_weights=np.array([
+            dataset_keypoint_weights=np.array([
                 1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
                 1.2, 1.5, 1.5
             ]).astype(np.float32))

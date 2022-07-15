@@ -25,6 +25,11 @@ from .datasets import (  # isort:skip
 
 from .datasets2 import (  # isort:skip
     CocoDataset, )
+from .pipelines2 import (  # isort:skip
+    Albumentation, GetBboxCenterScale, PhotometricDistortion,
+    RandomBboxTransform, RandomFlip, RandomHalfBody, PackPoseInputs,
+    TopDownAffine, TopDownGenerateHeatmap, TopDownGenerateRegressionLabel,
+)
 
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'BottomUpMhpDataset',
@@ -45,5 +50,8 @@ __all__ = [
     'TopDownPoseTrack18VideoDataset', 'build_dataloader', 'build_dataset',
     'Compose', 'DistributedSampler', 'DATASETS', 'PIPELINES', 'DatasetInfo',
     'Body3DMviewDirectPanopticDataset', 'Body3DMviewDirectShelfDataset',
-    'Body3DMviewDirectCampusDataset', 'CocoDataset'
+    'Body3DMviewDirectCampusDataset', 'CocoDataset', 'GetBboxCenterScale',
+    'RandomBboxTransform', 'RandomFlip', 'RandomHalfBody', 'TopDownAffine',
+    'TopDownGenerateHeatmap', 'TopDownGenerateRegressionLabel',
+    'Albumentation', 'PhotometricDistortion', 'PackPoseInputs'
 ]
