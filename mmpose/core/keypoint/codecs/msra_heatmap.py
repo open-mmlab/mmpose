@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from itertools import product
 from typing import Optional, Tuple
 
 import numpy as np
@@ -76,17 +75,23 @@ class MSRAHeatmap(BaseKeypointCodec):
         Returns:
             tuple:
             - heatmaps (np.ndarray): The generated heatmap in shape
-                (N, K, H, W) where [W, H] is the `heatmap_size`
+                (K, H, W) where [W, H] is the `heatmap_size`
             - keypoint_weights (np.ndarray): The target weights in shape
-                (N, K)
+                (K,)
         """
-        N, K, _ = keypoints.shape
+
+        N, K = keypoints.shape
         W, H = self.heatmap_size
+
+        assert N == 1, (
+            f'{self.__class__.__name__} only support single-instance '
+            'keypoint encoding')
+
         image_size = np.array(self.image_size)
         feat_stride = image_size / [W, H]
 
-        heatmaps = np.zeros((N, K, H, W), dtype=np.float32)
-        keypoint_weights = np.ones((N, K), dtype=np.float32)
+        heatmaps = np.zeros((K, H, W), dtype=np.float32)
+        keypoint_weights = np.ones(K, dtype=np.float32)
 
         # 3-sigma rule
         sigma = self.sigma
@@ -97,24 +102,24 @@ class MSRAHeatmap(BaseKeypointCodec):
             x = np.arange(0, W, 1, dtype=np.float32)
             y = np.arange(0, H, 1, dtype=np.float32)[:, None]
 
-            for n, k in product(range(N), range(K)):
+            for k in range(K):
                 # skip unlabled keypoints
-                if keypoints_visible[n, k] < 0.5:
-                    keypoint_weights[n, k] = 0
+                if keypoints_visible[0, k] < 0.5:
+                    keypoint_weights[k] = 0
                     continue
 
-                mu = keypoints[n, k] / feat_stride
+                mu = keypoints[0, k] / feat_stride
 
                 # check that the gaussian has in-bounds part
                 left, top = mu - radius
                 right, bottom = mu + radius + 1
 
                 if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[n, k] = 0
+                    keypoint_weights[k] = 0
                     continue
 
-                heatmaps[n, k] = np.exp(-((x - mu[0])**2 + (y - mu[1])**2) /
-                                        (2 * sigma**2))
+                heatmaps[k] = np.exp(-((x - mu[0])**2 + (y - mu[1])**2) /
+                                     (2 * sigma**2))
         else:
             # xy grid
             gaussian_size = 2 * radius + 1
@@ -122,21 +127,21 @@ class MSRAHeatmap(BaseKeypointCodec):
             y = x[:, None]
             x0 = y0 = gaussian_size // 2
 
-            for n, k in product(range(N), range(K)):
+            for k in range(K):
                 # skip unlabled keypoints
-                if keypoints_visible[n, k] < 0.5:
-                    keypoint_weights[n, k] = 0
+                if keypoints_visible[0, k] < 0.5:
+                    keypoint_weights[k] = 0
                     continue
 
                 # get gaussian center coordinates
-                mu = (keypoints[n, k] / feat_stride + 0.5)
+                mu = (keypoints[0, k] / feat_stride + 0.5)
 
                 # check that the gaussian has in-bounds part
                 left, top = (mu - radius).astype(np.int64)
                 right, bottom = (mu + radius + 1).astype(np.int64)
 
                 if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[n, k] = 0
+                    keypoint_weights[k] = 0
                     continue
 
                 # The gaussian is not normalized,
@@ -156,8 +161,8 @@ class MSRAHeatmap(BaseKeypointCodec):
                 h_y1 = max(0, top)
                 h_y2 = min(H, bottom)
 
-                heatmaps[n, k, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2,
-                                                                g_x1:g_x2]
+                heatmaps[k, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2,
+                                                             g_x1:g_x2]
 
         return heatmaps, keypoint_weights
 
@@ -165,7 +170,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         """Get keypoint coordinates from heatmaps.
 
         Args:
-            encoded (np.ndarray): Heatmaps in shape (N, K, H, W)
+            encoded (np.ndarray): Heatmaps in shape (K, H, W)
 
         Returns:
             tuple:
@@ -175,7 +180,7 @@ class MSRAHeatmap(BaseKeypointCodec):
                 usually represents the confidence of the keypoint prediction.
         """
         heatmaps = encoded.copy()
-        N, K, H, W = heatmaps.shape
+        K, H, W = heatmaps.shape
 
         keypoints, scores = get_heatmap_maximum(heatmaps)
 
@@ -184,22 +189,25 @@ class MSRAHeatmap(BaseKeypointCodec):
             # Apply Gaussian distribution modulation.
             heatmaps = gaussian_blur(heatmaps, kernel=self.blur_kernel)
             heatmaps = np.log(np.maximum(heatmaps, 1e-10))
-            for n in range(N):
-                for k in range(K):
-                    heatmaps[n, k] = self._taylor_decode(
-                        heatmap=heatmaps[n, k], keypoint=keypoints[n, k])
+            for k in range(K):
+                heatmaps[k] = self._taylor_decode(
+                    heatmap=heatmaps[k], keypoint=keypoints[k])
         else:
             # Add +/-0.25 shift to the predicted locations for higher acc.
-            for n, k in product(range(N), range(K)):
-                heatmap = heatmaps[n, k]
-                px = int(keypoints[n, k, 0])
-                py = int(keypoints[n, k, 1])
+            for k in range(K):
+                heatmap = heatmaps[k]
+                px = int(keypoints[k, 0])
+                py = int(keypoints[k, 1])
                 if 1 < px < W - 1 and 1 < py < H - 1:
                     diff = np.array([
                         heatmap[py][px + 1] - heatmap[py][px - 1],
                         heatmap[py + 1][px] - heatmap[py - 1][px]
                     ])
-                    keypoints[n, k] += np.sign(diff) * 0.25
+                    keypoints[k] += np.sign(diff) * 0.25
+
+        # Unsqueeze the instance dimension for single-instance results
+        keypoints = keypoints[None]
+        scores = keypoints[None]
 
         return keypoints, scores
 

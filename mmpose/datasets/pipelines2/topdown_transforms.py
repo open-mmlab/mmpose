@@ -5,16 +5,15 @@ from typing import Dict, List, Optional, Tuple, Union
 import cv2
 import numpy as np
 from mmcv.transforms import BaseTransform
-from mmengine import is_list_of, is_seq_of
+from mmengine import is_seq_of
 
 from mmpose.core.bbox import get_udp_warp_matrix, get_warp_matrix
-from mmpose.core.keypoint import (generate_megvii_heatmap,
-                                  generate_msra_heatmap, generate_udp_heatmap)
-from mmpose.registry import TRANSFORMS
+from mmpose.core.utils.typing import MultiConfig
+from mmpose.registry import KEYPOINT_CODEC, TRANSFORMS
 
 
 @TRANSFORMS.register_module()
-class TopDownAffine(BaseTransform):
+class TopdownAffine(BaseTransform):
     """Get the bbox image as the model input by affine transform.
 
     Required Keys:
@@ -76,7 +75,7 @@ class TopDownAffine(BaseTransform):
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`TopDownAffine`.
+        """The transform function of :class:`TopdownAffine`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 
@@ -143,8 +142,9 @@ class TopDownAffine(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class TopDownGenerateHeatmap(BaseTransform):
-    r"""Generate the target heatmap of the keypoints.
+class TopdownGeneratHeatmap(BaseTransform):
+    """Encode keypoints into heatmaps, regression labels or other forms to
+    generate the model prediction targets.
 
     Required Keys:
 
@@ -153,190 +153,56 @@ class TopDownGenerateHeatmap(BaseTransform):
         - dataset_keypoint_weights
 
     Added Keys:
-
         - heatmap
         - keypoint_weights
 
     Args:
-        heatmap_size (tuple): The heatmap size in [w, h]
-        encoding (str): Approach to encode keypoints to heatmaps. Options are
-            ``'msra'`` (see `Simple Baseline`_), ``'megvii'`` (see `MSPN`_ and
-            `CPN`_) and ``'udp'`` (see `UDP`_). Defaults to ``'msra'``
-        sigma (float | list[float]): Gaussian sigma value(s)in ``'msra'`` and
-            ``'udp'`` encoding. Defaults to 2.0
-        unbiased (bool): Whether use unbiased method in ``'msra'`` encoding.
-            See `Dark Pose`_ for details. Defaults to ``False``
-        kernel_size (tuple | list[tuple]): The size of Gaussian kernel(s) in
-            ``'megvii'`` encoding. Defaults to (11, 11)
-        udp_combined_map (bool): Whether use combined map in ``udp`` encoding.
-            If ``True``, the generated map is a combination of a binary
-            heatmap (for classification) and an offset map (for regression).
-            Otherwise, the generated map is a gaussian heatmap. Defaults to
-            ``False``
-        udp_radius_factor (float | list[float]): The radius factor(s) for
-            ``'udp'`` encoding with ``udp_combined_map==True``. The keypoint
-            radius in the heatmap is calculated as
-            :math:`factor \times max(w, h)` in pixels. Defaults to 0.0546875
-            (equivalent to 3.5 in 48x64 heatmap and 5.25 in 72x96 heatmap)
-        use_dataset_keypoint_weights (bool): Whether use the keypoint weight
-            from the dataset meta information. Defaults to ``False``
-
-    .. _`Simple Baseline`: https://arxiv.org/abs/1804.06208
-    .. _`MSPN`: https://arxiv.org/abs/1901.00148
-    .. _`CPN`: https://arxiv.org/abs/1711.07319
-    .. _`UDP`: https://arxiv.org/abs/1911.07524
-    .. _`Dark Pose`: https://arxiv.org/abs/1910.06278
+        encoder (dict | list[dict])
     """
 
     def __init__(self,
-                 heatmap_size: Tuple[int, int],
-                 encoding: str = 'msra',
-                 sigma: Union[float, List[float]] = 2.,
-                 unbiased: bool = False,
-                 kernel_size: Union[Tuple, List[Tuple]] = (11, 11),
-                 udp_combined_map: bool = False,
-                 udp_radius_factor: Union[float, List[float]] = 0.0546875,
+                 encoder: MultiConfig,
                  use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
-
-        encoding_options = ['msra', 'megvii', 'udp']
-
-        assert encoding.lower() in encoding_options, (
-            f'Invalid encoding type "{encoding}"'
-            f'Options are {encoding_options}')
-
-        assert is_seq_of(heatmap_size, int) and len(heatmap_size) == 2, (
-            'heatmap_size should be a tuple of integers as (w, h), got'
-            f'invalid value {heatmap_size}')
-
-        self.heatmap_size = heatmap_size
-        self.encoding = encoding.lower()
-        self.sigma = sigma
-        self.unbiased = unbiased
-        self.kernel_size = kernel_size
-        self.udp_combined_map = udp_combined_map
-        self.udp_radius_factor = udp_radius_factor
+        self.encoder_cfg = deepcopy(encoder)
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
-        # get heatmap encoder and its arguments
-        self.encoder, self.encoder_kwargs = self._get_encoder()
-
-    def _get_encoder(self):
-        """Get heatmap generation function and arguments.
-
-        Returns:
-            tuple:
-            - encoder [callable]: The heatmap generation function
-            - encoder_kwargs [dict | list[dict]]: The keyword arguments of
-                ``encoder``. A list means to generate multi-level
-                heatmaps where each element is the keyword arguments of
-                one level
-        """
-
-        if self.encoding == 'msra':
-            encoder = generate_msra_heatmap
-
-            if isinstance(self.sigma, (list, tuple)):
-                encoder_kwargs = [{
-                    'sigma': sigma,
-                    'unbiased': self.unbiased
-                } for sigma in self.sigma]
-            else:
-                encoder_kwargs = {
-                    'sigma': self.sigma,
-                    'unbiased': self.unbiased
-                }
-
-        elif self.encoding == 'megvii':
-            encoder = generate_megvii_heatmap
-
-            if is_list_of(self.kernel_size, (list, tuple)):
-                encoder_kwargs = [{
-                    'kernel_size': kernel_size
-                } for kernel_size in self.kernel_size]
-            else:
-                encoder_kwargs = {'kernel_size': self.kernel_size}
-
-        elif self.encoding == 'udp':
-            encoder = generate_udp_heatmap
-
-            if self.udp_combined_map:
-                factor = self.udp_radius_factor
-            else:
-                factor = self.sigma
-
-            if isinstance(factor, (list, tuple)):
-                encoder_kwargs = [{
-                    'factor': _factor,
-                    'combined_map': self.udp_combined_map
-                } for _factor in factor]
-            else:
-                encoder_kwargs = {
-                    'factor': factor,
-                    'combined_map': self.udp_combined_map
-                }
-
+        if isinstance(encoder, list):
+            self.encoder = [KEYPOINT_CODEC.build(cfg) for cfg in encoder]
         else:
-            raise ValueError(f'Invalid encoding type {self.encoding}')
-
-        return encoder, encoder_kwargs
+            self.encoder = KEYPOINT_CODEC.build(encoder)
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`TopDownGenerateHeatmap`.
 
-        See ``transform()`` method of :class:`BaseTransform` for details.
-
-        Args:
-            results (dict): The result dict
-
-        Returns:
-            dict: The result dict.
-        """
         # TODO: support multi-instance heatmap encoding
         assert results['keypoints'].shape[0] == 1, (
             'Top-down heatmap only supports single instance. '
             f'Got invalid shape of keypoints {results["keypoints"].shape}.')
 
-        # remove instance dim
-        keypoints = results['keypoints'][0]
-        keypoints_visible = results['keypoints_visible'][0]
-
-        encoder_kwargs = deepcopy(self.encoder_kwargs)
-
-        if isinstance(encoder_kwargs, list):
+        if isinstance(self.encoder, list):
             # multi-level heatmaps
-            heatmap = []
+            heatmaps = []
             keypoint_weights = []
 
-            for _kwargs in encoder_kwargs:
-                _heatmap, _keypoint_weights = self.encoder(
-                    keypoints=keypoints,
-                    keypoints_visible=keypoints_visible,
-                    image_size=results['input_size'],
-                    heatmap_size=self.heatmap_size,
-                    **_kwargs)
+            for encoder in self.encoder:
+                _heatmaps, _keypoints_weights = encoder.encode(
+                    keypoints=results['keypoints'],
+                    keypoints_visible=results['keypoints_visible'])
 
-                heatmap.append(_heatmap)
-                keypoint_weights.append(_keypoint_weights)
+                heatmaps.append(_heatmaps[0])
+                keypoint_weights.append(_keypoints_weights[0])
 
-            results['heatmap'] = np.stack(heatmap)
+            results['heatmap'] = np.stack(heatmaps)
             results['keypoint_weights'] = np.stack(keypoint_weights)
-
         else:
-            # single-level heatmap
-            heatmap, keypoint_weights = self.encoder(
-                keypoints=keypoints,
-                keypoints_visible=keypoints_visible,
-                image_size=results['input_size'],
-                heatmap_size=self.heatmap_size,
-                **encoder_kwargs)
+            # single-level heatmaps
+            heatmaps, keypoint_weights = encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
 
-            results['heatmap'] = heatmap
-            results['keypoint_weights'] = keypoint_weights
-
-        # restore instance dim
-        results['keypoint_weights'] = results['keypoint_weights'][None]
+            results['heatmap'] = heatmaps[0]
+            results['keypoint_weights'] = keypoint_weights[0]
 
         # multiply meta keypoint weight
         if self.use_dataset_keypoint_weights:
@@ -351,26 +217,14 @@ class TopDownGenerateHeatmap(BaseTransform):
             str: Formatted string.
         """
         repr_str = self.__class__.__name__
-        repr_str += f'(heatmap_size={self.heatmap_size}, '
-        repr_str += f'encoding="{self.encoding}", '
-        if self.encoding == 'msra':
-            repr_str += f'sigma={self.sigma}, '
-            repr_str += f'unbiased={self.unbiased}, '
-        elif self.encoding == 'megvii':
-            repr_str += f'kernel_size={self.kernel_size}, '
-        elif self.encoding == 'udp':
-            repr_str += f'combined_map={self.udp_combined_map}, '
-            if self.udp_combined_map:
-                repr_str += f'radius_factor={self.udp_radius_factor}, '
-            else:
-                repr_str += f'sigma={self.sigma}, '
+        repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
         repr_str += ('use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str
 
 
 @TRANSFORMS.register_module()
-class TopDownGenerateRegressionLabel(BaseTransform):
+class TopdownGenerateRegressionLabel(BaseTransform):
     """Generate the target regression label of the keypoints.
 
     Required Keys:
@@ -396,7 +250,7 @@ class TopDownGenerateRegressionLabel(BaseTransform):
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`TopDownGenerateRegressionLabel`.
+        """The transform function of :class:`TopdownGenerateRegressionLabel`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 

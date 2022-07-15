@@ -3,12 +3,12 @@ from .common_transforms import (Albumentation, GetBboxCenterScale,
                                 PhotometricDistortion, RandomBboxTransform,
                                 RandomFlip, RandomHalfBody)
 from .formatting import PackPoseInputs
-from .topdown_transforms import (TopDownAffine, TopDownGenerateHeatmap,
-                                 TopDownGenerateRegressionLabel)
+from .topdown_transforms import (TopdownAffine, TopdownGenerateHeatmap,
+                                 TopdownGenerateRegressionLabel)
 
 __all__ = [
     'GetBboxCenterScale', 'RandomBboxTransform', 'RandomFlip',
-    'RandomHalfBody', 'TopDownAffine', 'TopDownGenerateHeatmap',
-    'TopDownGenerateRegressionLabel', 'Albumentation', 'PhotometricDistortion',
+    'RandomHalfBody', 'TopdownAffine', 'TopdownGenerateHeatmap',
+    'TopdownGenerateRegressionLabel', 'Albumentation', 'PhotometricDistortion',
     'PackPoseInputs'
 ]
