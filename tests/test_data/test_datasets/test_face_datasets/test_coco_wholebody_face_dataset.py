@@ -86,7 +86,7 @@ class TestCocoWholeBodyFaceDataset(TestCase):
             len(dataset.metainfo['keypoint_colors']), num_keypoints)
         self.assertEqual(
             len(dataset.metainfo['dataset_keypoint_weights']), num_keypoints)
-        # note that len(sigmas) may be zero if dataset.metainfo['sigmas] = []
+        # note that len(sigmas) may be zero if dataset.metainfo['sigmas'] = []
         self.assertEqual(len(dataset.metainfo['sigmas']), num_keypoints)
 
     def test_top_down(self):

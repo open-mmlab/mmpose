@@ -6,7 +6,7 @@ from typing import Dict, Optional, Sequence
 
 import numpy as np
 from mmengine.evaluator import BaseMetric
-from mmengine.fileio import dump
+from mmengine.fileio import dump, load
 from mmengine.logging import MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
@@ -56,14 +56,23 @@ class CocoMetric(BaseMetric):
                  prefix: Optional[str] = None) -> None:
         super().__init__(collect_device=collect_device, prefix=prefix)
         # initialize coco helper with the annotation json file
+        self.ann_file = ann_file
         self.coco = COCO(ann_file)
 
         self.use_area = use_area
 
-        self.format_only = format_only
         if format_only:
-            assert outfile_prefix is not None, 'Please set `outfile_prefix`' \
-                'to specify the path to store the output results.'
+            assert outfile_prefix is not None, '`outfile_prefix` can not be '\
+                'None when `format_only` is True, otherwise the result file '\
+                'will be saved to a temp directory which will be cleaned up '\
+                'in the end.'
+        else:
+            # do evaluation only if the ground truth annotations exist
+            assert 'annotations' in load(ann_file), \
+                'Ground truth annotations are required for evaluation '\
+                'when `format_only` is False.'
+        self.format_only = format_only
+
         self.outfile_prefix = outfile_prefix
 
     def process(self, data_batch: Sequence[dict],
@@ -133,20 +142,18 @@ class CocoMetric(BaseMetric):
         kpts = self._sort_and_unique_bboxes(kpts, key='id')
 
         # convert results to coco style and dump into a json file
-        res_file = self.results2json(kpts, outfile_prefix=outfile_prefix)
+        self.results2json(kpts, outfile_prefix=outfile_prefix)
 
         # only format the results without doing quantitative evaluation
         if self.format_only:
+            logger.info('results are saved in '
+                        f'{osp.dirname(outfile_prefix)}')
             return {}
-        else:
-            # do evaluation only if the ground truth annotations exist
-            assert 'annotations' in self.coco.dataset, \
-                'Ground truth annotations are required for evaluation.'
 
         # evaluation results
         eval_results = OrderedDict()
         logger.info(f'Evaluating {self.__class__.__name__}...')
-        info_str = self._do_python_keypoint_eval(res_file)
+        info_str = self._do_python_keypoint_eval(outfile_prefix)
         name_value = OrderedDict(info_str)
         eval_results.update(name_value)
 
@@ -190,21 +197,21 @@ class CocoMetric(BaseMetric):
             cat_results.extend(result)
 
         res_file = f'{outfile_prefix}.keypoints.json'
-
         dump(cat_results, res_file, sort_keys=True, indent=4)
 
-        return res_file
-
-    def _do_python_keypoint_eval(self, res_file: str) -> list:
+    def _do_python_keypoint_eval(self, outfile_prefix: str) -> list:
         """Do keypoint evaluation using COCOAPI.
 
         Args:
-            res_file (str): The filename of the keypoint result json file.
+            outfile_prefix (str): The filename prefix of the json files. If the
+                prefix is "somepath/xxx", the json files will be named
+                "somepath/xxx.keypoints.json",
 
         Returns:
             list: a list of tuples. Each tuple contains the evaluation stats
             name and corresponding stats value.
         """
+        res_file = f'{outfile_prefix}.keypoints.json'
         coco_det = self.coco.loadRes(res_file)
         sigmas = self.dataset_meta['sigmas']
         coco_eval = COCOeval(self.coco, coco_det, 'keypoints', sigmas,
