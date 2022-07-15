@@ -78,9 +78,12 @@ def _gather_pose_lifter_inputs(pose_results,
                     ``with_track_id==True```
                 - bbox ((4, ) or (5, )): left, right, top, bottom, [score]
 
-        bbox_center (ndarray[1, 2]): x, y. The average center coordinate of the
-            bboxes in the dataset.
-        bbox_scale (int|float): The average scale of the bboxes in the dataset.
+        bbox_center (ndarray[1, 2], optional): x, y. The average center
+            coordinate of the bboxes in the dataset. `bbox_center` will be
+            used only when `norm_pose_2d` is `True`.
+        bbox_scale (int|float, optional): The average scale of the bboxes
+            in the dataset.
+            `bbox_scale` will be used only when `norm_pose_2d` is `True`.
         norm_pose_2d (bool): If True, scale the bbox (along with the 2D
             pose) to bbox_scale, and move the bbox (along with the 2D pose) to
             bbox_center. Default: False.
@@ -259,9 +262,13 @@ def inference_pose_lifter_model(model,
 
     if dataset_info is not None:
         flip_pairs = dataset_info.flip_pairs
-        assert 'stats_info' in dataset_info._dataset_info
-        bbox_center = dataset_info._dataset_info['stats_info']['bbox_center']
-        bbox_scale = dataset_info._dataset_info['stats_info']['bbox_scale']
+        if 'stats_info' in dataset_info._dataset_info:
+            bbox_center = dataset_info._dataset_info['stats_info'][
+                'bbox_center']
+            bbox_scale = dataset_info._dataset_info['stats_info']['bbox_scale']
+        else:
+            bbox_center = None
+            bbox_scale = None
     else:
         warnings.warn(
             'dataset is deprecated.'

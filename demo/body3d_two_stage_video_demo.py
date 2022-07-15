@@ -28,38 +28,146 @@ except (ImportError, ModuleNotFoundError):
 def convert_keypoint_definition(keypoints, pose_det_dataset,
                                 pose_lift_dataset):
     """Convert pose det dataset keypoints definition to pose lifter dataset
-    keypoints definition.
+    keypoints definition, so that they are compatible with the definitions
+    required for 3D pose lifting.
 
     Args:
         keypoints (ndarray[K, 2 or 3]): 2D keypoints to be transformed.
         pose_det_dataset, (str): Name of the dataset for 2D pose detector.
         pose_lift_dataset (str): Name of the dataset for pose lifter model.
+
+    Returns:
+        ndarray[K, 2 or 3]: the transformed 2D keypoints.
     """
+    assert pose_lift_dataset in [
+        'Body3DH36MDataset', 'Body3DMpiInf3dhpDataset'
+        ], '`pose_lift_dataset` should be `Body3DH36MDataset` ' \
+        f'or `Body3DMpiInf3dhpDataset`, but got {pose_lift_dataset}.'
+
     coco_style_datasets = [
         'TopDownCocoDataset', 'TopDownPoseTrack18Dataset',
         'TopDownPoseTrack18VideoDataset'
     ]
-    if pose_det_dataset == 'TopDownH36MDataset' and \
-            pose_lift_dataset == 'Body3DH36MDataset':
-        return keypoints
-    elif pose_det_dataset in coco_style_datasets and \
-            pose_lift_dataset == 'Body3DH36MDataset':
-        keypoints_new = np.zeros((17, keypoints.shape[1]))
-        # pelvis is in the middle of l_hip and r_hip
-        keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
-        # thorax is in the middle of l_shoulder and r_shoulder
-        keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
-        # in COCO, head is in the middle of l_eye and r_eye
-        # in PoseTrack18, head is in the middle of head_bottom and head_top
-        keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
-        # spine is in the middle of thorax and pelvis
-        keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
-        # rearrange other keypoints
-        keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
-            keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
-        return keypoints_new
-    else:
-        raise NotImplementedError
+    keypoints_new = np.zeros((17, keypoints.shape[1]), dtype=keypoints.dtype)
+    if pose_lift_dataset == 'Body3DH36MDataset':
+        if pose_det_dataset in ['TopDownH36MDataset']:
+            keypoints_new = keypoints
+        elif pose_det_dataset in coco_style_datasets:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[0] = (keypoints[11] + keypoints[12]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[8] = (keypoints[5] + keypoints[6]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+            # in COCO, head is in the middle of l_eye and r_eye
+            # in PoseTrack18, head is in the middle of head_bottom and head_top
+            keypoints_new[10] = (keypoints[1] + keypoints[2]) / 2
+            # rearrange other keypoints
+            keypoints_new[[1, 2, 3, 4, 5, 6, 9, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[[12, 14, 16, 11, 13, 15, 0, 5, 7, 9, 6, 8, 10]]
+        elif pose_det_dataset in ['TopDownAicDataset']:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[0] = (keypoints[9] + keypoints[6]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[8] = (keypoints[3] + keypoints[0]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+            # neck base (top end of neck) is 1/4 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[9] = (3 * keypoints[13] + keypoints[12]) / 4
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[10] = (5 * keypoints[13] + 7 * keypoints[12]) / 12
+
+            keypoints_new[[1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[[6, 7, 8, 9, 10, 11, 3, 4, 5, 0, 1, 2]]
+        elif pose_det_dataset in ['TopDownCrowdPoseDataset']:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[0] = (keypoints[6] + keypoints[7]) / 2
+            # thorax is in the middle of l_shoulder and r_shoulder
+            keypoints_new[8] = (keypoints[0] + keypoints[1]) / 2
+            # spine is in the middle of thorax and pelvis
+            keypoints_new[7] = (keypoints_new[0] + keypoints_new[8]) / 2
+            # neck base (top end of neck) is 1/4 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[9] = (3 * keypoints[13] + keypoints[12]) / 4
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[10] = (5 * keypoints[13] + 7 * keypoints[12]) / 12
+
+            keypoints_new[[1, 2, 3, 4, 5, 6, 11, 12, 13, 14, 15, 16]] = \
+                keypoints[[7, 9, 11, 6, 8, 10, 0, 2, 4, 1, 3, 5]]
+        else:
+            raise NotImplementedError(
+                f'unsupported conversion between {pose_lift_dataset} and '
+                f'{pose_det_dataset}')
+
+    elif pose_lift_dataset == 'Body3DMpiInf3dhpDataset':
+        if pose_det_dataset in coco_style_datasets:
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[14] = (keypoints[11] + keypoints[12]) / 2
+            # neck (bottom end of neck) is in the middle of
+            # l_shoulder and r_shoulder
+            keypoints_new[1] = (keypoints[5] + keypoints[6]) / 2
+            # spine (centre of torso) is in the middle of neck and root
+            keypoints_new[15] = (keypoints_new[1] + keypoints_new[14]) / 2
+
+            # in COCO, head is in the middle of l_eye and r_eye
+            # in PoseTrack18, head is in the middle of head_bottom and head_top
+            keypoints_new[16] = (keypoints[1] + keypoints[2]) / 2
+
+            if 'PoseTrack18' in pose_det_dataset:
+                keypoints_new[0] = keypoints[1]
+                # don't extrapolate the head top confidence score
+                keypoints_new[16, 2] = keypoints_new[0, 2]
+            else:
+                # head top is extrapolated from neck and head
+                keypoints_new[0] = (4 * keypoints_new[16] -
+                                    keypoints_new[1]) / 3
+                # don't extrapolate the head top confidence score
+                keypoints_new[0, 2] = keypoints_new[16, 2]
+            # arms and legs
+            keypoints_new[2:14] = keypoints[[
+                6, 8, 10, 5, 7, 9, 12, 14, 16, 11, 13, 15
+            ]]
+        elif pose_det_dataset in ['TopDownAicDataset']:
+            # head top is head top
+            keypoints_new[0] = keypoints[12]
+            # neck (bottom end of neck) is neck
+            keypoints_new[1] = keypoints[13]
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[14] = (keypoints[9] + keypoints[6]) / 2
+            # spine (centre of torso) is in the middle of neck and root
+            keypoints_new[15] = (keypoints_new[1] + keypoints_new[14]) / 2
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[16] = (5 * keypoints[13] + 7 * keypoints[12]) / 12
+            # arms and legs
+            keypoints_new[2:14] = keypoints[0:12]
+        elif pose_det_dataset in ['TopDownCrowdPoseDataset']:
+            # head top is top_head
+            keypoints_new[0] = keypoints[12]
+            # neck (bottom end of neck) is in the middle of
+            # l_shoulder and r_shoulder
+            keypoints_new[1] = (keypoints[0] + keypoints[1]) / 2
+            # pelvis (root) is in the middle of l_hip and r_hip
+            keypoints_new[14] = (keypoints[7] + keypoints[6]) / 2
+            # spine (centre of torso) is in the middle of neck and root
+            keypoints_new[15] = (keypoints_new[1] + keypoints_new[14]) / 2
+            # head (spherical centre of head) is 7/12 the way from
+            # neck (bottom end of neck) to head top
+            keypoints_new[16] = (5 * keypoints[13] + 7 * keypoints[12]) / 12
+            # arms and legs
+            keypoints_new[2:14] = keypoints[[
+                1, 3, 5, 0, 2, 4, 7, 9, 11, 6, 8, 10
+            ]]
+
+        else:
+            raise NotImplementedError(
+                f'unsupported conversion between {pose_lift_dataset} and '
+                f'{pose_det_dataset}')
+
+    return keypoints_new
 
 
 def main():
@@ -305,6 +413,16 @@ def main():
         smoother = None
 
     num_instances = args.num_instances
+    pose_lift_dataset_info = pose_lift_model.cfg.data['test'].get(
+        'dataset_info', None)
+    if pose_lift_dataset_info is None:
+        warnings.warn(
+            'Please set `dataset_info` in the config.'
+            'Check https://github.com/open-mmlab/mmpose/pull/663 for details.',
+            DeprecationWarning)
+    else:
+        pose_lift_dataset_info = DatasetInfo(pose_lift_dataset_info)
+
     print('Running 2D-to-3D pose lifting inference...')
     for i, pose_det_results in enumerate(
             mmcv.track_iter_progress(pose_det_results_list)):
@@ -325,6 +443,7 @@ def main():
             pose_lift_model,
             pose_results_2d=pose_results_2d,
             dataset=pose_lift_dataset,
+            dataset_info=pose_lift_dataset_info,
             with_track_id=True,
             image_size=video.resolution,
             norm_pose_2d=args.norm_pose_2d)
@@ -359,10 +478,13 @@ def main():
             pose_lift_model,
             result=pose_lift_results_vis,
             img=video[i],
+            dataset=pose_lift_dataset,
+            dataset_info=pose_lift_dataset_info,
             out_file=None,
             radius=args.radius,
             thickness=args.thickness,
-            num_instances=num_instances)
+            num_instances=num_instances,
+            show=args.show)
 
         if save_out_video:
             if writer is None:
