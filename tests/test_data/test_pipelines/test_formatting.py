@@ -3,6 +3,7 @@ import copy
 from unittest import TestCase
 
 import numpy as np
+import torch
 from mmengine.data import InstanceData, PixelData
 
 from mmpose.core import PoseDataSample
@@ -48,6 +49,8 @@ class TestPackPoseInputs(TestCase):
         transform = PackPoseInputs(meta_keys=self.meta_keys)
         results = transform(copy.deepcopy(self.results_topdown))
         self.assertIn('inputs', results)
+        self.assertIsInstance(results['inputs'], torch.Tensor)
+        self.assertEqual(results['inputs'].shape, (3, 425, 640))
         self.assertIn('data_sample', results)
         self.assertIsInstance(results['data_sample'], PoseDataSample)
         self.assertIsInstance(results['data_sample'].gt_instances,
@@ -56,6 +59,19 @@ class TestPackPoseInputs(TestCase):
         self.assertEqual(len(results['data_sample'].gt_instances), 1)
         self.assertIsInstance(results['data_sample'].gt_fields.heatmaps,
                               np.ndarray)
+
+        # test when results['img'] is sequence of frames
+        results = copy.deepcopy(self.results_topdown)
+        len_seq = 5
+        results['img'] = [
+            np.random.randint(0, 255, (425, 640, 3), dtype=np.uint8)
+            for _ in range(len_seq)
+        ]
+        results = transform(results)
+        self.assertIn('inputs', results)
+        self.assertIsInstance(results['inputs'], torch.Tensor)
+        # translate into 4-dim tensor: [len_seq, c, h, w]
+        self.assertEqual(results['inputs'].shape, (len_seq, 3, 425, 640))
 
     def test_repr(self):
         transform = PackPoseInputs(meta_keys=self.meta_keys)
