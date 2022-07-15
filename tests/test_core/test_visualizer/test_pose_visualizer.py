@@ -20,13 +20,17 @@ class TestPoseLocalVisualizer(TestCase):
         # None: kpt or link is hidden
         pose_kpt_color = [None] + [(127, 127, 127)] * 3
         pose_link_color = [(127, 127, 127)] * 2 + [None]
-        dataset_meta = {'SKELETON': [[0, 1], [1, 2], [2, 3]]}
+        dataset_meta = {
+            'keypoint_colors': pose_kpt_color,
+            'skeleton_link_colors': pose_link_color,
+            'skeleton_links': [[0, 1], [1, 2], [2, 3]]
+        }
 
         pose_local_visualizer = PoseLocalVisualizer(
             kpt_color=pose_kpt_color,
             link_color=pose_link_color,
             show_keypoint_weight=True)
-        pose_local_visualizer.dataset_meta = dataset_meta
+        pose_local_visualizer.set_dataset_meta(dataset_meta)
 
         # setting keypoints
         gt_instances = InstanceData()
