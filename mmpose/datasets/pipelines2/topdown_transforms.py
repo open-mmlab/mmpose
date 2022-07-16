@@ -9,7 +9,7 @@ from mmengine import is_seq_of
 
 from mmpose.core.bbox import get_udp_warp_matrix, get_warp_matrix
 from mmpose.core.utils.typing import MultiConfig
-from mmpose.registry import KEYPOINT_CODEC, TRANSFORMS
+from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
 
 
 @TRANSFORMS.register_module()
@@ -153,7 +153,7 @@ class TopdownGeneratHeatmap(BaseTransform):
         - dataset_keypoint_weights
 
     Added Keys:
-        - heatmap
+        - heatmaps
         - keypoint_weights
 
     Args:
@@ -168,17 +168,12 @@ class TopdownGeneratHeatmap(BaseTransform):
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
         if isinstance(encoder, list):
-            self.encoder = [KEYPOINT_CODEC.build(cfg) for cfg in encoder]
+            self.encoder = [KEYPOINT_CODECS.build(cfg) for cfg in encoder]
         else:
-            self.encoder = KEYPOINT_CODEC.build(encoder)
+            self.encoder = KEYPOINT_CODECS.build(encoder)
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-
-        # TODO: support multi-instance heatmap encoding
-        assert results['keypoints'].shape[0] == 1, (
-            'Top-down heatmap only supports single instance. '
-            f'Got invalid shape of keypoints {results["keypoints"].shape}.')
 
         if isinstance(self.encoder, list):
             # multi-level heatmaps
@@ -190,8 +185,8 @@ class TopdownGeneratHeatmap(BaseTransform):
                     keypoints=results['keypoints'],
                     keypoints_visible=results['keypoints_visible'])
 
-                heatmaps.append(_heatmaps[0])
-                keypoint_weights.append(_keypoints_weights[0])
+                heatmaps.append(_heatmaps)
+                keypoint_weights.append(_keypoints_weights)
 
             results['heatmap'] = np.stack(heatmaps)
             results['keypoint_weights'] = np.stack(keypoint_weights)
@@ -201,8 +196,8 @@ class TopdownGeneratHeatmap(BaseTransform):
                 keypoints=results['keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
-            results['heatmap'] = heatmaps[0]
-            results['keypoint_weights'] = keypoint_weights[0]
+            results['heatmaps'] = heatmaps
+            results['keypoint_weights'] = keypoint_weights
 
         # multiply meta keypoint weight
         if self.use_dataset_keypoint_weights:

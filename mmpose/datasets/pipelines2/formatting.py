@@ -129,8 +129,8 @@ class PackPoseInputs(BaseTransform):
             if key in results:
                 gt_instances[packed_key] = results[key]
 
-        if 'heatmap' in results:
-            gt_fields.heatmaps = results['heatmap']
+        if 'heatmaps' in results:
+            gt_fields.heatmaps = results['heatmaps']
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_fields = gt_fields

@@ -89,7 +89,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -105,7 +105,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -121,7 +121,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (2, 17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
 
@@ -136,7 +136,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -151,7 +151,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (2, 17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
 
@@ -167,7 +167,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -183,7 +183,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (2, 17, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
 
@@ -199,7 +199,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (51, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (51, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -215,7 +215,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (2, 51, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (2, 51, 64, 48))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
 
@@ -230,7 +230,7 @@ class TestTopDownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmap'].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
         self.assertEqual(results['keypoint_weights'].shape, (1, 17))
         self.assertTrue(
             np.allclose(results['keypoint_weights'],

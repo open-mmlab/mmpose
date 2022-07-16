@@ -5,15 +5,15 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer, build_upsample_layer
-from mmengine.data import InstanceData
+from mmengine.data import InstanceData, PixelData
+from mmengine.utils.misc import is_method_overridden
 from torch import Tensor, nn
 
 from mmpose.core.data_structures import PoseDataSample
-from mmpose.core.keypoint.heatmap import keypoints_from_heatmaps
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
-from mmpose.registry import MODELS
+from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -70,7 +70,10 @@ class HeatmapHead(BaseHead):
         align_corners (bool): `align_corners` argument of
             :func:`torch.nn.functional.interpolate` used in the input
             transformation. Defaults to ``False``
-        loss (Config): Config of the keypoint loss. Defaults to ``{}``
+        loss (Config): Config of the keypoint loss. Defaults to use
+            :class:`KeypointMSELoss`
+        decoder (Config, optional): The decoder config that controls decoing
+            keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
 
@@ -90,7 +93,9 @@ class HeatmapHead(BaseHead):
                  input_transform: str = 'select',
                  input_index: Union[int, Sequence[int]] = 0,
                  align_corners: bool = False,
-                 loss: ConfigType = {},
+                 loss: ConfigType = dict(
+                     type='KeypointMSELoss', use_target_weight=True),
+                 decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
         if init_cfg is None:
@@ -104,6 +109,10 @@ class HeatmapHead(BaseHead):
         self.input_transform = input_transform
         self.input_index = input_index
         self.loss_module = MODELS.build(loss)
+        if decoder is not None:
+            self.decoder = KEYPOINT_CODECS.build(decoder)
+        else:
+            self.decoder = None
 
         # Get model input channels according to feature
         in_channels = self._get_in_channels()
@@ -301,47 +310,52 @@ class HeatmapHead(BaseHead):
         preds = self.decode(heatmaps, batch_data_samples, test_cfg)
         return preds
 
-    def decode(self, heatmaps: Tensor, batch_data_samples: OptSampleList,
+    def decode(self, batch_heatmaps: Tensor, batch_data_samples: OptSampleList,
                test_cfg: ConfigType) -> SampleList:
         """Decode keypoints from heatmaps."""
-        # TODO: decode in Tensors w/o. converting to np.ndarray
-        _heatmaps = _to_numpy(heatmaps)
-        if batch_data_samples is not None:
-            bbox_centers = torch.cat(
-                [d.gt_instances.bbox_centers for d in batch_data_samples])
-            bbox_scales = torch.cat(
-                [d.gt_instances.bbox_scales for d in batch_data_samples])
+        if self.decoder is None:
+            raise RuntimeError(
+                f'The decoder has not been set in {self.__class__.__name__}. '
+                'Please set the decoder configs in the init parameters to '
+                'enable head methods `head.predict()` and `head.decode()`')
 
-            _bbox_centers = _to_numpy(bbox_centers)
-            _bbox_scales = _to_numpy(bbox_scales)
-        else:
-            N, _, H, W = heatmaps.shape
-            batch_data_samples = PoseDataSample()
-            _bbox_centers = np.full((N, 2), [0.5 * W, 0.5 * H],
-                                    dtype=np.float32)
-            _bbox_scales = np.full((N, 2), [W, H], dtype=np.float32)
+        N, _, H, W = batch_heatmaps.shape
 
-        pred_kpts, pred_kpt_scores = keypoints_from_heatmaps(
-            heatmaps=_heatmaps,
-            center=_bbox_centers,
-            scale=_bbox_scales,
-            unbiased=test_cfg.get('unbiased_decoding', False),
-            pose_process=test_cfg.get('post_process', 'default'),
-            kernel=test_cfg.get('modulate_kernel', 11),
-            udp_radius_factor=test_cfg.get('udp_radius_factor', 0.0546875),
-            use_udp=test_cfg.get('use_udp', False),
-            udp_combined_map=test_cfg.get('udp_combined_map', False))
+        # If data samples are not given, create data samples
+        # without the ground-truth information
+        if batch_data_samples is None:
+            batch_data_samples = [PoseDataSample() for _ in range(N)]
 
-        assert len(pred_kpts) == len(batch_data_samples)
-        for _kpts, _scores, data_sample in zip(pred_kpts, pred_kpt_scores,
-                                               batch_data_samples):
-            # TODO: modify the output shape of the decoding function to valid
-            # resizing
-            pred_instances = InstanceData(
-                keypoints=_kpts[None],  # [K, C] -> [1, K, C]
-                keypoint_scores=_scores[None, :, 0],  # [K, 1] -> [1, K]
-            )
-            data_sample.pred_instances = pred_instances.to_tensor.to(heatmaps)
+        # TODO: support decoding with tensor data
+        batch_heatmaps_np = _to_numpy(batch_heatmaps)
+        for heatmaps, data_sample in zip(batch_heatmaps_np,
+                                         batch_data_samples):
+            pred_kpts, pred_kpt_scores = self.decoder.decode(heatmaps)
+
+            if is_method_overridden(self.decode.keypoints_bbox2img):
+                # Convert the decoded local keypoints (in bbox space)
+                # to the image coordinate space
+                if 'gt_instances' in data_sample:
+                    bbox_centers = data_sample.gt_instances.bbox_centers
+                    bbox_scales = data_sample.get_instances.bbox_scales
+                else:
+                    bbox_centers = np.full((N, 2), [0.5 * W, 0.5 * H],
+                                           dtype=np.float32)
+                    bbox_scales = np.full((N, 2), [W, H], dtype=np.float32)
+
+                pred_kpts = self.decode.keypoints_bbox2img(
+                    pred_kpts, bbox_centers, bbox_scales)
+
+            # Store the keypoint predictions in the data sample
+            if 'pred_instances' not in data_sample:
+                data_sample.pred_instances = InstanceData()
+            data_sample.pred_instances.keypoints = pred_kpts
+            data_sample.pred_instances.keypoint_scores = pred_kpt_scores
+
+            # Store the heatmap predictions in the data sample
+            if 'pred_fileds' not in data_sample:
+                data_sample.pred_fields = PixelData()
+            data_sample.pred_fields.heatmaps = heatmaps
 
         return batch_data_samples
 

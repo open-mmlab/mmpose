@@ -75,45 +75,45 @@ def flip_keypoints(keypoints: np.ndarray,
     return keypoints_flipped, keypoints_visible_flipped
 
 
-def keypoints_bbox2img(coords, center, scale, output_size, use_udp=False):
-    """Get final keypoint predictions from heatmaps and apply scaling and
-    translation to map them back to the image.
+def keypoints_bbox2img(keypoints: np.ndarray,
+                       bbox_centers: np.ndarray,
+                       bbox_scales: np.ndarray,
+                       heatmap_size: Tuple[int, int],
+                       use_udp: bool = False):
+    """Transform keypoints from the local coordinate space in the bbox to the
+    image coordinate space.
 
     Note:
-        num_keypoints: K
+
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: C
+        - heatmap size: [W, H]
 
     Args:
-        coords (np.ndarray[K, ndims]):
-
-            * If ndims=2, corrds are predicted keypoint location.
-            * If ndims=4, corrds are composed of (x, y, scores, tags)
-            * If ndims=5, corrds are composed of (x, y, scores, tags,
-              flipped_tags)
-
-        center (np.ndarray[2, ]): Center of the bounding box (x, y).
-        scale (np.ndarray[2, ]): Scale of the bounding box
-            wrt [width, height].
-        output_size (np.ndarray[2, ] | list(2,)): Size of the
-            destination heatmaps.
-        use_udp (bool): Use unbiased data processing
-
-    Returns:
-        np.ndarray: Predicted coordinates in the images.
+        keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+        bbox_centers (np.ndarray): Bbox centers in shape (N, 2)
+        bbox_scales (np.ndarray): Bbox scales in shape (N, 2)
+        heatmap_size (Tuple[int, int]): The heatmap size in [W, H]
+        use_udp (bool): Use unbiased data processing. See `UDP`_ for details.
+            Defaults to ``False``
     """
-    assert coords.shape[1] in (2, 4, 5)
-    assert len(center) == 2
-    assert len(scale) == 2
-    assert len(output_size) == 2
+    assert keypoints.ndim == 3, (
+        f'keypoints.shape should be [N, K, C], but got {keypoints.shape}')
+    assert bbox_centers.ndim == 2, (
+        f'bbox_centers.shape should be [N, 2], but got {bbox_centers.shape}')
+    assert bbox_scales.ndim == 2, (
+        f'bbox_scales.shape should be [N, 2], but got {bbox_scales.shape}')
+    assert len(keypoints) == len(bbox_centers) == len(bbox_scales), (
+        f'Got unmatched instance numbers from keypoints ({len(keypoints)}) '
+        f'and bboxes ({len(bbox_centers)})')
 
+    W, H = heatmap_size
     if use_udp:
-        scale_x = scale[0] / (output_size[0] - 1.0)
-        scale_y = scale[1] / (output_size[1] - 1.0)
+        scale_factors = bbox_scales / [W - 1.0, H - 1.0]
     else:
-        scale_x = scale[0] / output_size[0]
-        scale_y = scale[1] / output_size[1]
+        scale_factors = bbox_scales / [W, H]
 
-    target_coords = np.ones_like(coords)
-    target_coords[:, 0] = coords[:, 0] * scale_x + center[0] - scale[0] * 0.5
-    target_coords[:, 1] = coords[:, 1] * scale_y + center[1] - scale[1] * 0.5
+    keypoints = keypoints * scale_factors + bbox_centers - bbox_scales * 0.5
 
-    return target_coords
+    return keypoints

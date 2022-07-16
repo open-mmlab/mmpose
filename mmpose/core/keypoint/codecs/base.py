@@ -44,3 +44,23 @@ class BaseKeypointCodec(metaclass=ABCMeta):
             - keypoints_visible (np.ndarray): Keypoint visibility in shape
                 (N, K, C)
         """
+
+    def keypoints_bbox2img(self, keypoints: np.ndarray,
+                           bbox_centers: np.ndarray,
+                           bbox_scales: np.ndarray) -> np.ndarray:
+        """Convert decoded keypoints from the bbox space to the image space.
+        Topdown codecs should override this method.
+
+        Args:
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
+                The coordinate is in the bbox space
+            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+
+        Returns:
+            np.ndarray: The transformed keypoints in shape (N, K, C).
+            The coordinate is in the image space.
+        """
+        raise NotImplementedError

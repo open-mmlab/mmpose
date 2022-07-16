@@ -4,12 +4,13 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 
-from mmpose.registry import KEYPOINT_CODEC
+from mmpose.registry import KEYPOINT_CODECS
+from ..transforms import keypoints_bbox2img
 from .base import BaseKeypointCodec
 from .utils import get_heatmap_maximum
 
 
-@KEYPOINT_CODEC.register_module()
+@KEYPOINT_CODECS.register_module()
 class UDPHeatmap(BaseKeypointCodec):
     r"""Generate keypoint heatmap via "UDP" approach. See the paper: `The Devil
     is in the Details: Delving into Unbiased Data Processing for Human Pose
@@ -318,3 +319,29 @@ class UDPHeatmap(BaseKeypointCodec):
         hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
         keypoints -= np.einsum('imn,ink->imk', hessian, derivative).squeeze()
         return keypoints
+
+    def keypoints_bbox2img(self, keypoints: np.ndarray,
+                           bbox_centers: np.ndarray,
+                           bbox_scales: np.ndarray) -> np.ndarray:
+        """Convert decoded keypoints from the bbox space to the image space.
+        Topdown codecs should override this method.
+
+        Args:
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
+                The coordinate is in the bbox space
+            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+
+        Returns:
+            np.ndarray: The transformed keypoints in shape (N, K, C).
+            The coordinate is in the image space.
+        """
+
+        keypoints = keypoints_bbox2img(
+            keypoints,
+            bbox_centers,
+            bbox_scales,
+            heatmap_size=self.heatmap_size,
+            use_udp=True)

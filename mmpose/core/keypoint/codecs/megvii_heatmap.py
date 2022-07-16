@@ -4,12 +4,13 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 
-from mmpose.registry import KEYPOINT_CODEC
+from mmpose.registry import KEYPOINT_CODECS
+from ..transforms import keypoints_bbox2img
 from .base import BaseKeypointCodec
 from .utils import gaussian_blur, get_heatmap_maximum
 
 
-@KEYPOINT_CODEC.register_module()
+@KEYPOINT_CODECS.register_module()
 class MegviiHeatmap(BaseKeypointCodec):
     """Represent keypoints as heatmaps via "Megvii" approach. See `MSPN`_
     (2019) and `CPN`_ (2018) for details.
@@ -132,3 +133,29 @@ class MegviiHeatmap(BaseKeypointCodec):
         scores = keypoints[None]
 
         return keypoints, scores
+
+    def keypoints_bbox2img(self, keypoints: np.ndarray,
+                           bbox_centers: np.ndarray,
+                           bbox_scales: np.ndarray) -> np.ndarray:
+        """Convert decoded keypoints from the bbox space to the image space.
+        Topdown codecs should override this method.
+
+        Args:
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
+                The coordinate is in the bbox space
+            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
+                See `pipelines.GetBboxCenterScale` for details
+
+        Returns:
+            np.ndarray: The transformed keypoints in shape (N, K, C).
+            The coordinate is in the image space.
+        """
+
+        keypoints = keypoints_bbox2img(
+            keypoints,
+            bbox_centers,
+            bbox_scales,
+            heatmap_size=self.heatmap_size,
+            use_udp=False)
