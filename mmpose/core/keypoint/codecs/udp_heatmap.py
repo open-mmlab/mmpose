@@ -25,7 +25,7 @@ class UDPHeatmap(BaseKeypointCodec):
         - heatmap size: [W, H]
 
     Args:
-        image_size (tuple): Image size in [w, h]
+        input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
         heatmap_type (str): The heatmap type to encode the keypoitns. Options
             are:
@@ -48,14 +48,14 @@ class UDPHeatmap(BaseKeypointCodec):
     """
 
     def __init__(self,
-                 image_size: Tuple[int, int],
+                 input_size: Tuple[int, int],
                  heatmap_size: Tuple[int, int],
                  heatmap_type: str = 'gaussian',
                  sigma: Optional[float] = None,
                  radius_factor: Optional[float] = None,
                  blur_kernel_size: int = 11) -> None:
         super().__init__()
-        self.image_size = image_size
+        self.input_size = input_size
         self.heatmap_size = heatmap_size
         self.sigma = sigma
         self.radius_factor = radius_factor
@@ -172,8 +172,8 @@ class UDPHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        image_size = np.array(self.image_size)
-        feat_stride = image_size / [W - 1, H - 1]
+        input_size = np.array(self.input_size)
+        feat_stride = input_size / [W - 1, H - 1]
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
@@ -238,8 +238,8 @@ class UDPHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        image_size = np.array(self.image_size)
-        feat_stride = image_size / [W - 1, H - 1]
+        input_size = np.array(self.input_size)
+        feat_stride = input_size / [W - 1, H - 1]
 
         heatmaps = np.zeros((K, 3, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)

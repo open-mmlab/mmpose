@@ -24,7 +24,7 @@ class MegviiHeatmap(BaseKeypointCodec):
         - heatmap size: [W, H]
 
     Args:
-        image_size (tuple): Image size in [w, h]
+        input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
         kernel_size (tuple): The kernel size of the heatmap gaussian in
             [ks_x, ks_y]
@@ -35,13 +35,13 @@ class MegviiHeatmap(BaseKeypointCodec):
 
     def __init__(
         self,
-        image_size: Tuple[int, int],
+        input_size: Tuple[int, int],
         heatmap_size: Tuple[int, int],
         kernel_size: int,
     ) -> None:
 
         super().__init__()
-        self.image_size = image_size
+        self.input_size = input_size
         self.heatmap_size = heatmap_size
         self.kernel_size = kernel_size
 
@@ -71,8 +71,8 @@ class MegviiHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        image_size = np.array(self.image_size)
-        feat_stride = image_size / [W, H]
+        input_size = np.array(self.input_size)
+        feat_stride = input_size / [W, H]
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)

@@ -24,7 +24,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         - heatmap size: [W, H]
 
     Args:
-        image_size (tuple): Image size in [w, h]
+        input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
         sigma (float): The sigma value of the Gaussian heatmap
         unbiased (bool): Whether use unbiased method (DarkPose) in ``'msra'``
@@ -40,13 +40,13 @@ class MSRAHeatmap(BaseKeypointCodec):
     """
 
     def __init__(self,
-                 image_size: Tuple[int, int],
+                 input_size: Tuple[int, int],
                  heatmap_size: Tuple[int, int],
                  sigma: float,
                  unbiased: bool = False,
                  blur_kernel_size: int = 11) -> None:
         super().__init__()
-        self.image_size = image_size
+        self.input_size = input_size
         self.heatmap_size = heatmap_size
         self.sigma = sigma
         self.unbiased = unbiased
@@ -81,15 +81,15 @@ class MSRAHeatmap(BaseKeypointCodec):
                 (K,)
         """
 
-        N, K = keypoints.shape
+        N, K, _ = keypoints.shape
         W, H = self.heatmap_size
 
         assert N == 1, (
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        image_size = np.array(self.image_size)
-        feat_stride = image_size / [W, H]
+        input_size = np.array(self.input_size)
+        feat_stride = input_size / [W, H]
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
@@ -208,7 +208,7 @@ class MSRAHeatmap(BaseKeypointCodec):
 
         # Unsqueeze the instance dimension for single-instance results
         keypoints = keypoints[None]
-        scores = keypoints[None]
+        scores = scores[None]
 
         return keypoints, scores
 
