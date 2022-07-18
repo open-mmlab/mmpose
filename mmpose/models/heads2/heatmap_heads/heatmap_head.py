@@ -9,7 +9,6 @@ from mmengine.data import InstanceData, PixelData
 from mmengine.utils.misc import is_method_overridden
 from torch import Tensor, nn
 
-from mmpose.core.data_structures import PoseDataSample
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
@@ -319,12 +318,9 @@ class HeatmapHead(BaseHead):
                 'Please set the decoder configs in the init parameters to '
                 'enable head methods `head.predict()` and `head.decode()`')
 
-        N, _, H, W = batch_heatmaps.shape
-
-        # If data samples are not given, create data samples
-        # without the ground-truth information
         if batch_data_samples is None:
-            batch_data_samples = [PoseDataSample() for _ in range(N)]
+            raise ValueError(
+                '`batch_data_samples` is required to decode keypoitns.')
 
         # TODO: support decoding with tensor data
         batch_heatmaps_np = _to_numpy(batch_heatmaps)
@@ -333,15 +329,15 @@ class HeatmapHead(BaseHead):
             pred_kpts, pred_kpt_scores = self.decoder.decode(heatmaps)
 
             if is_method_overridden(self.decode.keypoints_bbox2img):
-                # Convert the decoded local keypoints (in bbox space)
+                # Convert the decoded local keypoints (in heatmap space)
                 # to the image coordinate space
                 if 'gt_instances' in data_sample:
                     bbox_centers = data_sample.gt_instances.bbox_centers
                     bbox_scales = data_sample.get_instances.bbox_scales
                 else:
-                    bbox_centers = np.full((N, 2), [0.5 * W, 0.5 * H],
-                                           dtype=np.float32)
-                    bbox_scales = np.full((N, 2), [W, H], dtype=np.float32)
+                    raise ValueError(
+                        '`gt_instances` is required to convert keypoints from'
+                        ' from the heatmap space to the image space.')
 
                 pred_kpts = self.decode.keypoints_bbox2img(
                     pred_kpts, bbox_centers, bbox_scales)
