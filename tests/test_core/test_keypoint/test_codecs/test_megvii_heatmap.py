@@ -3,31 +3,22 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MSRAHeatmap  # noqa: F401
+from mmpose.core.keypoint.codecs import MegviiHeatmap  # noqa: F401
 from mmpose.registry import KEYPOINT_CODECS
 
 
-class TestMSRAHeatmap(TestCase):
+class TestMegviiHeatmap(TestCase):
 
     # name and configs of all test cases
     def setUp(self) -> None:
         self.configs = [
             (
-                'msra',
+                'megvii',
                 dict(
-                    type='MSRAHeatmap',
+                    type='MegviiHeatmap',
                     input_size=(192, 256),
                     heatmap_size=(48, 64),
-                    sigma=2.0),
-            ),
-            (
-                'msra+dark',
-                dict(
-                    type='MSRAHeatmap',
-                    input_size=(192, 256),
-                    heatmap_size=(48, 64),
-                    sigma=2.0,
-                    unbiased=True),
+                    kernel_size=11),
             ),
         ]
 

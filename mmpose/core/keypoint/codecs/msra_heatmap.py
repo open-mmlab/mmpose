@@ -4,7 +4,6 @@ from typing import Optional, Tuple
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
-from ..transforms import keypoints_bbox2img
 from .base import BaseKeypointCodec
 from .utils import gaussian_blur, get_heatmap_maximum
 
@@ -60,6 +59,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         #   sigma~=1.5 if ks=7;
         #   sigma~=1 if ks=3;
         self.blur_kernel_size = blur_kernel_size
+        self.scale_factor = np.array(input_size) / heatmap_size
 
     def encode(
         self,
@@ -88,9 +88,6 @@ class MSRAHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        input_size = np.array(self.input_size)
-        feat_stride = input_size / [W, H]
-
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
 
@@ -109,7 +106,7 @@ class MSRAHeatmap(BaseKeypointCodec):
                     keypoint_weights[k] = 0
                     continue
 
-                mu = keypoints[0, k] / feat_stride
+                mu = keypoints[0, k] / self.scale_factor
 
                 # check that the gaussian has in-bounds part
                 left, top = mu - radius
@@ -135,7 +132,7 @@ class MSRAHeatmap(BaseKeypointCodec):
                     continue
 
                 # get gaussian center coordinates
-                mu = (keypoints[0, k] / feat_stride + 0.5)
+                mu = (keypoints[0, k] / self.scale_factor + 0.5)
 
                 # check that the gaussian has in-bounds part
                 left, top = (mu - radius).astype(np.int64)
@@ -188,10 +185,10 @@ class MSRAHeatmap(BaseKeypointCodec):
         if self.unbiased:
             # Alleviate biased coordinate
             # Apply Gaussian distribution modulation.
-            heatmaps = gaussian_blur(heatmaps, kernel=self.blur_kernel)
+            heatmaps = gaussian_blur(heatmaps, kernel=self.blur_kernel_size)
             heatmaps = np.log(np.maximum(heatmaps, 1e-10))
             for k in range(K):
-                heatmaps[k] = self._taylor_decode(
+                keypoints[k] = self._taylor_decode(
                     heatmap=heatmaps[k], keypoint=keypoints[k])
         else:
             # Add +/-0.25 shift to the predicted locations for higher acc.
@@ -207,7 +204,8 @@ class MSRAHeatmap(BaseKeypointCodec):
                     keypoints[k] += np.sign(diff) * 0.25
 
         # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints[None]
+        # and restore the keypoint scales
+        keypoints = keypoints[None] * self.scale_factor
         scores = scores[None]
 
         return keypoints, scores
@@ -250,29 +248,3 @@ class MSRAHeatmap(BaseKeypointCodec):
                 offset = np.squeeze(np.array(offset.T), axis=0)
                 keypoint += offset
         return keypoint
-
-    def keypoints_bbox2img(self, keypoints: np.ndarray,
-                           bbox_centers: np.ndarray,
-                           bbox_scales: np.ndarray) -> np.ndarray:
-        """Convert decoded keypoints from the bbox space to the image space.
-        Topdown codecs should override this method.
-
-        Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
-                The coordinate is in the bbox space
-            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-
-        Returns:
-            np.ndarray: The transformed keypoints in shape (N, K, C).
-            The coordinate is in the image space.
-        """
-
-        keypoints = keypoints_bbox2img(
-            keypoints,
-            bbox_centers,
-            bbox_scales,
-            heatmap_size=self.heatmap_size,
-            use_udp=False)

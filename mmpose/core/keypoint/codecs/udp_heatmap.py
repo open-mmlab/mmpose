@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
-from ..transforms import keypoints_bbox2img
 from .base import BaseKeypointCodec
 from .utils import get_heatmap_maximum
 
@@ -34,12 +33,12 @@ class UDPHeatmap(BaseKeypointCodec):
             - ``'combined'``: Combination of a binary label map and offset
                 maps for X and Y axes.
 
-        sigma (float, optional): The sigma value of the Gaussian heatmap when
-            ``heatmap_type=='gaussian'``. Defaults to ``None``
-        radius_factor (float, optional): The radius factor of the binary label
+        sigma (float): The sigma value of the Gaussian heatmap when
+            ``heatmap_type=='gaussian'``. Defaults to 2.0
+        radius_factor (float): The radius factor of the binary label
             map when ``heatmap_type=='combined'``. The positive region is
             defined as the neighbor of the keypoit with the radius
-            :math:`r=radius_factor*max(W, H)`. Defaults to ``None``
+            :math:`r=radius_factor*max(W, H)`. Defaults to 0.0546875
         blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
             modulation in DarkPose. Defaults to 11
 
@@ -51,8 +50,8 @@ class UDPHeatmap(BaseKeypointCodec):
                  input_size: Tuple[int, int],
                  heatmap_size: Tuple[int, int],
                  heatmap_type: str = 'gaussian',
-                 sigma: Optional[float] = None,
-                 radius_factor: Optional[float] = None,
+                 sigma: float = 2.,
+                 radius_factor: float = 0.0546875,
                  blur_kernel_size: int = 11) -> None:
         super().__init__()
         self.input_size = input_size
@@ -61,6 +60,7 @@ class UDPHeatmap(BaseKeypointCodec):
         self.radius_factor = radius_factor
         self.heatmap_type = heatmap_type
         self.blur_kernel_size = blur_kernel_size
+        self.scale_factor = np.array(input_size) / heatmap_size
 
         if self.heatmap_type == 'gaussian':
             assert self.sigma is not None, (
@@ -153,8 +153,8 @@ class UDPHeatmap(BaseKeypointCodec):
             keypoints += np.stack((x_offset[index], y_offset[index]), axis=-1)
 
         # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints[None]
-        scores = keypoints[None]
+        keypoints = keypoints[None] * self.scale_factor
+        scores = scores[None]
 
         return keypoints, scores
 
@@ -171,9 +171,6 @@ class UDPHeatmap(BaseKeypointCodec):
         assert N == 1, (
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
-
-        input_size = np.array(self.input_size)
-        feat_stride = input_size / [W - 1, H - 1]
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
@@ -192,7 +189,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-            mu = (keypoints[0, k] / feat_stride + 0.5).astype(np.int64)
+            mu = (keypoints[0, k] / self.scale_factor + 0.5).astype(np.int64)
             # check that the gaussian has in-bounds part
             left, top = (mu - radius).astype(np.int64)
             right, bottom = (mu + radius + 1).astype(np.int64)
@@ -201,7 +198,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-            mu_ac = keypoints[0, k] / feat_stride
+            mu_ac = keypoints[0, k] / self.scale_factor
             x0 = y0 = gaussian_size // 2
             x0 += mu_ac[0] - mu[0]
             y0 += mu_ac[1] - mu[1]
@@ -238,9 +235,6 @@ class UDPHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        input_size = np.array(self.input_size)
-        feat_stride = input_size / [W - 1, H - 1]
-
         heatmaps = np.zeros((K, 3, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
 
@@ -256,7 +250,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-            mu = keypoints[0, k] / feat_stride
+            mu = keypoints[0, k] / self.scale_factor
 
             x_offset = (mu[0] - x) / radius
             y_offset = (mu[1] - y) / radius
@@ -319,29 +313,3 @@ class UDPHeatmap(BaseKeypointCodec):
         hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
         keypoints -= np.einsum('imn,ink->imk', hessian, derivative).squeeze()
         return keypoints
-
-    def keypoints_bbox2img(self, keypoints: np.ndarray,
-                           bbox_centers: np.ndarray,
-                           bbox_scales: np.ndarray) -> np.ndarray:
-        """Convert decoded keypoints from the bbox space to the image space.
-        Topdown codecs should override this method.
-
-        Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
-                The coordinate is in the bbox space
-            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-
-        Returns:
-            np.ndarray: The transformed keypoints in shape (N, K, C).
-            The coordinate is in the image space.
-        """
-
-        keypoints = keypoints_bbox2img(
-            keypoints,
-            bbox_centers,
-            bbox_scales,
-            heatmap_size=self.heatmap_size,
-            use_udp=True)

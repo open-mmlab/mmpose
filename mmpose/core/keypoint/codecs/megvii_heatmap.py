@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
-from ..transforms import keypoints_bbox2img
 from .base import BaseKeypointCodec
 from .utils import gaussian_blur, get_heatmap_maximum
 
@@ -44,6 +43,7 @@ class MegviiHeatmap(BaseKeypointCodec):
         self.input_size = input_size
         self.heatmap_size = heatmap_size
         self.kernel_size = kernel_size
+        self.scale_factor = np.array(input_size) / heatmap_size
 
     def encode(
         self,
@@ -71,9 +71,6 @@ class MegviiHeatmap(BaseKeypointCodec):
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        input_size = np.array(self.input_size)
-        feat_stride = input_size / [W, H]
-
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
         keypoint_weights = np.ones(K, dtype=np.float32)
 
@@ -84,13 +81,14 @@ class MegviiHeatmap(BaseKeypointCodec):
                 continue
 
             # get center coordinates
-            kx, ky = (keypoints[0, k] / feat_stride).astype(np.int64)
+            kx, ky = (keypoints[0, k] / self.scale_factor).astype(np.int64)
             if kx < 0 or kx >= W or ky < 0 or ky >= H:
                 keypoint_weights[k] = 0
                 continue
 
             heatmaps[k, ky, kx] = 1.
-            heatmaps[k] = cv2.GaussianBlur(heatmaps[k], self.kernel_size, 0)
+            kernel_size = (self.kernel_size, self.kernel_size)
+            heatmaps[k] = cv2.GaussianBlur(heatmaps[k], kernel_size, 0)
 
             # normalize the heatmap
             heatmaps[k] = heatmaps[k] / heatmaps[k, ky, kx] * 255.
@@ -129,33 +127,8 @@ class MegviiHeatmap(BaseKeypointCodec):
         scores = scores / 255.0 + 0.5
 
         # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints[None]
-        scores = keypoints[None]
+        # and restore the keypoint scales
+        keypoints = keypoints[None] * self.scale_factor
+        scores = scores[None]
 
         return keypoints, scores
-
-    def keypoints_bbox2img(self, keypoints: np.ndarray,
-                           bbox_centers: np.ndarray,
-                           bbox_scales: np.ndarray) -> np.ndarray:
-        """Convert decoded keypoints from the bbox space to the image space.
-        Topdown codecs should override this method.
-
-        Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C).
-                The coordinate is in the bbox space
-            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-
-        Returns:
-            np.ndarray: The transformed keypoints in shape (N, K, C).
-            The coordinate is in the image space.
-        """
-
-        keypoints = keypoints_bbox2img(
-            keypoints,
-            bbox_centers,
-            bbox_scales,
-            heatmap_size=self.heatmap_size,
-            use_udp=False)

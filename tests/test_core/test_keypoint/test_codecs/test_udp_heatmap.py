@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MSRAHeatmap  # noqa: F401
+from mmpose.core.keypoint.codecs import UDPHeatmap  # noqa: F401
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -13,32 +13,29 @@ class TestMSRAHeatmap(TestCase):
     def setUp(self) -> None:
         self.configs = [
             (
-                'msra',
+                'udp gaussian',
                 dict(
-                    type='MSRAHeatmap',
+                    type='UDPHeatmap',
                     input_size=(192, 256),
                     heatmap_size=(48, 64),
-                    sigma=2.0),
+                    heatmap_type='gaussian',
+                ),
             ),
             (
-                'msra+dark',
+                'udp combined',
                 dict(
-                    type='MSRAHeatmap',
+                    type='UDPHeatmap',
                     input_size=(192, 256),
                     heatmap_size=(48, 64),
-                    sigma=2.0,
-                    unbiased=True),
+                    heatmap_type='combined'),
             ),
         ]
 
         keypoints = np.round(np.random.rand(1, 17, 2) *
                              [192, 256]).astype(np.float32)
         keypoints_visible = np.ones((1, 17), dtype=np.float32)
-        heatmaps = np.random.rand(17, 64, 48).astype(np.float32)
         self.data = dict(
-            keypoints=keypoints,
-            keypoints_visible=keypoints_visible,
-            heatmaps=heatmaps)
+            keypoints=keypoints, keypoints_visible=keypoints_visible)
 
     def test_encode(self):
         keypoints = self.data['keypoints']
@@ -50,16 +47,27 @@ class TestMSRAHeatmap(TestCase):
             heatmaps, keypoint_weights = codec.encode(keypoints,
                                                       keypoints_visible)
 
-            self.assertEqual(heatmaps.shape, (17, 64, 48),
+            if codec.heatmap_type == 'combined':
+                channel_per_kpt = 3
+            else:
+                channel_per_kpt = 1
+
+            self.assertEqual(heatmaps.shape, (channel_per_kpt * 17, 64, 48),
                              f'Failed case: "{name}"')
             self.assertEqual(keypoint_weights.shape,
                              (17, )), f'Failed case: "{name}"'
 
     def test_decode(self):
-        heatmaps = self.data['heatmaps']
 
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
+            if codec.heatmap_type == 'combined':
+                channel_per_kpt = 3
+            else:
+                channel_per_kpt = 1
+
+            heatmaps = np.random.rand(channel_per_kpt * 17, 64,
+                                      48).astype(np.float32)
 
             keypoints, scores = codec.decode(heatmaps)
 

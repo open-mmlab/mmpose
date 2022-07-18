@@ -6,7 +6,6 @@ import torch
 import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer, build_upsample_layer
 from mmengine.data import InstanceData, PixelData
-from mmengine.utils.misc import is_method_overridden
 from torch import Tensor, nn
 
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -326,27 +325,24 @@ class HeatmapHead(BaseHead):
         batch_heatmaps_np = _to_numpy(batch_heatmaps)
         for heatmaps, data_sample in zip(batch_heatmaps_np,
                                          batch_data_samples):
-            pred_kpts, pred_kpt_scores = self.decoder.decode(heatmaps)
+            keypoints, scores = self.decoder.decode(heatmaps)
 
-            if is_method_overridden(self.decode.keypoints_bbox2img):
-                # Convert the decoded local keypoints (in heatmap space)
-                # to the image coordinate space
-                if 'gt_instances' in data_sample:
-                    bbox_centers = data_sample.gt_instances.bbox_centers
-                    bbox_scales = data_sample.get_instances.bbox_scales
-                else:
-                    raise ValueError(
-                        '`gt_instances` is required to convert keypoints from'
-                        ' from the heatmap space to the image space.')
-
-                pred_kpts = self.decode.keypoints_bbox2img(
-                    pred_kpts, bbox_centers, bbox_scales)
+            # Convert the decoded local keypoints (in heatmap space)
+            # to the image coordinate space
+            if 'gt_instances' in data_sample:
+                bbox_centers = data_sample.gt_instances.bbox_centers
+                bbox_scales = data_sample.get_instances.bbox_scales
+                keypoints = keypoints + bbox_centers - 0.5 * bbox_scales
+            else:
+                raise ValueError(
+                    '`gt_instances` is required to convert keypoints from'
+                    ' from the heatmap space to the image space.')
 
             # Store the keypoint predictions in the data sample
             if 'pred_instances' not in data_sample:
                 data_sample.pred_instances = InstanceData()
-            data_sample.pred_instances.keypoints = pred_kpts
-            data_sample.pred_instances.keypoint_scores = pred_kpt_scores
+            data_sample.pred_instances.keypoints = keypoints
+            data_sample.pred_instances.keypoint_scores = scores
 
             # Store the heatmap predictions in the data sample
             if 'pred_fileds' not in data_sample:
