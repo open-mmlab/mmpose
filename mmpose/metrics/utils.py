@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 
-from mmpose.core.keypoint.heatmap import get_max_preds
+from mmpose.core.keypoint.codecs.utils import get_heatmap_maximum
 
 
 def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,
@@ -228,8 +228,8 @@ def pose_pck_accuracy(output: np.ndarray,
     if normalize is None:
         normalize = np.tile(np.array([[H, W]]), (N, 1))
 
-    pred, _ = get_max_preds(output)
-    gt, _ = get_max_preds(target)
+    pred, _ = get_heatmap_maximum(output)
+    gt, _ = get_heatmap_maximum(target)
     return keypoint_pck_accuracy(pred, gt, mask, thr, normalize)
 
 

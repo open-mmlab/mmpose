@@ -70,7 +70,7 @@ class HeatmapHead(BaseHead):
             transformation. Defaults to ``False``
         loss (Config): Config of the keypoint loss. Defaults to use
             :class:`KeypointMSELoss`
-        decoder (Config, optional): The decoder config that controls decoing
+        decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
