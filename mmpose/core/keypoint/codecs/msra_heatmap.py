@@ -59,7 +59,8 @@ class MSRAHeatmap(BaseKeypointCodec):
         #   sigma~=1.5 if ks=7;
         #   sigma~=1 if ks=3;
         self.blur_kernel_size = blur_kernel_size
-        self.scale_factor = np.array(input_size) / heatmap_size
+        self.scale_factor = (np.array(input_size) /
+                             heatmap_size).astype(np.float32)
 
     def encode(
         self,

@@ -60,7 +60,11 @@ class UDPHeatmap(BaseKeypointCodec):
         self.radius_factor = radius_factor
         self.heatmap_type = heatmap_type
         self.blur_kernel_size = blur_kernel_size
-        self.scale_factor = np.array(input_size) / heatmap_size
+
+        w, h = input_size
+        W, H = heatmap_size
+        self.scale_factor = (np.array([w - 1, h - 1]) /
+                             [W - 1, H - 1]).astype(np.float32)
 
         if self.heatmap_type == 'gaussian':
             assert self.sigma is not None, (
@@ -128,7 +132,6 @@ class UDPHeatmap(BaseKeypointCodec):
             keypoints, scores = get_heatmap_maximum(heatmaps)
             keypoints = self._postprocess_dark_udp(heatmaps, keypoints,
                                                    self.blur_kernel_size)
-
         elif self.heatmap_type == 'combined':
             _K, H, W = heatmaps.shape
             K = _K // 3
@@ -305,11 +308,13 @@ class UDPHeatmap(BaseKeypointCodec):
         dy = 0.5 * (iy1 - iy1_)
         derivative = np.concatenate([dx, dy], axis=1)
         derivative = derivative.reshape(K, 2, 1)
+
         dxx = ix1 - 2 * i_ + ix1_
         dyy = iy1 - 2 * i_ + iy1_
         dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
-        hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=0)
+        hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1)
         hessian = hessian.reshape(K, 2, 2)
         hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
         keypoints -= np.einsum('imn,ink->imk', hessian, derivative).squeeze()
+
         return keypoints

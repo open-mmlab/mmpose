@@ -43,7 +43,8 @@ class MegviiHeatmap(BaseKeypointCodec):
         self.input_size = input_size
         self.heatmap_size = heatmap_size
         self.kernel_size = kernel_size
-        self.scale_factor = np.array(input_size) / heatmap_size
+        self.scale_factor = (np.array(input_size) /
+                             heatmap_size).astype(np.float32)
 
     def encode(
         self,

@@ -327,12 +327,16 @@ class HeatmapHead(BaseHead):
                                          batch_data_samples):
             keypoints, scores = self.decoder.decode(heatmaps)
 
-            # Convert the decoded local keypoints (in heatmap space)
+            # Convert the decoded local keypoints (in input space)
             # to the image coordinate space
+            # Convert keypoint coordinates from input space to image space
             if 'gt_instances' in data_sample:
                 bbox_centers = data_sample.gt_instances.bbox_centers
                 bbox_scales = data_sample.get_instances.bbox_scales
-                keypoints = keypoints + bbox_centers - 0.5 * bbox_scales
+                input_size = data_sample.metainfo.input_size
+                keypoints = keypoints / input_size * bbox_scales + \
+                    bbox_centers - 0.5 * bbox_scales
+
             else:
                 raise ValueError(
                     '`gt_instances` is required to convert keypoints from'
