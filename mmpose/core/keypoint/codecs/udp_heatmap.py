@@ -85,7 +85,8 @@ class UDPHeatmap(BaseKeypointCodec):
         keypoints: np.ndarray,
         keypoints_visible: Optional[np.ndarray] = None
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """Encode keypoints into heatmaps.
+        """Encode keypoints into heatmaps. Note that the original keypoint
+        coordinates should be in the input image space.
 
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
@@ -114,7 +115,8 @@ class UDPHeatmap(BaseKeypointCodec):
                 '{"gaussian", "combined"}')
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        """Get keypoint coordinates from heatmaps.
+        """Decode keypoint coordinates from heatmaps. The decoded keypoint
+        coordinates are in the input image space.
 
         Args:
             encoded (np.ndarray): Heatmaps in shape (K, H, W)
