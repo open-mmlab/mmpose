@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MegviiHeatmap  # noqa: F401
+from mmpose.core.keypoint.codecs import MegviiHeatmap
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -73,3 +73,14 @@ class TestMegviiHeatmap(TestCase):
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),
                 f'Failed case: "{name}"')
+
+    def test_errors(self):
+        # multiple instance
+        codec = MegviiHeatmap(
+            input_size=(192, 256), heatmap_size=(48, 64), kernel_size=11)
+        keypoints = np.random.rand(2, 17, 2)
+        keypoints_visible = np.random.rand(2, 17)
+
+        with self.assertRaisesRegex(AssertionError,
+                                    'only support single-instance'):
+            codec.encode(keypoints, keypoints_visible)

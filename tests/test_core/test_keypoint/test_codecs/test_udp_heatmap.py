@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import UDPHeatmap  # noqa: F401
+from mmpose.core.keypoint.codecs import UDPHeatmap
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -90,3 +90,20 @@ class TestMSRAHeatmap(TestCase):
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=6.),
                 f'Failed case: "{name}"')
+
+    def test_errors(self):
+        # invalid heatmap type
+        with self.assertRaisesRegex(ValueError, 'invalid `heatmap_type`'):
+            _ = UDPHeatmap(
+                input_size=(192, 256),
+                heatmap_size=(48, 64),
+                heatmap_type='invalid')
+
+        # multiple instance
+        codec = UDPHeatmap(input_size=(192, 256), heatmap_size=(48, 64))
+        keypoints = np.random.rand(2, 17, 2)
+        keypoints_visible = np.random.rand(2, 17)
+
+        with self.assertRaisesRegex(AssertionError,
+                                    'only support single-instance'):
+            codec.encode(keypoints, keypoints_visible)

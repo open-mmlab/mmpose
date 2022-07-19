@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MSRAHeatmap  # noqa: F401
+from mmpose.core.keypoint.codecs import MSRAHeatmap
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -82,3 +82,14 @@ class TestMSRAHeatmap(TestCase):
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),
                 f'Failed case: "{name}"')
+
+    def test_errors(self):
+        # multiple instance
+        codec = MSRAHeatmap(
+            input_size=(192, 256), heatmap_size=(48, 64), sigma=2.0)
+        keypoints = np.random.rand(2, 17, 2)
+        keypoints_visible = np.random.rand(2, 17)
+
+        with self.assertRaisesRegex(AssertionError,
+                                    'only support single-instance'):
+            codec.encode(keypoints, keypoints_visible)

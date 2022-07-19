@@ -110,7 +110,7 @@ class MegviiHeatmap(BaseKeypointCodec):
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
                 (K, C)
             - scores (np.ndarray): The keypoint scores in shape (K,). It
-                usually represents the confidence of the keypoint prediction.
+                usually represents the confidence of the keypoint prediction
         """
         heatmaps = gaussian_blur(encoded.copy(), self.kernel_size)
         K, H, W = heatmaps.shape

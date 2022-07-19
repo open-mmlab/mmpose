@@ -178,7 +178,7 @@ class MSRAHeatmap(BaseKeypointCodec):
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
                 (N, K, C)
             - scores (np.ndarray): The keypoint scores in shape (N, K). It
-                usually represents the confidence of the keypoint prediction.
+                usually represents the confidence of the keypoint prediction
         """
         heatmaps = encoded.copy()
         K, H, W = heatmaps.shape

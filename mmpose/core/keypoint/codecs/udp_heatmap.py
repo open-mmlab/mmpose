@@ -66,18 +66,10 @@ class UDPHeatmap(BaseKeypointCodec):
         self.scale_factor = (np.array([w - 1, h - 1]) /
                              [W - 1, H - 1]).astype(np.float32)
 
-        if self.heatmap_type == 'gaussian':
-            assert self.sigma is not None, (
-                'The parameter `sigma` should be provided if '
-                '`heatmap_type=="gaussian"`')
-        elif self.heatmap_type == 'combined':
-            assert self.sigma is not None, (
-                'The parameter `radius_factor` should be provided if '
-                '`heatmap_type=="combined"`')
-        else:
+        if self.heatmap_type not in {'gaussian', 'combined'}:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `heatmap_type` value'
-                f'{self.heatmap_typee}. Should be one of '
+                f'{self.heatmap_type}. Should be one of '
                 '{"gaussian", "combined"}')
 
     def encode(
@@ -111,7 +103,7 @@ class UDPHeatmap(BaseKeypointCodec):
         else:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `heatmap_type` value'
-                f'{self.heatmap_typee}. Should be one of '
+                f'{self.heatmap_type}. Should be one of '
                 '{"gaussian", "combined"}')
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -126,7 +118,7 @@ class UDPHeatmap(BaseKeypointCodec):
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
                 (N, K, C)
             - scores (np.ndarray): The keypoint scores in shape (N, K). It
-                usually represents the confidence of the keypoint prediction.
+                usually represents the confidence of the keypoint prediction
         """
         heatmaps = encoded.copy()
 
