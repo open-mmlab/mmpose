@@ -6,7 +6,7 @@ from mmpose.registry import MODELS
 
 
 @MODELS.register_module()
-class JointsMSELoss(nn.Module):
+class KeypointMSELoss(nn.Module):
     """MSE loss for heatmaps.
 
     Args:
@@ -94,7 +94,7 @@ class CombinedTargetMSELoss(nn.Module):
 
 
 @MODELS.register_module()
-class JointsOHKMMSELoss(nn.Module):
+class KeypointOHKMMSELoss(nn.Module):
     """MSE loss with online hard keypoint mining.
 
     Args:

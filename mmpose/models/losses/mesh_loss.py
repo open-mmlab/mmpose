@@ -76,7 +76,7 @@ class MeshLoss(nn.Module):
         # Per-vertex loss on the mesh
         self.criterion_vertex = nn.L1Loss(reduction='none')
 
-        # Joints (2D and 3D) loss
+        # Keypoints (2D and 3D) loss
         self.criterion_joints_2d = nn.SmoothL1Loss(reduction='none')
         self.criterion_joints_3d = nn.SmoothL1Loss(reduction='none')
 

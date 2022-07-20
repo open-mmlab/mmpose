@@ -25,7 +25,6 @@ class HeatmapHead(BaseHead):
     Args:
         in_channels (int): Number of channels in the input feature map
         out_channels (int): Number of channels in the output heatmap
-        num_deconv_layers (int): Number of deconv layers. Defaults to 3
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple]): The kernel size of
