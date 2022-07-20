@@ -2,7 +2,7 @@
 import pytest
 import torch
 
-from mmpose.models.backbones.swin import SwinBlock, SwinTransformer
+from mmpose.models.backbones2.swin import SwinBlock, SwinTransformer
 
 
 def test_swin_block():
@@ -26,10 +26,6 @@ def test_swin_block():
 
 def test_swin_transformer():
     """Test Swin Transformer backbone."""
-
-    with pytest.raises(TypeError):
-        # Pretrained arg must be str or None.
-        SwinTransformer(pretrained=123)
 
     with pytest.raises(AssertionError):
         # Because swin uses non-overlapping patch embed, so the stride of patch

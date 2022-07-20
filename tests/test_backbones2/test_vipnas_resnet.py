@@ -4,10 +4,10 @@ import torch
 import torch.nn as nn
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from mmpose.models.backbones import ViPNAS_ResNet
-from mmpose.models.backbones.vipnas_resnet import (ViPNAS_Bottleneck,
-                                                   ViPNAS_ResLayer,
-                                                   get_expansion)
+from mmpose.models.backbones2 import ViPNAS_ResNet
+from mmpose.models.backbones2.vipnas_resnet import (ViPNAS_Bottleneck,
+                                                    ViPNAS_ResLayer,
+                                                    get_expansion)
 
 
 def is_block(modules):
@@ -259,7 +259,7 @@ def test_resnet():
         ViPNAS_ResNet(50, strides=(1, ), dilations=(1, 1), num_stages=3)
 
     with pytest.raises(TypeError):
-        # pretrained must be a string path
+        # init_weights must have no parameter
         model = ViPNAS_ResNet(50)
         model.init_weights(pretrained=0)
 
@@ -322,7 +322,8 @@ def test_resnet():
 
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
-    assert feat.shape == (1, 608, 7, 7)
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == (1, 608, 7, 7)
 
     # Test ViPNAS_ResNet50 with checkpoint forward
     model = ViPNAS_ResNet(50, out_indices=(0, 1, 2, 3), with_cp=True)

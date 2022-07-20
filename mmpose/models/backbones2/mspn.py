@@ -5,14 +5,14 @@ from collections import OrderedDict
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import ConvModule, MaxPool2d
-from mmcv.runner.checkpoint import load_state_dict
 from mmengine.model import BaseModule
+from mmengine.runner import load_state_dict
 
 from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
 from .base_backbone import BaseBackbone
 from .resnet import Bottleneck as _Bottleneck
-from .utils.utils import get_state_dict
+from .utils import get_state_dict
 
 
 class Bottleneck(_Bottleneck):

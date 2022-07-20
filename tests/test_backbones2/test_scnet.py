@@ -3,8 +3,8 @@ import pytest
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.models.backbones import SCNet
-from mmpose.models.backbones.scnet import SCBottleneck, SCConv
+from mmpose.models.backbones2 import SCNet
+from mmpose.models.backbones2.scnet import SCBottleneck, SCConv
 
 
 def is_block(modules):
@@ -128,7 +128,8 @@ def test_scnet_backbone():
 
     imgs = torch.randn(2, 3, 224, 224)
     feat = model(imgs)
-    assert feat.shape == torch.Size([2, 2048, 7, 7])
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([2, 2048, 7, 7])
 
     # Test SEResNet50 with checkpoint forward
     model = SCNet(50, out_indices=(0, 1, 2, 3), with_cp=True)

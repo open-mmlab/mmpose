@@ -2,8 +2,8 @@
 import pytest
 import torch
 
-from mmpose.models.backbones import ResNeSt
-from mmpose.models.backbones.resnest import Bottleneck as BottleneckS
+from mmpose.models.backbones2 import ResNeSt
+from mmpose.models.backbones2.resnest import Bottleneck as BottleneckS
 
 
 def test_bottleneck():

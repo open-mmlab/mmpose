@@ -22,10 +22,6 @@ def test_pvt_block():
 def test_pvt():
     """Test PVT backbone."""
 
-    with pytest.raises(TypeError):
-        # Pretrained arg must be str or None.
-        PyramidVisionTransformer(pretrained=123)
-
     # test pretrained image size
     with pytest.raises(AssertionError):
         PyramidVisionTransformer(pretrain_img_size=(224, 224, 224))
@@ -86,20 +82,14 @@ def test_pvtv2():
     with pytest.raises(AssertionError):
         PyramidVisionTransformerV2(pretrain_img_size=(224, 224, 224))
 
-    # test load pretrained weights
+    # test init_cfg with pretrained model
     model = PyramidVisionTransformerV2(
         embed_dims=32,
         num_layers=[2, 2, 2, 2],
-        pretrained='https://github.com/whai362/PVT/'
-        'releases/download/v2/pvt_v2_b0.pth')
-    model.init_weights()
-
-    # test init_cfg
-    model = PyramidVisionTransformerV2(
-        embed_dims=32,
-        num_layers=[2, 2, 2, 2],
-        init_cfg=dict(checkpoint='https://github.com/whai362/PVT/'
-                      'releases/download/v2/pvt_v2_b0.pth'))
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='https://github.com/whai362/PVT/'
+            'releases/download/v2/pvt_v2_b0.pth'))
     model.init_weights()
 
     # test init weights from scratch

@@ -4,8 +4,8 @@ import torch
 from torch.nn.modules import GroupNorm
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.models.backbones.utils import (InvertedResidual, SELayer,
-                                           channel_shuffle, make_divisible)
+from mmpose.models.backbones2.utils import (InvertedResidual, SELayer,
+                                            channel_shuffle, make_divisible)
 
 
 def is_norm(modules):

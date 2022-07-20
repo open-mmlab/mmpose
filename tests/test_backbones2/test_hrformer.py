@@ -2,8 +2,8 @@
 import pytest
 import torch
 
-from mmpose.models.backbones.hrformer import (HRFomerModule, HRFormer,
-                                              HRFormerBlock)
+from mmpose.models.backbones2.hrformer import (HRFomerModule, HRFormer,
+                                               HRFormerBlock)
 
 
 def test_hrformer_module():
@@ -183,5 +183,6 @@ def test_hrformer_backbone():
 
     imgs = torch.randn(1, 3, 64, 64)
     feats = model(imgs)
+    assert isinstance(feats, tuple)
     assert len(feats) == 1
-    assert feats[0].shape == torch.Size([1, 32, 16, 16])
+    assert feats[-1].shape == torch.Size([1, 32, 16, 16])

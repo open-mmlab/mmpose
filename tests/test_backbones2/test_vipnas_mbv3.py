@@ -4,8 +4,8 @@ import torch
 from torch.nn.modules import GroupNorm
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.models.backbones import ViPNAS_MobileNetV3
-from mmpose.models.backbones.utils import InvertedResidual
+from mmpose.models.backbones2 import ViPNAS_MobileNetV3
+from mmpose.models.backbones2.utils import InvertedResidual
 
 
 def is_norm(modules):
@@ -26,7 +26,7 @@ def check_norm_state(modules, train_state):
 
 def test_mobilenetv3_backbone():
     with pytest.raises(TypeError):
-        # pretrained must be a string path
+        # init_weights must have no parameter
         model = ViPNAS_MobileNetV3()
         model.init_weights(pretrained=0)
 
@@ -68,7 +68,8 @@ def test_mobilenetv3_backbone():
 
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
-    assert feat.shape == torch.Size([1, 160, 7, 7])
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([1, 160, 7, 7])
 
     # Test MobileNetv3 forward with GroupNorm
     model = ViPNAS_MobileNetV3(
@@ -81,7 +82,8 @@ def test_mobilenetv3_backbone():
 
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
-    assert feat.shape == torch.Size([1, 160, 7, 7])
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([1, 160, 7, 7])
 
     # Test MobileNetv3 with checkpoint forward
     model = ViPNAS_MobileNetV3(with_cp=True)
@@ -93,7 +95,5 @@ def test_mobilenetv3_backbone():
 
     imgs = torch.randn(1, 3, 224, 224)
     feat = model(imgs)
-    assert feat.shape == torch.Size([1, 160, 7, 7])
-
-
-test_mobilenetv3_backbone()
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([1, 160, 7, 7])

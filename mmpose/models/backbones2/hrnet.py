@@ -598,7 +598,7 @@ class HRNet(BaseBackbone):
                 x_list.append(y_list[i])
         y_list = self.stage4(x_list)
 
-        return y_list
+        return tuple(y_list)
 
     def train(self, mode=True):
         """Convert the model into training mode."""

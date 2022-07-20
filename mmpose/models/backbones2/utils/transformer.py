@@ -11,8 +11,8 @@ from mmcv.cnn import (build_activation_layer, build_conv_layer,
 from mmcv.cnn.bricks.transformer import (BaseTransformerLayer,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
-from mmcv.runner.base_module import BaseModule
 from mmcv.utils import to_2tuple
+from mmengine.model import BaseModule
 from torch.nn.init import normal_
 
 try:
@@ -151,8 +151,8 @@ class PatchEmbed(BaseModule):
         input_size (int | tuple | None): The size of input, which will be
             used to calculate the out size. Only work when `dynamic_size`
             is False. Default: None.
-        init_cfg (`mmcv.ConfigDict`, optional): The Config for initialization.
-            Default: None.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(
@@ -280,8 +280,8 @@ class PatchMerging(BaseModule):
             Defaults: False.
         norm_cfg (dict, optional): Config dict for normalization layer.
             Default: dict(type='LN').
-        init_cfg (dict, optional): The extra config for initialization.
-            Default: None.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -415,12 +415,12 @@ class DetrTransformerDecoderLayer(BaseTransformerLayer):
             in ffn. Default 0.0.
         operation_order (tuple[str]): The execution order of operation
             in transformer. Such as ('self_attn', 'norm', 'ffn', 'norm').
-            Default：None
+            Default: None
         act_cfg (dict): The activation config for FFNs. Default: `LN`
         norm_cfg (dict): Config dict for normalization layer.
             Default: `LN`.
         ffn_num_fcs (int): The number of fully-connected layers in FFNs.
-            Default：2.
+            Default:2.
     """
 
     def __init__(self,
@@ -451,7 +451,7 @@ class DetrTransformerEncoder(TransformerLayerSequence):
     """TransformerEncoder of DETR.
 
     Args:
-        post_norm_cfg (dict): Config of last normalization layer. Default：
+        post_norm_cfg (dict): Config of last normalization layer. Default:
             `LN`. Only used when `self.pre_norm` is `True`
     """
 

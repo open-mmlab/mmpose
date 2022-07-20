@@ -2,9 +2,9 @@
 import torch
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from mmpose.models.backbones import HRNet
-from mmpose.models.backbones.hrnet import HRModule
-from mmpose.models.backbones.resnet import BasicBlock, Bottleneck
+from mmpose.models.backbones2 import HRNet
+from mmpose.models.backbones2.hrnet import HRModule
+from mmpose.models.backbones2.resnet import BasicBlock, Bottleneck
 
 
 def is_block(modules):
@@ -81,8 +81,8 @@ def test_hrnet_backbone():
 
     imgs = torch.randn(2, 3, 224, 224)
     feat = model(imgs)
-    assert len(feat) == 1
-    assert feat[0].shape == torch.Size([2, 32, 56, 56])
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([2, 32, 56, 56])
 
     # Test HRNet zero initialization of residual
     model = HRNet(extra, in_channels=3, zero_init_residual=True)
@@ -94,8 +94,8 @@ def test_hrnet_backbone():
 
     imgs = torch.randn(2, 3, 224, 224)
     feat = model(imgs)
-    assert len(feat) == 1
-    assert feat[0].shape == torch.Size([2, 32, 56, 56])
+    assert isinstance(feat, tuple)
+    assert feat[-1].shape == torch.Size([2, 32, 56, 56])
 
     # Test HRNet with the first three stages frozen
     frozen_stages = 3
