@@ -69,7 +69,7 @@ train_pipeline = [
     # The bbox is the tightest bbox enclosing keypoints. The paper uses 2.2
     # bbox as the input, while we use 1.76 (2.2 * 0.8) bbox as the input.
     dict(type='TopDownGetBboxCenterScale', padding=1.76),
-    dict(type='TopDownRandShiftBboxCenter', shift_factor=0.16, prob=0.3),
+    dict(type='TopDownRandomShiftBboxCenter', shift_factor=0.16, prob=0.3),
     dict(type='TopDownRandomFlip', flip_prob=0.5),
     dict(
         type='TopDownGetRandomScaleRotation', rot_factor=90, scale_factor=0.3),
