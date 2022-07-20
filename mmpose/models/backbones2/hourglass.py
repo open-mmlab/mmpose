@@ -2,17 +2,15 @@
 import copy
 
 import torch.nn as nn
-from mmcv.cnn import ConvModule, constant_init, normal_init
-from torch.nn.modules.batchnorm import _BatchNorm
+from mmcv.cnn import ConvModule
+from mmengine.model import BaseModule
 
-from mmpose.utils import get_root_logger
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 from .resnet import BasicBlock, ResLayer
-from .utils import load_checkpoint
 
 
-class HourglassModule(nn.Module):
+class HourglassModule(BaseModule):
     """Hourglass Module for HourglassNet backbone.
 
     Generate module recursively and use BasicBlock as the base unit.
@@ -24,16 +22,19 @@ class HourglassModule(nn.Module):
         stage_blocks (list[int]): Number of sub-modules stacked in current and
             follow-up HourglassModule.
         norm_cfg (dict): Dictionary to construct and config norm layer.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
                  depth,
                  stage_channels,
                  stage_blocks,
-                 norm_cfg=dict(type='BN', requires_grad=True)):
+                 norm_cfg=dict(type='BN', requires_grad=True),
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
 
         self.depth = depth
 
@@ -85,7 +86,7 @@ class HourglassModule(nn.Module):
         return up1 + up2
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class HourglassNet(BaseBackbone):
     """HourglassNet backbone.
 
@@ -103,6 +104,15 @@ class HourglassNet(BaseBackbone):
             HourglassModule.
         feat_channel (int): Feature channel of conv after a HourglassModule.
         norm_cfg (dict): Dictionary to construct and config norm layer.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import HourglassNet
@@ -117,16 +127,22 @@ class HourglassNet(BaseBackbone):
         (1, 256, 128, 128)
     """
 
-    def __init__(self,
-                 downsample_times=5,
-                 num_stacks=2,
-                 stage_channels=(256, 256, 384, 384, 384, 512),
-                 stage_blocks=(2, 2, 2, 2, 2, 4),
-                 feat_channel=256,
-                 norm_cfg=dict(type='BN', requires_grad=True)):
+    def __init__(
+        self,
+        downsample_times=5,
+        num_stacks=2,
+        stage_channels=(256, 256, 384, 384, 384, 512),
+        stage_blocks=(2, 2, 2, 2, 2, 4),
+        feat_channel=256,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        init_cfg=[
+            dict(type='Normal', std=0.001, layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
 
         self.num_stacks = num_stacks
         assert self.num_stacks >= 1
@@ -170,25 +186,6 @@ class HourglassNet(BaseBackbone):
         ])
 
         self.relu = nn.ReLU(inplace=True)
-
-    def init_weights(self, pretrained=None):
-        """Initialize the weights in backbone.
-
-        Args:
-            pretrained (str, optional): Path to pre-trained weights.
-                Defaults to None.
-        """
-        if isinstance(pretrained, str):
-            logger = get_root_logger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    normal_init(m, std=0.001)
-                elif isinstance(m, (_BatchNorm, nn.GroupNorm)):
-                    constant_init(m, 1)
-        else:
-            raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         """Model forward function."""

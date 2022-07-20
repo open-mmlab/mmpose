@@ -1,17 +1,15 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import logging
 
-import torch.nn as nn
-from mmcv.cnn import ConvModule, constant_init, kaiming_init
+from mmcv.cnn import ConvModule
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
-from .utils import InvertedResidual, load_checkpoint
+from .utils import InvertedResidual
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class MobileNetV3(BaseBackbone):
     """MobileNetV3 backbone.
 
@@ -32,6 +30,15 @@ class MobileNetV3(BaseBackbone):
         with_cp (bool): Use checkpoint or not. Using checkpoint will save
             some memory while slowing down the training speed.
             Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm'])
+            ]``
     """
     # Parameters to build each block:
     #     [kernel size, mid channels, out channels, with_se, act type, stride]
@@ -71,10 +78,14 @@ class MobileNetV3(BaseBackbone):
                  out_indices=(-1, ),
                  frozen_stages=-1,
                  norm_eval=False,
-                 with_cp=False):
+                 with_cp=False,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(type='Constant', val=1, layer=['_BatchNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         assert arch in self.arch_settings
         for index in out_indices:
             if index not in range(-len(self.arch_settings[arch]),
@@ -141,19 +152,6 @@ class MobileNetV3(BaseBackbone):
             layers.append(layer_name)
         return layers
 
-    def init_weights(self, pretrained=None):
-        if isinstance(pretrained, str):
-            logger = logging.getLogger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    kaiming_init(m)
-                elif isinstance(m, nn.BatchNorm2d):
-                    constant_init(m, 1)
-        else:
-            raise TypeError('pretrained must be a str or None')
-
     def forward(self, x):
         x = self.conv1(x)
 
@@ -165,8 +163,6 @@ class MobileNetV3(BaseBackbone):
                     i - len(self.layers) in self.out_indices:
                 outs.append(x)
 
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)
 
     def _freeze_stages(self):

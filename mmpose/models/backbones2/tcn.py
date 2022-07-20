@@ -2,15 +2,15 @@
 import copy
 
 import torch.nn as nn
-from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
-from mmcv.utils.parrots_wrapper import _BatchNorm
+from mmcv.cnn import ConvModule, build_conv_layer
+from mmengine.model import BaseModule
 
 from mmpose.core import WeightNormClipHook
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
-class BasicTemporalBlock(nn.Module):
+class BasicTemporalBlock(BaseModule):
     """Basic block for VideoPose3D.
 
     Args:
@@ -33,6 +33,8 @@ class BasicTemporalBlock(nn.Module):
             Default: dict(type='Conv1d').
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN1d').
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -46,11 +48,12 @@ class BasicTemporalBlock(nn.Module):
                  residual=True,
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
-                 norm_cfg=dict(type='BN1d')):
+                 norm_cfg=dict(type='BN1d'),
+                 init_cfg=None):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.mid_channels = mid_channels
@@ -129,7 +132,7 @@ class BasicTemporalBlock(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class TCN(BaseBackbone):
     """TCN backbone.
 
@@ -162,6 +165,19 @@ class TCN(BaseBackbone):
             Default: dict(type='BN1d').
         max_norm (float|None): if not None, the weight of convolution layers
             will be clipped to have a maximum norm of max_norm.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(
+                    type='Kaiming',
+                    mode='fan_in',
+                    nonlinearity='relu',
+                    layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import TCN
@@ -187,7 +203,18 @@ class TCN(BaseBackbone):
                  use_stride_conv=False,
                  conv_cfg=dict(type='Conv1d'),
                  norm_cfg=dict(type='BN1d'),
-                 max_norm=None):
+                 max_norm=None,
+                 init_cfg=[
+                     dict(
+                         type='Kaiming',
+                         mode='fan_in',
+                         nonlinearity='relu',
+                         layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         conv_cfg = copy.deepcopy(conv_cfg)
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -255,13 +282,3 @@ class TCN(BaseBackbone):
             outs.append(x)
 
         return tuple(outs)
-
-    def init_weights(self, pretrained=None):
-        """Initialize the weights."""
-        super().init_weights(pretrained)
-        if pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.modules.conv._ConvNd):
-                    kaiming_init(m, mode='fan_in', nonlinearity='relu')
-                elif isinstance(m, _BatchNorm):
-                    constant_init(m, 1)

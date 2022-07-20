@@ -318,7 +318,7 @@ class ResLayer(nn.Sequential):
     """ResLayer to build ResNet style backbone.
 
     Args:
-        block (BaseModule): Residual block used to build ResLayer.
+        block (nn.Module): Residual block used to build ResLayer.
         num_blocks (int): Number of blocks.
         in_channels (int): Input channels of this block.
         out_channels (int): Output channels of this block.
@@ -573,8 +573,7 @@ class ResNet(BaseBackbone):
                 avg_down=self.avg_down,
                 with_cp=with_cp,
                 conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg,
-                init_cfg=init_cfg)
+                norm_cfg=norm_cfg)
             _in_channels = _out_channels
             _out_channels *= 2
             layer_name = f'layer{i + 1}'
