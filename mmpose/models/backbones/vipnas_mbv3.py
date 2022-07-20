@@ -6,12 +6,12 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 from .utils import InvertedResidual, load_checkpoint
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ViPNAS_MobileNetV3(BaseBackbone):
     """ViPNAS_MobileNetV3 backbone.
 

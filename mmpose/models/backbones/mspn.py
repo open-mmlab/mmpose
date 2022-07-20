@@ -8,8 +8,8 @@ from mmcv.cnn import (ConvModule, MaxPool2d, constant_init, kaiming_init,
                       normal_init)
 from mmcv.runner.checkpoint import load_state_dict
 
+from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
-from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 from .resnet import Bottleneck as _Bottleneck
 from .utils.utils import get_state_dict
@@ -382,7 +382,7 @@ class ResNetTop(nn.Module):
         return self.top(img)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class MSPN(BaseBackbone):
     """MSPN backbone. Paper ref: Li et al. "Rethinking on Multi-Stage Networks
     for Human Pose Estimation" (CVPR 2020).

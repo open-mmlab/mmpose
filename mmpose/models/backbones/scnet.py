@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import Bottleneck, ResNet
 
 
@@ -188,7 +188,7 @@ class SCBottleneck(Bottleneck):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class SCNet(ResNet):
     """SCNet backbone.
 

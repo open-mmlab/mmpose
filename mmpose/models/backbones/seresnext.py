@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import ResLayer
 from .seresnet import SEBottleneck as _SEBottleneck
 from .seresnet import SEResNet
@@ -91,7 +91,7 @@ class SEBottleneck(_SEBottleneck):
         self.add_module(self.norm3_name, norm3)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class SEResNeXt(SEResNet):
     """SEResNeXt backbone.
 

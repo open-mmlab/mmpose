@@ -2,7 +2,7 @@
 import torch
 import torch.nn as nn
 
-from ..builder import LOSSES
+from mmpose.registry import MODELS
 from ..utils.geometry import batch_rodrigues
 
 
@@ -46,7 +46,7 @@ def perspective_projection(points, rotation, translation, focal_length,
     return projected_points
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class MeshLoss(nn.Module):
     """Mix loss for 3D human mesh. It is composed of loss on 2D joints, 3D
     joints, mesh vertices and smpl parameters (if any).
@@ -247,7 +247,7 @@ class MeshLoss(nn.Module):
         return losses
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class GANLoss(nn.Module):
     """Define GAN loss.
 

@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .resnet import Bottleneck as _Bottleneck
 from .resnet import ResLayer, ResNet
 
@@ -86,7 +86,7 @@ class Bottleneck(_Bottleneck):
         self.add_module(self.norm3_name, norm3)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNeXt(ResNet):
     """ResNeXt backbone.
 

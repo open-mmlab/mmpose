@@ -4,10 +4,10 @@ import torch.nn.functional as F
 from mmcv.cnn import ConvModule, xavier_init
 from mmcv.runner import auto_fp16
 
-from ..builder import NECKS
+from mmpose.registry import MODELS
 
 
-@NECKS.register_module()
+@MODELS.register_module()
 class FPN(nn.Module):
     r"""Feature Pyramid Network.
 

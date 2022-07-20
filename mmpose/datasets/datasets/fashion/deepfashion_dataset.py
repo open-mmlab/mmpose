@@ -1,26 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os.path as osp
-import tempfile
-import warnings
-from collections import OrderedDict
+from typing import Callable, List, Optional, Sequence, Union
 
-import numpy as np
-from mmcv import Config, deprecated_api_warning
-
-from mmpose.datasets.builder import DATASETS
-from ..base import Kpt2dSviewRgbImgTopDownDataset
+from mmpose.registry import DATASETS
+from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
+class DeepFashionDataset(BaseCocoDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
     "DeepFashion: Powering Robust Clothes Recognition
     and Retrieval with Rich Annotations", CVPR'2016.
     "Fashion Landmark Detection in the Wild", ECCV'2016.
-
-    The dataset loads raw features and apply specified transforms
-    to return a dict containing the image tensors and other information.
 
     The dataset contains 3 categories for full-body, upper-body and lower-body.
 
@@ -52,169 +43,95 @@ class DeepFashionDataset(Kpt2dSviewRgbImgTopDownDataset):
         7: 'right hem'
 
     Args:
-        ann_file (str): Path to the annotation file.
-        img_prefix (str): Path to a directory where images are held.
-            Default: None.
-        data_cfg (dict): config
-        pipeline (list[dict | callable]): A sequence of data transforms.
-        dataset_info (DatasetInfo): A class containing all dataset info.
-        test_mode (bool): Store True when building test or
-            validation dataset. Default: False.
+        ann_file (str): Annotation file path. Default: ''.
+        subset (str): Specifies the subset of body: ``'full'``, ``'upper'`` or
+            ``'lower'``. Default: '', which means ``'full'``.
+        bbox_file (str, optional): Detection result file path. If
+            ``bbox_file`` is set, detected bboxes loaded from this file will
+            be used instead of ground-truth bboxes. This setting is only for
+            evaluation, i.e., ignored when ``test_mode`` is ``False``.
+            Default: ``None``.
+        data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
+            ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
+            one instance; while in ``'bottomup'`` mode, each data sample
+            contains all instances in a image. Default: ``'topdown'``
+        metainfo (dict, optional): Meta information for dataset, such as class
+            information. Default: ``None``.
+        data_root (str, optional): The root directory for ``data_prefix`` and
+            ``ann_file``. Default: ``None``.
+        data_prefix (dict, optional): Prefix for training data. Default:
+            ``dict(img=None, ann=None)``.
+        filter_cfg (dict, optional): Config for filter data. Default: `None`.
+        indices (int or Sequence[int], optional): Support using first few
+            data in annotation file to facilitate training/testing on a smaller
+            dataset. Default: ``None`` which means using all ``data_infos``.
+        serialize_data (bool, optional): Whether to hold memory using
+            serialized objects, when enabled, data loader workers can use
+            shared RAM from master process instead of making a copy.
+            Default: ``True``.
+        pipeline (list, optional): Processing pipeline. Default: [].
+        test_mode (bool, optional): ``test_mode=True`` means in test phase.
+            Default: ``False``.
+        lazy_init (bool, optional): Whether to load annotation during
+            instantiation. In some cases, such as visualization, only the meta
+            information of the dataset is needed, which is not necessary to
+            load annotation file. ``Basedataset`` can skip load annotations to
+            save time by set ``lazy_init=False``. Default: ``False``.
+        max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
+            None img. The maximum extra number of cycles to get a valid
+            image. Default: 1000.
     """
 
     def __init__(self,
-                 ann_file,
-                 img_prefix,
-                 data_cfg,
-                 pipeline,
-                 subset='',
-                 dataset_info=None,
-                 test_mode=False):
-
-        if dataset_info is None:
-            warnings.warn(
-                'dataset_info is missing. '
-                'Check https://github.com/open-mmlab/mmpose/pull/663 '
-                'for details.', DeprecationWarning)
-            if subset != '':
-                warnings.warn(
-                    'subset is deprecated.'
-                    'Check https://github.com/open-mmlab/mmpose/pull/663 '
-                    'for details.', DeprecationWarning)
-            if subset == 'upper':
-                cfg = Config.fromfile(
-                    'configs/_base_/datasets/deepfashion_upper.py')
-                dataset_info = cfg._cfg_dict['dataset_info']
-            elif subset == 'lower':
-                cfg = Config.fromfile(
-                    'configs/_base_/datasets/deepfashion_lower.py')
-                dataset_info = cfg._cfg_dict['dataset_info']
-            elif subset == 'full':
-                cfg = Config.fromfile(
-                    'configs/_base_/datasets/deepfashion_full.py')
-                dataset_info = cfg._cfg_dict['dataset_info']
+                 ann_file: str = '',
+                 subset: str = '',
+                 bbox_file: Optional[str] = None,
+                 data_mode: str = 'topdown',
+                 metainfo: Optional[dict] = None,
+                 data_root: Optional[str] = None,
+                 data_prefix: dict = dict(img_path=''),
+                 filter_cfg: Optional[dict] = None,
+                 indices: Optional[Union[int, Sequence[int]]] = None,
+                 serialize_data: bool = True,
+                 pipeline: List[Union[dict, Callable]] = [],
+                 test_mode: bool = False,
+                 lazy_init: bool = False,
+                 max_refetch: int = 1000):
+        self._check_subset_and_metainfo(subset)
 
         super().__init__(
-            ann_file,
-            img_prefix,
-            data_cfg,
-            pipeline,
-            dataset_info=dataset_info,
-            test_mode=test_mode)
+            ann_file=ann_file,
+            bbox_file=bbox_file,
+            data_mode=data_mode,
+            metainfo=metainfo,
+            data_root=data_root,
+            data_prefix=data_prefix,
+            filter_cfg=filter_cfg,
+            indices=indices,
+            serialize_data=serialize_data,
+            pipeline=pipeline,
+            test_mode=test_mode,
+            lazy_init=lazy_init,
+            max_refetch=max_refetch)
 
-        self.ann_info['use_different_joint_weights'] = False
-
-        self.db = self._get_db()
-
-        print(f'=> num_images: {self.num_images}')
-        print(f'=> load {len(self.db)} samples')
-
-    def _get_db(self):
-        """Load dataset."""
-        gt_db = []
-        bbox_id = 0
-        num_joints = self.ann_info['num_joints']
-        for img_id in self.img_ids:
-
-            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
-            objs = self.coco.loadAnns(ann_ids)
-
-            for obj in objs:
-                if max(obj['keypoints']) == 0:
-                    continue
-                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
-
-                keypoints = np.array(obj['keypoints']).reshape(-1, 3)
-                joints_3d[:, :2] = keypoints[:, :2]
-                joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
-
-                image_file = osp.join(self.img_prefix, self.id2name[img_id])
-                gt_db.append({
-                    'image_file': image_file,
-                    'rotation': 0,
-                    'joints_3d': joints_3d,
-                    'joints_3d_visible': joints_3d_visible,
-                    'dataset': self.dataset_name,
-                    'bbox': obj['bbox'],
-                    'bbox_score': 1,
-                    'bbox_id': bbox_id
-                })
-                bbox_id = bbox_id + 1
-        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
-
-        return gt_db
-
-    @deprecated_api_warning(name_dict=dict(outputs='results'))
-    def evaluate(self, results, res_folder=None, metric='PCK', **kwargs):
-        """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in ``${res_folder}/result_keypoints.json``.
-
-        Note:
-            - batch_size: N
-            - num_keypoints: K
-            - heatmap height: H
-            - heatmap width: W
+    @classmethod
+    def _check_subset_and_metainfo(cls, subset: str = '') -> None:
+        """Check the subset of body and set the corresponding metainfo.
 
         Args:
-            results (list[dict]): Testing results containing the following
-                items:
-
-                - preds (np.ndarray[N,K,3]): The first two dimensions are \
-                    coordinates, score is the third dimension of the array.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
-                    scale[1],area, score]
-                - image_paths (list[str]): For example, ['img_00000001.jpg']
-                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-            res_folder (str, optional): The folder to save the testing
-                results. If not specified, a temp folder will be created.
-                Default: None.
-            metric (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'AUC', 'EPE'.
-
-        Returns:
-            dict: Evaluation results for evaluation metric.
+            subset(str): the subset of body: could be ``'full'``, ``'upper'``
+            or ``'lower'``. Default: '', which means ``'full'``.
         """
-        metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['PCK', 'AUC', 'EPE']
-        for metric in metrics:
-            if metric not in allowed_metrics:
-                raise KeyError(f'metric {metric} is not supported')
-
-        if res_folder is not None:
-            tmp_folder = None
-            res_file = osp.join(res_folder, 'result_keypoints.json')
+        if subset == '' or subset == 'full':
+            cls.METAINFO = dict(
+                from_file='configs/_base_/datasets/deepfashion_full.py')
+        elif subset == 'upper':
+            cls.METAINFO = dict(
+                from_file='configs/_base_/datasets/deepfashion_upper.py')
+        elif subset == 'lower':
+            cls.METAINFO = dict(
+                from_file='configs/_base_/datasets/deepfashion_lower.py')
         else:
-            tmp_folder = tempfile.TemporaryDirectory()
-            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
-
-        kpts = []
-        for result in results:
-            preds = result['preds']
-            boxes = result['boxes']
-            image_paths = result['image_paths']
-            bbox_ids = result['bbox_ids']
-
-            batch_size = len(image_paths)
-            for i in range(batch_size):
-                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
-
-                kpts.append({
-                    'keypoints': preds[i].tolist(),
-                    'center': boxes[i][0:2].tolist(),
-                    'scale': boxes[i][2:4].tolist(),
-                    'area': float(boxes[i][4]),
-                    'score': float(boxes[i][5]),
-                    'image_id': image_id,
-                    'bbox_id': bbox_ids[i]
-                })
-        kpts = self._sort_and_unique_bboxes(kpts)
-
-        self._write_keypoint_results(kpts, res_file)
-        info_str = self._report_metric(res_file, metrics)
-        name_value = OrderedDict(info_str)
-
-        if tmp_folder is not None:
-            tmp_folder.cleanup()
-
-        return name_value
+            raise ValueError(
+                f'{cls.__class__.__name__} got invalid subset: '
+                f'{subset}. Should be "full", "lower" or "upper".')

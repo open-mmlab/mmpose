@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import ConvModule
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
@@ -208,7 +208,7 @@ class EncoderDecorder(nn.Module):
         return x
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class V2VNet(BaseBackbone):
     """V2VNet.
 

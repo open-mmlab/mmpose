@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from .classfication_loss import BCELoss
+from .classification_loss import BCELoss
 from .heatmap_loss import AdaptiveWingLoss
 from .mesh_loss import GANLoss, MeshLoss
 from .mse_loss import JointsMSELoss, JointsOHKMMSELoss
