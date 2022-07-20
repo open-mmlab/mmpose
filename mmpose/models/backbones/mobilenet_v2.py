@@ -7,7 +7,7 @@ import torch.utils.checkpoint as cp
 from mmcv.cnn import ConvModule, constant_init, kaiming_init
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 from .utils import load_checkpoint, make_divisible
 
@@ -97,7 +97,7 @@ class InvertedResidual(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class MobileNetV2(BaseBackbone):
     """MobileNetV2 backbone.
 

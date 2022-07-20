@@ -6,7 +6,7 @@ from mmcv.cnn import ConvModule, build_conv_layer, constant_init, kaiming_init
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from mmpose.core import WeightNormClipHook
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
@@ -129,7 +129,7 @@ class BasicTemporalBlock(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class TCN(BaseBackbone):
     """TCN backbone.
 

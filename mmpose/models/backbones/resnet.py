@@ -7,7 +7,7 @@ from mmcv.cnn import (ConvModule, build_conv_layer, build_norm_layer,
                       constant_init, kaiming_init)
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
@@ -420,7 +420,7 @@ class ResLayer(nn.Sequential):
         super().__init__(*layers)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNet(BaseBackbone):
     """ResNet backbone.
 
@@ -687,7 +687,7 @@ class ResNet(BaseBackbone):
                     m.eval()
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ResNetV1d(ResNet):
     r"""ResNetV1d variant described in `Bag of Tricks
     <https://arxiv.org/pdf/1812.01187.pdf>`__.

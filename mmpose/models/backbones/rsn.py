@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from mmcv.cnn import (ConvModule, MaxPool2d, constant_init, kaiming_init,
                       normal_init)
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
@@ -508,7 +508,7 @@ class ResNet_top(nn.Module):
         return self.top(img)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class RSN(BaseBackbone):
     """Residual Steps Network backbone. Paper ref: Cai et al. "Learning
     Delicate Local Representations for Multi-Person Pose Estimation" (ECCV

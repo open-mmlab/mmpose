@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 import numpy as np
 
-from mmpose.core.post_processing import transform_preds
+from .transforms import keypoints_bbox2img
 
 
 def keypoints_from_regression(regression_preds: np.ndarray, center: np.ndarray,
@@ -36,6 +36,6 @@ def keypoints_from_regression(regression_preds: np.ndarray, center: np.ndarray,
 
     # Transform back to the image
     for i in range(N):
-        preds[i] = transform_preds(preds[i], center[i], scale[i], img_size)
+        preds[i] = keypoints_bbox2img(preds[i], center[i], scale[i], img_size)
 
     return preds, maxvals

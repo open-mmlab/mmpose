@@ -13,8 +13,8 @@ from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule,
                       normal_init)
 from torch.nn.modules.batchnorm import _BatchNorm
 
+from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
-from ..builder import BACKBONES
 from .utils import channel_shuffle, load_checkpoint
 
 
@@ -734,7 +734,7 @@ class LiteHRModule(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class LiteHRNet(nn.Module):
     """Lite-HRNet backbone.
 

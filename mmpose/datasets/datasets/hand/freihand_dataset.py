@@ -1,29 +1,23 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
-import tempfile
-import warnings
-from collections import OrderedDict
+from typing import Optional
 
 import numpy as np
-from mmcv import Config, deprecated_api_warning
 
-from mmpose.datasets.builder import DATASETS
-from ..base import Kpt2dSviewRgbImgTopDownDataset
+from mmpose.registry import DATASETS
+from ..base import BaseCocoDataset
 
 
 @DATASETS.register_module()
-class FreiHandDataset(Kpt2dSviewRgbImgTopDownDataset):
-    """FreiHand dataset for top-down hand pose estimation.
+class FreiHandDataset(BaseCocoDataset):
+    """FreiHand dataset for hand pose estimation.
 
     "FreiHAND: A Dataset for Markerless Capture of Hand Pose
     and Shape from Single RGB Images", ICCV'2019.
     More details can be found in the `paper
     <https://arxiv.org/pdf/1909.04349.pdf>`__ .
 
-    The dataset loads raw features and apply specified transforms
-    to return a dict containing the image tensors and other information.
-
-    FreiHand keypoint indexes::
+    FreiHand keypoints::
 
         0: 'wrist',
         1: 'thumb1',
@@ -48,156 +42,89 @@ class FreiHandDataset(Kpt2dSviewRgbImgTopDownDataset):
         20: 'pinky_finger4'
 
     Args:
-        ann_file (str): Path to the annotation file.
-        img_prefix (str): Path to a directory where images are held.
-            Default: None.
-        data_cfg (dict): config
-        pipeline (list[dict | callable]): A sequence of data transforms.
-        dataset_info (DatasetInfo): A class containing all dataset info.
-        test_mode (bool): Store True when building test or
-            validation dataset. Default: False.
+        ann_file (str): Annotation file path. Default: ''.
+        bbox_file (str, optional): Detection result file path. If
+            ``bbox_file`` is set, detected bboxes loaded from this file will
+            be used instead of ground-truth bboxes. This setting is only for
+            evaluation, i.e., ignored when ``test_mode`` is ``False``.
+            Default: ``None``.
+        data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
+            ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
+            one instance; while in ``'bottomup'`` mode, each data sample
+            contains all instances in a image. Default: ``'topdown'``
+        metainfo (dict, optional): Meta information for dataset, such as class
+            information. Default: ``None``.
+        data_root (str, optional): The root directory for ``data_prefix`` and
+            ``ann_file``. Default: ``None``.
+        data_prefix (dict, optional): Prefix for training data. Default:
+            ``dict(img=None, ann=None)``.
+        filter_cfg (dict, optional): Config for filter data. Default: `None`.
+        indices (int or Sequence[int], optional): Support using first few
+            data in annotation file to facilitate training/testing on a smaller
+            dataset. Default: ``None`` which means using all ``data_infos``.
+        serialize_data (bool, optional): Whether to hold memory using
+            serialized objects, when enabled, data loader workers can use
+            shared RAM from master process instead of making a copy.
+            Default: ``True``.
+        pipeline (list, optional): Processing pipeline. Default: [].
+        test_mode (bool, optional): ``test_mode=True`` means in test phase.
+            Default: ``False``.
+        lazy_init (bool, optional): Whether to load annotation during
+            instantiation. In some cases, such as visualization, only the meta
+            information of the dataset is needed, which is not necessary to
+            load annotation file. ``Basedataset`` can skip load annotations to
+            save time by set ``lazy_init=False``. Default: ``False``.
+        max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
+            None img. The maximum extra number of cycles to get a valid
+            image. Default: 1000.
     """
 
-    def __init__(self,
-                 ann_file,
-                 img_prefix,
-                 data_cfg,
-                 pipeline,
-                 dataset_info=None,
-                 test_mode=False):
+    METAINFO: dict = dict(from_file='configs/_base_/datasets/freihand2d.py')
 
-        if dataset_info is None:
-            warnings.warn(
-                'dataset_info is missing. '
-                'Check https://github.com/open-mmlab/mmpose/pull/663 '
-                'for details.', DeprecationWarning)
-            cfg = Config.fromfile('configs/_base_/datasets/freihand2d.py')
-            dataset_info = cfg._cfg_dict['dataset_info']
-
-        super().__init__(
-            ann_file,
-            img_prefix,
-            data_cfg,
-            pipeline,
-            dataset_info=dataset_info,
-            test_mode=test_mode)
-
-        self.ann_info['use_different_joint_weights'] = False
-        self.db = self._get_db()
-
-        print(f'=> num_images: {self.num_images}')
-        print(f'=> load {len(self.db)} samples')
-
-    def _get_db(self):
-        """Load dataset."""
-        gt_db = []
-        bbox_id = 0
-        num_joints = self.ann_info['num_joints']
-        for img_id in self.img_ids:
-
-            ann_ids = self.coco.getAnnIds(imgIds=img_id, iscrowd=False)
-            objs = self.coco.loadAnns(ann_ids)
-
-            for obj in objs:
-                if max(obj['keypoints']) == 0:
-                    continue
-                joints_3d = np.zeros((num_joints, 3), dtype=np.float32)
-                joints_3d_visible = np.zeros((num_joints, 3), dtype=np.float32)
-
-                keypoints = np.array(obj['keypoints']).reshape(-1, 3)
-                joints_3d[:, :2] = keypoints[:, :2]
-                joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
-
-                # use the entire image which is 224x224
-                bbox = np.array([0, 0, 224, 224], dtype=np.float32)
-
-                image_file = osp.join(self.img_prefix, self.id2name[img_id])
-                gt_db.append({
-                    'image_file': image_file,
-                    'rotation': 0,
-                    'joints_3d': joints_3d,
-                    'joints_3d_visible': joints_3d_visible,
-                    'dataset': self.dataset_name,
-                    'bbox': bbox,
-                    'bbox_score': 1,
-                    'bbox_id': bbox_id
-                })
-                bbox_id = bbox_id + 1
-        gt_db = sorted(gt_db, key=lambda x: x['bbox_id'])
-
-        return gt_db
-
-    @deprecated_api_warning(name_dict=dict(outputs='results'))
-    def evaluate(self, results, res_folder=None, metric='PCK', **kwargs):
-        """Evaluate freihand keypoint results. The pose prediction results will
-        be saved in ``${res_folder}/result_keypoints.json``.
-
-        Note:
-            - batch_size: N
-            - num_keypoints: K
-            - heatmap height: H
-            - heatmap width: W
+    def parse_data_info(self, raw_data_info: dict) -> Optional[dict]:
+        """Parse raw COCO annotation of an instance.
 
         Args:
-            results (list[dict]): Testing results containing the following
-                items:
+            raw_data_info (dict): Raw data information loaded from
+                ``ann_file``. It should have following contents:
 
-                - preds (np.ndarray[N,K,3]): The first two dimensions are \
-                    coordinates, score is the third dimension of the array.
-                - boxes (np.ndarray[N,6]): [center[0], center[1], scale[0], \
-                    scale[1],area, score]
-                - image_paths (list[str]): For example, ['training/rgb/\
-                    00031426.jpg']
-                - output_heatmap (np.ndarray[N, K, H, W]): model outputs.
-            res_folder (str, optional): The folder to save the testing
-                results. If not specified, a temp folder will be created.
-                Default: None.
-            metric (str | list[str]): Metric to be performed.
-                Options: 'PCK', 'AUC', 'EPE'.
+                - ``'raw_ann_info'``: Raw annotation of an instance
+                - ``'raw_img_info'``: Raw information of the image that
+                    contains the instance
 
         Returns:
-            dict: Evaluation results for evaluation metric.
+            dict: Parsed instance annotation
         """
-        metrics = metric if isinstance(metric, list) else [metric]
-        allowed_metrics = ['PCK', 'AUC', 'EPE']
-        for metric in metrics:
-            if metric not in allowed_metrics:
-                raise KeyError(f'metric {metric} is not supported')
 
-        if res_folder is not None:
-            tmp_folder = None
-            res_file = osp.join(res_folder, 'result_keypoints.json')
-        else:
-            tmp_folder = tempfile.TemporaryDirectory()
-            res_file = osp.join(tmp_folder.name, 'result_keypoints.json')
+        ann = raw_data_info['raw_ann_info']
+        img = raw_data_info['raw_img_info']
 
-        kpts = []
-        for result in results:
-            preds = result['preds']
-            boxes = result['boxes']
-            image_paths = result['image_paths']
-            bbox_ids = result['bbox_ids']
+        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_w, img_h = img['width'], img['height']
 
-            batch_size = len(image_paths)
-            for i in range(batch_size):
-                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+        # use the entire image which is 224x224
+        bbox = np.array([0, 0, 224, 224], dtype=np.float32).reshape(1, 4)
 
-                kpts.append({
-                    'keypoints': preds[i].tolist(),
-                    'center': boxes[i][0:2].tolist(),
-                    'scale': boxes[i][2:4].tolist(),
-                    'area': float(boxes[i][4]),
-                    'score': float(boxes[i][5]),
-                    'image_id': image_id,
-                    'bbox_id': bbox_ids[i]
-                })
-        kpts = self._sort_and_unique_bboxes(kpts)
+        # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
+        _keypoints = np.array(
+            ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
+        keypoints = _keypoints[..., :2]
+        keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
-        self._write_keypoint_results(kpts, res_file)
-        info_str = self._report_metric(res_file, metrics)
-        name_value = OrderedDict(info_str)
+        num_keypoints = np.count_nonzero(keypoints.max(axis=2))
 
-        if tmp_folder is not None:
-            tmp_folder.cleanup()
+        data_info = {
+            'img_id': ann['image_id'],
+            'img_path': img_path,
+            'img_shape': (img_h, img_w, 3),
+            'bbox': bbox,
+            'bbox_score': np.ones(1, dtype=np.float32),
+            'num_keypoints': num_keypoints,
+            'keypoints': keypoints,
+            'keypoints_visible': keypoints_visible,
+            'iscrowd': ann['iscrowd'],
+            'segmentation': ann['segmentation'],
+            'id': ann['id'],
+        }
 
-        return name_value
+        return data_info

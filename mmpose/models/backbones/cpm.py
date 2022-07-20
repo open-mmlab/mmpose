@@ -6,8 +6,8 @@ import torch.nn as nn
 from mmcv.cnn import ConvModule, constant_init, normal_init
 from torch.nn.modules.batchnorm import _BatchNorm
 
+from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
-from ..builder import BACKBONES
 from .base_backbone import BaseBackbone
 from .utils import load_checkpoint
 
@@ -50,7 +50,7 @@ class CpmBlock(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class CPM(BaseBackbone):
     """CPM backbone.
 

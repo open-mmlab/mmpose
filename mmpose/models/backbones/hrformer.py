@@ -11,7 +11,7 @@ from mmcv.cnn.bricks.transformer import build_dropout
 from mmcv.runner import BaseModule
 from torch.nn.functional import pad
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .hrnet import Bottleneck, HRModule, HRNet
 
 
@@ -576,7 +576,7 @@ class HRFomerModule(HRModule):
         return self.in_channels
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class HRFormer(HRNet):
     """HRFormer backbone.
 
