@@ -1,13 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import warnings
+from mmcv.cnn import MODELS as MMCV_MODELS
+from mmcv.cnn import build_model_from_cfg
+from mmcv.utils import Registry
 
-from mmpose.registry import MODELS
+MODELS = Registry(
+    'models', build_func=build_model_from_cfg, parent=MMCV_MODELS)
 
 BACKBONES = MODELS
 NECKS = MODELS
 HEADS = MODELS
 LOSSES = MODELS
-POSE_ESTIMATORS = MODELS
+POSENETS = MODELS
+MESH_MODELS = MODELS
 
 
 def build_backbone(cfg):
@@ -30,14 +34,11 @@ def build_loss(cfg):
     return LOSSES.build(cfg)
 
 
-def build_pose_estimator(cfg):
-    """Build pose estimator."""
-    return POSE_ESTIMATORS.build(cfg)
-
-
 def build_posenet(cfg):
     """Build posenet."""
-    warnings.warn(
-        '``build_posenet`` will be deprecated soon, '
-        'please use ``build_pose_estimator`` instead.', DeprecationWarning)
-    return build_pose_estimator(cfg)
+    return POSENETS.build(cfg)
+
+
+def build_mesh_model(cfg):
+    """Build mesh model."""
+    return MESH_MODELS.build(cfg)

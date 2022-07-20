@@ -8,8 +8,8 @@ from mmcv.utils import digit_version
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.models.utils.ops import resize
+from mmpose.registry import MODELS
 from ..backbones.resnet import BasicBlock, Bottleneck
-from ..builder import NECKS
 
 try:
     from mmcv.ops import DeformConv2d
@@ -18,7 +18,7 @@ except (ImportError, ModuleNotFoundError):
     has_mmcv_full = False
 
 
-@NECKS.register_module()
+@MODELS.register_module()
 class PoseWarperNeck(nn.Module):
     """PoseWarper neck.
 

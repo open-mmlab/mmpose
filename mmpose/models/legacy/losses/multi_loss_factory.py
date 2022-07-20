@@ -6,7 +6,7 @@
 import torch
 import torch.nn as nn
 
-from mmpose.registry import MODELS
+from ..builder import LOSSES
 
 
 def _make_input(t, requires_grad=False, device=torch.device('cpu')):
@@ -26,7 +26,7 @@ def _make_input(t, requires_grad=False, device=torch.device('cpu')):
     return inp
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class HeatmapLoss(nn.Module):
     """Accumulate the heatmap loss for each image in the batch.
 
@@ -66,7 +66,7 @@ class HeatmapLoss(nn.Module):
         return loss
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class AELoss(nn.Module):
     """Associative Embedding loss.
 
@@ -160,7 +160,7 @@ class AELoss(nn.Module):
         return torch.stack(pushes), torch.stack(pulls)
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class MultiLossFactory(nn.Module):
     """Loss for bottom-up models.
 

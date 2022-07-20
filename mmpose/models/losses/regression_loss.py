@@ -5,11 +5,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..builder import LOSSES
+from mmpose.registry import MODELS
 from ..utils.realnvp import RealNVP
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class RLELoss(nn.Module):
     """RLE Loss.
 
@@ -90,7 +90,7 @@ class RLELoss(nn.Module):
         return loss.sum()
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class SmoothL1Loss(nn.Module):
     """SmoothL1Loss loss.
 
@@ -130,7 +130,7 @@ class SmoothL1Loss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class WingLoss(nn.Module):
     """Wing Loss. paper ref: 'Wing Loss for Robust Facial Landmark Localisation
     with Convolutional Neural Networks' Feng et al. CVPR'2018.
@@ -200,7 +200,7 @@ class WingLoss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class SoftWingLoss(nn.Module):
     """Soft Wing Loss 'Structure-Coherent Deep Feature Learning for Robust Face
     Alignment' Lin et al. TIP'2021.
@@ -278,7 +278,7 @@ class SoftWingLoss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class MPJPELoss(nn.Module):
     """MPJPE (Mean Per Joint Position Error) loss.
 
@@ -318,7 +318,7 @@ class MPJPELoss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class L1Loss(nn.Module):
     """L1Loss loss ."""
 
@@ -351,7 +351,7 @@ class L1Loss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class MSELoss(nn.Module):
     """MSE loss for coordinate regression."""
 
@@ -384,7 +384,7 @@ class MSELoss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class BoneLoss(nn.Module):
     """Bone length loss.
 
@@ -438,7 +438,7 @@ class BoneLoss(nn.Module):
         return loss * self.loss_weight
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class SemiSupervisionLoss(nn.Module):
     """Semi-supervision loss for unlabeled data. It is composed of projection
     loss and bone loss.

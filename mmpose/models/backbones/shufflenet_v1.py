@@ -9,7 +9,7 @@ from mmcv.cnn import (ConvModule, build_activation_layer, constant_init,
                       normal_init)
 from torch.nn.modules.batchnorm import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 from .utils import channel_shuffle, load_checkpoint, make_divisible
 
@@ -153,7 +153,7 @@ class ShuffleUnit(nn.Module):
         return out
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ShuffleNetV1(BaseBackbone):
     """ShuffleNetV1 backbone.
 

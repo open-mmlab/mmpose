@@ -2,10 +2,10 @@
 import torch
 import torch.nn as nn
 
-from mmpose.registry import MODELS
+from ..builder import LOSSES
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class JointsMSELoss(nn.Module):
     """MSE loss for heatmaps.
 
@@ -44,7 +44,7 @@ class JointsMSELoss(nn.Module):
         return loss / num_joints * self.loss_weight
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class CombinedTargetMSELoss(nn.Module):
     """MSE loss for combined target.
         CombinedTarget: The combination of classification target
@@ -93,7 +93,7 @@ class CombinedTargetMSELoss(nn.Module):
         return loss / num_joints * self.loss_weight
 
 
-@MODELS.register_module()
+@LOSSES.register_module()
 class JointsOHKMMSELoss(nn.Module):
     """MSE loss with online hard keypoint mining.
 

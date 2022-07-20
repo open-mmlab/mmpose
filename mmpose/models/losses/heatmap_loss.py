@@ -2,10 +2,10 @@
 import torch
 import torch.nn as nn
 
-from ..builder import LOSSES
+from mmpose.registry import MODELS
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class AdaptiveWingLoss(nn.Module):
     """Adaptive wing loss. paper ref: 'Adaptive Wing Loss for Robust Face
     Alignment via Heatmap Regression' Wang et al. ICCV'2019.

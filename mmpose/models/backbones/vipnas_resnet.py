@@ -7,7 +7,7 @@ from mmcv.cnn import ConvModule, build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks import ContextBlock
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
-from ..builder import BACKBONES
+from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
@@ -339,7 +339,7 @@ class ViPNAS_ResLayer(nn.Sequential):
         super().__init__(*layers)
 
 
-@BACKBONES.register_module()
+@MODELS.register_module()
 class ViPNAS_ResNet(BaseBackbone):
     """ViPNAS_ResNet backbone.
 
