@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.fashion import DeepFashionDataset
+from mmpose.datasets.datasets.fashion import DeepFashionDataset
 
 
 class TestDeepFashionDataset(TestCase):

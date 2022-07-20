@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from mmengine.data import InstanceData
 
-from mmpose.datasets.datasets2.utils import parse_pose_metainfo
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.metrics import AUC, EPE, NME, PCKAccuracy
 
 

@@ -55,7 +55,7 @@ class TestMSRAHeatmap(TestCase):
             self.assertEqual(heatmaps.shape, (17, 64, 48),
                              f'Failed case: "{name}"')
             self.assertEqual(keypoint_weights.shape,
-                             (17, )), f'Failed case: "{name}"'
+                             (1, 17)), f'Failed case: "{name}"'
 
     def test_decode(self):
         heatmaps = self.data['heatmaps']

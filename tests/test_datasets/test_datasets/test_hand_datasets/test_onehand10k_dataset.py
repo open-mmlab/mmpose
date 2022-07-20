@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.hand import OneHand10KDataset
+from mmpose.datasets.datasets.hand import OneHand10KDataset
 
 
 class TestOneHand10KDataset(TestCase):

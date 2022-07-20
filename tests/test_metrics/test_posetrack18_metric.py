@@ -7,7 +7,7 @@ from unittest import TestCase
 import torch
 from mmengine.fileio import dump, load
 
-from mmpose.datasets.datasets2.utils import parse_pose_metainfo
+from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.metrics import PoseTrack18Metric
 
 

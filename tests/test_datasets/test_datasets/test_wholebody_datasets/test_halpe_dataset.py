@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.wholebody import HalpeDataset
+from mmpose.datasets.datasets.wholebody import HalpeDataset
 
 
 class TestHalpeDataset(TestCase):

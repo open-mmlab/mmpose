@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.hand import Rhd2DDataset
+from mmpose.datasets.datasets.hand import Rhd2DDataset
 
 
 class TestRhd2DDataset(TestCase):

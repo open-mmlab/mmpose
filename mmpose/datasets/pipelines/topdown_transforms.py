@@ -142,9 +142,8 @@ class TopdownAffine(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class TopdownGeneratHeatmap(BaseTransform):
-    """Encode keypoints into heatmaps, regression labels or other forms to
-    generate the model prediction targets.
+class TopdownGenerateHeatmap(BaseTransform):
+    """Encode keypoints into heatmaps.
 
     Required Keys:
 
@@ -188,11 +187,11 @@ class TopdownGeneratHeatmap(BaseTransform):
                 heatmaps.append(_heatmaps)
                 keypoint_weights.append(_keypoints_weights)
 
-            results['heatmap'] = np.stack(heatmaps)
+            results['heatmaps'] = np.stack(heatmaps)
             results['keypoint_weights'] = np.stack(keypoint_weights)
         else:
             # single-level heatmaps
-            heatmaps, keypoint_weights = encoder.encode(
+            heatmaps, keypoint_weights = self.encoder.encode(
                 keypoints=results['keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 

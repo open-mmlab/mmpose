@@ -7,10 +7,10 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import LoadImageFromFile
 
-from mmpose.datasets.pipelines2 import (Albumentation, GetBboxCenterScale,
-                                        PhotometricDistortion,
-                                        RandomBboxTransform, RandomFlip,
-                                        RandomHalfBody)
+from mmpose.datasets.pipelines import (Albumentation, GetBboxCenterScale,
+                                       PhotometricDistortion,
+                                       RandomBboxTransform, RandomFlip,
+                                       RandomHalfBody)
 
 
 class TestGetBboxCenterScale(TestCase):

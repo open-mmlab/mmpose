@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from itertools import product
 from typing import Optional, Tuple
 
 import numpy as np
@@ -80,7 +81,7 @@ class MSRAHeatmap(BaseKeypointCodec):
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
             - keypoint_weights (np.ndarray): The target weights in shape
-                (K,)
+                (N, K)
         """
 
         N, K, _ = keypoints.shape
@@ -91,7 +92,7 @@ class MSRAHeatmap(BaseKeypointCodec):
             'keypoint encoding')
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
-        keypoint_weights = np.ones(K, dtype=np.float32)
+        keypoint_weights = keypoints_visible.copy()
 
         # 3-sigma rule
         sigma = self.sigma
@@ -102,20 +103,19 @@ class MSRAHeatmap(BaseKeypointCodec):
             x = np.arange(0, W, 1, dtype=np.float32)
             y = np.arange(0, H, 1, dtype=np.float32)[:, None]
 
-            for k in range(K):
+            for n, k in product(range(N), range(K)):
                 # skip unlabled keypoints
-                if keypoints_visible[0, k] < 0.5:
-                    keypoint_weights[k] = 0
+                if keypoints_visible[n, k] < 0.5:
                     continue
 
-                mu = keypoints[0, k] / self.scale_factor
+                mu = keypoints[n, k] / self.scale_factor
 
                 # check that the gaussian has in-bounds part
                 left, top = mu - radius
                 right, bottom = mu + radius + 1
 
                 if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[k] = 0
+                    keypoint_weights[n, k] = 0
                     continue
 
                 heatmaps[k] = np.exp(-((x - mu[0])**2 + (y - mu[1])**2) /
@@ -127,21 +127,20 @@ class MSRAHeatmap(BaseKeypointCodec):
             y = x[:, None]
             x0 = y0 = gaussian_size // 2
 
-            for k in range(K):
+            for n, k in product(range(N), range(K)):
                 # skip unlabled keypoints
-                if keypoints_visible[0, k] < 0.5:
-                    keypoint_weights[k] = 0
+                if keypoints_visible[n, k] < 0.5:
                     continue
 
                 # get gaussian center coordinates
-                mu = (keypoints[0, k] / self.scale_factor + 0.5)
+                mu = (keypoints[n, k] / self.scale_factor + 0.5)
 
                 # check that the gaussian has in-bounds part
                 left, top = (mu - radius).astype(np.int64)
                 right, bottom = (mu + radius + 1).astype(np.int64)
 
                 if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[k] = 0
+                    keypoint_weights[n, k] = 0
                     continue
 
                 # The gaussian is not normalized,

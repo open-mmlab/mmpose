@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from itertools import product
 from typing import Optional, Tuple
 
 import cv2
@@ -170,7 +171,7 @@ class UDPHeatmap(BaseKeypointCodec):
             'keypoint encoding')
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
-        keypoint_weights = np.ones(K, dtype=np.float32)
+        keypoint_weights = keypoints_visible.copy()
 
         # 3-sigma rule
         radius = self.sigma * 3
@@ -180,13 +181,12 @@ class UDPHeatmap(BaseKeypointCodec):
         x = np.arange(0, gaussian_size, 1, dtype=np.float32)
         y = x[:, None]
 
-        for k in range(K):
+        for n, k in product(range(N), range(K)):
             # skip unlabled keypoints
-            if keypoints_visible[0, k] < 0.5:
-                keypoint_weights[k] = 0
+            if keypoints_visible[n, k] < 0.5:
                 continue
 
-            mu = (keypoints[0, k] / self.scale_factor + 0.5).astype(np.int64)
+            mu = (keypoints[n, k] / self.scale_factor + 0.5).astype(np.int64)
             # check that the gaussian has in-bounds part
             left, top = (mu - radius).astype(np.int64)
             right, bottom = (mu + radius + 1).astype(np.int64)
@@ -195,7 +195,7 @@ class UDPHeatmap(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-            mu_ac = keypoints[0, k] / self.scale_factor
+            mu_ac = keypoints[n, k] / self.scale_factor
             x0 = y0 = gaussian_size // 2
             x0 += mu_ac[0] - mu[0]
             y0 += mu_ac[1] - mu[1]
@@ -233,7 +233,7 @@ class UDPHeatmap(BaseKeypointCodec):
             'keypoint encoding')
 
         heatmaps = np.zeros((K, 3, H, W), dtype=np.float32)
-        keypoint_weights = np.ones(K, dtype=np.float32)
+        keypoint_weights = keypoints_visible.copy()
 
         # xy grid
         x = np.arange(0, W, 1)
@@ -242,12 +242,11 @@ class UDPHeatmap(BaseKeypointCodec):
         # positive area radius in the classification map
         radius = self.radius_factor * max(W, H)
 
-        for k in range(K):
-            if keypoints_visible[0, k] < 0.5:
-                keypoint_weights[k] = 0
+        for n, k in product(range(N), range(K)):
+            if keypoints_visible[n, k] < 0.5:
                 continue
 
-            mu = keypoints[0, k] / self.scale_factor
+            mu = keypoints[n, k] / self.scale_factor
 
             x_offset = (mu[0] - x) / radius
             y_offset = (mu[1] - y) / radius

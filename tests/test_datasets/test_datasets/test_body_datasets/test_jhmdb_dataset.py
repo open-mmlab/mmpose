@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import JhmdbDataset
+from mmpose.datasets.datasets.body import JhmdbDataset
 
 
 class TestJhmdbDataset(TestCase):

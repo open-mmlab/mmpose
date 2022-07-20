@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import PoseTrack18VideoDataset
+from mmpose.datasets.datasets.body import PoseTrack18VideoDataset
 
 
 class TestPoseTrack18VideoDataset(TestCase):

@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import AicDataset
+from mmpose.datasets.datasets.body import AicDataset
 
 
 class TestAicDataset(TestCase):

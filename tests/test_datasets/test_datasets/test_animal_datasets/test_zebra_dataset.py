@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.animal import ZebraDataset
+from mmpose.datasets.datasets.animal import ZebraDataset
 
 
 class TestZebraDataset(TestCase):

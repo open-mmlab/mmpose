@@ -14,7 +14,7 @@ class TestSetupEnv(TestCase):
         from mmpose.registry import DATASETS
 
         dataset_name = 'CocoDataset'
-        dataset_module = 'mmpose.datasets.datasets2.body.coco_dataset'
+        dataset_module = 'mmpose.datasets.datasets.body.coco_dataset'
 
         # not init default scope
         module = dataset_module

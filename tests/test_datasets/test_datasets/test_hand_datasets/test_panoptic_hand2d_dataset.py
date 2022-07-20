@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.hand import PanopticHand2DDataset
+from mmpose.datasets.datasets.hand import PanopticHand2DDataset
 
 
 class TestPanopticHand2DDataset(TestCase):

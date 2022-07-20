@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.animal import ATRWDataset
+from mmpose.datasets.datasets.animal import ATRWDataset
 
 
 class TestATRWDataset(TestCase):

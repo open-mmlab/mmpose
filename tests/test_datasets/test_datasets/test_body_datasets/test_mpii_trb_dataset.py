@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.body import MpiiTrbDataset
+from mmpose.datasets.datasets.body import MpiiTrbDataset
 
 
 class TestMpiiTrbDataset(TestCase):

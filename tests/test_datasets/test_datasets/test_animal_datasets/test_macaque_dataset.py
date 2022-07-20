@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.animal import MacaqueDataset
+from mmpose.datasets.datasets.animal import MacaqueDataset
 
 
 class TestMacaqueDataset(TestCase):

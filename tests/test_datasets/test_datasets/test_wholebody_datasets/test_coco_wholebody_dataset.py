@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.wholebody import CocoWholeBodyDataset
+from mmpose.datasets.datasets.wholebody import CocoWholeBodyDataset
 
 
 class TestCocoWholeBodyDataset(TestCase):

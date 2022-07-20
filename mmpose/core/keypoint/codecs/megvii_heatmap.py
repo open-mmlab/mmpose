@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from itertools import product
 from typing import Optional, Tuple
 
 import cv2
@@ -64,7 +65,7 @@ class MegviiHeatmap(BaseKeypointCodec):
             - heatmaps (np.ndarray): The generated heatmap in shape
                 (K, H, W) where [W, H] is the `heatmap_size`
             - keypoint_weights (np.ndarray): The target weights in shape
-                (K,)
+                (N, K)
         """
 
         N, K, _ = keypoints.shape
@@ -75,18 +76,17 @@ class MegviiHeatmap(BaseKeypointCodec):
             'keypoint encoding')
 
         heatmaps = np.zeros((K, H, W), dtype=np.float32)
-        keypoint_weights = np.ones(K, dtype=np.float32)
+        keypoint_weights = keypoints_visible.copy()
 
-        for k in range(K):
+        for n, k in product(range(N), range(K)):
             # skip unlabled keypoints
-            if keypoints_visible[0, k] < 0.5:
-                keypoint_weights[k] = 0
+            if keypoints_visible[n, k] < 0.5:
                 continue
 
             # get center coordinates
-            kx, ky = (keypoints[0, k] / self.scale_factor).astype(np.int64)
+            kx, ky = (keypoints[n, k] / self.scale_factor).astype(np.int64)
             if kx < 0 or kx >= W or ky < 0 or ky >= H:
-                keypoint_weights[k] = 0
+                keypoint_weights[n, k] = 0
                 continue
 
             heatmaps[k, ky, kx] = 1.

@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.datasets.datasets2.face import COFWDataset
+from mmpose.datasets.datasets.face import COFWDataset
 
 
 class TestCOFWDataset(TestCase):
