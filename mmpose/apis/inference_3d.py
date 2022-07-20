@@ -723,7 +723,7 @@ def inference_mesh_model(model,
         raise NotImplementedError()
 
     batch_data = []
-    for bbox in bboxes:
+    for bbox in bboxes_xywh:
         image_size = cfg.data_cfg.image_size
         aspect_ratio = image_size[0] / image_size[1]  # w over h
         center, scale = bbox_xywh2cs(bbox, aspect_ratio, padding=1.25)
