@@ -3,10 +3,19 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
+
+<<<<<<< HEAD
 from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
+
+=======
+from torch import Tensor, nn
+
+from mmpose.core.utils.tensor_utils import _to_numpy
+
+>>>>>>> 996f61e6 (reorganize decode funtion into baes_head)
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
@@ -260,6 +269,7 @@ class HeatmapHead(BaseHead):
                 data_sample.pred_fields.heatmaps = heatmaps
 
         return preds
+
 
     def loss(self,
              feats: Tuple[Tensor],

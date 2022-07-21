@@ -4,10 +4,7 @@ from typing import List, Tuple, Union
 
 import torch
 import torch.nn.functional as F
-<<<<<<< HEAD
 from mmengine.data import InstanceData
-=======
->>>>>>> 926f3b16 (reorganize multi-scale feature transform functions into base_head)
 from mmengine.model import BaseModule
 from torch import Tensor
 
@@ -65,13 +62,8 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return in_channels
 
-<<<<<<< HEAD
-    def _transform_inputs(self, feats: Tuple[Tensor]
-                          ) -> Union[Tensor, Tuple[Tensor]]:
-=======
     def _transform_inputs(
             self, feats: Tuple[Tensor]) -> Union[Tensor, Tuple[Tensor]]:
->>>>>>> 926f3b16 (reorganize multi-scale feature transform functions into base_head)
         """Transform multi scale features into the network input."""
         if self.input_transform == 'resize_concat':
             inputs = [feats[i] for i in self.input_index]
@@ -93,7 +85,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                    f'Invalid input transform mode "{self.input_transform}"')
 
         return inputs
-<<<<<<< HEAD
 
     def decode(self, batch_outputs: Union[Tensor, Tuple[Tensor]],
                batch_data_samples: OptSampleList) -> SampleList:
@@ -140,5 +131,3 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             data_sample.pred_instances.keypoint_scores = scores
 
         return batch_data_samples
-=======
->>>>>>> 926f3b16 (reorganize multi-scale feature transform functions into base_head)
