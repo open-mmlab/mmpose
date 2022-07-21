@@ -19,7 +19,7 @@ OptIntSeq = Optional[Sequence[int]]
 class RegressionHead(BaseHead):
     """Top-down regression head introduced in `Deeppose`_ by Toshev et al
     (2014). The head is composed of fully-connected layers to predict the
-    coordinates directly. It is also a base class for all regression-based 
+    coordinates directly. It is also a base class for all regression-based
     methods.
 
     Args:
