@@ -3,7 +3,6 @@ from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer, build_upsample_layer
 from mmengine.data import InstanceData, PixelData
 from torch import Tensor, nn
@@ -230,54 +229,6 @@ class HeatmapHead(BaseHead):
             dict(type='Constant', layer='BatchNorm2d', val=1)
         ]
         return init_cfg
-
-    def _get_in_channels(self):
-        """Get the input channel number of the network according to the feature
-        channel numbers and the input transform type."""
-
-        feat_channels = self.in_channels
-        if isinstance(feat_channels, int):
-            feat_channels = [feat_channels]
-
-        if self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = [feat_channels[i] for i in self.input_index]
-        elif self.input_transform == 'resize_concat':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = sum(feat_channels[i] for i in self.input_index)
-        else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
-
-        return in_channels
-
-    def _transform_inputs(self, feats: Tuple[Tensor]
-                          ) -> Union[Tensor, Tuple[Tensor]]:
-        """Transform multi scale features into the network input."""
-        if self.input_transform == 'select':
-            inputs = [feats[i] for i in self.input_index]
-            resized_inputs = [
-                F.interpolate(
-                    x,
-                    size=inputs[0].shape[2:],
-                    mode='bilinear',
-                    align_corners=self.align_corners) for x in inputs
-            ]
-            inputs = torch.cat(resized_inputs, dim=1)
-        elif self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                inputs = feats[self.input_index]
-            else:
-                inputs = tuple(feats[i] for i in self.input_index)
-        else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
-
-        return inputs
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
