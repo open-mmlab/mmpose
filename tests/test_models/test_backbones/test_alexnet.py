@@ -1,23 +1,27 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from unittest import TestCase
+
 import torch
 
 from mmpose.models.backbones import AlexNet
 
 
-def test_alexnet_backbone():
-    """Test alexnet backbone."""
-    model = AlexNet(-1)
-    model.train()
+class TestAlexNet(TestCase):
 
-    imgs = torch.randn(1, 3, 256, 192)
-    feat = model(imgs)
-    assert isinstance(feat, tuple)
-    assert feat[-1].shape == (1, 256, 7, 5)
+    def test_alexnet_backbone(self):
+        """Test alexnet backbone."""
+        model = AlexNet(-1)
+        model.train()
 
-    model = AlexNet(1)
-    model.train()
+        imgs = torch.randn(1, 3, 256, 192)
+        feat = model(imgs)
+        self.assertIsInstance(feat, tuple)
+        self.assertEqual(feat[-1].shape, (1, 256, 7, 5))
 
-    imgs = torch.randn(1, 3, 224, 224)
-    feat = model(imgs)
-    assert isinstance(feat, tuple)
-    assert feat[-1].shape == (1, 1)
+        model = AlexNet(1)
+        model.train()
+
+        imgs = torch.randn(1, 3, 224, 224)
+        feat = model(imgs)
+        self.assertIsInstance(feat, tuple)
+        self.assertEqual(feat[-1].shape, (1, 1))
