@@ -2,7 +2,7 @@
 # Adapted from https://github.com/mit-han-lab/litepose
 # By Junyan Li, lijunyan668@outlook.com
 import torch.nn as nn
-from mmcv.cnn import constant_init, normal_init
+from mmcv.cnn import build_upsample_layer, constant_init, normal_init
 
 from mmpose.models.backbones.litepose import SepConv2d
 from mmpose.models.builder import HEADS, build_loss
@@ -113,9 +113,10 @@ class LitePoseHead(nn.Module):
                                                                    1] else 0
             oup_tag = dim_tag if self.with_ae_loss[i - 1] else 0
             final_refined.append(
-                SepConv2d(num_filters[i], oup_joint + oup_tag, ker=5))
+                SepConv2d(num_filters[i], oup_joint + oup_tag, kernel_size=5))
             final_raw.append(
-                SepConv2d(self.channel[-i - 3], oup_joint + oup_tag, ker=5))
+                SepConv2d(
+                    self.channel[-i - 3], oup_joint + oup_tag, kernel_size=5))
             final_channel.append(oup_joint + oup_tag)
 
         return nn.ModuleList(final_refined), nn.ModuleList(
@@ -132,7 +133,8 @@ class LitePoseHead(nn.Module):
             # inplanes = self.inplanes + self.channel[-i-2]
             layers = []
             deconv_refined.append(
-                nn.ConvTranspose2d(
+                build_upsample_layer(
+                    dict(type='deconv'),
                     in_channels=self.inplanes,
                     out_channels=planes,
                     kernel_size=kernel,
@@ -141,7 +143,8 @@ class LitePoseHead(nn.Module):
                     output_padding=output_padding,
                     bias=False))
             deconv_raw.append(
-                nn.ConvTranspose2d(
+                build_upsample_layer(
+                    dict(type='deconv'),
                     in_channels=self.channel[-i - 2],
                     out_channels=planes,
                     kernel_size=kernel,
@@ -184,7 +187,7 @@ class LitePoseHead(nn.Module):
             - heatmaps weight: W
 
         Args:
-            outputs (list(torch.Tensor[N,K,H,W])): Multi-scale output heatmaps.
+            outputs (List(torch.Tensor[N,K,H,W])): Multi-scale output heatmaps.
             targets (List(torch.Tensor[N,K,H,W])): Multi-scale target heatmaps.
             masks (List(torch.Tensor[N,H,W])): Masks of multi-scale target
                 heatmaps

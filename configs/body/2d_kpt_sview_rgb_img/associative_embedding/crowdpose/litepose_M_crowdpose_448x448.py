@@ -39,7 +39,7 @@ data_cfg = dict(
 model = dict(
     type='AssociativeEmbedding',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/litpose_m_crowdpose-d9c5f8ca_20220714.pth',
+    'pretrain_models/litepose_m_crowdpose-be7edcef_20220721.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,

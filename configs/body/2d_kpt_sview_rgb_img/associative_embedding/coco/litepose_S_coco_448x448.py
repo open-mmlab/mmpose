@@ -36,13 +36,12 @@ data_cfg = dict(
     dataset_channel=channel_cfg['dataset_channel'],
     inference_channel=channel_cfg['inference_channel'],
     num_scales=2,
-    scale_aware_sigma=False,
-)
+    scale_aware_sigma=False)
 
 model = dict(
     type='AssociativeEmbedding',
     pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/litepose_s_coco-30a8754c_20220714.pth',
+    'pretrain_models/litepose_s_coco-8f01b74b_20220721.pth',
     backbone=dict(
         type='LitePose',
         input_channel=16,

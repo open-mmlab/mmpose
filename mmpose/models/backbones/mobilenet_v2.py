@@ -18,6 +18,8 @@ class InvertedResidual(nn.Module):
     Args:
         in_channels (int): The input channels of the InvertedResidual block.
         out_channels (int): The output channels of the InvertedResidual block.
+        kernel_size (int | tuple[int]): Size of the convolving kernel.
+            Default: 3.
         stride (int): Stride of the middle (first) 3x3 convolution.
         expand_ratio (int): adjusts number of channels of the hidden layer
             in InvertedResidual by this amount.
@@ -34,8 +36,9 @@ class InvertedResidual(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 stride,
-                 expand_ratio,
+                 kernel_size=3,
+                 stride=1,
+                 expand_ratio=6,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU6'),
@@ -49,7 +52,7 @@ class InvertedResidual(nn.Module):
             f'But received {stride}.'
         self.with_cp = with_cp
         self.use_res_connect = self.stride == 1 and in_channels == out_channels
-        hidden_dim = int(round(in_channels * expand_ratio))
+        hidden_dim = make_divisible(round(in_channels * expand_ratio), 8)
 
         layers = []
         if expand_ratio != 1:
@@ -65,9 +68,9 @@ class InvertedResidual(nn.Module):
             ConvModule(
                 in_channels=hidden_dim,
                 out_channels=hidden_dim,
-                kernel_size=3,
+                kernel_size=kernel_size,
                 stride=stride,
-                padding=1,
+                padding=kernel_size // 2,
                 groups=hidden_dim,
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
@@ -219,7 +222,8 @@ class MobileNetV2(BaseBackbone):
                 InvertedResidual(
                     self.in_channels,
                     out_channels,
-                    stride,
+                    kernel_size=3,
+                    stride=stride,
                     expand_ratio=expand_ratio,
                     conv_cfg=self.conv_cfg,
                     norm_cfg=self.norm_cfg,
