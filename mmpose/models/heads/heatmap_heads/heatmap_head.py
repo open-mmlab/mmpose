@@ -242,9 +242,18 @@ class HeatmapHead(BaseHead):
     def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
                 test_cfg: ConfigType) -> SampleList:
         """Predict results from features."""
-        heatmaps = self.forward(feats)
-        preds = self.decode(heatmaps, batch_data_samples, test_cfg)
-        return preds
+
+        batch_heatmaps = self.forward(feats)
+        pred_coords = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
+
+        # Whether to visualize the predicted heatmps
+        vis_heatmaps = test_cfg.get('vis_heatmaps', True)
+
+        for heatmaps, data_sample in zip(batch_heatmaps, batch_data_samples):
+            if vis_heatmaps:
+                data_sample.pred_fields.heatmaps = heatmaps
+
+        return pred_coords
 
     def loss(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
              train_cfg: ConfigType) -> dict:

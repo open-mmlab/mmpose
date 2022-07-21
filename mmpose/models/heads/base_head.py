@@ -99,31 +99,17 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         if isinstance(batch_outputs, Tensor):
             batch_outputs_np = _to_numpy(batch_outputs)
-            batch_heatmaps_np = batch_outputs_np
-
-            head_type = type(self).__name__.lower()
-            if 'regression' in head_type:
-                out_heatmaps = False
-            else:
-                out_heatmaps = True
 
         elif isinstance(batch_outputs, Tuple):
             assert len(batch_outputs) == 2, (
                 'batch_outputs should contain coordinates and heatmaps in '
                 f'{self.__class__.__name__}')
 
-            batch_coords, batch_heatmaps = batch_outputs
+            batch_coords, _ = batch_outputs
             batch_outputs_np = _to_numpy(batch_coords)
-            batch_heatmaps_np = _to_numpy(batch_heatmaps)
-
-            out_heatmaps = True
-
-        # Whether to visualize the predicted heatmps
-        vis_heatmaps = test_cfg.get('vis_heatmaps', True) and out_heatmaps
 
         # TODO: support decoding with tensor data
-        for idx, (outputs, data_sample) in enumerate(
-                zip(batch_outputs_np, batch_data_samples)):
+        for outputs, data_sample in zip(batch_outputs_np, batch_data_samples):
             keypoints, scores = self.decoder.decode(outputs)
 
             # Convert the decoded local keypoints (in input space)
@@ -150,9 +136,5 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             # Store the heatmap predictions in the data sample
             if 'pred_fileds' not in data_sample:
                 data_sample.pred_fields = PixelData()
-
-            if vis_heatmaps:
-                heatmaps = batch_heatmaps_np[idx]
-                data_sample.pred_fields.heatmaps = heatmaps
 
         return batch_data_samples
