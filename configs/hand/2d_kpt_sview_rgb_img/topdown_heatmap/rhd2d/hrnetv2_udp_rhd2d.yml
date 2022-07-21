@@ -17,8 +17,8 @@ Models:
   Results:
   - Dataset: RHD
     Metrics:
-      AUC: 0.742
-      EPE: 7.84
-      PCKh@0.7: 0.998
+      AUC: 0.902
+      EPE: 2.21
+      PCKh@0.7: 0.992
     Task: Hand 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/hand/udp/hrnetv2_w18_rhd2d_256x256_udp-63ba6007_20210330.pth
