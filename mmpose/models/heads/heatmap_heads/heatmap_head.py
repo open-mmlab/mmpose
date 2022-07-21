@@ -1,13 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
-import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer, build_upsample_layer
-from mmengine.data import InstanceData, PixelData
+from mmengine.data import PixelData
 from torch import Tensor, nn
 
+from mmpose.core.utils.tensor_utils import _to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
@@ -15,18 +14,6 @@ from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
-
-
-def _to_numpy(x: Tensor) -> np.ndarray:
-    """Convert a torch tensor to numpy.ndarray.
-
-    Args:
-        x (Tensor): A torch tensor
-
-    Returns:
-        np.ndarray: The converted numpy array
-    """
-    return x.detach().cpu().numpy()
 
 
 @MODELS.register_module()
@@ -231,54 +218,6 @@ class HeatmapHead(BaseHead):
         ]
         return init_cfg
 
-    def _get_in_channels(self):
-        """Get the input channel number of the network according to the feature
-        channel numbers and the input transform type."""
-
-        feat_channels = self.in_channels
-        if isinstance(feat_channels, int):
-            feat_channels = [feat_channels]
-
-        if self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = [feat_channels[i] for i in self.input_index]
-        elif self.input_transform == 'resize_concat':
-            if isinstance(self.input_index, int):
-                in_channels = feat_channels[self.input_index]
-            else:
-                in_channels = sum(feat_channels[i] for i in self.input_index)
-        else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
-
-        return in_channels
-
-    def _transform_inputs(self, feats: Tuple[Tensor]
-                          ) -> Union[Tensor, Tuple[Tensor]]:
-        """Transform multi scale features into the network input."""
-        if self.input_transform == 'select':
-            inputs = [feats[i] for i in self.input_index]
-            resized_inputs = [
-                F.interpolate(
-                    x,
-                    size=inputs[0].shape[2:],
-                    mode='bilinear',
-                    align_corners=self.align_corners) for x in inputs
-            ]
-            inputs = torch.cat(resized_inputs, dim=1)
-        elif self.input_transform == 'select':
-            if isinstance(self.input_index, int):
-                inputs = feats[self.input_index]
-            else:
-                inputs = tuple(feats[i] for i in self.input_index)
-        else:
-            raise (ValueError,
-                   f'Invalid input transform mode "{self.input_transform}"')
-
-        return inputs
-
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
         output is the heatmap.
@@ -304,56 +243,19 @@ class HeatmapHead(BaseHead):
     def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
                 test_cfg: ConfigType) -> SampleList:
         """Predict results from features."""
-        heatmaps = self.forward(feats)
-        preds = self.decode(heatmaps, batch_data_samples, test_cfg)
+
+        batch_heatmaps = self.forward(feats)
+        preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
+
+        # Whether to visualize the predicted heatmps
+        if test_cfg.get('output_heatmaps', True):
+            for heatmaps, data_sample in zip(batch_heatmaps, preds):
+                # Store the heatmap predictions in the data sample
+                if 'pred_fileds' not in data_sample:
+                    data_sample.pred_fields = PixelData()
+                data_sample.pred_fields.heatmaps = heatmaps
+
         return preds
-
-    def decode(self, batch_heatmaps: Tensor, batch_data_samples: OptSampleList,
-               test_cfg: ConfigType) -> SampleList:
-        """Decode keypoints from heatmaps."""
-        if self.decoder is None:
-            raise RuntimeError(
-                f'The decoder has not been set in {self.__class__.__name__}. '
-                'Please set the decoder configs in the init parameters to '
-                'enable head methods `head.predict()` and `head.decode()`')
-
-        if batch_data_samples is None:
-            raise ValueError(
-                '`batch_data_samples` is required to decode keypoitns.')
-
-        # TODO: support decoding with tensor data
-        batch_heatmaps_np = _to_numpy(batch_heatmaps)
-        for heatmaps, data_sample in zip(batch_heatmaps_np,
-                                         batch_data_samples):
-            keypoints, scores = self.decoder.decode(heatmaps)
-
-            # Convert the decoded local keypoints (in input space)
-            # to the image coordinate space
-            # Convert keypoint coordinates from input space to image space
-            if 'gt_instances' in data_sample:
-                bbox_centers = data_sample.gt_instances.bbox_centers
-                bbox_scales = data_sample.get_instances.bbox_scales
-                input_size = data_sample.metainfo.input_size
-                keypoints = keypoints / input_size * bbox_scales + \
-                    bbox_centers - 0.5 * bbox_scales
-
-            else:
-                raise ValueError(
-                    '`gt_instances` is required to convert keypoints from'
-                    ' from the heatmap space to the image space.')
-
-            # Store the keypoint predictions in the data sample
-            if 'pred_instances' not in data_sample:
-                data_sample.pred_instances = InstanceData()
-            data_sample.pred_instances.keypoints = keypoints
-            data_sample.pred_instances.keypoint_scores = scores
-
-            # Store the heatmap predictions in the data sample
-            if 'pred_fileds' not in data_sample:
-                data_sample.pred_fields = PixelData()
-            data_sample.pred_fields.heatmaps = heatmaps
-
-        return batch_data_samples
 
     def loss(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
              train_cfg: ConfigType) -> dict:
