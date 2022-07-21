@@ -64,7 +64,7 @@ class AdaptiveWingLoss(nn.Module):
 
         return torch.mean(losses)
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weights):
         """Forward function.
 
         Note:
@@ -72,14 +72,14 @@ class AdaptiveWingLoss(nn.Module):
             num_keypoints: K
 
         Args:
-            output (torch.Tensor[NxKxHxW]): Output heatmaps.
-            target (torch.Tensor[NxKxHxW]): Target heatmaps.
-            target_weight (torch.Tensor[NxKx1]):
+            output (torch.Tensor[N, K, H, W]): Output heatmaps.
+            target (torch.Tensor[N, K, H, W]): Target heatmaps.
+            target_weight (torch.Tensor[N, K]):
                 Weights across different joint types.
         """
         if self.use_target_weight:
-            loss = self.criterion(output * target_weight.unsqueeze(-1),
-                                  target * target_weight.unsqueeze(-1))
+            loss = self.criterion(output * target_weights,
+                                  target * target_weights)
         else:
             loss = self.criterion(output, target)
 

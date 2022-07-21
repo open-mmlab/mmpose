@@ -21,7 +21,7 @@ class KeypointMSELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weights):
         """Forward function."""
         batch_size = output.size(0)
         num_joints = output.size(1)
@@ -35,9 +35,10 @@ class KeypointMSELoss(nn.Module):
         for idx in range(num_joints):
             heatmap_pred = heatmaps_pred[idx].squeeze(1)
             heatmap_gt = heatmaps_gt[idx].squeeze(1)
+            target_weight = target_weights[:, idx, None]
             if self.use_target_weight:
-                loss += self.criterion(heatmap_pred * target_weight[:, idx],
-                                       heatmap_gt * target_weight[:, idx])
+                loss += self.criterion(heatmap_pred * target_weight,
+                                       heatmap_gt * target_weight)
             else:
                 loss += self.criterion(heatmap_pred, heatmap_gt)
 
@@ -64,7 +65,7 @@ class CombinedTargetMSELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weights):
         batch_size = output.size(0)
         num_channels = output.size(1)
         heatmaps_pred = output.reshape(
@@ -80,9 +81,10 @@ class CombinedTargetMSELoss(nn.Module):
             offset_x_gt = heatmaps_gt[idx * 3 + 1].squeeze()
             offset_y_pred = heatmaps_pred[idx * 3 + 2].squeeze()
             offset_y_gt = heatmaps_gt[idx * 3 + 2].squeeze()
+            target_weight = target_weights[:, idx, None]
             if self.use_target_weight:
-                heatmap_pred = heatmap_pred * target_weight[:, idx]
-                heatmap_gt = heatmap_gt * target_weight[:, idx]
+                heatmap_pred = heatmap_pred * target_weight
+                heatmap_gt = heatmap_gt * target_weight
             # classification loss
             loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
             # regression loss
@@ -125,7 +127,7 @@ class KeypointOHKMMSELoss(nn.Module):
         ohkm_loss /= N
         return ohkm_loss
 
-    def forward(self, output, target, target_weight):
+    def forward(self, output, target, target_weights):
         """Forward function."""
         batch_size = output.size(0)
         num_joints = output.size(1)
@@ -141,9 +143,10 @@ class KeypointOHKMMSELoss(nn.Module):
             heatmap_pred = heatmaps_pred[idx].squeeze(1)
             heatmap_gt = heatmaps_gt[idx].squeeze(1)
             if self.use_target_weight:
+                target_weight = target_weights[:, idx, None]
                 losses.append(
-                    self.criterion(heatmap_pred * target_weight[:, idx],
-                                   heatmap_gt * target_weight[:, idx]))
+                    self.criterion(heatmap_pred * target_weight,
+                                   heatmap_gt * target_weight))
             else:
                 losses.append(self.criterion(heatmap_pred, heatmap_gt))
 

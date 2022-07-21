@@ -95,7 +95,7 @@ class PackPoseInputs(BaseTransform):
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
         'reg_label': 'reg_labels',
-        'target_weights': 'target_weights'
+        'keypoint_weights': 'keypoint_weights'
     }
 
     def __init__(self,

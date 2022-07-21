@@ -225,7 +225,7 @@ class TopdownGenerateRegressionLabel(BaseTransform):
 
         - keypoints
         - keypoints_visible
-        - image_size
+        - input_size
         - dataset_keypoint_weights
 
     Added Keys:
