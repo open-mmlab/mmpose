@@ -4,7 +4,7 @@ from typing import Tuple, Union
 
 import torch
 import torch.nn.functional as F
-from mmengine.data import InstanceData, PixelData
+from mmengine.data import InstanceData
 from mmengine.model import BaseModule
 from torch import Tensor
 
@@ -132,9 +132,5 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                 data_sample.pred_instances = InstanceData()
             data_sample.pred_instances.keypoints = keypoints
             data_sample.pred_instances.keypoint_scores = scores
-
-            # Store the heatmap predictions in the data sample
-            if 'pred_fileds' not in data_sample:
-                data_sample.pred_fields = PixelData()
 
         return batch_data_samples

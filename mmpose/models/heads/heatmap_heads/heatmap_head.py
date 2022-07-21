@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
+from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import _to_numpy
@@ -247,10 +248,11 @@ class HeatmapHead(BaseHead):
         preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
 
         # Whether to visualize the predicted heatmps
-        out_heatmaps = test_cfg.get('out_heatmaps', True)
-
-        if out_heatmaps:
+        if test_cfg.get('output_heatmaps', True):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
+                # Store the heatmap predictions in the data sample
+                if 'pred_fileds' not in data_sample:
+                    data_sample.pred_fields = PixelData()
                 data_sample.pred_fields.heatmaps = heatmaps
 
         return preds
