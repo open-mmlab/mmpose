@@ -62,8 +62,8 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return in_channels
 
-    def _transform_inputs(
-            self, feats: Tuple[Tensor]) -> Union[Tensor, Tuple[Tensor]]:
+    def _transform_inputs(self, feats: Tuple[Tensor]
+                          ) -> Union[Tensor, Tuple[Tensor]]:
         """Transform multi scale features into the network input."""
         if self.input_transform == 'resize_concat':
             inputs = [feats[i] for i in self.input_index]
