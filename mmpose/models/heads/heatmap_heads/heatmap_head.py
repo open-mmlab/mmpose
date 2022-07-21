@@ -249,8 +249,8 @@ class HeatmapHead(BaseHead):
         # Whether to visualize the predicted heatmps
         vis_heatmaps = test_cfg.get('vis_heatmaps', True)
 
-        for heatmaps, data_sample in zip(batch_heatmaps, preds):
-            if vis_heatmaps:
+        if vis_heatmaps:
+            for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 data_sample.pred_fields.heatmaps = heatmaps
 
         return preds
