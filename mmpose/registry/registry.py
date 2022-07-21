@@ -2,7 +2,6 @@
 """MMPose provides following registry nodes to support using modules across
 projects. Each node is a child of the root registry in MMEngine.
 
-Each node is a child of the root registry in MMEngine.
 More details can be found at
 https://mmengine.readthedocs.io/en/latest/tutorials/registry.html.
 """
