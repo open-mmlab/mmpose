@@ -263,7 +263,6 @@ class TopdownGenerateRegressionLabel(BaseTransform):
         # single-level heatmaps
         reg_label, keypoint_weights = self.encoder.encode(
             keypoints=results['keypoints'],
-            input_size=results['input_size'],
             keypoints_visible=results['keypoints_visible'])
 
         # multiply meta keypoint weight
