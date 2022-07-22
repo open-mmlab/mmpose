@@ -25,7 +25,9 @@ class DSNTLoss(nn.Module):
             Different joint types may have different target weights.
         size_average (bool): Option to average the loss by the batch_size.
         dist_loss (string): Option for the distance loss,
-            Options: "l1" or "l2"
+            Options:
+                - ``'l1'``: Smooth L1 loss
+                - ``'l2'``: MSE Loss
         div_reg (string): Option for the divergence regularization,
             Options:
                 - ``'kl'``: Kullback-Leibler divergences
