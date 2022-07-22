@@ -186,9 +186,5 @@ class IntegralRegressionHead(BaseHead):
 
     @property
     def default_init_cfg(self):
-        init_cfg = [
-            dict(
-                type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.001),
-            dict(type='Constant', layer='BatchNorm2d', val=1)
-        ]
+        init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]
         return init_cfg
