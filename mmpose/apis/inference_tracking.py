@@ -36,7 +36,7 @@ def _compute_iou(bboxA, bboxB):
     return iou
 
 
-def _track_by_iou(res, results_last, thr):
+def _track_by_iou(res, results_last, thr, **kwargs):
     """Get track id using IoU tracking greedily.
 
     Args:
@@ -75,7 +75,7 @@ def _track_by_iou(res, results_last, thr):
     return track_id, results_last, match_result
 
 
-def _track_by_oks(res, results_last, thr):
+def _track_by_oks(res, results_last, thr, sigmas, **kwargs):
     """Get track id using OKS tracking greedily.
 
     Args:
@@ -83,6 +83,7 @@ def _track_by_oks(res, results_last, thr):
         results_last (list[dict]): The pose & track_id info of the
             last frame (pose_result, track_id).
         thr (float): The threshold for oks tracking.
+        sigmas (np.ndarray): standard deviation of keypoint labelling.
 
     Returns:
         int: The track id for the new person instance.
@@ -102,7 +103,7 @@ def _track_by_oks(res, results_last, thr):
         [res_last['keypoints'].reshape((-1)) for res_last in results_last])
     area_last = np.array([res_last['area'] for res_last in results_last])
 
-    oks_score = oks_iou(pose, pose_last, area, area_last)
+    oks_score = oks_iou(pose, pose_last, area, area_last, sigmas=sigmas)
 
     max_index = np.argmax(oks_score)
 
@@ -171,7 +172,8 @@ def get_track_id(results,
                  use_oks=False,
                  tracking_thr=0.3,
                  use_one_euro=False,
-                 fps=None):
+                 fps=None,
+                 sigmas=None):
     """Get track id for each person instance on the current frame.
 
     Args:
@@ -188,6 +190,9 @@ def get_track_id(results,
         use_one_euro (bool): Option to use one-euro-filter. default: False.
         fps (optional): Parameters that d_cutoff
             when one-euro-filter is used as a video input
+        sigmas (np.ndarray): Standard deviation of keypoint labelling. It is
+            necessary for oks_iou tracking (`use_oks==True`). It will be use
+            sigmas of COCO as default if it is set to None. Default is None.
 
     Returns:
         tuple:
@@ -215,8 +220,8 @@ def get_track_id(results,
         _track = _track_by_iou
 
     for result in results:
-        track_id, results_last, match_result = _track(result, results_last,
-                                                      tracking_thr)
+        track_id, results_last, match_result = _track(
+            result, results_last, tracking_thr, sigmas=sigmas)
         if track_id == -1:
             if np.count_nonzero(result['keypoints'][:, 1]) >= min_keypoints:
                 result['track_id'] = next_id

@@ -146,7 +146,8 @@ def main():
             use_oks=args.use_oks_tracking,
             tracking_thr=args.tracking_thr,
             use_one_euro=args.euro,
-            fps=fps)
+            fps=fps,
+            sigmas=getattr(dataset_info, 'sigmas', None))
 
         # post-process the pose results with smoother
         if smoother:
