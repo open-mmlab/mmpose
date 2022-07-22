@@ -8,7 +8,7 @@ from mmcv.transforms import BaseTransform
 from mmengine import is_seq_of
 
 from mmpose.core.bbox import get_udp_warp_matrix, get_warp_matrix
-from mmpose.core.utils.typing import MultiConfig
+from mmpose.core.utils.typing import ConfigType, MultiConfig
 from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
 
 
@@ -219,7 +219,8 @@ class TopdownGenerateHeatmap(BaseTransform):
 
 @TRANSFORMS.register_module()
 class TopdownGenerateRegressionLabel(BaseTransform):
-    """Generate the target regression label of the keypoints.
+    """Generate the target regression label of the keypoints from input image
+    space to normalized [0, 1) space.
 
     Required Keys:
 
@@ -238,9 +239,13 @@ class TopdownGenerateRegressionLabel(BaseTransform):
             from the dataset meta information. Defaults to ``False``
     """
 
-    def __init__(self, use_dataset_keypoint_weights: bool = False) -> None:
+    def __init__(self,
+                 encoder: ConfigType,
+                 use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
+        self.encoder_cfg = deepcopy(encoder)
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
+        self.encoder = KEYPOINT_CODECS.build(encoder)
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
@@ -254,16 +259,12 @@ class TopdownGenerateRegressionLabel(BaseTransform):
         Returns:
             dict: The result dict.
         """
-        keypoints = results['keypoints']
-        keypoints_visible = results['keypoints_visible']
 
-        w, h = results['input_size']
-        valid = ((keypoints >= 0) &
-                 (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
-                     keypoints_visible > 0.5)
-
-        reg_label = keypoints / [w, h]
-        keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
+        # single-level heatmaps
+        reg_label, keypoint_weights = self.encoder.encode(
+            keypoints=results['keypoints'],
+            input_size=results['input_size'],
+            keypoints_visible=results['keypoints_visible'])
 
         # multiply meta keypoint weight
         if self.use_dataset_keypoint_weights:
