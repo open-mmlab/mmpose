@@ -35,7 +35,7 @@
 
 </details>
 
-The following SmoothNet model checkpoints are available for pose smoothing. The table shows the the performance of [SimpleBaseline3D](https://arxiv.org/abs/1705.03098) on [Human3.6M](https://ieeexplore.ieee.org/abstract/document/6682899/) dataset without/with the SmoothNet plugin, and compares the SmoothNet models with 4 different window sizes (8, 16, 32 and 64). The metrics are MPJPE(mm), P-MEJPE(mm) and Acceleration Error (mm/frame^2).
+The following SmoothNet model checkpoints are available for pose smoothing. The table shows the performance of [SimpleBaseline3D](https://arxiv.org/abs/1705.03098) on [Human3.6M](https://ieeexplore.ieee.org/abstract/document/6682899/) dataset without/with the SmoothNet plugin, and compares the SmoothNet models with 4 different window sizes (8, 16, 32 and 64). The metrics are MPJPE(mm), P-MEJPE(mm) and Acceleration Error (mm/frame^2).
 
 | Arch                                 | Window Size | MPJPE<sup>w/o</sup> | MPJPE<sup>w</sup> | P-MPJPE<sup>w/o</sup> | P-MPJPE<sup>w</sup> | AC. Err<sup>w/o</sup> | AC. Err<sup>w</sup> |                 ckpt                  |
 | :----------------------------------- | :---------: | :-----------------: | :---------------: | :-------------------: | :-----------------: | :-------------------: | :-----------------: | :-----------------------------------: |
