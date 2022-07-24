@@ -118,7 +118,7 @@ MMPose 也提供了其他更详细的教程:
 ## 模型库
 
 各个模型的结果和设置都可以在对应的 config（配置）目录下的 *README.md* 中查看。
-整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/latest/recognition_models.html) 页面中查看。
+整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/latest/modelzoo.html) 页面中查看。
 
 <details open>
 <summary><b>支持的算法</b></summary>
