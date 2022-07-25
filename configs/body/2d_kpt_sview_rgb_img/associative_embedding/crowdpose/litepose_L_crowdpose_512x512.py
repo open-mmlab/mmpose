@@ -42,7 +42,7 @@ model = dict(
     'pretrain_models/litepose_l_crowdpose-e6b534d1_20220721.pth',
     backbone=dict(
         type='LitePose',
-        input_channel=16,
+        input_channel=24,
         num_blocks=(6, 8, 10, 10),
         strides=(2, 2, 2, 1),
         channels=(24, 64, 96, 160),
@@ -57,7 +57,7 @@ model = dict(
         tag_per_joint=True,
         with_heatmaps_loss=[True, True],
         with_ae_loss=[True, False],
-        channels=(16, 24, 64, 96, 160),
+        channels=(24, 24, 64, 96, 160),
         loss_keypoint=dict(
             type='MultiLossFactory',
             num_joints=channel_cfg['dataset_joints'],
