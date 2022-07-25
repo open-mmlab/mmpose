@@ -64,7 +64,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - **支持多样的数据集**
 
-  MMPose 支持了很多主流数据集的准备和构建，如 COCO、 MPII 等。 具体请参考 [数据集准备](docs/en/data_preparation.md)。
+  MMPose 支持了很多主流数据集的准备和构建，如 COCO、AIC、MPII、MPII-TRB、OCHuman 等。 具体请参考 [数据集准备](docs/en/data_preparation.md)。
 
 - **模块化设计**
 
@@ -241,7 +241,7 @@ MMPose 在主流关键点检测基准 COCO 上达到了优越的模型精度和�
 
 ## 常见问题
 
-请参考 [FAQ](docs/en/faq.md) 了解其他用户的常见问题。
+请参考 [FAQ](docs/zh_cn/faq.md) 了解其他用户的常见问题。
 
 ## 参与贡献
 
