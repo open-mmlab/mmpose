@@ -1,0 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+from ._utils import get_packed_inputs
+
+__all__ = ['get_packed_inputs']

@@ -6,7 +6,7 @@ from mmcv.cnn import build_conv_layer, build_upsample_layer
 from mmengine.data import PixelData
 from torch import Tensor, nn
 
-from mmpose.core.utils.tensor_utils import _to_numpy
+from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
@@ -23,13 +23,13 @@ class HeatmapHead(BaseHead):
     convolutional layer to generate heatmaps from low-resolution feature maps.
 
     Args:
-        in_channels (int): Number of channels in the input feature map
+        in_channels (int | sequence[int]): Number of channels in the input
+            feature map
         out_channels (int): Number of channels in the output heatmap
-        num_deconv_layers (int): Number of deconv layers. Defaults to 3
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
-        deconv_kernel_sizes (sequence[int | tuple]): The kernel size of
-            each deconv layer. Each element should be either an integer for
+        deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+            of each deconv layer. Each element should be either an integer for
             both height and width dimensions, or a tuple of two integers for
             the height and the width dimension respectively.Defaults to
             ``(4, 4, 4)``
@@ -51,7 +51,7 @@ class HeatmapHead(BaseHead):
 
             Defaults to ``'select'``
         input_index (int | sequence[int]): The feature map index used in the
-            input transformation. See also ``input_transform``. Defaults to 0
+            input transformation. See also ``input_transform``. Defaults to -1
         align_corners (bool): `align_corners` argument of
             :func:`torch.nn.functional.interpolate` used in the input
             transformation. Defaults to ``False``
@@ -76,7 +76,7 @@ class HeatmapHead(BaseHead):
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
                  input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = 0,
+                 input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='KeypointMSELoss', use_target_weight=True),
@@ -118,7 +118,7 @@ class HeatmapHead(BaseHead):
             )
             in_channels = deconv_out_channels[-1]
         else:
-            self.deconv_layers = nn.Identity
+            self.deconv_layers = nn.Identity()
 
         if conv_out_channels:
             if conv_kernel_sizes is None or len(conv_out_channels) != len(
@@ -134,7 +134,7 @@ class HeatmapHead(BaseHead):
                 layer_kernel_sizes=conv_kernel_sizes)
             in_channels = conv_out_channels[-1]
         else:
-            self.conv_layers = nn.Identity
+            self.conv_layers = nn.Identity()
 
         if has_final_layer:
             cfg = dict(
@@ -240,15 +240,17 @@ class HeatmapHead(BaseHead):
 
         return x
 
-    def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-                test_cfg: ConfigType) -> SampleList:
+    def predict(self,
+                feats: Tuple[Tensor],
+                batch_data_samples: OptSampleList,
+                test_cfg: OptConfigType = {}) -> SampleList:
         """Predict results from features."""
 
         batch_heatmaps = self.forward(feats)
         preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
 
-        # Whether to visualize the predicted heatmps
-        if test_cfg.get('output_heatmaps', True):
+        # Whether to visualize the predicted heatmaps
+        if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
                 if 'pred_fileds' not in data_sample:
@@ -257,28 +259,30 @@ class HeatmapHead(BaseHead):
 
         return preds
 
-    def loss(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-             train_cfg: ConfigType) -> dict:
+    def loss(self,
+             feats: Tuple[Tensor],
+             batch_data_samples: OptSampleList,
+             train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
         pred_heatmaps = self.forward(feats)
         gt_heatmaps = torch.stack(
             [d.gt_fields.heatmaps for d in batch_data_samples])
-        target_weights = torch.cat(
-            [d.gt_instance.target_weights for d in batch_data_samples])
+        keypoint_weights = torch.cat(
+            [d.gt_instances.keypoint_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
-        loss = self.loss_module(pred_heatmaps, gt_heatmaps, target_weights)
+        loss = self.loss_module(pred_heatmaps, gt_heatmaps, keypoint_weights)
         if isinstance(loss, dict):
             losses.update(loss)
         else:
-            losses.update(loss_kpts=loss)
+            losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = pose_pck_accuracy(
-            output=_to_numpy(pred_heatmaps),
-            target=_to_numpy(gt_heatmaps),
-            mask=_to_numpy(target_weights).squeeze(-1) > 0)
+            output=to_numpy(pred_heatmaps),
+            target=to_numpy(gt_heatmaps),
+            mask=to_numpy(keypoint_weights) > 0)
 
         losses.update(acc_pose=float(avg_acc))
 
@@ -294,7 +298,7 @@ class HeatmapHead(BaseHead):
         """
 
         version = local_meta.get('version', None)
-        if version >= self._version:
+        if version and version >= self._version:
             return
 
         # convert old-version state dict

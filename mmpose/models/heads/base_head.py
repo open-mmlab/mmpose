@@ -8,8 +8,9 @@ from mmengine.data import InstanceData
 from mmengine.model import BaseModule
 from torch import Tensor
 
-from mmpose.core.utils.tensor_utils import _to_numpy
-from mmpose.core.utils.typing import ConfigType, OptSampleList, SampleList
+from mmpose.core.utils.tensor_utils import to_numpy, to_tensor
+from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
+                                      SampleList)
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -25,13 +26,17 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         """Forward the network."""
 
     @abstractmethod
-    def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-                test_cfg: ConfigType) -> SampleList:
+    def predict(self,
+                feats: Tuple[Tensor],
+                batch_data_samples: OptSampleList,
+                test_cfg: OptConfigType = {}) -> SampleList:
         """Predict results from features."""
 
     @abstractmethod
-    def loss(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-             train_cfg: ConfigType) -> dict:
+    def loss(self,
+             feats: Tuple[Tensor],
+             batch_data_samples: OptSampleList,
+             train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
     def _get_in_channels(self):
@@ -97,28 +102,22 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             raise ValueError(
                 '`batch_data_samples` is required to decode keypoitns.')
 
-        if isinstance(batch_outputs, Tensor):
-            batch_outputs_np = _to_numpy(batch_outputs)
-
-        elif isinstance(batch_outputs, Tuple):
-            assert len(batch_outputs) == 2, (
-                'batch_outputs should contain coordinates and heatmaps in '
-                f'{self.__class__.__name__}')
-
-            batch_coords, _ = batch_outputs
-            batch_outputs_np = _to_numpy(batch_coords)
+        batch_outputs_np, device = to_numpy(batch_outputs, return_device=True)
 
         # TODO: support decoding with tensor data
         for outputs, data_sample in zip(batch_outputs_np, batch_data_samples):
-            keypoints, scores = self.decoder.decode(outputs)
+            keypoints_np, scores_np = self.decoder.decode(outputs)
+            keypoints = to_tensor(keypoints_np, device)
+            scores = to_tensor(scores_np, device)
 
             # Convert the decoded local keypoints (in input space)
             # to the image coordinate space
             # Convert keypoint coordinates from input space to image space
             if 'gt_instances' in data_sample:
                 bbox_centers = data_sample.gt_instances.bbox_centers
-                bbox_scales = data_sample.get_instances.bbox_scales
-                input_size = data_sample.metainfo.input_size
+                bbox_scales = data_sample.gt_instances.bbox_scales
+                input_size = keypoints.new_tensor(
+                    data_sample.metainfo['input_size'])
                 keypoints = keypoints / input_size * bbox_scales + \
                     bbox_centers - 0.5 * bbox_scales
 

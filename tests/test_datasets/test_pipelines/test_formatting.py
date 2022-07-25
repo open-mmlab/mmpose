@@ -39,7 +39,7 @@ class TestPackPoseInputs(TestCase):
             'keypoints_visible': np.full((1, 17), 1).astype(np.float32),
             'reg_label': np.random.randint(0, 100,
                                            (1, 17, 2)).astype(np.float32),
-            'target_weight': np.full((1, 17), 1).astype(np.float32),
+            'keypoint_weights': np.full((1, 17), 1).astype(np.float32),
             'heatmaps': np.random.random((17, 64, 48)).astype(np.float32),
         }
         self.meta_keys = ('img_id', 'img_path', 'ori_shape', 'img_shape',
