@@ -141,13 +141,13 @@ test_pipeline = val_pipeline
 
 data_root = 'data/'
 data = dict(
-    samples_per_gpu=64,
+    samples_per_gpu=32,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
     train=dict(
         type='TopDownCarFusionDataset',
-        ann_file=f'{data_root}/annotations/car_all_annotations.json',
+        ann_file=f'{data_root}/annotations/carfusion_train.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=train_pipeline,
@@ -161,7 +161,7 @@ data = dict(
         dataset_info={{_base_.dataset_info}}),
     test=dict(
         type='TopDownCarFusionDataset',
-        ann_file=f'{data_root}/annotations/car_all_annotations.json',
+        ann_file=f'{data_root}/annotations/carfusion_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
         pipeline=test_pipeline,
