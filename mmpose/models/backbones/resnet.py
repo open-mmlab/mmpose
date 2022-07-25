@@ -280,7 +280,7 @@ def get_expansion(block, expansion=None):
     1. If ``expansion`` is given, just return it.
     2. If ``block`` has the attribute ``expansion``, then return
        ``block.expansion``.
-    3. Return the default value according the the block type:
+    3. Return the default value according to the block type:
        1 for ``BasicBlock`` and 4 for ``Bottleneck``.
 
     Args:

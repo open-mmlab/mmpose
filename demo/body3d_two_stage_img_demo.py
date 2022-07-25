@@ -75,7 +75,7 @@ def main():
         type=str,
         default=None,
         help='Camera parameter file for converting 3D pose predictions from '
-        ' the camera space to to world space. If None, no conversion will be '
+        ' the camera space to the world space. If None, no conversion will be '
         'applied.')
     parser.add_argument(
         '--only-second-stage',
