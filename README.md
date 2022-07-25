@@ -178,6 +178,7 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/lates
 - [x] [MHP](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
 - [x] [WFLW](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
 - [x] [PoseTrack18](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#posetrack18-cvpr-2018) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
+- [x] [CarFusion](http://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html) \[[homepage](http://www.cs.cmu.edu/~ILIM/projects/IM/CarFusion/cvpr2018/index.html)\] (CVPR'2018)
 - [x] [OCHuman](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#ochuman-cvpr-2019) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
 - [x] [CrowdPose](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#crowdpose-cvpr-2019) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
 - [x] [MPII-TRB](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#mpii-trb-iccv-2019) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
