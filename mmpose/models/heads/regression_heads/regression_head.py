@@ -21,7 +21,6 @@ class RegressionHead(BaseHead):
     (2014). The head is composed of fully-connected layers to predict the
     coordinates directly.
 
-
     Args:
         in_channels (int | sequence[int]): Number of input channels
         num_joints (int): Number of joints
