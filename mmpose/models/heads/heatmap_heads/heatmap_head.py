@@ -249,7 +249,7 @@ class HeatmapHead(BaseHead):
         batch_heatmaps = self.forward(feats)
         preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
 
-        # Whether to visualize the predicted heatmps
+        # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
