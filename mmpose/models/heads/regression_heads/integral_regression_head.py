@@ -84,9 +84,9 @@ class IntegralRegressionHead(BaseHead):
 
         W, H = self.heatmap_size
         self.linspace_x = torch.arange(0.0, 1.0 * W, 1).reshape(1, W).repeat(
-            [W, 1]) / W
+            [H, 1]) / W
         self.linspace_y = torch.arange(0.0, 1.0 * H, 1).reshape(H, 1).repeat(
-            [1, H]) / H
+            [1, W]) / H
 
         self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
         self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
@@ -142,8 +142,8 @@ class IntegralRegressionHead(BaseHead):
 
         preds = self.decode(batch_coords, batch_data_samples, test_cfg)
 
-        # Whether to visualize the predicted heatmps
-        if test_cfg.get('output_heatmaps', True):
+        # Whether to visualize the predicted heatmaps
+        if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
                 if 'pred_fileds' not in data_sample:
