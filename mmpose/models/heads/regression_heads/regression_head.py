@@ -42,9 +42,9 @@ class RegressionHead(BaseHead):
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  num_joints: int,
-                 output_sigma: bool,
+                 output_sigma: bool = False,
                  input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = 0,
+                 input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='SmoothL1Loss', use_target_weight=True),
@@ -138,6 +138,58 @@ class RegressionHead(BaseHead):
             normalize=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
         losses.update(acc_pose=float(avg_acc))
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to convert old-version state dict of
+        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`RegressionHead`.
+
+        The hook will be automatically registered during initialization.
+        """
+
+        version = local_meta.get('version', None)
+        if version and version >= self._version:
+            return
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for _k in keys:
+            v = state_dict.pop(_k)
+            k = _k.lstrip(prefix)
+            # In old version, "final_layer" includes both intermediate
+            # conv layers (new "conv_layers") and final conv layers (new
+            # "final_layer").
+            #
+            # If there is no intermediate conv layer, old "final_layer" will
+            # have keys like "final_layer.xxx", which should be still
+            # named "final_layer.xxx";
+            #
+            # If there are intermediate conv layerse, old "final_layer"  will
+            # have keys like "final_layer.n.xxx", where the weghts of the last
+            # one should be renamed "final_layer.xxx", and others should be
+            # renamed "conv_layers.n.xxx"
+            k_parts = _k.split('.')
+            if k_parts[0] == 'final_layer':
+                if len(k_parts) == 3:
+                    assert isinstance(self.conv_layers, nn.Sequential)
+                    idx = int(k_parts[1])
+                    if idx < len(self.conv_layers):
+                        # final_layer.n.xxx -> conv_layers.n.xxx
+                        k_new = 'conv_layers.' + '.'.join(k_parts[1:])
+                    else:
+                        # final_layer.n.xxx -> final_layer.xxx
+                        k_new = 'final_layer.' + k_parts[2]
+                else:
+                    # final_layer.xxx remains final_layer.xxx
+                    k_new = k
+            elif k_parts[0] == 'loss':
+                # loss.xxx -> loss_module.xxx
+                k_new = 'loss_module.' + '.'.join(k_parts[1:])
+            else:
+                k_new = k
+
+            state_dict[prefix + k_new] = v
 
     @property
     def default_init_cfg(self):
