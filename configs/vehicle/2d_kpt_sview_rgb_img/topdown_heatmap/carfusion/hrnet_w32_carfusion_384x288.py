@@ -16,7 +16,7 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=0.001,
     step=[170, 200])
-total_epochs = 210
+total_epochs = 50
 channel_cfg = dict(
     num_output_channels=14,
     dataset_joints=14,
@@ -88,8 +88,8 @@ data_cfg = dict(
     vis_thr=0.2,
     use_gt_bbox=True,
     det_bbox_thr=0.0,
-    bbox_file='data/coco/person_detection_results/'
-    'COCO_val2017_detections_AP_H_56_person.json',
+    bbox_file='data/carfusion/car_detection_results/'
+    'carfusion_test_detections_AP_H_56_car.json',
 )
 
 train_pipeline = [
@@ -141,7 +141,7 @@ test_pipeline = val_pipeline
 
 data_root = 'data/'
 data = dict(
-    samples_per_gpu=32,
+    samples_per_gpu=24,
     workers_per_gpu=2,
     val_dataloader=dict(samples_per_gpu=32),
     test_dataloader=dict(samples_per_gpu=32),
