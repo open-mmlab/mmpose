@@ -38,10 +38,10 @@ class RegressionLabel(BaseKeypointCodec):
                  (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
                      keypoints_visible > 0.5)
 
-        reg_label = keypoints / np.array([w, h])
+        reg_labels = keypoints / np.array([w, h])
         keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
 
-        return reg_label, keypoint_weights
+        return reg_labels, keypoint_weights
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from normalized space to input image

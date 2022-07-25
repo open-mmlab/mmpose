@@ -219,7 +219,7 @@ class TopdownGenerateHeatmap(BaseTransform):
 
 @TRANSFORMS.register_module()
 class TopdownGenerateRegressionLabel(BaseTransform):
-    """Generate the target regression label of the keypoints from input image
+    """Generate the target regression labels of the keypoints from input image
     space to normalized [0, 1) space.
 
     Required Keys:
@@ -231,7 +231,7 @@ class TopdownGenerateRegressionLabel(BaseTransform):
 
     Added Keys:
 
-        - reg_label
+        - reg_labels
         - keypoint_weights
 
     Args:
@@ -260,8 +260,8 @@ class TopdownGenerateRegressionLabel(BaseTransform):
             dict: The result dict.
         """
 
-        # single-level heatmaps
-        reg_label, keypoint_weights = self.encoder.encode(
+        # single-level labels
+        reg_labels, keypoint_weights = self.encoder.encode(
             keypoints=results['keypoints'],
             keypoints_visible=results['keypoints_visible'])
 
@@ -269,7 +269,7 @@ class TopdownGenerateRegressionLabel(BaseTransform):
         if self.use_dataset_keypoint_weights:
             keypoint_weights *= results['dataset_keypoint_weights']
 
-        results['reg_label'] = reg_label
+        results['reg_labels'] = reg_labels
         results['keypoint_weights'] = keypoint_weights
 
         return results
@@ -282,5 +282,65 @@ class TopdownGenerateRegressionLabel(BaseTransform):
         """
         repr_str = self.__class__.__name__
         repr_str += ('(use_dataset_keypoint_weights='
+                     f'{self.use_dataset_keypoint_weights})')
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class TopdownGenerateSimCCLabel(BaseTransform):
+    """Encode keypoints into SimCC labels.
+
+    Required Keys:
+
+        - keypoints
+        - keypoints_visible
+        - dataset_keypoint_weights
+
+    Added Keys:
+        - simcc_labels
+        - keypoint_weights
+
+    Args:
+        encoder (dict | list[dict])
+    """
+
+    def __init__(self,
+                 encoder: MultiConfig,
+                 use_dataset_keypoint_weights: bool = False) -> None:
+        super().__init__()
+        self.encoder_cfg = deepcopy(encoder)
+        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
+
+        if isinstance(encoder, list):
+            self.encoder = [KEYPOINT_CODECS.build(cfg) for cfg in encoder]
+        else:
+            self.encoder = KEYPOINT_CODECS.build(encoder)
+
+    def transform(self,
+                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
+
+        # single-level labels
+        simcc_labels, keypoint_weights = self.encoder.encode(
+            keypoints=results['keypoints'],
+            keypoints_visible=results['keypoints_visible'])
+
+        # multiply meta keypoint weight
+        if self.use_dataset_keypoint_weights:
+            results['keypoint_weights'] *= results['dataset_keypoint_weights']
+
+        results['simcc_labels'] = simcc_labels
+        results['keypoint_weights'] = keypoint_weights
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
+        repr_str += ('use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str
