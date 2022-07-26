@@ -42,5 +42,6 @@ __all__ = [
     'TopDownPoseTrack18VideoDataset', 'build_dataloader', 'build_dataset',
     'Compose', 'DistributedSampler', 'DATASETS', 'PIPELINES', 'DatasetInfo',
     'Body3DMviewDirectPanopticDataset', 'Body3DMviewDirectShelfDataset',
-    'Body3DMviewDirectCampusDataset', 'NVGestureDataset','TopDownCarFusionDataset'
+    'Body3DMviewDirectCampusDataset', 'NVGestureDataset',
+    'TopDownCarFusionDataset'
 ]
