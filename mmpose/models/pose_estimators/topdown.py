@@ -100,7 +100,9 @@ class TopdownPoseEstimator(BasePoseEstimator):
         losses = dict()
 
         if self.with_head:
-            losses.update(self.head.loss(feats, batch_data_samples))
+            losses.update(
+                self.head.loss(
+                    feats, batch_data_samples, train_cfg=self.train_cfg))
 
         return losses
 
@@ -130,6 +132,7 @@ class TopdownPoseEstimator(BasePoseEstimator):
             'The model must have head to perform prediction.')
 
         feats = self.extract_feat(batch_inputs)
-        preds = self.head.predict(feats, batch_inputs, batch_data_samples)
+        preds = self.head.predict(
+            feats, batch_inputs, batch_data_samples, test_cfg=self.test_cfg)
 
         return preds

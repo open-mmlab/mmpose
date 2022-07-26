@@ -9,8 +9,7 @@ from mmengine.model import BaseModule
 from torch import Tensor
 
 from mmpose.core.utils.tensor_utils import to_numpy, to_tensor
-from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList)
+from mmpose.core.utils.typing import OptConfigType, OptSampleList, SampleList
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -88,8 +87,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
         return inputs
 
     def decode(self, batch_outputs: Union[Tensor, Tuple[Tensor]],
-               batch_data_samples: OptSampleList,
-               test_cfg: ConfigType) -> SampleList:
+               batch_data_samples: OptSampleList) -> SampleList:
         """Decode keypoints from outputs."""
 
         if self.decoder is None:
