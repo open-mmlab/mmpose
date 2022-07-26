@@ -93,8 +93,8 @@ Below are quick steps for installation.
 Please refer to [install.md](docs/en/install.md) for detailed installation guide.
 
 ```shell
-conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y
-conda activate open-mmlab
+conda create -n openmmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y
+conda activate openmmlab
 pip3 install openmim
 mim install mmcv-full
 git clone https://github.com/open-mmlab/mmpose.git
