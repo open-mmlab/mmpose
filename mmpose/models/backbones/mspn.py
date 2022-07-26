@@ -4,15 +4,15 @@ from collections import OrderedDict
 
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import (ConvModule, MaxPool2d, constant_init, kaiming_init,
-                      normal_init)
-from mmcv.runner.checkpoint import load_state_dict
+from mmcv.cnn import ConvModule, MaxPool2d
+from mmengine.model import BaseModule
+from mmengine.runner import load_state_dict
 
 from mmpose.registry import MODELS
 from mmpose.utils import get_root_logger
 from .base_backbone import BaseBackbone
 from .resnet import Bottleneck as _Bottleneck
-from .utils.utils import get_state_dict
+from .utils import get_state_dict
 
 
 class Bottleneck(_Bottleneck):
@@ -27,13 +27,15 @@ class Bottleneck(_Bottleneck):
             Default: None
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self, in_channels, out_channels, **kwargs):
         super().__init__(in_channels, out_channels * 4, **kwargs)
 
 
-class DownsampleModule(nn.Module):
+class DownsampleModule(BaseModule):
     """Downsample module for MSPN.
 
     Args:
@@ -46,6 +48,8 @@ class DownsampleModule(nn.Module):
             Default: dict(type='BN')
         in_channels (int): Number of channels of the input feature to
             downsample module. Default: 64
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -54,10 +58,11 @@ class DownsampleModule(nn.Module):
                  num_units=4,
                  has_skip=False,
                  norm_cfg=dict(type='BN'),
-                 in_channels=64):
+                 in_channels=64,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.has_skip = has_skip
         self.in_channels = in_channels
         assert len(num_blocks) == num_units
@@ -113,7 +118,7 @@ class DownsampleModule(nn.Module):
         return tuple(out)
 
 
-class UpsampleUnit(nn.Module):
+class UpsampleUnit(BaseModule):
     """Upsample unit for upsample module.
 
     Args:
@@ -133,6 +138,8 @@ class UpsampleUnit(nn.Module):
             Default: dict(type='BN')
         out_channels (int): Number of channels of feature output by upsample
             module. Must equal to in_channels of downsample module. Default:64
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -143,10 +150,11 @@ class UpsampleUnit(nn.Module):
                  gen_skip=False,
                  gen_cross_conv=False,
                  norm_cfg=dict(type='BN'),
-                 out_channels=64):
+                 out_channels=64,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.num_units = num_units
         self.norm_cfg = norm_cfg
         self.in_skip = ConvModule(
@@ -229,7 +237,7 @@ class UpsampleUnit(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class UpsampleModule(nn.Module):
+class UpsampleModule(BaseModule):
     """Upsample module for MSPN.
 
     Args:
@@ -244,6 +252,8 @@ class UpsampleModule(nn.Module):
             Default: dict(type='BN')
         out_channels (int): Number of channels of feature output by upsample
             module. Must equal to in_channels of downsample module. Default:64
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -252,10 +262,11 @@ class UpsampleModule(nn.Module):
                  gen_skip=False,
                  gen_cross_conv=False,
                  norm_cfg=dict(type='BN'),
-                 out_channels=64):
+                 out_channels=64,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.in_channels = list()
         for i in range(num_units):
             self.in_channels.append(Bottleneck.expansion * out_channels *
@@ -301,7 +312,7 @@ class UpsampleModule(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class SingleStageNetwork(nn.Module):
+class SingleStageNetwork(BaseModule):
     """Single_stage Network.
 
     Args:
@@ -319,6 +330,8 @@ class SingleStageNetwork(nn.Module):
             Default: dict(type='BN')
         in_channels (int): Number of channels of the feature from ResNetTop.
             Default: 64.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -329,11 +342,12 @@ class SingleStageNetwork(nn.Module):
                  num_units=4,
                  num_blocks=[2, 2, 2, 2],
                  norm_cfg=dict(type='BN'),
-                 in_channels=64):
+                 in_channels=64,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
         num_blocks = cp.deepcopy(num_blocks)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         assert len(num_blocks) == num_units
         self.has_skip = has_skip
         self.gen_skip = gen_skip
@@ -355,19 +369,21 @@ class SingleStageNetwork(nn.Module):
         return out, skip1, skip2, cross_conv
 
 
-class ResNetTop(nn.Module):
+class ResNetTop(BaseModule):
     """ResNet top for MSPN.
 
     Args:
         norm_cfg (dict): dictionary to construct and config norm layer.
             Default: dict(type='BN')
         channels (int): Number of channels of the feature output by ResNetTop.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
-    def __init__(self, norm_cfg=dict(type='BN'), channels=64):
+    def __init__(self, norm_cfg=dict(type='BN'), channels=64, init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.top = nn.Sequential(
             ConvModule(
                 3,
@@ -400,6 +416,19 @@ class MSPN(BaseBackbone):
             Default: dict(type='BN')
         res_top_channels (int): Number of channels of feature from ResNetTop.
             Default: 64.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm']),
+                dict(
+                    type='Normal',
+                    std=0.01,
+                    layer=['Linear']),
+            ]``
 
     Example:
         >>> from mmpose.models import MSPN
@@ -424,11 +453,19 @@ class MSPN(BaseBackbone):
                  num_units=4,
                  num_blocks=[2, 2, 2, 2],
                  norm_cfg=dict(type='BN'),
-                 res_top_channels=64):
+                 res_top_channels=64,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm']),
+                     dict(type='Normal', std=0.01, layer=['Linear']),
+                 ]):
         # Protect mutable default arguments
         norm_cfg = cp.deepcopy(norm_cfg)
         num_blocks = cp.deepcopy(num_blocks)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.unit_channels = unit_channels
         self.num_stages = num_stages
         self.num_units = num_units
@@ -468,11 +505,12 @@ class MSPN(BaseBackbone):
 
         return out_feats
 
-    def init_weights(self, pretrained=None):
+    def init_weights(self):
         """Initialize model weights."""
-        if isinstance(pretrained, str):
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
             logger = get_root_logger()
-            state_dict_tmp = get_state_dict(pretrained)
+            state_dict_tmp = get_state_dict(self.init_cfg['checkpoint'])
             state_dict = OrderedDict()
             state_dict['top'] = OrderedDict()
             state_dict['bottlenecks'] = OrderedDict()
@@ -500,14 +538,4 @@ class MSPN(BaseBackbone):
                     strict=False,
                     logger=logger)
         else:
-            for m in self.multi_stage_mspn.modules():
-                if isinstance(m, nn.Conv2d):
-                    kaiming_init(m)
-                elif isinstance(m, nn.BatchNorm2d):
-                    constant_init(m, 1)
-                elif isinstance(m, nn.Linear):
-                    normal_init(m, std=0.01)
-
-            for m in self.top.modules():
-                if isinstance(m, nn.Conv2d):
-                    kaiming_init(m)
+            super(MSPN, self).init_weights()

@@ -6,12 +6,13 @@ import torch.utils.checkpoint as cp
 from mmcv.cnn import ConvModule, build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks import ContextBlock
 from mmcv.utils.parrots_wrapper import _BatchNorm
+from mmengine.model import BaseModule, Sequential
 
 from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
 
 
-class ViPNAS_Bottleneck(nn.Module):
+class ViPNAS_Bottleneck(BaseModule):
     """Bottleneck block for ViPNAS_ResNet.
 
     Args:
@@ -36,6 +37,8 @@ class ViPNAS_Bottleneck(nn.Module):
         groups (int): group number of conv2 searched in ViPNAS.
         attention (bool): whether to use attention module in the end of
             the block.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -51,10 +54,11 @@ class ViPNAS_Bottleneck(nn.Module):
                  norm_cfg=dict(type='BN'),
                  kernel_size=3,
                  groups=1,
-                 attention=False):
+                 attention=False,
+                 init_cfg=None):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         assert style in ['pytorch', 'caffe']
 
         self.in_channels = in_channels
@@ -205,7 +209,7 @@ def get_expansion(block, expansion=None):
     return expansion
 
 
-class ViPNAS_ResLayer(nn.Sequential):
+class ViPNAS_ResLayer(Sequential):
     """ViPNAS_ResLayer to build ResNet style backbone.
 
     Args:
@@ -233,6 +237,8 @@ class ViPNAS_ResLayer(nn.Sequential):
             searched in the block.
         attention (bool): Whether to use attention module in the end of the
             block.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -249,6 +255,7 @@ class ViPNAS_ResLayer(nn.Sequential):
                  kernel_size=3,
                  groups=1,
                  attention=False,
+                 init_cfg=None,
                  **kwargs):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
@@ -336,7 +343,7 @@ class ViPNAS_ResLayer(nn.Sequential):
                     attention=attention,
                     **kwargs))
 
-        super().__init__(*layers)
+        super().__init__(*layers, init_cfg=init_cfg)
 
 
 @MODELS.register_module()
@@ -383,6 +390,15 @@ class ViPNAS_ResNet(BaseBackbone):
         ks (list(int)): Searched kernel size config for each stage.
         group (list(int)): Searched group number config for each stage.
         att (list(bool)): Searched attention config for each stage.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
     """
 
     arch_settings = {
@@ -410,10 +426,17 @@ class ViPNAS_ResNet(BaseBackbone):
                  dep=[None, 4, 6, 7, 3],
                  ks=[7, 3, 5, 5, 5],
                  group=[None, 16, 16, 16, 16],
-                 att=[None, True, False, True, True]):
+                 att=[None, True, False, True, True],
+                 init_cfg=[
+                     dict(type='Normal', std=0.001, layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for resnet')
         self.depth = depth
@@ -545,20 +568,6 @@ class ViPNAS_ResNet(BaseBackbone):
             for param in m.parameters():
                 param.requires_grad = False
 
-    def init_weights(self, pretrained=None):
-        """Initialize model weights."""
-        super().init_weights(pretrained)
-        if pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    nn.init.normal_(m.weight, std=0.001)
-                    for name, _ in m.named_parameters():
-                        if name in ['bias']:
-                            nn.init.constant_(m.bias, 0)
-                elif isinstance(m, nn.BatchNorm2d):
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
-
     def forward(self, x):
         """Forward function."""
         if self.deep_stem:
@@ -574,8 +583,6 @@ class ViPNAS_ResNet(BaseBackbone):
             x = res_layer(x)
             if i in self.out_indices:
                 outs.append(x)
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)
 
     def train(self, mode=True):
