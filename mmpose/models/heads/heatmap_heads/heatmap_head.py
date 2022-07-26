@@ -101,6 +101,10 @@ class HeatmapHead(BaseHead):
 
         # Get model input channels according to feature
         in_channels = self._get_in_channels()
+        if isinstance(in_channels, list):
+            raise ValueError(
+                f'{self.__class__.__name__} does not support selecting '
+                'multiple input features.')
 
         if deconv_out_channels:
             if deconv_kernel_sizes is None or len(deconv_out_channels) != len(
@@ -229,10 +233,6 @@ class HeatmapHead(BaseHead):
             Tensor: output heatmap.
         """
         x = self._transform_inputs(feats)
-
-        assert isinstance(x, Tensor), (
-            'Selecting multiple features as the inputs is not supported in '
-            f'{self.__class__.__name__}')
 
         x = self.deconv_layers(x)
         x = self.conv_layers(x)

@@ -2,7 +2,6 @@
 from typing import List, Tuple
 from unittest import TestCase
 
-import numpy as np
 import torch
 from torch import nn
 
@@ -133,7 +132,7 @@ class TestHeatmapHead(TestCase):
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
         self.assertIn('pred_fields', preds[0])
-        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 48, 64))
+        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 64, 48))
 
     def test_loss(self):
         head = HeatmapHead(
@@ -148,7 +147,7 @@ class TestHeatmapHead(TestCase):
         losses = head.loss(feats, batch_data_samples)
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], np.float32)
+        self.assertIsInstance(losses['acc_pose'], float)
 
     def test_errors(self):
         # Invalid arguments
@@ -168,24 +167,20 @@ class TestHeatmapHead(TestCase):
 
         with self.assertRaisesRegex(ValueError, 'Unsupported kernel size'):
             _ = HeatmapHead(
-                in_channels=[16, 32],
+                in_channels=16,
                 out_channels=17,
                 deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(2, ))
+                deconv_kernel_sizes=(1, ))
 
-        # Select multiple features
-        head = HeatmapHead(
-            in_channels=[16, 32],
-            out_channels=17,
-            input_transform='select',
-            input_index=[0, 1])
-
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-
-        with self.assertRaisesRegex(AssertionError,
-                                    'Selecting multiple features'):
-            _ = head.forward(feats)
+        with self.assertRaisesRegex(ValueError,
+                                    'selecting multiple input features'):
+            _ = HeatmapHead(
+                in_channels=[16, 32],
+                out_channels=17,
+                input_transform='select',
+                input_index=[0, 1],
+                deconv_out_channels=(256, ),
+                deconv_kernel_sizes=(4, ))
 
     def test_state_dict_compatible(self):
         # Typical setting for HRNet
