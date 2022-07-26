@@ -1024,3 +1024,59 @@ def test_top_down_h36m_dataset():
 
     with pytest.raises(KeyError):
         _ = custom_dataset.evaluate(results, metric='AUC')
+
+
+def test_top_down_CARFUSION_dataset():
+    dataset = 'TopDownCarFusionDataset'
+    dataset_info = Config.fromfile(
+        'configs/_base_/datasets/carfusion.py').dataset_info
+    # test COCO datasets
+    dataset_class = DATASETS.get(dataset)
+    dataset_class.load_annotations = MagicMock()
+    dataset_class.coco = MagicMock()
+
+    channel_cfg = dict(
+        num_output_channels=14,
+        dataset_joints=14,
+        dataset_channel=[
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        ],
+        inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+
+    data_cfg = dict(
+        image_size=[192, 256],
+        heatmap_size=[48, 64],
+        num_output_channels=channel_cfg['num_output_channels'],
+        num_joints=channel_cfg['dataset_joints'],
+        dataset_channel=channel_cfg['dataset_channel'],
+        inference_channel=channel_cfg['inference_channel'],
+        soft_nms=False,
+        nms_thr=1.0,
+        oks_thr=0.9,
+        vis_thr=0.2,
+        use_gt_bbox=True,
+        det_bbox_thr=0.0,
+        bbox_file='tests/data/carfusion/test_carfusion_det_AP_H_56.json',
+    )
+
+    # Test gt bbox
+    custom_dataset = dataset_class(
+        ann_file='tests/data/carfusion/carfusion_coco.json',
+        img_prefix='tests/data/carfusion/',
+        data_cfg=data_cfg,
+        pipeline=[],
+        dataset_info=dataset_info,
+        test_mode=True)
+
+    assert custom_dataset.test_mode is True
+    assert custom_dataset.dataset_name == 'carfusion'
+    image_id = 101728037
+    assert image_id in custom_dataset.img_ids
+    _ = custom_dataset[0]
+
+    results = convert_db_to_output(custom_dataset.db)
+    infos = custom_dataset.evaluate(results, metric='mAP')
+    assert_almost_equal(infos['AP'], 1.0)
+
+    with pytest.raises(KeyError):
+        _ = custom_dataset.evaluate(results, metric='PCK')
