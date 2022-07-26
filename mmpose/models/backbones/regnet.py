@@ -43,6 +43,15 @@ class RegNet(ResNet):
             memory while slowing down the training speed. Default: False.
         zero_init_residual (bool): whether to use zero init for last norm layer
             in resblocks to let them behave as identity. Default: True.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Kaiming', layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
 
     Example:
         >>> from mmpose.models import RegNet
@@ -101,10 +110,17 @@ class RegNet(ResNet):
                  norm_cfg=dict(type='BN', requires_grad=True),
                  norm_eval=False,
                  with_cp=False,
-                 zero_init_residual=True):
+                 zero_init_residual=True,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(
+                         type='Constant',
+                         val=1,
+                         layer=['_BatchNorm', 'GroupNorm'])
+                 ]):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super(ResNet, self).__init__()
+        super(ResNet, self).__init__(init_cfg=init_cfg)
 
         # Generate RegNet parameters first
         if isinstance(arch, str):
@@ -312,6 +328,4 @@ class RegNet(ResNet):
             if i in self.out_indices:
                 outs.append(x)
 
-        if len(outs) == 1:
-            return outs[0]
         return tuple(outs)

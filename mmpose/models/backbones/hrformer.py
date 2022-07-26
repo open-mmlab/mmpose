@@ -4,11 +4,10 @@ import math
 
 import torch
 import torch.nn as nn
-# from timm.models.layers import to_2tuple, trunc_normal_
 from mmcv.cnn import (build_activation_layer, build_conv_layer,
                       build_norm_layer, trunc_normal_init)
 from mmcv.cnn.bricks.transformer import build_dropout
-from mmcv.runner import BaseModule
+from mmengine.model import BaseModule
 from torch.nn.functional import pad
 
 from mmpose.registry import MODELS
@@ -67,7 +66,7 @@ class WindowMSA(BaseModule):
         proj_drop_rate (float, optional): Dropout ratio of output. Default: 0.
         with_rpe (bool, optional): If True, use relative position bias.
             Default: True.
-        init_cfg (dict | None, optional): The Config for initialization.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None.
     """
 
@@ -181,7 +180,7 @@ class LocalWindowSelfAttention(BaseModule):
             Default: True.
         with_pad_mask (bool, optional): If True, mask out the padded tokens in
             the attention process. Default: False.
-        init_cfg (dict | None, optional): The Config for initialization.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None.
     """
 
@@ -270,7 +269,7 @@ class CrossFFN(BaseModule):
             right after DW Conv. Default: dict(type='GELU').
         norm_cfg (dict, optional): Config of norm layer.
             Default: dict(type='SyncBN').
-        init_cfg (dict | list | None, optional): The init config.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None.
     """
 
@@ -333,7 +332,7 @@ class HRFormerBlock(BaseModule):
             Default: dict(type='SyncBN').
         transformer_norm_cfg (dict, optional): Config of transformer norm
             layer. Default: dict(type='LN', eps=1e-6).
-        init_cfg (dict | list | None, optional): The init config.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
             Default: None.
     """
 
@@ -425,6 +424,8 @@ class HRFomerModule(HRModule):
             memory while slowing down the training speed. Default: False
         upsample_cfg(dict, optional): The config of upsample layers in fuse
             layers. Default: dict(mode='bilinear', align_corners=False)
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None.
     """
 
     def __init__(self,
@@ -444,7 +445,8 @@ class HRFomerModule(HRModule):
                  norm_cfg=dict(type='SyncBN', requires_grad=True),
                  transformer_norm_cfg=dict(type='LN', eps=1e-6),
                  with_cp=False,
-                 upsample_cfg=dict(mode='bilinear', align_corners=False)):
+                 upsample_cfg=dict(mode='bilinear', align_corners=False),
+                 **kwargs):
 
         self.transformer_norm_cfg = transformer_norm_cfg
         self.drop_paths = drop_paths
@@ -456,7 +458,7 @@ class HRFomerModule(HRModule):
 
         super().__init__(num_branches, block, num_blocks, num_inchannels,
                          num_channels, multiscale_output, with_cp, conv_cfg,
-                         norm_cfg, upsample_cfg)
+                         norm_cfg, upsample_cfg, **kwargs)
 
     def _make_one_branch(self,
                          branch_index,
@@ -609,6 +611,16 @@ class HRFormer(HRNet):
             in resblocks to let them behave as identity. Default: False.
         frozen_stages (int): Stages to be frozen (stop grad and set eval mode).
             -1 means not freezing any parameters. Default: -1.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
+
     Example:
         >>> from mmpose.models import HRFormer
         >>> import torch
@@ -660,16 +672,22 @@ class HRFormer(HRNet):
 
     blocks_dict = {'BOTTLENECK': Bottleneck, 'HRFORMERBLOCK': HRFormerBlock}
 
-    def __init__(self,
-                 extra,
-                 in_channels=3,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN', requires_grad=True),
-                 transformer_norm_cfg=dict(type='LN', eps=1e-6),
-                 norm_eval=False,
-                 with_cp=False,
-                 zero_init_residual=False,
-                 frozen_stages=-1):
+    def __init__(
+        self,
+        extra,
+        in_channels=3,
+        conv_cfg=None,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        transformer_norm_cfg=dict(type='LN', eps=1e-6),
+        norm_eval=False,
+        with_cp=False,
+        zero_init_residual=False,
+        frozen_stages=-1,
+        init_cfg=[
+            dict(type='Normal', std=0.001, layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ):
 
         # stochastic depth
         depths = [
@@ -696,7 +714,7 @@ class HRFormer(HRNet):
         self.with_pad_mask = extra.get('with_pad_mask', False)
 
         super().__init__(extra, in_channels, conv_cfg, norm_cfg, norm_eval,
-                         with_cp, zero_init_residual, frozen_stages)
+                         with_cp, zero_init_residual, frozen_stages, init_cfg)
 
     def _make_stage(self,
                     layer_config,

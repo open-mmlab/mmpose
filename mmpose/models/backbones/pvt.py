@@ -1,23 +1,22 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import math
 import warnings
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import (Conv2d, build_activation_layer, build_norm_layer,
-                      constant_init, normal_init, trunc_normal_init)
+from mmcv.cnn import Conv2d, build_activation_layer, build_norm_layer
 from mmcv.cnn.bricks.drop import build_dropout
 from mmcv.cnn.bricks.transformer import MultiheadAttention
-from mmcv.cnn.utils.weight_init import trunc_normal_
-from mmcv.runner import (BaseModule, ModuleList, Sequential, _load_checkpoint,
-                         load_state_dict)
+from mmengine.model import BaseModule, ModuleList, Sequential
+from mmengine.model.utils import trunc_normal_
+from mmengine.runner import load_state_dict
 from torch.nn.modules.utils import _pair as to_2tuple
 
 from mmpose.registry import MODELS
 from ...utils import get_root_logger
 from ..utils import PatchEmbed, nchw_to_nlc, nlc_to_nchw, pvt_convert
+from .utils import get_state_dict
 
 
 class MixFFN(BaseModule):
@@ -40,8 +39,8 @@ class MixFFN(BaseModule):
             Default: None.
         use_conv (bool): If True, add 3x3 DWConv between two Linear layers.
             Defaults: False.
-        init_cfg (obj:`mmcv.ConfigDict`): The Config for initialization.
-            Default: None.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -122,8 +121,8 @@ class SpatialReductionAttention(MultiheadAttention):
             Default: dict(type='LN').
         sr_ratio (int): The ratio of spatial reduction of Spatial Reduction
             Attention of PVT. Default: 1.
-        init_cfg (obj:`mmcv.ConfigDict`): The Config for initialization.
-            Default: None.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -238,8 +237,8 @@ class PVTEncoderLayer(BaseModule):
             Attention of PVT. Default: 1.
         use_conv_ffn (bool): If True, use Convolutional FFN to replace FFN.
             Default: False.
-        init_cfg (dict, optional): Initialization config dict.
-            Default: None.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -296,6 +295,8 @@ class AbsolutePositionEmbedding(BaseModule):
         pos_dim (int): The dimension of the absolute position embedding.
         drop_rate (float): Probability of an element to be zeroed.
             Default: 0.0.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None.
     """
 
     def __init__(self, pos_shape, pos_dim, drop_rate=0., init_cfg=None):
@@ -404,7 +405,12 @@ class PyramidVisionTransformer(BaseModule):
             to convert some keys to make it compatible.
             Default: True.
         init_cfg (dict or list[dict], optional): Initialization config dict.
-            Default: None.
+            Default:
+            ``[
+                dict(type='TruncNormal', std=.02, layer=['Linear']),
+                dict(type='Constant', val=1, layer=['LayerNorm']),
+                dict(type='Normal', std=0.01, layer=['Conv2d'])
+            ]``
     """
 
     def __init__(self,
@@ -429,9 +435,12 @@ class PyramidVisionTransformer(BaseModule):
                  use_conv_ffn=False,
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN', eps=1e-6),
-                 pretrained=None,
                  convert_weights=True,
-                 init_cfg=None):
+                 init_cfg=[
+                     dict(type='TruncNormal', std=.02, layer=['Linear']),
+                     dict(type='Constant', val=1, layer=['LayerNorm']),
+                     dict(type='Kaiming', layer=['Conv2d'])
+                 ]):
         super().__init__(init_cfg=init_cfg)
 
         self.convert_weights = convert_weights
@@ -443,15 +452,6 @@ class PyramidVisionTransformer(BaseModule):
             assert len(pretrain_img_size) == 2, \
                 f'The size of image should have length 1 or 2, ' \
                 f'but got {len(pretrain_img_size)}'
-
-        assert not (init_cfg and pretrained), \
-            'init_cfg and pretrained cannot be setting at the same time'
-        if isinstance(pretrained, str):
-            self.init_cfg = dict(type='Pretrained', checkpoint=pretrained)
-        elif pretrained is None:
-            self.init_cfg = init_cfg
-        else:
-            raise TypeError('pretrained must be a str or None')
 
         self.embed_dims = embed_dims
 
@@ -466,7 +466,6 @@ class PyramidVisionTransformer(BaseModule):
 
         self.out_indices = out_indices
         assert max(out_indices) < self.num_stages
-        self.pretrained = pretrained
 
         # transformer encoder
         dpr = [
@@ -518,48 +517,26 @@ class PyramidVisionTransformer(BaseModule):
             self.layers.append(ModuleList([patch_embed, layers, norm]))
             cur += num_layer
 
-    def init_weights(self, pretrained=None):
-        if isinstance(pretrained, str):
-            self.init_cfg = dict(type='Pretrained', checkpoint=pretrained)
+    def init_weights(self):
+        """Initialize the weights in backbone."""
 
-        logger = get_root_logger()
-        if self.init_cfg is None:
-            logger.warn(f'No pre-trained weights for '
-                        f'{self.__class__.__name__}, '
-                        f'training start from scratch')
-            for m in self.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_init(m, std=.02, bias=0.)
-                elif isinstance(m, nn.LayerNorm):
-                    constant_init(m, 1.0)
-                elif isinstance(m, nn.Conv2d):
-                    fan_out = m.kernel_size[0] * m.kernel_size[
-                        1] * m.out_channels
-                    fan_out //= m.groups
-                    normal_init(m, 0, math.sqrt(2.0 / fan_out))
-                elif isinstance(m, AbsolutePositionEmbedding):
-                    m.init_weights()
-        else:
-            assert 'checkpoint' in self.init_cfg, f'Only support ' \
-                                                  f'specify `Pretrained` in ' \
-                                                  f'`init_cfg` in ' \
-                                                  f'{self.__class__.__name__} '
-            checkpoint = _load_checkpoint(
-                self.init_cfg['checkpoint'], logger=logger, map_location='cpu')
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            logger = get_root_logger()
+            state_dict = get_state_dict(
+                self.init_cfg['checkpoint'], map_location='cpu')
             logger.warn(f'Load pre-trained model for '
                         f'{self.__class__.__name__} from original repo')
-            if 'state_dict' in checkpoint:
-                state_dict = checkpoint['state_dict']
-            elif 'model' in checkpoint:
-                state_dict = checkpoint['model']
-            else:
-                state_dict = checkpoint
+
             if self.convert_weights:
                 # Because pvt backbones are not supported by mmcls,
                 # so we need to convert pre-trained weights to match this
                 # implementation.
                 state_dict = pvt_convert(state_dict)
             load_state_dict(self, state_dict, strict=False, logger=logger)
+
+        else:
+            super(PyramidVisionTransformer, self).init_weights()
 
     def forward(self, x):
         outs = []

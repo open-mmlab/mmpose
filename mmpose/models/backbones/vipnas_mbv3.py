@@ -1,14 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-import logging
 
-import torch.nn as nn
 from mmcv.cnn import ConvModule
 from torch.nn.modules.batchnorm import _BatchNorm
 
 from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone
-from .utils import InvertedResidual, load_checkpoint
+from .utils import InvertedResidual
 
 
 @MODELS.register_module()
@@ -40,28 +38,40 @@ class ViPNAS_MobileNetV3(BaseBackbone):
         with_cp (bool): Use checkpoint or not. Using checkpoint will save
             some memory while slowing down the training speed.
             Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default:
+            ``[
+                dict(type='Normal', std=0.001, layer=['Conv2d']),
+                dict(
+                    type='Constant',
+                    val=1,
+                    layer=['_BatchNorm', 'GroupNorm'])
+            ]``
     """
 
-    def __init__(self,
-                 wid=[16, 16, 24, 40, 80, 112, 160],
-                 expan=[None, 1, 5, 4, 5, 5, 6],
-                 dep=[None, 1, 4, 4, 4, 4, 4],
-                 ks=[3, 3, 7, 7, 5, 7, 5],
-                 group=[None, 8, 120, 20, 100, 280, 240],
-                 att=[None, True, True, False, True, True, True],
-                 stride=[2, 1, 2, 2, 2, 1, 2],
-                 act=[
-                     'HSwish', 'ReLU', 'ReLU', 'ReLU', 'HSwish', 'HSwish',
-                     'HSwish'
-                 ],
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 frozen_stages=-1,
-                 norm_eval=False,
-                 with_cp=False):
+    def __init__(
+        self,
+        wid=[16, 16, 24, 40, 80, 112, 160],
+        expan=[None, 1, 5, 4, 5, 5, 6],
+        dep=[None, 1, 4, 4, 4, 4, 4],
+        ks=[3, 3, 7, 7, 5, 7, 5],
+        group=[None, 8, 120, 20, 100, 280, 240],
+        att=[None, True, True, False, True, True, True],
+        stride=[2, 1, 2, 2, 2, 1, 2],
+        act=['HSwish', 'ReLU', 'ReLU', 'ReLU', 'HSwish', 'HSwish', 'HSwish'],
+        conv_cfg=None,
+        norm_cfg=dict(type='BN'),
+        frozen_stages=-1,
+        norm_eval=False,
+        with_cp=False,
+        init_cfg=[
+            dict(type='Normal', std=0.001, layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ):
         # Protect mutable default arguments
         norm_cfg = copy.deepcopy(norm_cfg)
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.wid = wid
         self.expan = expan
         self.dep = dep
@@ -134,23 +144,6 @@ class ViPNAS_MobileNetV3(BaseBackbone):
                 layers.append(layer_name)
         return layers
 
-    def init_weights(self, pretrained=None):
-        if isinstance(pretrained, str):
-            logger = logging.getLogger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
-        elif pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    nn.init.normal_(m.weight, std=0.001)
-                    for name, _ in m.named_parameters():
-                        if name in ['bias']:
-                            nn.init.constant_(m.bias, 0)
-                elif isinstance(m, nn.BatchNorm2d):
-                    nn.init.constant_(m.weight, 1)
-                    nn.init.constant_(m.bias, 0)
-        else:
-            raise TypeError('pretrained must be a str or None')
-
     def forward(self, x):
         x = self.conv1(x)
 
@@ -158,7 +151,7 @@ class ViPNAS_MobileNetV3(BaseBackbone):
             layer = getattr(self, layer_name)
             x = layer(x)
 
-        return x
+        return (x, )
 
     def _freeze_stages(self):
         if self.frozen_stages >= 0:

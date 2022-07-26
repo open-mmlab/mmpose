@@ -6,20 +6,22 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as cp
-from mmcv.cnn import build_norm_layer, constant_init, trunc_normal_init
+from mmcv.cnn import build_norm_layer
 from mmcv.cnn.bricks.transformer import FFN, build_dropout
-from mmcv.cnn.utils.weight_init import trunc_normal_
-from mmcv.runner import _load_checkpoint
 from mmcv.utils import to_2tuple
+from mmengine.model import BaseModule
+from mmengine.model.utils import trunc_normal_
+from mmengine.runner import load_state_dict
 
 from mmpose.registry import MODELS
 from ...utils import get_root_logger
 from .base_backbone import BaseBackbone
+from .utils import get_state_dict
 from .utils.ckpt_convert import swin_converter
 from .utils.transformer import PatchEmbed, PatchMerging
 
 
-class WindowMSA(nn.Module):
+class WindowMSA(BaseModule):
     """Window based multi-head self-attention (W-MSA) module with relative
     position bias.
 
@@ -34,6 +36,8 @@ class WindowMSA(nn.Module):
         attn_drop_rate (float, optional): Dropout ratio of attention weight.
             Default: 0.0
         proj_drop_rate (float, optional): Dropout ratio of output. Default: 0.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None.
     """
 
     def __init__(self,
@@ -43,9 +47,10 @@ class WindowMSA(nn.Module):
                  qkv_bias=True,
                  qk_scale=None,
                  attn_drop_rate=0.,
-                 proj_drop_rate=0.):
+                 proj_drop_rate=0.,
+                 init_cfg=None):
 
-        super().__init__()
+        super().__init__(init_cfg=init_cfg)
         self.embed_dims = embed_dims
         self.window_size = window_size  # Wh, Ww
         self.num_heads = num_heads
@@ -121,7 +126,7 @@ class WindowMSA(nn.Module):
         return (seq1[:, None] + seq2[None, :]).reshape(1, -1)
 
 
-class ShiftWindowMSA(nn.Module):
+class ShiftWindowMSA(BaseModule):
     """Shifted Window Multihead Self-Attention Module.
 
     Args:
@@ -140,6 +145,8 @@ class ShiftWindowMSA(nn.Module):
             Defaults: 0.
         dropout_layer (dict, optional): The dropout_layer used before output.
             Defaults: dict(type='DropPath', drop_prob=0.).
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -151,8 +158,9 @@ class ShiftWindowMSA(nn.Module):
                  qk_scale=None,
                  attn_drop_rate=0,
                  proj_drop_rate=0,
-                 dropout_layer=dict(type='DropPath', drop_prob=0.)):
-        super().__init__()
+                 dropout_layer=dict(type='DropPath', drop_prob=0.),
+                 init_cfg=None):
+        super().__init__(init_cfg=init_cfg)
 
         self.window_size = window_size
         self.shift_size = shift_size
@@ -277,7 +285,7 @@ class ShiftWindowMSA(nn.Module):
         return windows
 
 
-class SwinBlock(nn.Module):
+class SwinBlock(BaseModule):
     """"
     Args:
         embed_dims (int): The feature dimension.
@@ -298,6 +306,8 @@ class SwinBlock(nn.Module):
         with_cp (bool, optional): Use checkpoint or not. Using checkpoint
             will save some memory while slowing down the training speed.
             Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -313,9 +323,10 @@ class SwinBlock(nn.Module):
                  drop_path_rate=0.,
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
-                 with_cp=False):
+                 with_cp=False,
+                 init_cfg=None):
 
-        super(SwinBlock, self).__init__()
+        super(SwinBlock, self).__init__(init_cfg=init_cfg)
 
         self.with_cp = with_cp
 
@@ -365,7 +376,7 @@ class SwinBlock(nn.Module):
         return x
 
 
-class SwinBlockSequence(nn.Module):
+class SwinBlockSequence(BaseModule):
     """Implements one stage in Swin Transformer.
 
     Args:
@@ -390,6 +401,8 @@ class SwinBlockSequence(nn.Module):
         with_cp (bool, optional): Use checkpoint or not. Using checkpoint
             will save some memory while slowing down the training speed.
             Default: False.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: None
     """
 
     def __init__(self,
@@ -406,8 +419,9 @@ class SwinBlockSequence(nn.Module):
                  downsample=None,
                  act_cfg=dict(type='GELU'),
                  norm_cfg=dict(type='LN'),
-                 with_cp=False):
-        super().__init__()
+                 with_cp=False,
+                 init_cfg=None):
+        super().__init__(init_cfg=init_cfg)
 
         if isinstance(drop_path_rate, list):
             drop_path_rates = drop_path_rate
@@ -500,33 +514,40 @@ class SwinTransformer(BaseBackbone):
             Default: False.
         frozen_stages (int): Stages to be frozen (stop grad and set eval mode).
             Default: -1 (-1 means not freezing any parameters).
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+            Default: ``[
+                dict(type='TruncNormal', std=.02, layer=['Linear']),
+                dict(type='Constant', val=1, layer=['LayerNorm']),
+            ]``
     """
 
-    def __init__(
-        self,
-        pretrain_img_size=224,
-        in_channels=3,
-        embed_dims=96,
-        patch_size=4,
-        window_size=7,
-        mlp_ratio=4,
-        depths=(2, 2, 6, 2),
-        num_heads=(3, 6, 12, 24),
-        strides=(4, 2, 2, 2),
-        out_indices=(0, 1, 2, 3),
-        qkv_bias=True,
-        qk_scale=None,
-        patch_norm=True,
-        drop_rate=0.,
-        attn_drop_rate=0.,
-        drop_path_rate=0.1,
-        use_abs_pos_embed=False,
-        act_cfg=dict(type='GELU'),
-        norm_cfg=dict(type='LN'),
-        with_cp=False,
-        convert_weights=False,
-        frozen_stages=-1,
-    ):
+    def __init__(self,
+                 pretrain_img_size=224,
+                 in_channels=3,
+                 embed_dims=96,
+                 patch_size=4,
+                 window_size=7,
+                 mlp_ratio=4,
+                 depths=(2, 2, 6, 2),
+                 num_heads=(3, 6, 12, 24),
+                 strides=(4, 2, 2, 2),
+                 out_indices=(0, 1, 2, 3),
+                 qkv_bias=True,
+                 qk_scale=None,
+                 patch_norm=True,
+                 drop_rate=0.,
+                 attn_drop_rate=0.,
+                 drop_path_rate=0.1,
+                 use_abs_pos_embed=False,
+                 act_cfg=dict(type='GELU'),
+                 norm_cfg=dict(type='LN'),
+                 with_cp=False,
+                 convert_weights=False,
+                 frozen_stages=-1,
+                 init_cfg=[
+                     dict(type='TruncNormal', std=.02, layer=['Linear']),
+                     dict(type='Constant', val=1, layer=['LayerNorm']),
+                 ]):
         self.convert_weights = convert_weights
         self.frozen_stages = frozen_stages
         if isinstance(pretrain_img_size, int):
@@ -538,7 +559,7 @@ class SwinTransformer(BaseBackbone):
                 f'The size of image should have length 1 or 2, ' \
                 f'but got {len(pretrain_img_size)}'
 
-        super(SwinTransformer, self).__init__()
+        super(SwinTransformer, self).__init__(init_cfg=init_cfg)
 
         num_layers = len(depths)
         self.out_indices = out_indices
@@ -643,24 +664,17 @@ class SwinTransformer(BaseBackbone):
             pretrained (str, optional): Path to pre-trained weights.
                 Defaults to None.
         """
-        if isinstance(pretrained, str):
+        if (isinstance(self.init_cfg, dict)
+                and self.init_cfg['type'] == 'Pretrained'):
+            # Suppress zero_init_residual if use pretrained model.
             logger = get_root_logger()
-            ckpt = _load_checkpoint(
-                pretrained, logger=logger, map_location='cpu')
-            if 'state_dict' in ckpt:
-                _state_dict = ckpt['state_dict']
-            elif 'model' in ckpt:
-                _state_dict = ckpt['model']
-            else:
-                _state_dict = ckpt
+            _state_dict = get_state_dict(
+                self.init_cfg['checkpoint'], map_location='cpu')
             if self.convert_weights:
                 # supported loading weight from original repo,
                 _state_dict = swin_converter(_state_dict)
 
             state_dict = OrderedDict()
-            for k, v in _state_dict.items():
-                if k.startswith('backbone.'):
-                    state_dict[k[9:]] = v
 
             # strip prefix of state_dict
             if list(state_dict.keys())[0].startswith('module.'):
@@ -700,17 +714,12 @@ class SwinTransformer(BaseBackbone):
                         nH2, L2).permute(1, 0).contiguous()
 
             # load state_dict
-            self.load_state_dict(state_dict, False)
-        elif pretrained is None:
+            load_state_dict(self, state_dict, strict=False, logger=logger)
+
+        else:
+            super(SwinTransformer, self).init_weights()
             if self.use_abs_pos_embed:
                 trunc_normal_(self.absolute_pos_embed, std=0.02)
-            for m in self.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_init(m, std=.02, bias=0.)
-                elif isinstance(m, nn.LayerNorm):
-                    constant_init(m, 1.0)
-        else:
-            raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
         x, hw_shape = self.patch_embed(x)
@@ -730,4 +739,4 @@ class SwinTransformer(BaseBackbone):
                                                              2).contiguous()
                 outs.append(out)
 
-        return outs
+        return tuple(outs)
