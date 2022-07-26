@@ -100,10 +100,10 @@ class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
         """Ground truth bbox and keypoints."""
         gt_db = []
         for img_id in self.img_ids:
-            gt_db.extend(self._load_carfusion_keypoint_annotation_kernel(img_id))
+            gt_db.extend(self._load_carfusion_annotation_kernel(img_id))
         return gt_db
 
-    def _load_carfusion_keypoint_annotation_kernel(self, img_id):
+    def _load_carfusion_annotation_kernel(self, img_id):
         """load annotation from COCOAPI.
 
         Note:
@@ -214,8 +214,8 @@ class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
 
     @deprecated_api_warning(name_dict=dict(outputs='results'))
     def evaluate(self, results, res_folder=None, metric='mAP', **kwargs):
-        """Evaluate carfusion keypoint results. The pose prediction results will be
-        saved in ``${res_folder}/result_keypoints.json``.
+        """Evaluate carfusion keypoint results. The pose prediction results
+        will be saved in ``${res_folder}/result_keypoints.json``.
 
         Note:
             - batch_size: N
@@ -340,12 +340,12 @@ class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
         } for cls_ind, cls in enumerate(self.classes)
                      if not cls == '__background__']
 
-        results = self._carfusion_keypoint_results_one_category_kernel(data_pack[0])
+        results = self._carfusion_results_one_category_kernel(data_pack[0])
 
         with open(res_file, 'w') as f:
             json.dump(results, f, sort_keys=True, indent=4)
 
-    def _carfusion_keypoint_results_one_category_kernel(self, data_pack):
+    def _carfusion_results_one_category_kernel(self, data_pack):
         """Get carfusion keypoint results."""
         cat_id = data_pack['cat_id']
         keypoints = data_pack['keypoints']
