@@ -14,7 +14,7 @@ For hand bounding box detection, we simply train our hand box models on onehand1
 | Arch                                                              | Box AP |                               ckpt                                |                               log                                |
 | :---------------------------------------------------------------- | :----: | :---------------------------------------------------------------: | :--------------------------------------------------------------: |
 | [Cascade_R-CNN X-101-64x4d-FPN-1class](/demo/mmdetection_cfg/cascade_rcnn_x101_64x4d_fpn_1class.py) | 0.817  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k-dac19597_20201030.pth) | [log](https://download.openmmlab.com/mmpose/mmdet_pretrained/cascade_rcnn_x101_64x4d_fpn_20e_onehand10k_20201030.log.json) |
-| [ssdlite_mobilenetv2-1class](/demo/mmdetection_cfg/ssdlite_mobilenetv2_scratch_600e_onehand.py) | 0.779  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth) | [log](https://download.openmmlab.com/mmpose/mmdet_pretrainedssdlite_mobilenetv2_scratch_600e_onehand_20220523.log.json) |
+| [ssdlite_mobilenetv2-1class](/demo/mmdetection_cfg/ssdlite_mobilenetv2_scratch_600e_onehand.py) | 0.779  | [ckpt](https://download.openmmlab.com/mmpose/mmdet_pretrained/ssdlite_mobilenetv2_scratch_600e_onehand-4f9f8686_20220523.pth) | [log](https://download.openmmlab.com/mmpose/mmdet_pretrained/ssdlite_mobilenetv2_scratch_600e_onehand_20220523.log.json) |
 
 ### Animal Bounding Box Detection Models
 
