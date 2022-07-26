@@ -16,7 +16,7 @@ from ..base import Kpt2dSviewRgbImgTopDownDataset
 
 @DATASETS.register_module()
 class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
-    """CocoDataset dataset for top-down pose estimation.
+    """CarFusionDataset dataset for top-down pose estimation.
 
     The dataset loads raw features and apply specified transforms
     to return a dict containing the image tensors and other information.
@@ -31,7 +31,7 @@ class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
         6: 'Right Back HeadLight'
         7: 'Left Back HeadLight'
         8: 'Exhaust'
-        9:
+        9: 'Misllaneous'
         10: 'Right Front Top'
         11: 'Left Front Top'
         12: 'Right Back Top'
@@ -170,7 +170,7 @@ class TopDownCarFusionDataset(Kpt2dSviewRgbImgTopDownDataset):
         return rec
 
     def _load_carfusion_vehicle_detection_results(self):
-        """Load coco person detection results."""
+        """Load coco vehicle detection results."""
         num_joints = self.ann_info['num_joints']
         all_boxes = None
         with open(self.bbox_file, 'r') as f:
