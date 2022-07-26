@@ -81,6 +81,10 @@ class IntegralRegressionHead(BaseHead):
 
         # Get model input channels according to feature
         in_channels = self._get_in_channels()
+        if isinstance(in_channels, list):
+            raise ValueError(
+                f'{self.__class__.__name__} does not support selecting '
+                'multiple input features.')
 
         W, H = self.heatmap_size
         self.linspace_x = torch.arange(0.0, 1.0 * W, 1).reshape(1, W).repeat(
@@ -121,11 +125,7 @@ class IntegralRegressionHead(BaseHead):
         Returns:
             Tensor: output coordinates(and sigmas[optional]).
         """
-        x = self._transform_inputs(feats)
-
-        assert isinstance(x, Tensor), (
-            'Selecting multiple features as the inputs is not supported in '
-            f'{self.__class__.__name__}')
+        feats = self._transform_inputs(feats)
 
         heatmaps = self._flat_softmax(feats)
         pred_x = self._linear_expectation(heatmaps, self.linspace_x)

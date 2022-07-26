@@ -155,6 +155,6 @@ class TestIntegralRegressionHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
 
-        with self.assertRaisesRegex(AssertionError,
-                                    'Selecting multiple features'):
+        with self.assertRaisesRegex(ValueError,
+                                    'selecting multiple input features'):
             _ = head.forward(feats)
