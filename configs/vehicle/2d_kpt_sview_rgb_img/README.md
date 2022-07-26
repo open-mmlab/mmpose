@@ -44,19 +44,17 @@ mmpose
 `── data
     │── coco
         │-- annotations
-        │   │-- carfusion_train.json
-        │   |-- carfusion_test.json
-        │-- images
-        │   │-- carfusion
-            	│-- train
-            	    │-- car_butler1
-            	     	│-- images_jpg
+        │     │-- carfusion_train.json
+        │     |-- carfusion_test.json
+        │-- train
+              │-- car_butler1
+            	     │-- images_jpg
             	     	    │-- 11_00201.jpg
             	     	    │-- 11_00241.jpg
             	     	    │-- 11_00281.jpg
-            	│-- test
-            	    │-- car_penn1
-            	     	│-- images_jpg
+        │-- test
+              │-- car_penn1
+            	     │-- images_jpg
             	     	    │-- 10_0001.jpg
             	     	    │-- 10_0041.jpg
             	     	    │-- 10_0081.jpg
