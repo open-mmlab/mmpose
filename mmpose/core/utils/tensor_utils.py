@@ -27,7 +27,8 @@ def to_numpy(x: Union[Tensor, Sequence[Tensor]],
         arrays = x.detach().cpu().numpy()
         device = x.device
     elif is_seq_of(x, Tensor):
-        arrays = [to_numpy(_x)[0] for _x in x]
+        # convert (A, B) -> [(A[0], B[0]), (A[1], B[1]), ...]
+        arrays = [tuple(to_numpy(_x) for _x in _each) for _each in zip(*x)]
         device = x[0].device
     else:
         raise ValueError(f'Invalid input type {type(x)}')

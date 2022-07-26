@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-from mmpose.core.utils.tensor_utils import _to_numpy
+from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
@@ -115,13 +115,13 @@ class RegressionHead(BaseHead):
 
         pred_outputs = self.forward(inputs)
         target_coords = torch.stack(
-            [d.gt_fields.keypoints for d in batch_data_samples])
-        target_weights = torch.cat(
-            [d.gt_instance.target_weights for d in batch_data_samples])
+            [d.gt_instances.keypoints for d in batch_data_samples])
+        keypoint_weights = torch.cat(
+            [d.gt_instance.keypoint_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
-        loss = self.loss_module(pred_outputs, target_coords, target_weights)
+        loss = self.loss_module(pred_outputs, target_coords, keypoint_weights)
         if isinstance(loss, dict):
             losses.update(loss)
         else:
@@ -131,9 +131,9 @@ class RegressionHead(BaseHead):
         pred_coords = pred_outputs[:, :, :2]
 
         _, avg_acc, _ = keypoint_pck_accuracy(
-            pred=_to_numpy(pred_coords),
-            gt=_to_numpy(target_coords),
-            mask=_to_numpy(target_weights).squeeze(-1) > 0,
+            pred=to_numpy(pred_coords),
+            gt=to_numpy(target_coords),
+            mask=to_numpy(keypoint_weights).squeeze(-1) > 0,
             thr=0.05,
             normalize=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 

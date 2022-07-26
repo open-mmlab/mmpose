@@ -48,7 +48,7 @@ class RegressionLabel(BaseKeypointCodec):
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (K, D)
+            encoded (np.ndarray): Coordinates in shape (N, K, D)
 
         Returns:
             tuple:

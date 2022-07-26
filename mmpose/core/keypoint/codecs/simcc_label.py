@@ -4,6 +4,7 @@ from typing import Optional, Tuple, Union
 
 import numpy as np
 
+from mmpose.core.keypoint.codecs.utils import get_simcc_maximum
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
 
@@ -87,29 +88,40 @@ class SimCCLabel(BaseKeypointCodec):
 
         Returns:
             tuple:
-            - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
-            - socres (np.ndarray): The keypoint scores in shape (N, K, 1).
+            - keypoints (np.ndarray): Decoded coordinates in shape (K, D)
+            - socres (np.ndarray): The keypoint scores in shape (K, 1).
                 It usually represents the confidence of the keypoint prediction
         """
 
-        if encoded.shape[-1] == 2:
-            N, K, _ = encoded.shape
-            normalized_coords = encoded.copy()
-            scores = np.ones((N, K, 1), dtype=np.float32)
-        elif encoded.shape[-1] == 4:
-            # split coords and sigma if outputs contain output_sigma
-            normalized_coords = encoded[..., :2].copy()
-            output_sigma = encoded[..., 2:4].copy()
-            scores = (1 - output_sigma).mean(axis=2, keepdims=True)
+        simcc_x, simcc_y = encoded
 
-        w, h = self.input_size
-        keypoints = normalized_coords * np.array([w, h])
+        keypoints, scores = get_simcc_maximum(simcc_x, simcc_y)
+
+        keypoints /= self.simcc_split_ratio
 
         # Unsqueeze the instance dimension for single-instance results
         keypoints = keypoints[None]
         scores = scores[None]
 
         return keypoints, scores
+
+    def _map_coordinates(
+        self,
+        keypoints: np.ndarray,
+        keypoints_visible: Optional[np.ndarray] = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Mapping keypoint coordinates into SimCC space."""
+
+        _, K, _ = keypoints.shape
+
+        keypoints_split = keypoints.copy()
+        keypoints_split = np.around(keypoints_split * self.simdr_split_ratio)
+        keypoints_split = keypoints_split.astype(np.int64)
+
+        keypoint_weights = np.ones((K, 1), dtype=np.float32)
+        keypoint_weights[:, 0] = keypoints_visible[:, 0].copy()
+
+        return keypoints_split, keypoint_weights
 
     def _generate_onehot(
         self,
@@ -121,19 +133,14 @@ class SimCCLabel(BaseKeypointCodec):
 
         N, K, _ = keypoints.shape
         w, h = self.input_size
-        W = w * self.simcc_split_ratio
-        H = h * self.simcc_split_ratio
+        W = np.around(w * self.simcc_split_ratio)
+        H = np.around(h * self.simcc_split_ratio)
 
-        assert N == 1, (
-            f'{self.__class__.__name__} only support single-instance '
-            'keypoint encoding')
+        keypoints_split, keypoint_weights = self._map_coordinates(
+            keypoints, keypoints_visible)
 
-        keypoints_split = keypoints.copy()
-        keypoints_split = np.around(keypoints_split * self.simdr_split_ratio)
-        keypoints_split = keypoints_split.astype(np.int64)
-
-        keypoint_weights = np.ones((K, 1), dtype=np.float32)
-        keypoint_weights[:, 0] = keypoints_visible[:, 0].copy()
+        target_x = np.zeros((N, K), dtype=np.float32)
+        target_y = np.zeros((N, K), dtype=np.float32)
 
         for n, k in product(range(N), range(K)):
             # skip unlabled keypoints
@@ -148,7 +155,10 @@ class SimCCLabel(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-        return keypoints_split, keypoint_weights
+            target_x[n, k] = mu_x
+            target_y[n, k] = mu_y
+
+        return target_x, target_y, keypoint_weights
 
     def _generate_gaussian(
         self,
@@ -160,14 +170,14 @@ class SimCCLabel(BaseKeypointCodec):
 
         N, K, _ = keypoints.shape
         w, h = self.input_size
-        W = w * self.simcc_split_ratio
-        H = h * self.simcc_split_ratio,
+        W = np.around(w * self.simcc_split_ratio)
+        H = np.around(h * self.simcc_split_ratio)
 
-        keypoints_split, keypoint_weights = self._generate_onehot(
+        keypoints_split, keypoint_weights = self._map_coordinates(
             keypoints, keypoints_visible)
 
-        target_x = np.zeros((K, W), dtype=np.float32)
-        target_y = np.zeros((K, H), dtype=np.float32)
+        target_x = np.zeros((N, K, W), dtype=np.float32)
+        target_y = np.zeros((N, K, H), dtype=np.float32)
 
         # 3-sigma rule
         radius = self.sigma * 3
@@ -193,11 +203,11 @@ class SimCCLabel(BaseKeypointCodec):
 
             mu_x, mu_y = mu
 
-            target_x[k] = (np.exp(-((x - mu_x)**2) / (2 * self.sigma**2))) / (
-                self.sigma * np.sqrt(np.pi * 2))
-            target_y[k] = (np.exp(-((y - mu_y)**2) / (2 * self.sigma**2))) / (
-                self.sigma * np.sqrt(np.pi * 2))
+            target_x[n,
+                     k] = (np.exp(-((x - mu_x)**2) / (2 * self.sigma**2))) / (
+                         self.sigma * np.sqrt(np.pi * 2))
+            target_y[n,
+                     k] = (np.exp(-((y - mu_y)**2) / (2 * self.sigma**2))) / (
+                         self.sigma * np.sqrt(np.pi * 2))
 
-        simcc_labels = np.concatenate([target_x, target_y], axis=-1)
-
-        return simcc_labels, keypoint_weights
+        return target_x, target_y, keypoint_weights

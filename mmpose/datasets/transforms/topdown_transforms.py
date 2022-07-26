@@ -320,7 +320,7 @@ class TopdownGenerateSimCCLabel(BaseTransform):
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
 
         # single-level labels
-        simcc_labels, keypoint_weights = self.encoder.encode(
+        simcc_x, simcc_y, keypoint_weights = self.encoder.encode(
             keypoints=results['keypoints'],
             keypoints_visible=results['keypoints_visible'])
 
@@ -328,7 +328,7 @@ class TopdownGenerateSimCCLabel(BaseTransform):
         if self.use_dataset_keypoint_weights:
             results['keypoint_weights'] *= results['dataset_keypoint_weights']
 
-        results['simcc_labels'] = simcc_labels
+        results['simcc_labels'] = (simcc_x, simcc_y)
         results['keypoint_weights'] = keypoint_weights
 
         return results

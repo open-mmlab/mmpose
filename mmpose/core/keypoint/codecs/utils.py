@@ -5,6 +5,62 @@ import cv2
 import numpy as np
 
 
+def get_simcc_maximum(simcc_x: np.ndarray,
+                      simcc_y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Get maximum response location and value from simcc representations.
+
+    Note:
+        batch_size: B
+        num_keypoints: K
+        heatmap height: H
+        heatmap width: W
+
+    Args:
+        simcc_x (np.ndarray): x-axis SimCC in shape (K, Wx) or (B, K, Wx)
+        simcc_y (np.ndarray): y-axis SimCC in shape (K, Wy) or (B, K, Wy)
+
+    Returns:
+        tuple:
+        - locs (np.ndarray): locations of maximum heatmap responses in shape
+            (K, 2) or (B, K, 2)
+        - vals (np.ndarray): values of maximum heatmap responses in shape
+            (K,) or (B, K)
+    """
+
+    assert isinstance(simcc_x, np.ndarray), ('simcc_x should be numpy.ndarray')
+    assert isinstance(simcc_y, np.ndarray), ('simcc_y should be numpy.ndarray')
+    assert simcc_x.ndim == 2 or simcc_x.ndim == 3, (
+        f'Invalid shape {simcc_x.shape}')
+    assert simcc_y.ndim == 2 or simcc_y.ndim == 3, (
+        f'Invalid shape {simcc_y.shape}')
+    assert simcc_x.ndim == simcc_y.ndim, (
+        f'{simcc_x.shape} != {simcc_y.shape}')
+
+    if simcc_x.ndim == 3:
+        B, K, Wx = simcc_x.shape
+        simcc_x = simcc_x.reshape(B * K, -1)
+        simcc_y = simcc_y.reshape(B * K, -1)
+    else:
+        B = None
+
+    x_locs = np.argmax(simcc_x, axis=1, keepdims=True)
+    y_locs = np.argmax(simcc_y, axis=1, keepdims=True)
+    locs = np.stack((x_locs, y_locs), axis=-1).astype(np.float32)
+    max_val_x = np.amax(simcc_x, axis=1)
+    max_val_y = np.amax(simcc_y, axis=1)
+
+    mask = max_val_x > max_val_y
+    max_val_x[mask] = max_val_y[mask]
+    vals = max_val_x
+    locs[vals <= 0.] = -1
+
+    if B:
+        locs = locs.rehsape(B, K, 2)
+        vals = vals.reshape(B, K)
+
+    return locs, vals
+
+
 def get_heatmap_maximum(heatmaps: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Get maximum response location and value from heatmaps.
 

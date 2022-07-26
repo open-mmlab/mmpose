@@ -1,9 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs.utils import get_heatmap_maximum
+from mmpose.core.keypoint.codecs.utils import (get_heatmap_maximum,
+                                               get_simcc_maximum)
 
 
 def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,
@@ -231,6 +232,49 @@ def pose_pck_accuracy(output: np.ndarray,
     pred, _ = get_heatmap_maximum(output)
     gt, _ = get_heatmap_maximum(target)
     return keypoint_pck_accuracy(pred, gt, mask, thr, normalize)
+
+
+def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
+                       target: np.ndarray,
+                       simcc_split_ratio: float,
+                       mask: np.ndarray,
+                       thr: float = 0.05,
+                       normalize: Optional[np.ndarray] = None) -> tuple:
+    """Calculate the pose accuracy of PCK for each individual keypoint and the
+    averaged accuracy across all keypoints from SimCC.
+
+    Note:
+        PCK metric measures accuracy of the localization of the body joints.
+        The distances between predicted positions and the ground-truth ones
+        are typically normalized by the bounding box size.
+        The threshold (thr) of the normalized distance is commonly set
+        as 0.05, 0.1 or 0.2 etc.
+
+        - batch_size: N
+        - num_keypoints: K
+
+    Args:
+        output (Tuple[np.ndarray, np.ndarray]): Model predicted SimCC.
+        target (np.ndarray[N, K, 2]): Groundtruth keypoint location.
+        mask (np.ndarray[N, K]): Visibility of the target. False for invisible
+            joints, and True for visible. Invisible joints will be ignored for
+            accuracy calculation.
+        thr (float): Threshold of PCK calculation. Default 0.05.
+        normalize (np.ndarray[N, 2]): Normalization factor for H&W.
+
+    Returns:
+        tuple: A tuple containing keypoint accuracy.
+
+        - np.ndarray[K]: Accuracy of each keypoint.
+        - float: Averaged accuracy across all keypoints.
+        - int: Number of valid keypoints.
+    """
+    pred_x, pred_y = output
+
+    pred_coords, _ = get_simcc_maximum(pred_x, pred_y)
+    pred_coords /= simcc_split_ratio
+
+    return keypoint_pck_accuracy(pred_coords, target, mask, thr, normalize)
 
 
 def multilabel_classification_accuracy(pred: np.ndarray,

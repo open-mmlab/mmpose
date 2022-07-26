@@ -86,6 +86,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return inputs
 
+
     def decode(self, batch_outputs: Union[Tensor, Tuple[Tensor]],
                batch_data_samples: OptSampleList) -> SampleList:
         """Decode keypoints from outputs."""
