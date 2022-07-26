@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -39,7 +39,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
-    def _get_in_channels(self):
+    def _get_in_channels(self) -> Union[int, List[int]]:
         """Get the input channel number of the network according to the feature
         channel numbers and the input transform type."""
 
