@@ -23,9 +23,7 @@ channel_cfg = dict(
     dataset_channel=[
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
     ],
-    inference_channel=[
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
-    ])
+    inference_channel=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
 # model settings
 model = dict(
@@ -153,7 +151,7 @@ data = dict(
         pipeline=train_pipeline,
         dataset_info={{_base_.dataset_info}}),
     val=dict(
-         type='TopDownCarFusionDataset',
+        type='TopDownCarFusionDataset',
         ann_file=f'{data_root}/annotations/carfusion_test.json',
         img_prefix=f'{data_root}/',
         data_cfg=data_cfg,
