@@ -289,4 +289,5 @@ We provide some tutorials for users:
 - [customize data pipelines](tutorials/3_data_pipeline.md)
 - [add new modules](tutorials/4_new_modules.md)
 - [export a model to ONNX](tutorials/5_export_model.md)
-- [customize runtime settings](tutorials/6_customize_runtime.md).
+- [customize runtime settings](tutorials/6_customize_runtime.md)
+- [develop applications with Webcam API](tutorials/7_webcam_api.md)
