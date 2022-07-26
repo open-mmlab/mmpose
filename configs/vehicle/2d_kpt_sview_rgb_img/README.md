@@ -26,8 +26,11 @@ year = {2018}
 ```
 
 </details>
-CARFUSION provides mannual annotations of 14 semantic keypoints for 100,000 car instances (sedan, suv, bus, and truck) from 53,000 images captured from 18 moving cameras at Multiple intersections in Pittsburgh, PA. To view the labels, please run the following command:
-To download the data you need to fill the form [Access Form](https://forms.gle/FCUcbt3jD1hB6ja57) and convert it to coco format using [CARFUSIONTOCOCO](https://github.com/dineshreddy91/carfusion_to_coco) :
+CARFUSION provides manual annotations of 14 semantic keypoints
+for 100,000 car instances (sedan, suv, bus, and truck) from 53,000 images
+captured from 18 moving cameras at Multiple intersections in Pittsburgh, PA.
+To download the data you need to fill the form [Access Form](https://forms.gle/FCUcbt3jD1hB6ja57)
+and convert it to coco format using [CARFUSIONTOCOCO](https://github.com/dineshreddy91/carfusion_to_coco) :
 
 Download and extract them under $MMPOSE/data, and make them look like this:
 
@@ -57,8 +60,7 @@ mmpose
             	     	    │-- 10_0001.jpg
             	     	    │-- 10_0041.jpg
             	     	    │-- 10_0081.jpg
-	
-			
+
+
 
 ```
-
