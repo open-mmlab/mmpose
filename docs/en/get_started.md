@@ -10,6 +10,7 @@ For installation instructions, please see [install.md](install.md).
   - [Test a dataset](#test-a-dataset)
   - [Run demos](#run-demos)
 - [Train a Model](#train-a-model)
+  - [Training setting](#training-setting) 
   - [Train with a single GPU](#train-with-a-single-gpu)
   - [Train with CPU](#train-with-cpu)
   - [Train with multiple GPUs](#train-with-multiple-gpus)
