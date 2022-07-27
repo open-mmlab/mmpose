@@ -2,6 +2,8 @@ _base_ = [
     '../../../../_base_/default_runtime.py',
     '../../../../_base_/datasets/coco.py'
 ]
+
+load_from = 'https://download.openmmlab.com/mmpose/pretrain_models/litepose_s_coco-8f01b74b_20220721.pth'  # noqa: E501
 checkpoint_config = dict(interval=50)
 evaluation = dict(interval=50, metric='mAP', save_best='AP')
 
@@ -40,8 +42,7 @@ data_cfg = dict(
 
 model = dict(
     type='AssociativeEmbedding',
-    pretrained='https://download.openmmlab.com/mmpose/'
-    'pretrain_models/litepose_s_coco-8f01b74b_20220721.pth',
+    pretrained=None,
     backbone=dict(
         type='LitePose',
         input_channel=16,
