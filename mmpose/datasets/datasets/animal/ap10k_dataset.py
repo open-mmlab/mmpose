@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class AP10KDataset(BaseCocoDataset):
+class AP10KDataset(BaseCocoStyleDataset):
     """AP-10K dataset for animal pose estimation.
 
     "AP-10K: A Benchmark for Animal Pose Estimation in the Wild"

@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class Horse10Dataset(BaseCocoDataset):
+class Horse10Dataset(BaseCocoStyleDataset):
     """Horse10Dataset for animal pose estimation.
 
     "Pretraining boosts out-of-domain robustness for pose estimation"

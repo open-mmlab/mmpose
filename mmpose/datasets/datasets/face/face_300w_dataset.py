@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class Face300WDataset(BaseCocoDataset):
+class Face300WDataset(BaseCocoStyleDataset):
     """300W dataset for face keypoint localization.
 
     "300 faces In-the-wild challenge: Database and results",

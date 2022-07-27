@@ -17,7 +17,7 @@ from ..utils import parse_pose_metainfo
 
 
 @DATASETS.register_module()
-class BaseCocoDataset(BaseDataset):
+class BaseCocoStyleDataset(BaseDataset):
     """Base class for COCO-style datasets.
 
     Args:
@@ -128,7 +128,7 @@ class BaseCocoDataset(BaseDataset):
     def prepare_data(self, idx) -> Any:
         """Get data processed by ``self.pipeline``.
 
-        :class:`BaseCocoDataset` overrides this method from
+        :class:`BaseCocoStyleDataset` overrides this method from
         :class:`mmengine.dataset.BaseDataset` to add the metainfo into
         the ``data_info`` before it is passed to the pipeline.
 

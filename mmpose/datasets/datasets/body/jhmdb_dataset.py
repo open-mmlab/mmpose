@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class JhmdbDataset(BaseCocoDataset):
+class JhmdbDataset(BaseCocoStyleDataset):
     """JhmdbDataset dataset for pose estimation.
 
     "Towards understanding action recognition", ICCV'2013.

@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class PanopticHand2DDataset(BaseCocoDataset):
+class PanopticHand2DDataset(BaseCocoStyleDataset):
     """Panoptic 2D dataset for hand pose estimation.
 
     "Hand Keypoint Detection in Single Images using Multiview

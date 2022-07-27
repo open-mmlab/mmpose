@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class MhpDataset(BaseCocoDataset):
+class MhpDataset(BaseCocoStyleDataset):
     """MHPv2.0 dataset for pose estimation.
 
     "Understanding Humans in Crowded Scenes: Deep Nested Adversarial

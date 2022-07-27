@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class COFWDataset(BaseCocoDataset):
+class COFWDataset(BaseCocoStyleDataset):
     """COFW dataset for face keypoint localization.
 
     "Robust face landmark estimation under occlusion", ICCV'2013.
