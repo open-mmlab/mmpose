@@ -23,22 +23,26 @@ class HeatmapHead(BaseHead):
     convolutional layer to generate heatmaps from low-resolution feature maps.
 
     Args:
-        in_channels (int | sequence[int]): Number of channels in the input
+        in_channels (int | Sequence[int]): Number of channels in the input
             feature map
         out_channels (int): Number of channels in the output heatmap
-        deconv_out_channels (sequence[int]): The output channel number of each
-            deconv layer. Defaults to ``(256, 256, 256)``
-        deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+        deconv_out_channels (Sequence[int], optional): The output channel
+            number of each deconv layer. Defaults to ``(256, 256, 256)``
+        deconv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
             of each deconv layer. Each element should be either an integer for
             both height and width dimensions, or a tuple of two integers for
             the height and the width dimension respectively.Defaults to
             ``(4, 4, 4)``
-        conv_out_channels (sequence[int], optional): The output channel number
+        deconv_num_groups (Sequence[int], optional): The group number of each
+            deconv layer. Defaults to ``(1, 1, 1)``
+        conv_out_channels (Sequence[int], optional): The output channel number
             of each intermediate conv layer. ``None`` means no intermediate
             conv layer between deconv layers and the final conv layer.
             Defaults to ``None``
-        conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+        conv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
             of each intermediate conv layer. Defaults to ``None``
+        has_final_layer (bool): Whether have the final 1x1 Conv2d layer.
+            Defaults to ``True``
         input_transform (str): Transformation of input features which should
             be one of the following options:
 
@@ -50,7 +54,7 @@ class HeatmapHead(BaseHead):
                     bundled into a tuple
 
             Defaults to ``'select'``
-        input_index (int | sequence[int]): The feature map index used in the
+        input_index (int | Sequence[int]): The feature map index used in the
             input transformation. See also ``input_transform``. Defaults to -1
         align_corners (bool): `align_corners` argument of
             :func:`torch.nn.functional.interpolate` used in the input
@@ -72,6 +76,7 @@ class HeatmapHead(BaseHead):
                  out_channels: int,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+                 deconv_num_groups: OptIntSeq = (1, 1, 1),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
@@ -114,11 +119,19 @@ class HeatmapHead(BaseHead):
                     'be integer sequences with the same length. Got '
                     f'unmatched values {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
+            if deconv_num_groups is None or len(deconv_out_channels) != len(
+                    deconv_num_groups):
+                raise ValueError(
+                    '"deconv_out_channels" and "deconv_num_groups" should '
+                    'be integer sequences with the same length. Got '
+                    f'unmatched values {deconv_out_channels} and '
+                    f'{deconv_num_groups}')
 
             self.deconv_layers = self._make_deconv_layers(
                 in_channels=in_channels,
                 layer_out_channels=deconv_out_channels,
                 layer_kernel_sizes=deconv_kernel_sizes,
+                layer_groups=deconv_num_groups,
             )
             in_channels = deconv_out_channels[-1]
         else:
@@ -178,12 +191,14 @@ class HeatmapHead(BaseHead):
 
     def _make_deconv_layers(self, in_channels: int,
                             layer_out_channels: Sequence[int],
-                            layer_kernel_sizes: Sequence[int]) -> nn.Module:
+                            layer_kernel_sizes: Sequence[int],
+                            layer_groups: Sequence[int]) -> nn.Module:
         """Create deconvolutional layers by given parameters."""
 
         layers = []
-        for out_channels, kernel_size in zip(layer_out_channels,
-                                             layer_kernel_sizes):
+        for out_channels, kernel_size, groups in zip(layer_out_channels,
+                                                     layer_kernel_sizes,
+                                                     layer_groups):
             if kernel_size == 4:
                 padding = 1
                 output_padding = 0
@@ -202,6 +217,7 @@ class HeatmapHead(BaseHead):
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=kernel_size,
+                groups=groups,
                 stride=2,
                 padding=padding,
                 output_padding=output_padding,
@@ -333,9 +349,6 @@ class HeatmapHead(BaseHead):
                 else:
                     # final_layer.xxx remains final_layer.xxx
                     k_new = k
-            elif k_parts[0] == 'loss':
-                # loss.xxx -> loss_module.xxx
-                k_new = 'loss_module.' + '.'.join(k_parts[1:])
             else:
                 k_new = k
 

@@ -39,7 +39,8 @@ class TestHeatmapHead(TestCase):
             in_channels=32,
             out_channels=17,
             deconv_out_channels=(32, 32),
-            deconv_kernel_sizes=(4, 4))
+            deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1))
         self.assertTrue(isinstance(head.deconv_layers, nn.Sequential))
         self.assertTrue(isinstance(head.conv_layers, nn.Identity))
 
@@ -49,6 +50,7 @@ class TestHeatmapHead(TestCase):
             out_channels=17,
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1),
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ))
         self.assertTrue(isinstance(head.deconv_layers, nn.Sequential))
@@ -103,6 +105,7 @@ class TestHeatmapHead(TestCase):
             input_index=[0, 1],
             deconv_out_channels=(256, 256),
             deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1),
             conv_out_channels=(256, ),
             conv_kernel_sizes=(1, ),
             decoder=decoder_cfg)
@@ -157,6 +160,13 @@ class TestHeatmapHead(TestCase):
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, 4))
+        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+            _ = HeatmapHead(
+                in_channels=[16, 32],
+                out_channels=17,
+                deconv_out_channels=(256, 256),
+                deconv_kernel_sizes=(4, 4),
+                deconv_num_groups=(1, ))
 
         with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
             _ = HeatmapHead(
@@ -170,7 +180,8 @@ class TestHeatmapHead(TestCase):
                 in_channels=16,
                 out_channels=17,
                 deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(1, ))
+                deconv_kernel_sizes=(1, ),
+                deconv_num_groups=(1, ))
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
@@ -180,7 +191,8 @@ class TestHeatmapHead(TestCase):
                 input_transform='select',
                 input_index=[0, 1],
                 deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(4, ))
+                deconv_kernel_sizes=(4, ),
+                deconv_num_groups=(1, ))
 
     def test_state_dict_compatible(self):
         # Typical setting for HRNet
