@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
+from functools import partial
 
 import numpy as np
 
@@ -36,7 +37,7 @@ def _compute_iou(bboxA, bboxB):
     return iou
 
 
-def _track_by_iou(res, results_last, thr, **kwargs):
+def _track_by_iou(res, results_last, thr):
     """Get track id using IoU tracking greedily.
 
     Args:
@@ -75,7 +76,7 @@ def _track_by_iou(res, results_last, thr, **kwargs):
     return track_id, results_last, match_result
 
 
-def _track_by_oks(res, results_last, thr, sigmas, **kwargs):
+def _track_by_oks(res, results_last, thr, sigmas):
     """Get track id using OKS tracking greedily.
 
     Args:
@@ -215,13 +216,13 @@ def get_track_id(results,
     results = _get_area(results)
 
     if use_oks:
-        _track = _track_by_oks
+        _track = partial(_track_by_oks, sigmas=sigmas)
     else:
         _track = _track_by_iou
 
     for result in results:
-        track_id, results_last, match_result = _track(
-            result, results_last, tracking_thr, sigmas=sigmas)
+        track_id, results_last, match_result = _track(result, results_last,
+                                                      tracking_thr)
         if track_id == -1:
             if np.count_nonzero(result['keypoints'][:, 1]) >= min_keypoints:
                 result['track_id'] = next_id
