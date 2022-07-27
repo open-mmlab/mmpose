@@ -4,6 +4,7 @@ import tempfile
 from collections import defaultdict
 from unittest import TestCase
 
+import numpy as np
 import torch
 from mmengine.fileio import dump, load
 
@@ -47,11 +48,13 @@ class TestCocoMetric(TestCase):
         """Convert annotations to topdown-style batch data."""
         data = []
         for ann in self.db['annotations']:
+            w, h = ann['bbox'][2], ann['bbox'][3]
             data_batch = {}
             data_batch['inputs'] = None
             data_batch['data_sample'] = {
                 'id': ann['id'],
                 'img_id': ann['image_id'],
+                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
             }
             predictions = {}
             predictions['pred_instances'] = {
@@ -98,6 +101,15 @@ class TestCocoMetric(TestCase):
 
     def test_init(self):
         """test metric init method."""
+        # test score_mode option
+        with self.assertRaisesRegex(ValueError,
+                                    '`score_mode` should be one of'):
+            CocoMetric(ann_file=self.ann_file, score_mode='keypoint')
+
+        # test nms_mode option
+        with self.assertRaisesRegex(ValueError, '`nms_mode` should be one of'):
+            CocoMetric(ann_file=self.ann_file, nms_mode='invalid')
+
         # test format_only option
         with self.assertRaisesRegex(
                 AssertionError,
@@ -107,8 +119,49 @@ class TestCocoMetric(TestCase):
 
     def test_topdown_evaluate(self):
         """test topdown-style COCO metric evaluation."""
+        # case 1: score_mode='bbox', nms_mode='none'
+
         coco_metric = CocoMetric(
-            ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox',
+            nms_mode='none')
+        coco_metric.dataset_meta = self.coco_dataset_meta
+
+        # process samples
+        for batch, preds in self.topdown_data:
+            coco_metric.process(batch, preds)
+
+        eval_results = coco_metric.evaluate(size=len(self.topdown_data))
+
+        self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 2: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        coco_metric = CocoMetric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            nms_mode='oks_nms')
+        coco_metric.dataset_meta = self.coco_dataset_meta
+
+        # process samples
+        for batch, preds in self.topdown_data:
+            coco_metric.process(batch, preds)
+
+        eval_results = coco_metric.evaluate(size=len(self.topdown_data))
+
+        self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
+
+        # case 3: score_mode='bbox_rle', nms_mode='soft_oks_nms'
+        coco_metric = CocoMetric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_rle',
+            nms_mode='soft_oks_nms')
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
@@ -123,8 +176,12 @@ class TestCocoMetric(TestCase):
 
     def test_bottomup_evaluate(self):
         """test bottomup-style COCO metric evaluation."""
+        # case1: score_mode='bbox', nms_mode='none'
         coco_metric = CocoMetric(
-            ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox',
+            nms_mode='none')
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
@@ -139,7 +196,8 @@ class TestCocoMetric(TestCase):
     def test_other_methods(self):
         """test other useful methods."""
         # test `_sort_and_unique_bboxes` method
-        coco_metric = CocoMetric(ann_file=self.ann_file)
+        coco_metric = CocoMetric(
+            ann_file=self.ann_file, score_mode='bbox', nms_mode='none')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process samples
         for batch, preds in self.topdown_data:
@@ -156,7 +214,9 @@ class TestCocoMetric(TestCase):
         coco_metric = CocoMetric(
             ann_file=self.ann_file,
             format_only=True,
-            outfile_prefix=f'{self.tmp_dir.name}/test')
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            nms_mode='oks_nms')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process one sample
         batch, preds = self.topdown_data[0]

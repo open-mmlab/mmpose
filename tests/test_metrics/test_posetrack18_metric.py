@@ -4,6 +4,7 @@ import tempfile
 from collections import defaultdict
 from unittest import TestCase
 
+import numpy as np
 import torch
 from mmengine.fileio import dump, load
 
@@ -48,11 +49,13 @@ class TestPoseTrack18Metric(TestCase):
         """Convert annotations to topdown-style batch data."""
         data = []
         for ann in self.db['annotations']:
+            w, h = ann['bbox'][2], ann['bbox'][3]
             data_batch = {}
             data_batch['inputs'] = None
             data_batch['data_sample'] = {
                 'id': ann['id'],
                 'img_id': ann['image_id'],
+                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
             }
             predictions = {}
             predictions['pred_instances'] = {
@@ -161,10 +164,10 @@ class TestPoseTrack18Metric(TestCase):
             format_only=True,
             outfile_prefix=f'{self.tmp_dir.name}/test')
         posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
-        # process one sample
-        batch, preds = self.topdown_data[0]
-        posetrack18_metric.process(batch, preds)
-        eval_results = posetrack18_metric.evaluate(size=1)
+        # process samples
+        for batch, preds in self.topdown_data:
+            posetrack18_metric.process(batch, preds)
+        eval_results = posetrack18_metric.evaluate(size=len(self.topdown_data))
         self.assertDictEqual(eval_results, {})
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, '012834_mpii_test.json')))
