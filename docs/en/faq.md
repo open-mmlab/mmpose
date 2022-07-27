@@ -25,7 +25,7 @@ If the contents here do not cover your issue, please create an issue using the [
 
 | MMPose version |       MMCV version        |
 | :------------: | :-----------------------: |
-|     master     | mmcv-full>=1.3.8, \<1.6.0 |
+|     master     | mmcv-full>=1.3.8, \<1.7.0 |
 |     0.26.0     | mmcv-full>=1.3.8, \<1.6.0 |
 |     0.25.1     | mmcv-full>=1.3.8, \<1.6.0 |
 |     0.25.0     | mmcv-full>=1.3.8, \<1.5.0 |
