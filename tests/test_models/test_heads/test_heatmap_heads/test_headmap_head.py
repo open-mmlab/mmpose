@@ -182,7 +182,6 @@ class TestHeatmapHead(TestCase):
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, ))
 
-
     def test_state_dict_compatible(self):
         # Typical setting for HRNet
         head = HeatmapHead(
