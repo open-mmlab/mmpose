@@ -111,8 +111,12 @@ class TestPoseTrack18Metric(TestCase):
 
     def test_topdown_evaluate(self):
         """test topdown-style posetrack18 metric evaluation."""
+        # case 1: score_mode='bbox', nms_mode='none'
         posetrack18_metric = PoseTrack18Metric(
-            ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox',
+            nms_mode='none')
         posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
 
         # process samples
@@ -125,8 +129,45 @@ class TestPoseTrack18Metric(TestCase):
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, '003418_mpii_test.json')))
 
+        # case 2: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        posetrack18_metric = PoseTrack18Metric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            nms_mode='oks_nms')
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
+
+        # process samples
+        for batch, preds in self.topdown_data:
+            posetrack18_metric.process(batch, preds)
+
+        eval_results = posetrack18_metric.evaluate(size=len(self.topdown_data))
+
+        self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, '009473_mpii_test.json')))
+
+        # case 3: score_mode='bbox_keypoint', nms_mode='soft_oks_nms'
+        posetrack18_metric = PoseTrack18Metric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            nms_mode='soft_oks_nms')
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
+
+        # process samples
+        for batch, preds in self.topdown_data:
+            posetrack18_metric.process(batch, preds)
+
+        eval_results = posetrack18_metric.evaluate(size=len(self.topdown_data))
+
+        self.assertDictEqual(eval_results, self.target)
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, '012834_mpii_test.json')))
+
     def test_bottomup_evaluate(self):
         """test bottomup-style posetrack18 metric evaluation."""
+        # case 1: score_mode='bbox', nms_mode='none'
         posetrack18_metric = PoseTrack18Metric(
             ann_file=self.ann_file, outfile_prefix=f'{self.tmp_dir.name}/test')
         posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
