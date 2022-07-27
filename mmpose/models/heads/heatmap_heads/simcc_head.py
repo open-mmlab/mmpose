@@ -3,7 +3,6 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
-from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
@@ -268,10 +267,7 @@ class SimCCHead(BaseHead):
             for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
                                                    preds):
                 # Store the simcc predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.simcc_x = pred_x
-                data_sample.pred_fields.simcc_y = pred_y
+                data_sample.pred_instances.simcc_label = (pred_x, pred_y)
 
         return preds
 
@@ -281,8 +277,10 @@ class SimCCHead(BaseHead):
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
         pred_x, pred_y = self.forward(feats)
-        gt_x = torch.stack([d.gt_fields.simcc_x for d in batch_data_samples])
-        gt_y = torch.stack([d.gt_fields.simcc_y for d in batch_data_samples])
+        gt_x = torch.stack(
+            [d.gt_instances.simcc_label[0] for d in batch_data_samples])
+        gt_y = torch.stack(
+            [d.gt_instances.simcc_label[1] for d in batch_data_samples])
         target_coords = torch.stack(
             [d.gt_instances.keypoints for d in batch_data_samples])
 
