@@ -10,6 +10,7 @@ For installation instructions, please see [install.md](install.md).
   - [Test a dataset](#test-a-dataset)
   - [Run demos](#run-demos)
 - [Train a Model](#train-a-model)
+  - [Training setting](#training-setting)
   - [Train with a single GPU](#train-with-a-single-gpu)
   - [Train with CPU](#train-with-cpu)
   - [Train with multiple GPUs](#train-with-multiple-gpus)
@@ -288,4 +289,5 @@ We provide some tutorials for users:
 - [customize data pipelines](tutorials/3_data_pipeline.md)
 - [add new modules](tutorials/4_new_modules.md)
 - [export a model to ONNX](tutorials/5_export_model.md)
-- [customize runtime settings](tutorials/6_customize_runtime.md).
+- [customize runtime settings](tutorials/6_customize_runtime.md)
+- [develop applications with Webcam API](tutorials/7_webcam_api.md)

@@ -9,6 +9,7 @@
   - [测试某个数据集](#测试某个数据集)
   - [运行演示](#运行演示)
 - [如何训练模型](#如何训练模型)
+  - [训练配置](#训练配置)
   - [使用单个 GPU 训练](#使用单个-GPU-训练)
   - [使用 CPU 训练](#使用-CPU-训练)
   - [使用多个 GPU 训练](#使用多个-GPU-训练)
@@ -265,6 +266,14 @@ dist_params = dict(backend='nccl', port=29501)
 ```shell
 CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} config1.py [--work-dir ${WORK_DIR}]
 CUDA_VISIBLE_DEVICES=4,5,6,7 GPUS=4 ./tools/slurm_train.sh ${PARTITION} ${JOB_NAME} config2.py [--work-dir ${WORK_DIR}]
+```
+
+## 基准测试
+
+您可以使用以下脚本获得平均推理速度。请注意，它不包括 IO 时间和预处理时间。
+
+```shell
+python tools/analysis/benchmark_inference.py ${MMPOSE_CONFIG_FILE}
 ```
 
 ## 进阶教程
