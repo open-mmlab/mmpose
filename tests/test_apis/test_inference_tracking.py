@@ -151,7 +151,11 @@ def test_bottom_up_pose_tracking_demo():
 
     # oks
     pose_results, next_id = get_track_id(
-        pose_results, pose_results_last, next_id=next_id, use_oks=True)
+        pose_results,
+        pose_results_last,
+        next_id=next_id,
+        use_oks=True,
+        sigmas=getattr(dataset_info, 'sigmas', None))
 
     pose_results_last = pose_results
 
