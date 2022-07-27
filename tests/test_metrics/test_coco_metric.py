@@ -104,17 +104,17 @@ class TestCocoMetric(TestCase):
         # test score_mode option
         with self.assertRaisesRegex(ValueError,
                                     '`score_mode` should be one of'):
-            CocoMetric(ann_file=self.ann_file, score_mode='keypoint')
+            _ = CocoMetric(ann_file=self.ann_file, score_mode='keypoint')
 
         # test nms_mode option
         with self.assertRaisesRegex(ValueError, '`nms_mode` should be one of'):
-            CocoMetric(ann_file=self.ann_file, nms_mode='invalid')
+            _ = CocoMetric(ann_file=self.ann_file, nms_mode='invalid')
 
         # test format_only option
         with self.assertRaisesRegex(
                 AssertionError,
                 '`outfile_prefix` can not be None when `format_only` is True'):
-            CocoMetric(
+            _ = CocoMetric(
                 ann_file=self.ann_file, format_only=True, outfile_prefix=None)
 
     def test_topdown_evaluate(self):

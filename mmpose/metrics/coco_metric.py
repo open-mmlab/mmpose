@@ -184,7 +184,7 @@ class CocoMetric(BaseMetric):
 
         # group the results by img_id
         for result in results:
-            img_id = str(result['img_id'])
+            img_id = result['img_id']
             for idx in range(len(result['scores'])):
                 kpt = {
                     'id': result['id'],

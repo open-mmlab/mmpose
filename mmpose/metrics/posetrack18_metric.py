@@ -176,7 +176,7 @@ class PoseTrack18Metric(CocoMetric):
                 img['file_name'] = image['file_name']
                 images.append(img)
 
-                img_kpts = keypoints[str(img['id'])]
+                img_kpts = keypoints[img['id']]
 
                 for track_id, img_kpt in enumerate(img_kpts):
                     ann = {}

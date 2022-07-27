@@ -102,11 +102,21 @@ class TestPoseTrack18Metric(TestCase):
 
     def test_init(self):
         """test metric init method."""
+        # test score_mode option
+        with self.assertRaisesRegex(ValueError,
+                                    '`score_mode` should be one of'):
+            _ = PoseTrack18Metric(
+                ann_file=self.ann_file, score_mode='keypoint')
+
+        # test nms_mode option
+        with self.assertRaisesRegex(ValueError, '`nms_mode` should be one of'):
+            _ = PoseTrack18Metric(ann_file=self.ann_file, nms_mode='invalid')
+
         # test `format_only` option
         with self.assertRaisesRegex(
                 AssertionError,
                 '`outfile_prefix` can not be None when `format_only` is True'):
-            PoseTrack18Metric(
+            _ = PoseTrack18Metric(
                 ann_file=self.ann_file, format_only=True, outfile_prefix=None)
 
     def test_topdown_evaluate(self):
