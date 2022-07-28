@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class AFLWDataset(BaseCocoDataset):
+class AFLWDataset(BaseCocoStyleDataset):
     """AFLW dataset for face keypoint localization.
 
     "Annotated Facial Landmarks in the Wild: A Large-scale,

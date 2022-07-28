@@ -8,11 +8,11 @@ from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class PoseTrack18VideoDataset(BaseCocoDataset):
+class PoseTrack18VideoDataset(BaseCocoStyleDataset):
     """PoseTrack18 dataset for video pose estimation.
 
     "Posetrack: A benchmark for human pose estimation and tracking", CVPR'2018.

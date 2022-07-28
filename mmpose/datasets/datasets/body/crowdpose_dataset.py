@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class CrowdPoseDataset(BaseCocoDataset):
+class CrowdPoseDataset(BaseCocoStyleDataset):
     """CrowdPose dataset for pose estimation.
 
     "CrowdPose: Efficient Crowded Scenes Pose Estimation and

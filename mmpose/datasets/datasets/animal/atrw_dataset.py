@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class ATRWDataset(BaseCocoDataset):
+class ATRWDataset(BaseCocoStyleDataset):
     """ATRW dataset for animal pose estimation.
 
     "ATRW: A Benchmark for Amur Tiger Re-identification in the Wild"

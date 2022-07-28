@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class FreiHandDataset(BaseCocoDataset):
+class FreiHandDataset(BaseCocoStyleDataset):
     """FreiHand dataset for hand pose estimation.
 
     "FreiHAND: A Dataset for Markerless Capture of Hand Pose

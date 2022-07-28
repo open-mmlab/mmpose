@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class OCHumanDataset(BaseCocoDataset):
+class OCHumanDataset(BaseCocoStyleDataset):
     """OChuman dataset for pose estimation.
 
     "Pose2Seg: Detection Free Human Instance Segmentation", CVPR'2019.

@@ -7,11 +7,11 @@ import numpy as np
 from mmengine.utils import check_file_exist
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class MpiiDataset(BaseCocoDataset):
+class MpiiDataset(BaseCocoStyleDataset):
     """MPII Dataset for pose estimation.
 
     "2D Human Pose Estimation: New Benchmark and State of the Art Analysis"

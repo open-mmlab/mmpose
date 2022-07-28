@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class PoseTrack18Dataset(BaseCocoDataset):
+class PoseTrack18Dataset(BaseCocoStyleDataset):
     """PoseTrack18 dataset for pose estimation.
 
     "Posetrack: A benchmark for human pose estimation and tracking", CVPR'2018.

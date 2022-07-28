@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseCocoDataset):
+class CocoDataset(BaseCocoStyleDataset):
     """COCO dataset for pose estimation.
 
     "Microsoft COCO: Common Objects in Context", ECCV'2014.

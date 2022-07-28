@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class CocoWholeBodyFaceDataset(BaseCocoDataset):
+class CocoWholeBodyFaceDataset(BaseCocoStyleDataset):
     """CocoWholeBodyDataset for face keypoint localization.
 
     `Whole-Body Human Pose Estimation in the Wild', ECCV'2020.
