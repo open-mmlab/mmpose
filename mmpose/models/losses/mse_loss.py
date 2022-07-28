@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import torch
 import torch.nn as nn
+from torch import Tensor
 
 from mmpose.registry import MODELS
 
@@ -21,37 +22,42 @@ class KeypointMSELoss(nn.Module):
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weights):
-        """Forward function."""
-        batch_size = output.size(0)
-        num_joints = output.size(1)
+    def forward(self, output: Tensor, target: Tensor,
+                target_weights: Tensor) -> Tensor:
+        """Forward function of loss.
 
-        heatmaps_pred = output.reshape(
-            (batch_size, num_joints, -1)).split(1, 1)
-        heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
+        Note:
+            - batch_size: B
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
 
-        loss = 0.
+        Args:
+            output (Tensor): The output heatmaps with shape [B, K, H, W].
+            target (Tensor): The target heatmaps with shape [B, K, H, W].
+            target_weights (Tensor): The target weights of differet keypoints,
+                with shape [B, K].
 
-        for idx in range(num_joints):
-            heatmap_pred = heatmaps_pred[idx].squeeze(1)
-            heatmap_gt = heatmaps_gt[idx].squeeze(1)
-            target_weight = target_weights[:, idx, None]
-            if self.use_target_weight:
-                loss += self.criterion(heatmap_pred * target_weight,
-                                       heatmap_gt * target_weight)
-            else:
-                loss += self.criterion(heatmap_pred, heatmap_gt)
+        Returns:
+            Tensor: The calculated loss.
+        """
+        if self.use_target_weight:
+            loss = self.criterion(output * target_weights[..., None, None],
+                                  target * target_weights[..., None, None])
+        else:
+            loss = self.criterion(output, target)
 
-        return loss / num_joints * self.loss_weight
+        return loss * self.loss_weight
 
 
 @MODELS.register_module()
 class CombinedTargetMSELoss(nn.Module):
     """MSE loss for combined target.
-        CombinedTarget: The combination of classification target
-        (response map) and regression target (offset map).
-        Paper ref: Huang et al. The Devil is in the Details: Delving into
-        Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
+
+    CombinedTarget: The combination of classification target
+    (response map) and regression target (offset map).
+    Paper ref: Huang et al. The Devil is in the Details: Delving into
+    Unbiased Data Processing for Human Pose Estimation (CVPR 2020).
 
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
@@ -114,12 +120,19 @@ class KeypointOHKMMSELoss(nn.Module):
         self.topk = topk
         self.loss_weight = loss_weight
 
-    def _ohkm(self, loss):
-        """Online hard keypoint mining."""
+    def _ohkm(self, losses: Tensor) -> Tensor:
+        """Online hard keypoint mining.
+
+        Args:
+            loss (Tensor): The losses with shape [B, K]
+
+        Returns:
+            Tensor: The calculated loss.
+        """
         ohkm_loss = 0.
-        N = len(loss)
+        N = len(losses)
         for i in range(N):
-            sub_loss = loss[i]
+            sub_loss = losses[i]
             _, topk_idx = torch.topk(
                 sub_loss, k=self.topk, dim=0, sorted=False)
             tmp_loss = torch.gather(sub_loss, 0, topk_idx)
@@ -127,28 +140,39 @@ class KeypointOHKMMSELoss(nn.Module):
         ohkm_loss /= N
         return ohkm_loss
 
-    def forward(self, output, target, target_weights):
-        """Forward function."""
-        batch_size = output.size(0)
-        num_joints = output.size(1)
-        if num_joints < self.topk:
-            raise ValueError(f'topk ({self.topk}) should not '
-                             f'larger than num_joints ({num_joints}).')
-        heatmaps_pred = output.reshape(
-            (batch_size, num_joints, -1)).split(1, 1)
-        heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
+    def forward(self, output: Tensor, target: Tensor,
+                target_weights: Tensor) -> Tensor:
+        """Forward function of loss.
+
+        Note:
+            - batch_size: B
+            - num_keypoints: K
+            - heatmaps height: H
+            - heatmaps weight: W
+
+        Args:
+            output (Tensor): The output heatmaps with shape [B, K, H, W].
+            target (Tensor): The target heatmaps with shape [B, K, H, W].
+            target_weights (Tensor): The target weights of differet keypoints,
+                with shape [B, K].
+
+        Returns:
+            Tensor: The calculated loss.
+        """
+        num_keypoints = output.size(1)
+        if num_keypoints < self.topk:
+            raise ValueError(f'topk ({self.topk}) should not be '
+                             f'larger than num_keypoints ({num_keypoints}).')
 
         losses = []
-        for idx in range(num_joints):
-            heatmap_pred = heatmaps_pred[idx].squeeze(1)
-            heatmap_gt = heatmaps_gt[idx].squeeze(1)
+        for idx in range(num_keypoints):
             if self.use_target_weight:
                 target_weight = target_weights[:, idx, None]
                 losses.append(
-                    self.criterion(heatmap_pred * target_weight,
-                                   heatmap_gt * target_weight))
+                    self.criterion(output[:, idx] * target_weight,
+                                   target[:, idx] * target_weight))
             else:
-                losses.append(self.criterion(heatmap_pred, heatmap_gt))
+                losses.append(self.criterion(output[:, idx], target[:, idx]))
 
         losses = [loss.mean(dim=1).unsqueeze(dim=1) for loss in losses]
         losses = torch.cat(losses, dim=1)
