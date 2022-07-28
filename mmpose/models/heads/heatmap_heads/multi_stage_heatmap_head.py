@@ -26,10 +26,10 @@ class MultiStageHeatmapHead(BaseHead):
     of which has some deconv layers and a simple conv2d layer.
 
     Args:
-        num_stages (int): Number of stages.
         in_channels (int | Sequence[int]): Number of channels in the input
             feature maps.
         out_channels (int): Number of channels in the output heatmaps.
+        num_stages (int): Number of stages.
         deconv_out_channels (Sequence[int], optional): The output channel
             number of each deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
@@ -53,9 +53,9 @@ class MultiStageHeatmapHead(BaseHead):
     _version = 2
 
     def __init__(self,
-                 num_stages: int,
                  in_channels: Union[int, Sequence[int]],
                  out_channels: int,
+                 num_stages: int,
                  deconv_out_channels: OptIntSeq = None,
                  deconv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
