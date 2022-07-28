@@ -13,7 +13,7 @@ from PIL import Image
 from mmpose.core.bbox.transforms_old import bbox_xywh2xyxy, bbox_xyxy2xywh
 from mmpose.core.post_processing import oks_nms
 from mmpose.datasets.dataset_info import DatasetInfo
-from mmpose.datasets.pipelines import Compose, ToTensor
+from mmpose.datasets.transforms import Compose, ToTensor
 from mmpose.models import build_posenet
 from mmpose.utils.hooks import OutputHook
 

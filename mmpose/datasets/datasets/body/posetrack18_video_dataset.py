@@ -275,7 +275,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': int(img['frame_id']),
             'img_path': img_paths,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': ann['num_keypoints'],
@@ -316,9 +315,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             # remove non-human instances
             if det['category_id'] != 1:
                 continue
-
-            img = coco.loadImgs(det['image_id'])[0]
-            height, width = img['height'], img['width']
 
             # get the predicted bbox and bbox_score
             bbox = np.array(det['bbox'][:4], dtype=np.float32).reshape(1, 4)
@@ -380,7 +376,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             data_list.append({
                 'img_id': det['image_id'],
                 'img_path': img_paths,
-                'img_shape': (height, width, 3),
                 'frame_weights': self.frame_weights,
                 'bbox': bbox,
                 'bbox_score': bbox_score,

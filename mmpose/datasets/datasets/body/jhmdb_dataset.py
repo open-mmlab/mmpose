@@ -121,7 +121,6 @@ class JhmdbDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,

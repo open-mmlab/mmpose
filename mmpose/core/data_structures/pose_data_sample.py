@@ -21,7 +21,7 @@ class PoseDataSample(BaseDataElement):
         >>> from mmengine.data import InstanceData, PixelData
         >>> from mmpose.core import PoseDataSample
 
-        >>> pose_meta = dict(img_shape=(800, 1216, 3),
+        >>> pose_meta = dict(img_shape=(800, 1216),
         ...                  crop_size=(256, 192),
         ...                  heatmap_size=(64, 48))
         >>> gt_instances = InstanceData()

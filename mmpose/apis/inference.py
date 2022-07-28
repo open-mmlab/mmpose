@@ -3,10 +3,15 @@ import warnings
 from pathlib import Path
 from typing import Optional, Union
 
+import numpy as np
+import torch
+import torch.nn as nn
+from mmcv.transforms import Compose
 from mmengine.config import Config
 from mmengine.runner import load_checkpoint
-from torch import nn
+from PIL import Image
 
+from mmpose.core.bbox.transforms import bbox_xyxy2xywh
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.models.builder import build_pose_estimator
 
@@ -112,3 +117,61 @@ def init_model(config: Union[str, Path, Config],
     model.to(device)
     model.eval()
     return model
+
+
+def inference_topdown(model: nn.Module,
+                      img: Union[np.ndarray, str],
+                      bboxes: Optional[np.ndarray] = None,
+                      bbox_format: str = 'xyxy'):
+    """Inference image with the top-down pose estimator.
+
+    Args:
+        model (nn.Module): The top-down pose estimator
+        img (np.ndarray | str): The loaded image or image file to inference
+        bboxes (np.ndarray, optional): The bboxes in shape (N, 4), each row
+            represents a bbox. If not given, the entire image will be regarded
+            as a single bbox area. Defaults to ``None``
+        bbox_format (str): The bbox format indicator. Options are ``'xywh'``
+            and ``'xyxy'``. Defaults to ``'xyxy'``
+
+    Returns:
+        :obj:`PoseDataSample`: The inference results. Specifically, the
+        predicted keypoints and scores are saved at
+        ``data_sample.pred_instances.keypoints`` and
+        ``data_sample.pred_instances.keypoint_scores``.
+    """
+    cfg = model.cfg
+    pipeline = Compose(cfg.test_dataloader.dataset.pipeline)
+
+    if bboxes is None:
+        # get bbox from the image size
+        if isinstance(img, str):
+            w, h = Image.open(img).size
+        else:
+            h, w = img.shape[:2]
+
+        bboxes = np.array([[0, 0, w, h]], dtype=np.float32)
+    else:
+        assert bbox_format in {'xyxy', 'xywh'}, \
+            f'Invalid bbox_format "{bbox_format}".'
+
+        if bbox_format == 'xyxy':
+            bboxes = bbox_xyxy2xywh(bboxes)
+
+    # construct batch data samples
+    data = []
+    for bbox in bboxes:
+
+        if isinstance(img, str):
+            _data = dict(img_path=img)
+        else:
+            _data = dict(img=img)
+
+        _data['bbox'] = bbox
+        _data['bbox_score'] = np.ones(1, dtype=np.float32)
+        data.append(pipeline(_data))
+
+    with torch.no_grad():
+        results = model.test_step(data)
+
+    return results

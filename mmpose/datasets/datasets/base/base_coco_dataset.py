@@ -245,7 +245,6 @@ class BaseCocoStyleDataset(BaseDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,
@@ -335,7 +334,7 @@ class BaseCocoStyleDataset(BaseDataset):
                 if not seg:
                     continue
 
-                img_h, img_w = img_shape[:2]
+                img_h, img_w = img_shape
 
                 if data_info_invalid['iscrowd']:
                     # crowd object has a unitary mask region
@@ -384,7 +383,7 @@ class BaseCocoStyleDataset(BaseDataset):
             data_list.append({
                 'img_id': det['image_id'],
                 'img_path': img_path,
-                'img_shape': (img['height'], img['width'], 3),
+                'img_shape': (img['height'], img['width']),
                 'bbox': bbox,
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,

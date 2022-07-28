@@ -194,7 +194,7 @@ class RandomFlip(BaseTransform):
             results['flip'] = True
             results['flip_direction'] = flip_dir
 
-            h, w = results['img_shape'][:2]
+            h, w = results['img_shape']
             # flip image
             if isinstance(results['img'], list):
                 results['img'] = [
@@ -429,7 +429,7 @@ class RandomBboxTransform(BaseTransform):
         scale_factor (float): Randomly resize the bbox in range
             :math:`[1 - scale_factor, 1 + scale_factor]`. Defaults to 0.5
         scale_prob (float): Probability of applying random resizing. Defaults
-            to 0.5
+            to 1.0
         rotate_factor (float): Randomly rotate the bbox in
             :math:`[-2*rotate_factor, 2*rotate_factor]` in degrees. Defaults
             to 40.0

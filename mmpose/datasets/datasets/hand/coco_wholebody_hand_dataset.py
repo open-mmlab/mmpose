@@ -104,7 +104,6 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                             ann[f'{type}hand_kpts']) > 0:
                         img_path = osp.join(self.data_prefix['img_path'],
                                             img['file_name'])
-                        img_w, img_h = img['width'], img['height']
 
                         bbox = np.array(
                             ann[f'{type}hand_box'],
@@ -121,7 +120,6 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                         data_info = {
                             'img_id': ann['image_id'],
                             'img_path': img_path,
-                            'img_shape': (img_h, img_w, 3),
                             'bbox': bbox,
                             'bbox_score': np.ones(1, dtype=np.float32),
                             'num_keypoints': num_keypoints,

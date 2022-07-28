@@ -100,7 +100,6 @@ class FreiHandDataset(BaseCocoStyleDataset):
         img = raw_data_info['raw_img_info']
 
         img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
-        img_w, img_h = img['width'], img['height']
 
         # use the entire image which is 224x224
         bbox = np.array([0, 0, 224, 224], dtype=np.float32).reshape(1, 4)
@@ -116,7 +115,6 @@ class FreiHandDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,

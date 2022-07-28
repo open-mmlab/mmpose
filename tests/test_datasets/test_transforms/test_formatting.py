@@ -7,7 +7,7 @@ import torch
 from mmengine.data import InstanceData, PixelData
 
 from mmpose.core import PoseDataSample
-from mmpose.datasets.pipelines import PackPoseInputs
+from mmpose.datasets.transforms import PackPoseInputs
 
 
 class TestPackPoseInputs(TestCase):

@@ -6,4 +6,4 @@ from mmpose.registry import MODELS
 
 @MODELS.register_module()
 class PoseDataPreprocessor(ImgDataPreprocessor):
-    pass
+    """Image pre-processor for pose estimation tasks."""

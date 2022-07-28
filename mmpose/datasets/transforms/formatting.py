@@ -71,7 +71,7 @@ class PackPoseInputs(BaseTransform):
         - ``ori_shape``: original shape of the image as a tuple (h, w, c)
 
         - ``img_shape``: shape of the image input to the network as a tuple \
-            (h, w, c).  Note that images may be zero padded on the \
+            (h, w).  Note that images may be zero padded on the \
             bottom/right if the batch tensor is larger than this shape.
 
         - ``input_size``: the input size to the network
