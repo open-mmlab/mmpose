@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class ZebraDataset(BaseCocoDataset):
+class ZebraDataset(BaseCocoStyleDataset):
     """ZebraDataset for animal pose estimation.
 
     "DeepPoseKit, a software toolkit for fast and robust animal

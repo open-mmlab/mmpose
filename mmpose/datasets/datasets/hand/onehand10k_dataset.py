@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class OneHand10KDataset(BaseCocoDataset):
+class OneHand10KDataset(BaseCocoStyleDataset):
     """OneHand10K dataset for hand pose estimation.
 
     "Mask-pose Cascaded CNN for 2D Hand Pose Estimation from

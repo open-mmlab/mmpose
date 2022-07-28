@@ -2,11 +2,11 @@
 from typing import Callable, List, Optional, Sequence, Union
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class DeepFashionDataset(BaseCocoDataset):
+class DeepFashionDataset(BaseCocoStyleDataset):
     """DeepFashion dataset (full-body clothes) for fashion landmark detection.
 
     "DeepFashion: Powering Robust Clothes Recognition

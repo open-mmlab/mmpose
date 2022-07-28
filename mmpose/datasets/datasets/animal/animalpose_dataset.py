@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class AnimalPoseDataset(BaseCocoDataset):
+class AnimalPoseDataset(BaseCocoStyleDataset):
     """Animal-Pose dataset for animal pose estimation.
 
     "Cross-domain Adaptation For Animal Pose Estimation" ICCV'2019

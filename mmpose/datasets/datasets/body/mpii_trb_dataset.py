@@ -7,11 +7,11 @@ import numpy as np
 from mmengine.utils import check_file_exist
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class MpiiTrbDataset(BaseCocoDataset):
+class MpiiTrbDataset(BaseCocoStyleDataset):
     """MPII-TRB Dataset dataset for pose estimation.
 
     "TRB: A Novel Triplet Representation for Understanding 2D Human Body",

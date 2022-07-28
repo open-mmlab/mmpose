@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class Rhd2DDataset(BaseCocoDataset):
+class Rhd2DDataset(BaseCocoStyleDataset):
     """Rendered Handpose Dataset for hand pose estimation.
 
     "Learning to Estimate 3D Hand Pose from Single RGB Images",

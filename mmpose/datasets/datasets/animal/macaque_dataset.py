@@ -1,11 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class MacaqueDataset(BaseCocoDataset):
+class MacaqueDataset(BaseCocoStyleDataset):
     """MacaquePose dataset for animal pose estimation.
 
     "MacaquePose: A novel 'in the wild' macaque monkey pose dataset

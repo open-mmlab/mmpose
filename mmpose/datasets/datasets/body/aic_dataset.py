@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class AicDataset(BaseCocoDataset):
+class AicDataset(BaseCocoStyleDataset):
     """AIC dataset for pose estimation.
 
     "AI Challenger : A Large-scale Dataset for Going Deeper

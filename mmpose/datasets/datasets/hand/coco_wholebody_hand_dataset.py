@@ -7,11 +7,11 @@ from mmengine.utils import check_file_exist
 from xtcocotools.coco import COCO
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class CocoWholeBodyHandDataset(BaseCocoDataset):
+class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
     """CocoWholeBodyDataset for hand pose estimation.
 
     "Whole-Body Human Pose Estimation in the Wild", ECCV'2020.

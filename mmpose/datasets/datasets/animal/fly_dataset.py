@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class FlyDataset(BaseCocoDataset):
+class FlyDataset(BaseCocoStyleDataset):
     """FlyDataset for animal pose estimation.
 
     "Fast animal pose estimation using deep neural networks"

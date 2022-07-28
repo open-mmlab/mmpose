@@ -5,11 +5,11 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
-from ..base import BaseCocoDataset
+from ..base import BaseCocoStyleDataset
 
 
 @DATASETS.register_module()
-class LocustDataset(BaseCocoDataset):
+class LocustDataset(BaseCocoStyleDataset):
     """LocustDataset for animal pose estimation.
 
     "DeepPoseKit, a software toolkit for fast and robust animal
