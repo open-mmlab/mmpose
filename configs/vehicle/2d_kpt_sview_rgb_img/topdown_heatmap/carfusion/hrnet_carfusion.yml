@@ -15,10 +15,10 @@ Models:
   Results:
   - Dataset: CARFUSION
     Metrics:
-      AP: 0.493
-      AP@0.5: 0.915
-      AP@0.75: 0.489
-      AR: 0.548
-      AR@0.5: 0.925
+      AP: 0.76
+      AP@0.5: 0.906
+      AP@0.75: 0.829
+      AR: 0.81
+      AR@0.5: 0.943
     Task: Vehicle 2D Keypoint
   Weights: https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_carfusion_384x288-d9f0d786_20200708.pth

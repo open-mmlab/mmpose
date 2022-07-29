@@ -19,14 +19,14 @@ from .hand import (FreiHandDataset, HandCocoWholeBodyDataset,
                    PanopticDataset)
 from .mesh import (MeshAdversarialDataset, MeshH36MDataset, MeshMixDataset,
                    MoshDataset)
-from .top_down import (TopDownAicDataset, TopDownCarFusionDataset,
-                       TopDownCocoDataset, TopDownCocoWholeBodyDataset,
-                       TopDownCrowdPoseDataset, TopDownH36MDataset,
-                       TopDownHalpeDataset, TopDownJhmdbDataset,
-                       TopDownMhpDataset, TopDownMpiiDataset,
-                       TopDownMpiiTrbDataset, TopDownOCHumanDataset,
-                       TopDownPoseTrack18Dataset,
+from .top_down import (TopDownAicDataset, TopDownCocoDataset,
+                       TopDownCocoWholeBodyDataset, TopDownCrowdPoseDataset,
+                       TopDownH36MDataset, TopDownHalpeDataset,
+                       TopDownJhmdbDataset, TopDownMhpDataset,
+                       TopDownMpiiDataset, TopDownMpiiTrbDataset,
+                       TopDownOCHumanDataset, TopDownPoseTrack18Dataset,
                        TopDownPoseTrack18VideoDataset)
+from .vehicle import TopDownCarFusionDataset
 
 __all__ = [
     'TopDownCocoDataset', 'BottomUpCocoDataset', 'BottomUpMhpDataset',

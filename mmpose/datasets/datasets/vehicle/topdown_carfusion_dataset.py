@@ -9,9 +9,9 @@ import numpy as np
 from mmcv import Config, deprecated_api_warning
 from xtcocotools.cocoeval import COCOeval
 
-from ....core.post_processing import oks_nms, soft_oks_nms
-from ...builder import DATASETS
-from ..base import Kpt2dSviewRgbImgTopDownDataset
+from mmpose.core.post_processing import oks_nms, soft_oks_nms
+from mmpose.datasets.builder import DATASETS
+from mmpose.datasets.datasets.base import Kpt2dSviewRgbImgTopDownDataset
 
 
 @DATASETS.register_module()
