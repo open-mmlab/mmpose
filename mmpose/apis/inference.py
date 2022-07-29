@@ -167,8 +167,8 @@ def inference_topdown(model: nn.Module,
         else:
             _data = dict(img=img)
 
-        _data['bbox'] = bbox
-        _data['bbox_score'] = np.ones(1, dtype=np.float32)
+        _data['bbox'] = bbox[None]  # shape (1, 4)
+        _data['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
         data.append(pipeline(_data))
 
     with torch.no_grad():

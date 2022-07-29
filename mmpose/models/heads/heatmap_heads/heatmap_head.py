@@ -296,7 +296,6 @@ class HeatmapHead(BaseHead):
 
         The hook will be automatically registered during initialization.
         """
-
         version = local_meta.get('version', None)
         if version and version >= self._version:
             return
@@ -304,6 +303,8 @@ class HeatmapHead(BaseHead):
         # convert old-version state dict
         keys = list(state_dict.keys())
         for _k in keys:
+            if not _k.startswith(prefix):
+                continue
             v = state_dict.pop(_k)
             k = _k.lstrip(prefix)
             # In old version, "final_layer" includes both intermediate

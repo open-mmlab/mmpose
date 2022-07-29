@@ -1,56 +1,37 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List, Tuple, Union
+from typing import Sequence, Union
 
 import numpy as np
 import torch
 from mmcv.transforms import BaseTransform, to_tensor
 from mmengine.data import InstanceData, PixelData
+from mmengine.utils import is_seq_of
 
 from mmpose.core import PoseDataSample
 from mmpose.registry import TRANSFORMS
 
 
-def image_to_tensor(img: np.ndarray) -> torch.Tensor:
-    """Trans image to tensor.
+def image_to_tensor(img: Union[np.ndarray,
+                               Sequence[np.ndarray]]) -> torch.torch.Tensor:
+    """Translate image or sequence of images to tensor. Multiple image tensors
+    will be stacked.
 
     Args:
-        img (np.ndarray): The original image.
+        value (np.ndarray | Sequence[np.ndarray]): The original image or
+            image sequence
 
     Returns:
         torch.Tensor: The output tensor.
     """
 
-    if len(img.shape) < 3:
-        img = np.expand_dims(img, -1)
-    img = np.ascontiguousarray(img.transpose(2, 0, 1))
-    tensor = to_tensor(img)
-
-    return tensor
-
-
-def images_to_tensor(
-    value: Union[np.ndarray, List[np.ndarray], Tuple[np.ndarray, np.ndarray]]
-) -> torch.Tensor:
-    """Translate image or sequence of frames to tensor.
-
-    Args:
-        value (np.ndarray | List[np.ndarray] | Tuple[np.ndarray, np.ndarray]):
-            The original image or list of frames.
-
-    Returns:
-        torch.Tensor: The output tensor.
-    """
-
-    if isinstance(value, (List, Tuple)):
-        frames = [image_to_tensor(v) for v in value]
-        # stack sequence of frames
-        # List[Tensor[c, h, w]] -> Tensor[len_seq, c, h, w]
-        tensor = torch.stack(frames, dim=0)
-    elif isinstance(value, np.ndarray):
-        tensor = image_to_tensor(value)
+    if isinstance(img, np.ndarray):
+        if len(img.shape) < 3:
+            img = np.expand_dims(img, -1)
+        img = np.ascontiguousarray(img.transpose(2, 0, 1))
+        tensor = to_tensor(img)
     else:
-        # Maybe the data has been converted to Tensor.
-        tensor = to_tensor(value)
+        assert is_seq_of(img, np.ndarray)
+        tensor = torch.stack([to_tensor(_img) for _img in img])
 
     return tensor
 
@@ -87,6 +68,8 @@ class PackPoseInputs(BaseTransform):
             'img_shape', 'input_size', 'flip', 'flip_direction')``
     """
 
+    # items in `mapping_table` will be directly packed into PoseDataSample
+    # without converting to Tensor
     mapping_table = {
         'bbox': 'bboxes',
         'bbox_center': 'bbox_centers',
@@ -94,7 +77,6 @@ class PackPoseInputs(BaseTransform):
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
-        'reg_label': 'reg_labels',
         'keypoint_weights': 'keypoint_weights'
     }
 
@@ -117,20 +99,26 @@ class PackPoseInputs(BaseTransform):
             - 'data_sample' (obj:`PoseDataSample`): The annotation info of the
                 sample.
         """
+        # Pack image(s)
         if 'img' in results:
             img = results['img']
-            img_tensor = images_to_tensor(img)
+            img_tensor = image_to_tensor(img)
 
         data_sample = PoseDataSample()
         gt_instances = InstanceData()
         gt_fields = PixelData()
 
+        # Pack labels
+        if 'reg_label' in results:
+            gt_instances.reg_labels = to_tensor(results['reg_label'])
+
+        if 'heatmaps' in results:
+            gt_fields.heatmaps = to_tensor(results['heatmaps'])
+
+        # Pack other data
         for key, packed_key in self.mapping_table.items():
             if key in results:
                 gt_instances[packed_key] = results[key]
-
-        if 'heatmaps' in results:
-            gt_fields.heatmaps = results['heatmaps']
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_fields = gt_fields

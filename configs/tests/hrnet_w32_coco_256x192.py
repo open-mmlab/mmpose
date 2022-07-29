@@ -44,7 +44,7 @@ model = dict(
         out_channels=17,
         deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decode=codec))
+        decoder=codec))
 
 # dataset settings
 dataset_type = 'CocoDataset'
@@ -103,3 +103,7 @@ val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator
+
+vis_backends = [dict(type='LocalVisBackend')]
+visualizer = dict(
+    type='PoseLocalVisualizer', vis_backends=vis_backends, name='visualizer')

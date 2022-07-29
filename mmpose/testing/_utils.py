@@ -85,13 +85,13 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     return keypoints
 
 
-def _rand_bboxes(rng, num_instances, w, h):
+def _rand_bboxes(rng, num_instances, img_w, img_h):
     cx, cy, bw, bh = rng.rand(num_instances, 4).T
 
-    tl_x = ((cx * w) - (w * bw / 2)).clip(0, w)
-    tl_y = ((cy * h) - (h * bh / 2)).clip(0, h)
-    br_x = ((cx * w) + (w * bw / 2)).clip(0, w)
-    br_y = ((cy * h) + (h * bh / 2)).clip(0, h)
+    tl_x = ((cx * img_w) - (img_w * bw / 2)).clip(0, img_w)
+    tl_y = ((cy * img_h) - (img_h * bh / 2)).clip(0, img_h)
+    br_x = ((cx * img_w) + (img_w * bw / 2)).clip(0, img_w)
+    br_y = ((cy * img_h) + (img_h * bh / 2)).clip(0, img_h)
 
     bboxes = np.vstack([tl_x, tl_y, br_x, br_y]).T
     return bboxes

@@ -8,7 +8,7 @@ from mmengine.data import InstanceData
 from mmengine.model import BaseModule
 from torch import Tensor
 
-from mmpose.core.utils.tensor_utils import to_numpy, to_tensor
+from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import OptConfigType, OptSampleList, SampleList
 
 
@@ -100,22 +100,19 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             raise ValueError(
                 '`batch_data_samples` is required to decode keypoitns.')
 
-        batch_outputs_np, device = to_numpy(batch_outputs, return_device=True)
+        batch_outputs_np = to_numpy(batch_outputs)
 
         # TODO: support decoding with tensor data
         for outputs, data_sample in zip(batch_outputs_np, batch_data_samples):
-            keypoints_np, scores_np = self.decoder.decode(outputs)
-            keypoints = to_tensor(keypoints_np, device)
-            scores = to_tensor(scores_np, device)
-
+            keypoints, scores = self.decoder.decode(outputs)
             # Convert the decoded local keypoints (in input space)
             # to the image coordinate space
             # Convert keypoint coordinates from input space to image space
             if 'gt_instances' in data_sample:
                 bbox_centers = data_sample.gt_instances.bbox_centers
                 bbox_scales = data_sample.gt_instances.bbox_scales
-                input_size = keypoints.new_tensor(
-                    data_sample.metainfo['input_size'])
+                input_size = data_sample.metainfo['input_size']
+
                 keypoints = keypoints / input_size * bbox_scales + \
                     bbox_centers - 0.5 * bbox_scales
 
@@ -126,7 +123,10 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
             # Store the keypoint predictions in the data sample
             if 'pred_instances' not in data_sample:
-                data_sample.pred_instances = InstanceData()
+                pred_instances = InstanceData()
+                pred_instances.bboxes = data_sample.gt_instances.bboxes
+                data_sample.pred_instances = pred_instances
+
             data_sample.pred_instances.keypoints = keypoints
             data_sample.pred_instances.keypoint_scores = scores
 

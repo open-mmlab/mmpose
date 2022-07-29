@@ -36,7 +36,7 @@ class BaseCocoStyleDataset(BaseDataset):
         data_root (str, optional): The root directory for ``data_prefix`` and
             ``ann_file``. Default: ``None``.
         data_prefix (dict, optional): Prefix for training data.
-            Default: ``dict(img_path='')``.
+            Default: ``dict(img='')``.
         filter_cfg (dict, optional): Config for filter data. Default: `None`.
         indices (int or Sequence[int], optional): Support using first few
             data in annotation file to facilitate training/testing on a smaller
@@ -66,7 +66,7 @@ class BaseCocoStyleDataset(BaseDataset):
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img_path=''),
+                 data_prefix: dict = dict(img=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,
@@ -218,7 +218,7 @@ class BaseCocoStyleDataset(BaseDataset):
                 ann['keypoints']) == 0:
             return None
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh

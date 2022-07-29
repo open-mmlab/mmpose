@@ -58,7 +58,7 @@ class TestPackPoseInputs(TestCase):
         self.assertIsInstance(results['data_sample'].gt_fields, PixelData)
         self.assertEqual(len(results['data_sample'].gt_instances), 1)
         self.assertIsInstance(results['data_sample'].gt_fields.heatmaps,
-                              np.ndarray)
+                              torch.Tensor)
 
         # test when results['img'] is sequence of frames
         results = copy.deepcopy(self.results_topdown)

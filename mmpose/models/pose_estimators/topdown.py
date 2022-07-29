@@ -28,6 +28,8 @@ class TopdownPoseEstimator(BasePoseEstimator):
             Defaults to ``None``
     """
 
+    _version = 2
+
     def __init__(self,
                  backbone: ConfigType,
                  neck: OptConfigType = None,
@@ -46,8 +48,11 @@ class TopdownPoseEstimator(BasePoseEstimator):
         if head is not None:
             self.head = MODELS.build(head)
 
-        self.train_cfg = train_cfg
-        self.test_cfg = test_cfg
+        self.train_cfg = train_cfg if train_cfg else {}
+        self.test_cfg = test_cfg if test_cfg else {}
+
+        # Register the hook to automatically convert old version state dicts
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 
     def extract_feat(self, batch_inputs: Tensor) -> Tuple[Tensor]:
         """Extract features.
@@ -133,6 +138,26 @@ class TopdownPoseEstimator(BasePoseEstimator):
 
         feats = self.extract_feat(batch_inputs)
         preds = self.head.predict(
-            feats, batch_inputs, batch_data_samples, test_cfg=self.test_cfg)
+            feats, batch_data_samples, test_cfg=self.test_cfg)
 
         return preds
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to convert old-version state dict of
+        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`HeatmapHead`.
+
+        The hook will be automatically registered during initialization.
+        """
+        version = local_meta.get('version', None)
+        if version and version >= self._version:
+            return
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for k in keys:
+            if 'keypoint_head' in k:
+                v = state_dict.pop(k)
+                k = k.replace('keypoint_head', 'head')
+                state_dict[k] = v
