@@ -528,3 +528,46 @@ class SemiSupervisionLoss(nn.Module):
         losses['bone_loss'] = loss_bone
 
         return losses
+
+
+@LOSSES.register_module()
+class AWRSmoothL1Loss(nn.Module):
+    """L1Loss loss ."""
+
+    def __init__(self, use_target_weight=False, loss_weight=1.):
+        super().__init__()
+        self.use_target_weight = use_target_weight
+        self.loss_weight = loss_weight
+
+    def forward(self, output, target, target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+
+        Args:
+            output (torch.Tensor[N, K, 3]): Output regression.
+            target (torch.Tensor[N, K, 3]): Target regression.
+            target_weight (torch.Tensor[N, K, 3]):
+                Weights across different joint types.
+        """
+        assert (output.shape == target.shape)
+        if self.use_target_weight:
+            assert target_weight is not None
+            z = (output * target_weight - target * target_weight)
+        else:
+            z = (output - target)
+        mse_mask = (torch.abs(z) < 0.01).to(dtype=z.dtype, device=z.device)
+        l1_mask = (torch.abs(z) >= 0.01).to(dtype=z.dtype, device=z.device)
+        mse = mse_mask * z
+        l1 = l1_mask * z
+        loss = torch.mean(self._calculate_MSE(mse) * mse_mask) + torch.mean(
+            self._calculate_L1(l1) * l1_mask)
+        return loss
+
+    def _calculate_MSE(self, z):
+        return 0.5 * (torch.pow(z, 2))
+
+    def _calculate_L1(self, z):
+        return 0.01 * (torch.abs(z) - 0.005)

@@ -2,6 +2,7 @@
 from .ae_higher_resolution_head import AEHigherResolutionHead
 from .ae_multi_stage_head import AEMultiStageHead
 from .ae_simple_head import AESimpleHead
+from .awr_head import AdaptiveWeightingRegression3DHead
 from .deconv_head import DeconvHead
 from .deeppose_regression_head import DeepposeRegressionHead
 from .hmr_head import HMRMeshHead
@@ -21,5 +22,5 @@ __all__ = [
     'AEHigherResolutionHead', 'AESimpleHead', 'AEMultiStageHead',
     'DeepposeRegressionHead', 'TemporalRegressionHead', 'Interhand3DHead',
     'HMRMeshHead', 'DeconvHead', 'ViPNASHeatmapSimpleHead', 'CuboidCenterHead',
-    'CuboidPoseHead', 'MultiModalSSAHead'
+    'CuboidPoseHead', 'MultiModalSSAHead', 'AdaptiveWeightingRegression3DHead'
 ]
