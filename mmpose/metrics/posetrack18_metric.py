@@ -223,8 +223,8 @@ class PoseTrack18Metric(CocoMetric):
         logger.info('Loading data')
         gtFramesAll, prFramesAll = eval_helpers.load_data_dir(argv)
 
-        logger.info('# gt frames  :', len(gtFramesAll))
-        logger.info('# pred frames:', len(prFramesAll))
+        logger.info(f'# gt frames  : {len(gtFramesAll)}')
+        logger.info(f'# pred frames: {len(prFramesAll)}')
 
         # evaluate per-frame multi-person pose estimation (AP)
         # compute AP

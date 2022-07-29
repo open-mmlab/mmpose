@@ -381,14 +381,14 @@ class TestCocoMetric(TestCase):
             predictions = [predictions0, predictions1]
             data.append((data_batch, predictions))
 
-        # case 3: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        # case 3: score_mode='bbox_keypoint', nms_mode='soft_oks_nms'
         coco_metric = CocoMetric(
             ann_file=self.ann_file,
             outfile_prefix=f'{self.tmp_dir.name}/test',
             score_mode='bbox_keypoint',
             keypoint_score_thr=0.2,
             nms_thr=0.9,
-            nms_mode='oks_nms')
+            nms_mode='soft_oks_nms')
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
@@ -398,11 +398,11 @@ class TestCocoMetric(TestCase):
         eval_results = coco_metric.evaluate(size=len(data) * 2)
 
         target = {
-            'coco/AP': 0.19344059405940592,
-            'coco/AP .5': 0.297029702970297,
-            'coco/AP .75': 0.10891089108910887,
+            'coco/AP': 0.17073707370737073,
+            'coco/AP .5': 0.25055005500550054,
+            'coco/AP .75': 0.10671067106710669,
             'coco/AP (M)': 0.0,
-            'coco/AP (L)': 0.3329561527581329,
+            'coco/AP (L)': 0.29315181518151806,
             'coco/AR': 0.2416666666666666,
             'coco/AR .5': 0.3333333333333333,
             'coco/AR .75': 0.16666666666666666,

@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import copy
 import os.path as osp
 import tempfile
 from collections import defaultdict
@@ -232,3 +233,146 @@ class TestPoseTrack18Metric(TestCase):
                 AssertionError,
                 'Ground truth annotations are required for evaluation'):
             _ = PoseTrack18Metric(ann_file=tmp_ann_file, format_only=False)
+
+    def test_topdown_alignment(self):
+        """Test whether the output of PoseTrack18Metric and the original
+        TopDownPoseTrack18Dataset are the same."""
+        data = []
+        for ann in self.db['annotations']:
+            w, h = ann['bbox'][2], ann['bbox'][3]
+            data_batch = {}
+            data_batch['inputs'] = None
+            data_batch['data_sample'] = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+            }
+            predictions = {}
+            keypoints = np.array(
+                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
+            keypoints[0, :, 0] = keypoints[0, :, 0] * 0.98
+            keypoints[0, :, 1] = keypoints[0, :, 1] * 1.02
+            keypoints[0, :, 2] = keypoints[0, :, 2] * 0.8
+
+            predictions['pred_instances'] = {
+                'keypoints': torch.tensor(keypoints).reshape((1, -1, 3)),
+                'scores': torch.ones((1, 1)) * 0.98
+            }
+            # batch size = 1
+            data_batch = [data_batch]
+            predictions = [predictions]
+            data.append((data_batch, predictions))
+
+        # case 1:
+        # typical setting: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        posetrack18_metric = PoseTrack18Metric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            nms_mode='oks_nms')
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
+
+        # process samples
+        for batch, preds in data:
+            posetrack18_metric.process(batch, preds)
+
+        eval_results = posetrack18_metric.evaluate(size=len(data))
+
+        target = {
+            'posetrack18/Head AP': 84.6677132391418,
+            'posetrack18/Shou AP': 80.86734693877551,
+            'posetrack18/Elb AP': 83.0204081632653,
+            'posetrack18/Wri AP': 85.12396694214877,
+            'posetrack18/Hip AP': 75.14792899408285,
+            'posetrack18/Knee AP': 66.76515151515152,
+            'posetrack18/Ankl AP': 71.78571428571428,
+            'posetrack18/Total AP': 78.62827822638012,
+        }
+
+        for key in eval_results.keys():
+            self.assertAlmostEqual(eval_results[key], target[key])
+
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, '012834_mpii_test.json')))
+
+        data = []
+        anns = self.db['annotations']
+        for i, ann in enumerate(anns):
+            w, h = ann['bbox'][2], ann['bbox'][3]
+            data_batch0 = {}
+            data_batch0['inputs'] = None
+            data_batch0['data_sample'] = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+            }
+            predictions0 = {}
+            keypoints = np.array(
+                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
+            keypoints[0, :, 0] = keypoints[0, :, 0] * (1 - i / 100)
+            keypoints[0, :, 1] = keypoints[0, :, 1] * (1 + i / 100)
+            keypoints[0, :, 2] = keypoints[0, :, 2] * (1 - i / 100)
+
+            predictions0['pred_instances'] = {
+                'keypoints': torch.tensor(keypoints).reshape((1, -1, 3)),
+                'scores': torch.ones((1, 1))
+            }
+
+            data_batch1 = {}
+            data_batch1['inputs'] = None
+            data_batch1['data_sample'] = {
+                'id': ann['id'] + 1,
+                'img_id': ann['image_id'],
+                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+            }
+            predictions1 = {}
+            keypoints = np.array(
+                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
+            keypoints[0, :, 0] = keypoints[0, :, 0] * (1 + i / 100)
+            keypoints[0, :, 1] = keypoints[0, :, 1] * (1 - i / 100)
+            keypoints[0, :, 2] = keypoints[0, :, 2] * (1 - 2 * i / 100)
+
+            predictions1['pred_instances'] = {
+                'keypoints':
+                torch.tensor(copy.deepcopy(keypoints)).reshape((1, -1, 3)),
+                'scores':
+                torch.ones((1, 1)) * (1 - 2 * i / 100)
+            }
+
+            # batch size = 2
+            data_batch = [data_batch0, data_batch1]
+            predictions = [predictions0, predictions1]
+            data.append((data_batch, predictions))
+
+        # case 3: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        posetrack18_metric = PoseTrack18Metric(
+            ann_file=self.ann_file,
+            outfile_prefix=f'{self.tmp_dir.name}/test',
+            score_mode='bbox_keypoint',
+            keypoint_score_thr=0.2,
+            nms_thr=0.9,
+            nms_mode='soft_oks_nms')
+        posetrack18_metric.dataset_meta = self.posetrack18_dataset_meta
+
+        # process samples
+        for batch, preds in data:
+            posetrack18_metric.process(batch, preds)
+
+        eval_results = posetrack18_metric.evaluate(size=len(data) * 2)
+
+        target = {
+            'posetrack18/Head AP': 27.1062271062271068,
+            'posetrack18/Shou AP': 25.918367346938776,
+            'posetrack18/Elb AP': 22.67857142857143,
+            'posetrack18/Wri AP': 29.090909090909093,
+            'posetrack18/Hip AP': 18.40659340659341,
+            'posetrack18/Knee AP': 32.0,
+            'posetrack18/Ankl AP': 20.0,
+            'posetrack18/Total AP': 25.167170924313783,
+        }
+
+        for key in eval_results.keys():
+            self.assertAlmostEqual(eval_results[key], target[key])
+
+        self.assertTrue(
+            osp.isfile(osp.join(self.tmp_dir.name, '009473_mpii_test.json')))
