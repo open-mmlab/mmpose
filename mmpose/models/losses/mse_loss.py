@@ -13,10 +13,13 @@ class KeypointMSELoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
-        loss_weight (float): Weight of the loss. Default: 1.0.
+            Defaults to ``False``
+        loss_weight (float): Weight of the loss. Defaults to 1.0
     """
 
-    def __init__(self, use_target_weight=False, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight: bool = False,
+                 loss_weight: float = 1.):
         super().__init__()
         self.criterion = nn.MSELoss()
         self.use_target_weight = use_target_weight
@@ -62,16 +65,39 @@ class CombinedTargetMSELoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
-        loss_weight (float): Weight of the loss. Default: 1.0.
+            Defaults to ``False``
+        loss_weight (float): Weight of the loss. Defaults to 1.0
     """
 
-    def __init__(self, use_target_weight, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight: bool = False,
+                 loss_weight: float = 1.):
         super().__init__()
         self.criterion = nn.MSELoss(reduction='mean')
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
-    def forward(self, output, target, target_weights):
+    def forward(self, output: Tensor, target: Tensor,
+                target_weights: Tensor) -> Tensor:
+        """Forward function of loss.
+
+        Note:
+            - batch_size: B
+            - num_channels: C
+            - heatmaps height: H
+            - heatmaps weight: W
+            - num_keypoints: K
+            Here, C = 3 * K
+
+        Args:
+            output (Tensor): The output feature maps with shape [B, C, H, W].
+            target (Tensor): The target feature maps with shape [B, C, H, W].
+            target_weights (Tensor): The target weights of differet keypoints,
+                with shape [B, K].
+
+        Returns:
+            Tensor: The calculated loss.
+        """
         batch_size = output.size(0)
         num_channels = output.size(1)
         heatmaps_pred = output.reshape(
@@ -87,8 +113,8 @@ class CombinedTargetMSELoss(nn.Module):
             offset_x_gt = heatmaps_gt[idx * 3 + 1].squeeze()
             offset_y_pred = heatmaps_pred[idx * 3 + 2].squeeze()
             offset_y_gt = heatmaps_gt[idx * 3 + 2].squeeze()
-            target_weight = target_weights[:, idx, None]
             if self.use_target_weight:
+                target_weight = target_weights[:, idx, None]
                 heatmap_pred = heatmap_pred * target_weight
                 heatmap_gt = heatmap_gt * target_weight
             # classification loss
@@ -108,11 +134,15 @@ class KeypointOHKMMSELoss(nn.Module):
     Args:
         use_target_weight (bool): Option to use weighted MSE loss.
             Different joint types may have different target weights.
-        topk (int): Only top k joint losses are kept.
-        loss_weight (float): Weight of the loss. Default: 1.0.
+            Defaults to ``False``
+        topk (int): Only top k joint losses are kept. Defaults to 8
+        loss_weight (float): Weight of the loss. Defaults to 1.0
     """
 
-    def __init__(self, use_target_weight=False, topk=8, loss_weight=1.):
+    def __init__(self,
+                 use_target_weight: bool = False,
+                 topk: int = 8,
+                 loss_weight: float = 1.):
         super().__init__()
         assert topk > 0
         self.criterion = nn.MSELoss(reduction='none')
@@ -122,6 +152,10 @@ class KeypointOHKMMSELoss(nn.Module):
 
     def _ohkm(self, losses: Tensor) -> Tensor:
         """Online hard keypoint mining.
+
+        Note:
+            - batch_size: B
+            - num_keypoints: K
 
         Args:
             loss (Tensor): The losses with shape [B, K]
