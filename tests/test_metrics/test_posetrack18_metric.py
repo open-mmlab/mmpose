@@ -344,7 +344,7 @@ class TestPoseTrack18Metric(TestCase):
             predictions = [predictions0, predictions1]
             data.append((data_batch, predictions))
 
-        # case 3: score_mode='bbox_keypoint', nms_mode='oks_nms'
+        # case 3: score_mode='bbox_keypoint', nms_mode='soft_oks_nms'
         posetrack18_metric = PoseTrack18Metric(
             ann_file=self.ann_file,
             outfile_prefix=f'{self.tmp_dir.name}/test',
