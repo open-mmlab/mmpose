@@ -135,7 +135,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
                 'img_id':
                 img_id,
                 'img_path':
-                osp.join(self.data_prefix['img_path'],
+                osp.join(self.data_prefix['img'],
                          imgid2info[img_id]['file_name']),
                 'bbox_center':
                 center,

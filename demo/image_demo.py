@@ -1,10 +1,10 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from argparse import ArgumentParser
 
-import numpy as np
 from mmcv.image import imread
 
 from mmpose.apis import inference_topdown, init_model
+from mmpose.core.data_structures import PoseDataSample
 from mmpose.registry import VISUALIZERS
 from mmpose.utils import register_all_modules
 
@@ -46,16 +46,15 @@ def main(args):
     visualizer.set_dataset_meta(model.dataset_meta)
 
     # inference a single image
-    bboxes = np.array([[280.79, 44.73, 218.7, 346.68]], dtype=np.float32)
-    results = inference_topdown(
-        model, args.img, bboxes=bboxes, bbox_format='xywh')
+    results = inference_topdown(model, args.img)
+    results = PoseDataSample.merge(results)
 
     # show the results
     img = imread(args.img, channel_order='rgb')
     visualizer.add_datasample(
         'result',
         img,
-        data_sample=results[0],
+        data_sample=results,
         draw_gt=False,
         draw_bbox=True,
         draw_heatmap=args.draw_heatmap,

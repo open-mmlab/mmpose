@@ -31,7 +31,7 @@ def image_to_tensor(img: Union[np.ndarray,
         tensor = to_tensor(img)
     else:
         assert is_seq_of(img, np.ndarray)
-        tensor = torch.stack([to_tensor(_img) for _img in img])
+        tensor = torch.stack([image_to_tensor(_img) for _img in img])
 
     return tensor
 
@@ -77,7 +77,6 @@ class PackPoseInputs(BaseTransform):
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
-        'keypoint_weights': 'keypoint_weights'
     }
 
     def __init__(self,
@@ -109,6 +108,10 @@ class PackPoseInputs(BaseTransform):
         gt_fields = PixelData()
 
         # Pack labels
+        if 'keypoint_weights' in results:
+            gt_instances.keypoint_weights = to_tensor(
+                results['keypoint_weights'])
+
         if 'reg_label' in results:
             gt_instances.reg_labels = to_tensor(results['reg_label'])
 

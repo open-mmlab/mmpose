@@ -99,7 +99,7 @@ class FreiHandDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
         # use the entire image which is 224x224
         bbox = np.array([0, 0, 224, 224], dtype=np.float32).reshape(1, 4)

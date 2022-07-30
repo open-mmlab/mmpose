@@ -11,7 +11,7 @@ from mmengine.config import Config
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
-from mmpose.core.bbox.transforms import bbox_xyxy2xywh
+from mmpose.core.bbox.transforms import bbox_xywh2xyxy
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.models.builder import build_pose_estimator
 
@@ -155,8 +155,8 @@ def inference_topdown(model: nn.Module,
         assert bbox_format in {'xyxy', 'xywh'}, \
             f'Invalid bbox_format "{bbox_format}".'
 
-        if bbox_format == 'xyxy':
-            bboxes = bbox_xyxy2xywh(bboxes)
+        if bbox_format == 'xywh':
+            bboxes = bbox_xywh2xyxy(bboxes)
 
     # construct batch data samples
     data = []

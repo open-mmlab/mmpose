@@ -113,7 +113,7 @@ class LocustDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
         # get bbox in shape [1, 4], formatted as xywh
         # use the entire image which is 160x160

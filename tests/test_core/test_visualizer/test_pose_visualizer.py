@@ -60,8 +60,7 @@ class TestPoseLocalVisualizer(TestCase):
         pose_local_visualizer.add_datasample(
             'image',
             image,
-            gt_sample=pred_pose_data_sample,
-            pred_sample=pred_pose_data_sample,
+            data_sample=pred_pose_data_sample,
             draw_bbox=True,
             out_file=out_file)
         self._assert_image_and_shape(out_file, (h, w * 2, 3))
@@ -70,8 +69,7 @@ class TestPoseLocalVisualizer(TestCase):
         pose_local_visualizer.add_datasample(
             'image',
             image,
-            gt_sample=pred_pose_data_sample,
-            pred_sample=pred_pose_data_sample,
+            data_sample=pred_pose_data_sample,
             draw_pred=False,
             draw_heatmap=True,
             out_file=out_file)
@@ -80,8 +78,7 @@ class TestPoseLocalVisualizer(TestCase):
         pose_local_visualizer.add_datasample(
             'image',
             image,
-            gt_sample=pred_pose_data_sample,
-            pred_sample=pred_pose_data_sample,
+            data_sample=pred_pose_data_sample,
             draw_heatmap=True,
             out_file=out_file)
         self._assert_image_and_shape(out_file, ((h * 2), (w * 2), 3))

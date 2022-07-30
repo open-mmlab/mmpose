@@ -6,6 +6,7 @@ import numpy as np
 from mmengine.utils import check_file_exist
 from xtcocotools.coco import COCO
 
+from mmpose.core.bbox.transforms import bbox_xywh2xyxy
 from mmpose.registry import DATASETS
 from ..base import BaseCocoStyleDataset
 
@@ -102,12 +103,14 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                     # valid instances (left and right hand) in one image
                     if ann[f'{type}hand_valid'] and max(
                             ann[f'{type}hand_kpts']) > 0:
-                        img_path = osp.join(self.data_prefix['img_path'],
+                        img_path = osp.join(self.data_prefix['img'],
                                             img['file_name'])
 
-                        bbox = np.array(
+                        bbox_xywh = np.array(
                             ann[f'{type}hand_box'],
                             dtype=np.float32).reshape(1, 4)
+
+                        bbox = bbox_xywh2xyxy(bbox_xywh)
 
                         _keypoints = np.array(
                             ann[f'{type}hand_kpts'],

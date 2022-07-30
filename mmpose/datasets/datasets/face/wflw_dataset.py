@@ -76,7 +76,7 @@ class WFLWDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
         center = np.array(ann['center'], dtype=np.float32)
         scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)

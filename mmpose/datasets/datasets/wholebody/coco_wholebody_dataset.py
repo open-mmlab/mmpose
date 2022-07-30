@@ -84,7 +84,7 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -94,8 +94,7 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
         x2 = np.clip(x + w, 0, img_w - 1)
         y2 = np.clip(y + h, 0, img_h - 1)
 
-        bbox = np.array([x1, y1, x2 - x1, y2 - y1],
-                        dtype=np.float32).reshape(1, 4)
+        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         # COCO-Wholebody: consisting of body, foot, face and hand keypoints
