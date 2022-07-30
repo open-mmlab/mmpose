@@ -374,7 +374,7 @@ mmpose
 
 </details>
 
-请从此链接 [PoseTrack18](https://posetrack.net/users/download.php)下载数据文件，并从此链接下载 [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar)下载标注文件。
+请从此链接 [PoseTrack18](https://posetrack.net/users/download.php)下载数据文件，并从此链接 [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar)下载标注文件。
 我们已将官方提供的所有单视频标注文件合并为两个 json 文件 (posetrack18_train & posetrack18_val.json)，并生成了 [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) 来加速训练。
 对于 top-down 的方法， 我们使用 [MMDetection](https://github.com/open-mmlab/mmdetection) 的预训练 [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) 来生成人体的检测框。
 请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
