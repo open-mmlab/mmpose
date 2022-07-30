@@ -465,7 +465,7 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 </details>
 
-对于 [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) 数据集，请从此链接 [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) （来自 [JHMDB](http://jhmdb.is.tue.mpg.de/dataset)）下载，
+对于 [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) 数据集，请从此链接 [JHMDB](http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz) 下载images，
 请从此链接 [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar)下载标注文件。
 将它们移至 $MMPOSE/data目录下， 使得文件呈如下的格式：
 
