@@ -293,8 +293,8 @@ class HeatmapHead(BaseHead):
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
         """A hook function to convert old-version state dict of
-        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`HeatmapHead`.
+        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`RegressionHead`.
 
         The hook will be automatically registered during initialization.
         """
@@ -309,10 +309,19 @@ class HeatmapHead(BaseHead):
                 continue
             v = state_dict.pop(_k)
             k = _k.lstrip(prefix)
-            # In old version, "loss" includes the instances of loss,
-            # now it should be renamed "loss_module"
+            # In old version, "final_layer" includes both intermediate
+            # conv layers (new "conv_layers") and final conv layers (new
+            # "final_layer").
+            #
+            # If there is no intermediate conv layer, old "final_layer" will
+            # have keys like "final_layer.xxx", which should be still
+            # named "final_layer.xxx";
+            #
+            # If there are intermediate conv layerse, old "final_layer"  will
+            # have keys like "final_layer.n.xxx", where the weghts of the last
+            # one should be renamed "final_layer.xxx", and others should be
+            # renamed "conv_layers.n.xxx"
             k_parts = _k.split('.')
-
             if k_parts[0] == 'final_layer':
                 if len(k_parts) == 3:
                     assert isinstance(self.conv_layers, nn.Sequential)
@@ -326,6 +335,7 @@ class HeatmapHead(BaseHead):
                 else:
                     # final_layer.xxx remains final_layer.xxx
                     k_new = k
+
             else:
                 k_new = k
 
