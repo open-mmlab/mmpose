@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import unittest
 from typing import List, Tuple
 from unittest import TestCase
-import unittest
-import numpy as np
+
 import torch
 
 from mmpose.core.data_structures.pose_data_sample import PoseDataSample
@@ -23,9 +23,13 @@ class TestRegressionHead(TestCase):
 
         return feats
 
-    def _get_data_samples(self, batch_size: int = 2, with_heatmap: bool = False):
+    def _get_data_samples(self,
+                          batch_size: int = 2,
+                          with_heatmap: bool = False):
+
         batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(batch_size, with_heatmap=with_heatmap)
+            inputs['data_sample'] for inputs in get_packed_inputs(
+                batch_size, with_heatmap=with_heatmap)
         ]
 
         return batch_data_samples
@@ -131,11 +135,10 @@ class TestRegressionHead(TestCase):
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
 
-            _ = head = RegressionHead(
-            in_channels=[16, 32],
-            num_joints=17,
-            input_transform='select',
-            input_index=[0, 1])
+            _ = RegressionHead(in_channels=[16, 32],
+                               num_joints=17,
+                               input_transform='select',
+                               input_index=[0, 1])
 
     def test_state_dict_compatible(self):
         # w/ sigma
@@ -155,6 +158,7 @@ class TestRegressionHead(TestCase):
             'fc.bias': torch.zeros((17 * 2))
         }
         head.load_state_dict(state_dict)
+
 
 if __name__ == '__main__':
     unittest.main()

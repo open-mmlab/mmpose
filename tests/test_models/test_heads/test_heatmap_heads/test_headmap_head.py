@@ -1,7 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import unittest
 from typing import List, Tuple
 from unittest import TestCase
-import unittest
+
 import torch
 from torch import nn
 
@@ -219,6 +220,7 @@ class TestHeatmapHead(TestCase):
             'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)
+
 
 if __name__ == '__main__':
     unittest.main()
