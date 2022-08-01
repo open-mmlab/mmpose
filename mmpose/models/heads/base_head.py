@@ -13,6 +13,7 @@ from mmpose.core.utils.typing import OptConfigType, OptSampleList, SampleList
 
 
 
+
 class BaseHead(BaseModule, metaclass=ABCMeta):
     """Base head. A subclass should override :meth:`predict` and :meth:`loss`.
 
