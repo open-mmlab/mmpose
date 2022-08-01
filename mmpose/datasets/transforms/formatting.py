@@ -115,24 +115,6 @@ class PackPoseInputs(BaseTransform):
         gt_instance_labels = InstanceData()
         gt_heatmaps = PixelData()
 
-<<<<<<< HEAD:mmpose/datasets/transforms/formatting.py
-        # Pack labels
-        if 'keypoint_weights' in results:
-            gt_instances.keypoint_weights = to_tensor(
-                results['keypoint_weights'])
-
-        if 'reg_label' in results:
-            gt_instances.reg_labels = to_tensor(results['reg_label'])
-
-        if 'heatmaps' in results:
-            gt_fields.heatmaps = to_tensor(results['heatmaps'])
-
-        # Pack other data
-        for key, packed_key in self.mapping_table.items():
-            if key in results:
-                gt_instances[packed_key] = results[key]
-
-=======
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
                 gt_instances[packed_key] = results[key]
@@ -144,7 +126,6 @@ class PackPoseInputs(BaseTransform):
         if 'heatmaps' in results:
             gt_heatmaps.heatmaps = results['heatmaps']
 
->>>>>>> 7457e758 (reorganize data_sample):mmpose/datasets/pipelines/formatting.py
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
         data_sample.gt_heatmaps = gt_heatmaps

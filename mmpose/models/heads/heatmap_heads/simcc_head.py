@@ -180,9 +180,10 @@ class SimCCHead(BaseHead):
         # flatten the output heatmap
         x = torch.flatten(feats, 2)
 
+
         pred_x = self.mlp_head_x(x)
         pred_y = self.mlp_head_y(x)
-
+        
         return pred_x, pred_y
 
     def predict(
@@ -199,8 +200,10 @@ class SimCCHead(BaseHead):
 
         # Whether to visualize the predicted simcc representations
         if test_cfg.get('output_heatmaps', False):
-            for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
+            for pred_x, pred_y, data_sample in zip(batch_pred_x,
+                                                   batch_pred_y,
                                                    preds):
+
                 if 'pred_instance_labels' not in data_sample:
                     data_sample.pred_instance_labels = InstanceData()
                     # Store the simcc predictions in the data sample

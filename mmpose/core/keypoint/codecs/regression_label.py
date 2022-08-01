@@ -69,7 +69,7 @@ class RegressionLabel(BaseKeypointCodec):
             - socres (np.ndarray): The keypoint scores in shape (K, 1).
                 It usually represents the confidence of the keypoint prediction
         """
-
+        
         if encoded.shape[-1] == 2:
             K, _ = encoded.shape
             normalized_coords = encoded.copy()

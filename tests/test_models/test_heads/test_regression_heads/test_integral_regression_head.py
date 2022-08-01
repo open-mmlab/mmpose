@@ -25,6 +25,7 @@ class TestIntegralRegressionHead(TestCase):
 
         return feats
 
+
     def _get_data_samples(self,
                           batch_size: int = 2,
                           with_heatmap: bool = False):
@@ -60,6 +61,7 @@ class TestIntegralRegressionHead(TestCase):
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
         )
+
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -75,6 +77,7 @@ class TestIntegralRegressionHead(TestCase):
             conv_kernel_sizes=(1, ),
             has_final_layer=False,
         )
+
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -88,6 +91,7 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=tuple(),
             has_final_layer=False,
         )
+
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -101,6 +105,7 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=None,
             has_final_layer=False,
         )
+
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -112,6 +117,7 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
+
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
@@ -185,6 +191,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertEqual(preds[0].pred_heatmaps.heatmaps.shape,
                          (17, 8 * 8, 6 * 8))
 
+
     def test_loss(self):
         head = IntegralRegressionHead(
             in_channels=[16, 32],
@@ -207,6 +214,7 @@ class TestIntegralRegressionHead(TestCase):
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
+
             _ = IntegralRegressionHead(
                 in_channels=[16, 32],
                 in_featuremap_size=(6, 8),

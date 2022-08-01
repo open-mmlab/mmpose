@@ -25,6 +25,7 @@ class TestRegressionHead(TestCase):
 
         return feats
 
+
     def _get_data_samples(self,
                           batch_size: int = 2,
                           with_heatmap: bool = False):
@@ -32,7 +33,7 @@ class TestRegressionHead(TestCase):
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
                 batch_size, with_heatmap=with_heatmap)
-        ]
+
 
         return batch_data_samples
 
@@ -48,6 +49,7 @@ class TestRegressionHead(TestCase):
             num_joints=17,
             decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
+
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
@@ -145,6 +147,7 @@ class TestRegressionHead(TestCase):
                 input_transform='select',
                 input_index=[0, 1],
             )
+
 
     def test_state_dict_compatible(self):
 

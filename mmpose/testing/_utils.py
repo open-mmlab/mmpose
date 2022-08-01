@@ -18,6 +18,7 @@ def get_packed_inputs(batch_size=2,
                       with_heatmap=True,
                       with_reg_label=True,
                       with_simcc_label=None):
+
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
@@ -124,6 +125,10 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     keypoints = rng.rand(n, num_keypoints,
                          2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
     return keypoints
+
+def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
+    simcc_label = rng.rand(num_instances, num_keypoints, int(len_feats))
+    return simcc_label
 
 
 def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):

@@ -15,6 +15,7 @@ from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from .. import HeatmapHead
 from ..base_head import BaseHead
+from .. import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -109,6 +110,7 @@ class IntegralRegressionHead(BaseHead):
 
         num_deconv = len(deconv_out_channels) if deconv_out_channels else 0
         if num_deconv != 0:
+
             self.heatmap_size = tuple(
                 [s * (2**num_deconv) for s in in_featuremap_size])
 
@@ -124,6 +126,7 @@ class IntegralRegressionHead(BaseHead):
                 input_transform=input_transform,
                 input_index=input_index,
                 align_corners=align_corners)
+
 
             if has_final_layer:
                 in_channels = num_joints
@@ -157,6 +160,7 @@ class IntegralRegressionHead(BaseHead):
 
         self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
         self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
+
 
     def _linear_expectation(self, heatmaps: Tensor,
                             linspace: Tensor) -> Tensor:
@@ -201,6 +205,7 @@ class IntegralRegressionHead(BaseHead):
 
         return coords, heatmaps
 
+
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
@@ -221,6 +226,7 @@ class IntegralRegressionHead(BaseHead):
 
         return preds
 
+
     def loss(self,
              inputs: Tuple[Tensor],
              batch_data_samples: OptSampleList,
@@ -234,12 +240,14 @@ class IntegralRegressionHead(BaseHead):
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
 
+
         # calculate losses
         losses = dict()
-
+        
         # TODO: multi-loss calculation
         loss = self.loss_module(pred_coords, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
+
 
         if isinstance(loss, dict):
             losses.update(loss)

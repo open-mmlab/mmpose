@@ -73,6 +73,7 @@ class RegressionHead(BaseHead):
         # Define fully-connected layers
         self.fc = nn.Linear(in_channels, self.num_joints * 2)
 
+
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
         output is the coordinates.
@@ -90,6 +91,7 @@ class RegressionHead(BaseHead):
 
         return x.reshape(-1, self.num_joints, 2)
 
+
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
@@ -100,6 +102,7 @@ class RegressionHead(BaseHead):
         preds = self.decode(batch_coords, batch_data_samples)
 
         return preds
+
 
     def loss(self,
              inputs: Tuple[Tensor],
