@@ -11,6 +11,7 @@ from mmengine.logging import MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
+from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.registry import METRICS
 
 
@@ -29,6 +30,36 @@ class CocoMetric(BaseMetric):
             If the ground truth annotations (e.g. CrowdPose, AIC) do not have
             the field ``'area'``, please set ``use_area=False``.
             Default: ``True``.
+        score_mode (str): The mode to score the prediction results which
+            should be one of the following options:
+
+                - ``'bbox'``: Take the score of bbox as the score of the
+                    prediction results.
+                - ``'bbox_keypoint'``: Use keypoint score to rescore the
+                    prediction results.
+                - ``'bbox_rle'``: Use rle_score to rescore the
+                    prediction results.
+
+            Defaults to ``'bbox_keypoint'`
+        keypoint_score_thr (float): The threshold of keypoint score. The
+            keypoints with score lower than it will not be included to
+            rescore the prediction results. Valid only when ``score_mode`` is
+            ``bbox_keypoint``. Defaults to ``0.2``
+        nms_mode (str): The mode to perform Non-Maximum Suppression (NMS),
+            which should be one of the following options:
+
+                - ``'oks_nms'``: Use Object Keypoint Similarity (OKS) to
+                    perform NMS.
+                - ``'soft_oks_nms'``: Use Object Keypoint Similarity (OKS)
+                    to perform soft NMS.
+                - ``'none'``: Do not perform NMS. Typically for bottomup mode
+                    output.
+
+            Defaults to ``'oks_nms'`
+        nms_thr (float): The Object Keypoint Similarity (OKS) threshold
+            used in NMS when ``nms_mode`` is ``'oks_nms'`` or
+            ``'soft_oks_nms'``. Will retain the prediction results with OKS
+            lower than ``nms_thr``. Defaults to ``0.9``
         format_only (bool): Whether only format the output results without
             doing quantitative evaluation. This is designed for the need of
             test submission when the ground truth annotations are absent. If
@@ -50,6 +81,10 @@ class CocoMetric(BaseMetric):
     def __init__(self,
                  ann_file: str,
                  use_area: bool = True,
+                 score_mode: str = 'bbox_keypoint',
+                 keypoint_score_thr: float = 0.2,
+                 nms_mode: str = 'oks_nms',
+                 nms_thr: float = 0.9,
                  format_only: bool = False,
                  outfile_prefix: Optional[str] = None,
                  collect_device: str = 'cpu',
@@ -60,6 +95,22 @@ class CocoMetric(BaseMetric):
         self.coco = COCO(ann_file)
 
         self.use_area = use_area
+
+        allowed_score_modes = ['bbox', 'bbox_keypoint', 'bbox_rle']
+        if score_mode not in allowed_score_modes:
+            raise ValueError(
+                "`score_mode` should be one of 'bbox', 'bbox_keypoint', "
+                f"'bbox_rle', but got {score_mode}")
+        self.score_mode = score_mode
+        self.keypoint_score_thr = keypoint_score_thr
+
+        allowed_nms_modes = ['oks_nms', 'soft_oks_nms', 'none']
+        if nms_mode not in allowed_nms_modes:
+            raise ValueError(
+                "`nms_mode` should be one of 'oks_nms', 'soft_oks_nms', "
+                f"'none', but got {nms_mode}")
+        self.nms_mode = nms_mode
+        self.nms_thr = nms_thr
 
         if format_only:
             assert outfile_prefix is not None, '`outfile_prefix` can not be '\
@@ -103,6 +154,10 @@ class CocoMetric(BaseMetric):
             result['img_id'] = data['data_sample']['img_id']
             result['keypoints'] = keypoints
             result['scores'] = scores
+            # get area information
+            if 'bbox_scales' in data['data_sample']:
+                result['areas'] = np.prod(
+                    data['data_sample']['bbox_scales'], axis=1)
             # add converted result to the results list
             self.results.append(result)
 
@@ -131,18 +186,63 @@ class CocoMetric(BaseMetric):
         for result in results:
             img_id = result['img_id']
             for idx in range(len(result['scores'])):
-                kpts[img_id].append({
+                kpt = {
                     'id': result['id'],
                     'img_id': result['img_id'],
                     'keypoints': result['keypoints'][idx],
-                    'score': result['scores'][idx],
-                })
+                    'score': float(result['scores'][idx]),
+                }
+                if 'areas' in result:
+                    kpt['area'] = float(result['areas'][idx])
+                else:
+                    # use bbox area
+                    keypoints = result['keypoints'][idx]
+                    area = (
+                        np.max(keypoints[:, 0]) - np.min(keypoints[:, 0])) * (
+                            np.max(keypoints[:, 1]) - np.min(keypoints[:, 1]))
+                    kpt['area'] = area
+
+                kpts[img_id].append(kpt)
 
         # sort keypoint results according to id and remove duplicate ones
         kpts = self._sort_and_unique_bboxes(kpts, key='id')
 
+        # score the prediction results according to `score_mode`
+        # and perform NMS according to `nms_mode`
+        valid_kpts = dict()
+        num_keypoints = self.dataset_meta['num_keypoints']
+        for img_id, img_kpts in kpts.items():
+            if self.score_mode != 'bbox':
+                for kpts in img_kpts:
+                    bbox_score = kpts['score']
+                    if self.score_mode == 'bbox_rle':
+                        pose_score = kpts['keypoints'][:, 2]
+                        kpts['score'] = float(bbox_score +
+                                              np.mean(pose_score) +
+                                              np.max(pose_score))
+
+                    else:  # self.score_mode == 'bbox_keypoint':
+                        kpt_scores = 0
+                        valid_num = 0
+                        for kpt_idx in range(num_keypoints):
+                            kpt_score = kpts['keypoints'][kpt_idx][2]
+                            if kpt_score > self.keypoint_score_thr:
+                                kpt_scores += kpt_score
+                                valid_num += 1
+                        if valid_num != 0:
+                            kpt_scores /= valid_num
+                        kpts['score'] = bbox_score * kpt_scores
+            # perform nms
+            if self.nms_mode == 'none':
+                valid_kpts[img_id] = img_kpts
+            else:
+                nms = oks_nms if self.nms_mode == 'oks_nms' else soft_oks_nms
+                keep = nms(
+                    img_kpts, self.nms_thr, sigmas=self.dataset_meta['sigmas'])
+                valid_kpts[img_id] = [img_kpts[_keep] for _keep in keep]
+
         # convert results to coco style and dump into a json file
-        self.results2json(kpts, outfile_prefix=outfile_prefix)
+        self.results2json(valid_kpts, outfile_prefix=outfile_prefix)
 
         # only format the results without doing quantitative evaluation
         if self.format_only:
