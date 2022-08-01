@@ -229,10 +229,11 @@ class SmoothL1Loss(nn.Module):
             target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
+        
         if self.use_target_weight:
             assert target_weight is not None
-            loss = self.criterion(output * target_weight,
-                                  target * target_weight)
+            loss = self.criterion(output * target_weight[..., None],
+                                  target * target_weight[..., None])
         else:
             loss = self.criterion(output, target)
 

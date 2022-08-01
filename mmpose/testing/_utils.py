@@ -13,9 +13,12 @@ def get_packed_inputs(batch_size=2,
                       image_shape=(3, 128, 128),
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
+                      simcc_split_ratio=2.0,
                       with_heatmap=True,
                       with_reg_label=True,
-                      num_levels=1):
+                      num_levels=1,
+                      with_simcc_label=True):
+
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
@@ -68,6 +71,12 @@ def get_packed_inputs(batch_size=2,
         if with_reg_label:
             gt_instances.reg_label = torch.FloatTensor(keypoints / input_size)
 
+        if with_simcc_label:
+            len_x = np.around(input_size[0] * simcc_split_ratio)
+            len_y = np.around(input_size[1] * simcc_split_ratio)
+            gt_instances.simcc_x = torch.FloatTensor(_rand_simcc_label(rng, num_instances, num_keypoints, len_x))
+            gt_instances.simcc_y = torch.FloatTensor(_rand_simcc_label(rng, num_instances, num_keypoints, len_y))
+
         data_sample.gt_instances = gt_instances
 
         # gt_fields
@@ -102,6 +111,10 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     keypoints = rng.rand(n, num_keypoints,
                          2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
     return keypoints
+
+def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
+    simcc_label = rng.rand(num_instances, num_keypoints, int(len_feats))
+    return simcc_label
 
 
 def _rand_bboxes(rng, num_instances, img_w, img_h):

@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import List, Tuple
 from unittest import TestCase
-
+import unittest
 import torch
 from torch import nn
 
@@ -14,7 +14,7 @@ class TestHeatmapHead(TestCase):
 
     def _get_feats(self,
                    batch_size: int = 2,
-                   feat_shapes: List[Tuple[int, int, int]] = [(32, 6, 8)]):
+                   feat_shapes: List[Tuple[int, int, int]] = [(32, 8, 6)]):
 
         feats = [
             torch.rand((batch_size, ) + shape, dtype=torch.float32)
@@ -219,3 +219,6 @@ class TestHeatmapHead(TestCase):
             'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)
+
+if __name__ == '__main__':
+    unittest.main()

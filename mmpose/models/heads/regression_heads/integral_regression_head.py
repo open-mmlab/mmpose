@@ -7,12 +7,13 @@ import torch.nn.functional as F
 from mmengine.data import PixelData
 from torch import Tensor, nn
 
-from mmpose.core.utils.tensor_utils import _to_numpy
+from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
+from .. import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -26,7 +27,7 @@ class IntegralRegressionHead(BaseHead):
 
     Args:
         in_channels (int | sequence[int]): Number of input channels
-        heatmap_size (int | sequence[int]): Size of input heatmap
+        in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
         out_sigma (bool): Predict the sigma (the variance of the joint
             location) together with the joint location. Introduced in `RLE`_
@@ -45,8 +46,13 @@ class IntegralRegressionHead(BaseHead):
 
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
-                 heatmap_size: Union[int, Sequence[int]],
+                 in_featuremap_size: Tuple[int, int],
                  num_joints: int,
+                 deconv_out_channels: OptIntSeq = (256, 256, 256),
+                 deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+                 conv_out_channels: OptIntSeq = None,
+                 conv_kernel_sizes: OptIntSeq = None,
+                 has_final_layer: bool = True,
                  input_transform: str = 'select',
                  input_index: Union[int, Sequence[int]] = 0,
                  align_corners: bool = False,
@@ -61,14 +67,6 @@ class IntegralRegressionHead(BaseHead):
         super().__init__(init_cfg)
 
         self.in_channels = in_channels
-
-        if isinstance(heatmap_size, Sequence[int]):
-            assert len(
-                heatmap_size) == 2, 'Expect an integer or a list like [w, h]'
-            self.heatmap_size = heatmap_size
-        else:
-            self.heatmap_size = [heatmap_size, heatmap_size]
-
         self.num_joints = num_joints
         self.align_corners = align_corners
         self.input_transform = input_transform
@@ -79,21 +77,57 @@ class IntegralRegressionHead(BaseHead):
         else:
             self.decoder = None
 
-        # Get model input channels according to feature
-        in_channels = self._get_in_channels()
+        num_deconv = len(deconv_out_channels) if deconv_out_channels else 0
+        if num_deconv != 0:
+            self.heatmap_size = tuple([s * 2**num_deconv for s in in_featuremap_size])
+
+            # deconv layers + 1x1 conv
+            self.simplebaseline_head = HeatmapHead(
+                in_channels=in_channels,
+                out_channels=num_joints,
+                deconv_out_channels=deconv_out_channels,
+                deconv_kernel_sizes=deconv_kernel_sizes,
+                conv_out_channels=conv_out_channels,
+                conv_kernel_sizes=conv_kernel_sizes,
+                has_final_layer=has_final_layer,
+                input_transform=input_transform,
+                input_index=input_index,
+                align_corners=align_corners
+            )
+
+            if has_final_layer:
+                in_channels = num_joints
+            else:
+                in_channels = deconv_out_channels[-1]
+        else:
+            self.simplebaseline_head = None
+            in_channels = self._get_in_channels()
+
+            if self.input_transform == 'resize_concat':
+                if isinstance(in_featuremap_size, tuple):
+                    self.heatmap_size = in_featuremap_size
+                elif isinstance(in_featuremap_size, list):
+                    self.heatmap_size = in_featuremap_size[0]
+            elif self.input_transform == 'select':
+                if isinstance(in_featuremap_size, tuple):
+                    self.heatmap_size = in_featuremap_size
+                elif isinstance(in_featuremap_size, list):
+                    self.heatmap_size = in_featuremap_size[input_index]
+
         if isinstance(in_channels, list):
             raise ValueError(
                 f'{self.__class__.__name__} does not support selecting '
                 'multiple input features.')
 
         W, H = self.heatmap_size
-        self.linspace_x = torch.arange(0.0, 1.0 * W, 1).reshape(1, W).repeat(
-            [H, 1]) / W
-        self.linspace_y = torch.arange(0.0, 1.0 * H, 1).reshape(H, 1).repeat(
+        self.linspace_x = torch.arange(0.0, 1.0 * H, 1).reshape(H, 1).repeat(
             [1, W]) / H
+        self.linspace_y = torch.arange(0.0, 1.0 * W, 1).reshape(1, W).repeat(
+            [H, 1]) / W
 
         self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
         self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
+
 
     def _linear_expectation(self, heatmaps: Tensor,
                             linspace: Tensor) -> Tensor:
@@ -125,9 +159,13 @@ class IntegralRegressionHead(BaseHead):
         Returns:
             Tensor: output coordinates(and sigmas[optional]).
         """
-        feats = self._transform_inputs(feats)
+        if self.simplebaseline_head is None:
+            feats = self._transform_inputs(feats)
+        else:
+            feats = self.simplebaseline_head(feats)
 
         heatmaps = self._flat_softmax(feats)
+
         pred_x = self._linear_expectation(heatmaps, self.linspace_x)
         pred_y = self._linear_expectation(heatmaps, self.linspace_y)
         coords = torch.cat([pred_x, pred_y], dim=-1)
@@ -135,7 +173,7 @@ class IntegralRegressionHead(BaseHead):
         return coords, heatmaps
 
     def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-                test_cfg: ConfigType) -> SampleList:
+                test_cfg: ConfigType = {}) -> SampleList:
         """Predict results from outputs."""
 
         batch_coords, batch_heatmaps = self.forward(feats)
@@ -153,36 +191,42 @@ class IntegralRegressionHead(BaseHead):
         return preds
 
     def loss(self, inputs: Tuple[Tensor], batch_data_samples: OptSampleList,
-             train_cfg: ConfigType) -> dict:
+             train_cfg: ConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
         pred_coords, pred_heatmaps = self.forward(inputs)
-        target_coords = torch.stack(
-            [d.gt_fields.keypoints for d in batch_data_samples])
-        target_weights = torch.cat(
-            [d.gt_instance.target_weights for d in batch_data_samples])
+        target_coords = torch.cat(
+            [d.gt_instances.keypoints for d in batch_data_samples])
+        keypoint_weights = torch.cat(
+            [d.gt_instances.keypoint_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
-
+        
         # TODO: multi-loss calculation
-        loss = self.loss_module(pred_coords, pred_heatmaps, target_coords,
-                                target_weights)
+        if 'use_dsnt' in train_cfg:
+            loss = self.loss_module(pred_coords, pred_heatmaps, target_coords,
+                                    keypoint_weights)
+        else:
+            loss = self.loss_module(pred_coords, target_coords,
+                                    keypoint_weights)
 
         if isinstance(loss, dict):
             losses.update(loss)
         else:
-            losses.update(loss_kpts=loss)
+            losses.update(loss_kpt=loss)
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
-            pred=_to_numpy(pred_coords),
-            gt=_to_numpy(target_coords),
-            mask=_to_numpy(target_weights).squeeze(-1) > 0,
+            pred=to_numpy(pred_coords),
+            gt=to_numpy(target_coords),
+            mask=to_numpy(keypoint_weights) > 0,
             thr=0.05,
-            normalize=np.ones((pred_coords.size(0), 2), dtype=np.float32))
+            norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
         losses.update(acc_pose=float(avg_acc))
+
+        return losses
 
     @property
     def default_init_cfg(self):

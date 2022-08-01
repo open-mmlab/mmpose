@@ -48,19 +48,19 @@ class RegressionLabel(BaseKeypointCodec):
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (N, K, D)
+            encoded (np.ndarray): Coordinates in shape (K, D)
 
         Returns:
             tuple:
-            - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
-            - socres (np.ndarray): The keypoint scores in shape (N, K, 1).
+            - keypoints (np.ndarray): Decoded coordinates in shape (K, D)
+            - socres (np.ndarray): The keypoint scores in shape (K, 1).
                 It usually represents the confidence of the keypoint prediction
         """
-
+        
         if encoded.shape[-1] == 2:
-            N, K, _ = encoded.shape
+            K, _ = encoded.shape
             normalized_coords = encoded.copy()
-            scores = np.ones((N, K, 1), dtype=np.float32)
+            scores = np.ones((K, 1), dtype=np.float32)
         elif encoded.shape[-1] == 4:
             # split coords and sigma if outputs contain output_sigma
             normalized_coords = encoded[..., :2].copy()

@@ -85,7 +85,7 @@ class SimCCHead(BaseHead):
                  input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
-                     type='KeypointMSELoss', use_target_weight=True),
+                     type='KLDiscretLoss', use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -245,11 +245,11 @@ class SimCCHead(BaseHead):
         x = self.final_layer(x)
 
         # flatten the output heatmap
-        x = x.flatten(dim=2)
+        x = torch.flatten(x, 2)
 
         pred_x = self.mlp_head_x(x)
         pred_y = self.mlp_head_y(x)
-
+        
         return pred_x, pred_y
 
     def predict(self,
@@ -267,7 +267,8 @@ class SimCCHead(BaseHead):
             for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
                                                    preds):
                 # Store the simcc predictions in the data sample
-                data_sample.pred_instances.simcc_label = (pred_x, pred_y)
+                data_sample.pred_instances.simcc_x = pred_x[None, :]
+                data_sample.pred_instances.simcc_y = pred_y[None, :]
 
         return preds
 
@@ -276,19 +277,20 @@ class SimCCHead(BaseHead):
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
+        
         pred_x, pred_y = self.forward(feats)
-        gt_x = torch.stack(
-            [d.gt_instances.simcc_label[0] for d in batch_data_samples])
-        gt_y = torch.stack(
-            [d.gt_instances.simcc_label[1] for d in batch_data_samples])
-        target_coords = torch.stack(
-            [d.gt_instances.keypoints for d in batch_data_samples])
+
+        gt_x = torch.cat(
+            [d.gt_instances.simcc_x for d in batch_data_samples], dim=0)
+        gt_y = torch.cat(
+            [d.gt_instances.simcc_y for d in batch_data_samples], dim=0)
+        target_coords = torch.cat(
+            [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
+        keypoint_weights = torch.cat(
+            [d.gt_instances.keypoint_weights for d in batch_data_samples], dim=0)
 
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
-
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
@@ -300,7 +302,7 @@ class SimCCHead(BaseHead):
 
         # calculate accuracy
         _, avg_acc, _ = simcc_pck_accuracy(
-            output=pred_simcc,
+            output=to_numpy(pred_simcc),
             target=to_numpy(target_coords),
             simcc_split_ratio=self.simcc_split_ratio,
             mask=to_numpy(keypoint_weights) > 0)

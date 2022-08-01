@@ -43,8 +43,8 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     else:
         B = None
 
-    x_locs = np.argmax(simcc_x, axis=1, keepdims=True)
-    y_locs = np.argmax(simcc_y, axis=1, keepdims=True)
+    x_locs = np.argmax(simcc_x, axis=1)
+    y_locs = np.argmax(simcc_y, axis=1)
     locs = np.stack((x_locs, y_locs), axis=-1).astype(np.float32)
     max_val_x = np.amax(simcc_x, axis=1)
     max_val_y = np.amax(simcc_y, axis=1)
@@ -53,9 +53,9 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     max_val_x[mask] = max_val_y[mask]
     vals = max_val_x
     locs[vals <= 0.] = -1
-
+    
     if B:
-        locs = locs.rehsape(B, K, 2)
+        locs = locs.reshape(B, K, 2)
         vals = vals.reshape(B, K)
 
     return locs, vals

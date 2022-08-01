@@ -50,8 +50,10 @@ class KLDiscretLoss(nn.Module):
     <https://github.com/leeyegy/SimCC>`_.
     """
 
-    def __init__(self):
+    def __init__(self, use_target_weight=True):
         super(KLDiscretLoss, self).__init__()
+
+        self.use_target_weight = use_target_weight
         self.LogSoftmax = nn.LogSoftmax(dim=1)  # [B,LOGITS]
         self.criterion_ = nn.KLDivLoss(reduction='none')
 
@@ -78,11 +80,16 @@ class KLDiscretLoss(nn.Module):
             coord_y_pred = output_y[:, idx].squeeze()
             coord_x_gt = target_x[:, idx].squeeze()
             coord_y_gt = target_y[:, idx].squeeze()
-            weight = target_weight[:, idx].squeeze()
+
+            if self.use_target_weight:
+                weight = target_weight[:, idx].squeeze()
+            else:
+                weight = 1.
+            
             loss += (
-                self.criterion(coord_x_pred, coord_x_gt).mul(weight).mean())
+                self.criterion(coord_x_pred, coord_x_gt).mul(weight).sum())
             loss += (
-                self.criterion(coord_y_pred, coord_y_gt).mul(weight).mean())
+                self.criterion(coord_y_pred, coord_y_gt).mul(weight).sum())
 
         return loss / num_joints
 
@@ -96,8 +103,10 @@ class KLLossWithLabelSmoothing(nn.Module):
     <https://github.com/leeyegy/SimCC>`_.
     """
 
-    def __init__(self, label_smoothing=0.0):
+    def __init__(self, label_smoothing=0.0, use_target_weight=True):
         super(KLLossWithLabelSmoothing, self).__init__()
+
+        self.use_target_weight = use_target_weight
         self.label_smoothing = label_smoothing
         self.LogSoftmax = nn.LogSoftmax(dim=1)  # [B,LOGITS]
 
@@ -149,9 +158,15 @@ class KLLossWithLabelSmoothing(nn.Module):
             coord_x_pred = output_x[:, idx]
             coord_y_pred = output_y[:, idx]
             coord_gt = target[:, idx]
-            weight = target_weight[:, idx]
+            
+            if self.use_target_weight:
+                weight = target_weight[:, idx]
+            else:
+                weight = 1.
+
             loss += self.criterion(coord_x_pred,
                                    coord_gt[:, 0]).mul(weight).sum()
             loss += self.criterion(coord_y_pred,
                                    coord_gt[:, 1]).mul(weight).sum()
+
         return loss / batch_size

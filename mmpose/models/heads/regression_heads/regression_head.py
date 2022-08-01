@@ -77,9 +77,9 @@ class RegressionHead(BaseHead):
 
         # Define fully-connected layers
         if self.output_sigma:
-            self.fc = nn.Linear(self.in_channels, self.num_joints * 4)
+            self.fc = nn.Linear(in_channels, self.num_joints * 4)
         else:
-            self.fc = nn.Linear(self.in_channels, self.num_joints * 2)
+            self.fc = nn.Linear(in_channels, self.num_joints * 2)
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
@@ -93,6 +93,7 @@ class RegressionHead(BaseHead):
         """
         x = self._transform_inputs(feats)
 
+        x = torch.flatten(x, 1)
         x = self.fc(x)
 
         if self.output_sigma:
@@ -101,7 +102,7 @@ class RegressionHead(BaseHead):
             return x.reshape(-1, self.num_joints, 2)
 
     def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
-                test_cfg: ConfigType) -> SampleList:
+                test_cfg: ConfigType = {}) -> SampleList:
         """Predict results from outputs."""
 
         batch_coords = self.forward(feats)
@@ -110,14 +111,14 @@ class RegressionHead(BaseHead):
         return preds
 
     def loss(self, inputs: Tuple[Tensor], batch_data_samples: OptSampleList,
-             train_cfg: ConfigType) -> dict:
+             train_cfg: ConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
         pred_outputs = self.forward(inputs)
-        target_coords = torch.stack(
+        target_coords = torch.cat(
             [d.gt_instances.keypoints for d in batch_data_samples])
         keypoint_weights = torch.cat(
-            [d.gt_instance.keypoint_weights for d in batch_data_samples])
+            [d.gt_instances.keypoint_weights for d in batch_data_samples])
 
         # calculate losses
         losses = dict()
@@ -125,7 +126,7 @@ class RegressionHead(BaseHead):
         if isinstance(loss, dict):
             losses.update(loss)
         else:
-            losses.update(loss_kpts=loss)
+            losses.update(loss_kpt=loss)
 
         # calculate accuracy
         pred_coords = pred_outputs[:, :, :2]
@@ -133,11 +134,13 @@ class RegressionHead(BaseHead):
         _, avg_acc, _ = keypoint_pck_accuracy(
             pred=to_numpy(pred_coords),
             gt=to_numpy(target_coords),
-            mask=to_numpy(keypoint_weights).squeeze(-1) > 0,
+            mask=to_numpy(keypoint_weights) > 0,
             thr=0.05,
-            normalize=np.ones((pred_coords.size(0), 2), dtype=np.float32))
+            norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
         losses.update(acc_pose=float(avg_acc))
+
+        return losses
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
