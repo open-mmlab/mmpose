@@ -164,14 +164,14 @@ class KeypointOHKMMSELoss(nn.Module):
             Tensor: The calculated loss.
         """
         ohkm_loss = 0.
-        N = len(losses)
-        for i in range(N):
+        B = losses.shape[0]
+        for i in range(B):
             sub_loss = losses[i]
             _, topk_idx = torch.topk(
                 sub_loss, k=self.topk, dim=0, sorted=False)
             tmp_loss = torch.gather(sub_loss, 0, topk_idx)
             ohkm_loss += torch.sum(tmp_loss) / self.topk
-        ohkm_loss /= N
+        ohkm_loss /= B
         return ohkm_loss
 
     def forward(self, output: Tensor, target: Tensor,
@@ -201,14 +201,14 @@ class KeypointOHKMMSELoss(nn.Module):
         losses = []
         for idx in range(num_keypoints):
             if self.use_target_weight:
-                target_weight = target_weights[:, idx, None]
+                target_weight = target_weights[:, idx, None, None]
                 losses.append(
                     self.criterion(output[:, idx] * target_weight,
                                    target[:, idx] * target_weight))
             else:
                 losses.append(self.criterion(output[:, idx], target[:, idx]))
 
-        losses = [loss.mean(dim=1).unsqueeze(dim=1) for loss in losses]
+        losses = [loss.mean(dim=(1, 2)).unsqueeze(dim=1) for loss in losses]
         losses = torch.cat(losses, dim=1)
 
         return self._ohkm(losses) * self.loss_weight

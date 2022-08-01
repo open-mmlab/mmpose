@@ -1,8 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from .cpm_head import CPMHead
 from .heatmap_head import HeatmapHead
-from .multi_stage_heatmap_head import (MultiStageHeatmapHead,
-                                       MultiStageMultiUnitHeatmapHead)
+from .mspn_head import MSPNHead
+from .vipnas_head import ViPNASHead
 
-__all__ = [
-    'HeatmapHead', 'MultiStageHeatmapHead', 'MultiStageMultiUnitHeatmapHead'
-]
+__all__ = ['HeatmapHead', 'CPMHead', 'MSPNHead', 'ViPNASHead']
