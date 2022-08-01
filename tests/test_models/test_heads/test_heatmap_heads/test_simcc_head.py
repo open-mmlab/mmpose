@@ -34,7 +34,9 @@ class TestSimCCHead(TestCase):
                 simcc_split_ratio=simcc_split_ratio,
                 with_simcc_label=with_simcc_label)
         ]
+
         return batch_data_samples
+
 
     def test_init(self):
 
@@ -80,6 +82,7 @@ class TestSimCCHead(TestCase):
             simcc_type='one-hot',
             sigma=2.,
             simcc_split_ratio=2.0)
+
 
         for decoder_cfg in [decoder_cfg1, decoder_cfg2]:
             # input transform: select

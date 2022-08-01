@@ -33,6 +33,7 @@ class TestRegressionHead(TestCase):
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
                 batch_size, with_heatmap=with_heatmap)
+        ]
 
 
         return batch_data_samples
