@@ -29,6 +29,34 @@ class PoseTrack18Metric(CocoMetric):
 
     Args:
         ann_file (str): Path to the annotation file.
+        score_mode (str): The mode to score the prediction results which
+            should be one of the following options:
+
+                - ``'bbox'``: Take the score of bbox as the score of the
+                    prediction results.
+                - ``'bbox_keypoint'``: Use keypoint score to rescore the
+                    prediction results.
+
+            Defaults to ``'bbox'`
+        keypoint_score_thr (float): The threshold of keypoint score. The
+            keypoints with score lower than it will not be included to
+            rescore the prediction results. Valid only when ``score_mode`` is
+            ``bbox_keypoint``. Defaults to ``0.2``
+        nms_mode (str): The mode to perform Non-Maximum Suppression (NMS),
+            which should be one of the following options:
+
+                - ``'oks_nms'``: Use Object Keypoint Similarity (OKS) to
+                    perform NMS.
+                - ``'soft_oks_nms'``: Use Object Keypoint Similarity (OKS)
+                    to perform soft NMS.
+                - ``'none'``: Do not perform NMS. Typically for bottomup mode
+                    output.
+
+            Defaults to ``'oks_nms'`
+        nms_thr (float): The Object Keypoint Similarity (OKS) threshold
+            used in NMS when ``nms_mode`` is ``'oks_nms'`` or
+            ``'soft_oks_nms'``. Will retain the prediction results with OKS
+            lower than ``nms_thr``. Defaults to ``0.9``
         format_only (bool): Whether only format the output results without
             doing quantitative evaluation. This is designed for the need of
             test submission when the ground truth annotations are absent. If
@@ -49,6 +77,10 @@ class PoseTrack18Metric(CocoMetric):
 
     def __init__(self,
                  ann_file: str,
+                 score_mode: str = 'bbox_keypoint',
+                 keypoint_score_thr: float = 0.2,
+                 nms_mode: str = 'oks_nms',
+                 nms_thr: float = 0.9,
                  format_only: bool = False,
                  outfile_prefix: Optional[str] = None,
                  collect_device: str = 'cpu',
@@ -58,12 +90,39 @@ class PoseTrack18Metric(CocoMetric):
             raise ImportError('Please install ``poseval`` package for '
                               'evaluation on PoseTrack dataset '
                               '(see `requirements/optional.txt`)')
-        super().__init__(
-            ann_file=ann_file,
-            format_only=format_only,
-            outfile_prefix=outfile_prefix,
-            collect_device=collect_device,
-            prefix=prefix)
+        super(CocoMetric, self).__init__(
+            collect_device=collect_device, prefix=prefix)
+        self.ann_file = ann_file
+
+        allowed_score_modes = ['bbox', 'bbox_keypoint']
+        if score_mode not in allowed_score_modes:
+            raise ValueError(
+                "`score_mode` should be one of 'bbox', 'bbox_keypoint', "
+                f"'bbox_rle', but got {score_mode}")
+        self.score_mode = score_mode
+        self.keypoint_score_thr = keypoint_score_thr
+
+        allowed_nms_modes = ['oks_nms', 'soft_oks_nms', 'none']
+        if nms_mode not in allowed_nms_modes:
+            raise ValueError(
+                "`nms_mode` should be one of 'oks_nms', 'soft_oks_nms', "
+                f"'none', but got {nms_mode}")
+        self.nms_mode = nms_mode
+        self.nms_thr = nms_thr
+
+        if format_only:
+            assert outfile_prefix is not None, '`outfile_prefix` can not be '\
+                'None when `format_only` is True, otherwise the result file '\
+                'will be saved to a temp directory which will be cleaned up '\
+                'in the end.'
+        else:
+            # do evaluation only if the ground truth annotations exist
+            assert 'annotations' in load(ann_file), \
+                'Ground truth annotations are required for evaluation '\
+                'when `format_only` is False.'
+        self.format_only = format_only
+
+        self.outfile_prefix = outfile_prefix
 
     def results2json(self, keypoints: Dict[int, list],
                      outfile_prefix: str) -> str:
@@ -164,8 +223,8 @@ class PoseTrack18Metric(CocoMetric):
         logger.info('Loading data')
         gtFramesAll, prFramesAll = eval_helpers.load_data_dir(argv)
 
-        logger.info('# gt frames  :', len(gtFramesAll))
-        logger.info('# pred frames:', len(prFramesAll))
+        logger.info(f'# gt frames  : {len(gtFramesAll)}')
+        logger.info(f'# pred frames: {len(prFramesAll)}')
 
         # evaluate per-frame multi-person pose estimation (AP)
         # compute AP
