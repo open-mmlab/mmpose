@@ -17,32 +17,32 @@ from mmpose.models.builder import build_pose_estimator
 
 
 def dataset_meta_from_config(config: Config,
-                             dataset: str = 'train') -> Optional[dict]:
+                             dataset_mode: str = 'train') -> Optional[dict]:
     """Get dataset metainfo from the model config.
 
     Args:
         config (str, :obj:`Path`, or :obj:`mmengine.Config`): Config file path,
             :obj:`Path`, or the config object.
-        dataset (str): Specify the dataset of which to get the metainfo.
+        dataset_mode (str): Specify the dataset of which to get the metainfo.
             Options are ``'train'``, ``'val'`` and ``'test'``. Defaults to
             ``'train'``
 
     Returns:
         dict, optional: The dataset metainfo. See
-        ``mmpose.datasets.datasets.parse_pose_metainfo`` for more details.
-        Return ``None`` if fail to get dataset metainfo from the config.
+        ``mmpose.datasets.datasets.utils.parse_pose_metainfo`` for details.
+        Return ``None`` if failing to get dataset metainfo from the config.
     """
     try:
-        if dataset == 'train':
+        if dataset_mode == 'train':
             dataset_cfg = config.train_dataloader.dataset
-        elif dataset == 'val':
+        elif dataset_mode == 'val':
             dataset_cfg = config.val_dataloader.dataset
-        elif dataset == 'test':
+        elif dataset_mode == 'test':
             dataset_cfg = config.test_dataloader.dataset
         else:
             raise ValueError(
-                f'Invalid dataset {dataset} to get metainfo. Should be one of '
-                '"train", "val", or "test".')
+                f'Invalid dataset {dataset_mode} to get metainfo. '
+                'Should be one of "train", "val", or "test".')
 
         if 'metainfo' in dataset_cfg:
             metainfo = dataset_cfg.metainfo
@@ -101,7 +101,8 @@ def init_model(config: Union[str, Path, Config],
             # checkpoint from mmpose 1.x
             model.dataset_meta = ckpt['meta']['dataset_meta']
         else:
-            dataset_meta = dataset_meta_from_config(config, dataset='test')
+            dataset_meta = dataset_meta_from_config(
+                config, dataset_mode='test')
 
             if dataset_meta is None:
                 warnings.simplefilter('once')
