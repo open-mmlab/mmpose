@@ -2,7 +2,10 @@
 from .megvii_heatmap import MegviiHeatmap
 from .msra_heatmap import MSRAHeatmap
 from .regression_label import RegressionLabel
-from .udp_heatmap import UDPHeatmap
 from .simcc_label import SimCCLabel
+from .udp_heatmap import UDPHeatmap
 
-__all__ = ['MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap', 'RegressionLabel', 'SimCCLabel']
+__all__ = [
+    'MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap', 'RegressionLabel',
+    'SimCCLabel'
+]

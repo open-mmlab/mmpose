@@ -85,7 +85,7 @@ class KLDiscretLoss(nn.Module):
                 weight = target_weight[:, idx].squeeze()
             else:
                 weight = 1.
-            
+
             loss += (
                 self.criterion(coord_x_pred, coord_x_gt).mul(weight).sum())
             loss += (
@@ -158,7 +158,7 @@ class KLLossWithLabelSmoothing(nn.Module):
             coord_x_pred = output_x[:, idx]
             coord_y_pred = output_y[:, idx]
             coord_gt = target[:, idx]
-            
+
             if self.use_target_weight:
                 weight = target_weight[:, idx]
             else:

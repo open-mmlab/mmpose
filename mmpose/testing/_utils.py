@@ -74,8 +74,10 @@ def get_packed_inputs(batch_size=2,
         if with_simcc_label:
             len_x = np.around(input_size[0] * simcc_split_ratio)
             len_y = np.around(input_size[1] * simcc_split_ratio)
-            gt_instances.simcc_x = torch.FloatTensor(_rand_simcc_label(rng, num_instances, num_keypoints, len_x))
-            gt_instances.simcc_y = torch.FloatTensor(_rand_simcc_label(rng, num_instances, num_keypoints, len_y))
+            gt_instances.simcc_x = torch.FloatTensor(
+                _rand_simcc_label(rng, num_instances, num_keypoints, len_x))
+            gt_instances.simcc_y = torch.FloatTensor(
+                _rand_simcc_label(rng, num_instances, num_keypoints, len_y))
 
         data_sample.gt_instances = gt_instances
 
@@ -111,6 +113,7 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     keypoints = rng.rand(n, num_keypoints,
                          2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
     return keypoints
+
 
 def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
     simcc_label = rng.rand(num_instances, num_keypoints, int(len_feats))

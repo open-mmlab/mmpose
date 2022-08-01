@@ -7,7 +7,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList,)
+                                      SampleList)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
@@ -249,7 +249,7 @@ class SimCCHead(BaseHead):
 
         pred_x = self.mlp_head_x(x)
         pred_y = self.mlp_head_y(x)
-        
+
         return pred_x, pred_y
 
     def predict(self,
@@ -280,10 +280,10 @@ class SimCCHead(BaseHead):
 
         pred_x, pred_y = self.forward(feats)
 
-        gt_x = torch.cat(
-            [d.gt_instances.simcc_x for d in batch_data_samples], dim=0)
-        gt_y = torch.cat(
-            [d.gt_instances.simcc_y for d in batch_data_samples], dim=0)
+        gt_x = torch.cat([d.gt_instances.simcc_x for d in batch_data_samples],
+                         dim=0)
+        gt_y = torch.cat([d.gt_instances.simcc_y for d in batch_data_samples],
+                         dim=0)
         target_coords = torch.cat(
             [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
         keypoint_weights = torch.cat(

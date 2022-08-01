@@ -97,7 +97,7 @@ class SimCCLabel(BaseKeypointCodec):
         keypoints, scores = get_simcc_maximum(simcc_x, simcc_y)
 
         keypoints /= self.simcc_split_ratio
-        
+
         # Unsqueeze the instance dimension for single-instance results
         if len(keypoints) == 2:
             keypoints = keypoints[None, :]
