@@ -276,7 +276,7 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
 
     if normalize is None:
         normalize = np.tile(np.array([[H, W]]), (N, 1))
-    
+
     pred_coords, _ = get_simcc_maximum(pred_x, pred_y)
     pred_coords /= simcc_split_ratio
 

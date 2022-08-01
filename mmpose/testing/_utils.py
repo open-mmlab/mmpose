@@ -91,6 +91,7 @@ def get_packed_inputs(batch_size=2,
                 gt_instance_labels.keypoint_y_labels = torch.LongTensor(
                     _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
 
+
         # gt_fields
         gt_heatmaps = PixelData()
         if with_heatmap:
@@ -125,6 +126,7 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     keypoints = rng.rand(n, num_keypoints,
                          2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
     return keypoints
+
 
 def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
     simcc_label = rng.rand(num_instances, num_keypoints, int(len_feats))

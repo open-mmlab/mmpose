@@ -53,7 +53,7 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     max_val_x[mask] = max_val_y[mask]
     vals = max_val_x
     locs[vals <= 0.] = -1
-    
+
     if B:
         locs = locs.reshape(B, K, 2)
         vals = vals.reshape(B, K)
