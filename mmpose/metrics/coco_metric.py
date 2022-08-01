@@ -40,7 +40,7 @@ class CocoMetric(BaseMetric):
                 - ``'bbox_rle'``: Use rle_score to rescore the
                     prediction results.
 
-            Defaults to ``'bbox'`
+            Defaults to ``'bbox_keypoint'`
         keypoint_score_thr (float): The threshold of keypoint score. The
             keypoints with score lower than it will not be included to
             rescore the prediction results. Valid only when ``score_mode`` is
