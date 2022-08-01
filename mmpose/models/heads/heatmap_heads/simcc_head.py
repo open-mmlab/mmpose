@@ -7,7 +7,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList)
+                                      SampleList,)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
@@ -277,7 +277,7 @@ class SimCCHead(BaseHead):
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
-        
+
         pred_x, pred_y = self.forward(feats)
 
         gt_x = torch.cat(
@@ -287,7 +287,8 @@ class SimCCHead(BaseHead):
         target_coords = torch.cat(
             [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
         keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples], dim=0)
+            [d.gt_instances.keypoint_weights for d in batch_data_samples],
+            dim=0)
 
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
