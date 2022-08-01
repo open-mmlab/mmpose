@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import unittest
 from typing import List, Tuple
 from unittest import TestCase
-import unittest
-import numpy as np
+
 import torch
 
 from mmpose.core.data_structures.pose_data_sample import PoseDataSample
@@ -23,9 +23,12 @@ class TestIntegralRegressionHead(TestCase):
 
         return feats
 
-    def _get_data_samples(self, batch_size: int = 2, with_heatmap: bool = False):
+    def _get_data_samples(self,
+                          batch_size: int = 2,
+                          with_heatmap: bool = False):
         batch_data_samples = [
-            inputs['data_sample'] for inputs in get_packed_inputs(batch_size, with_heatmap=with_heatmap)
+            inputs['data_sample'] for inputs in get_packed_inputs(
+                batch_size, with_heatmap=with_heatmap)
         ]
 
         return batch_data_samples
@@ -53,8 +56,7 @@ class TestIntegralRegressionHead(TestCase):
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(32, ),
-            conv_kernel_sizes=(1, )
-            )
+            conv_kernel_sizes=(1, ))
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -68,8 +70,7 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
-            has_final_layer=False
-            )
+            has_final_layer=False)
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -81,8 +82,7 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             deconv_out_channels=tuple(),
             deconv_kernel_sizes=tuple(),
-            has_final_layer=False
-            )
+            has_final_layer=False)
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -94,8 +94,7 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             deconv_out_channels=None,
             deconv_kernel_sizes=None,
-            has_final_layer=False
-            )
+            has_final_layer=False)
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -169,7 +168,8 @@ class TestIntegralRegressionHead(TestCase):
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
         self.assertIn('pred_fields', preds[0])
-        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 8 * 8, 6 * 8))
+        self.assertEqual(preds[0].pred_fields.heatmaps.shape,
+                         (17, 8 * 8, 6 * 8))
 
     def test_loss(self):
         head = IntegralRegressionHead(
@@ -192,12 +192,13 @@ class TestIntegralRegressionHead(TestCase):
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
-            head = IntegralRegressionHead(
+            _ = IntegralRegressionHead(
                 in_channels=[16, 32],
                 in_featuremap_size=(6, 8),
                 num_joints=17,
                 input_transform='select',
                 input_index=[0, 1])
+
 
 if __name__ == '__main__':
     unittest.main()
