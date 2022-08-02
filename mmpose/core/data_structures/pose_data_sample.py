@@ -55,6 +55,18 @@ class PoseDataSample(BaseDataElement):
         del self._gt_instances
 
     @property
+    def gt_instance_labels(self) -> InstanceData:
+        return self._gt_instance_labels
+
+    @gt_instance_labels.setter
+    def gt_instance_labels(self, value: InstanceData):
+        self.set_field(value, '_gt_instance_labels', dtype=InstanceData)
+
+    @gt_instance_labels.deleter
+    def gt_instance_labels(self):
+        del self._gt_instance_labels
+
+    @property
     def pred_instances(self) -> InstanceData:
         return self._pred_instances
 
@@ -67,28 +79,28 @@ class PoseDataSample(BaseDataElement):
         del self._pred_instances
 
     @property
-    def gt_fields(self) -> PixelData:
-        return self._gt_fields
+    def gt_heatmaps(self) -> PixelData:
+        return self._gt_heatmaps
 
-    @gt_fields.setter
-    def gt_fields(self, value: PixelData):
-        self.set_field(value, '_gt_fields', dtype=PixelData)
+    @gt_heatmaps.setter
+    def gt_heatmaps(self, value: PixelData):
+        self.set_field(value, '_gt_heatmaps', dtype=PixelData)
 
-    @gt_fields.deleter
-    def gt_fields(self):
-        del self._gt_fields
+    @gt_heatmaps.deleter
+    def gt_heatmaps(self):
+        del self._gt_heatmaps
 
     @property
-    def pred_fields(self) -> PixelData:
-        return self._pred_fields
+    def pred_heatmaps(self) -> PixelData:
+        return self._pred_heatmaps
 
-    @pred_fields.setter
-    def pred_fields(self, value: PixelData):
-        self.set_field(value, '_pred_fields', dtype=PixelData)
+    @pred_heatmaps.setter
+    def pred_heatmaps(self, value: PixelData):
+        self.set_field(value, '_pred_heatmaps', dtype=PixelData)
 
-    @pred_fields.deleter
-    def pred_fields(self):
-        del self._pred_fields
+    @pred_heatmaps.deleter
+    def pred_heatmaps(self):
+        del self._pred_heatmaps
 
     @classmethod
     def merge(cls, data_samples: List['PoseDataSample']) -> 'PoseDataSample':
@@ -126,3 +138,4 @@ class PoseDataSample(BaseDataElement):
         # TODO: Support merging ``gt_fields`` and ``pred_fields``
 
         return merged
+

@@ -68,15 +68,22 @@ class PackPoseInputs(BaseTransform):
             'img_shape', 'input_size', 'flip', 'flip_direction')``
     """
 
-    # items in `mapping_table` will be directly packed into PoseDataSample
+    # items in `instance_mapping_table` will be directly packed into PoseDataSample
     # without converting to Tensor
-    mapping_table = {
+    instance_mapping_table = {
         'bbox': 'bboxes',
         'bbox_center': 'bbox_centers',
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
+    }
+
+    label_mapping_table = {
+        'reg_labels': 'keypoint_labels',
+        'simcc_x': 'keypoint_x_labels',
+        'simcc_y': 'keypoint_y_labels',
+        'keypoint_weights': 'keypoint_weights'
     }
 
     def __init__(self,
@@ -105,8 +112,10 @@ class PackPoseInputs(BaseTransform):
 
         data_sample = PoseDataSample()
         gt_instances = InstanceData()
-        gt_fields = PixelData()
+        gt_instance_labels = InstanceData()
+        gt_heatmaps = PixelData()
 
+<<<<<<< HEAD:mmpose/datasets/transforms/formatting.py
         # Pack labels
         if 'keypoint_weights' in results:
             gt_instances.keypoint_weights = to_tensor(
@@ -123,8 +132,22 @@ class PackPoseInputs(BaseTransform):
             if key in results:
                 gt_instances[packed_key] = results[key]
 
+=======
+        for key, packed_key in self.instance_mapping_table.items():
+            if key in results:
+                gt_instances[packed_key] = results[key]
+
+        for key, packed_key in self.label_mapping_table.items():
+            if key in results:
+                gt_instance_labels[packed_key] = results[key]
+
+        if 'heatmaps' in results:
+            gt_heatmaps.heatmaps = results['heatmaps']
+
+>>>>>>> 7457e758 (reorganize data_sample):mmpose/datasets/pipelines/formatting.py
         data_sample.gt_instances = gt_instances
-        data_sample.gt_fields = gt_fields
+        data_sample.gt_instance_labels = gt_instance_labels
+        data_sample.gt_heatmaps = gt_heatmaps
 
         img_meta = {k: results[k] for k in self.meta_keys if k in results}
         data_sample.set_metainfo(img_meta)

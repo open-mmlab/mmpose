@@ -8,7 +8,7 @@ from mmcv.transforms import BaseTransform
 from mmengine import is_seq_of
 
 from mmpose.core.bbox import get_udp_warp_matrix, get_warp_matrix
-from mmpose.core.utils.typing import ConfigType, MultiConfig
+from mmpose.core.utils.typing import MultiConfig
 from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
 
 
@@ -142,8 +142,8 @@ class TopdownAffine(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class TopdownGenerateHeatmap(BaseTransform):
-    """Encode keypoints into heatmaps.
+class TopdownGenerateTarget(BaseTransform):
+    """Encode keypoints into Target.
 
     Required Keys:
 
@@ -152,7 +152,7 @@ class TopdownGenerateHeatmap(BaseTransform):
         - dataset_keypoint_weights
 
     Added Keys:
-        - heatmaps
+        - simcc_labels
         - keypoint_weights
 
     Args:
@@ -173,6 +173,20 @@ class TopdownGenerateHeatmap(BaseTransform):
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
+
+        if self.encoder_cfg['type'] in [
+                'MSRAHeatmap', 'MegviiHeatmap', 'UDPHeatmap'
+        ]:
+            results = self._transform_heatmaps(results)
+        elif self.encoder_cfg['type'] in ['RegressionLabel']:
+            results = self._transform_regression_labels(results)
+        elif self.encoder_cfg['type'] in ['SimCCLabel']:
+            results = self._transform_simcc_labels(results)
+
+        return results
+
+    def _transform_heatmaps(self, results: Dict
+                            ) -> Optional[Union[Dict, Tuple[List, List]]]:
 
         if isinstance(self.encoder, list):
             # multi-level heatmaps
@@ -204,61 +218,8 @@ class TopdownGenerateHeatmap(BaseTransform):
 
         return results
 
-    def __repr__(self) -> str:
-        """print the basic information of the transform.
-
-        Returns:
-            str: Formatted string.
-        """
-        repr_str = self.__class__.__name__
-        repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
-        repr_str += ('use_dataset_keypoint_weights='
-                     f'{self.use_dataset_keypoint_weights})')
-        return repr_str
-
-
-@TRANSFORMS.register_module()
-class TopdownGenerateRegressionLabel(BaseTransform):
-    """Generate the target regression labels of the keypoints from input image
-    space to normalized [0, 1) space.
-
-    Required Keys:
-
-        - keypoints
-        - keypoints_visible
-        - input_size
-        - dataset_keypoint_weights
-
-    Added Keys:
-
-        - reg_labels
-        - keypoint_weights
-
-    Args:
-        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
-            from the dataset meta information. Defaults to ``False``
-    """
-
-    def __init__(self,
-                 encoder: ConfigType,
-                 use_dataset_keypoint_weights: bool = False) -> None:
-        super().__init__()
-        self.encoder_cfg = deepcopy(encoder)
-        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
-        self.encoder = KEYPOINT_CODECS.build(encoder)
-
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`TopdownGenerateRegressionLabel`.
-
-        See ``transform()`` method of :class:`BaseTransform` for details.
-
-        Args:
-            results (dict): The result dict
-
-        Returns:
-            dict: The result dict.
-        """
+    def _transform_regression_labels(
+            self, results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
 
         # single-level labels
         reg_labels, keypoint_weights = self.encoder.encode(
@@ -274,50 +235,8 @@ class TopdownGenerateRegressionLabel(BaseTransform):
 
         return results
 
-    def __repr__(self) -> str:
-        """print the basic information of the transform.
-
-        Returns:
-            str: Formatted string.
-        """
-        repr_str = self.__class__.__name__
-        repr_str += ('(use_dataset_keypoint_weights='
-                     f'{self.use_dataset_keypoint_weights})')
-        return repr_str
-
-
-@TRANSFORMS.register_module()
-class TopdownGenerateSimCCLabel(BaseTransform):
-    """Encode keypoints into SimCC labels.
-
-    Required Keys:
-
-        - keypoints
-        - keypoints_visible
-        - dataset_keypoint_weights
-
-    Added Keys:
-        - simcc_labels
-        - keypoint_weights
-
-    Args:
-        encoder (dict | list[dict])
-    """
-
-    def __init__(self,
-                 encoder: MultiConfig,
-                 use_dataset_keypoint_weights: bool = False) -> None:
-        super().__init__()
-        self.encoder_cfg = deepcopy(encoder)
-        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
-
-        if isinstance(encoder, list):
-            self.encoder = [KEYPOINT_CODECS.build(cfg) for cfg in encoder]
-        else:
-            self.encoder = KEYPOINT_CODECS.build(encoder)
-
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
+    def _transform_simcc_labels(self, results: Dict
+                                ) -> Optional[Union[Dict, Tuple[List, List]]]:
 
         # single-level labels
         simcc_x, simcc_y, keypoint_weights = self.encoder.encode(
@@ -328,7 +247,8 @@ class TopdownGenerateSimCCLabel(BaseTransform):
         if self.use_dataset_keypoint_weights:
             results['keypoint_weights'] *= results['dataset_keypoint_weights']
 
-        results['simcc_labels'] = (simcc_x, simcc_y)
+        results['simcc_x'] = simcc_x
+        results['simcc_y'] = simcc_y
         results['keypoint_weights'] = keypoint_weights
 
         return results

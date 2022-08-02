@@ -2,7 +2,6 @@
 from typing import Optional, Sequence, Tuple, Union
 
 import torch
-from mmcv.cnn import build_conv_layer, build_upsample_layer
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
@@ -10,6 +9,7 @@ from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
+from .. import HeatmapHead
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -75,7 +75,7 @@ class SimCCHead(BaseHead):
         in_channels: Union[int, Sequence[int]],
         out_channels: int,
         input_size: Tuple[int, int],
-        heatmap_size: Tuple[int, int],
+        in_featuremap_size: Tuple[int, int],
         simcc_split_ratio: float = 2.0,
         deconv_out_channels: OptIntSeq = (256, 256, 256),
         deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
@@ -98,7 +98,7 @@ class SimCCHead(BaseHead):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.input_size = input_size
-        self.heatmap_size = heatmap_size
+        self.in_featuremap_size = in_featuremap_size
         self.simcc_split_ratio = simcc_split_ratio
         self.align_corners = align_corners
         self.input_transform = input_transform
@@ -109,58 +109,47 @@ class SimCCHead(BaseHead):
         else:
             self.decoder = None
 
-        # Get model input channels according to feature
-        in_channels = self._get_in_channels()
+        num_deconv = len(deconv_out_channels) if deconv_out_channels else 0
+        if num_deconv != 0:
+            self.heatmap_size = tuple(
+                [s * (2**num_deconv) for s in in_featuremap_size])
+
+            # deconv layers + 1x1 conv
+            self.simplebaseline_head = HeatmapHead(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                deconv_out_channels=deconv_out_channels,
+                deconv_kernel_sizes=deconv_kernel_sizes,
+                conv_out_channels=conv_out_channels,
+                conv_kernel_sizes=conv_kernel_sizes,
+                has_final_layer=has_final_layer,
+                input_transform=input_transform,
+                input_index=input_index,
+                align_corners=align_corners)
+
+            if has_final_layer:
+                in_channels = out_channels
+            else:
+                in_channels = deconv_out_channels[-1]
+        else:
+            self.simplebaseline_head = None
+            in_channels = self._get_in_channels()
+
+            if self.input_transform == 'resize_concat':
+                if isinstance(in_featuremap_size, tuple):
+                    self.heatmap_size = in_featuremap_size
+                elif isinstance(in_featuremap_size, list):
+                    self.heatmap_size = in_featuremap_size[0]
+            elif self.input_transform == 'select':
+                if isinstance(in_featuremap_size, tuple):
+                    self.heatmap_size = in_featuremap_size
+                elif isinstance(in_featuremap_size, list):
+                    self.heatmap_size = in_featuremap_size[input_index]
+
         if isinstance(in_channels, list):
             raise ValueError(
                 f'{self.__class__.__name__} does not support selecting '
                 'multiple input features.')
-
-        if deconv_out_channels:
-            if deconv_kernel_sizes is None or len(deconv_out_channels) != len(
-                    deconv_kernel_sizes):
-                raise ValueError(
-                    '"deconv_out_channels" and "deconv_kernel_sizes" should '
-                    'be integer sequences with the same length. Got '
-                    f'unmatched values {deconv_out_channels} and '
-                    f'{deconv_kernel_sizes}')
-
-            self.deconv_layers = self._make_deconv_layers(
-                in_channels=in_channels,
-                layer_out_channels=deconv_out_channels,
-                layer_kernel_sizes=deconv_kernel_sizes,
-            )
-            in_channels = deconv_out_channels[-1]
-        else:
-            self.deconv_layers = nn.Identity()
-
-        if conv_out_channels:
-            if conv_kernel_sizes is None or len(conv_out_channels) != len(
-                    conv_kernel_sizes):
-                raise ValueError(
-                    '"conv_out_channels" and "conv_kernel_sizes" should '
-                    'be integer sequences with the same length. Got unmatched'
-                    f' values {conv_out_channels} and {conv_kernel_sizes}')
-
-            self.conv_layers = self._make_conv_layers(
-                in_channels=in_channels,
-                layer_out_channels=conv_out_channels,
-                layer_kernel_sizes=conv_kernel_sizes,
-            )
-            in_channels = conv_out_channels[-1]
-        else:
-            self.conv_layers = nn.Identity()
-
-        if has_final_layer:
-            cfg = dict(
-                type='Conv2d',
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=1,
-            )
-            self.final_layer = build_conv_layer(cfg)
-        else:
-            self.final_layer = nn.Identity()
 
         # Define SimCC layers
         flatten_dims = self.heatmap_size[0] * self.heatmap_size[1]
@@ -169,74 +158,6 @@ class SimCCHead(BaseHead):
 
         self.mlp_head_x = nn.Linear(flatten_dims, W)
         self.mlp_head_y = nn.Linear(flatten_dims, H)
-
-    def _make_conv_layers(
-        self,
-        in_channels: int,
-        layer_out_channels: Sequence[int],
-        layer_kernel_sizes: Sequence[int],
-    ) -> nn.Module:
-        """Create convolutional layers by given parameters."""
-
-        layers = []
-        for out_channels, kernel_size in zip(layer_out_channels,
-                                             layer_kernel_sizes):
-            padding = (kernel_size - 1) // 2
-            cfg = dict(
-                type='Conv2d',
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=kernel_size,
-                stride=1,
-                padding=padding,
-            )
-            layers.append(build_conv_layer(cfg))
-            layers.append(nn.BatchNorm2d(num_features=out_channels))
-            layers.append(nn.ReLU(inplace=True))
-            in_channels = out_channels
-
-        return nn.Sequential(*layers)
-
-    def _make_deconv_layers(
-        self,
-        in_channels: int,
-        layer_out_channels: Sequence[int],
-        layer_kernel_sizes: Sequence[int],
-    ) -> nn.Module:
-        """Create deconvolutional layers by given parameters."""
-
-        layers = []
-        for out_channels, kernel_size in zip(layer_out_channels,
-                                             layer_kernel_sizes):
-            if kernel_size == 4:
-                padding = 1
-                output_padding = 0
-            elif kernel_size == 3:
-                padding = 1
-                output_padding = 1
-            elif kernel_size == 2:
-                padding = 0
-                output_padding = 0
-            else:
-                raise ValueError(f'Unsupported kernel size {kernel_size} for'
-                                 'deconvlutional layers in '
-                                 f'{self.__class__.__name__}')
-            cfg = dict(
-                type='deconv',
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=kernel_size,
-                stride=2,
-                padding=padding,
-                output_padding=output_padding,
-                bias=False,
-            )
-            layers.append(build_upsample_layer(cfg))
-            layers.append(nn.BatchNorm2d(num_features=out_channels))
-            layers.append(nn.ReLU(inplace=True))
-            in_channels = out_channels
-
-        return nn.Sequential(*layers)
 
     def forward(self, feats: Tuple[Tensor]) -> Tuple[Tensor, Tensor]:
         """Forward the network. The input is multi scale feature maps and the
