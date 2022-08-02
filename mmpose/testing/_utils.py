@@ -65,7 +65,6 @@ def get_packed_inputs(batch_size=2,
         gt_instances.keypoints_visible = keypoints_visible
         gt_instances.keypoint_weights = torch.FloatTensor(keypoint_weights)
 
-
         if with_reg_label:
             gt_instances.reg_label = torch.FloatTensor(keypoints / input_size)
 
