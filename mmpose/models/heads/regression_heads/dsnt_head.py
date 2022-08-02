@@ -27,9 +27,35 @@ class DSNTHead(IntegralRegressionHead):
         in_channels (int | sequence[int]): Number of input channels
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
-        out_sigma (bool): Predict the sigma (the variance of the joint
-            location) together with the joint location. Introduced in `RLE`_
-            by Li et al(2021). Default: False
+        deconv_out_channels (sequence[int]): The output channel number of each
+            deconv layer. Defaults to ``(256, 256, 256)``
+        deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+            of each deconv layer. Each element should be either an integer for
+            both height and width dimensions, or a tuple of two integers for
+            the height and the width dimension respectively.Defaults to
+            ``(4, 4, 4)``
+        conv_out_channels (sequence[int], optional): The output channel number
+            of each intermediate conv layer. ``None`` means no intermediate
+            conv layer between deconv layers and the final conv layer.
+            Defaults to ``None``
+        conv_kernel_sizes (sequence[int | tuple], optional): The kernel size
+            of each intermediate conv layer. Defaults to ``None``
+        input_transform (str): Transformation of input features which should
+            be one of the following options:
+
+                - ``'resize_concat'``: Resize multiple feature maps specified
+                    by ``input_index`` to the same size as the first one and
+                    concat these feature maps
+                - ``'select'``: Select feature map(s) specified by
+                    ``input_index``. Multiple selected features will be
+                    bundled into a tuple
+
+            Defaults to ``'select'``
+        input_index (int | sequence[int]): The feature map index used in the
+            input transformation. See also ``input_transform``. Defaults to -1
+        align_corners (bool): `align_corners` argument of
+            :func:`torch.nn.functional.interpolate` used in the input
+            transformation. Defaults to ``False``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`DSNTLoss`
         decoder (Config, optional): The decoder config that controls decoding

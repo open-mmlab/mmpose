@@ -60,7 +60,7 @@ class SimCCHead(BaseHead):
             :func:`torch.nn.functional.interpolate` used in the input
             transformation. Defaults to ``False``
         loss (Config): Config of the keypoint loss. Defaults to use
-            :class:`KeypointMSELoss`
+            :class:`KLDiscretLoss`
         decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
