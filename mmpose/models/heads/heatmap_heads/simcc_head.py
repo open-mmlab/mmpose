@@ -70,24 +70,25 @@ class SimCCHead(BaseHead):
 
     _version = 2
 
-    def __init__(self,
-                 in_channels: Union[int, Sequence[int]],
-                 out_channels: int,
-                 input_size: Tuple[int, int],
-                 heatmap_size: Tuple[int, int],
-                 simcc_split_ratio: float = 2.0,
-                 deconv_out_channels: OptIntSeq = (256, 256, 256),
-                 deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
-                 conv_out_channels: OptIntSeq = None,
-                 conv_kernel_sizes: OptIntSeq = None,
-                 has_final_layer: bool = True,
-                 input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = -1,
-                 align_corners: bool = False,
-                 loss: ConfigType = dict(
-                     type='KLDiscretLoss', use_target_weight=True),
-                 decoder: OptConfigType = None,
-                 init_cfg: OptConfigType = None):
+    def __init__(
+        self,
+        in_channels: Union[int, Sequence[int]],
+        out_channels: int,
+        input_size: Tuple[int, int],
+        heatmap_size: Tuple[int, int],
+        simcc_split_ratio: float = 2.0,
+        deconv_out_channels: OptIntSeq = (256, 256, 256),
+        deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+        conv_out_channels: OptIntSeq = None,
+        conv_kernel_sizes: OptIntSeq = None,
+        has_final_layer: bool = True,
+        input_transform: str = 'select',
+        input_index: Union[int, Sequence[int]] = -1,
+        align_corners: bool = False,
+        loss: ConfigType = dict(type='KLDiscretLoss', use_target_weight=True),
+        decoder: OptConfigType = None,
+        init_cfg: OptConfigType = None,
+    ):
 
         if init_cfg is None:
             init_cfg = self.default_init_cfg
@@ -144,7 +145,8 @@ class SimCCHead(BaseHead):
             self.conv_layers = self._make_conv_layers(
                 in_channels=in_channels,
                 layer_out_channels=conv_out_channels,
-                layer_kernel_sizes=conv_kernel_sizes)
+                layer_kernel_sizes=conv_kernel_sizes,
+            )
             in_channels = conv_out_channels[-1]
         else:
             self.conv_layers = nn.Identity()
@@ -154,7 +156,8 @@ class SimCCHead(BaseHead):
                 type='Conv2d',
                 in_channels=in_channels,
                 out_channels=out_channels,
-                kernel_size=1)
+                kernel_size=1,
+            )
             self.final_layer = build_conv_layer(cfg)
         else:
             self.final_layer = nn.Identity()
@@ -167,9 +170,12 @@ class SimCCHead(BaseHead):
         self.mlp_head_x = nn.Linear(flatten_dims, W)
         self.mlp_head_y = nn.Linear(flatten_dims, H)
 
-    def _make_conv_layers(self, in_channels: int,
-                          layer_out_channels: Sequence[int],
-                          layer_kernel_sizes: Sequence[int]) -> nn.Module:
+    def _make_conv_layers(
+        self,
+        in_channels: int,
+        layer_out_channels: Sequence[int],
+        layer_kernel_sizes: Sequence[int],
+    ) -> nn.Module:
         """Create convolutional layers by given parameters."""
 
         layers = []
@@ -182,7 +188,8 @@ class SimCCHead(BaseHead):
                 out_channels=out_channels,
                 kernel_size=kernel_size,
                 stride=1,
-                padding=padding)
+                padding=padding,
+            )
             layers.append(build_conv_layer(cfg))
             layers.append(nn.BatchNorm2d(num_features=out_channels))
             layers.append(nn.ReLU(inplace=True))
@@ -190,9 +197,12 @@ class SimCCHead(BaseHead):
 
         return nn.Sequential(*layers)
 
-    def _make_deconv_layers(self, in_channels: int,
-                            layer_out_channels: Sequence[int],
-                            layer_kernel_sizes: Sequence[int]) -> nn.Module:
+    def _make_deconv_layers(
+        self,
+        in_channels: int,
+        layer_out_channels: Sequence[int],
+        layer_kernel_sizes: Sequence[int],
+    ) -> nn.Module:
         """Create deconvolutional layers by given parameters."""
 
         layers = []
@@ -219,7 +229,8 @@ class SimCCHead(BaseHead):
                 stride=2,
                 padding=padding,
                 output_padding=output_padding,
-                bias=False)
+                bias=False,
+            )
             layers.append(build_upsample_layer(cfg))
             layers.append(nn.BatchNorm2d(num_features=out_channels))
             layers.append(nn.ReLU(inplace=True))
@@ -252,10 +263,12 @@ class SimCCHead(BaseHead):
 
         return pred_x, pred_y
 
-    def predict(self,
-                feats: Tuple[Tensor],
-                batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
+    def predict(
+        self,
+        feats: Tuple[Tensor],
+        batch_data_samples: OptSampleList,
+        test_cfg: OptConfigType = {},
+    ) -> SampleList:
         """Predict results from features."""
 
         batch_pred_x, batch_pred_y = self.forward(feats)
@@ -272,10 +285,12 @@ class SimCCHead(BaseHead):
 
         return preds
 
-    def loss(self,
-             feats: Tuple[Tensor],
-             batch_data_samples: OptSampleList,
-             train_cfg: OptConfigType = {}) -> dict:
+    def loss(
+        self,
+        feats: Tuple[Tensor],
+        batch_data_samples: OptSampleList,
+        train_cfg: OptConfigType = {},
+    ) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
         pred_x, pred_y = self.forward(feats)
@@ -288,7 +303,8 @@ class SimCCHead(BaseHead):
             [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
         keypoint_weights = torch.cat(
             [d.gt_instances.keypoint_weights for d in batch_data_samples],
-            dim=0)
+            dim=0,
+        )
 
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
@@ -306,7 +322,8 @@ class SimCCHead(BaseHead):
             output=to_numpy(pred_simcc),
             target=to_numpy(target_coords),
             simcc_split_ratio=self.simcc_split_ratio,
-            mask=to_numpy(keypoint_weights) > 0)
+            mask=to_numpy(keypoint_weights) > 0,
+        )
 
         losses.update(acc_pose=float(avg_acc))
 
@@ -318,6 +335,6 @@ class SimCCHead(BaseHead):
             dict(
                 type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.001),
             dict(type='Constant', layer='BatchNorm2d', val=1),
-            dict(type='Normal', layer=['Linear'], std=0.01, bias=0)
+            dict(type='Normal', layer=['Linear'], std=0.01, bias=0),
         ]
         return init_cfg

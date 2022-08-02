@@ -12,9 +12,11 @@ from mmpose.testing import get_packed_inputs
 
 class TestIntegralRegressionHead(TestCase):
 
-    def _get_feats(self,
-                   batch_size: int = 2,
-                   feat_shapes: List[Tuple[int, int, int]] = [(32, 6, 8)]):
+    def _get_feats(
+        self,
+        batch_size: int = 2,
+        feat_shapes: List[Tuple[int, int, int]] = [(32, 6, 8)],
+    ):
 
         feats = [
             torch.rand((batch_size, ) + shape, dtype=torch.float32)
@@ -56,7 +58,8 @@ class TestIntegralRegressionHead(TestCase):
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(32, ),
-            conv_kernel_sizes=(1, ))
+            conv_kernel_sizes=(1, ),
+        )
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -70,7 +73,8 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=(4, 4),
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
-            has_final_layer=False)
+            has_final_layer=False,
+        )
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -82,7 +86,8 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             deconv_out_channels=tuple(),
             deconv_kernel_sizes=tuple(),
-            has_final_layer=False)
+            has_final_layer=False,
+        )
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -94,7 +99,8 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             deconv_out_channels=None,
             deconv_kernel_sizes=None,
-            has_final_layer=False)
+            has_final_layer=False,
+        )
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -104,7 +110,8 @@ class TestIntegralRegressionHead(TestCase):
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
-            decoder=dict(type='RegressionLabel', input_size=(192, 256)))
+            decoder=dict(type='RegressionLabel', input_size=(192, 256)),
+        )
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
@@ -117,7 +124,8 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             input_transform='select',
             input_index=-1,
-            decoder=decoder_cfg)
+            decoder=decoder_cfg,
+        )
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
@@ -128,8 +136,10 @@ class TestIntegralRegressionHead(TestCase):
         self.assertEqual(len(preds), 2)
         self.assertIsInstance(preds[0], PoseDataSample)
         self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
+        self.assertEqual(
+            preds[0].pred_instances.keypoints.shape,
+            preds[0].gt_instances.keypoints.shape,
+        )
 
         # inputs transform: resize and concat
         head = IntegralRegressionHead(
@@ -138,7 +148,8 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             input_transform='resize_concat',
             input_index=[0, 1],
-            decoder=decoder_cfg)
+            decoder=decoder_cfg,
+        )
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(batch_size=2)
@@ -147,8 +158,10 @@ class TestIntegralRegressionHead(TestCase):
         self.assertEqual(len(preds), 2)
         self.assertIsInstance(preds[0], PoseDataSample)
         self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
+        self.assertEqual(
+            preds[0].pred_instances.keypoints.shape,
+            preds[0].gt_instances.keypoints.shape,
+        )
         self.assertNotIn('pred_fields', preds[0])
 
         # input transform: output heatmap
@@ -158,7 +171,8 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             input_transform='select',
             input_index=-1,
-            decoder=decoder_cfg)
+            decoder=decoder_cfg,
+        )
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
@@ -177,7 +191,8 @@ class TestIntegralRegressionHead(TestCase):
             in_featuremap_size=(6, 8),
             num_joints=17,
             input_transform='select',
-            input_index=-1)
+            input_index=-1,
+        )
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
@@ -197,7 +212,8 @@ class TestIntegralRegressionHead(TestCase):
                 in_featuremap_size=(6, 8),
                 num_joints=17,
                 input_transform='select',
-                input_index=[0, 1])
+                input_index=[0, 1],
+            )
 
 
 if __name__ == '__main__':
