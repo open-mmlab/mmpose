@@ -8,14 +8,14 @@ import torch
 from numpy.testing import assert_array_almost_equal
 from xtcocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (Collect, LoadImageFromFile,
-                                       NormalizeTensor, TopDownAffine,
-                                       TopDownGenerateTarget,
-                                       TopDownGetBboxCenterScale,
-                                       TopDownGetRandomScaleRotation,
-                                       TopDownHalfBodyTransform,
-                                       TopDownRandomFlip,
-                                       TopDownRandomShiftBboxCenter, ToTensor)
+from mmpose.datasets.transforms import (Collect, LoadImageFromFile,
+                                        NormalizeTensor, TopDownAffine,
+                                        TopDownGenerateTarget,
+                                        TopDownGetBboxCenterScale,
+                                        TopDownGetRandomScaleRotation,
+                                        TopDownHalfBodyTransform,
+                                        TopDownRandomFlip,
+                                        TopDownRandomShiftBboxCenter, ToTensor)
 
 
 def _check_keys_contain(result_keys, target_keys):

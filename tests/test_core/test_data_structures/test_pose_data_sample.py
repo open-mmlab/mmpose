@@ -13,7 +13,7 @@ class TestPoseDataSample(TestCase):
     def get_pose_data_sample(self):
         # meta
         pose_meta = dict(
-            img_shape=(600, 900, 3),  # [h, w, c]
+            img_shape=(600, 900),  # [h, w, c]
             crop_size=(256, 192),  # [h, w]
             heatmap_size=(64, 48),  # [h, w]
         )

@@ -60,7 +60,7 @@ class DeepFashionDataset(BaseCocoStyleDataset):
         data_root (str, optional): The root directory for ``data_prefix`` and
             ``ann_file``. Default: ``None``.
         data_prefix (dict, optional): Prefix for training data. Default:
-            ``dict(img=None, ann=None)``.
+            ``dict(img='')``.
         filter_cfg (dict, optional): Config for filter data. Default: `None`.
         indices (int or Sequence[int], optional): Support using first few
             data in annotation file to facilitate training/testing on a smaller
@@ -89,7 +89,7 @@ class DeepFashionDataset(BaseCocoStyleDataset):
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img_path=''),
+                 data_prefix: dict = dict(img=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,

@@ -35,7 +35,6 @@ class TestPoseTrack18VideoDataset(TestCase):
                 img_id=int,
                 # mind this difference: img_path is a list
                 img_path=list,
-                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
@@ -47,12 +46,11 @@ class TestPoseTrack18VideoDataset(TestCase):
             expected_keys = dict(
                 img_id=int,
                 img_path=list,
-                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
-                mask_invalid_rle=dict,
+                mask_segs=list,
                 frame_weights=np.ndarray,
                 id=list)
         else:

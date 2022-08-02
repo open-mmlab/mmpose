@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from xtcocotools.coco import COCO
 
 from mmpose.datasets import DatasetInfo
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.transforms import Compose
 
 
 class Kpt3dSviewRgbImgTopDownDataset(Dataset, metaclass=ABCMeta):

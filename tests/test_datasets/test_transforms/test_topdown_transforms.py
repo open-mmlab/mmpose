@@ -5,8 +5,8 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import Compose
 
-from mmpose.datasets.pipelines import (TopdownAffine, TopdownGenerateHeatmap,
-                                       TopdownGenerateRegressionLabel)
+from mmpose.datasets.transforms import (TopdownAffine, TopdownGenerateHeatmap,
+                                        TopdownGenerateRegressionLabel)
 
 
 class TestTopdownAffine(TestCase):
@@ -15,7 +15,7 @@ class TestTopdownAffine(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
@@ -59,7 +59,7 @@ class TestTopdownGenerateHeatmap(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
@@ -149,7 +149,7 @@ class TestTopdownGenerateRegressionLabel(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),

@@ -17,7 +17,7 @@ from mmcv.parallel import collate, scatter
 from mmpose.apis.inference import init_pose_model
 from mmpose.core.post_processing import get_affine_transform
 from mmpose.datasets.dataset_info import DatasetInfo
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.transforms import Compose
 
 
 def download_panoptic3d_demo_data():

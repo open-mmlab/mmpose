@@ -87,8 +87,7 @@ class ZebraDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
-        img_w, img_h = img['width'], img['height']
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
         # get bbox in shape [1, 4], formatted as xywh
         # use the entire image which is 160x160
@@ -105,7 +104,6 @@ class ZebraDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,

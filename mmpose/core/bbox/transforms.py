@@ -41,6 +41,39 @@ def bbox_xywh2xyxy(bbox_xywh: np.ndarray) -> np.ndarray:
     return bbox_xyxy
 
 
+def bbox_xyxy2cs(bbox: np.ndarray,
+                 padding: float = 1.) -> Tuple[np.ndarray, np.ndarray]:
+    """Transform the bbox format from (x,y,w,h) into (center, scale)
+
+    Args:
+        bbox (ndarray): Bounding box(es) in shape (4,) or (n, 4), formatted
+            as (left, top, right, bottom)
+        padding (float): Bbox padding factor that will be multilied to scale.
+            Default: 1.0
+
+    Returns:
+        tuple: A tuple containing center and scale.
+        - np.ndarray[float32]: Center (x, y) of the bbox in shape (2,) or
+            (n, 2)
+        - np.ndarray[float32]: Scale (w, h) of the bbox in shape (2,) or
+            (n, 2)
+    """
+    # convert single bbox from (4, ) to (1, 4)
+    dim = bbox.ndim
+    if dim == 1:
+        bbox = bbox[None, :]
+
+    x1, y1, x2, y2 = np.hsplit(bbox, [1, 2, 3])
+    center = np.hstack([x1 + x2, y1 + y2]) * 0.5
+    scale = np.hstack([x2 - x1, y2 - y1]) * padding
+
+    if dim == 1:
+        center = center[0]
+        scale = scale[0]
+
+    return center, scale
+
+
 def bbox_xywh2cs(bbox: np.ndarray,
                  padding: float = 1.) -> Tuple[np.ndarray, np.ndarray]:
     """Transform the bbox format from (x,y,w,h) into (center, scale)
@@ -73,6 +106,38 @@ def bbox_xywh2cs(bbox: np.ndarray,
         scale = scale[0]
 
     return center, scale
+
+
+def bbox_cs2xyxy(center: np.ndarray,
+                 scale: np.ndarray,
+                 padding: float = 1.) -> np.ndarray:
+    """Transform the bbox format from (center, scale) to (x,y,w,h).
+
+    Args:
+        center (ndarray): Bbox center (x, y) in shape (2,) or (n, 2)
+        scale (ndarray): Bbox scale (w, h) in shape (2,) or (n, 2)
+        padding (float): Bbox padding factor that will be multilied to scale.
+            Default: 1.0
+
+    Returns:
+        ndarray[float32]: Bbox (x, y, w, h) in shape (4, ) or (n, 4)
+    """
+
+    dim = center.ndim
+    assert scale.ndim == dim
+
+    if dim == 1:
+        center = center[None, :]
+        scale = scale[None, :]
+
+    wh = scale / padding
+    xy = center - 0.5 * wh
+    bbox = np.hstack((xy, xy + wh))
+
+    if dim == 1:
+        bbox = bbox[0]
+
+    return bbox
 
 
 def bbox_cs2xywh(center: np.ndarray,

@@ -21,27 +21,23 @@ class PoseLocalVisualizer(Visualizer):
     Args:
         name (str): Name of the instance. Defaults to 'visualizer'.
         image (np.ndarray, optional): the origin image to draw. The format
-            should be RGB. Defaults to None.
-        vis_backends (list, optional): Visual backend config list.22222
-            Defaults to None.
+            should be RGB. Defaults to ``None``
+        vis_backends (list, optional): Visual backend config list. Defaults to
+            ``None``
         save_dir (str, optional): Save file dir for all storage backends.
-            If it is None, the backend storage will not save any data.
+            If it is ``None``, the backend storage will not save any data.
+            Defaults to ``None``
         bbox_color (str, tuple(int), optional): Color of bbox lines.
-            The tuple of color should be in BGR order. Defaults to 'green'.
+            The tuple of color should be in BGR order. Defaults to ``'green'``
         kpt_color (str, tuple(tuple(int)), optional): Color of keypoints.
-            The tuple of color should be in BGR order.
-            Defaults to 'red'.
+            The tuple of color should be in BGR order. Defaults to ``'red'``
         link_color (str, tuple(tuple(int)), optional): Color of skeleton.
-            The tuple of color should be in BGR order.
-            Defaults to None.
-        line_width (int, float): The width of lines.
-            Defaults to 1.
-        radius (int, float): The radius of keypoints.
-            Defaults to 4.
+            The tuple of color should be in BGR order. Defaults to ``None``
+        line_width (int, float): The width of lines. Defaults to 1
+        radius (int, float): The radius of keypoints. Defaults to 4
         show_keypoint_weight (bool): Whether to adjust the transparency
-            of keypoints according to their score. Defaults to False.
-        alpha (int, float): The transparency of bboxes.
-                Defaults to 0.8.
+            of keypoints according to their score. Defaults to ``False``
+        alpha (int, float): The transparency of bboxes. Defaults to ``0.8``
 
     Examples:
         >>> import numpy as np
@@ -119,7 +115,7 @@ class PoseLocalVisualizer(Visualizer):
         self.skeleton = self.dataset_meta.get('skeleton_links', None)
 
     def _draw_instances_bbox(self, image: np.ndarray,
-                             instances: ['InstanceData']) -> np.ndarray:
+                             instances: InstanceData) -> np.ndarray:
         """Draw bounding boxes of GT or prediction.
 
         Args:
@@ -143,7 +139,7 @@ class PoseLocalVisualizer(Visualizer):
 
     def _draw_instances_kpts(self,
                              image: np.ndarray,
-                             instances: ['InstanceData'],
+                             instances: InstanceData,
                              kpt_score_thr: float = 0.3):
         """Draw keypoints and skeletons (optional) of GT or prediction.
 
@@ -291,8 +287,7 @@ class PoseLocalVisualizer(Visualizer):
             self,
             name: str,
             image: np.ndarray,
-            gt_sample: Optional['PoseDataSample'] = None,
-            pred_sample: Optional['PoseDataSample'] = None,
+            data_sample: PoseDataSample,
             draw_gt: bool = True,
             draw_pred: bool = True,
             draw_heatmap: bool = False,
@@ -315,57 +310,59 @@ class PoseLocalVisualizer(Visualizer):
         is not available.
 
         Args:
-            name (str): The image identifier.
-            image (np.ndarray): The image to draw.
-            gt_sample (:obj:`PoseDataSample`, optional): GT PoseDataSample.
-                Defaults to None.
-            pred_sample (:obj:`PoseDataSample`, optional): Prediction
-                PoseDataSample. Defaults to None.
-            draw_gt (bool): Whether to draw GT PoseDataSample. Default to True.
+            name (str): The image identifier
+            image (np.ndarray): The image to draw
+            data_sample (:obj:`PoseDataSample`, optional): The data sample
+                to visualize
+            draw_gt (bool): Whether to draw GT PoseDataSample. Default to
+                ``True``
             draw_pred (bool): Whether to draw Prediction PoseDataSample.
-                Defaults to True.
-            draw_bbox (bool): Whether to draw bounding boxes. Default to False.
-            draw_heatmap (bool): Whether to draw heatmaps. Defaults to False.
-            show (bool): Whether to display the drawn image. Default to False.
-            wait_time (float): The interval of show (s). Defaults to 0.
-            out_file (str): Path to output file. Defaults to None.
+                Defaults to ``True``
+            draw_bbox (bool): Whether to draw bounding boxes. Default to
+                ``False``
+            draw_heatmap (bool): Whether to draw heatmaps. Defaults to
+                ``False``
+            show (bool): Whether to display the drawn image. Default to
+                ``False``
+            wait_time (float): The interval of show (s). Defaults to 0
+            out_file (str): Path to output file. Defaults to ``None``
             pred_score_thr (float): The threshold to visualize the bboxes
-                and masks. Defaults to 0.3.
-            step (int): Global step value to record. Defaults to 0.
+                and masks. Defaults to 0.3
+            step (int): Global step value to record. Defaults to 0
         """
 
         gt_img_data = None
         pred_img_data = None
 
-        if draw_gt and gt_sample is not None:
+        if draw_gt:
             gt_img_data = image.copy()
             gt_img_heatmap = None
-            if 'gt_instances' in gt_sample:
+            if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
-                    gt_img_data, gt_sample.gt_instances, kpt_score_thr)
-            if 'gt_instances' in gt_sample and draw_bbox:
-                gt_img_data = self._draw_instances_bbox(
-                    gt_img_data, gt_sample.gt_instances)
+                    gt_img_data, data_sample.gt_instances, kpt_score_thr)
+                if draw_bbox:
+                    gt_img_data = self._draw_instances_bbox(
+                        gt_img_data, data_sample.gt_instances)
 
-            if 'gt_fields' in gt_sample and draw_heatmap:
+            if 'gt_fields' in data_sample and draw_heatmap:
                 gt_img_heatmap = self._draw_instance_heatmap(
-                    gt_sample.gt_fields, image)
+                    data_sample.gt_fields, image)
                 if gt_img_heatmap is not None:
                     gt_img_data = np.concatenate((gt_img_data, gt_img_heatmap),
                                                  axis=0)
 
-        if draw_pred and pred_sample is not None:
+        if draw_pred:
             pred_img_data = image.copy()
             pred_img_heatmap = None
-            if 'pred_instances' in pred_sample:
+            if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
-                    pred_img_data, pred_sample.pred_instances, kpt_score_thr)
-            if 'pred_instances' in pred_sample and draw_bbox:
-                pred_img_data = self._draw_instances_bbox(
-                    pred_img_data, pred_sample.pred_instances)
-            if 'pred_fields' in pred_sample and draw_heatmap:
+                    pred_img_data, data_sample.pred_instances, kpt_score_thr)
+                if draw_bbox:
+                    pred_img_data = self._draw_instances_bbox(
+                        pred_img_data, data_sample.pred_instances)
+            if 'pred_fields' in data_sample and draw_heatmap:
                 pred_img_heatmap = self._draw_instance_heatmap(
-                    pred_sample.pred_fields, image)
+                    data_sample.pred_fields, image)
                 if pred_img_heatmap is not None:
                     pred_img_data = np.concatenate(
                         (pred_img_data, pred_img_heatmap), axis=0)

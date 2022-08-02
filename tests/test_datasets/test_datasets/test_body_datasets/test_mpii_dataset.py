@@ -43,7 +43,7 @@ class TestMpiiDataset(TestCase):
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
-                mask_invalid_rle=dict,
+                mask_segs=list,
                 id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')

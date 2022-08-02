@@ -247,7 +247,7 @@ class HeatmapHead(BaseHead):
         """Predict results from features."""
 
         batch_heatmaps = self.forward(feats)
-        preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
+        preds = self.decode(batch_heatmaps, batch_data_samples)
 
         # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
@@ -296,7 +296,6 @@ class HeatmapHead(BaseHead):
 
         The hook will be automatically registered during initialization.
         """
-
         version = local_meta.get('version', None)
         if version and version >= self._version:
             return
@@ -304,6 +303,8 @@ class HeatmapHead(BaseHead):
         # convert old-version state dict
         keys = list(state_dict.keys())
         for _k in keys:
+            if not _k.startswith(prefix):
+                continue
             v = state_dict.pop(_k)
             k = _k.lstrip(prefix)
             # In old version, "final_layer" includes both intermediate

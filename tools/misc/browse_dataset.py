@@ -147,6 +147,7 @@ def main():
             osp.basename(img_path),
             img,
             data_sample,
+            draw_pred=False,
             draw_bbox=(args.mode == 'original'),
             draw_heatmap=True,
             show=not args.not_show,

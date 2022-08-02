@@ -7,6 +7,7 @@ from mmcv.fileio import load
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
+from mmpose.core.bbox.transforms import bbox_xywh2xyxy
 from mmpose.registry import DATASETS
 from ..base import BaseCocoStyleDataset
 
@@ -78,7 +79,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
         data_root (str, optional): The root directory for ``data_prefix`` and
             ``ann_file``. Default: ``None``.
         data_prefix (dict, optional): Prefix for training data. Default:
-            ``dict(img=None, ann=None)``.
+            ``dict(img='')``.
         filter_cfg (dict, optional): Config for filter data. Default: `None`.
         indices (int or Sequence[int], optional): Support using first few
             data in annotation file to facilitate training/testing on a smaller
@@ -114,7 +115,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
                  ph_fill_len: int = 6,
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img_path=''),
+                 data_prefix: dict = dict(img=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,
@@ -229,8 +230,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
         x2 = np.clip(x + w, 0, img_w - 1)
         y2 = np.clip(y + h, 0, img_h - 1)
 
-        bbox = np.array([x1, y1, x2 - x1, y2 - y1],
-                        dtype=np.float32).reshape(1, 4)
+        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
 
         # get the keypoints of the center frame
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
@@ -242,8 +242,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
         # deal with multiple image paths
         img_paths: list = []
         # get the image path of the center frame
-        center_img_path = osp.join(self.data_prefix['img_path'],
-                                   img['file_name'])
+        center_img_path = osp.join(self.data_prefix['img'], img['file_name'])
         # append the center image path first
         img_paths.append(center_img_path)
 
@@ -275,7 +274,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': int(img['frame_id']),
             'img_path': img_paths,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': ann['num_keypoints'],
@@ -317,11 +315,10 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             if det['category_id'] != 1:
                 continue
 
-            img = coco.loadImgs(det['image_id'])[0]
-            height, width = img['height'], img['width']
-
             # get the predicted bbox and bbox_score
-            bbox = np.array(det['bbox'][:4], dtype=np.float32).reshape(1, 4)
+            bbox_xywh = np.array(
+                det['bbox'][:4], dtype=np.float32).reshape(1, 4)
+            bbox = bbox_xywh2xyxy(bbox_xywh)
             bbox_score = np.array(det['score'], dtype=np.float32).reshape(1)
 
             # use dummy keypoint location and visibility
@@ -346,8 +343,7 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             else:
                 image_name = id2name[det['image_id']]
             # get the image path of the center frame
-            center_img_path = osp.join(self.data_prefix['img_path'],
-                                       image_name)
+            center_img_path = osp.join(self.data_prefix['img'], image_name)
             # append the center image path first
             img_paths.append(center_img_path)
 
@@ -380,7 +376,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             data_list.append({
                 'img_id': det['image_id'],
                 'img_path': img_paths,
-                'img_shape': (height, width, 3),
                 'frame_weights': self.frame_weights,
                 'bbox': bbox,
                 'bbox_score': bbox_score,
