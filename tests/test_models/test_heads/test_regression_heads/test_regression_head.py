@@ -100,7 +100,6 @@ class TestRegressionHead(TestCase):
         )
         self.assertNotIn('pred_heatmaps', preds[0])
 
-
         # input transform: output heatmap
         head = RegressionHead(
             in_channels=[16, 32],
@@ -151,6 +150,7 @@ class TestRegressionHead(TestCase):
 
 
     def test_state_dict_compatible(self):
+
         head = RegressionHead(in_channels=2048, num_joints=17)
 
         state_dict = {

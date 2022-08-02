@@ -165,7 +165,6 @@ class TestIntegralRegressionHead(TestCase):
         )
         self.assertNotIn('pred_heatmaps', preds[0])
 
-
         # input transform: output heatmap
         head = IntegralRegressionHead(
             in_channels=[16, 32],

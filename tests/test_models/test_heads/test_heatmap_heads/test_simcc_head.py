@@ -83,7 +83,6 @@ class TestSimCCHead(TestCase):
             sigma=2.,
             simcc_split_ratio=2.0)
 
-
         for decoder_cfg in [decoder_cfg1, decoder_cfg2]:
             # input transform: select
             head = SimCCHead(

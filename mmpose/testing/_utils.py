@@ -91,7 +91,6 @@ def get_packed_inputs(batch_size=2,
                 gt_instance_labels.keypoint_y_labels = torch.LongTensor(
                     _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
 
-
         # gt_fields
         gt_heatmaps = PixelData()
         if with_heatmap:
