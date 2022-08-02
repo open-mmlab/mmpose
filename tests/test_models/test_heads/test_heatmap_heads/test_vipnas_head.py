@@ -6,11 +6,11 @@ import torch
 from torch import nn
 
 from mmpose.core.data_structures.pose_data_sample import PoseDataSample
-from mmpose.models.heads import HeatmapHead
+from mmpose.models.heads import ViPNASHead
 from mmpose.testing import get_packed_inputs
 
 
-class TestHeatmapHead(TestCase):
+class TestViPNASHead(TestCase):
 
     def _get_feats(self,
                    batch_size: int = 2,
@@ -30,37 +30,39 @@ class TestHeatmapHead(TestCase):
 
     def test_init(self):
         # w/o deconv
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=32, out_channels=17, deconv_out_channels=None)
         self.assertTrue(isinstance(head.deconv_layers, nn.Identity))
 
         # w/ deconv and w/o conv
-        head = HeatmapHead(
-            in_channels=32,
-            out_channels=17,
-            deconv_out_channels=(32, 32),
-            deconv_kernel_sizes=(4, 4))
-        self.assertTrue(isinstance(head.deconv_layers, nn.Sequential))
-        self.assertTrue(isinstance(head.conv_layers, nn.Identity))
-
-        # w/ both deconv and conv
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=32,
             out_channels=17,
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1))
+        self.assertTrue(isinstance(head.deconv_layers, nn.Sequential))
+        self.assertTrue(isinstance(head.conv_layers, nn.Identity))
+
+        # w/ both deconv and conv
+        head = ViPNASHead(
+            in_channels=32,
+            out_channels=17,
+            deconv_out_channels=(32, 32),
+            deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1),
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ))
         self.assertTrue(isinstance(head.deconv_layers, nn.Sequential))
         self.assertTrue(isinstance(head.conv_layers, nn.Sequential))
 
         # w/o final layer
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=32, out_channels=17, has_final_layer=False)
         self.assertTrue(isinstance(head.final_layer, nn.Identity))
 
         # w/ decoder
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=32,
             out_channels=17,
             decoder=dict(
@@ -78,7 +80,7 @@ class TestHeatmapHead(TestCase):
             sigma=2.)
 
         # input transform: select
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=[16, 32],
             out_channels=17,
             input_transform='select',
@@ -96,13 +98,14 @@ class TestHeatmapHead(TestCase):
                          preds[0].gt_instances.keypoints.shape)
 
         # input transform: resize and concat
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=[16, 32],
             out_channels=17,
             input_transform='resize_concat',
             input_index=[0, 1],
             deconv_out_channels=(256, 256),
             deconv_kernel_sizes=(4, 4),
+            deconv_num_groups=(1, 1),
             conv_out_channels=(256, ),
             conv_kernel_sizes=(1, ),
             decoder=decoder_cfg)
@@ -119,7 +122,7 @@ class TestHeatmapHead(TestCase):
         self.assertNotIn('pred_fields', preds[0])
 
         # input transform: output heatmap
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=[16, 32],
             out_channels=17,
             input_transform='select',
@@ -135,7 +138,7 @@ class TestHeatmapHead(TestCase):
         self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 64, 48))
 
     def test_loss(self):
-        head = HeatmapHead(
+        head = ViPNASHead(
             in_channels=[16, 32],
             out_channels=17,
             input_transform='select',
@@ -152,69 +155,100 @@ class TestHeatmapHead(TestCase):
     def test_errors(self):
         # Invalid arguments
         with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
-            _ = HeatmapHead(
+            _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,
                 deconv_out_channels=(256, ),
                 deconv_kernel_sizes=(4, 4))
-
         with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
-            _ = HeatmapHead(
+            _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,
-                conv_out_channels=(256, ))
+                deconv_out_channels=(256, 256),
+                deconv_kernel_sizes=(4, 4),
+                deconv_num_groups=(1, ))
+
+        with self.assertRaisesRegex(ValueError, 'Got unmatched values'):
+            _ = ViPNASHead(
+                in_channels=[16, 32],
+                out_channels=17,
+                conv_out_channels=(256, ),
+                conv_kernel_sizes=(1, 1))
 
         with self.assertRaisesRegex(ValueError, 'Unsupported kernel size'):
-            _ = HeatmapHead(
+            _ = ViPNASHead(
                 in_channels=16,
                 out_channels=17,
                 deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(1, ))
+                deconv_kernel_sizes=(1, ),
+                deconv_num_groups=(1, ))
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
-            _ = HeatmapHead(
+            _ = ViPNASHead(
                 in_channels=[16, 32],
                 out_channels=17,
                 input_transform='select',
                 input_index=[0, 1],
                 deconv_out_channels=(256, ),
-                deconv_kernel_sizes=(4, ))
+                deconv_kernel_sizes=(4, ),
+                deconv_num_groups=(1, ))
 
     def test_state_dict_compatible(self):
-        # Typical setting for HRNet
-        head = HeatmapHead(
-            in_channels=32, out_channels=17, deconv_out_channels=None)
+        # Typical setting for MobileNetV3
+        head = ViPNASHead(
+            in_channels=160,
+            out_channels=17,
+            deconv_out_channels=(160, 160, 160),
+            deconv_num_groups=(160, 160, 160))
 
         state_dict = {
-            'final_layer.weight': torch.zeros((17, 32, 1, 1)),
-            'final_layer.bias': torch.zeros((17))
+            'deconv_layers.0.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.1.weight': torch.zeros([160]),
+            'deconv_layers.1.bias': torch.zeros([160]),
+            'deconv_layers.1.running_mean': torch.zeros([160]),
+            'deconv_layers.1.running_var': torch.zeros([160]),
+            'deconv_layers.1.num_batches_tracked': torch.zeros([]),
+            'deconv_layers.3.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.4.weight': torch.zeros([160]),
+            'deconv_layers.4.bias': torch.zeros([160]),
+            'deconv_layers.4.running_mean': torch.zeros([160]),
+            'deconv_layers.4.running_var': torch.zeros([160]),
+            'deconv_layers.4.num_batches_tracked': torch.zeros([]),
+            'deconv_layers.6.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.7.weight': torch.zeros([160]),
+            'deconv_layers.7.bias': torch.zeros([160]),
+            'deconv_layers.7.running_mean': torch.zeros([160]),
+            'deconv_layers.7.running_var': torch.zeros([160]),
+            'deconv_layers.7.num_batches_tracked': torch.zeros([]),
+            'final_layer.weight': torch.zeros([17, 160, 1, 1]),
+            'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)
 
         # Typical setting for Resnet
-        head = HeatmapHead(in_channels=2048, out_channels=17)
+        head = ViPNASHead(in_channels=608, out_channels=17)
 
         state_dict = {
-            'deconv_layers.0.weight': torch.zeros([2048, 256, 4, 4]),
-            'deconv_layers.1.weight': torch.zeros([256]),
-            'deconv_layers.1.bias': torch.zeros([256]),
-            'deconv_layers.1.running_mean': torch.zeros([256]),
-            'deconv_layers.1.running_var': torch.zeros([256]),
+            'deconv_layers.0.weight': torch.zeros([608, 9, 4, 4]),
+            'deconv_layers.1.weight': torch.zeros([144]),
+            'deconv_layers.1.bias': torch.zeros([144]),
+            'deconv_layers.1.running_mean': torch.zeros([144]),
+            'deconv_layers.1.running_var': torch.zeros([144]),
             'deconv_layers.1.num_batches_tracked': torch.zeros([]),
-            'deconv_layers.3.weight': torch.zeros([256, 256, 4, 4]),
-            'deconv_layers.4.weight': torch.zeros([256]),
-            'deconv_layers.4.bias': torch.zeros([256]),
-            'deconv_layers.4.running_mean': torch.zeros([256]),
-            'deconv_layers.4.running_var': torch.zeros([256]),
+            'deconv_layers.3.weight': torch.zeros([144, 9, 4, 4]),
+            'deconv_layers.4.weight': torch.zeros([144]),
+            'deconv_layers.4.bias': torch.zeros([144]),
+            'deconv_layers.4.running_mean': torch.zeros([144]),
+            'deconv_layers.4.running_var': torch.zeros([144]),
             'deconv_layers.4.num_batches_tracked': torch.zeros([]),
-            'deconv_layers.6.weight': torch.zeros([256, 256, 4, 4]),
-            'deconv_layers.7.weight': torch.zeros([256]),
-            'deconv_layers.7.bias': torch.zeros([256]),
-            'deconv_layers.7.running_mean': torch.zeros([256]),
-            'deconv_layers.7.running_var': torch.zeros([256]),
+            'deconv_layers.6.weight': torch.zeros([144, 9, 4, 4]),
+            'deconv_layers.7.weight': torch.zeros([144]),
+            'deconv_layers.7.bias': torch.zeros([144]),
+            'deconv_layers.7.running_mean': torch.zeros([144]),
+            'deconv_layers.7.running_var': torch.zeros([144]),
             'deconv_layers.7.num_batches_tracked': torch.zeros([]),
-            'final_layer.weight': torch.zeros([17, 256, 1, 1]),
+            'final_layer.weight': torch.zeros([17, 144, 1, 1]),
             'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)

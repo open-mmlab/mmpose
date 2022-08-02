@@ -114,7 +114,8 @@ class TestTopdownGenerateHeatmap(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertEqual(results['heatmaps'].shape, (2, 17, 64, 48))
+        self.assertEqual(results['heatmaps'].shape, (2 * 17, 64, 48))
+        self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
 

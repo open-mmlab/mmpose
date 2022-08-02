@@ -1,38 +1,38 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Optional, Sequence, Tuple, Union
+from typing import Optional, Sequence, Union
 
-import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
-from mmengine.data import PixelData
-from torch import Tensor, nn
+from torch import nn
 
-from mmpose.core.utils.tensor_utils import to_numpy
-from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList)
-from mmpose.metrics.utils import pose_pck_accuracy
+from mmpose.core.utils.typing import ConfigType, OptConfigType
 from mmpose.registry import KEYPOINT_CODECS, MODELS
-from ..base_head import BaseHead
+from .heatmap_head import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
 
 
 @MODELS.register_module()
-class HeatmapHead(BaseHead):
-    """Top-down heatmap head introduced in `Simple Baselines`_ by Xiao et al
-    (2018). The head is composed of a few deconvolutional layers followed by a
-    convolutional layer to generate heatmaps from low-resolution feature maps.
+class ViPNASHead(HeatmapHead):
+    """ViPNAS heatmap head introduced in `ViPNAS`_ by Xu et al (2021). The head
+    is composed of a few deconvolutional layers followed by a convolutional
+    layer to generate heatmaps from low-resolution feature maps. Specifically,
+    different from the :class: `HeatmapHead` introduced by `Simple Baselines`_,
+    the group numbers in the deconvolutional layers are elastic and thus can be
+    optimized by neural architecture search (NAS).
 
     Args:
         in_channels (int | Sequence[int]): Number of channels in the input
             feature map
         out_channels (int): Number of channels in the output heatmap
         deconv_out_channels (Sequence[int], optional): The output channel
-            number of each deconv layer. Defaults to ``(256, 256, 256)``
+            number of each deconv layer. Defaults to ``(144, 144, 144)``
         deconv_kernel_sizes (Sequence[int | tuple], optional): The kernel size
             of each deconv layer. Each element should be either an integer for
             both height and width dimensions, or a tuple of two integers for
             the height and the width dimension respectively.Defaults to
             ``(4, 4, 4)``
+        deconv_num_groups (Sequence[int], optional): The group number of each
+            deconv layer. Defaults to ``(16, 16, 16)``
         conv_out_channels (Sequence[int], optional): The output channel number
             of each intermediate conv layer. ``None`` means no intermediate
             conv layer between deconv layers and the final conv layer.
@@ -64,6 +64,7 @@ class HeatmapHead(BaseHead):
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
 
+    .. _`ViPNAS`: https://arxiv.org/abs/2105.10154
     .. _`Simple Baselines`: https://arxiv.org/abs/1804.06208
     """
 
@@ -72,8 +73,9 @@ class HeatmapHead(BaseHead):
     def __init__(self,
                  in_channels: Union[int, Sequence[int]],
                  out_channels: int,
-                 deconv_out_channels: OptIntSeq = (256, 256, 256),
+                 deconv_out_channels: OptIntSeq = (144, 144, 144),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
+                 deconv_num_groups: OptIntSeq = (16, 16, 16),
                  conv_out_channels: OptIntSeq = None,
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
@@ -88,7 +90,7 @@ class HeatmapHead(BaseHead):
         if init_cfg is None:
             init_cfg = self.default_init_cfg
 
-        super().__init__(init_cfg)
+        super(HeatmapHead, self).__init__(init_cfg)
 
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -116,11 +118,19 @@ class HeatmapHead(BaseHead):
                     'be integer sequences with the same length. Got '
                     f'unmatched values {deconv_out_channels} and '
                     f'{deconv_kernel_sizes}')
+            if deconv_num_groups is None or len(deconv_out_channels) != len(
+                    deconv_num_groups):
+                raise ValueError(
+                    '"deconv_out_channels" and "deconv_num_groups" should '
+                    'be integer sequences with the same length. Got '
+                    f'unmatched values {deconv_out_channels} and '
+                    f'{deconv_num_groups}')
 
             self.deconv_layers = self._make_deconv_layers(
                 in_channels=in_channels,
                 layer_out_channels=deconv_out_channels,
                 layer_kernel_sizes=deconv_kernel_sizes,
+                layer_groups=deconv_num_groups,
             )
             in_channels = deconv_out_channels[-1]
         else:
@@ -155,37 +165,16 @@ class HeatmapHead(BaseHead):
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 
-    def _make_conv_layers(self, in_channels: int,
-                          layer_out_channels: Sequence[int],
-                          layer_kernel_sizes: Sequence[int]) -> nn.Module:
-        """Create convolutional layers by given parameters."""
-
-        layers = []
-        for out_channels, kernel_size in zip(layer_out_channels,
-                                             layer_kernel_sizes):
-            padding = (kernel_size - 1) // 2
-            cfg = dict(
-                type='Conv2d',
-                in_channels=in_channels,
-                out_channels=out_channels,
-                kernel_size=kernel_size,
-                stride=1,
-                padding=padding)
-            layers.append(build_conv_layer(cfg))
-            layers.append(nn.BatchNorm2d(num_features=out_channels))
-            layers.append(nn.ReLU(inplace=True))
-            in_channels = out_channels
-
-        return nn.Sequential(*layers)
-
     def _make_deconv_layers(self, in_channels: int,
                             layer_out_channels: Sequence[int],
-                            layer_kernel_sizes: Sequence[int]) -> nn.Module:
+                            layer_kernel_sizes: Sequence[int],
+                            layer_groups: Sequence[int]) -> nn.Module:
         """Create deconvolutional layers by given parameters."""
 
         layers = []
-        for out_channels, kernel_size in zip(layer_out_channels,
-                                             layer_kernel_sizes):
+        for out_channels, kernel_size, groups in zip(layer_out_channels,
+                                                     layer_kernel_sizes,
+                                                     layer_groups):
             if kernel_size == 4:
                 padding = 1
                 output_padding = 0
@@ -204,6 +193,7 @@ class HeatmapHead(BaseHead):
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=kernel_size,
+                groups=groups,
                 stride=2,
                 padding=padding,
                 output_padding=output_padding,
@@ -214,128 +204,3 @@ class HeatmapHead(BaseHead):
             in_channels = out_channels
 
         return nn.Sequential(*layers)
-
-    @property
-    def default_init_cfg(self):
-        init_cfg = [
-            dict(
-                type='Normal', layer=['Conv2d', 'ConvTranspose2d'], std=0.001),
-            dict(type='Constant', layer='BatchNorm2d', val=1)
-        ]
-        return init_cfg
-
-    def forward(self, feats: Tuple[Tensor]) -> Tensor:
-        """Forward the network. The input is multi scale feature maps and the
-        output is the heatmap.
-
-        Args:
-            feats (Tuple[Tensor]): Multi scale feature maps.
-
-        Returns:
-            Tensor: output heatmap.
-        """
-        x = self._transform_inputs(feats)
-
-        x = self.deconv_layers(x)
-        x = self.conv_layers(x)
-        x = self.final_layer(x)
-
-        return x
-
-    def predict(self,
-                feats: Tuple[Tensor],
-                batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
-        """Predict results from features."""
-
-        batch_heatmaps = self.forward(feats)
-        preds = self.decode(batch_heatmaps, batch_data_samples)
-
-        # Whether to visualize the predicted heatmaps
-        if test_cfg.get('output_heatmaps', False):
-            for heatmaps, data_sample in zip(batch_heatmaps, preds):
-                # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
-
-        return preds
-
-    def loss(self,
-             feats: Tuple[Tensor],
-             batch_data_samples: OptSampleList,
-             train_cfg: OptConfigType = {}) -> dict:
-        """Calculate losses from a batch of inputs and data samples."""
-        pred_heatmaps = self.forward(feats)
-        gt_heatmaps = torch.stack(
-            [d.gt_fields.heatmaps for d in batch_data_samples])
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
-
-        # calculate losses
-        losses = dict()
-        loss = self.loss_module(pred_heatmaps, gt_heatmaps, keypoint_weights)
-        if isinstance(loss, dict):
-            losses.update(loss)
-        else:
-            losses.update(loss_kpt=loss)
-
-        # calculate accuracy
-        _, avg_acc, _ = pose_pck_accuracy(
-            output=to_numpy(pred_heatmaps),
-            target=to_numpy(gt_heatmaps),
-            mask=to_numpy(keypoint_weights) > 0)
-
-        losses.update(acc_pose=float(avg_acc))
-
-        return losses
-
-    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
-                                  **kwargs):
-        """A hook function to convert old-version state dict of
-        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`HeatmapHead`.
-
-        The hook will be automatically registered during initialization.
-        """
-        version = local_meta.get('version', None)
-        if version and version >= self._version:
-            return
-
-        # convert old-version state dict
-        keys = list(state_dict.keys())
-        for _k in keys:
-            if not _k.startswith(prefix):
-                continue
-            v = state_dict.pop(_k)
-            k = _k.lstrip(prefix)
-            # In old version, "final_layer" includes both intermediate
-            # conv layers (new "conv_layers") and final conv layers (new
-            # "final_layer").
-            #
-            # If there is no intermediate conv layer, old "final_layer" will
-            # have keys like "final_layer.xxx", which should be still
-            # named "final_layer.xxx";
-            #
-            # If there are intermediate conv layerse, old "final_layer"  will
-            # have keys like "final_layer.n.xxx", where the weghts of the last
-            # one should be renamed "final_layer.xxx", and others should be
-            # renamed "conv_layers.n.xxx"
-            k_parts = _k.split('.')
-            if k_parts[0] == 'final_layer':
-                if len(k_parts) == 3:
-                    assert isinstance(self.conv_layers, nn.Sequential)
-                    idx = int(k_parts[1])
-                    if idx < len(self.conv_layers):
-                        # final_layer.n.xxx -> conv_layers.n.xxx
-                        k_new = 'conv_layers.' + '.'.join(k_parts[1:])
-                    else:
-                        # final_layer.n.xxx -> final_layer.xxx
-                        k_new = 'final_layer.' + k_parts[2]
-                else:
-                    # final_layer.xxx remains final_layer.xxx
-                    k_new = k
-            else:
-                k_new = k
-
-            state_dict[prefix + k_new] = v
