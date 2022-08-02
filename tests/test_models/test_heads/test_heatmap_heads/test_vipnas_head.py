@@ -195,13 +195,34 @@ class TestViPNASHead(TestCase):
                 deconv_num_groups=(1, ))
 
     def test_state_dict_compatible(self):
-        # Typical setting for HRNet
+        # Typical setting for MobileNetV3
         head = ViPNASHead(
-            in_channels=32, out_channels=17, deconv_out_channels=None)
+            in_channels=160,
+            out_channels=17,
+            deconv_out_channels=(160, 160, 160),
+            deconv_num_groups=(160, 160, 160))
 
         state_dict = {
-            'final_layer.weight': torch.zeros((17, 32, 1, 1)),
-            'final_layer.bias': torch.zeros((17))
+            'deconv_layers.0.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.1.weight': torch.zeros([160]),
+            'deconv_layers.1.bias': torch.zeros([160]),
+            'deconv_layers.1.running_mean': torch.zeros([160]),
+            'deconv_layers.1.running_var': torch.zeros([160]),
+            'deconv_layers.1.num_batches_tracked': torch.zeros([]),
+            'deconv_layers.3.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.4.weight': torch.zeros([160]),
+            'deconv_layers.4.bias': torch.zeros([160]),
+            'deconv_layers.4.running_mean': torch.zeros([160]),
+            'deconv_layers.4.running_var': torch.zeros([160]),
+            'deconv_layers.4.num_batches_tracked': torch.zeros([]),
+            'deconv_layers.6.weight': torch.zeros([160, 1, 4, 4]),
+            'deconv_layers.7.weight': torch.zeros([160]),
+            'deconv_layers.7.bias': torch.zeros([160]),
+            'deconv_layers.7.running_mean': torch.zeros([160]),
+            'deconv_layers.7.running_var': torch.zeros([160]),
+            'deconv_layers.7.num_batches_tracked': torch.zeros([]),
+            'final_layer.weight': torch.zeros([17, 160, 1, 1]),
+            'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)
 

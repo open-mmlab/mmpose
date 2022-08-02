@@ -18,9 +18,10 @@ OptIntSeq = Optional[Sequence[int]]
 
 @MODELS.register_module()
 class CPMHead(BaseHead):
-    """Multi-stage heatmap head introduced in `Convolutional Pose Machines`_
-    and `Stacked Hourglass Networks`_. It consists of multiple branches, each
-    of which has some deconv layers and a simple conv2d layer.
+    """Multi-stage heatmap head introduced in `Convolutional Pose Machines`_ by
+    Wei et al (2016) and used by `Stacked Hourglass Networks`_ by Newell et al
+    (2016). The head consists of multiple branches, each of which has some
+    deconv layers and a simple conv2d layer.
 
     Args:
         in_channels (int | Sequence[int]): Number of channels in the input

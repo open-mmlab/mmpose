@@ -167,7 +167,10 @@ class PredictHeatmap(nn.Module):
 @MODELS.register_module()
 class MSPNHead(BaseHead):
     """Multi-stage multi-unit heatmap head introduced in `Multi-Stage Pose
-    estimation Network (MSPN)`_, and `Residual Steps Networks (RSN)`_.
+    estimation Network (MSPN)`_ by Li et al (2019), and used by `Residual Steps
+    Networks (RSN)`_ by Cai et al (2020). The head consists of multiple stages
+    and each stage consists of multiple units. Each unit of each stage has some
+    conv layers.
 
     Args:
         num_stages (int): Number of stages.
