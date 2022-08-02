@@ -2,6 +2,7 @@
 from typing import Optional, Sequence, Tuple, Union
 
 import torch
+from mmengine.data import InstanceData
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
@@ -170,9 +171,12 @@ class SimCCHead(BaseHead):
             pred_x (Tensor): 1d representation of x.
             pred_y (Tensor): 1d representation of y.
         """
-        x = self._transform_inputs(feats)
+        if self.simplebaseline_head is None:
+            feats = self._transform_inputs(feats)
+        else:
+            feats = self.simplebaseline_head(feats)
 
-        x = self.deconv_layers(x)
+        x = self.deconv_layers(feats)
         x = self.conv_layers(x)
         x = self.final_layer(x)
 
@@ -200,9 +204,13 @@ class SimCCHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
                                                    preds):
-                # Store the simcc predictions in the data sample
-                data_sample.pred_instances.simcc_x = pred_x[None, :]
-                data_sample.pred_instances.simcc_y = pred_y[None, :]
+                if 'pred_instance_labels' not in data_sample:
+                    data_sample.pred_instance_labels = InstanceData()
+                    # Store the simcc predictions in the data sample
+                data_sample.pred_instance_labels.keypoint_x_labels = pred_x[
+                    None, :]
+                data_sample.pred_instance_labels.keypoint_y_labels = pred_y[
+                    None, :]
 
         return preds
 
@@ -216,14 +224,21 @@ class SimCCHead(BaseHead):
 
         pred_x, pred_y = self.forward(feats)
 
-        gt_x = torch.cat([d.gt_instances.simcc_x for d in batch_data_samples],
+        gt_x = torch.cat([
+            d.gt_instance_labels.keypoint_x_labels for d in batch_data_samples
+        ],
                          dim=0)
-        gt_y = torch.cat([d.gt_instances.simcc_y for d in batch_data_samples],
+        gt_y = torch.cat([
+            d.gt_instance_labels.keypoint_y_labels for d in batch_data_samples
+        ],
                          dim=0)
         target_coords = torch.cat(
             [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
         keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples],
+            [
+                d.gt_instance_labels.keypoint_weights
+                for d in batch_data_samples
+            ],
             dim=0,
         )
 

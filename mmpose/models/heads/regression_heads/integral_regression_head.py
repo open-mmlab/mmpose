@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+
 from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -9,7 +10,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList,)
+                                      SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from .. import HeatmapHead
@@ -24,6 +25,9 @@ class IntegralRegressionHead(BaseHead):
     al(2018). The head contains a differentiable spatial to numerical transform
     (DSNT) layer that do soft-argmax operation on the predicted heatmaps to
     regress the coordinates.
+
+    This head is used for algorithms that only supervise the coordinates. If
+    you need to supervise the heatmaps, please refer to `DSNTHead`.
 
     Args:
         in_channels (int | sequence[int]): Number of input channels
@@ -79,8 +83,8 @@ class IntegralRegressionHead(BaseHead):
 
         num_deconv = len(deconv_out_channels) if deconv_out_channels else 0
         if num_deconv != 0:
-            self.heatmap_size = tuple([s * (2**num_deconv)
-                                       for s in in_featuremap_size])
+            self.heatmap_size = tuple(
+                [s * (2**num_deconv) for s in in_featuremap_size])
 
             # deconv layers + 1x1 conv
             self.simplebaseline_head = HeatmapHead(
@@ -93,8 +97,7 @@ class IntegralRegressionHead(BaseHead):
                 has_final_layer=has_final_layer,
                 input_transform=input_transform,
                 input_index=input_index,
-                align_corners=align_corners
-            )
+                align_corners=align_corners)
 
             if has_final_layer:
                 in_channels = num_joints
@@ -172,7 +175,9 @@ class IntegralRegressionHead(BaseHead):
 
         return coords, heatmaps
 
-    def predict(self, feats: Tuple[Tensor], batch_data_samples: OptSampleList,
+    def predict(self,
+                feats: Tuple[Tensor],
+                batch_data_samples: OptSampleList,
                 test_cfg: ConfigType = {}) -> SampleList:
         """Predict results from outputs."""
 
@@ -184,32 +189,30 @@ class IntegralRegressionHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
+                if 'pred_heatmaps' not in data_sample:
+                    data_sample.pred_heatmaps = PixelData()
+                data_sample.pred_heatmaps.heatmaps = heatmaps
 
         return preds
 
-    def loss(self, inputs: Tuple[Tensor], batch_data_samples: OptSampleList,
+    def loss(self,
+             inputs: Tuple[Tensor],
+             batch_data_samples: OptSampleList,
              train_cfg: ConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
-        pred_coords, pred_heatmaps = self.forward(inputs)
-        target_coords = torch.cat(
-            [d.gt_instances.keypoints for d in batch_data_samples])
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
+        pred_coords, _ = self.forward(inputs)
+        keypoint_labels = torch.cat(
+            [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
+        keypoint_weights = torch.cat([
+            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+        ])
 
         # calculate losses
         losses = dict()
 
         # TODO: multi-loss calculation
-        if 'use_dsnt' in train_cfg:
-            loss = self.loss_module(pred_coords, pred_heatmaps, target_coords,
-                                    keypoint_weights)
-        else:
-            loss = self.loss_module(pred_coords, target_coords,
-                                    keypoint_weights)
+        loss = self.loss_module(pred_coords, keypoint_labels, keypoint_weights)
 
         if isinstance(loss, dict):
             losses.update(loss)
@@ -219,7 +222,7 @@ class IntegralRegressionHead(BaseHead):
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
             pred=to_numpy(pred_coords),
-            gt=to_numpy(target_coords),
+            gt=to_numpy(keypoint_labels),
             mask=to_numpy(keypoint_weights) > 0,
             thr=0.05,
             norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))

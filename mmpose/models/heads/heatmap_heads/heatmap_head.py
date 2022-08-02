@@ -8,7 +8,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList,)
+                                      SampleList)
 from mmpose.metrics.utils import pose_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
@@ -255,9 +255,9 @@ class HeatmapHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
+                if 'pred_heatmaps' not in data_sample:
+                    data_sample.pred_heatmaps = PixelData()
+                data_sample.pred_heatmaps.heatmaps = heatmaps
 
         return preds
 
@@ -268,9 +268,10 @@ class HeatmapHead(BaseHead):
         """Calculate losses from a batch of inputs and data samples."""
         pred_heatmaps = self.forward(feats)
         gt_heatmaps = torch.stack(
-            [d.gt_fields.heatmaps for d in batch_data_samples])
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
+            [d.gt_heatmaps.heatmaps for d in batch_data_samples])
+        keypoint_weights = torch.cat([
+            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+        ])
 
         # calculate losses
         losses = dict()

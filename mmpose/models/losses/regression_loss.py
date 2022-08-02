@@ -142,16 +142,16 @@ class RLELoss(nn.Module):
                  use_target_weight=False,
                  size_average=True,
                  residual=True,
-                 q_dis='laplace'):
+                 q_distribution='laplace'):
         super(RLELoss, self).__init__()
         self.size_average = size_average
         self.use_target_weight = use_target_weight
         self.residual = residual
-        self.q_dis = q_dis
+        self.q_distribution = q_distribution
 
         self.flow_model = RealNVP()
 
-    def forward(self, output, target, target_weight=None):
+    def forward(self, pred, sigma, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -160,14 +160,13 @@ class RLELoss(nn.Module):
             - dimension of keypoints: D (D=2 or D=3)
 
         Args:
-            output (torch.Tensor[N, K, D*2]): Output regression,
-                    including coords and sigmas.
-            target (torch.Tensor[N, K, D]): Target regression.
-            target_weight (torch.Tensor[N, K, D]):
+            pred (Tensor[N, K, D]): Output regression.
+            sigma (Tensor[N, K, D]): Output sigma.
+            target (Tensor[N, K, D]): Target regression.
+            target_weight (Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        pred = output[:, :, :2]
-        sigma = output[:, :, 2:4].sigmoid()
+        sigma = sigma.sigmoid()
 
         error = (pred - target) / (sigma + 1e-9)
         # (B, K, 2)
@@ -178,8 +177,8 @@ class RLELoss(nn.Module):
         nf_loss = log_sigma - log_phi
 
         if self.residual:
-            assert self.q_dis in ['laplace', 'gaussian', 'strict']
-            if self.q_dis == 'laplace':
+            assert self.q_distribution in ['laplace', 'gaussian']
+            if self.q_distribution == 'laplace':
                 loss_q = torch.log(sigma * 2) + torch.abs(error)
             else:
                 loss_q = torch.log(
