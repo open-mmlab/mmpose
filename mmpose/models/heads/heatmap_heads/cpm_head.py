@@ -206,7 +206,7 @@ class CPMHead(BaseHead):
         multi_stage_batch_heatmaps = self.forward(feats)
         batch_heatmaps = multi_stage_batch_heatmaps[-1]
 
-        preds = self.decode(batch_heatmaps, batch_data_samples, test_cfg)
+        preds = self.decode(batch_heatmaps, batch_data_samples)
 
         # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
