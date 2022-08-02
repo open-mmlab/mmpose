@@ -14,7 +14,8 @@ def get_packed_inputs(batch_size=2,
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
                       with_heatmap=True,
-                      with_reg_label=True):
+                      with_reg_label=True,
+                      num_levels=1):
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
@@ -49,7 +50,13 @@ def get_packed_inputs(batch_size=2,
         keypoints = _rand_keypoints(rng, bboxes, num_keypoints)
         keypoints_visible = np.ones((num_instances, num_keypoints),
                                     dtype=np.float32)
-        keypoint_weights = keypoints_visible.copy()
+        # [N, K] -> [N, num_levels, K]
+        # keep the first dimension as the num_instances
+        if num_levels > 1:
+            keypoint_weights = np.tile(keypoints_visible[:, None],
+                                       (1, num_levels, 1))
+        else:
+            keypoint_weights = keypoints_visible.copy()
 
         gt_instances.bboxes = bboxes
         gt_instances.bbox_centers = bbox_centers
@@ -66,9 +73,21 @@ def get_packed_inputs(batch_size=2,
         # gt_fields
         gt_fields = PixelData()
         if with_heatmap:
-            W, H = heatmap_size
-            heatmaps = rng.rand(num_keypoints, H, W)
-            gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+            if num_levels == 1:
+                # generate single-scale heatmaps
+                W, H = heatmap_size
+                heatmaps = rng.rand(num_keypoints, H, W)
+                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+            else:
+                # generate multi-scale heatmaps
+                heatmaps = []
+                for _ in range(num_levels):
+                    W, H = heatmap_size
+                    heatmaps_ = rng.rand(num_keypoints, H, W)
+                    heatmaps.append(heatmaps_)
+                # [num_levels*K, H, W]
+                heatmaps = np.concatenate(heatmaps)
+                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
 
         data_sample.gt_fields = gt_fields
 

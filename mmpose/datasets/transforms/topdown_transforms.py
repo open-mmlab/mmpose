@@ -187,8 +187,8 @@ class TopdownGenerateHeatmap(BaseTransform):
                 heatmaps.append(_heatmaps)
                 keypoint_weights.append(_keypoints_weights)
 
-            results['heatmaps'] = np.stack(heatmaps)
-            results['keypoint_weights'] = np.stack(keypoint_weights)
+            results['heatmaps'] = np.concatenate(heatmaps)
+            results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
         else:
             # single-level heatmaps
             heatmaps, keypoint_weights = self.encoder.encode(
