@@ -1,3 +1,9 @@
+_base_ = [
+    '../_base_/default_runtime.py',
+    '../_base_/schedules/schedule_bs512_ep210.py',
+]
+
+# codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
 
@@ -46,7 +52,7 @@ model = dict(
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec))
 
-# dataset settings
+# base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
 data_root = 'data/coco/'
@@ -71,6 +77,7 @@ test_pipeline = [
     dict(type='PackPoseInputs')
 ]
 
+# data loaders
 train_dataloader = dict(
     batch_size=64,
     num_workers=2,
@@ -103,7 +110,3 @@ val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator
-
-vis_backends = [dict(type='LocalVisBackend')]
-visualizer = dict(
-    type='PoseLocalVisualizer', vis_backends=vis_backends, name='visualizer')
