@@ -28,10 +28,12 @@ class TestSimCCHead(TestCase):
                           simcc_split_ratio: float = 2.0,
                           with_simcc_label=True):
 
-        batch_data_samples = [inputs['data_sample']
-                              for inputs in get_packed_inputs(batch_size,
-                              simcc_split_ratio=simcc_split_ratio,
-                              with_simcc_label=with_simcc_label)]
+        batch_data_samples = [
+            inputs['data_sample'] for inputs in get_packed_inputs(
+                batch_size,
+                simcc_split_ratio=simcc_split_ratio,
+                with_simcc_label=with_simcc_label)
+        ]
         return batch_data_samples
 
     def test_init(self):
@@ -109,9 +111,8 @@ class TestSimCCHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2,
-                                                    simcc_split_ratio=2.0,
-                                                    with_simcc_label=True)
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
         preds = head.predict(feats, batch_data_samples)
 
         self.assertEqual(len(preds), 2)
@@ -135,9 +136,8 @@ class TestSimCCHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2,
-                                                    simcc_split_ratio=2.0,
-                                                    with_simcc_label=True)
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
         preds = head.predict(feats, batch_data_samples)
 
         self.assertEqual(len(preds), 2)
@@ -145,7 +145,7 @@ class TestSimCCHead(TestCase):
         self.assertIn('pred_instances', preds[0])
         self.assertEqual(preds[0].pred_instances.keypoints.shape,
                          preds[0].gt_instances.keypoints.shape)
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertNotIn('pred_heatmaps', preds[0])
 
         # input transform: output heatmap
         head = SimCCHead(
@@ -158,17 +158,16 @@ class TestSimCCHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2,
-                                                    simcc_split_ratio=2.0,
-                                                    with_simcc_label=True)
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertIn('simcc_x', preds[0].pred_instances)
-        self.assertIn('simcc_y', preds[0].pred_instances)
-        self.assertEqual(preds[0].pred_instances.simcc_x.shape,
+        self.assertIn('keypoint_x_labels', preds[0].pred_instance_labels)
+        self.assertIn('keypoint_y_labels', preds[0].pred_instance_labels)
+        self.assertEqual(preds[0].pred_instances.keypoint_x_labels.shape,
                          (1, 17, 192 * 2))
-        self.assertEqual(preds[0].pred_instances.simcc_y.shape,
+        self.assertEqual(preds[0].pred_instances.keypoint_y_labels.shape,
                          (1, 17, 256 * 2))
 
     def test_loss(self):
@@ -182,9 +181,8 @@ class TestSimCCHead(TestCase):
 
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2,
-                                                    simcc_split_ratio=2.0,
-                                                    with_simcc_label=True)
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
         losses = head.loss(feats, batch_data_samples)
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))

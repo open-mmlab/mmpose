@@ -46,6 +46,7 @@ def get_packed_inputs(batch_size=2,
 
         # gt_instance
         gt_instances = InstanceData()
+        gt_instance_labels = InstanceData()
 
         bboxes = _rand_bboxes(rng, num_instances, w, h)
         bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
@@ -53,6 +54,7 @@ def get_packed_inputs(batch_size=2,
         keypoints = _rand_keypoints(rng, bboxes, num_keypoints)
         keypoints_visible = np.ones((num_instances, num_keypoints),
                                     dtype=np.float32)
+
         # [N, K] -> [N, num_levels, K]
         # keep the first dimension as the num_instances
         if num_levels > 1:
@@ -66,24 +68,27 @@ def get_packed_inputs(batch_size=2,
         gt_instances.bbox_scales = bbox_scales
         gt_instances.keypoints = keypoints
         gt_instances.keypoints_visible = keypoints_visible
-        gt_instances.keypoint_weights = torch.FloatTensor(keypoint_weights)
+        gt_instance_labels.keypoint_weights = torch.FloatTensor(
+            keypoint_weights)
 
         if with_reg_label:
-            gt_instances.reg_label = torch.FloatTensor(keypoints / input_size)
+            gt_instance_labels.keykoint_labels = torch.FloatTensor(keypoints /
+                                                                   input_size)
 
         if with_simcc_label:
             len_x = np.around(input_size[0] * simcc_split_ratio)
             len_y = np.around(input_size[1] * simcc_split_ratio)
-            gt_instances.simcc_x = torch.FloatTensor(
+            gt_instance_labels.keypoint_x_labels = torch.FloatTensor(
                 _rand_simcc_label(rng, num_instances, num_keypoints, len_x))
-            gt_instances.simcc_y = torch.FloatTensor(
+            gt_instance_labels.keypoint_y_labels = torch.FloatTensor(
                 _rand_simcc_label(rng, num_instances, num_keypoints, len_y))
 
         data_sample.gt_instances = gt_instances
 
         # gt_fields
-        gt_fields = PixelData()
+        gt_heatmaps = PixelData()
         if with_heatmap:
+<<<<<<< HEAD
             if num_levels == 1:
                 # generate single-scale heatmaps
                 W, H = heatmap_size
@@ -99,8 +104,13 @@ def get_packed_inputs(batch_size=2,
                 # [num_levels*K, H, W]
                 heatmaps = np.concatenate(heatmaps)
                 gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+=======
+            W, H = heatmap_size
+            heatmaps = rng.rand(num_keypoints, H, W)
+            gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
+>>>>>>> b2197973 (add unittest)
 
-        data_sample.gt_fields = gt_fields
+        data_sample.gt_heatmaps = gt_heatmaps
 
         inputs['data_sample'] = data_sample
         packed_inputs.append(inputs)

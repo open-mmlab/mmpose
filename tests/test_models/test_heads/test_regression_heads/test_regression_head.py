@@ -37,16 +37,9 @@ class TestRegressionHead(TestCase):
         return batch_data_samples
 
     def test_init(self):
-        # w/o sigma
-        head = RegressionHead(
-            in_channels=1024, num_joints=17, output_sigma=False)
-        self.assertEqual(head.fc.weight.shape, (17 * 2, 1024))
-        self.assertIsNone(head.decoder)
 
-        # w/ sigma
-        head = RegressionHead(
-            in_channels=1024, num_joints=17, output_sigma=True)
-        self.assertEqual(head.fc.weight.shape, (17 * 4, 1024))
+        head = RegressionHead(in_channels=1024, num_joints=17)
+        self.assertEqual(head.fc.weight.shape, (17 * 2, 1024))
         self.assertIsNone(head.decoder)
 
         # w/ decoder
@@ -103,7 +96,7 @@ class TestRegressionHead(TestCase):
             preds[0].pred_instances.keypoints.shape,
             preds[0].gt_instances.keypoints.shape,
         )
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertNotIn('pred_heatmaps', preds[0])
 
         # input transform: output heatmap
         head = RegressionHead(
@@ -121,7 +114,7 @@ class TestRegressionHead(TestCase):
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertNotIn('pred_heatmaps', preds[0])
 
     def test_loss(self):
         head = RegressionHead(
@@ -154,16 +147,7 @@ class TestRegressionHead(TestCase):
             )
 
     def test_state_dict_compatible(self):
-        # w/ sigma
-        head = RegressionHead(in_channels=32, num_joints=17, output_sigma=True)
 
-        state_dict = {
-            'fc.weight': torch.zeros((17 * 4, 32)),
-            'fc.bias': torch.zeros((17 * 4)),
-        }
-        head.load_state_dict(state_dict)
-
-        # w/o sigma
         head = RegressionHead(in_channels=2048, num_joints=17)
 
         state_dict = {

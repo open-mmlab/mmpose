@@ -6,11 +6,11 @@ from unittest import TestCase
 import torch
 
 from mmpose.core.data_structures.pose_data_sample import PoseDataSample
-from mmpose.models.heads import IntegralRegressionHead
+from mmpose.models.heads import DSNTHead
 from mmpose.testing import get_packed_inputs
 
 
-class TestIntegralRegressionHead(TestCase):
+class TestDSNTHead(TestCase):
 
     def _get_feats(
         self,
@@ -37,21 +37,21 @@ class TestIntegralRegressionHead(TestCase):
 
     def test_init(self):
         # square heatmap
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32, in_featuremap_size=(8, 8), num_joints=17)
         self.assertEqual(head.linspace_x.shape, (64, 64))
         self.assertEqual(head.linspace_y.shape, (64, 64))
         self.assertIsNone(head.decoder)
 
         # rectangle heatmap
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32, in_featuremap_size=(6, 8), num_joints=17)
         self.assertEqual(head.linspace_x.shape, (8 * 8, 6 * 8))
         self.assertEqual(head.linspace_y.shape, (8 * 8, 6 * 8))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + 1x1 conv
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -65,7 +65,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # 2 deconv + w/o 1x1 conv
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -80,7 +80,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -93,7 +93,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -106,7 +106,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/ decoder
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -118,7 +118,7 @@ class TestIntegralRegressionHead(TestCase):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -142,7 +142,7 @@ class TestIntegralRegressionHead(TestCase):
         )
 
         # inputs transform: resize and concat
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=[16, 32],
             in_featuremap_size=(12, 16),
             num_joints=17,
@@ -165,7 +165,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertNotIn('pred_heatmaps', preds[0])
 
         # input transform: output heatmap
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -186,7 +186,7 @@ class TestIntegralRegressionHead(TestCase):
                          (17, 8 * 8, 6 * 8))
 
     def test_loss(self):
-        head = IntegralRegressionHead(
+        head = DSNTHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -207,7 +207,7 @@ class TestIntegralRegressionHead(TestCase):
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
-            _ = IntegralRegressionHead(
+            _ = DSNTHead(
                 in_channels=[16, 32],
                 in_featuremap_size=(6, 8),
                 num_joints=17,

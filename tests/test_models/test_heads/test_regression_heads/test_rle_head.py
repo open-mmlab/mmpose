@@ -6,16 +6,16 @@ from unittest import TestCase
 import torch
 
 from mmpose.core.data_structures.pose_data_sample import PoseDataSample
-from mmpose.models.heads import IntegralRegressionHead
+from mmpose.models.heads import RLEHead
 from mmpose.testing import get_packed_inputs
 
 
-class TestIntegralRegressionHead(TestCase):
+class TestRLEHead(TestCase):
 
     def _get_feats(
         self,
         batch_size: int = 2,
-        feat_shapes: List[Tuple[int, int, int]] = [(32, 6, 8)],
+        feat_shapes: List[Tuple[int, int, int]] = [(32, 1, 1)],
     ):
 
         feats = [
@@ -28,6 +28,7 @@ class TestIntegralRegressionHead(TestCase):
     def _get_data_samples(self,
                           batch_size: int = 2,
                           with_heatmap: bool = False):
+
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
                 batch_size, with_heatmap=with_heatmap)
@@ -36,79 +37,15 @@ class TestIntegralRegressionHead(TestCase):
         return batch_data_samples
 
     def test_init(self):
-        # square heatmap
-        head = IntegralRegressionHead(
-            in_channels=32, in_featuremap_size=(8, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (64, 64))
-        self.assertEqual(head.linspace_y.shape, (64, 64))
-        self.assertIsNone(head.decoder)
 
-        # rectangle heatmap
-        head = IntegralRegressionHead(
-            in_channels=32, in_featuremap_size=(6, 8), num_joints=17)
-        self.assertEqual(head.linspace_x.shape, (8 * 8, 6 * 8))
-        self.assertEqual(head.linspace_y.shape, (8 * 8, 6 * 8))
-        self.assertIsNone(head.decoder)
-
-        # 2 deconv + 1x1 conv
-        head = IntegralRegressionHead(
-            in_channels=32,
-            in_featuremap_size=(6, 8),
-            num_joints=17,
-            deconv_out_channels=(32, 32),
-            deconv_kernel_sizes=(4, 4),
-            conv_out_channels=(32, ),
-            conv_kernel_sizes=(1, ),
-        )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
-        self.assertIsNone(head.decoder)
-
-        # 2 deconv + w/o 1x1 conv
-        head = IntegralRegressionHead(
-            in_channels=32,
-            in_featuremap_size=(6, 8),
-            num_joints=17,
-            deconv_out_channels=(32, 32),
-            deconv_kernel_sizes=(4, 4),
-            conv_out_channels=(32, ),
-            conv_kernel_sizes=(1, ),
-            has_final_layer=False,
-        )
-        self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
-        self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
-        self.assertIsNone(head.decoder)
-
-        # w/o deconv and 1x1 conv
-        head = IntegralRegressionHead(
-            in_channels=32,
-            in_featuremap_size=(6, 8),
-            num_joints=17,
-            deconv_out_channels=tuple(),
-            deconv_kernel_sizes=tuple(),
-            has_final_layer=False,
-        )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
-        self.assertIsNone(head.decoder)
-
-        # w/o deconv and 1x1 conv
-        head = IntegralRegressionHead(
-            in_channels=32,
-            in_featuremap_size=(6, 8),
-            num_joints=17,
-            deconv_out_channels=None,
-            deconv_kernel_sizes=None,
-            has_final_layer=False,
-        )
-        self.assertEqual(head.linspace_x.shape, (8, 6))
-        self.assertEqual(head.linspace_y.shape, (8, 6))
+        # w/ sigma
+        head = RLEHead(in_channels=1024, num_joints=17)
+        self.assertEqual(head.fc.weight.shape, (17 * 4, 1024))
         self.assertIsNone(head.decoder)
 
         # w/ decoder
-        head = IntegralRegressionHead(
+        head = RLEHead(
             in_channels=1024,
-            in_featuremap_size=(6, 8),
             num_joints=17,
             decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
@@ -118,9 +55,8 @@ class TestIntegralRegressionHead(TestCase):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
-        head = IntegralRegressionHead(
+        head = RLEHead(
             in_channels=[16, 32],
-            in_featuremap_size=(6, 8),
             num_joints=17,
             input_transform='select',
             input_index=-1,
@@ -128,7 +64,7 @@ class TestIntegralRegressionHead(TestCase):
         )
 
         feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, with_heatmap=False)
         preds = head.predict(feats, batch_data_samples)
@@ -142,16 +78,15 @@ class TestIntegralRegressionHead(TestCase):
         )
 
         # inputs transform: resize and concat
-        head = IntegralRegressionHead(
+        head = RLEHead(
             in_channels=[16, 32],
-            in_featuremap_size=(12, 16),
             num_joints=17,
             input_transform='resize_concat',
             input_index=[0, 1],
             decoder=decoder_cfg,
         )
         feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
         batch_data_samples = self._get_data_samples(batch_size=2)
         preds = head.predict(feats, batch_data_samples)
 
@@ -165,9 +100,8 @@ class TestIntegralRegressionHead(TestCase):
         self.assertNotIn('pred_heatmaps', preds[0])
 
         # input transform: output heatmap
-        head = IntegralRegressionHead(
+        head = RLEHead(
             in_channels=[16, 32],
-            in_featuremap_size=(6, 8),
             num_joints=17,
             input_transform='select',
             input_index=-1,
@@ -175,28 +109,26 @@ class TestIntegralRegressionHead(TestCase):
         )
 
         feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, with_heatmap=False)
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertIn('pred_heatmaps', preds[0])
-        self.assertEqual(preds[0].pred_heatmaps.heatmaps.shape,
-                         (17, 8 * 8, 6 * 8))
+        self.assertNotIn('pred_heatmaps', preds[0])
 
     def test_loss(self):
-        head = IntegralRegressionHead(
+        head = RLEHead(
             in_channels=[16, 32],
-            in_featuremap_size=(6, 8),
             num_joints=17,
             input_transform='select',
             input_index=-1,
         )
 
         feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
+            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, with_heatmap=False)
         losses = head.loss(feats, batch_data_samples)
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
@@ -207,13 +139,23 @@ class TestIntegralRegressionHead(TestCase):
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
-            _ = IntegralRegressionHead(
+
+            _ = RLEHead(
                 in_channels=[16, 32],
-                in_featuremap_size=(6, 8),
                 num_joints=17,
                 input_transform='select',
                 input_index=[0, 1],
             )
+
+    def test_state_dict_compatible(self):
+        # w/ sigma
+        head = RLEHead(in_channels=32, num_joints=17, output_sigma=True)
+
+        state_dict = {
+            'fc.weight': torch.zeros((17 * 4, 32)),
+            'fc.bias': torch.zeros((17 * 4)),
+        }
+        head.load_state_dict(state_dict)
 
 
 if __name__ == '__main__':
