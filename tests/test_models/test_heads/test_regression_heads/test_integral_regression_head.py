@@ -61,7 +61,6 @@ class TestIntegralRegressionHead(TestCase):
             conv_out_channels=(32, ),
             conv_kernel_sizes=(1, ),
         )
-
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -77,7 +76,6 @@ class TestIntegralRegressionHead(TestCase):
             conv_kernel_sizes=(1, ),
             has_final_layer=False,
         )
-
         self.assertEqual(head.linspace_x.shape, (8 * 4, 6 * 4))
         self.assertEqual(head.linspace_y.shape, (8 * 4, 6 * 4))
         self.assertIsNone(head.decoder)
@@ -91,7 +89,6 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=tuple(),
             has_final_layer=False,
         )
-
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -105,7 +102,6 @@ class TestIntegralRegressionHead(TestCase):
             deconv_kernel_sizes=None,
             has_final_layer=False,
         )
-
         self.assertEqual(head.linspace_x.shape, (8, 6))
         self.assertEqual(head.linspace_y.shape, (8, 6))
         self.assertIsNone(head.decoder)
@@ -117,7 +113,6 @@ class TestIntegralRegressionHead(TestCase):
             num_joints=17,
             decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
-
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
@@ -169,6 +164,7 @@ class TestIntegralRegressionHead(TestCase):
             preds[0].gt_instances.keypoints.shape,
         )
         self.assertNotIn('pred_heatmaps', preds[0])
+
 
         # input transform: output heatmap
         head = IntegralRegressionHead(
@@ -222,7 +218,6 @@ class TestIntegralRegressionHead(TestCase):
                 input_transform='select',
                 input_index=[0, 1],
             )
-
 
 
 if __name__ == '__main__':

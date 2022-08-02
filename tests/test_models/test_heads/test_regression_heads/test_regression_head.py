@@ -50,7 +50,6 @@ class TestRegressionHead(TestCase):
             num_joints=17,
             decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
-
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
@@ -100,6 +99,7 @@ class TestRegressionHead(TestCase):
             preds[0].gt_instances.keypoints.shape,
         )
         self.assertNotIn('pred_heatmaps', preds[0])
+
 
         # input transform: output heatmap
         head = RegressionHead(
@@ -151,7 +151,6 @@ class TestRegressionHead(TestCase):
 
 
     def test_state_dict_compatible(self):
-
         head = RegressionHead(in_channels=2048, num_joints=17)
 
         state_dict = {
