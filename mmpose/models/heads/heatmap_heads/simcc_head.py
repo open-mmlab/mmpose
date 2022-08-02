@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmengine.data import InstanceData
+
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
@@ -10,6 +11,7 @@ from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
+from .. import HeatmapHead
 from ..base_head import BaseHead
 from .heatmap_head import HeatmapHead
 
