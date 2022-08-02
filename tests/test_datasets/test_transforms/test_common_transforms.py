@@ -7,10 +7,10 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import LoadImageFromFile
 
-from mmpose.datasets.pipelines import (Albumentation, GetBboxCenterScale,
-                                       PhotometricDistortion,
-                                       RandomBboxTransform, RandomFlip,
-                                       RandomHalfBody)
+from mmpose.datasets.transforms import (Albumentation, GetBboxCenterScale,
+                                        PhotometricDistortion,
+                                        RandomBboxTransform, RandomFlip,
+                                        RandomHalfBody)
 
 
 class TestGetBboxCenterScale(TestCase):
@@ -20,7 +20,7 @@ class TestGetBboxCenterScale(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_score=np.ones(1, dtype=np.float32),
             keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
@@ -70,7 +70,7 @@ class TestRandomFlip(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
@@ -184,7 +184,7 @@ class TestRandomHalfBody(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),
@@ -279,7 +279,7 @@ class TestRandomBboxTransform(TestCase):
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
             img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640, 3),
+            img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
             bbox_scale=np.array([[125, 125]], dtype=np.float32),

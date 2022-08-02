@@ -9,7 +9,7 @@ import pytest
 from numpy.testing import assert_array_almost_equal
 
 from mmpose.core import SimpleCamera
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.transforms import Compose
 
 H36M_JOINT_IDX = [14, 2, 1, 0, 3, 4, 5, 16, 12, 17, 18, 9, 10, 11, 8, 7, 6]
 

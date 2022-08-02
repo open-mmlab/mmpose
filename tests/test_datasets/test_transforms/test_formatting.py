@@ -7,7 +7,7 @@ import torch
 from mmengine.data import InstanceData, PixelData
 
 from mmpose.core import PoseDataSample
-from mmpose.datasets.pipelines import PackPoseInputs
+from mmpose.datasets.transforms import PackPoseInputs
 
 
 class TestPackPoseInputs(TestCase):
@@ -58,7 +58,7 @@ class TestPackPoseInputs(TestCase):
         self.assertIsInstance(results['data_sample'].gt_fields, PixelData)
         self.assertEqual(len(results['data_sample'].gt_instances), 1)
         self.assertIsInstance(results['data_sample'].gt_fields.heatmaps,
-                              np.ndarray)
+                              torch.Tensor)
 
         # test when results['img'] is sequence of frames
         results = copy.deepcopy(self.results_topdown)

@@ -81,7 +81,7 @@ class CocoWholeBodyFaceDataset(BaseCocoStyleDataset):
         if not ann['face_valid'] or max(ann['face_kpts']) <= 0:
             return None
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -91,8 +91,7 @@ class CocoWholeBodyFaceDataset(BaseCocoStyleDataset):
         x2 = np.clip(x + w, 0, img_w - 1)
         y2 = np.clip(y + h, 0, img_h - 1)
 
-        bbox = np.array([x1, y1, x2 - x1, y2 - y1],
-                        dtype=np.float32).reshape(1, 4)
+        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(
@@ -105,7 +104,6 @@ class CocoWholeBodyFaceDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,

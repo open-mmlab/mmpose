@@ -118,8 +118,6 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
 
         for ann in data['annotations']:
             img_id = ann['image_id']
-            img_h = imgid2info[img_id]['height']
-            img_w = imgid2info[img_id]['width']
 
             center = np.array(ann['center'], dtype=np.float32)
             scale = np.array([ann['scale'], ann['scale']],
@@ -137,9 +135,8 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
                 'img_id':
                 img_id,
                 'img_path':
-                osp.join(self.data_prefix['img_path'],
+                osp.join(self.data_prefix['img'],
                          imgid2info[img_id]['file_name']),
-                'img_shape': (img_h, img_w, 3),
                 'bbox_center':
                 center,
                 'bbox_scale':

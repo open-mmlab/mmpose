@@ -10,7 +10,7 @@ from mmcv.transforms.utils import avoid_cache_randomness, cache_randomness
 from mmengine import is_list_of
 from scipy.stats import truncnorm
 
-from mmpose.core.bbox import bbox_xywh2cs, flip_bbox
+from mmpose.core.bbox import bbox_xyxy2cs, flip_bbox
 from mmpose.core.keypoint import flip_keypoints
 from mmpose.registry import TRANSFORMS
 
@@ -67,7 +67,7 @@ class GetBboxCenterScale(BaseTransform):
 
         else:
             bbox = results['bbox']
-            center, scale = bbox_xywh2cs(bbox, padding=self.padding)
+            center, scale = bbox_xyxy2cs(bbox, padding=self.padding)
 
             results['bbox_center'] = center
             results['bbox_scale'] = scale
@@ -93,6 +93,7 @@ class RandomFlip(BaseTransform):
         - img
         - img_shape
         - flip_pairs
+        - bbox (optional)
         - bbox_center (optional)
         - keypoints (optional)
         - keypoints_visible (optional)
@@ -100,6 +101,7 @@ class RandomFlip(BaseTransform):
     Modified Keys:
 
         - img
+        - bbox (optional)
         - bbox_center
         - keypoints
         - keypoints_visible
@@ -194,7 +196,7 @@ class RandomFlip(BaseTransform):
             results['flip'] = True
             results['flip_direction'] = flip_dir
 
-            h, w = results['img_shape'][:2]
+            h, w = results['img_shape']
             # flip image
             if isinstance(results['img'], list):
                 results['img'] = [
@@ -204,6 +206,13 @@ class RandomFlip(BaseTransform):
                 results['img'] = imflip(results['img'], direction=flip_dir)
 
             # flip bboxes
+            if results.get('bbox', None) is not None:
+                results['bbox'] = flip_bbox(
+                    results['bbox'],
+                    image_size=(w, h),
+                    bbox_format='xyxy',
+                    direction=flip_dir)
+
             if results.get('bbox_center', None) is not None:
                 results['bbox_center'] = flip_bbox(
                     results['bbox_center'],
@@ -429,7 +438,7 @@ class RandomBboxTransform(BaseTransform):
         scale_factor (float): Randomly resize the bbox in range
             :math:`[1 - scale_factor, 1 + scale_factor]`. Defaults to 0.5
         scale_prob (float): Probability of applying random resizing. Defaults
-            to 0.5
+            to 1.0
         rotate_factor (float): Randomly rotate the bbox in
             :math:`[-2*rotate_factor, 2*rotate_factor]` in degrees. Defaults
             to 40.0

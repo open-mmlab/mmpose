@@ -3,6 +3,7 @@ from .backbones import *  # noqa
 from .builder import (BACKBONES, HEADS, LOSSES, NECKS, build_backbone,
                       build_head, build_loss, build_neck, build_pose_estimator,
                       build_posenet)
+from .data_preprocessors import *  # noqa
 from .heads import *  # noqa
 from .losses import *  # noqa
 from .necks import *  # noqa

@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from mmengine.data import InstanceData, PixelData
 
-from mmpose.core.bbox.transforms import bbox_xywh2cs, bbox_xyxy2xywh
+from mmpose.core.bbox.transforms import bbox_xyxy2cs
 from mmpose.core.data_structures import PoseDataSample
 
 
@@ -43,19 +43,19 @@ def get_packed_inputs(batch_size=2,
         # gt_instance
         gt_instances = InstanceData()
 
-        bboxes_xyxy = _rand_bboxes(rng, num_instances, w, h)
-        bboxes = bbox_xyxy2xywh(bboxes_xyxy)
-        bbox_centers, bbox_scales = bbox_xywh2cs(bboxes)
-        gt_instances.bboxes = torch.FloatTensor(bboxes)
-        gt_instances.bbox_centers = torch.FloatTensor(bbox_centers)
-        gt_instances.bbox_scales = torch.FloatTensor(bbox_scales)
+        bboxes = _rand_bboxes(rng, num_instances, w, h)
+        bbox_centers, bbox_scales = bbox_xyxy2cs(bboxes)
 
         keypoints = _rand_keypoints(rng, bboxes, num_keypoints)
         keypoints_visible = np.ones((num_instances, num_keypoints),
                                     dtype=np.float32)
         keypoint_weights = keypoints_visible.copy()
-        gt_instances.keypoints = torch.FloatTensor(keypoints)
-        gt_instances.keypoints_visible = torch.FloatTensor(keypoints_visible)
+
+        gt_instances.bboxes = bboxes
+        gt_instances.bbox_centers = bbox_centers
+        gt_instances.bbox_scales = bbox_scales
+        gt_instances.keypoints = keypoints
+        gt_instances.keypoints_visible = keypoints_visible
         gt_instances.keypoint_weights = torch.FloatTensor(keypoint_weights)
 
         if with_reg_label:
@@ -85,13 +85,13 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     return keypoints
 
 
-def _rand_bboxes(rng, num_instances, w, h):
+def _rand_bboxes(rng, num_instances, img_w, img_h):
     cx, cy, bw, bh = rng.rand(num_instances, 4).T
 
-    tl_x = ((cx * w) - (w * bw / 2)).clip(0, w)
-    tl_y = ((cy * h) - (h * bh / 2)).clip(0, h)
-    br_x = ((cx * w) + (w * bw / 2)).clip(0, w)
-    br_y = ((cy * h) + (h * bh / 2)).clip(0, h)
+    tl_x = ((cx * img_w) - (img_w * bw / 2)).clip(0, img_w)
+    tl_y = ((cy * img_h) - (img_h * bh / 2)).clip(0, img_h)
+    br_x = ((cx * img_w) + (img_w * bw / 2)).clip(0, img_w)
+    br_y = ((cy * img_h) + (img_h * bh / 2)).clip(0, img_h)
 
     bboxes = np.vstack([tl_x, tl_y, br_x, br_y]).T
     return bboxes

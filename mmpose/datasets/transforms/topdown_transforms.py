@@ -22,8 +22,7 @@ class TopdownAffine(BaseTransform):
         - bbox_center
         - bbox_scale
         - bbox_rotation (optional)
-        - keypoints
-        - keypoints_visible
+        - keypoints (optional)
 
     Modified Keys:
 
@@ -121,9 +120,10 @@ class TopdownAffine(BaseTransform):
             results['img'] = cv2.warpAffine(
                 results['img'], warp_mat, warp_size, flags=cv2.INTER_LINEAR)
 
-        # Only transform (x, y) coordinates
-        results['keypoints'][..., :2] = cv2.transform(
-            results['keypoints'][..., :2], warp_mat)
+        if 'keypoints' in results:
+            # Only transform (x, y) coordinates
+            results['keypoints'][..., :2] = cv2.transform(
+                results['keypoints'][..., :2], warp_mat)
 
         results['input_size'] = (w, h)
 

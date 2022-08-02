@@ -6,12 +6,12 @@ from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
                     Union)
 
 import numpy as np
-import xtcocotools.mask as cocomask
 from mmcv.fileio import load
 from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
+from mmpose.core.bbox import bbox_xywh2xyxy
 from mmpose.registry import DATASETS
 from ..utils import parse_pose_metainfo
 
@@ -36,7 +36,7 @@ class BaseCocoStyleDataset(BaseDataset):
         data_root (str, optional): The root directory for ``data_prefix`` and
             ``ann_file``. Default: ``None``.
         data_prefix (dict, optional): Prefix for training data.
-            Default: ``dict(img_path='')``.
+            Default: ``dict(img='')``.
         filter_cfg (dict, optional): Config for filter data. Default: `None`.
         indices (int or Sequence[int], optional): Support using first few
             data in annotation file to facilitate training/testing on a smaller
@@ -66,7 +66,7 @@ class BaseCocoStyleDataset(BaseDataset):
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
-                 data_prefix: dict = dict(img_path=''),
+                 data_prefix: dict = dict(img=''),
                  filter_cfg: Optional[dict] = None,
                  indices: Optional[Union[int, Sequence[int]]] = None,
                  serialize_data: bool = True,
@@ -218,7 +218,7 @@ class BaseCocoStyleDataset(BaseDataset):
                 ann['keypoints']) == 0:
             return None
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
         img_w, img_h = img['width'], img['height']
 
         # get bbox in shape [1, 4], formatted as xywh
@@ -228,8 +228,7 @@ class BaseCocoStyleDataset(BaseDataset):
         x2 = np.clip(x + w, 0, img_w - 1)
         y2 = np.clip(y + h, 0, img_h - 1)
 
-        bbox = np.array([x1, y1, x2 - x1, y2 - y1],
-                        dtype=np.float32).reshape(1, 4)
+        bbox = np.array([x1, y1, x2, y2], dtype=np.float32).reshape(1, 4)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(
@@ -245,7 +244,6 @@ class BaseCocoStyleDataset(BaseDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox': bbox,
             'bbox_score': np.ones(1, dtype=np.float32),
             'num_keypoints': num_keypoints,
@@ -270,7 +268,8 @@ class BaseCocoStyleDataset(BaseDataset):
             return False
         # invalid bbox
         if 'bbox' in data_info:
-            w, h = data_info['bbox'][0, 2:4]
+            bbox = data_info['bbox'][0]
+            w, h = bbox[2:4] - bbox[:2]
             if w <= 0 or h <= 0:
                 return False
         return True
@@ -305,22 +304,18 @@ class BaseCocoStyleDataset(BaseDataset):
                 continue
 
             img_path = data_infos_valid[0]['img_path']
-            if 'img_shape' in data_infos_valid[0]:
-                img_shape = data_infos_valid[0]['img_shape']
-            else:
-                img_shape = None
 
             # image data
             data_info_bu = {
                 'img_id': img_id,
                 'img_path': img_path,
-                'img_shape': img_shape,
             }
             # instance data
             for key in data_infos_valid[0].keys():
                 if key not in data_info_bu:
                     data_info_bu[key] = _concat(data_infos_valid, key)
 
+            # TODO: move the calculation of masks into pipeline
             # get region mask of invalid instances (crowd objects or objects
             # without valid keypoint annotations)
 
@@ -328,23 +323,31 @@ class BaseCocoStyleDataset(BaseDataset):
             # details can be found at `COCO tools <https://github.com/
             # cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/
             # mask.py>`__
-            rles = []
+
+            # rles = []
+            # for data_info_invalid in filterfalse(self._is_valid_instance,
+            #                                      data_infos):
+            #     seg = data_info_invalid.get('segmentation', None)
+            #     if not seg:
+            #         continue
+
+            #     img_h, img_w = img_shape
+
+            #     if data_info_invalid['iscrowd']:
+            #         # crowd object has a unitary mask region
+            #         rles.append(cocomask.frPyObjects(seg, img_h, img_w))
+            #     elif data_info_invalid['num_keypoints'] == 0:
+            #         # non-crowd object has a list of mask regions
+            #         rles.extend(cocomask.frPyObjects(seg, img_h, img_w))
+
+            # data_info_bu['mask_invalid_rle'] = cocomask.merge(rles)
+
+            mask_segs = []
             for data_info_invalid in filterfalse(self._is_valid_instance,
                                                  data_infos):
-                seg = data_info_invalid.get('segmentation', None)
-                if not seg:
-                    continue
-
-                img_h, img_w = img_shape[:2]
-
-                if data_info_invalid['iscrowd']:
-                    # crowd object has a unitary mask region
-                    rles.append(cocomask.frPyObjects(seg, img_h, img_w))
-                elif data_info_invalid['num_keypoints'] == 0:
-                    # non-crowd object has a list of mask regions
-                    rles.extend(cocomask.frPyObjects(seg, img_h, img_w))
-
-            data_info_bu['mask_invalid_rle'] = cocomask.merge(rles)
+                if 'segementation' in data_info_invalid:
+                    mask_segs.append(data_info_invalid['segmentation'])
+            data_info_bu['mask_segs'] = mask_segs
 
             data_list_bu.append(data_info_bu)
 
@@ -373,8 +376,10 @@ class BaseCocoStyleDataset(BaseDataset):
 
             img = coco.loadImgs(det['image_id'])[0]
 
-            img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
-            bbox = np.array(det['bbox'][:4], dtype=np.float32).reshape(1, 4)
+            img_path = osp.join(self.data_prefix['img'], img['file_name'])
+            bbox_xywh = np.array(
+                det['bbox'][:4], dtype=np.float32).reshape(1, 4)
+            bbox = bbox_xywh2xyxy(bbox_xywh)
             bbox_score = np.array(det['score'], dtype=np.float32).reshape(1)
 
             # use dummy keypoint location and visibility
@@ -384,7 +389,7 @@ class BaseCocoStyleDataset(BaseDataset):
             data_list.append({
                 'img_id': det['image_id'],
                 'img_path': img_path,
-                'img_shape': (img['height'], img['width'], 3),
+                'img_shape': (img['height'], img['width']),
                 'bbox': bbox,
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,

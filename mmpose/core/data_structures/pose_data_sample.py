@@ -1,5 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import List
+
 from mmengine.data import BaseDataElement, InstanceData, PixelData
+from mmengine.utils import is_list_of
 
 
 class PoseDataSample(BaseDataElement):
@@ -21,7 +24,7 @@ class PoseDataSample(BaseDataElement):
         >>> from mmengine.data import InstanceData, PixelData
         >>> from mmpose.core import PoseDataSample
 
-        >>> pose_meta = dict(img_shape=(800, 1216, 3),
+        >>> pose_meta = dict(img_shape=(800, 1216),
         ...                  crop_size=(256, 192),
         ...                  heatmap_size=(64, 48))
         >>> gt_instances = InstanceData()
@@ -86,3 +89,40 @@ class PoseDataSample(BaseDataElement):
     @pred_fields.deleter
     def pred_fields(self):
         del self._pred_fields
+
+    @classmethod
+    def merge(cls, data_samples: List['PoseDataSample']) -> 'PoseDataSample':
+        """Merge the given data samples into a single data sample.
+
+        This function can be used to merge the top-down predictions with
+        bboxes from the same image. The merged data sample will contain all
+        instances from the input data samples, and the identical metainfo with
+        the first input data sample.
+
+        Args:
+            data_samples (List[:obj:`PoseDataSample`]): The data samples to
+                merge
+
+        Returns:
+            PoseDataSample: The merged data sample.
+        """
+
+        if not is_list_of(data_samples, cls):
+            raise ValueError('Invalid input type, should be a list of '
+                             f':obj:`{cls.__name__}`')
+
+        assert len(data_samples) > 0
+
+        merged = cls(metainfo=data_samples[0].metainfo)
+
+        if 'gt_instances' in data_samples[0]:
+            merged.gt_instances = InstanceData.cat(
+                [d.gt_instances for d in data_samples])
+
+        if 'pred_instances' in data_samples[0]:
+            merged.pred_instances = InstanceData.cat(
+                [d.pred_instances for d in data_samples])
+
+        # TODO: Support merging ``gt_fields`` and ``pred_fields``
+
+        return merged

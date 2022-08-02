@@ -27,7 +27,6 @@ class TestHalpeDataset(TestCase):
             expected_keys = dict(
                 img_id=int,
                 img_path=str,
-                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
@@ -37,12 +36,11 @@ class TestHalpeDataset(TestCase):
             expected_keys = dict(
                 img_id=int,
                 img_path=str,
-                img_shape=tuple,
                 bbox=np.ndarray,
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
-                mask_invalid_rle=dict,
+                mask_segs=list,
                 id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')

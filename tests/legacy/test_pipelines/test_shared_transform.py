@@ -6,7 +6,7 @@ import pytest
 from mmcv import bgr2rgb, build_from_cfg
 
 from mmpose.datasets import PIPELINES
-from mmpose.datasets.pipelines import Compose
+from mmpose.datasets.transforms import Compose
 
 
 def check_keys_equal(result_keys, target_keys):

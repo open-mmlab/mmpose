@@ -106,7 +106,7 @@ class RegressionHead(BaseHead):
         """Predict results from outputs."""
 
         batch_coords = self.forward(feats)
-        preds = self.decode(batch_coords, batch_data_samples, test_cfg)
+        preds = self.decode(batch_coords, batch_data_samples)
 
         return preds
 

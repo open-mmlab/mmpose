@@ -79,8 +79,7 @@ class AFLWDataset(BaseCocoStyleDataset):
         ann = raw_data_info['raw_ann_info']
         img = raw_data_info['raw_img_info']
 
-        img_path = osp.join(self.data_prefix['img_path'], img['file_name'])
-        img_w, img_h = img['width'], img['height']
+        img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
         center = np.array(ann['center'], dtype=np.float32)
         scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
@@ -96,7 +95,6 @@ class AFLWDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
-            'img_shape': (img_h, img_w, 3),
             'bbox_center': center,
             'bbox_scale': scale,
             'bbox_score': np.ones(1, dtype=np.float32),

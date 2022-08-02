@@ -7,13 +7,13 @@ import pytest
 import xtcocotools
 from xtcocotools.coco import COCO
 
-from mmpose.datasets.pipelines import (BottomUpGenerateHeatmapTarget,
-                                       BottomUpGeneratePAFTarget,
-                                       BottomUpGenerateTarget,
-                                       BottomUpGetImgSize,
-                                       BottomUpRandomAffine,
-                                       BottomUpRandomFlip, BottomUpResizeAlign,
-                                       LoadImageFromFile)
+from mmpose.datasets.transforms import (BottomUpGenerateHeatmapTarget,
+                                        BottomUpGeneratePAFTarget,
+                                        BottomUpGenerateTarget,
+                                        BottomUpGetImgSize,
+                                        BottomUpRandomAffine,
+                                        BottomUpRandomFlip,
+                                        BottomUpResizeAlign, LoadImageFromFile)
 
 
 def _get_mask(coco, anno, img_id):
