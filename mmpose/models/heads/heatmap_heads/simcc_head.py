@@ -226,7 +226,6 @@ class SimCCHead(BaseHead):
 
         pred_x, pred_y = self.forward(feats)
 
-
         gt_x = torch.cat([
             d.gt_instance_labels.keypoint_x_labels for d in batch_data_samples
         ],

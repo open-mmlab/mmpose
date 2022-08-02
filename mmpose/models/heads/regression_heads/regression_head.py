@@ -7,7 +7,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList,)
+                                      SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
@@ -122,6 +122,7 @@ class RegressionHead(BaseHead):
         losses = dict()
         loss = self.loss_module(pred_outputs, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
+
         if isinstance(loss, dict):
             losses.update(loss)
         else:

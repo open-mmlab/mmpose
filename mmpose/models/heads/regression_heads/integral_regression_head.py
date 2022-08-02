@@ -10,7 +10,7 @@ from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                      SampleList,)
+                                      SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 
@@ -114,7 +114,6 @@ class IntegralRegressionHead(BaseHead):
             self.heatmap_size = tuple(
                 [s * (2**num_deconv) for s in in_featuremap_size])
 
-
             # deconv layers + 1x1 conv
             self.simplebaseline_head = HeatmapHead(
                 in_channels=in_channels,
@@ -128,11 +127,11 @@ class IntegralRegressionHead(BaseHead):
                 input_index=input_index,
                 align_corners=align_corners)
 
-
             if has_final_layer:
                 in_channels = num_joints
             else:
                 in_channels = deconv_out_channels[-1]
+
         else:
             self.simplebaseline_head = None
             in_channels = self._get_in_channels()
@@ -247,6 +246,7 @@ class IntegralRegressionHead(BaseHead):
         # TODO: multi-loss calculation
         loss = self.loss_module(pred_coords, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
+
 
 
         if isinstance(loss, dict):

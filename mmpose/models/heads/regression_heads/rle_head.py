@@ -122,6 +122,7 @@ class RLEHead(BaseHead):
         losses = dict()
         loss = self.loss_module(pred_coords, pred_sigma, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
+
         if isinstance(loss, dict):
             losses.update(loss)
         else:
