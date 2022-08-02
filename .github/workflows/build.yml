@@ -64,7 +64,9 @@ jobs:
           pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cpu/${{matrix.torch_version}}/index.html
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Install other dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
       - name: Build and install
         run: rm -rf .eggs && pip install -e .
       - name: Run unittests and generate coverage report
@@ -122,6 +124,7 @@ jobs:
           python -V
           python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
+          python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
         run: |
@@ -185,6 +188,7 @@ jobs:
           python -V
           python -m pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/${{matrix.torch_version}}/index.html
           python -m pip install -r requirements.txt
+          python -m pip install albumentations>=0.3.2 --no-binary imgaug,albumentations
           python -c 'import mmcv; print(mmcv.__version__)'
       - name: Build and install
         run: |
