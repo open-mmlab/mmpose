@@ -6,7 +6,7 @@ import torch
 from mmengine.data import InstanceData
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
-from mmpose.metrics import AUC, EPE, NME, PCKAccuracy
+from mmpose.evaluation.metrics import AUC, EPE, NME, PCKAccuracy
 
 
 class TestPCKAccuracy(TestCase):

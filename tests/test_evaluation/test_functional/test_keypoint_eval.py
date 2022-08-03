@@ -2,10 +2,10 @@
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from mmpose.metrics.utils import (keypoint_auc, keypoint_epe, keypoint_nme,
-                                  keypoint_pck_accuracy,
-                                  multilabel_classification_accuracy,
-                                  pose_pck_accuracy)
+from mmpose.evaluation.functional import (keypoint_auc, keypoint_epe,
+                                          keypoint_nme, keypoint_pck_accuracy,
+                                          multilabel_classification_accuracy,
+                                          pose_pck_accuracy)
 
 
 def test_keypoint_pck_accuracy():
