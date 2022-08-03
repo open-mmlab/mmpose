@@ -301,8 +301,8 @@ class SmoothL1Loss(nn.Module):
 
         if self.use_target_weight:
             assert target_weight is not None
-            loss = self.criterion(output * target_weight[..., None],
-                                  target * target_weight[..., None])
+            loss = self.criterion(output * target_weight,
+                                  target * target_weight)
         else:
             loss = self.criterion(output, target)
 

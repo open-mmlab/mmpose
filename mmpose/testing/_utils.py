@@ -18,7 +18,6 @@ def get_packed_inputs(batch_size=2,
                       with_heatmap=True,
                       with_reg_label=True,
                       with_simcc_label=None):
-
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 

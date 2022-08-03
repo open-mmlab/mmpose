@@ -131,7 +131,6 @@ class TestDSNTHead(TestCase):
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, with_reg_label=False)
-
         preds = head.predict(feats, batch_data_samples)
 
         self.assertEqual(len(preds), 2)
@@ -179,7 +178,6 @@ class TestDSNTHead(TestCase):
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, with_reg_label=False)
-
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 

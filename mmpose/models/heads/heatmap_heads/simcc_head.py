@@ -11,7 +11,6 @@ from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
-from .. import HeatmapHead
 from ..base_head import BaseHead
 from .heatmap_head import HeatmapHead
 
@@ -181,7 +180,6 @@ class SimCCHead(BaseHead):
 
         # flatten the output heatmap
         x = torch.flatten(feats, 2)
-
 
         pred_x = self.mlp_head_x(x)
         pred_y = self.mlp_head_y(x)
