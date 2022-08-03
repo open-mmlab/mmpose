@@ -68,8 +68,8 @@ class PackPoseInputs(BaseTransform):
             'img_shape', 'input_size', 'flip', 'flip_direction')``
     """
 
-    # items in `instance_mapping_table` will be directly packed into PoseDataSample
-    # without converting to Tensor
+    # items in `instance_mapping_table` will be directly packed into
+    # PoseDataSample without converting to Tensor
     instance_mapping_table = {
         'bbox': 'bboxes',
         'bbox_center': 'bbox_centers',
