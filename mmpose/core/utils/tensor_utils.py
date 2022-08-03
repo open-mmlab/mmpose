@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+
 from typing import Any, Optional, Sequence, Union
 
 import numpy as np
@@ -8,7 +9,8 @@ from torch import Tensor
 
 
 def to_numpy(x: Union[Tensor, Sequence[Tensor]],
-             return_device: bool = False) -> Union[np.ndarray, tuple]:
+             return_device: bool = False,
+             unzip: bool = False) -> Union[np.ndarray, tuple]:
     """Convert torch tensor to numpy.ndarray.
 
     Args:
@@ -16,6 +18,8 @@ def to_numpy(x: Union[Tensor, Sequence[Tensor]],
             tensors
         return_device (bool): Whether return the tensor device. Defaults to
             ``False``
+        unzip (bool): Whether unzip the input sequence. Ddfaults to ``False``
+
     Returns:
         np.ndarray | tuple: If ``return_device`` is ``True``, return a tuple
         of converted numpy array(s) and the device indicator; otherwise only
@@ -26,8 +30,17 @@ def to_numpy(x: Union[Tensor, Sequence[Tensor]],
         arrays = x.detach().cpu().numpy()
         device = x.device
     elif is_seq_of(x, Tensor):
-        arrays = [to_numpy(_x)[0] for _x in x]
+        if unzip:
+            # convert (A, B) -> [(A[0], B[0]), (A[1], B[1]), ...]
+            arrays = [
+                tuple(to_numpy(_x[None, :]) for _x in _each)
+                for _each in zip(*x)
+            ]
+        else:
+            arrays = [to_numpy(_x) for _x in x]
+
         device = x[0].device
+
     else:
         raise ValueError(f'Invalid input type {type(x)}')
 

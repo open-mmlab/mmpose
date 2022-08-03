@@ -1,5 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import math
+from functools import partial, reduce
+from operator import mul
 
 import torch
 import torch.nn as nn
@@ -7,6 +9,183 @@ import torch.nn.functional as F
 
 from mmpose.registry import MODELS
 from ..utils.realnvp import RealNVP
+
+
+@MODELS.register_module()
+class DSNTLoss(nn.Module):
+    """DSNT Loss.
+
+    `Numerical Coordinate Regression with Convolutional Neural Networks
+    arXiv: <https://arxiv.org/abs/1801.07372>`_.
+
+    Code is modified from `the official implementation
+    <https://github.com/anibali/dsntnn/blob/master/dsntnn/__init__.py>`_.
+
+    Args:
+        use_target_weight (bool): Option to use weighted loss.
+            Different joint types may have different target weights.
+        size_average (bool): Option to average the loss by the batch_size.
+        dist_loss (string): Option for the distance loss,
+            Options:
+                - ``'l1'``: Smooth L1 loss
+                - ``'l2'``: MSE Loss
+        div_reg (string): Option for the divergence regularization,
+            Options:
+                - ``'kl'``: Kullback-Leibler divergences
+                - ``'js'``: Jensen-Shannon divergences
+        sigma (float): Target standard deviation (in pixels)
+    """
+
+    def __init__(self,
+                 use_target_weight: bool = False,
+                 size_average: bool = True,
+                 dist_loss: str = 'l2',
+                 div_reg: str = 'js',
+                 sigma: float = 1.0) -> None:
+        super().__init__()
+
+        assert dist_loss in ['l1', 'l2'], ''
+        assert div_reg in ['kl', 'js'], ''
+
+        self.use_target_weight = use_target_weight
+        self.size_average = size_average
+
+        if dist_loss == 'l1':
+            self.dist_loss = SmoothL1Loss(use_target_weight=use_target_weight)
+        else:
+            self.dist_loss = MSELoss(use_target_weight=use_target_weight)
+
+        if div_reg == 'kl':
+            self.div_reg_loss = partial(
+                self._divergence_reg_loss, divergence=self._kl)
+        else:
+            self.div_reg_loss = partial(
+                self._divergence_reg_loss, divergence=self._js)
+
+        self.sigma = sigma
+
+    def _kl(self, p, q, ndims):
+        eps = 1e-24
+        unsummed_kl = p * ((p + eps).log() - (q + eps).log())
+        kl_values = reduce(lambda t, _: t.sum(-1, keepdim=False), range(ndims),
+                           unsummed_kl)
+        return kl_values
+
+    def _js(self, p, q, ndims):
+        m = 0.5 * (p + q)
+        return 0.5 * self._kl(p, m, ndims) + 0.5 * self._kl(q, m, ndims)
+
+    def _divergence_reg_loss(self, heatmaps, target, sigma, divergence):
+        """Calculate divergence losses between heatmaps and target
+        Gaussians."""
+
+        ndims = target.size(-1)
+        assert heatmaps.dim(
+        ) == ndims + 2, f'expected heatmaps to be a {ndims+2}D tensor'
+        assert heatmaps.size()[:-ndims] == target.size()[:-1]
+
+        gauss = self._generate_gaussian(target, heatmaps.size()[2:], sigma)
+
+        divergences = divergence(heatmaps, gauss, ndims)
+
+        return divergences
+
+    def _normalized_lingspace(self, length, dtype=None, device=None):
+        """Generate a vector with values ranging from 0 to 1.
+
+        Note that the values correspond to the "centre" of each cell, so
+        0 and 1 are always conceptually outside the bounds of the vector.
+
+        Args:
+            length (Tensor): The length of the vector
+
+        Returns:
+            The generated vector
+        """
+        if isinstance(length, torch.Tensor):
+            length = length.to(device, dtype)
+
+        return torch.arange(
+            0.0, length, 1, dtype=dtype, device=device) / length
+
+    def _generate_gaussian(self, means, heatmap_size, sigma, normalize=True):
+        """Generate Gaussian distribution. This function is differential with
+        respect to means.
+
+        Args:
+            means (Tensor): coordinates containing the Gaussian means
+                (units: normalized coordinates)
+            heatmap_size (Tensor): Size of the heatmap (units: pixels)
+            sigma (Tensor): Standard deviation of the Gaussian (units: pixels)
+            normalize (bool): If True, the returned Gaussians will be
+                normalized.
+        """
+        # dim_range = [-1, -2] for heatmap_size = [H, W]
+        dim_range = range(-1, -(len(heatmap_size) + 1), -1)
+
+        coords_list = [
+            self._normalized_lingspace(s, means.dtype, means.device)
+            for s in reversed(heatmap_size)
+        ]
+
+        # PDF: exp(-(x - \mu)^2 / (2 \sigma^2))
+
+        # dists <- (x - \mu)^2
+        dists = [(x - mean)**2
+                 for x, mean in zip(coords_list, means.split(1, -1))]
+
+        # ks <- -1 / (2 \sigma^2)
+        stddevs = [2 * sigma / s for s in reversed(heatmap_size)]
+        ks = [-0.5 * (1 / stddev)**2 for stddev in stddevs]
+
+        exps = [(dist * k).exp() for k, dist in zip(ks, dists)]
+
+        # Combine dimensions of the Gaussian
+        gauss = reduce(mul, [
+            reduce(lambda t, d: t.unsqueeze(d),
+                   filter(lambda d: d != dim, dim_range), dist)
+            for dim, dist in zip(dim_range, exps)
+        ])
+
+        if normalize:
+            val_sum = reduce(lambda t, dim: t.sum(dim, keepdim=True),
+                             dim_range, gauss) + 1e-24
+            gauss = gauss / val_sum
+
+        return gauss
+
+    def forward(self, preds, heatmaps, targets, target_weight=None):
+        """Forward function.
+
+        Note:
+            - batch_size: N
+            - num_keypoints: K
+            - dimension of keypoints: D (D=2)
+            - size of heatmaps: H, W
+
+        Args:
+            preds (Tensor[N, K, D]): Output regression.
+            heatmaps (Tensor[N, K, H, W]): Output heatmaps.
+            targets (Tensor[N, K, D]): Target regression.
+            target_weight (Tensor[N, K, D]):
+                Weights across different joint types.
+        """
+
+        if self.use_target_weight:
+            assert target_weight is not None
+
+            loss1 = self.dist_loss(preds, targets, target_weight)
+            loss2 = self.div_reg_loss(heatmaps * target_weight.unsqueeze(-1),
+                                      targets * target_weight, self.sigma)
+        else:
+            loss1 = self.dist_loss(preds, targets)
+            loss2 = self.div_reg_loss(heatmaps, targets, self.sigma)
+        loss = loss1 + loss2
+
+        if self.size_average:
+            loss /= len(loss)
+
+        return loss.sum()
 
 
 @MODELS.register_module()
@@ -20,7 +199,7 @@ class RLELoss(nn.Module):
     <https://github.com/Jeff-sjtu/res-loglikelihood-regression>`_.
 
     Args:
-        use_target_weight (bool): Option to use weighted MSE loss.
+        use_target_weight (bool): Option to use weighted loss.
             Different joint types may have different target weights.
         size_average (bool): Option to average the loss by the batch_size.
         residual (bool): Option to add L1 loss and let the flow
@@ -33,16 +212,16 @@ class RLELoss(nn.Module):
                  use_target_weight=False,
                  size_average=True,
                  residual=True,
-                 q_dis='laplace'):
+                 q_distribution='laplace'):
         super(RLELoss, self).__init__()
         self.size_average = size_average
         self.use_target_weight = use_target_weight
         self.residual = residual
-        self.q_dis = q_dis
+        self.q_distribution = q_distribution
 
         self.flow_model = RealNVP()
 
-    def forward(self, output, target, target_weight=None):
+    def forward(self, pred, sigma, target, target_weight=None):
         """Forward function.
 
         Note:
@@ -51,14 +230,13 @@ class RLELoss(nn.Module):
             - dimension of keypoints: D (D=2 or D=3)
 
         Args:
-            output (torch.Tensor[N, K, D*2]): Output regression,
-                    including coords and sigmas.
-            target (torch.Tensor[N, K, D]): Target regression.
-            target_weight (torch.Tensor[N, K, D]):
+            pred (Tensor[N, K, D]): Output regression.
+            sigma (Tensor[N, K, D]): Output sigma.
+            target (Tensor[N, K, D]): Target regression.
+            target_weight (Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        pred = output[:, :, :2]
-        sigma = output[:, :, 2:4].sigmoid()
+        sigma = sigma.sigmoid()
 
         error = (pred - target) / (sigma + 1e-9)
         # (B, K, 2)
@@ -69,8 +247,8 @@ class RLELoss(nn.Module):
         nf_loss = log_sigma - log_phi
 
         if self.residual:
-            assert self.q_dis in ['laplace', 'gaussian', 'strict']
-            if self.q_dis == 'laplace':
+            assert self.q_distribution in ['laplace', 'gaussian']
+            if self.q_distribution == 'laplace':
                 loss_q = torch.log(sigma * 2) + torch.abs(error)
             else:
                 loss_q = torch.log(
@@ -120,6 +298,7 @@ class SmoothL1Loss(nn.Module):
             target_weight (torch.Tensor[N, K, D]):
                 Weights across different joint types.
         """
+
         if self.use_target_weight:
             assert target_weight is not None
             loss = self.criterion(output * target_weight,
@@ -374,6 +553,7 @@ class MSELoss(nn.Module):
             target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
         """
+
         if self.use_target_weight:
             assert target_weight is not None
             loss = self.criterion(output * target_weight,
