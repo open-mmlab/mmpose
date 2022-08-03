@@ -210,7 +210,6 @@ class TestDSNTHead(TestCase):
                 self.assertEqual(losses['loss_kpt'].shape, torch.Size())
                 self.assertIsInstance(losses['acc_pose'], float)
 
-
     def test_errors(self):
 
         with self.assertRaisesRegex(ValueError,

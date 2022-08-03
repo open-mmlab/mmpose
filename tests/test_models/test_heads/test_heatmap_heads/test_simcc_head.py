@@ -22,7 +22,6 @@ class TestSimCCHead(TestCase):
         ]
         return feats
 
-
     def _get_data_samples(self,
                           batch_size: int = 2,
                           simcc_split_ratio: float = 2.0,
@@ -36,7 +35,6 @@ class TestSimCCHead(TestCase):
         ]
 
         return batch_data_samples
-
 
     def test_init(self):
 
@@ -162,7 +160,6 @@ class TestSimCCHead(TestCase):
                 preds[0].pred_instance_labels.keypoint_y_labels.shape,
                 (1, 17, 256 * 2))
 
-
     def test_loss(self):
         decoder_cfg1 = dict(
             type='SimCCLabel',
@@ -229,7 +226,6 @@ class TestSimCCHead(TestCase):
             self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
             self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
             self.assertIsInstance(losses['acc_pose'], float)
-
 
     def test_errors(self):
         # Invalid arguments

@@ -138,4 +138,3 @@ class PoseDataSample(BaseDataElement):
         # TODO: Support merging ``gt_fields`` and ``pred_fields``
 
         return merged
-

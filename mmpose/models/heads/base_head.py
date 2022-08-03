@@ -12,8 +12,6 @@ from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import OptConfigType, OptSampleList, SampleList
 
 
-
-
 class BaseHead(BaseModule, metaclass=ABCMeta):
     """Base head. A subclass should override :meth:`predict` and :meth:`loss`.
 
@@ -88,7 +86,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return inputs
 
-
     def decode(self, batch_outputs: Union[Tensor, Tuple[Tensor]],
                batch_data_samples: OptSampleList) -> SampleList:
         """Decode keypoints from outputs."""
@@ -103,8 +100,8 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             raise ValueError(
                 '`batch_data_samples` is required to decode keypoitns.')
 
-        batch_outputs_np, device = to_numpy(batch_outputs, return_device=True,
-                                            unzip=True)
+        batch_outputs_np, device = to_numpy(
+            batch_outputs, return_device=True, unzip=True)
 
         # TODO: support decoding with tensor data
         for outputs, data_sample in zip(batch_outputs_np, batch_data_samples):

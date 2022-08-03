@@ -25,7 +25,6 @@ class TestIntegralRegressionHead(TestCase):
 
         return feats
 
-
     def _get_data_samples(self,
                           batch_size: int = 2,
                           with_heatmap: bool = False):
@@ -185,7 +184,6 @@ class TestIntegralRegressionHead(TestCase):
         self.assertIn('pred_heatmaps', preds[0])
         self.assertEqual(preds[0].pred_heatmaps.heatmaps.shape,
                          (17, 8 * 8, 6 * 8))
-
 
     def test_loss(self):
         head = IntegralRegressionHead(
