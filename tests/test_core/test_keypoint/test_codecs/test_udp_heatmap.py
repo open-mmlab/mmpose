@@ -9,8 +9,8 @@ from mmpose.registry import KEYPOINT_CODECS
 
 class TestMSRAHeatmap(TestCase):
 
-    # name and configs of all test cases
     def setUp(self) -> None:
+        # name and configs of all test cases
         self.configs = [
             (
                 'udp gaussian',
