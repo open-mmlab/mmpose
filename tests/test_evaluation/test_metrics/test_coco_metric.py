@@ -1,16 +1,14 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import copy
 import os.path as osp
 import tempfile
 from collections import defaultdict
 from unittest import TestCase
 
 import numpy as np
-import torch
 from mmengine.fileio import dump, load
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
-from mmpose.metrics import CocoMetric
+from mmpose.evaluation.metrics import CocoMetric
 
 
 class TestCocoMetric(TestCase):
@@ -47,27 +45,37 @@ class TestCocoMetric(TestCase):
 
     def _convert_ann_to_topdown_batch_data(self):
         """Convert annotations to topdown-style batch data."""
-        data = []
+        topdown_data = []
         for ann in self.db['annotations']:
             w, h = ann['bbox'][2], ann['bbox'][3]
-            data_batch = {}
-            data_batch['inputs'] = None
-            data_batch['data_sample'] = {
+            bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
+            bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
+            keypoints = np.array(ann['keypoints']).reshape((1, -1, 3))
+            data = {}
+            data['inputs'] = None
+            data['data_sample'] = {
                 'id': ann['id'],
                 'img_id': ann['image_id'],
-                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+                'bbox_scales': bbox_scales,
             }
-            predictions = {}
-            predictions['pred_instances'] = {
-                'keypoints': torch.tensor(ann['keypoints']).reshape(
-                    (1, -1, 3)),
-                'scores': torch.ones((1, 1))
+            pred = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': {
+                    'bbox_scales': bbox_scales
+                },
+            }
+            pred['pred_instances'] = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bboxes': bboxes,
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
             }
             # batch size = 1
-            data_batch = [data_batch]
-            predictions = [predictions]
-            data.append((data_batch, predictions))
-        return data
+            data_batch = [data]
+            predictions = [pred]
+            topdown_data.append((data_batch, predictions))
+        return topdown_data
 
     def _convert_ann_to_bottomup_batch_data(self):
         """Convert annotations to bottomup-style batch data."""
@@ -75,27 +83,31 @@ class TestCocoMetric(TestCase):
         for ann in self.db['annotations']:
             img2ann[ann['image_id']].append(ann)
 
-        data = []
+        bottomup_data = []
         for img_id, anns in img2ann.items():
-            data_batch = {}
-            data_batch['inputs'] = None
-            data_batch['data_sample'] = {
+            keypoints = np.array([ann['keypoints'] for ann in anns]).reshape(
+                (len(anns), -1, 3))
+            data = {}
+            data['inputs'] = None
+            data['data_sample'] = {
                 'id': [ann['id'] for ann in anns],
                 'img_id': img_id,
             }
-            predictions = {}
-            predictions['pred_instances'] = {
-                'keypoints':
-                torch.tensor([ann['keypoints'] for ann in anns]).reshape(
-                    (len(anns), -1, 3)),
-                'scores':
-                torch.ones((len(anns), 1))
+            pred = {
+                'id': [ann['id'] for ann in anns],
+                'img_id': img_id,
+                'gt_instances': dict(),
+            }
+            pred['pred_instances'] = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bbox_scores': np.ones((len(anns)), dtype=np.float32)
             }
             # batch size = 1
-            data_batch = [data_batch]
-            predictions = [predictions]
-            data.append((data_batch, predictions))
-        return data
+            data_batch = [data]
+            predictions = [pred]
+            bottomup_data.append((data_batch, predictions))
+        return bottomup_data
 
     def tearDown(self):
         self.tmp_dir.cleanup()
@@ -129,8 +141,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in self.topdown_data:
+            coco_metric.process(data_batch, predictions)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -147,8 +159,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in self.topdown_data:
+            coco_metric.process(data_batch, predictions)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -165,8 +177,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in self.topdown_data:
+            coco_metric.process(data_batch, predictions)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -185,8 +197,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in self.bottomup_data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in self.bottomup_data:
+            coco_metric.process(data_batch, predictions)
 
         eval_results = coco_metric.evaluate(size=len(self.bottomup_data))
         self.assertDictEqual(eval_results, self.target)
@@ -200,11 +212,11 @@ class TestCocoMetric(TestCase):
             ann_file=self.ann_file, score_mode='bbox', nms_mode='none')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process samples
-        for batch, preds in self.topdown_data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in self.topdown_data:
+            coco_metric.process(data_batch, predictions)
         # process one extra sample
-        batch, preds = self.topdown_data[0]
-        coco_metric.process(batch, preds)
+        data_batch, predictions = self.topdown_data[0]
+        coco_metric.process(data_batch, predictions)
         # an extra sample
         eval_results = coco_metric.evaluate(size=len(self.topdown_data) + 1)
         self.assertDictEqual(eval_results, self.target)
@@ -219,8 +231,8 @@ class TestCocoMetric(TestCase):
             nms_mode='oks_nms')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process one sample
-        batch, preds = self.topdown_data[0]
-        coco_metric.process(batch, preds)
+        data_batch, predictions = self.topdown_data[0]
+        coco_metric.process(data_batch, predictions)
         eval_results = coco_metric.evaluate(size=1)
         self.assertDictEqual(eval_results, {})
         self.assertTrue(
@@ -239,31 +251,41 @@ class TestCocoMetric(TestCase):
     def test_topdown_alignment(self):
         """Test whether the output of CocoMetric and the original
         TopDownCocoDataset are the same."""
-        data = []
+        topdown_data = []
         for ann in self.db['annotations']:
             w, h = ann['bbox'][2], ann['bbox'][3]
-            data_batch = {}
-            data_batch['inputs'] = None
-            data_batch['data_sample'] = {
+            bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
+            bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
+            data = {}
+            data['inputs'] = None
+            data['data_sample'] = {
                 'id': ann['id'],
                 'img_id': ann['image_id'],
-                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+                'bbox_scales': bbox_scales,
             }
-            predictions = {}
+            pred = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': {
+                    'bbox_scales': bbox_scales
+                },
+            }
             keypoints = np.array(
-                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
-            keypoints[0, :, 0] = keypoints[0, :, 0] * 0.98
-            keypoints[0, :, 1] = keypoints[0, :, 1] * 1.02
-            keypoints[0, :, 2] = keypoints[0, :, 2] * 0.8
+                ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
+            keypoints[..., 0] = keypoints[..., 0] * 0.98
+            keypoints[..., 1] = keypoints[..., 1] * 1.02
+            keypoints[..., 2] = keypoints[..., 2] * 0.8
 
-            predictions['pred_instances'] = {
-                'keypoints': torch.tensor(keypoints).reshape((1, -1, 3)),
-                'scores': torch.ones((1, 1)) * 0.98
+            pred['pred_instances'] = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bboxes': bboxes,
+                'bbox_scores': np.ones((1, ), dtype=np.float32) * 0.98,
             }
             # batch size = 1
-            data_batch = [data_batch]
-            predictions = [predictions]
-            data.append((data_batch, predictions))
+            data_batch = [data]
+            predictions = [pred]
+            topdown_data.append((data_batch, predictions))
 
         # case 1:
         # typical setting: score_mode='bbox_keypoint', nms_mode='oks_nms'
@@ -275,10 +297,10 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in topdown_data:
+            coco_metric.process(data_batch, predictions)
 
-        eval_results = coco_metric.evaluate(size=len(data))
+        eval_results = coco_metric.evaluate(size=len(topdown_data))
 
         target = {
             'coco/AP': 0.5287458745874587,
@@ -308,10 +330,10 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in topdown_data:
+            coco_metric.process(data_batch, predictions)
 
-        eval_results = coco_metric.evaluate(size=len(data))
+        eval_results = coco_metric.evaluate(size=len(topdown_data))
 
         target = {
             'coco/AP': 0.5004950495049505,
@@ -332,54 +354,71 @@ class TestCocoMetric(TestCase):
         self.assertTrue(
             osp.isfile(osp.join(self.tmp_dir.name, 'test.keypoints.json')))
 
-        data = []
+        topdown_data = []
         anns = self.db['annotations']
         for i, ann in enumerate(anns):
             w, h = ann['bbox'][2], ann['bbox'][3]
-            data_batch0 = {}
-            data_batch0['inputs'] = None
-            data_batch0['data_sample'] = {
+            bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
+            bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
+            data0 = {}
+            data0['inputs'] = None
+            data0['data_sample'] = {
                 'id': ann['id'],
                 'img_id': ann['image_id'],
-                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+                'bbox_scales': bbox_scales,
             }
-            predictions0 = {}
+            pred0 = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': {
+                    'bbox_scales': bbox_scales
+                },
+            }
             keypoints = np.array(
-                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
-            keypoints[0, :, 0] = keypoints[0, :, 0] * (1 - i / 100)
-            keypoints[0, :, 1] = keypoints[0, :, 1] * (1 + i / 100)
-            keypoints[0, :, 2] = keypoints[0, :, 2] * (1 - i / 100)
+                ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
+            keypoints[..., 0] = keypoints[..., 0] * (1 - i / 100)
+            keypoints[..., 1] = keypoints[..., 1] * (1 + i / 100)
+            keypoints[..., 2] = keypoints[..., 2] * (1 - i / 100)
 
-            predictions0['pred_instances'] = {
-                'keypoints': torch.tensor(keypoints).reshape((1, -1, 3)),
-                'scores': torch.ones((1, 1))
+            pred0['pred_instances'] = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bboxes': bboxes,
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
             }
 
-            data_batch1 = {}
-            data_batch1['inputs'] = None
-            data_batch1['data_sample'] = {
+            data1 = {}
+            data1['inputs'] = None
+            data1['data_sample'] = {
                 'id': ann['id'] + 1,
                 'img_id': ann['image_id'],
-                'bbox_scales': np.array([w * 1.25, h * 1.25]).reshape(-1, 2),
+                'bbox_scales': bbox_scales,
             }
-            predictions1 = {}
+            pred1 = {
+                'id': ann['id'] + 1,
+                'img_id': ann['image_id'],
+                'gt_instances': {
+                    'bbox_scales': bbox_scales
+                },
+            }
             keypoints = np.array(
-                ann['keypoints'], dtype=np.float32).reshape(1, 17, 3)
-            keypoints[0, :, 0] = keypoints[0, :, 0] * (1 + i / 100)
-            keypoints[0, :, 1] = keypoints[0, :, 1] * (1 - i / 100)
-            keypoints[0, :, 2] = keypoints[0, :, 2] * (1 - 2 * i / 100)
+                ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
+            keypoints[..., 0] = keypoints[..., 0] * (1 + i / 100)
+            keypoints[..., 1] = keypoints[..., 1] * (1 - i / 100)
+            keypoints[..., 2] = keypoints[..., 2] * (1 - 2 * i / 100)
 
-            predictions1['pred_instances'] = {
-                'keypoints':
-                torch.tensor(copy.deepcopy(keypoints)).reshape((1, -1, 3)),
-                'scores':
-                torch.ones((1, 1)) * (1 - 2 * i / 100)
+            pred1['pred_instances'] = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+                'bboxes': bboxes,
+                'bbox_scores': np.ones(
+                    (1, ), dtype=np.float32) * (1 - 2 * i / 100)
             }
 
             # batch size = 2
-            data_batch = [data_batch0, data_batch1]
-            predictions = [predictions0, predictions1]
-            data.append((data_batch, predictions))
+            data_batch = [data0, data1]
+            predictions = [pred0, pred1]
+            topdown_data.append((data_batch, predictions))
 
         # case 3: score_mode='bbox_keypoint', nms_mode='soft_oks_nms'
         coco_metric = CocoMetric(
@@ -392,10 +431,10 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for batch, preds in data:
-            coco_metric.process(batch, preds)
+        for data_batch, predictions in topdown_data:
+            coco_metric.process(data_batch, predictions)
 
-        eval_results = coco_metric.evaluate(size=len(data) * 2)
+        eval_results = coco_metric.evaluate(size=len(topdown_data) * 2)
 
         target = {
             'coco/AP': 0.17073707370737073,

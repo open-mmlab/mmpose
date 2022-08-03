@@ -65,6 +65,7 @@ def get_packed_inputs(batch_size=2,
         gt_instances.bboxes = bboxes
         gt_instances.bbox_centers = bbox_centers
         gt_instances.bbox_scales = bbox_scales
+        gt_instances.bbox_scores = np.ones((num_instances, ), dtype=np.float32)
         gt_instances.keypoints = keypoints
         gt_instances.keypoints_visible = keypoints_visible
         gt_instance_labels.keypoint_weights = torch.FloatTensor(

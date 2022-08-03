@@ -4,12 +4,10 @@ from .common_transforms import (Albumentation, GetBboxCenterScale,
                                 RandomFlip, RandomHalfBody)
 from .formatting import PackPoseInputs
 from .loading import LoadImage
-from .topdown_transforms import (TopdownAffine, TopdownGenerateHeatmap,
-                                 TopdownGenerateRegressionLabel)
+from .topdown_transforms import TopdownAffine, TopdownGenerateTarget
 
 __all__ = [
     'GetBboxCenterScale', 'RandomBboxTransform', 'RandomFlip',
-    'RandomHalfBody', 'TopdownAffine', 'TopdownGenerateHeatmap',
-    'TopdownGenerateRegressionLabel', 'Albumentation', 'PhotometricDistortion',
-    'PackPoseInputs', 'LoadImage'
+    'RandomHalfBody', 'TopdownAffine', 'TopdownGenerateTarget',
+    'Albumentation', 'PhotometricDistortion', 'PackPoseInputs', 'LoadImage'
 ]
