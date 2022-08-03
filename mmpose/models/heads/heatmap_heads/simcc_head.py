@@ -10,8 +10,8 @@ from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import simcc_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
-from .. import HeatmapHead
 from ..base_head import BaseHead
+from .heatmap_head import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -154,6 +154,7 @@ class SimCCHead(BaseHead):
 
         # Define SimCC layers
         flatten_dims = self.heatmap_size[0] * self.heatmap_size[1]
+
         W = int(self.input_size[0] * self.simcc_split_ratio)
         H = int(self.input_size[1] * self.simcc_split_ratio)
 
@@ -176,12 +177,8 @@ class SimCCHead(BaseHead):
         else:
             feats = self.simplebaseline_head(feats)
 
-        x = self.deconv_layers(feats)
-        x = self.conv_layers(x)
-        x = self.final_layer(x)
-
         # flatten the output heatmap
-        x = torch.flatten(x, 2)
+        x = torch.flatten(feats, 2)
 
         pred_x = self.mlp_head_x(x)
         pred_y = self.mlp_head_y(x)

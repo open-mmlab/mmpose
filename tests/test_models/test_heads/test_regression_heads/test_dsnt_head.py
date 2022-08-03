@@ -27,10 +27,10 @@ class TestDSNTHead(TestCase):
 
     def _get_data_samples(self,
                           batch_size: int = 2,
-                          with_heatmap: bool = False):
+                          with_reg_label: bool = False):
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size, with_heatmap=with_heatmap)
+                batch_size, with_reg_label=with_reg_label)
         ]
 
         return batch_data_samples
@@ -130,7 +130,7 @@ class TestDSNTHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
+            batch_size=2, with_reg_label=False)
         preds = head.predict(feats, batch_data_samples)
 
         self.assertEqual(len(preds), 2)
@@ -177,7 +177,7 @@ class TestDSNTHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
+            batch_size=2, with_reg_label=False)
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -186,22 +186,29 @@ class TestDSNTHead(TestCase):
                          (17, 8 * 8, 6 * 8))
 
     def test_loss(self):
-        head = DSNTHead(
-            in_channels=[16, 32],
-            in_featuremap_size=(6, 8),
-            num_joints=17,
-            input_transform='select',
-            input_index=-1,
-        )
+        for dist_loss in ['l1', 'l2']:
+            for div_reg in ['kl', 'js']:
+                head = DSNTHead(
+                    in_channels=[16, 32],
+                    in_featuremap_size=(6, 8),
+                    num_joints=17,
+                    input_transform='select',
+                    input_index=-1,
+                    loss=dict(
+                        type='DSNTLoss',
+                        use_target_weight=True,
+                        dist_loss=dist_loss,
+                        div_reg=div_reg))
 
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-        batch_data_samples = self._get_data_samples(batch_size=2)
-        losses = head.loss(feats, batch_data_samples)
+                feats = self._get_feats(
+                    batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+                batch_data_samples = self._get_data_samples(
+                    batch_size=2, with_reg_label=True)
+                losses = head.loss(feats, batch_data_samples)
 
-        self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
-        self.assertEqual(losses['loss_kpt'].shape, torch.Size())
-        self.assertIsInstance(losses['acc_pose'], float)
+                self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
+                self.assertEqual(losses['loss_kpt'].shape, torch.Size())
+                self.assertIsInstance(losses['acc_pose'], float)
 
     def test_errors(self):
 

@@ -238,7 +238,8 @@ class IntegralRegressionHead(BaseHead):
         losses = dict()
 
         # TODO: multi-loss calculation
-        loss = self.loss_module(pred_coords, keypoint_labels, keypoint_weights)
+        loss = self.loss_module(pred_coords, keypoint_labels,
+                                keypoint_weights.unsqueeze(-1))
 
         if isinstance(loss, dict):
             losses.update(loss)

@@ -78,7 +78,8 @@ class RegressionLabel(BaseKeypointCodec):
             # split coords and sigma if outputs contain output_sigma
             normalized_coords = encoded[..., :2].copy()
             output_sigma = encoded[..., 2:4].copy()
-            scores = (1 - output_sigma).mean(axis=2, keepdims=True)
+
+            scores = (1 - output_sigma).mean(axis=-1, keepdims=True)
 
         w, h = self.input_size
         keypoints = normalized_coords * np.array([w, h])

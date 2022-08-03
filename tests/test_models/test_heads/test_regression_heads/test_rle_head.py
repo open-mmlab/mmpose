@@ -147,16 +147,6 @@ class TestRLEHead(TestCase):
                 input_index=[0, 1],
             )
 
-    def test_state_dict_compatible(self):
-        # w/ sigma
-        head = RLEHead(in_channels=32, num_joints=17, output_sigma=True)
-
-        state_dict = {
-            'fc.weight': torch.zeros((17 * 4, 32)),
-            'fc.bias': torch.zeros((17 * 4)),
-        }
-        head.load_state_dict(state_dict)
-
 
 if __name__ == '__main__':
     unittest.main()

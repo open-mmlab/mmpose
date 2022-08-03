@@ -10,15 +10,14 @@ from mmpose.core.data_structures import PoseDataSample
 def get_packed_inputs(batch_size=2,
                       num_instances=1,
                       num_keypoints=17,
+                      num_levels=1,
                       image_shape=(3, 128, 128),
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
                       simcc_split_ratio=2.0,
                       with_heatmap=True,
                       with_reg_label=True,
-                      num_levels=1,
-                      with_simcc_label=True):
-
+                      with_simcc_label=None):
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
@@ -72,23 +71,28 @@ def get_packed_inputs(batch_size=2,
             keypoint_weights)
 
         if with_reg_label:
-            gt_instance_labels.keykoint_labels = torch.FloatTensor(keypoints /
+            gt_instance_labels.keypoint_labels = torch.FloatTensor(keypoints /
                                                                    input_size)
 
         if with_simcc_label:
-            len_x = np.around(input_size[0] * simcc_split_ratio)
-            len_y = np.around(input_size[1] * simcc_split_ratio)
-            gt_instance_labels.keypoint_x_labels = torch.FloatTensor(
-                _rand_simcc_label(rng, num_instances, num_keypoints, len_x))
-            gt_instance_labels.keypoint_y_labels = torch.FloatTensor(
-                _rand_simcc_label(rng, num_instances, num_keypoints, len_y))
-
-        data_sample.gt_instances = gt_instances
+            if with_simcc_label == 'gaussian':
+                len_x = np.around(input_size[0] * simcc_split_ratio)
+                len_y = np.around(input_size[1] * simcc_split_ratio)
+                gt_instance_labels.keypoint_x_labels = torch.FloatTensor(
+                    _rand_simcc_label(rng, num_instances, num_keypoints,
+                                      len_x))
+                gt_instance_labels.keypoint_y_labels = torch.FloatTensor(
+                    _rand_simcc_label(rng, num_instances, num_keypoints,
+                                      len_y))
+            else:
+                gt_instance_labels.keypoint_x_labels = torch.LongTensor(
+                    _rand_keypoints(rng, bboxes, num_keypoints)[..., 0])
+                gt_instance_labels.keypoint_y_labels = torch.LongTensor(
+                    _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
 
         # gt_fields
         gt_heatmaps = PixelData()
         if with_heatmap:
-<<<<<<< HEAD
             if num_levels == 1:
                 # generate single-scale heatmaps
                 W, H = heatmap_size
@@ -104,12 +108,9 @@ def get_packed_inputs(batch_size=2,
                 # [num_levels*K, H, W]
                 heatmaps = np.concatenate(heatmaps)
                 gt_fields.heatmaps = torch.FloatTensor(heatmaps)
-=======
-            W, H = heatmap_size
-            heatmaps = rng.rand(num_keypoints, H, W)
-            gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
->>>>>>> b2197973 (add unittest)
 
+        data_sample.gt_instances = gt_instances
+        data_sample.gt_instance_labels = gt_instance_labels
         data_sample.gt_heatmaps = gt_heatmaps
 
         inputs['data_sample'] = data_sample

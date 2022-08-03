@@ -9,7 +9,7 @@ from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import ConfigType, OptConfigType, OptSampleList
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import MODELS
-from . import IntegralRegressionHead
+from .integral_regression_head import IntegralRegressionHead
 
 OptIntSeq = Optional[Sequence[int]]
 
@@ -119,7 +119,7 @@ class DSNTHead(IntegralRegressionHead):
 
         # TODO: multi-loss calculation
         loss = self.loss_module(pred_coords, pred_heatmaps, keypoint_labels,
-                                keypoint_weights)
+                                keypoint_weights.unsqueeze(-1))
 
         if isinstance(loss, dict):
             losses.update(loss)

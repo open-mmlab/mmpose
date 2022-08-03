@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import math
 from functools import partial, reduce
+from operator import mul
 
 import torch
 import torch.nn as nn
@@ -83,10 +84,75 @@ class DSNTLoss(nn.Module):
         ) == ndims + 2, f'expected heatmaps to be a {ndims+2}D tensor'
         assert heatmaps.size()[:-ndims] == target.size()[:-1]
 
-        gauss = self.make_gauss(target, heatmaps.size()[2:], sigma)
+        gauss = self._generate_gaussian(target, heatmaps.size()[2:], sigma)
+
         divergences = divergence(heatmaps, gauss, ndims)
 
         return divergences
+
+    def _normalized_lingspace(self, length, dtype=None, device=None):
+        """Generate a vector with values ranging from 0 to 1.
+
+        Note that the values correspond to the "centre" of each cell, so
+        0 and 1 are always conceptually outside the bounds of the vector.
+
+        Args:
+            length (Tensor): The length of the vector
+
+        Returns:
+            The generated vector
+        """
+        if isinstance(length, torch.Tensor):
+            length = length.to(device, dtype)
+
+        return torch.arange(
+            0.0, length, 1, dtype=dtype, device=device) / length
+
+    def _generate_gaussian(self, means, heatmap_size, sigma, normalize=True):
+        """Generate Gaussian distribution. This function is differential with
+        respect to means.
+
+        Args:
+            means (Tensor): coordinates containing the Gaussian means
+                (units: normalized coordinates)
+            heatmap_size (Tensor): Size of the heatmap (units: pixels)
+            sigma (Tensor): Standard deviation of the Gaussian (units: pixels)
+            normalize (bool): If True, the returned Gaussians will be
+                normalized.
+        """
+        # dim_range = [-1, -2] for heatmap_size = [H, W]
+        dim_range = range(-1, -(len(heatmap_size) + 1), -1)
+
+        coords_list = [
+            self._normalized_lingspace(s, means.dtype, means.device)
+            for s in reversed(heatmap_size)
+        ]
+
+        # PDF: exp(-(x - \mu)^2 / (2 \sigma^2))
+
+        # dists <- (x - \mu)^2
+        dists = [(x - mean)**2
+                 for x, mean in zip(coords_list, means.split(1, -1))]
+
+        # ks <- -1 / (2 \sigma^2)
+        stddevs = [2 * sigma / s for s in reversed(heatmap_size)]
+        ks = [-0.5 * (1 / stddev)**2 for stddev in stddevs]
+
+        exps = [(dist * k).exp() for k, dist in zip(ks, dists)]
+
+        # Combine dimensions of the Gaussian
+        gauss = reduce(mul, [
+            reduce(lambda t, d: t.unsqueeze(d),
+                   filter(lambda d: d != dim, dim_range), dist)
+            for dim, dist in zip(dim_range, exps)
+        ])
+
+        if normalize:
+            val_sum = reduce(lambda t, dim: t.sum(dim, keepdim=True),
+                             dim_range, gauss) + 1e-24
+            gauss = gauss / val_sum
+
+        return gauss
 
     def forward(self, preds, heatmaps, targets, target_weight=None):
         """Forward function.
@@ -104,13 +170,17 @@ class DSNTLoss(nn.Module):
             target_weight (Tensor[N, K, D]):
                 Weights across different joint types.
         """
-        loss1 = self.dist_loss(preds, targets)
-        loss2 = self.div_reg_loss(heatmaps, targets, self.sigma)
-        loss = loss1 + loss2
 
         if self.use_target_weight:
             assert target_weight is not None
-            loss *= target_weight
+
+            loss1 = self.dist_loss(preds, targets, target_weight)
+            loss2 = self.div_reg_loss(heatmaps * target_weight.unsqueeze(-1),
+                                      targets * target_weight, self.sigma)
+        else:
+            loss1 = self.dist_loss(preds, targets)
+            loss2 = self.div_reg_loss(heatmaps, targets, self.sigma)
+        loss = loss1 + loss2
 
         if self.size_average:
             loss /= len(loss)
@@ -231,8 +301,8 @@ class SmoothL1Loss(nn.Module):
 
         if self.use_target_weight:
             assert target_weight is not None
-            loss = self.criterion(output * target_weight[..., None],
-                                  target * target_weight[..., None])
+            loss = self.criterion(output * target_weight,
+                                  target * target_weight)
         else:
             loss = self.criterion(output, target)
 
@@ -483,6 +553,7 @@ class MSELoss(nn.Module):
             target_weight (torch.Tensor[N, K, 2]):
                 Weights across different joint types.
         """
+
         if self.use_target_weight:
             assert target_weight is not None
             loss = self.criterion(output * target_weight,

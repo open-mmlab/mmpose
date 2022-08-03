@@ -127,7 +127,7 @@ class KLLossWithLabelSmoothing(nn.Module):
         device = dec_outs.device
 
         # conduct label_smoothing module
-        gtruth = labels.view(-1)
+        gtruth = labels.reshape(-1)
         if self.confidence < 1:
             tdata = gtruth.detach()
 
@@ -141,13 +141,16 @@ class KLLossWithLabelSmoothing(nn.Module):
 
             gtruth = tmp_.detach()
 
-        loss = torch.sum(self.criterion_(scores, gtruth), dim=1)
+        loss = self.criterion_(scores, gtruth)
+
+        loss = torch.sum(loss)
 
         return loss
 
     def forward(self, pred_simcc, gt_simcc, target_weight):
         output_x, output_y = pred_simcc  # B, K, Wx
         target_x, target_y = gt_simcc  # B, K
+
         target = torch.cat([target_x[..., None], target_y[..., None]], dim=-1)
         batch_size = output_x.size(0)
         num_joints = output_x.size(1)
