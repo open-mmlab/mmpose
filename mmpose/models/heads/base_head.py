@@ -126,6 +126,8 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             if 'pred_instances' not in data_sample:
                 pred_instances = InstanceData()
                 pred_instances.bboxes = data_sample.gt_instances.bboxes
+                pred_instances.bbox_scores = \
+                    data_sample.gt_instances.bbox_scores
                 data_sample.pred_instances = pred_instances
 
             data_sample.pred_instances.keypoints = keypoints

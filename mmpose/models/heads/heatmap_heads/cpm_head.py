@@ -9,7 +9,7 @@ from torch import Tensor, nn
 from mmpose.core.utils.tensor_utils import to_numpy
 from mmpose.core.utils.typing import (MultiConfig, OptConfigType,
                                       OptSampleList, SampleList)
-from mmpose.metrics.utils import pose_pck_accuracy
+from mmpose.evaluation.functional import pose_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from ..base_head import BaseHead
 

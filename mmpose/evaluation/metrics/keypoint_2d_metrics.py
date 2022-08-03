@@ -7,8 +7,8 @@ from mmengine.evaluator import BaseMetric
 from mmengine.logging import MMLogger
 
 from mmpose.registry import METRICS
-from .utils import (keypoint_auc, keypoint_epe, keypoint_nme,
-                    keypoint_pck_accuracy)
+from ..functional import (keypoint_auc, keypoint_epe, keypoint_nme,
+                          keypoint_pck_accuracy)
 
 
 @METRICS.register_module()

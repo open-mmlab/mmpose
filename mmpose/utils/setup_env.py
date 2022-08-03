@@ -62,7 +62,7 @@ def register_all_modules(init_default_scope: bool = True) -> None:
     """  # noqa
     import mmpose.core  # noqa: F401,F403
     import mmpose.datasets  # noqa: F401,F403
-    import mmpose.metrics  # noqa: F401,F403
+    import mmpose.evaluation  # noqa: F401,F403
     import mmpose.models  # noqa: F401,F403
 
     if init_default_scope:

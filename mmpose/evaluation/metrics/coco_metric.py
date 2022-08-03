@@ -136,28 +136,38 @@ class CocoMetric(BaseMetric):
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
             predictions (Sequence[dict]): A batch of outputs from
-                the model.
+                the model, each of which has the following keys:
+
+                - 'id': The id of the sample
+                - 'img_id': The image_id of the sample
+                - 'pred_instances': The prediction results of instance(s)
         """
-        for data, pred in zip(data_batch, predictions):
-            pred = pred['pred_instances']
-            # keypoints.shape: [N, K, 3],
+        for _, pred in zip(data_batch, predictions):
+            if 'pred_instances' not in pred:
+                raise ValueError(
+                    '`pred_instances` are required to process the '
+                    f'predictions results in {self.__class__.__name__}. ')
+
+            # keypoints.shape: [N, K, 2],
             # N: number of instances, K: number of keypoints
             # for topdown-style output, N is usually 1, while for
             # bottomup-style output, N is the number of instances in the image
-            keypoints = pred['keypoints'].cpu().numpy()
-            # [N, 1], the scores for all instances
-            scores = pred['scores'].cpu().numpy()
-            assert len(scores) == len(keypoints)
+            keypoints = pred['pred_instances']['keypoints']
+            # [N, K], the scores for all keypoints of all instances
+            keypoint_scores = pred['pred_instances']['keypoint_scores']
+            assert keypoint_scores.shape == keypoints.shape[:2]
 
             result = dict()
-            result['id'] = data['data_sample']['id']
-            result['img_id'] = data['data_sample']['img_id']
+            result['id'] = pred['id']
+            result['img_id'] = pred['img_id']
             result['keypoints'] = keypoints
-            result['scores'] = scores
+            result['keypoint_scores'] = keypoint_scores
+            result['bbox_scores'] = pred['pred_instances']['bbox_scores']
+
             # get area information
-            if 'bbox_scales' in data['data_sample']:
+            if 'bbox_scales' in pred['gt_instances']:
                 result['areas'] = np.prod(
-                    data['data_sample']['bbox_scales'], axis=1)
+                    pred['gt_instances']['bbox_scales'], axis=1)
             # add converted result to the results list
             self.results.append(result)
 
@@ -185,24 +195,26 @@ class CocoMetric(BaseMetric):
         # group the results by img_id
         for result in results:
             img_id = result['img_id']
-            for idx in range(len(result['scores'])):
-                kpt = {
+            for idx in range(len(result['bbox_scores'])):
+                instance = {
                     'id': result['id'],
                     'img_id': result['img_id'],
                     'keypoints': result['keypoints'][idx],
-                    'score': float(result['scores'][idx]),
+                    'keypoint_scores': result['keypoint_scores'][idx],
+                    'bbox_score': result['bbox_scores'][idx],
                 }
+
                 if 'areas' in result:
-                    kpt['area'] = float(result['areas'][idx])
+                    instance['area'] = result['areas'][idx]
                 else:
-                    # use bbox area
+                    # use keypoint to calculate bbox and get area
                     keypoints = result['keypoints'][idx]
                     area = (
                         np.max(keypoints[:, 0]) - np.min(keypoints[:, 0])) * (
                             np.max(keypoints[:, 1]) - np.min(keypoints[:, 1]))
-                    kpt['area'] = area
+                    instance['area'] = area
 
-                kpts[img_id].append(kpt)
+                kpts[img_id].append(instance)
 
         # sort keypoint results according to id and remove duplicate ones
         kpts = self._sort_and_unique_bboxes(kpts, key='id')
@@ -211,35 +223,44 @@ class CocoMetric(BaseMetric):
         # and perform NMS according to `nms_mode`
         valid_kpts = dict()
         num_keypoints = self.dataset_meta['num_keypoints']
-        for img_id, img_kpts in kpts.items():
-            if self.score_mode != 'bbox':
-                for kpts in img_kpts:
-                    bbox_score = kpts['score']
+        for img_id, instances in kpts.items():
+            for instance in instances:
+                # concatenate the keypoint coordinates and scores
+                instance['keypoints'] = np.concatenate([
+                    instance['keypoints'], instance['keypoint_scores'][:, None]
+                ],
+                                                       axis=-1)
+                if self.score_mode == 'bbox':
+                    instance['score'] = instance['bbox_score']
+                else:
+                    bbox_score = instance['bbox_score']
                     if self.score_mode == 'bbox_rle':
-                        pose_score = kpts['keypoints'][:, 2]
-                        kpts['score'] = float(bbox_score +
-                                              np.mean(pose_score) +
-                                              np.max(pose_score))
+                        keypoint_scores = instance['keypoint_scores']
+                        instance['score'] = float(bbox_score +
+                                                  np.mean(keypoint_scores) +
+                                                  np.max(keypoint_scores))
 
                     else:  # self.score_mode == 'bbox_keypoint':
-                        kpt_scores = 0
+                        mean_kpt_score = 0
                         valid_num = 0
                         for kpt_idx in range(num_keypoints):
-                            kpt_score = kpts['keypoints'][kpt_idx][2]
+                            kpt_score = instance['keypoint_scores'][kpt_idx]
                             if kpt_score > self.keypoint_score_thr:
-                                kpt_scores += kpt_score
+                                mean_kpt_score += kpt_score
                                 valid_num += 1
                         if valid_num != 0:
-                            kpt_scores /= valid_num
-                        kpts['score'] = bbox_score * kpt_scores
+                            mean_kpt_score /= valid_num
+                        instance['score'] = bbox_score * mean_kpt_score
             # perform nms
             if self.nms_mode == 'none':
-                valid_kpts[img_id] = img_kpts
+                valid_kpts[img_id] = instances
             else:
                 nms = oks_nms if self.nms_mode == 'oks_nms' else soft_oks_nms
                 keep = nms(
-                    img_kpts, self.nms_thr, sigmas=self.dataset_meta['sigmas'])
-                valid_kpts[img_id] = [img_kpts[_keep] for _keep in keep]
+                    instances,
+                    self.nms_thr,
+                    sigmas=self.dataset_meta['sigmas'])
+                valid_kpts[img_id] = [instances[_keep] for _keep in keep]
 
         # convert results to coco style and dump into a json file
         self.results2json(valid_kpts, outfile_prefix=outfile_prefix)
@@ -282,8 +303,7 @@ class CocoMetric(BaseMetric):
         for _, img_kpts in keypoints.items():
             _keypoints = np.array(
                 [img_kpt['keypoints'] for img_kpt in img_kpts])
-            # use the keypoints of the first person in current image
-            num_keypoints = len(img_kpts[0]['keypoints'])
+            num_keypoints = self.dataset_meta['num_keypoints']
             # collect all the person keypoints in current image
             keypoints = _keypoints.reshape(-1, num_keypoints * 3)
 
