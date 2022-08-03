@@ -16,22 +16,22 @@ OptIntSeq = Optional[Sequence[int]]
 
 
 @MODELS.register_module()
-class RegressionHead(BaseHead):
-    """Top-down regression head introduced in `Deeppose`_ by Toshev et al
-    (2014). The head is composed of fully-connected layers to predict the
-    coordinates directly.
+class RLEHead(BaseHead):
+    """Top-down regression head introduced in `RLE`_ by Li et al(2021). The
+    head is composed of fully-connected layers to predict the coordinates and
+    sigma(the variance of the coordinates) together.
 
     Args:
         in_channels (int | sequence[int]): Number of input channels
         num_joints (int): Number of joints
         loss (Config): Config for keypoint loss. Defaults to use
-            :class:`SmoothL1Loss`
+            :class:`RLELoss`
         decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
             :attr:`default_init_cfg` for default settings
 
-    .. _`Deeppose`: https://arxiv.org/abs/1312.4659
+    .. _`RLE`: https://arxiv.org/abs/2107.11291
     """
 
     _version = 2
@@ -43,7 +43,7 @@ class RegressionHead(BaseHead):
                  input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
-                     type='SmoothL1Loss', use_target_weight=True),
+                     type='RLELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
@@ -71,7 +71,7 @@ class RegressionHead(BaseHead):
                 'multiple input features.')
 
         # Define fully-connected layers
-        self.fc = nn.Linear(in_channels, self.num_joints * 2)
+        self.fc = nn.Linear(in_channels, self.num_joints * 4)
 
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
@@ -88,7 +88,7 @@ class RegressionHead(BaseHead):
         x = torch.flatten(x, 1)
         x = self.fc(x)
 
-        return x.reshape(-1, self.num_joints, 2)
+        return x.reshape(-1, self.num_joints, 4)
 
     def predict(self,
                 feats: Tuple[Tensor],
@@ -115,9 +115,12 @@ class RegressionHead(BaseHead):
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
 
+        pred_coords = pred_outputs[:, :, :2]
+        pred_sigma = pred_outputs[:, :, 2:4]
+
         # calculate losses
         losses = dict()
-        loss = self.loss_module(pred_outputs, keypoint_labels,
+        loss = self.loss_module(pred_coords, pred_sigma, keypoint_labels,
                                 keypoint_weights.unsqueeze(-1))
         if isinstance(loss, dict):
             losses.update(loss)
@@ -126,11 +129,11 @@ class RegressionHead(BaseHead):
 
         # calculate accuracy
         _, avg_acc, _ = keypoint_pck_accuracy(
-            pred=to_numpy(pred_outputs),
+            pred=to_numpy(pred_coords),
             gt=to_numpy(keypoint_labels),
             mask=to_numpy(keypoint_weights) > 0,
             thr=0.05,
-            norm_factor=np.ones((pred_outputs.size(0), 2), dtype=np.float32))
+            norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
         losses.update(acc_pose=float(avg_acc))
 

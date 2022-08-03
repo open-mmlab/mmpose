@@ -255,9 +255,9 @@ class HeatmapHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
+                if 'pred_heatmaps' not in data_sample:
+                    data_sample.pred_heatmaps = PixelData()
+                data_sample.pred_heatmaps.heatmaps = heatmaps
 
         return preds
 
@@ -268,9 +268,10 @@ class HeatmapHead(BaseHead):
         """Calculate losses from a batch of inputs and data samples."""
         pred_heatmaps = self.forward(feats)
         gt_heatmaps = torch.stack(
-            [d.gt_fields.heatmaps for d in batch_data_samples])
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
+            [d.gt_heatmaps.heatmaps for d in batch_data_samples])
+        keypoint_weights = torch.cat([
+            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+        ])
 
         # calculate losses
         losses = dict()
@@ -293,8 +294,8 @@ class HeatmapHead(BaseHead):
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
         """A hook function to convert old-version state dict of
-        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`HeatmapHead`.
+        :class:`DeepposeRegressionHead` (before MMPose v1.0.0) to a
+        compatible format of :class:`RegressionHead`.
 
         The hook will be automatically registered during initialization.
         """
@@ -335,6 +336,7 @@ class HeatmapHead(BaseHead):
                 else:
                     # final_layer.xxx remains final_layer.xxx
                     k_new = k
+
             else:
                 k_new = k
 

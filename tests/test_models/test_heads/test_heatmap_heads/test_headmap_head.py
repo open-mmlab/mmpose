@@ -1,4 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import unittest
 from typing import List, Tuple
 from unittest import TestCase
 
@@ -14,7 +15,7 @@ class TestHeatmapHead(TestCase):
 
     def _get_feats(self,
                    batch_size: int = 2,
-                   feat_shapes: List[Tuple[int, int, int]] = [(32, 6, 8)]):
+                   feat_shapes: List[Tuple[int, int, int]] = [(32, 8, 6)]):
 
         feats = [
             torch.rand((batch_size, ) + shape, dtype=torch.float32)
@@ -116,7 +117,7 @@ class TestHeatmapHead(TestCase):
         self.assertIn('pred_instances', preds[0])
         self.assertEqual(preds[0].pred_instances.keypoints.shape,
                          preds[0].gt_instances.keypoints.shape)
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertNotIn('pred_heatmaps', preds[0])
 
         # input transform: output heatmap
         head = HeatmapHead(
@@ -131,8 +132,8 @@ class TestHeatmapHead(TestCase):
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertIn('pred_fields', preds[0])
-        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 64, 48))
+        self.assertIn('pred_heatmaps', preds[0])
+        self.assertEqual(preds[0].pred_heatmaps.heatmaps.shape, (17, 64, 48))
 
     def test_loss(self):
         head = HeatmapHead(
@@ -218,3 +219,7 @@ class TestHeatmapHead(TestCase):
             'final_layer.bias': torch.zeros([17])
         }
         head.load_state_dict(state_dict)
+
+
+if __name__ == '__main__':
+    unittest.main()

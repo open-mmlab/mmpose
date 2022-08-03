@@ -142,8 +142,8 @@ class TopdownAffine(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class TopdownGenerateHeatmap(BaseTransform):
-    """Encode keypoints into heatmaps.
+class TopdownGenerateTarget(BaseTransform):
+    """Encode keypoints into Target.
 
     Required Keys:
 
@@ -151,52 +151,71 @@ class TopdownGenerateHeatmap(BaseTransform):
         - keypoints_visible
         - dataset_keypoint_weights
 
-    Added Keys:
+    Added Keys (depends on the args):
         - heatmaps
+        - keypoint_labels
+        - keypoint_x_labels
+        - keypoint_y_labels
         - keypoint_weights
 
     Args:
-        encoder (dict | list[dict])
+        encoder (dict | list[dict]): The codec config for keypoint encoding
+        target_type (str): The type of the encoded form of the keypoints.
+            Should be one of the following options:
+
+            - ``'heatmap'``: The encoded should be instance-irrelevant
+                heatmaps and will be stored in ``results['heatmaps']``
+            - ``'keypoint_label'``: The encoded should be instance-level
+                labels and will be stored in ``results['keypoint_label']``
+            - ``'keypoint_xy_label'``: The encoed should be instance-level
+                labels in x-axis and y-axis respectively. They will be stored
+                in ``results['keypoint_x_label']`` and
+                ``results['keypoint_y_label']``
+        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
+            from the dataset meta information. Defaults to ``False``
     """
 
     def __init__(self,
                  encoder: MultiConfig,
+                 target_type: str,
                  use_dataset_keypoint_weights: bool = False) -> None:
         super().__init__()
         self.encoder_cfg = deepcopy(encoder)
+        self.target_type = target_type
         self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
 
-        if isinstance(encoder, list):
-            self.encoder = [KEYPOINT_CODECS.build(cfg) for cfg in encoder]
-        else:
-            self.encoder = KEYPOINT_CODECS.build(encoder)
+        self.encoder = KEYPOINT_CODECS.build(encoder)
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
 
-        if isinstance(self.encoder, list):
-            # multi-level heatmaps
-            heatmaps = []
-            keypoint_weights = []
-
-            for encoder in self.encoder:
-                _heatmaps, _keypoints_weights = encoder.encode(
-                    keypoints=results['keypoints'],
-                    keypoints_visible=results['keypoints_visible'])
-
-                heatmaps.append(_heatmaps)
-                keypoint_weights.append(_keypoints_weights)
-
-            results['heatmaps'] = np.concatenate(heatmaps)
-            results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
-        else:
-            # single-level heatmaps
+        if self.target_type == 'heatmap':
             heatmaps, keypoint_weights = self.encoder.encode(
                 keypoints=results['keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
             results['heatmaps'] = heatmaps
             results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'keypoint_label':
+            keypoint_labels, keypoint_weights = self.encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
+
+            results['keypoint_labels'] = heatmaps
+            results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'keypoint_xy_label':
+            x_labels, y_labels, keypoint_weights = self.encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
+
+            results['keypoint_x_labels'] = x_labels
+            results['keypoint_y_labels'] = y_labels
+            results['keypoint_weights'] = keypoint_weights
+
+        else:
+            raise ValueError(f'Invalid target type {self.target_type}')
 
         # multiply meta keypoint weight
         if self.use_dataset_keypoint_weights:
@@ -212,75 +231,7 @@ class TopdownGenerateHeatmap(BaseTransform):
         """
         repr_str = self.__class__.__name__
         repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
+        repr_str += (f'(target_type={str(self.target_type)}, ')
         repr_str += ('use_dataset_keypoint_weights='
-                     f'{self.use_dataset_keypoint_weights})')
-        return repr_str
-
-
-@TRANSFORMS.register_module()
-class TopdownGenerateRegressionLabel(BaseTransform):
-    """Generate the target regression label of the keypoints.
-
-    Required Keys:
-
-        - keypoints
-        - keypoints_visible
-        - input_size
-        - dataset_keypoint_weights
-
-    Added Keys:
-
-        - reg_label
-        - keypoint_weights
-
-    Args:
-        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
-            from the dataset meta information. Defaults to ``False``
-    """
-
-    def __init__(self, use_dataset_keypoint_weights: bool = False) -> None:
-        super().__init__()
-        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
-
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`TopdownGenerateRegressionLabel`.
-
-        See ``transform()`` method of :class:`BaseTransform` for details.
-
-        Args:
-            results (dict): The result dict
-
-        Returns:
-            dict: The result dict.
-        """
-        keypoints = results['keypoints']
-        keypoints_visible = results['keypoints_visible']
-
-        w, h = results['input_size']
-        valid = ((keypoints >= 0) &
-                 (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
-                     keypoints_visible > 0.5)
-
-        reg_label = keypoints / [w, h]
-        keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
-
-        # multiply meta keypoint weight
-        if self.use_dataset_keypoint_weights:
-            keypoint_weights *= results['dataset_keypoint_weights']
-
-        results['reg_label'] = reg_label
-        results['keypoint_weights'] = keypoint_weights
-
-        return results
-
-    def __repr__(self) -> str:
-        """print the basic information of the transform.
-
-        Returns:
-            str: Formatted string.
-        """
-        repr_str = self.__class__.__name__
-        repr_str += ('(use_dataset_keypoint_weights='
                      f'{self.use_dataset_keypoint_weights})')
         return repr_str
