@@ -1,9 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Optional, Sequence, Tuple, Union
 
+import numpy as np
 import torch
 from mmengine.data import InstanceData
-
 from torch import Tensor, nn
 
 from mmpose.core.utils.tensor_utils import to_numpy
@@ -195,13 +195,11 @@ class SimCCHead(BaseHead):
         """Predict results from features."""
 
         batch_pred_x, batch_pred_y = self.forward(feats)
-        preds = self.decode((batch_pred_x, batch_pred_y), batch_data_samples,
-                            test_cfg)
+        preds = self.decode((batch_pred_x, batch_pred_y), batch_data_samples)
 
         # Whether to visualize the predicted simcc representations
         if test_cfg.get('output_heatmaps', False):
-            for pred_x, pred_y, data_sample in zip(batch_pred_x,
-                                                   batch_pred_y,
+            for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
                                                    preds):
 
                 if 'pred_instance_labels' not in data_sample:
@@ -232,9 +230,6 @@ class SimCCHead(BaseHead):
             d.gt_instance_labels.keypoint_y_labels for d in batch_data_samples
         ],
                          dim=0)
-                         
-        target_coords = torch.cat(
-            [d.gt_instances.keypoints for d in batch_data_samples], dim=0)
         keypoint_weights = torch.cat(
             [
                 d.gt_instance_labels.keypoint_weights
@@ -242,6 +237,9 @@ class SimCCHead(BaseHead):
             ],
             dim=0,
         )
+
+        target_coords = np.concatenate(
+            [d.gt_instances.keypoints for d in batch_data_samples], axis=0)
 
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
@@ -257,7 +255,7 @@ class SimCCHead(BaseHead):
         # calculate accuracy
         _, avg_acc, _ = simcc_pck_accuracy(
             output=to_numpy(pred_simcc),
-            target=to_numpy(target_coords),
+            target=target_coords,
             simcc_split_ratio=self.simcc_split_ratio,
             mask=to_numpy(keypoint_weights) > 0,
         )

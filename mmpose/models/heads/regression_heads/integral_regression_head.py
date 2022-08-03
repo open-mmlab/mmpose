@@ -13,7 +13,6 @@ from mmpose.core.utils.typing import (ConfigType, OptConfigType, OptSampleList,
                                       SampleList)
 from mmpose.metrics.utils import keypoint_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
-
 from .. import HeatmapHead
 from ..base_head import BaseHead
 
@@ -204,7 +203,6 @@ class IntegralRegressionHead(BaseHead):
 
         return coords, heatmaps
 
-
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
@@ -213,7 +211,7 @@ class IntegralRegressionHead(BaseHead):
 
         batch_coords, batch_heatmaps = self.forward(feats)
 
-        preds = self.decode(batch_coords, batch_data_samples, test_cfg)
+        preds = self.decode(batch_coords, batch_data_samples)
 
         # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
@@ -224,7 +222,6 @@ class IntegralRegressionHead(BaseHead):
                 data_sample.pred_heatmaps.heatmaps = heatmaps
 
         return preds
-
 
     def loss(self,
              inputs: Tuple[Tensor],
@@ -238,7 +235,6 @@ class IntegralRegressionHead(BaseHead):
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
-
 
         # calculate losses
         losses = dict()

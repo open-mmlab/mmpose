@@ -90,14 +90,14 @@ def get_packed_inputs(batch_size=2,
                 gt_instance_labels.keypoint_y_labels = torch.LongTensor(
                     _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
 
-        # gt_fields
+        # gt_heatmaps
         gt_heatmaps = PixelData()
         if with_heatmap:
             if num_levels == 1:
                 # generate single-scale heatmaps
                 W, H = heatmap_size
                 heatmaps = rng.rand(num_keypoints, H, W)
-                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+                gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
             else:
                 # generate multi-scale heatmaps
                 heatmaps = []
@@ -107,7 +107,7 @@ def get_packed_inputs(batch_size=2,
                     heatmaps.append(heatmaps_)
                 # [num_levels*K, H, W]
                 heatmaps = np.concatenate(heatmaps)
-                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
+                gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
@@ -124,11 +124,6 @@ def _rand_keypoints(rng, bboxes, num_keypoints):
     keypoints = rng.rand(n, num_keypoints,
                          2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
     return keypoints
-
-
-def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
-    simcc_label = rng.rand(num_instances, num_keypoints, int(len_feats))
-    return simcc_label
 
 
 def _rand_simcc_label(rng, num_instances, num_keypoints, len_feats):
