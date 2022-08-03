@@ -171,6 +171,8 @@ class TopdownGenerateTarget(BaseTransform):
                 labels in x-axis and y-axis respectively. They will be stored
                 in ``results['keypoint_x_label']`` and
                 ``results['keypoint_y_label']``
+        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
+            from the dataset meta information. Defaults to ``False``
     """
 
     def __init__(self,
