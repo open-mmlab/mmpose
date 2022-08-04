@@ -11,8 +11,8 @@ from mmengine.dataset import BaseDataset, force_full_init
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
-from mmpose.core.bbox import bbox_xywh2xyxy
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_xywh2xyxy
 from ..utils import parse_pose_metainfo
 
 

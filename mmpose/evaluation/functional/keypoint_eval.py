@@ -3,8 +3,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs.utils import (get_heatmap_maximum,
-                                               get_simcc_maximum)
+from mmpose.codecs.utils import get_heatmap_maximum, get_simcc_maximum
 
 
 def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,

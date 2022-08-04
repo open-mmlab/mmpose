@@ -6,8 +6,8 @@ from unittest import TestCase
 import torch
 from torch import nn
 
-from mmpose.core.data_structures.pose_data_sample import PoseDataSample
 from mmpose.models.heads import HeatmapHead
+from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 

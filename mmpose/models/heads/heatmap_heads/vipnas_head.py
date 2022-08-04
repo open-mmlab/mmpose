@@ -4,8 +4,8 @@ from typing import Optional, Sequence, Union
 from mmcv.cnn import build_conv_layer, build_upsample_layer
 from torch import nn
 
-from mmpose.core.utils.typing import ConfigType, OptConfigType
 from mmpose.registry import KEYPOINT_CODECS, MODELS
+from mmpose.utils.typing import ConfigType, OptConfigType
 from .heatmap_head import HeatmapHead
 
 OptIntSeq = Optional[Sequence[int]]

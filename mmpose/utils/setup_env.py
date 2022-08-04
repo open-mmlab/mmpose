@@ -60,7 +60,8 @@ def register_all_modules(init_default_scope: bool = True) -> None:
             to https://github.com/open-mmlab/mmengine/blob/main/docs/en/tutorials/registry.md
             Defaults to True.
     """  # noqa
-    import mmpose.core  # noqa: F401,F403
+
+    import mmpose.codecs  # noqa: F401, F403
     import mmpose.datasets  # noqa: F401,F403
     import mmpose.evaluation  # noqa: F401,F403
     import mmpose.models  # noqa: F401,F403
