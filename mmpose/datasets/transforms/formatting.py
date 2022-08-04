@@ -80,9 +80,9 @@ class PackPoseInputs(BaseTransform):
     }
 
     label_mapping_table = {
-        'reg_labels': 'keypoint_labels',
-        'simcc_x': 'keypoint_x_labels',
-        'simcc_y': 'keypoint_y_labels',
+        'keypoint_labels': 'keypoint_labels',
+        'keypoint_x_labels': 'keypoint_x_labels',
+        'keypoint_y_labels': 'keypoint_y_labels',
         'keypoint_weights': 'keypoint_weights'
     }
 
