@@ -136,35 +136,6 @@ class RegressionHead(BaseHead):
 
         return losses
 
-    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
-                                  **kwargs):
-        """A hook function to convert old-version state dict of
-        :class:`TopdownHeatmapSimpleHead` (before MMPose v1.0.0) to a
-        compatible format of :class:`HeatmapHead`.
-
-        The hook will be automatically registered during initialization.
-        """
-
-        version = local_meta.get('version', None)
-        if version and version >= self._version:
-            return
-
-        # convert old-version state dict
-        keys = list(state_dict.keys())
-        for _k in keys:
-            v = state_dict.pop(_k)
-            k = _k.lstrip(prefix)
-            # In old version, "loss" includes the instances of loss,
-            # now it should be renamed "loss_module"
-            k_parts = _k.split('.')
-            if k_parts[0] == 'loss':
-                # loss.xxx -> loss_module.xxx
-                k_new = 'loss_module.' + '.'.join(k_parts[1:])
-            else:
-                k_new = k
-
-            state_dict[prefix + k_new] = v
-
     @property
     def default_init_cfg(self):
         init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]

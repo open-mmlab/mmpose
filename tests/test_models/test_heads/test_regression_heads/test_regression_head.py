@@ -146,16 +146,6 @@ class TestRegressionHead(TestCase):
                 input_index=[0, 1],
             )
 
-    def test_state_dict_compatible(self):
-
-        head = RegressionHead(in_channels=2048, num_joints=17)
-
-        state_dict = {
-            'fc.weight': torch.zeros((17 * 2, 2048)),
-            'fc.bias': torch.zeros((17 * 2)),
-        }
-        head.load_state_dict(state_dict)
-
 
 if __name__ == '__main__':
     unittest.main()
