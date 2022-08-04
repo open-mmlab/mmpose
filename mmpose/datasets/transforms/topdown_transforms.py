@@ -202,7 +202,7 @@ class TopdownGenerateTarget(BaseTransform):
                 keypoints=results['keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
-            results['keypoint_labels'] = heatmaps
+            results['keypoint_labels'] = keypoint_labels
             results['keypoint_weights'] = keypoint_weights
 
         elif self.target_type == 'keypoint_xy_label':
