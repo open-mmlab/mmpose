@@ -8,8 +8,8 @@ from mmengine.data import InstanceData
 from mmengine.model import BaseModule
 from torch import Tensor
 
-from mmpose.core.utils.tensor_utils import to_numpy
-from mmpose.core.utils.typing import OptConfigType, OptSampleList, SampleList
+from mmpose.utils.tensor_utils import to_numpy
+from mmpose.utils.typing import OptConfigType, OptSampleList, SampleList
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):

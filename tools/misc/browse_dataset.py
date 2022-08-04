@@ -9,8 +9,8 @@ from mmcv import Config, DictAction
 from mmengine.data import InstanceData
 from mmengine.registry import build_from_cfg
 
-from mmpose.core import PoseDataSample, bbox_xywh2xyxy
 from mmpose.registry import DATASETS, VISUALIZERS
+from mmpose.structures import PoseDataSample, bbox_xywh2xyxy
 from mmpose.utils import register_all_modules
 
 

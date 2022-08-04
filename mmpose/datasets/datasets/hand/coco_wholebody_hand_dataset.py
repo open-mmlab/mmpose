@@ -6,8 +6,8 @@ import numpy as np
 from mmengine.utils import check_file_exist
 from xtcocotools.coco import COCO
 
-from mmpose.core.bbox.transforms import bbox_xywh2xyxy
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_xywh2xyxy
 from ..base import BaseCocoStyleDataset
 
 

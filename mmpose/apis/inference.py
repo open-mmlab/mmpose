@@ -11,9 +11,9 @@ from mmengine.config import Config
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
-from mmpose.core.bbox.transforms import bbox_xywh2xyxy
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.models.builder import build_pose_estimator
+from mmpose.structures.bbox import bbox_xywh2xyxy
 
 
 def dataset_meta_from_config(config: Config,

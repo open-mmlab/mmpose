@@ -3,8 +3,8 @@ import numpy as np
 import torch
 from mmengine.data import InstanceData, PixelData
 
-from mmpose.core.bbox.transforms import bbox_xyxy2cs
-from mmpose.core.data_structures import PoseDataSample
+from mmpose.structures import PoseDataSample
+from mmpose.structures.bbox import bbox_xyxy2cs
 
 
 def get_packed_inputs(batch_size=2,

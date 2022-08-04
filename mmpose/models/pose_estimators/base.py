@@ -5,9 +5,8 @@ import torch
 from mmengine.model import BaseModel
 from torch import Tensor
 
-from mmpose.core.utils.typing import (ForwardResults, OptConfigType,
-                                      OptMultiConfig, OptSampleList,
-                                      SampleList)
+from mmpose.utils.typing import (ForwardResults, OptConfigType, OptMultiConfig,
+                                 OptSampleList, SampleList)
 
 
 class BasePoseEstimator(BaseModel, metaclass=ABCMeta):

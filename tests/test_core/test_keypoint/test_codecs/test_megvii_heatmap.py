@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MegviiHeatmap
+from mmpose.codecs import MegviiHeatmap
 from mmpose.registry import KEYPOINT_CODECS
 
 

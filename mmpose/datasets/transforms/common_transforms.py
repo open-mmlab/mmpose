@@ -10,9 +10,9 @@ from mmcv.transforms.utils import avoid_cache_randomness, cache_randomness
 from mmengine import is_list_of
 from scipy.stats import truncnorm
 
-from mmpose.core.bbox import bbox_xyxy2cs, flip_bbox
-from mmpose.core.keypoint import flip_keypoints
 from mmpose.registry import TRANSFORMS
+from mmpose.structures.bbox import bbox_xyxy2cs, flip_bbox
+from mmpose.structures.keypoint import flip_keypoints
 
 try:
     import albumentations

@@ -4,8 +4,8 @@ from argparse import ArgumentParser
 from mmcv.image import imread
 
 from mmpose.apis import inference_topdown, init_model
-from mmpose.core.data_structures import PoseDataSample
 from mmpose.registry import VISUALIZERS
+from mmpose.structures import PoseDataSample
 from mmpose.utils import register_all_modules
 
 

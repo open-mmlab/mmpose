@@ -3,9 +3,9 @@ from typing import Tuple
 
 from torch import Tensor
 
-from mmpose.core.utils.typing import (ConfigType, OptConfigType,
-                                      OptMultiConfig, SampleList)
 from mmpose.registry import MODELS
+from mmpose.utils.typing import (ConfigType, OptConfigType, OptMultiConfig,
+                                 SampleList)
 from .base import BasePoseEstimator
 
 
