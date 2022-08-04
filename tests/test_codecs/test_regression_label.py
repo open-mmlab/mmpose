@@ -3,6 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
+from mmpose.codecs import RegressionLabel  # noqa: F401
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -43,9 +44,9 @@ class TestRegressionLabel(TestCase):
             reg_label, keypoint_weights = codec.encode(keypoints,
                                                        keypoints_visible)
 
-            self.assertEqual(reg_label.shape, (17, 2),
+            self.assertEqual(reg_label.shape, (1, 17, 2),
                              f'Failed case: "{name}"')
-            self.assertEqual(keypoint_weights.shape, (17, 1),
+            self.assertEqual(keypoint_weights.shape, (1, 17),
                              f'Failed case: "{name}"')
 
     def test_decode(self):
@@ -60,12 +61,10 @@ class TestRegressionLabel(TestCase):
 
             self.assertEqual(keypoints1.shape, (1, 17, 2),
                              f'Failed case: "{name}"')
-            self.assertEqual(scores1.shape, (1, 17, 1),
-                             f'Failed case: "{name}"')
+            self.assertEqual(scores1.shape, (1, 17), f'Failed case: "{name}"')
             self.assertEqual(keypoints2.shape, (1, 17, 2),
                              f'Failed case: "{name}"')
-            self.assertEqual(scores2.shape, (1, 17, 1),
-                             f'Failed case: "{name}"')
+            self.assertEqual(scores2.shape, (1, 17), f'Failed case: "{name}"')
 
     def test_cicular_verification(self):
         keypoints = self.data['keypoints']
@@ -74,10 +73,9 @@ class TestRegressionLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            reg_label, keypoint_weights = codec.encode(keypoints,
-                                                       keypoints_visible)
+            reg_label, _ = codec.encode(keypoints, keypoints_visible)
 
-            _keypoints, scores = codec.decode(reg_label)
+            _keypoints, _ = codec.decode(reg_label)
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),

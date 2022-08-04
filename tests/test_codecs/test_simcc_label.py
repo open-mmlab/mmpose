@@ -3,6 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
+from mmpose.codecs import SimCCLabel  # noqa: F401
 from mmpose.registry import KEYPOINT_CODECS
 
 
@@ -18,7 +19,7 @@ class TestSimCCLabel(TestCase):
                     input_size=(192, 256),
                     simcc_type='gaussian',
                     sigma=6.0,
-                    simcc_split_retio=2.0),
+                    simcc_split_ratio=2.0),
             ),
             (
                 'simcc one-hot',
@@ -27,7 +28,7 @@ class TestSimCCLabel(TestCase):
                     input_size=(192, 256),
                     simcc_type='one-hot',
                     sigma=5.0,
-                    simcc_split_retio=3.0),
+                    simcc_split_ratio=3.0),
             ),
         ]
 
@@ -51,10 +52,10 @@ class TestSimCCLabel(TestCase):
 
             if codec.simcc_type == 'gaussian':
                 self.assertEqual(target_x.shape,
-                                 (17, 192 * codec.simcc_split_ratio),
+                                 (1, 17, int(192 * codec.simcc_split_ratio)),
                                  f'Failed case: "{name}"')
                 self.assertEqual(target_y.shape,
-                                 (17, 256 * codec.simcc_split_ratio),
+                                 (1, 17, int(256 * codec.simcc_split_ratio)),
                                  f'Failed case: "{name}"')
             else:
                 self.assertEqual(target_x.shape, (1, 17),
@@ -69,8 +70,8 @@ class TestSimCCLabel(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            simcc_x = np.random.rand(17, 192 * codec.simcc_split_ratio)
-            simcc_y = np.random.rand(17, 256 * codec.simcc_split_ratio)
+            simcc_x = np.random.rand(1, 17, int(192 * codec.simcc_split_ratio))
+            simcc_y = np.random.rand(1, 17, int(256 * codec.simcc_split_ratio))
             encoded = (simcc_x, simcc_y)
 
             keypoints, scores = codec.decode(encoded)
@@ -88,7 +89,17 @@ class TestSimCCLabel(TestCase):
 
             target_x, target_y, _ = codec.encode(keypoints, keypoints_visible)
 
-            encoded = (target_x, target_y)
+            if cfg['simcc_type'] == 'one-hot':
+                # convert one-hot label to one-hot vector
+                w, h = cfg['input_size']
+                r = cfg['simcc_split_ratio']
+                onehot_x = np.where(target_x[..., None] == np.arange(0, w * r),
+                                    1, 0)
+                onehot_y = np.where(target_y[..., None] == np.arange(0, h * r),
+                                    1, 0)
+                encoded = (onehot_x, onehot_y)
+            else:
+                encoded = (target_x, target_y)
 
             _keypoints, _ = codec.decode(encoded)
 

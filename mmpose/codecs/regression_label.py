@@ -41,7 +41,7 @@ class RegressionLabel(BaseKeypointCodec):
         Returns:
             tuple:
             - reg_labels (np.ndarray): The normalized regression labels in
-                shape (K, D) where D is 2 for 2d coordinates
+                shape (N, K, C) where D is 2 for 2d coordinates
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
@@ -61,31 +61,35 @@ class RegressionLabel(BaseKeypointCodec):
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (K, D)
+            encoded (np.ndarray): Coordinates in shape (N, K, C)
 
         Returns:
             tuple:
-            - keypoints (np.ndarray): Decoded coordinates in shape (K, D)
-            - socres (np.ndarray): The keypoint scores in shape (K, 1).
+            - keypoints (np.ndarray): Decoded coordinates in shape (N, K, C)
+            - socres (np.ndarray): The keypoint scores in shape (N, K).
                 It usually represents the confidence of the keypoint prediction
         """
 
         if encoded.shape[-1] == 2:
-            K, _ = encoded.shape
+            N, K, _ = encoded.shape
             normalized_coords = encoded.copy()
-            scores = np.ones((K, 1), dtype=np.float32)
+            scores = np.ones((N, K), dtype=np.float32)
         elif encoded.shape[-1] == 4:
             # split coords and sigma if outputs contain output_sigma
             normalized_coords = encoded[..., :2].copy()
             output_sigma = encoded[..., 2:4].copy()
 
-            scores = (1 - output_sigma).mean(axis=-1, keepdims=True)
+            scores = (1 - output_sigma).mean(axis=-1)
+        else:
+            raise ValueError(
+                'Keypoint dimension should be 2 or 4 (with sigma), '
+                f'but got {encoded.shape[-1]}')
 
         w, h = self.input_size
         keypoints = normalized_coords * np.array([w, h])
 
         # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints[None]
-        scores = scores[None]
+        keypoints = keypoints
+        scores = scores
 
         return keypoints, scores

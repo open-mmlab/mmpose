@@ -10,21 +10,21 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     """Get maximum response location and value from simcc representations.
 
     Note:
-        batch_size: B
+        instance number: N
         num_keypoints: K
         heatmap height: H
         heatmap width: W
 
     Args:
-        simcc_x (np.ndarray): x-axis SimCC in shape (K, Wx) or (B, K, Wx)
-        simcc_y (np.ndarray): y-axis SimCC in shape (K, Wy) or (B, K, Wy)
+        simcc_x (np.ndarray): x-axis SimCC in shape (K, Wx) or (N, K, Wx)
+        simcc_y (np.ndarray): y-axis SimCC in shape (K, Wy) or (N, K, Wy)
 
     Returns:
         tuple:
         - locs (np.ndarray): locations of maximum heatmap responses in shape
-            (K, 2) or (B, K, 2)
+            (K, 2) or (N, K, 2)
         - vals (np.ndarray): values of maximum heatmap responses in shape
-            (K,) or (B, K)
+            (K,) or (N, K)
     """
 
     assert isinstance(simcc_x, np.ndarray), ('simcc_x should be numpy.ndarray')
@@ -37,11 +37,11 @@ def get_simcc_maximum(simcc_x: np.ndarray,
         f'{simcc_x.shape} != {simcc_y.shape}')
 
     if simcc_x.ndim == 3:
-        B, K, Wx = simcc_x.shape
-        simcc_x = simcc_x.reshape(B * K, -1)
-        simcc_y = simcc_y.reshape(B * K, -1)
+        N, K, Wx = simcc_x.shape
+        simcc_x = simcc_x.reshape(N * K, -1)
+        simcc_y = simcc_y.reshape(N * K, -1)
     else:
-        B = None
+        N = None
 
     x_locs = np.argmax(simcc_x, axis=1)
     y_locs = np.argmax(simcc_y, axis=1)
@@ -54,9 +54,9 @@ def get_simcc_maximum(simcc_x: np.ndarray,
     vals = max_val_x
     locs[vals <= 0.] = -1
 
-    if B:
-        locs = locs.reshape(B, K, 2)
-        vals = vals.reshape(B, K)
+    if N:
+        locs = locs.reshape(N, K, 2)
+        vals = vals.reshape(N, K)
 
     return locs, vals
 
