@@ -151,11 +151,9 @@ class TestRLEHead(TestCase):
 
         head = RLEHead(in_channels=2048, num_joints=17)
 
-        # state_dict = {
-        #     'fc.weight': torch.zeros((17 * 2, 2048)),
-        #     'fc.bias': torch.zeros((17 * 2)),
-        # }
         state_dict = {
+            'fc.weight': torch.zeros((17 * 4, 2048)),
+            'fc.bias': torch.zeros((17 * 4)),
             'loss.flow_model.loc': torch.zeros(torch.Size([2])),
             'loss.flow_model.cov': torch.zeros(torch.Size([2, 2])),
             'loss.flow_model.mask': torch.zeros(torch.Size([6, 2])),

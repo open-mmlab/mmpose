@@ -73,6 +73,9 @@ class RLEHead(BaseHead):
         # Define fully-connected layers
         self.fc = nn.Linear(in_channels, self.num_joints * 4)
 
+        # Register the hook to automatically convert old version state dicts
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
     def forward(self, feats: Tuple[Tensor]) -> Tensor:
         """Forward the network. The input is multi scale feature maps and the
         output is the coordinates.
