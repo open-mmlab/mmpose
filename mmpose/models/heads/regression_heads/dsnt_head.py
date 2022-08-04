@@ -5,10 +5,10 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from mmpose.core.utils.tensor_utils import to_numpy
-from mmpose.core.utils.typing import ConfigType, OptConfigType, OptSampleList
 from mmpose.evaluation.functional import keypoint_pck_accuracy
 from mmpose.registry import MODELS
+from mmpose.utils.tensor_utils import to_numpy
+from mmpose.utils.typing import ConfigType, OptConfigType, OptSampleList
 from .integral_regression_head import IntegralRegressionHead
 
 OptIntSeq = Optional[Sequence[int]]

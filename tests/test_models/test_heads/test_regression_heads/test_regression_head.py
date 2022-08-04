@@ -5,8 +5,8 @@ from unittest import TestCase
 
 import torch
 
-from mmpose.core.data_structures.pose_data_sample import PoseDataSample
 from mmpose.models.heads import RegressionHead
+from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 

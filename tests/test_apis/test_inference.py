@@ -11,7 +11,7 @@ from mmengine.utils import is_list_of
 from parameterized import parameterized
 
 from mmpose.apis import inference_topdown, init_model
-from mmpose.core.data_structures import PoseDataSample
+from mmpose.structures import PoseDataSample
 from mmpose.testing._utils import _rand_bboxes
 from mmpose.utils import register_all_modules
 

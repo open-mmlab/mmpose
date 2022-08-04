@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from mmpose.core.keypoint.codecs import MultiLevelHeatmapEncoder
+from mmpose.codecs import MultiLevelHeatmapEncoder
 from mmpose.registry import KEYPOINT_CODECS
 
 

@@ -11,8 +11,8 @@ from mmengine.logging import MMLogger
 from xtcocotools.coco import COCO
 from xtcocotools.cocoeval import COCOeval
 
-from mmpose.core.post_processing import oks_nms, soft_oks_nms
 from mmpose.registry import METRICS
+from ..functional import oks_nms, soft_oks_nms
 
 
 @METRICS.register_module()

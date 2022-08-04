@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from mmengine.data import InstanceData, PixelData
 
-from mmpose.core import PoseDataSample
+from mmpose.structures import PoseDataSample
 
 
 class TestPoseDataSample(TestCase):

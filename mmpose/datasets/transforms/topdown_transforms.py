@@ -7,9 +7,9 @@ import numpy as np
 from mmcv.transforms import BaseTransform
 from mmengine import is_seq_of
 
-from mmpose.core.bbox import get_udp_warp_matrix, get_warp_matrix
-from mmpose.core.utils.typing import MultiConfig
 from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
+from mmpose.structures.bbox import get_udp_warp_matrix, get_warp_matrix
+from mmpose.utils.typing import MultiConfig
 
 
 @TRANSFORMS.register_module()

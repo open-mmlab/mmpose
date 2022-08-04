@@ -5,8 +5,7 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import Compose
 
-from mmpose.datasets.transforms import (TopdownAffine, TopdownGenerateHeatmap,
-                                        TopdownGenerateRegressionLabel)
+from mmpose.datasets.transforms import TopdownAffine, TopdownGenerateTarget
 
 
 class TestTopdownAffine(TestCase):
@@ -53,7 +52,7 @@ class TestTopdownAffine(TestCase):
             'TopdownAffine(input_size=(192, 256), use_udp=False)')
 
 
-class TestTopdownGenerateHeatmap(TestCase):
+class TestTopdownGenerateTarget(TestCase):
 
     def setUp(self):
         # prepare dummy top-down data sample with COCO metainfo
@@ -77,16 +76,17 @@ class TestTopdownGenerateHeatmap(TestCase):
                 1.2, 1.5, 1.5
             ]).astype(np.float32))
 
-    def test_transform(self):
-        # single-level heatmap
+    def test_generate_heatmap(self):
         encoder = dict(
             type='MSRAHeatmap',
             input_size=(192, 256),
             heatmap_size=(48, 64),
             sigma=2.0)
+
+        # generate heatmap
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            TopdownGenerateHeatmap(encoder=encoder)
+            TopdownGenerateTarget(target_type='heatmap', encoder=encoder)
         ])
         results = pipeline(deepcopy(self.data_info))
 
@@ -94,40 +94,11 @@ class TestTopdownGenerateHeatmap(TestCase):
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
-        # multi-level heatmap
-        encoder = [
-            dict(
-                type='MSRAHeatmap',
-                input_size=(192, 256),
-                heatmap_size=(48, 64),
-                sigma=2.0),
-            dict(
-                type='MSRAHeatmap',
-                input_size=(192, 256),
-                heatmap_size=(48, 64),
-                sigma=3.0)
-        ]
-
+        # generate heatmap and use meta keypoint weights
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            TopdownGenerateHeatmap(encoder=encoder)
-        ])
-        results = pipeline(deepcopy(self.data_info))
-
-        self.assertEqual(results['heatmaps'].shape, (2 * 17, 64, 48))
-        self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
-        self.assertTrue(
-            np.allclose(results['keypoint_weights'], np.ones((1, 2, 17))))
-
-        # use meta keypoint weights
-        encoder = dict(
-            type='MSRAHeatmap',
-            input_size=(192, 256),
-            heatmap_size=(48, 64),
-            sigma=2.0)
-        pipeline = Compose([
-            TopdownAffine(input_size=(192, 256)),
-            TopdownGenerateHeatmap(
+            TopdownGenerateTarget(
+                target_type='heatmap',
                 encoder=encoder,
                 use_dataset_keypoint_weights=True,
             )
@@ -140,39 +111,14 @@ class TestTopdownGenerateHeatmap(TestCase):
             np.allclose(results['keypoint_weights'],
                         self.data_info['dataset_keypoint_weights'][None]))
 
-    def test_repr(self):
-        pass
+    def test_generate_keypoint_label(self):
+        encoder = dict(type='RegressionLabel', input_size=(192, 256))
 
-
-class TestTopdownGenerateRegressionLabel(TestCase):
-
-    def setUp(self):
-        # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
-            img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_rotation=np.array([45], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(10, 50, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.ones((1, 17)).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
-
-    def test_transform(self):
-        # test w/o dataset keypoint weights
+        # generate keypoint label
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            TopdownGenerateRegressionLabel()
+            TopdownGenerateTarget(
+                target_type='keypoint_label', encoder=encoder)
         ])
 
         results = pipeline(deepcopy(self.data_info))
@@ -180,10 +126,13 @@ class TestTopdownGenerateRegressionLabel(TestCase):
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
-        # test w/ dataset dataset weights
+        # generate keypoint label and use meta keypoint weights
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
-            TopdownGenerateRegressionLabel(use_dataset_keypoint_weights=True)
+            TopdownGenerateTarget(
+                target_type='keypoint_label',
+                encoder=encoder,
+                use_dataset_keypoint_weights=True)
         ])
 
         results = pipeline(deepcopy(self.data_info))
@@ -192,11 +141,3 @@ class TestTopdownGenerateRegressionLabel(TestCase):
         self.assertTrue(
             np.allclose(results['keypoint_weights'],
                         self.data_info['dataset_keypoint_weights'][None]))
-
-    def test_repr(self):
-        transform = TopdownGenerateRegressionLabel(
-            use_dataset_keypoint_weights=True)
-        self.assertEqual(
-            repr(transform),
-            'TopdownGenerateRegressionLabel(use_dataset_keypoint_weights=True)'
-        )

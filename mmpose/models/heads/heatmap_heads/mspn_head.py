@@ -8,11 +8,11 @@ from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule, Linear,
 from mmengine.data import PixelData
 from torch import Tensor, nn
 
-from mmpose.core.utils.tensor_utils import to_numpy
-from mmpose.core.utils.typing import (ConfigType, MultiConfig, OptConfigType,
-                                      OptSampleList, SampleList)
 from mmpose.evaluation.functional import pose_pck_accuracy
 from mmpose.registry import KEYPOINT_CODECS, MODELS
+from mmpose.utils.tensor_utils import to_numpy
+from mmpose.utils.typing import (ConfigType, MultiConfig, OptConfigType,
+                                 OptSampleList, SampleList)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
