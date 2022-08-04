@@ -86,6 +86,10 @@ class PackPoseInputs(BaseTransform):
         'keypoint_weights': 'keypoint_weights'
     }
 
+    field_mapping_table = {
+        'heatmaps': 'heatmaps',
+    }
+
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
@@ -111,24 +115,27 @@ class PackPoseInputs(BaseTransform):
             img_tensor = image_to_tensor(img)
 
         data_sample = PoseDataSample()
-        gt_instances = InstanceData()
-        gt_instance_labels = InstanceData()
-        gt_heatmaps = PixelData()
 
+        # pack instance data
+        gt_instances = InstanceData()
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
-                gt_instances[packed_key] = results[key]
+                gt_instances.set_field(results[key], packed_key)
+        data_sample.gt_instances = gt_instances
 
+        # pack instance labels
+        gt_instance_labels = InstanceData()
         for key, packed_key in self.label_mapping_table.items():
             if key in results:
-                gt_instance_labels[packed_key] = results[key]
+                gt_instance_labels.set_field(results[key], packed_key)
+        data_sample.gt_instance_labels = gt_instance_labels.to_tensor()
 
-        if 'heatmaps' in results:
-            gt_heatmaps.heatmaps = results['heatmaps']
-
-        data_sample.gt_instances = gt_instances
-        data_sample.gt_instance_labels = gt_instance_labels
-        data_sample.gt_heatmaps = gt_heatmaps
+        # pack fields
+        gt_fields = PixelData()
+        for key, packed_key in self.field_mapping_table.items():
+            if key in results:
+                gt_fields.set_field(results[key], packed_key)
+        data_sample.gt_fields = gt_fields.to_tensor()
 
         img_meta = {k: results[k] for k in self.meta_keys if k in results}
         data_sample.set_metainfo(img_meta)
