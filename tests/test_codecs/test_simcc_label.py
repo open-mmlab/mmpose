@@ -22,6 +22,16 @@ class TestSimCCLabel(TestCase):
                     simcc_split_ratio=2.0),
             ),
             (
+                'simcc smoothing',
+                dict(
+                    type='SimCCLabel',
+                    input_size=(192, 256),
+                    simcc_type='smoothing',
+                    sigma=5.0,
+                    simcc_split_ratio=3.0,
+                    label_smoothing=0.1),
+            ),
+            (
                 'simcc one-hot',
                 dict(
                     type='SimCCLabel',
@@ -50,19 +60,12 @@ class TestSimCCLabel(TestCase):
             target_x, target_y, keypoint_weights = codec.encode(
                 keypoints, keypoints_visible)
 
-            if codec.simcc_type == 'gaussian':
-                self.assertEqual(target_x.shape,
-                                 (1, 17, int(192 * codec.simcc_split_ratio)),
-                                 f'Failed case: "{name}"')
-                self.assertEqual(target_y.shape,
-                                 (1, 17, int(256 * codec.simcc_split_ratio)),
-                                 f'Failed case: "{name}"')
-            else:
-                self.assertEqual(target_x.shape, (1, 17),
-                                 f'Failed case: "{name}"')
-                self.assertEqual(target_y.shape, (1, 17),
-                                 f'Failed case: "{name}"')
-
+            self.assertEqual(target_x.shape,
+                             (1, 17, int(192 * codec.simcc_split_ratio)),
+                             f'Failed case: "{name}"')
+            self.assertEqual(target_y.shape,
+                             (1, 17, int(256 * codec.simcc_split_ratio)),
+                             f'Failed case: "{name}"')
             self.assertEqual(keypoint_weights.shape, (1, 17),
                              f'Failed case: "{name}"')
 
@@ -89,17 +92,7 @@ class TestSimCCLabel(TestCase):
 
             target_x, target_y, _ = codec.encode(keypoints, keypoints_visible)
 
-            if cfg['simcc_type'] == 'one-hot':
-                # convert one-hot label to one-hot vector
-                w, h = cfg['input_size']
-                r = cfg['simcc_split_ratio']
-                onehot_x = np.where(target_x[..., None] == np.arange(0, w * r),
-                                    1, 0)
-                onehot_y = np.where(target_y[..., None] == np.arange(0, h * r),
-                                    1, 0)
-                encoded = (onehot_x, onehot_y)
-            else:
-                encoded = (target_x, target_y)
+            encoded = (target_x, target_y)
 
             _keypoints, _ = codec.decode(encoded)
 
@@ -116,4 +109,42 @@ class TestSimCCLabel(TestCase):
             simcc_split_ratio=2.0)
 
         with self.assertRaisesRegex(ValueError, 'got invalid `simcc_type`'):
+            _ = KEYPOINT_CODECS.build(cfg)
+
+        # invalid label_smoothing in smoothing
+        cfg = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            simcc_type='smoothing',
+            sigma=1.0,
+            simcc_split_ratio=2.0,
+            label_smoothing=1.1)
+
+        with self.assertRaisesRegex(ValueError, '`label_smoothing` should be'):
+            _ = KEYPOINT_CODECS.build(cfg)
+
+        # invalid label_smoothing for one-hot
+        cfg = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            simcc_type='one-hot',
+            sigma=1.0,
+            simcc_split_ratio=2.0,
+            label_smoothing=0.1)
+
+        with self.assertRaisesRegex(ValueError,
+                                    '`label_smoothing` must equal'):
+            _ = KEYPOINT_CODECS.build(cfg)
+
+        # invalid label_smoothing for gaussian
+        cfg = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            simcc_type='gaussian',
+            sigma=1.0,
+            simcc_split_ratio=2.0,
+            label_smoothing=0.1)
+
+        with self.assertRaisesRegex(ValueError,
+                                    '`label_smoothing` must equal'):
             _ = KEYPOINT_CODECS.build(cfg)

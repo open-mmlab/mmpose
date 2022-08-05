@@ -17,7 +17,7 @@ def get_packed_inputs(batch_size=2,
                       simcc_split_ratio=2.0,
                       with_heatmap=True,
                       with_reg_label=True,
-                      with_simcc_label=None):
+                      with_simcc_label=True):
     """Create a dummy batch of model inputs and data samples."""
     rng = np.random.RandomState(0)
 
@@ -77,20 +77,12 @@ def get_packed_inputs(batch_size=2,
                                                                    input_size)
 
         if with_simcc_label:
-            if with_simcc_label == 'gaussian':
-                len_x = np.around(input_size[0] * simcc_split_ratio)
-                len_y = np.around(input_size[1] * simcc_split_ratio)
-                gt_instance_labels.keypoint_x_labels = torch.FloatTensor(
-                    _rand_simcc_label(rng, num_instances, num_keypoints,
-                                      len_x))
-                gt_instance_labels.keypoint_y_labels = torch.FloatTensor(
-                    _rand_simcc_label(rng, num_instances, num_keypoints,
-                                      len_y))
-            else:
-                gt_instance_labels.keypoint_x_labels = torch.LongTensor(
-                    _rand_keypoints(rng, bboxes, num_keypoints)[..., 0])
-                gt_instance_labels.keypoint_y_labels = torch.LongTensor(
-                    _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
+            len_x = np.around(input_size[0] * simcc_split_ratio)
+            len_y = np.around(input_size[1] * simcc_split_ratio)
+            gt_instance_labels.keypoint_x_labels = torch.FloatTensor(
+                _rand_simcc_label(rng, num_instances, num_keypoints, len_x))
+            gt_instance_labels.keypoint_y_labels = torch.FloatTensor(
+                _rand_simcc_label(rng, num_instances, num_keypoints, len_y))
 
         # gt_fields
         gt_fields = PixelData()
