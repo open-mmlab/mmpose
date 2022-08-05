@@ -34,14 +34,14 @@ class RegressionLabel(BaseKeypointCodec):
         """Encoding keypoints from input image space to normalized space.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
 
         Returns:
             tuple:
             - reg_labels (np.ndarray): The normalized regression labels in
-                shape (N, K, C) where D is 2 for 2d coordinates
+                shape (N, K, D) where D is 2 for 2d coordinates
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
@@ -61,11 +61,11 @@ class RegressionLabel(BaseKeypointCodec):
         space.
 
         Args:
-            encoded (np.ndarray): Coordinates in shape (N, K, C)
+            encoded (np.ndarray): Coordinates in shape (N, K, D)
 
         Returns:
             tuple:
-            - keypoints (np.ndarray): Decoded coordinates in shape (N, K, C)
+            - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
             - socres (np.ndarray): The keypoint scores in shape (N, K).
                 It usually represents the confidence of the keypoint prediction
         """

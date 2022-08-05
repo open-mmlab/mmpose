@@ -19,7 +19,7 @@ class MSRAHeatmap(BaseKeypointCodec):
 
         - instance number: N
         - keypoint number: K
-        - keypoint dimension: C
+        - keypoint dimension: D
         - image size: [w, h]
         - heatmap size: [W, H]
 
@@ -72,7 +72,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         coordinates should be in the input image space.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
 
@@ -175,7 +175,7 @@ class MSRAHeatmap(BaseKeypointCodec):
         Returns:
             tuple:
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
-                (N, K, C)
+                (N, K, D)
             - scores (np.ndarray): The keypoint scores in shape (N, K). It
                 usually represents the confidence of the keypoint prediction
         """

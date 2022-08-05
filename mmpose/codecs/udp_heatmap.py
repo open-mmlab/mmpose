@@ -20,7 +20,7 @@ class UDPHeatmap(BaseKeypointCodec):
 
         - instance number: N
         - keypoint number: K
-        - keypoint dimension: C
+        - keypoint dimension: D
         - image size: [w, h]
         - heatmap size: [W, H]
 
@@ -82,7 +82,7 @@ class UDPHeatmap(BaseKeypointCodec):
         coordinates should be in the input image space.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
 
@@ -117,7 +117,7 @@ class UDPHeatmap(BaseKeypointCodec):
         Returns:
             tuple:
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
-                (N, K, C)
+                (N, K, D)
             - scores (np.ndarray): The keypoint scores in shape (N, K). It
                 usually represents the confidence of the keypoint prediction
         """
@@ -268,7 +268,7 @@ class UDPHeatmap(BaseKeypointCodec):
 
         Args:
             heatmaps (np.ndarray): Heatmaps in shape (K, H, W)
-            keypoints (np.ndarray): Keypoint coordinates in shape (K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (K, D)
             kernel_size (int): The Gaussian blur kernel size of the heatmap
                 modulation
 

@@ -18,7 +18,7 @@ class MultiLevelHeatmapEncoder(BaseKeypointCodec):
         - encoder number: n
         - instance number: N
         - keypoint number: K
-        - keypoint dimension: C
+        - keypoint dimension: D
         - image size: [w, h]
         - heatmap size: [W, H]
 
@@ -65,7 +65,7 @@ class MultiLevelHeatmapEncoder(BaseKeypointCodec):
         results.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
 
