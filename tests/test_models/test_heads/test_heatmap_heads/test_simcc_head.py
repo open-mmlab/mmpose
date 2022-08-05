@@ -131,7 +131,7 @@ class TestSimCCHead(TestCase):
             self.assertIn('pred_instances', preds[0])
             self.assertEqual(preds[0].pred_instances.keypoints.shape,
                              preds[0].gt_instances.keypoints.shape)
-            self.assertNotIn('pred_heatmaps', preds[0])
+            self.assertNotIn('pred_fields', preds[0])
 
             # input transform: output heatmap
             head = SimCCHead(

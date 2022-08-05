@@ -15,10 +15,10 @@ def flip_keypoints(keypoints: np.ndarray,
     Note:
 
         - keypoint number: K
-        - keypoint dimension: C
+        - keypoint dimension: D
 
     Args:
-        keypoints (np.ndarray): Keypoints in shape (..., K, C)
+        keypoints (np.ndarray): Keypoints in shape (..., K, D)
         keypoints_visible (np.ndarray, optional): The visibility of keypoints
             in shape (..., K, 1). Set ``None`` if the keypoint visibility is
             unavailable
@@ -31,7 +31,7 @@ def flip_keypoints(keypoints: np.ndarray,
     Returns:
         tuple:
         - keypoints_flipped (np.ndarray): Flipped keypoints in shape
-            (..., K, C)
+            (..., K, D)
         - keypoints_visible_flipped (np.ndarray, optional): Flipped keypoints'
             visibility in shape (..., K, 1). Return ``None`` if the input
             ``keypoints_visible`` is ``None``

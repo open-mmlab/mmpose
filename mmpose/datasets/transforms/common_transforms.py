@@ -293,7 +293,7 @@ class RandomHalfBody(BaseTransform):
         """Get half-body bbox center and scale of a single instance.
 
         Args:
-            keypoints (np.ndarray): Keypoints in shape (K, C)
+            keypoints (np.ndarray): Keypoints in shape (K, D)
             upper_body_ids (list): The list of half-body keypont indices
 
         Returns:

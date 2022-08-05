@@ -350,7 +350,7 @@ class MSPNHead(BaseHead):
             d.gt_fields.heatmaps for d in batch_data_samples
         ])  # shape: [B, L*K, H, W]
         keypoint_weights = torch.cat([
-            d.gt_instances.keypoint_weights for d in batch_data_samples
+            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])  # shape: [B*N, L, K]
 
         # number of output channels for each level of gt heatmaps,

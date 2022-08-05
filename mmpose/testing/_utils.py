@@ -68,6 +68,7 @@ def get_packed_inputs(batch_size=2,
         gt_instances.bbox_scores = np.ones((num_instances, ), dtype=np.float32)
         gt_instances.keypoints = keypoints
         gt_instances.keypoints_visible = keypoints_visible
+
         gt_instance_labels.keypoint_weights = torch.FloatTensor(
             keypoint_weights)
 
@@ -91,14 +92,14 @@ def get_packed_inputs(batch_size=2,
                 gt_instance_labels.keypoint_y_labels = torch.LongTensor(
                     _rand_keypoints(rng, bboxes, num_keypoints)[..., 1])
 
-        # gt_heatmaps
-        gt_heatmaps = PixelData()
+        # gt_fields
+        gt_fields = PixelData()
         if with_heatmap:
             if num_levels == 1:
                 # generate single-scale heatmaps
                 W, H = heatmap_size
                 heatmaps = rng.rand(num_keypoints, H, W)
-                gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
+                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
             else:
                 # generate multi-scale heatmaps
                 heatmaps = []
@@ -108,11 +109,11 @@ def get_packed_inputs(batch_size=2,
                     heatmaps.append(heatmaps_)
                 # [num_levels*K, H, W]
                 heatmaps = np.concatenate(heatmaps)
-                gt_heatmaps.heatmaps = torch.FloatTensor(heatmaps)
+                gt_fields.heatmaps = torch.FloatTensor(heatmaps)
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
-        data_sample.gt_heatmaps = gt_heatmaps
+        data_sample.gt_fields = gt_fields
 
         inputs['data_sample'] = data_sample
         packed_inputs.append(inputs)

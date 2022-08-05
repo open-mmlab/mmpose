@@ -11,9 +11,9 @@ def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,
     """Calculate the normalized distances between preds and target.
 
     Note:
-        batch_size: N
-        num_keypoints: K
-        dimension of keypoints: D (normally, D=2 or D=3)
+        - instance number: N
+        - keypoint number: K
+        - keypoint dimension: D (normally, D=2 or D=3)
 
     Args:
         preds (np.ndarray[N, K, D]): Predicted keypoint location.
@@ -45,7 +45,8 @@ def _distance_acc(distances: np.ndarray, thr: float = 0.5) -> float:
     distances values with -1.
 
     Note:
-        batch_size: N
+        - instance number: N
+
     Args:
         distances (np.ndarray[N, ]): The normalized distances.
         thr (float): Threshold of the distances.
@@ -73,8 +74,8 @@ def keypoint_pck_accuracy(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
         The threshold (thr) of the normalized distance is commonly set
         as 0.05, 0.1 or 0.2 etc.
 
-        - batch_size: N
-        - num_keypoints: K
+        - instance number: N
+        - keypoint number: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -109,8 +110,8 @@ def keypoint_auc(pred: np.ndarray,
     """Calculate the Area under curve (AUC) of keypoint PCK accuracy.
 
     Note:
-        - batch_size: N
-        - num_keypoints: K
+        - instance number: N
+        - keypoint number: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -142,8 +143,8 @@ def keypoint_nme(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray,
     """Calculate the normalized mean error (NME).
 
     Note:
-        - batch_size: N
-        - num_keypoints: K
+        - instance number: N
+        - keypoint number: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -165,8 +166,8 @@ def keypoint_epe(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray) -> float:
     """Calculate the end-point error.
 
     Note:
-        - batch_size: N
-        - num_keypoints: K
+        - instance number: N
+        - keypoint number: K
 
     Args:
         pred (np.ndarray[N, K, 2]): Predicted keypoint location.
@@ -249,8 +250,8 @@ def simcc_pck_accuracy(output: Tuple[np.ndarray, np.ndarray],
         The threshold (thr) of the normalized distance is commonly set
         as 0.05, 0.1 or 0.2 etc.
 
-        - batch_size: N
-        - num_keypoints: K
+        - instance number: N
+        - keypoint number: K
 
     Args:
         output (Tuple[np.ndarray, np.ndarray]): Model predicted SimCC.

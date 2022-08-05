@@ -255,9 +255,9 @@ class HeatmapHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
-                if 'pred_heatmaps' not in data_sample:
-                    data_sample.pred_heatmaps = PixelData()
-                data_sample.pred_heatmaps.heatmaps = heatmaps
+                if 'pred_fields' not in data_sample:
+                    data_sample.pred_fields = PixelData()
+                data_sample.pred_fields.heatmaps = heatmaps
 
         return preds
 
@@ -266,16 +266,16 @@ class HeatmapHead(BaseHead):
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
-        pred_heatmaps = self.forward(feats)
+        pred_fields = self.forward(feats)
         gt_heatmaps = torch.stack(
-            [d.gt_heatmaps.heatmaps for d in batch_data_samples])
+            [d.gt_fields.heatmaps for d in batch_data_samples])
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
 
         # calculate losses
         losses = dict()
-        loss = self.loss_module(pred_heatmaps, gt_heatmaps, keypoint_weights)
+        loss = self.loss_module(pred_fields, gt_heatmaps, keypoint_weights)
         if isinstance(loss, dict):
             losses.update(loss)
         else:
@@ -283,7 +283,7 @@ class HeatmapHead(BaseHead):
 
         # calculate accuracy
         _, avg_acc, _ = pose_pck_accuracy(
-            output=to_numpy(pred_heatmaps),
+            output=to_numpy(pred_fields),
             target=to_numpy(gt_heatmaps),
             mask=to_numpy(keypoint_weights) > 0)
 

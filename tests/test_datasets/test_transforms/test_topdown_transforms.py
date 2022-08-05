@@ -122,7 +122,7 @@ class TestTopdownGenerateTarget(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['reg_label'].shape, (1, 17, 2))
+        self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
         self.assertTrue(
             np.allclose(results['keypoint_weights'], np.ones((1, 17))))
 
@@ -136,8 +136,28 @@ class TestTopdownGenerateTarget(TestCase):
         ])
 
         results = pipeline(deepcopy(self.data_info))
-        self.assertEqual(results['reg_label'].shape, (1, 17, 2))
+        self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
         self.assertEqual(results['keypoint_weights'].shape, (1, 17))
         self.assertTrue(
             np.allclose(results['keypoint_weights'],
                         self.data_info['dataset_keypoint_weights'][None]))
+
+    def test_generate_keypoint_xy_label(self):
+        encoder = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            simcc_type='gaussian',
+            simcc_split_ratio=2.0)
+
+        # generate keypoint label
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            TopdownGenerateTarget(
+                target_type='keypoint_xy_label', encoder=encoder)
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['keypoint_x_labels'].shape, (1, 17, 192 * 2))
+        self.assertEqual(results['keypoint_y_labels'].shape, (1, 17, 256 * 2))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'], np.ones((1, 17))))

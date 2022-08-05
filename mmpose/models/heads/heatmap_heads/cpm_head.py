@@ -238,8 +238,9 @@ class CPMHead(BaseHead):
 
         gt_heatmaps = torch.stack(
             [d.gt_fields.heatmaps for d in batch_data_samples])
-        keypoint_weights = torch.cat(
-            [d.gt_instances.keypoint_weights for d in batch_data_samples])
+        keypoint_weights = torch.cat([
+            d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+        ])
 
         # calculate losses over multiple stages
         losses = dict()
