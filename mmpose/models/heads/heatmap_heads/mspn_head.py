@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
+from ctypes import Union
 from typing import List, Optional, Sequence
 
 import torch
@@ -9,6 +10,7 @@ from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import pose_pck_accuracy
+from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, MultiConfig, OptConfigType,
@@ -16,6 +18,7 @@ from mmpose.utils.typing import (ConfigType, MultiConfig, OptConfigType,
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
+MSMUFeatures = Sequence[Sequence[Tensor]]  # Multi-stage multi-unit features
 
 
 class PRM(nn.Module):
@@ -223,7 +226,16 @@ class MSPNHead(BaseHead):
                 f'The length of loss_module({len(loss)}) did not match '
                 f'`num_stages`({num_stages}) * `num_units` ({num_units})')
 
-        self.loss_module = MODELS.build(loss)
+        if isinstance(loss, list):
+            if len(loss) != num_stages * num_units:
+                raise ValueError(
+                    f'The length of loss_module({len(loss)}) did not match '
+                    f'`num_stages`({num_stages}) * `num_units` ({num_units})')
+            self.loss_module = nn.ModuleList(
+                MODELS.build(_loss) for _loss in loss)
+        else:
+            self.loss_module = MODELS.build(loss)
+
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
         else:
@@ -285,26 +297,37 @@ class MSPNHead(BaseHead):
         return out
 
     def predict(self,
-                feats: Sequence[Sequence[Tensor]],
+                feats: Union[MSMUFeatures, List[MSMUFeatures]],
                 batch_data_samples: OptSampleList,
                 test_cfg: OptConfigType = {}) -> SampleList:
         """Predict results from multi-stage feature maps.
 
         Args:
-            feats (Sequence[Sequence[Tensor]]): Feature maps from multiple
-                stages and units.
+            feats (Sequence[Sequence[Tensor]]): Multi-stage multi-unit
+                features (or multiple MSMU features for TTA)
             batch_data_samples (List[:obj:`PoseDataSample`]): The Data
                 Samples. It usually includes information such as
-                `gt_instances`.
-            test_cfg (Config, optional): The testing/inference config.
+                `gt_instances`
+            test_cfg (Config, optional): The testing/inference config
 
         Returns:
             List[:obj:`PoseDataSample`]: Pose estimation results of each
             sample after the post process.
         """
         # multi-stage multi-unit batch heatmaps
-        msmu_batch_heatmaps = self.forward(feats)
-        batch_heatmaps = msmu_batch_heatmaps[-1]
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test
+            assert isinstance(feats, list) and len(feats) == 2
+            _feats, _feats_flip = feats
+            _batch_heatmaps = self.forward(_feats)[-1]
+            _batch_heatmaps_flip = flip_heatmaps(
+                self.forward(_feats_flip)[-1],
+                flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+                shift_heatmap=test_cfg.get('shift_heatmap', False))
+            batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5
+        else:
+            msmu_batch_heatmaps = self.forward(feats)
+            batch_heatmaps = msmu_batch_heatmaps[-1]
 
         preds = self.decode(batch_heatmaps, batch_data_samples)
 
@@ -319,7 +342,7 @@ class MSPNHead(BaseHead):
         return preds
 
     def loss(self,
-             feats: Sequence[Sequence[Tensor]],
+             feats: MSMUFeatures,
              batch_data_samples: OptSampleList,
              train_cfg: OptConfigType = {}) -> dict:
         """Calculate losses from a batch of inputs and data samples.
@@ -334,11 +357,11 @@ class MSPNHead(BaseHead):
 
         Args:
             feats (Sequence[Sequence[Tensor]]): Feature maps from multiple
-                stages and units.
+                stages and units
             batch_data_samples (List[:obj:`PoseDataSample`]): The Data
                 Samples. It usually includes information such as
-                `gt_instances`.
-            train_cfg (Config, optional): The training config.
+                `gt_instances`
+            train_cfg (Config, optional): The training config
 
         Returns:
             dict: A dictionary of loss components.
@@ -360,7 +383,7 @@ class MSPNHead(BaseHead):
         # calculate losses over multiple stages and multiple units
         losses = dict()
         for i in range(self.num_stages * self.num_units):
-            if isinstance(self.loss_module, nn.Sequential):
+            if isinstance(self.loss_module, nn.ModuleList):
                 # use different loss_module over different stages and units
                 loss_func = self.loss_module[i]
             else:

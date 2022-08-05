@@ -7,10 +7,11 @@ from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import pose_pck_accuracy
+from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                 SampleList)
+from mmpose.utils.typing import (ConfigType, Features, OptConfigType,
+                                 OptSampleList, SampleList)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -243,12 +244,44 @@ class HeatmapHead(BaseHead):
         return x
 
     def predict(self,
-                feats: Tuple[Tensor],
+                feats: Features,
                 batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
-        """Predict results from features."""
+                test_cfg: ConfigType = {}) -> SampleList:
+        """Predict results from features.
 
-        batch_heatmaps = self.forward(feats)
+        Args:
+            feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
+                features (or multiple multi-stage features in TTA)
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
+
+        Returns:
+            list[:obj:`PoseDataSample`]: The batch data samples with
+            ``pred_instances`` field, which contains the following prediction
+            results:
+
+                - keypoints (Tensor): predicted keypoint coordinates in shape
+                    (num_instances, K, D) where K is the keypoint number and D
+                    is the keypoint dimension
+                - keypoint_scores (Tensor): predicted keypoint scores in shape
+                    (num_instances, K)
+        """
+
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test
+            assert isinstance(feats, list) and len(feats) == 2
+            _feats, _feats_flip = feats
+            _batch_heatmaps = self.forward(_feats)
+            _batch_heatmaps_flip = flip_heatmaps(
+                self.forward(_feats_flip),
+                flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+                shift_heatmap=test_cfg.get('shift_heatmap', False))
+            batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5
+        else:
+            batch_heatmaps = self.forward(feats)
+
         preds = self.decode(batch_heatmaps, batch_data_samples)
 
         # Whether to visualize the predicted heatmaps
@@ -264,8 +297,19 @@ class HeatmapHead(BaseHead):
     def loss(self,
              feats: Tuple[Tensor],
              batch_data_samples: OptSampleList,
-             train_cfg: OptConfigType = {}) -> dict:
-        """Calculate losses from a batch of inputs and data samples."""
+             train_cfg: ConfigType = {}) -> dict:
+        """Calculate losses from a batch of inputs and data samples.
+
+        Args:
+            feats (Tuple[Tensor]): The multi-stage features
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            train_cfg (dict): The runtime config for training process.
+                Defaults to {}
+
+        Returns:
+            dict: A dictionary of losses.
+        """
         pred_fields = self.forward(feats)
         gt_heatmaps = torch.stack(
             [d.gt_fields.heatmaps for d in batch_data_samples])

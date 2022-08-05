@@ -76,8 +76,8 @@ def parse_pose_metainfo(metainfo: dict):
         - "keypoint_name2id" (dict): Mapping from keypoint name to id
         - "upper_body_ids" (list): Ids of upper-body keypoint
         - "lower_body_ids" (list): Ids of lower-body keypoint
-        - "flip_indices" (list): The Id of each keypoint's symmetry keypoint
-        - "flip_pairs" (list): The Ids of symmetry keypoint pairs
+        - "flip_indices" (list): The Id of each keypoint's symmetric keypoint
+        - "flip_pairs" (list): The Ids of symmetric keypoint pairs
         - "keypoint_colors" (numpy.ndarray): The keypoint color matrix of
             shape [K, 3], where each row is the color of one keypint in bgr
         - "num_skeleton_links" (int): The number of links
@@ -159,7 +159,7 @@ def parse_pose_metainfo(metainfo: dict):
             parsed['flip_indices'].append(kpt_name)
         else:
             parsed['flip_indices'].append(swap_kpt)
-            pair = [swap_kpt, kpt_name]
+            pair = (swap_kpt, kpt_name)
             if pair not in parsed['flip_pairs']:
                 parsed['flip_pairs'].append(pair)
 
@@ -177,7 +177,8 @@ def parse_pose_metainfo(metainfo: dict):
     # formatting
     def _map(src, mapping: dict):
         if isinstance(src, (list, tuple)):
-            return [_map(s, mapping) for s in src]
+            cls = type(str)
+            return cls(_map(s, mapping) for s in src)
         else:
             return mapping[src]
 
