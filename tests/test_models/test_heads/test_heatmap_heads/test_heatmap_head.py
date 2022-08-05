@@ -135,6 +135,66 @@ class TestHeatmapHead(TestCase):
         self.assertIn('pred_fields', preds[0])
         self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 64, 48))
 
+    def test_tta(self):
+        # flip test: heatmap
+        decoder_cfg = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.)
+
+        head = HeatmapHead(
+            in_channels=[16, 32],
+            out_channels=17,
+            input_transform='select',
+            input_index=-1,
+            decoder=decoder_cfg)
+        feats = self._get_feats(
+            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        batch_data_samples = self._get_data_samples(batch_size=2)
+        preds = head.predict([feats, feats],
+                             batch_data_samples,
+                             test_cfg=dict(
+                                 flip_test=True,
+                                 flip_mode='heatmap',
+                                 shift_heatmap=True,
+                             ))
+
+        self.assertEqual(len(preds), 2)
+        self.assertIsInstance(preds[0], PoseDataSample)
+        self.assertIn('pred_instances', preds[0])
+        self.assertEqual(preds[0].pred_instances.keypoints.shape,
+                         preds[0].gt_instances.keypoints.shape)
+
+        # flip test: udp_combine
+        decoder_cfg = dict(
+            type='UDPHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            heatmap_type='combined')
+        head = HeatmapHead(
+            in_channels=[16, 32],
+            out_channels=17 * 3,
+            input_transform='select',
+            input_index=-1,
+            decoder=decoder_cfg)
+        feats = self._get_feats(
+            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        batch_data_samples = self._get_data_samples(batch_size=2)
+        preds = head.predict([feats, feats],
+                             batch_data_samples,
+                             test_cfg=dict(
+                                 flip_test=True,
+                                 flip_mode='udp_combined',
+                                 shift_heatmap=False,
+                             ))
+
+        self.assertEqual(len(preds), 2)
+        self.assertIsInstance(preds[0], PoseDataSample)
+        self.assertIn('pred_instances', preds[0])
+        self.assertEqual(preds[0].pred_instances.keypoints.shape,
+                         preds[0].gt_instances.keypoints.shape)
+
     def test_loss(self):
         head = HeatmapHead(
             in_channels=[16, 32],

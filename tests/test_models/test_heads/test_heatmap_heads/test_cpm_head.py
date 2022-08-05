@@ -54,7 +54,7 @@ class TestCPMHead(TestCase):
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4))
         self.assertTrue(isinstance(head.multi_deconv_layers, nn.ModuleList))
-        self.assertTrue(isinstance(head.multi_deconv_layers[0], nn.Sequential))
+        self.assertTrue(isinstance(head.multi_deconv_layers[0], nn.ModuleDict))
 
         # w/o final layer
         head = CPMHead(
@@ -152,6 +152,37 @@ class TestCPMHead(TestCase):
                          preds[0].gt_instances.keypoints.shape)
         self.assertIn('pred_fields', preds[0])
         self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 32, 24))
+
+    def test_tta(self):
+        # flip test: heatmap
+        decoder_cfg = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(24, 32),
+            sigma=2.)
+
+        head = CPMHead(
+            num_stages=1,
+            in_channels=32,
+            out_channels=17,
+            has_final_layer=True,
+            decoder=decoder_cfg)
+
+        feats = self._get_feats(batch_size=2, feat_shapes=[(32, 8, 6)])
+        batch_data_samples = self._get_data_samples(batch_size=2)
+        preds = head.predict([feats, feats],
+                             batch_data_samples,
+                             test_cfg=dict(
+                                 flip_test=True,
+                                 flip_mode='heatmap',
+                                 shift_heatmap=True,
+                             ))
+
+        self.assertEqual(len(preds), 2)
+        self.assertIsInstance(preds[0], PoseDataSample)
+        self.assertIn('pred_instances', preds[0])
+        self.assertEqual(preds[0].pred_instances.keypoints.shape,
+                         preds[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
         # num_stages = 1

@@ -35,9 +35,9 @@ def flip_heatmaps(heatmaps: Tensor,
     elif flip_mode == 'udp_combined':
         B, C, H, W = heatmaps.shape
         assert len(flip_indices) * 3 == C
-        heatmaps = heatmaps.view(B, 3, C // 3, H, W)
+        heatmaps = heatmaps.view(B, C // 3, 3, H, W)
         heatmaps = heatmaps[:, flip_indices].flip(-1)
-        heatmaps[:, 1] = -heatmaps[:, 1]
+        heatmaps[:, :, 1] = -heatmaps[:, :, 1]
         heatmaps = heatmaps.view(B, C, H, W)
     else:
         raise ValueError(f'Invalid flip_mode value "{flip_mode}"')

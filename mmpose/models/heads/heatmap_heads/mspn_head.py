@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import copy
-from ctypes import Union
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Union
 
 import torch
 from mmcv.cnn import (ConvModule, DepthwiseSeparableConvModule, Linear,
@@ -318,11 +317,13 @@ class MSPNHead(BaseHead):
         if test_cfg.get('flip_test', False):
             # TTA: flip test
             assert isinstance(feats, list) and len(feats) == 2
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
             _feats, _feats_flip = feats
             _batch_heatmaps = self.forward(_feats)[-1]
             _batch_heatmaps_flip = flip_heatmaps(
                 self.forward(_feats_flip)[-1],
                 flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+                flip_indices=flip_indices,
                 shift_heatmap=test_cfg.get('shift_heatmap', False))
             batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5
         else:
