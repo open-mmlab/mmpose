@@ -54,7 +54,7 @@ class TestCPMHead(TestCase):
             deconv_out_channels=(32, 32),
             deconv_kernel_sizes=(4, 4))
         self.assertTrue(isinstance(head.multi_deconv_layers, nn.ModuleList))
-        self.assertTrue(isinstance(head.multi_deconv_layers[0], nn.ModuleDict))
+        self.assertTrue(isinstance(head.multi_deconv_layers[0], nn.Sequential))
 
         # w/o final layer
         head = CPMHead(
@@ -96,7 +96,7 @@ class TestCPMHead(TestCase):
             has_final_layer=False,
             loss=[dict(type='KeypointMSELoss', use_target_weight=True)] * 6,
         )
-        self.assertTrue(isinstance(head.loss_module, nn.Sequential))
+        self.assertTrue(isinstance(head.loss_module, nn.ModuleList))
         self.assertTrue(len(head.loss_module), num_stages)
 
     def test_predict(self):

@@ -177,7 +177,7 @@ def parse_pose_metainfo(metainfo: dict):
     # formatting
     def _map(src, mapping: dict):
         if isinstance(src, (list, tuple)):
-            cls = type(str)
+            cls = type(src)
             return cls(_map(s, mapping) for s in src)
         else:
             return mapping[src]
