@@ -96,7 +96,7 @@ class TestRegressionHead(TestCase):
             preds[0].pred_instances.keypoints.shape,
             preds[0].gt_instances.keypoints.shape,
         )
-        self.assertNotIn('pred_heatmaps', preds[0])
+        self.assertNotIn('pred_fields', preds[0])
 
         # input transform: output heatmap
         head = RegressionHead(
@@ -114,7 +114,7 @@ class TestRegressionHead(TestCase):
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertNotIn('pred_heatmaps', preds[0])
+        self.assertNotIn('pred_fields', preds[0])
 
     def test_loss(self):
         head = RegressionHead(

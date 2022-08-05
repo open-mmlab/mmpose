@@ -19,7 +19,7 @@ class MegviiHeatmap(BaseKeypointCodec):
 
         - instance number: N
         - keypoint number: K
-        - keypoint dimension: C
+        - keypoint dimension: D
         - image size: [w, h]
         - heatmap size: [W, H]
 
@@ -56,7 +56,7 @@ class MegviiHeatmap(BaseKeypointCodec):
         coordinates should be in the input image space.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, C)
+            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
             keypoints_visible (np.ndarray): Keypoint visibilities in shape
                 (N, K)
 
@@ -108,7 +108,7 @@ class MegviiHeatmap(BaseKeypointCodec):
         Returns:
             tuple:
             - keypoints (np.ndarray): Decoded keypoint coordinates in shape
-                (K, C)
+                (K, D)
             - scores (np.ndarray): The keypoint scores in shape (K,). It
                 usually represents the confidence of the keypoint prediction
         """

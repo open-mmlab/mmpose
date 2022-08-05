@@ -79,27 +79,27 @@ class PoseDataSample(BaseDataElement):
         del self._pred_instances
 
     @property
-    def gt_heatmaps(self) -> PixelData:
-        return self._gt_heatmaps
+    def gt_fields(self) -> PixelData:
+        return self._gt_fields
 
-    @gt_heatmaps.setter
-    def gt_heatmaps(self, value: PixelData):
-        self.set_field(value, '_gt_heatmaps', dtype=PixelData)
+    @gt_fields.setter
+    def gt_fields(self, value: PixelData):
+        self.set_field(value, '_gt_fields', dtype=PixelData)
 
-    @gt_heatmaps.deleter
-    def gt_heatmaps(self):
-        del self._gt_heatmaps
+    @gt_fields.deleter
+    def gt_fields(self):
+        del self._gt_fields
 
     @property
-    def pred_heatmaps(self) -> PixelData:
+    def pred_fields(self) -> PixelData:
         return self._pred_heatmaps
 
-    @pred_heatmaps.setter
-    def pred_heatmaps(self, value: PixelData):
+    @pred_fields.setter
+    def pred_fields(self, value: PixelData):
         self.set_field(value, '_pred_heatmaps', dtype=PixelData)
 
-    @pred_heatmaps.deleter
-    def pred_heatmaps(self):
+    @pred_fields.deleter
+    def pred_fields(self):
         del self._pred_heatmaps
 
     @classmethod

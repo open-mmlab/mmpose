@@ -100,6 +100,7 @@ class RLEHead(BaseHead):
         """Predict results from outputs."""
 
         batch_coords = self.forward(feats)
+        batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
         preds = self.decode(batch_coords, batch_data_samples)
 
         return preds

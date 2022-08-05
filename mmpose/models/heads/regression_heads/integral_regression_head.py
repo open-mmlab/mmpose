@@ -200,7 +200,6 @@ class IntegralRegressionHead(BaseHead):
         pred_x = self._linear_expectation(heatmaps, self.linspace_x)
         pred_y = self._linear_expectation(heatmaps, self.linspace_y)
         coords = torch.cat([pred_x, pred_y], dim=-1)
-
         return coords, heatmaps
 
     def predict(self,
@@ -210,16 +209,16 @@ class IntegralRegressionHead(BaseHead):
         """Predict results from outputs."""
 
         batch_coords, batch_heatmaps = self.forward(feats)
-
+        batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
         preds = self.decode(batch_coords, batch_data_samples)
 
         # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
             for heatmaps, data_sample in zip(batch_heatmaps, preds):
                 # Store the heatmap predictions in the data sample
-                if 'pred_heatmaps' not in data_sample:
-                    data_sample.pred_heatmaps = PixelData()
-                data_sample.pred_heatmaps.heatmaps = heatmaps
+                if 'pred_fields' not in data_sample:
+                    data_sample.pred_fields = PixelData()
+                data_sample.pred_fields.heatmaps = heatmaps
 
         return preds
 

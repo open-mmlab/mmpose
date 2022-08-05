@@ -20,27 +20,46 @@ class TestPackPoseInputs(TestCase):
         """
         # prepare dummy top-down data sample with COCO metainfo
         self.results_topdown = {
-            'img_id': 1,
-            'img_path': 'tests/data/coco/000000000785.jpg',
-            'id': 1,
+            'img_id':
+            1,
+            'img_path':
+            'tests/data/coco/000000000785.jpg',
+            'id':
+            1,
             'ori_shape': (425, 640),
             'img_shape': (425, 640, 3),
-            'scale_factor': 2.0,
-            'flip': False,
-            'flip_direction': None,
-            'img': np.zeros((425, 640, 3), dtype=np.uint8),
-            'bbox': np.array([[0, 0, 100, 100]], dtype=np.float32),
-            'bbox_center': np.array([[50, 50]], dtype=np.float32),
-            'bbox_scale': np.array([[125, 125]], dtype=np.float32),
-            'bbox_rotation': np.array([45], dtype=np.float32),
-            'bbox_score': np.ones(1, dtype=np.float32),
-            'keypoints': np.random.randint(0, 100,
-                                           (1, 17, 2)).astype(np.float32),
-            'keypoints_visible': np.full((1, 17), 1).astype(np.float32),
-            'reg_label': np.random.randint(0, 100,
-                                           (1, 17, 2)).astype(np.float32),
-            'keypoint_weights': np.full((1, 17), 1).astype(np.float32),
-            'heatmaps': np.random.random((17, 64, 48)).astype(np.float32),
+            'scale_factor':
+            2.0,
+            'flip':
+            False,
+            'flip_direction':
+            None,
+            'img':
+            np.zeros((425, 640, 3), dtype=np.uint8),
+            'bbox':
+            np.array([[0, 0, 100, 100]], dtype=np.float32),
+            'bbox_center':
+            np.array([[50, 50]], dtype=np.float32),
+            'bbox_scale':
+            np.array([[125, 125]], dtype=np.float32),
+            'bbox_rotation':
+            np.array([45], dtype=np.float32),
+            'bbox_score':
+            np.ones(1, dtype=np.float32),
+            'keypoints':
+            np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
+            'keypoints_visible':
+            np.full((1, 17), 1).astype(np.float32),
+            'keypoint_weights':
+            np.full((1, 17), 1).astype(np.float32),
+            'heatmaps':
+            np.random.random((17, 64, 48)).astype(np.float32),
+            'keypoint_labels':
+            np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
+            'keypoint_x_labels':
+            np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
+            'keypoint_y_labels':
+            np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
         }
         self.meta_keys = ('img_id', 'img_path', 'ori_shape', 'img_shape',
                           'scale_factor', 'flip', 'flip_direction')

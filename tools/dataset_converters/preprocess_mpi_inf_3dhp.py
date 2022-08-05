@@ -43,14 +43,14 @@ def get_pose_stats(kps):
     """Get statistic information `mean` and `std` of pose data.
 
     Args:
-        kps (ndarray): keypoints in shape [..., K, C] where K and C is
+        kps (ndarray): keypoints in shape [..., K, D] where K and D is
             the keypoint category number and dimension.
     Returns:
-        mean (ndarray): [K, C]
+        mean (ndarray): [K, D]
     """
     assert kps.ndim > 2
-    K, C = kps.shape[-2:]
-    kps = kps.reshape(-1, K, C)
+    K, D = kps.shape[-2:]
+    kps = kps.reshape(-1, K, D)
     mean = kps.mean(axis=0)
     std = kps.std(axis=0)
     return mean, std

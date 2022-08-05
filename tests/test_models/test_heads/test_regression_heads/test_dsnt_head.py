@@ -162,7 +162,7 @@ class TestDSNTHead(TestCase):
             preds[0].pred_instances.keypoints.shape,
             preds[0].gt_instances.keypoints.shape,
         )
-        self.assertNotIn('pred_heatmaps', preds[0])
+        self.assertNotIn('pred_fields', preds[0])
 
         # input transform: output heatmap
         head = DSNTHead(
@@ -181,8 +181,8 @@ class TestDSNTHead(TestCase):
         preds = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertIn('pred_heatmaps', preds[0])
-        self.assertEqual(preds[0].pred_heatmaps.heatmaps.shape,
+        self.assertIn('pred_fields', preds[0])
+        self.assertEqual(preds[0].pred_fields.heatmaps.shape,
                          (17, 8 * 8, 6 * 8))
 
     def test_loss(self):
