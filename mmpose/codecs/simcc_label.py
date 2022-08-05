@@ -23,7 +23,7 @@ class SimCCLabel(BaseKeypointCodec):
     Args:
         input_size (tuple): Input image size in [w, h]
         simcc_type (str): The SimCC label type. Options are ``'gaussian'`` ,
-        ``'label-smoothing'`` and ``'one-hot'``. Defaults to ``'gaussian'``
+        ``'smoothing'`` and ``'one-hot'``. Defaults to ``'gaussian'``
         sigma (str): The sigma value in the Gaussian SimCC label. Defaults to
             6.0
         simcc_split_ratio (float): The ratio of the label size to the input
