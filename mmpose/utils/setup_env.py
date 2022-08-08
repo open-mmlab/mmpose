@@ -65,6 +65,7 @@ def register_all_modules(init_default_scope: bool = True) -> None:
     import mmpose.datasets  # noqa: F401,F403
     import mmpose.evaluation  # noqa: F401,F403
     import mmpose.models  # noqa: F401,F403
+    import mmpose.visualization  # noqa: F401,F403
 
     if init_default_scope:
         never_created = DefaultScope.get_current_instance() is None \

@@ -50,7 +50,12 @@ model = dict(
         out_channels=17,
         deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        decoder=codec))
+        decoder=codec),
+    test_cfg=dict(
+        flip_test=False,
+        flip_mode='heatmap',
+        shift_heatmap=True,
+    ))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -100,6 +105,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         ann_file='annotations/person_keypoints_val2017.json',
+        bbox_file=f'{data_root}/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=test_pipeline,
