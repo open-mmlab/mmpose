@@ -25,7 +25,7 @@ class TestSimCCHead(TestCase):
     def _get_data_samples(self,
                           batch_size: int = 2,
                           simcc_split_ratio: float = 2.0,
-                          with_simcc_label=None):
+                          with_simcc_label=False):
 
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
@@ -47,9 +47,24 @@ class TestSimCCHead(TestCase):
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
-                simcc_type='gaussian',
+                smoothing_type='gaussian',
                 sigma=6.,
                 simcc_split_ratio=2.0))
+        self.assertIsNotNone(head.decoder)
+
+        # w/ label-smoothing decoder
+        head = SimCCHead(
+            in_channels=32,
+            out_channels=17,
+            input_size=(192, 256),
+            in_featuremap_size=(8, 6),
+            decoder=dict(
+                type='SimCCLabel',
+                input_size=(192, 256),
+                smoothing_type='standard',
+                sigma=6.,
+                simcc_split_ratio=3.0,
+                label_smoothing=0.1))
         self.assertIsNotNone(head.decoder)
 
         # w/ one-hot decoder
@@ -61,7 +76,7 @@ class TestSimCCHead(TestCase):
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
-                simcc_type='one-hot',
+                smoothing_type='standard',
                 sigma=6.,
                 simcc_split_ratio=3.0))
         self.assertIsNotNone(head.decoder)
@@ -70,18 +85,26 @@ class TestSimCCHead(TestCase):
         decoder_cfg1 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='gaussian',
+            smoothing_type='gaussian',
             sigma=2.,
             simcc_split_ratio=2.0)
 
         decoder_cfg2 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='one-hot',
+            smoothing_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0)
 
-        for decoder_cfg in [decoder_cfg1, decoder_cfg2]:
+        decoder_cfg3 = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            smoothing_type='standard',
+            sigma=2.,
+            simcc_split_ratio=2.0,
+            label_smoothing=0.1)
+
+        for decoder_cfg in [decoder_cfg1, decoder_cfg2, decoder_cfg3]:
             # input transform: select
             head = SimCCHead(
                 in_channels=[16, 32],
@@ -94,9 +117,7 @@ class TestSimCCHead(TestCase):
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = self._get_data_samples(
-                batch_size=2,
-                simcc_split_ratio=2.0,
-                with_simcc_label='gaussian')
+                batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             preds = head.predict(feats, batch_data_samples)
 
             self.assertEqual(len(preds), 2)
@@ -121,9 +142,7 @@ class TestSimCCHead(TestCase):
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = self._get_data_samples(
-                batch_size=2,
-                simcc_split_ratio=2.0,
-                with_simcc_label='gaussian')
+                batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             preds = head.predict(feats, batch_data_samples)
 
             self.assertEqual(len(preds), 2)
@@ -145,9 +164,7 @@ class TestSimCCHead(TestCase):
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = self._get_data_samples(
-                batch_size=2,
-                simcc_split_ratio=2.0,
-                with_simcc_label='gaussian')
+                batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             preds = head.predict(
                 feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -164,27 +181,27 @@ class TestSimCCHead(TestCase):
         decoder_cfg1 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='gaussian',
+            smoothing_type='gaussian',
             sigma=2.,
             simcc_split_ratio=2.0)
 
         decoder_cfg2 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='one-hot',
+            smoothing_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0)
 
-        loss_cfg1 = dict(
-            type='KLLossWithLabelSmoothing', use_target_weight=True)
-
-        loss_cfg2 = dict(
-            type='KLLossWithLabelSmoothing',
-            label_smoothing=0.2,
-            use_target_weight=True)
+        decoder_cfg3 = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            smoothing_type='standard',
+            sigma=2.,
+            simcc_split_ratio=2.0,
+            label_smoothing=0.1)
 
         # decoder
-        for decoder_cfg in [decoder_cfg1, decoder_cfg2]:
+        for decoder_cfg in [decoder_cfg1, decoder_cfg2, decoder_cfg3]:
             head = SimCCHead(
                 in_channels=[16, 32],
                 out_channels=17,
@@ -197,31 +214,7 @@ class TestSimCCHead(TestCase):
             feats = self._get_feats(
                 batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
             batch_data_samples = self._get_data_samples(
-                batch_size=2,
-                simcc_split_ratio=2.0,
-                with_simcc_label='gaussian')
-            losses = head.loss(feats, batch_data_samples)
-            self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
-            self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-            self.assertIsInstance(losses['acc_pose'], float)
-
-        for loss_cfg in [loss_cfg1, loss_cfg2]:
-            head = SimCCHead(
-                in_channels=[16, 32],
-                out_channels=17,
-                input_size=(192, 256),
-                in_featuremap_size=(8, 6),
-                input_transform='select',
-                input_index=-1,
-                decoder=decoder_cfg2,
-                loss=loss_cfg)
-
-            feats = self._get_feats(
-                batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-            batch_data_samples = self._get_data_samples(
-                batch_size=2,
-                simcc_split_ratio=2.0,
-                with_simcc_label='one-hot')
+                batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             losses = head.loss(feats, batch_data_samples)
             self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
             self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
