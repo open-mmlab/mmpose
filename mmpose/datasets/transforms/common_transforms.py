@@ -1,5 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import warnings
+from copy import deepcopy
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
@@ -10,9 +11,11 @@ from mmcv.transforms.utils import avoid_cache_randomness, cache_randomness
 from mmengine import is_list_of
 from scipy.stats import truncnorm
 
-from mmpose.registry import TRANSFORMS
+from mmpose.codecs import *  # noqa: F401, F403
+from mmpose.registry import KEYPOINT_CODECS, TRANSFORMS
 from mmpose.structures.bbox import bbox_xyxy2cs, flip_bbox
 from mmpose.structures.keypoint import flip_keypoints
+from mmpose.utils.typing import MultiConfig
 
 try:
     import albumentations
@@ -48,8 +51,7 @@ class GetBBoxCenterScale(BaseTransform):
 
         self.padding = padding
 
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
+    def transform(self, results: Dict) -> Optional[dict]:
         """The transform function of :class:`GetBBoxCenterScale`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
@@ -97,14 +99,16 @@ class RandomFlip(BaseTransform):
         - bbox_center (optional)
         - keypoints (optional)
         - keypoints_visible (optional)
+        - img_mask (optional)
 
     Modified Keys:
 
         - img
         - bbox (optional)
-        - bbox_center
-        - keypoints
-        - keypoints_visible
+        - bbox_center (optional)
+        - keypoints (optional)
+        - keypoints_visible (optional)
+        - img_mask (optional)
 
     Added Keys:
 
@@ -197,13 +201,17 @@ class RandomFlip(BaseTransform):
             results['flip_direction'] = flip_dir
 
             h, w = results['img_shape']
-            # flip image
+            # flip image and make
             if isinstance(results['img'], list):
                 results['img'] = [
                     imflip(img, direction=flip_dir) for img in results['img']
                 ]
             else:
                 results['img'] = imflip(results['img'], direction=flip_dir)
+
+            if 'img_mask' in results:
+                results['img_mask'] = imflip(
+                    results['img_mask'], direction=flip_dir)
 
             # flip bboxes
             if results.get('bbox', None) is not None:
@@ -362,8 +370,7 @@ class RandomHalfBody(BaseTransform):
 
         return half_body_ids
 
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
+    def transform(self, results: Dict) -> Optional[dict]:
         """The transform function of :class:`HalfBodyTransform`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
@@ -435,13 +442,13 @@ class RandomBBoxTransform(BaseTransform):
             Defaults to 0.16
         shift_prob (float): Probability of applying random shift. Defaults to
             0.3
-        scale_factor (float): Randomly resize the bbox in range
-            :math:`[1 - scale_factor, 1 + scale_factor]`. Defaults to 0.5
+        scale_factor (Tuple[float, float]): Randomly resize the bbox in range
+            :math:`[scale_factor[0], scale_factor[1]]`. Defaults to (0.5, 1.5)
         scale_prob (float): Probability of applying random resizing. Defaults
             to 1.0
         rotate_factor (float): Randomly rotate the bbox in
-            :math:`[-2*rotate_factor, 2*rotate_factor]` in degrees. Defaults
-            to 40.0
+            :math:`[-rotate_factor, rotate_factor]` in degrees. Defaults
+            to 80.0
         rotate_prob (float): Probability of applying random rotation. Defaults
             to 0.6
     """
@@ -449,9 +456,9 @@ class RandomBBoxTransform(BaseTransform):
     def __init__(self,
                  shift_factor: float = 0.16,
                  shift_prob: float = 0.3,
-                 scale_factor: float = 0.5,
+                 scale_factor: Tuple[float, float] = (0.5, 1.5),
                  scale_prob: float = 1.0,
-                 rotate_factor: float = 40.0,
+                 rotate_factor: float = 80.0,
                  rotate_prob: float = 0.6) -> None:
         super().__init__()
 
@@ -481,7 +488,7 @@ class RandomBBoxTransform(BaseTransform):
         Returns:
             tuple:
             - offset (np.ndarray): Offset of each bbox in shape (n, 2)
-            - scale (np.ndarray): Scale factor of each bbox in shape (n, 1)
+            - scale (np.ndarray): Scaling factor of each bbox in shape (n, 1)
             - rotate (np.ndarray): Rotation degree of each bbox in shape
                 (n, 1)
         """
@@ -494,23 +501,23 @@ class RandomBBoxTransform(BaseTransform):
             np.random.rand(num_bbox, 1) < self.shift_prob, offset, 0.)
 
         # Get scaling parameters
-        scale = self._truncnorm(size=(num_bbox, 1))
-        scale = scale * self.scale_factor + 1.
+        scale_min, scale_max = self.scale_factor
+        scale = scale_min + (scale_max -
+                             scale_min) * self._truncnorm(size=(num_bbox, 1))
+        scale = self._truncnorm(scale_min, scale_max, size=(num_bbox, 1))
         scale = np.where(
             np.random.rand(num_bbox, 1) < self.scale_prob, scale, 1.)
 
         # Get rotation parameters
-        # TODO: check why use [-2, 2] truncation instead of [-1, 1]
-        rotate = self._truncnorm(-2, 2, size=(num_bbox, ))
+        rotate = self._truncnorm(size=(num_bbox, )) * self.rotate_factor
         rotate = rotate * self.rotate_factor
         rotate = np.where(
             np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)
 
         return offset, scale, rotate
 
-    def transform(self,
-                  results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`RandomBBoxTransform`.
+    def transform(self, results: Dict) -> Optional[dict]:
+        """The transform function of :class:`RandomBboxTransform`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 
@@ -859,4 +866,130 @@ class PhotometricDistortion(BaseTransform):
                      f'saturation_range=({self.saturation_lower}, '
                      f'{self.saturation_upper}), '
                      f'hue_delta={self.hue_delta})')
+        return repr_str
+
+
+@TRANSFORMS.register_module()
+class GenerateTarget(BaseTransform):
+    """Encode keypoints into Target.
+
+    The generated target is usually the supervision signal of the model
+    learning, e.g. heatmaps or regression labels.
+
+    Required Keys:
+
+        - keypoints
+        - keypoints_visible
+        - dataset_keypoint_weights
+
+    Added Keys (depends on the args):
+        - heatmaps
+        - keypoint_labels
+        - keypoint_x_labels
+        - keypoint_y_labels
+        - keypoint_weights
+
+    Args:
+        encoder (dict | list[dict]): The codec config for keypoint encoding
+        target_type (str): The type of the encoded form of the keypoints.
+            Should be one of the following options:
+
+            - ``'heatmap'``: The encoded should be instance-irrelevant
+                heatmaps and will be stored in ``results['heatmaps']``
+            - ``'multiscale_heatmap'`` The encoded should be a list of
+                heatmaps and will be stored in ``results['hatmaps']``. Note
+                that in this case ``self.encoder`` is also a list, each
+                encoder for a single scale of heatmaps
+            - ``'keypoint_label'``: The encoded should be instance-level
+                labels and will be stored in ``results['keypoint_label']``
+            - ``'keypoint_xy_label'``: The encoed should be instance-level
+                labels in x-axis and y-axis respectively. They will be stored
+                in ``results['keypoint_x_label']`` and
+                ``results['keypoint_y_label']``
+        use_dataset_keypoint_weights (bool): Whether use the keypoint weights
+            from the dataset meta information. Defaults to ``False``
+    """
+
+    def __init__(self,
+                 encoder: MultiConfig,
+                 target_type: str,
+                 use_dataset_keypoint_weights: bool = False) -> None:
+        super().__init__()
+        self.encoder_cfg = deepcopy(encoder)
+        self.target_type = target_type
+        self.use_dataset_keypoint_weights = use_dataset_keypoint_weights
+
+        if self.target_type == 'multiscale_heatmap':
+            if not isinstance(self.encoder_cfg, list):
+                raise ValueError(
+                    'The encoder should be a list if target type is '
+                    '"multiscale_heatmap"')
+            self.encoder = [
+                KEYPOINT_CODECS.build(cfg) for cfg in self.encoder_cfg
+            ]
+        else:
+            self.encoder = KEYPOINT_CODECS.build(self.encoder_cfg)
+
+    def transform(self, results: Dict) -> Optional[dict]:
+
+        if self.target_type == 'heatmap':
+            heatmaps, keypoint_weights = self.encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
+
+            results['heatmaps'] = heatmaps
+            results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'keypoint_label':
+            keypoint_labels, keypoint_weights = self.encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
+
+            results['keypoint_labels'] = keypoint_labels
+            results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'keypoint_xy_label':
+            x_labels, y_labels, keypoint_weights = self.encoder.encode(
+                keypoints=results['keypoints'],
+                keypoints_visible=results['keypoints_visible'])
+
+            results['keypoint_x_labels'] = x_labels
+            results['keypoint_y_labels'] = y_labels
+            results['keypoint_weights'] = keypoint_weights
+
+        elif self.target_type == 'multiscale_heatmap':
+            heatmaps = []
+            keypoint_weights = []
+
+            for encoder in self.encoder:
+                _heatmaps, _keypoint_weights = encoder.encode(
+                    keypoints=results['keypoints'],
+                    keypoints_visible=results['keypoints_visible'])
+                heatmaps.append(_heatmaps)
+                keypoint_weights.append(_keypoint_weights)
+
+            results['heatmaps'] = heatmaps
+            # keypoint_weights.shape: [N, K] -> [N, n, K]
+            results['keypoint_weights'] = np.stack(heatmaps, axis=1)
+
+        else:
+            raise ValueError(f'Invalid target type {self.target_type}')
+
+        # multiply meta keypoint weight
+        if self.use_dataset_keypoint_weights:
+            results['keypoint_weights'] *= results['dataset_keypoint_weights']
+
+        return results
+
+    def __repr__(self) -> str:
+        """print the basic information of the transform.
+
+        Returns:
+            str: Formatted string.
+        """
+        repr_str = self.__class__.__name__
+        repr_str += (f'(encoder={str(self.encoder_cfg)}, ')
+        repr_str += (f'(target_type={str(self.target_type)}, ')
+        repr_str += ('use_dataset_keypoint_weights='
+                     f'{self.use_dataset_keypoint_weights})')
         return repr_str

@@ -69,7 +69,8 @@ class TestRandomFlip(TestCase):
 
         # prepare dummy top-down data sample with COCO metainfo
         self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+            img=np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8),
+            img_mask=np.random.randint(0, 2, (480, 640, 3), dtype=np.uint8),
             img_shape=(480, 640),
             bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
             bbox_center=np.array([[50, 50]], dtype=np.float32),
@@ -115,6 +116,9 @@ class TestRandomFlip(TestCase):
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][:, ::-1]))
+        self.assertTrue(
+            np.allclose(results['img_mask'],
+                        self.data_info['img_mask'][:, ::-1]))
         self.assertTrue(np.allclose(results['bbox_center'], [[589., 50.]]))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], kpts2[..., 1]))
@@ -133,6 +137,8 @@ class TestRandomFlip(TestCase):
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1]))
+        self.assertTrue(
+            np.allclose(results['img_mask'], self.data_info['img_mask'][::-1]))
         self.assertTrue(np.allclose(results['bbox_center'], [[50., 429.]]))
         self.assertTrue(np.allclose(kpts1[..., 0], kpts2[..., 0]))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
@@ -150,6 +156,9 @@ class TestRandomFlip(TestCase):
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1, ::-1]))
+        self.assertTrue(
+            np.allclose(results['img_mask'],
+                        self.data_info['img_mask'][::-1, ::-1]))
         self.assertTrue(np.allclose(results['bbox_center'], [[589., 429.]]))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
