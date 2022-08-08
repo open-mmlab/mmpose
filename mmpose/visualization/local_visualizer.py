@@ -191,7 +191,9 @@ class PoseLocalVisualizer(Visualizer):
                         # skip the point that should not be drawn
                         continue
 
-                    color = tuple(int(c) for c in kpt_color[kid])
+                    color = kpt_color[kid]
+                    if not isinstance(color, str):
+                        color = tuple(int(c) for c in color)
                     transparency = max(0, min(1, score[kid])) * self.alpha
                     self.draw_circles(
                         kpt,
@@ -231,7 +233,9 @@ class PoseLocalVisualizer(Visualizer):
                             continue
                         X = np.array((pos1[0], pos2[0]))
                         Y = np.array((pos1[1], pos2[1]))
-                        color = tuple(int(c) for c in link_color[sk_id])
+                        color = link_color[sk_id]
+                        if not isinstance(color, str):
+                            color = tuple(int(c) for c in color)
                         if self.show_keypoint_weight:
 
                             mX = np.mean(X)
