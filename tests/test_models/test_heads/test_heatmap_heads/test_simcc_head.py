@@ -61,7 +61,7 @@ class TestSimCCHead(TestCase):
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
-                simcc_type='smoothing',
+                simcc_type='standard',
                 sigma=6.,
                 simcc_split_ratio=3.0,
                 label_smoothing=0.1))
@@ -76,7 +76,7 @@ class TestSimCCHead(TestCase):
             decoder=dict(
                 type='SimCCLabel',
                 input_size=(192, 256),
-                simcc_type='one-hot',
+                simcc_type='standard',
                 sigma=6.,
                 simcc_split_ratio=3.0))
         self.assertIsNotNone(head.decoder)
@@ -92,14 +92,14 @@ class TestSimCCHead(TestCase):
         decoder_cfg2 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='one-hot',
+            simcc_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0)
 
         decoder_cfg3 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='smoothing',
+            simcc_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0,
             label_smoothing=0.1)
@@ -188,14 +188,14 @@ class TestSimCCHead(TestCase):
         decoder_cfg2 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='one-hot',
+            simcc_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0)
 
         decoder_cfg3 = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='smoothing',
+            simcc_type='standard',
             sigma=2.,
             simcc_split_ratio=2.0,
             label_smoothing=0.1)

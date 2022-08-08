@@ -26,7 +26,7 @@ class TestSimCCLabel(TestCase):
                 dict(
                     type='SimCCLabel',
                     input_size=(192, 256),
-                    simcc_type='smoothing',
+                    simcc_type='standard',
                     sigma=5.0,
                     simcc_split_ratio=3.0,
                     label_smoothing=0.1),
@@ -36,7 +36,7 @@ class TestSimCCLabel(TestCase):
                 dict(
                     type='SimCCLabel',
                     input_size=(192, 256),
-                    simcc_type='one-hot',
+                    simcc_type='standard',
                     sigma=5.0,
                     simcc_split_ratio=3.0),
             ),
@@ -115,25 +115,12 @@ class TestSimCCLabel(TestCase):
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='smoothing',
+            simcc_type='standard',
             sigma=1.0,
             simcc_split_ratio=2.0,
             label_smoothing=1.1)
 
         with self.assertRaisesRegex(ValueError, '`label_smoothing` should be'):
-            _ = KEYPOINT_CODECS.build(cfg)
-
-        # invalid label_smoothing for one-hot
-        cfg = dict(
-            type='SimCCLabel',
-            input_size=(192, 256),
-            simcc_type='one-hot',
-            sigma=1.0,
-            simcc_split_ratio=2.0,
-            label_smoothing=0.1)
-
-        with self.assertRaisesRegex(ValueError,
-                                    '`label_smoothing` must equal'):
             _ = KEYPOINT_CODECS.build(cfg)
 
         # invalid label_smoothing for gaussian
@@ -146,5 +133,5 @@ class TestSimCCLabel(TestCase):
             label_smoothing=0.1)
 
         with self.assertRaisesRegex(ValueError,
-                                    '`label_smoothing` must equal'):
+                                    'is only used for `standard` mode.'):
             _ = KEYPOINT_CODECS.build(cfg)
