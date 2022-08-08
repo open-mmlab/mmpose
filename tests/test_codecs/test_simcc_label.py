@@ -17,7 +17,7 @@ class TestSimCCLabel(TestCase):
                 dict(
                     type='SimCCLabel',
                     input_size=(192, 256),
-                    simcc_type='gaussian',
+                    smoothing_type='gaussian',
                     sigma=6.0,
                     simcc_split_ratio=2.0),
             ),
@@ -26,7 +26,7 @@ class TestSimCCLabel(TestCase):
                 dict(
                     type='SimCCLabel',
                     input_size=(192, 256),
-                    simcc_type='standard',
+                    smoothing_type='standard',
                     sigma=5.0,
                     simcc_split_ratio=3.0,
                     label_smoothing=0.1),
@@ -36,7 +36,7 @@ class TestSimCCLabel(TestCase):
                 dict(
                     type='SimCCLabel',
                     input_size=(192, 256),
-                    simcc_type='standard',
+                    smoothing_type='standard',
                     sigma=5.0,
                     simcc_split_ratio=3.0),
             ),
@@ -104,18 +104,19 @@ class TestSimCCLabel(TestCase):
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='uniform',
+            smoothing_type='uniform',
             sigma=1.0,
             simcc_split_ratio=2.0)
 
-        with self.assertRaisesRegex(ValueError, 'got invalid `simcc_type`'):
+        with self.assertRaisesRegex(ValueError,
+                                    'got invalid `smoothing_type`'):
             _ = KEYPOINT_CODECS.build(cfg)
 
         # invalid label_smoothing in smoothing
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='standard',
+            smoothing_type='standard',
             sigma=1.0,
             simcc_split_ratio=2.0,
             label_smoothing=1.1)
@@ -127,7 +128,7 @@ class TestSimCCLabel(TestCase):
         cfg = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='gaussian',
+            smoothing_type='gaussian',
             sigma=1.0,
             simcc_split_ratio=2.0,
             label_smoothing=0.1)

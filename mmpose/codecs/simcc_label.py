@@ -22,7 +22,7 @@ class SimCCLabel(BaseKeypointCodec):
 
     Args:
         input_size (tuple): Input image size in [w, h]
-        simcc_type (str): The SimCC label smoothing strategy. Options are
+        smoothing_type (str): The SimCC label smoothing strategy. Options are
         ``'gaussian'`` and ``'standard'``. Defaults to ``'gaussian'``
         sigma (str): The sigma value in the Gaussian SimCC label. Defaults to
             6.0
@@ -33,25 +33,25 @@ class SimCCLabel(BaseKeypointCodec):
 
     def __init__(self,
                  input_size: Tuple[int, int],
-                 simcc_type: str = 'gaussian',
+                 smoothing_type: str = 'gaussian',
                  sigma: float = 6.0,
                  simcc_split_ratio: float = 2.0,
                  label_smoothing: float = 0.0) -> None:
         super().__init__()
 
         self.input_size = input_size
-        self.simcc_type = simcc_type
+        self.smoothing_type = smoothing_type
         self.sigma = sigma
         self.simcc_split_ratio = simcc_split_ratio
         self.label_smoothing = label_smoothing
 
-        if self.simcc_type not in {'gaussian', 'standard'}:
+        if self.smoothing_type not in {'gaussian', 'standard'}:
             raise ValueError(
-                f'{self.__class__.__name__} got invalid `simcc_type` value'
-                f'{self.simcc_type}. Should be one of '
+                f'{self.__class__.__name__} got invalid `smoothing_type` value'
+                f'{self.smoothing_type}. Should be one of '
                 '{"gaussian", "standard"}')
 
-        if self.simcc_type == 'gaussian' and self.label_smoothing > 0.0:
+        if self.smoothing_type == 'gaussian' and self.label_smoothing > 0.0:
             raise ValueError(
                 'Attribute `label_smoothing` is only used for `standard` mode.'
             )
@@ -76,25 +76,25 @@ class SimCCLabel(BaseKeypointCodec):
         Returns:
             tuple:
             - simcc_x (np.ndarray): The generated SimCC label for x-axis.
-                The label shape is (N, K, Wx) if ``simcc_type=='gaussian'``
-                and (N, K) if `simcc_type=='standard'``, where
+                The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
+                and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wx=w*simcc_split_ratio`
             - simcc_y (np.ndarray): The generated SimCC label for y-axis.
-                The label shape is (N, K, Wy) if ``simcc_type=='gaussian'``
-                and (N, K) if `simcc_type=='standard'``, where
+                The label shape is (N, K, Wy) if ``smoothing_type=='gaussian'``
+                and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wy=h*simcc_split_ratio`
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
 
-        if self.simcc_type == 'gaussian':
+        if self.smoothing_type == 'gaussian':
             return self._generate_gaussian(keypoints, keypoints_visible)
-        elif self.simcc_type == 'standard':
+        elif self.smoothing_type == 'standard':
             return self._generate_standard(keypoints, keypoints_visible)
         else:
             raise ValueError(
-                f'{self.__class__.__name__} got invalid `simcc_type` value'
-                f'{self.simcc_type}. Should be one of '
+                f'{self.__class__.__name__} got invalid `smoothing_type` value'
+                f'{self.smoothing_type}. Should be one of '
                 '{"gaussian", "standard"}')
 
     def decode(self,
