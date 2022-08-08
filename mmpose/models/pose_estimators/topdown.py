@@ -117,9 +117,9 @@ class TopdownPoseEstimator(BasePoseEstimator):
         processing.
 
         Args:
-            batch_inputs (Tensor): Inputs with shape (N, C, H, W).
+            batch_inputs (Tensor): Inputs with shape (N, C, H, W)
             batch_data_samples (List[:obj:`PoseDataSample`]): The batch
-                data samples.
+                data samples
 
         Returns:
             list[:obj:`PoseDataSample`]: The pose estimation results of the
@@ -136,7 +136,13 @@ class TopdownPoseEstimator(BasePoseEstimator):
         assert self.with_head, (
             'The model must have head to perform prediction.')
 
-        feats = self.extract_feat(batch_inputs)
+        if self.test_cfg.get('flip_test', False):
+            _feats = self.extract_feat(batch_inputs)
+            _feats_flip = self.extract_feat(batch_inputs.flip(-1))
+            feats = [_feats, _feats_flip]
+        else:
+            feats = self.extract_feat(batch_inputs)
+
         preds = self.head.predict(
             feats, batch_data_samples, test_cfg=self.test_cfg)
 

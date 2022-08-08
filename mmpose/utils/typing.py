@@ -1,8 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import Dict, List, Optional, Tuple, Union
 
-import torch
 from mmengine.config import ConfigDict
+from torch import Tensor
 
 from mmpose.structures import PoseDataSample
 
@@ -12,9 +12,13 @@ OptConfigType = Optional[ConfigType]
 # Type hint of one or more config data
 MultiConfig = Union[ConfigType, List[ConfigType]]
 OptMultiConfig = Optional[MultiConfig]
-
+# Type hint of data samples
 SampleList = List[PoseDataSample]
 OptSampleList = Optional[SampleList]
-
-ForwardResults = Union[Dict[str, torch.Tensor], List[PoseDataSample],
-                       Tuple[torch.Tensor], torch.Tensor]
+# Type hint of model outputs
+ForwardResults = Union[Dict[str, Tensor], List[PoseDataSample], Tuple[Tensor],
+                       Tensor]
+# Type hint of features
+#   - Tuple[Tensor]: multi-level features extracted by the network
+#   - List[Tuple[Tensor]]: multiple feature pyramids for TTA
+Features = Union[Tuple[Tensor], List[Tuple[Tensor]]]

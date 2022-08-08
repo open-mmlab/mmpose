@@ -58,7 +58,7 @@ class TestPoseTrack18VideoDataset(TestCase):
 
         for key, type_ in expected_keys.items():
             self.assertIn(key, data_info)
-            self.assertIsInstance(data_info[key], type_)
+            self.assertIsInstance(data_info[key], type_, key)
 
     def check_metainfo_keys(self, metainfo: dict):
         expected_keys = dict(
@@ -78,7 +78,7 @@ class TestPoseTrack18VideoDataset(TestCase):
 
         for key, type_ in expected_keys.items():
             self.assertIn(key, metainfo)
-            self.assertIsInstance(metainfo[key], type_)
+            self.assertIsInstance(metainfo[key], type_, key)
 
     def test_metainfo(self):
         dataset = self.build_posetrack18_video_dataset()
