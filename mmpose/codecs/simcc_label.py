@@ -22,8 +22,8 @@ class SimCCLabel(BaseKeypointCodec):
 
     Args:
         input_size (tuple): Input image size in [w, h]
-        simcc_type (str): The SimCC label type. Options are ``'gaussian'`` and
-            ``'one-hot'``. Defaults to ``'gaussian'``
+        smoothing_type (str): The SimCC label smoothing strategy. Options are
+        ``'gaussian'`` and ``'standard'``. Defaults to ``'gaussian'``
         sigma (str): The sigma value in the Gaussian SimCC label. Defaults to
             6.0
         simcc_split_ratio (float): The ratio of the label size to the input
@@ -33,21 +33,31 @@ class SimCCLabel(BaseKeypointCodec):
 
     def __init__(self,
                  input_size: Tuple[int, int],
-                 simcc_type: str = 'gaussian',
+                 smoothing_type: str = 'gaussian',
                  sigma: float = 6.0,
-                 simcc_split_ratio: float = 2.0) -> None:
+                 simcc_split_ratio: float = 2.0,
+                 label_smoothing: float = 0.0) -> None:
         super().__init__()
 
         self.input_size = input_size
-        self.simcc_type = simcc_type
+        self.smoothing_type = smoothing_type
         self.sigma = sigma
         self.simcc_split_ratio = simcc_split_ratio
+        self.label_smoothing = label_smoothing
 
-        if self.simcc_type not in {'gaussian', 'one-hot'}:
+        if self.smoothing_type not in {'gaussian', 'standard'}:
             raise ValueError(
-                f'{self.__class__.__name__} got invalid `simcc_type` value'
-                f'{self.simcc_type}. Should be one of '
-                '{"gaussian", "one-hot"}')
+                f'{self.__class__.__name__} got invalid `smoothing_type` value'
+                f'{self.smoothing_type}. Should be one of '
+                '{"gaussian", "standard"}')
+
+        if self.smoothing_type == 'gaussian' and self.label_smoothing > 0.0:
+            raise ValueError(
+                'Attribute `label_smoothing` is only used for `standard` mode.'
+            )
+
+        if self.label_smoothing < 0.0 or self.label_smoothing > 1.0:
+            raise ValueError('`label_smoothing` should be in range [0, 1]')
 
     def encode(
         self,
@@ -66,26 +76,26 @@ class SimCCLabel(BaseKeypointCodec):
         Returns:
             tuple:
             - simcc_x (np.ndarray): The generated SimCC label for x-axis.
-                The label shape is (N, K, Wx) if ``simcc_type=='gaussian'``
-                and (N, K) if `simcc_type=='one-hot'``, where
+                The label shape is (N, K, Wx) if ``smoothing_type=='gaussian'``
+                and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wx=w*simcc_split_ratio`
             - simcc_y (np.ndarray): The generated SimCC label for y-axis.
-                The label shape is (N, K, Wy) if ``simcc_type=='gaussian'``
-                and (N, K) if `simcc_type=='one-hot'``, where
+                The label shape is (N, K, Wy) if ``smoothing_type=='gaussian'``
+                and (N, K) if `smoothing_type=='standard'``, where
                 :math:`Wy=h*simcc_split_ratio`
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
 
-        if self.simcc_type == 'gaussian':
+        if self.smoothing_type == 'gaussian':
             return self._generate_gaussian(keypoints, keypoints_visible)
-        elif self.simcc_type == 'one-hot':
-            return self._generate_onehot(keypoints, keypoints_visible)
+        elif self.smoothing_type == 'standard':
+            return self._generate_standard(keypoints, keypoints_visible)
         else:
             raise ValueError(
-                f'{self.__class__.__name__} got invalid `simcc_type` value'
-                f'{self.simcc_type}. Should be one of '
-                '{"gaussian", "one-hot"}')
+                f'{self.__class__.__name__} got invalid `smoothing_type` value'
+                f'{self.smoothing_type}. Should be one of '
+                '{"gaussian", "standard"}')
 
     def decode(self,
                encoded: Tuple[np.ndarray,
@@ -129,13 +139,16 @@ class SimCCLabel(BaseKeypointCodec):
 
         return keypoints_split, keypoint_weights
 
-    def _generate_onehot(
+    def _generate_standard(
         self,
         keypoints: np.ndarray,
         keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """Encoding keypoints into one-hot SimCC labels without Label
-        Smoothing."""
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Encoding keypoints into SimCC labels with Standard Label Smoothing
+        strategy.
+
+        Labels will be one-hot vectors if self.label_smoothing==0.0
+        """
 
         N, K, _ = keypoints.shape
         w, h = self.input_size
@@ -145,8 +158,8 @@ class SimCCLabel(BaseKeypointCodec):
         keypoints_split, keypoint_weights = self._map_coordinates(
             keypoints, keypoints_visible)
 
-        target_x = np.zeros((N, K), dtype=np.int64)
-        target_y = np.zeros((N, K), dtype=np.int64)
+        target_x = np.zeros((N, K, W), dtype=np.float32)
+        target_y = np.zeros((N, K, H), dtype=np.float32)
 
         for n, k in product(range(N), range(K)):
             # skip unlabled keypoints
@@ -161,8 +174,12 @@ class SimCCLabel(BaseKeypointCodec):
                 keypoint_weights[k] = 0
                 continue
 
-            target_x[n, k] = mu_x
-            target_y[n, k] = mu_y
+            if self.label_smoothing > 0:
+                target_x[n, k] = self.label_smoothing / (W - 1)
+                target_y[n, k] = self.label_smoothing / (H - 1)
+
+            target_x[n, k, mu_x] = 1.0 - self.label_smoothing
+            target_y[n, k, mu_y] = 1.0 - self.label_smoothing
 
         return target_x, target_y, keypoint_weights
 
@@ -171,8 +188,8 @@ class SimCCLabel(BaseKeypointCodec):
         keypoints: np.ndarray,
         keypoints_visible: Optional[np.ndarray] = None
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """Encoding keypoints into SimCC labels with Gaussian Label
-        Smoothing."""
+        """Encoding keypoints into SimCC labels with Gaussian Label Smoothing
+        strategy."""
 
         N, K, _ = keypoints.shape
         w, h = self.input_size
