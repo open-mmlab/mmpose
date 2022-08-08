@@ -9,7 +9,8 @@ from mmengine.model import BaseModule
 from torch import Tensor
 
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import OptConfigType, OptSampleList, SampleList
+from mmpose.utils.typing import (Features, OptConfigType, OptSampleList,
+                                 SampleList)
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -26,7 +27,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
     @abstractmethod
     def predict(self,
-                feats: Tuple[Tensor],
+                feats: Features,
                 batch_data_samples: OptSampleList,
                 test_cfg: OptConfigType = {}) -> SampleList:
         """Predict results from features."""

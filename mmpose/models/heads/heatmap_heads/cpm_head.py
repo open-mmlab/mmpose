@@ -7,10 +7,11 @@ from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import pose_pck_accuracy
+from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (MultiConfig, OptConfigType, OptSampleList,
-                                 SampleList)
+from mmpose.utils.typing import (Features, MultiConfig, OptConfigType,
+                                 OptSampleList, SampleList)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -70,12 +71,15 @@ class CPMHead(BaseHead):
         self.in_channels = in_channels
         self.out_channels = out_channels
 
-        if isinstance(loss, list) and len(loss) != num_stages:
-            raise ValueError(
-                f'The length of loss_module({len(loss)}) did not match '
-                f'`num_stages`({num_stages})')
-
-        self.loss_module = MODELS.build(loss)
+        if isinstance(loss, list):
+            if len(loss) != num_stages:
+                raise ValueError(
+                    f'The length of loss_module({len(loss)}) did not match '
+                    f'`num_stages`({num_stages})')
+            self.loss_module = nn.ModuleList(
+                MODELS.build(_loss) for _loss in loss)
+        else:
+            self.loss_module = MODELS.build(loss)
 
         if decoder is not None:
             self.decoder = KEYPOINT_CODECS.build(decoder)
@@ -187,24 +191,46 @@ class CPMHead(BaseHead):
         return out
 
     def predict(self,
-                feats: Sequence[Tensor],
+                feats: Features,
                 batch_data_samples: OptSampleList,
                 test_cfg: OptConfigType = {}) -> SampleList:
         """Predict results from multi-stage feature maps.
 
         Args:
-            feats (Sequence[Tensor]): Multi-stage feature maps.
-            batch_data_samples (List[:obj:`PoseDataSample`]): The Data
-                Samples. It usually includes information such as
-                `gt_instances`.
-            test_cfg (Config, optional): The testing/inference config.
+            feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
+                features (or multiple multi-stage features in TTA)
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
 
         Returns:
-            List[:obj:`PoseDataSample`]: Pose estimation results of each
-            sample after the post process.
+            list[:obj:`PoseDataSample`]: The batch data samples with
+            ``pred_instances`` field, which contains the following prediction
+            results:
+
+                - keypoints (Tensor): predicted keypoint coordinates in shape
+                    (num_instances, K, D) where K is the keypoint number and D
+                    is the keypoint dimension
+                - keypoint_scores (Tensor): predicted keypoint scores in shape
+                    (num_instances, K)
         """
-        multi_stage_batch_heatmaps = self.forward(feats)
-        batch_heatmaps = multi_stage_batch_heatmaps[-1]
+
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test
+            assert isinstance(feats, list) and len(feats) == 2
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            _feats, _feats_flip = feats
+            _batch_heatmaps = self.forward(_feats)[-1]
+            _batch_heatmaps_flip = flip_heatmaps(
+                self.forward(_feats_flip)[-1],
+                flip_mode=test_cfg.get('flip_mode', 'heatmap'),
+                flip_indices=flip_indices,
+                shift_heatmap=test_cfg.get('shift_heatmap', False))
+            batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5
+        else:
+            multi_stage_heatmaps = self.forward(feats)
+            batch_heatmaps = multi_stage_heatmaps[-1]
 
         preds = self.decode(batch_heatmaps, batch_data_samples)
 
@@ -245,7 +271,7 @@ class CPMHead(BaseHead):
         # calculate losses over multiple stages
         losses = dict()
         for i in range(self.num_stages):
-            if isinstance(self.loss_module, nn.Sequential):
+            if isinstance(self.loss_module, nn.ModuleList):
                 # use different loss_module over different stages
                 loss_func = self.loss_module[i]
             else:

@@ -38,9 +38,11 @@ def get_packed_inputs(batch_size=2,
             'img_shape': image_shape,
             'input_size': input_size,
             'flip': False,
-            'flip_direction': None
+            'flip_direction': None,
+            'flip_indices': list(range(num_keypoints))
         }
 
+        np.random.shuffle(img_meta['flip_indices'])
         data_sample = PoseDataSample(metainfo=img_meta)
 
         # gt_instance

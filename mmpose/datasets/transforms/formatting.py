@@ -62,10 +62,10 @@ class PackPoseInputs(BaseTransform):
         - ``flip_direction``: the flipping direction
 
     Args:
-        meta_keys (Sequence[str], optional): Meta keys to be converted to
-            ``mmcv.DataContainer`` and collected in ``data[img_metas]``.
-            Defaults to ``('id', 'img_id', 'img_path', 'ori_shape',
-            'img_shape', 'input_size', 'flip', 'flip_direction')``
+        meta_keys (Sequence[str], optional): Meta keys which will be stored in
+            :obj: `PoseDataSample` as meta info. Defaults to ``('id',
+            'img_id', 'img_path', 'ori_shape', 'img_shape', 'input_size',
+            'flip', 'flip_direction', 'flip_indices)``
     """
 
     # items in `instance_mapping_table` will be directly packed into
@@ -93,7 +93,7 @@ class PackPoseInputs(BaseTransform):
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
-                            'flip_direction')):
+                            'flip_direction', 'flip_indices')):
         self.meta_keys = meta_keys
 
     def transform(self, results: dict) -> dict:

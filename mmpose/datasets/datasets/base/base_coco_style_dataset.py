@@ -143,7 +143,7 @@ class BaseCocoStyleDataset(BaseDataset):
         # Add metainfo items that are required in the pipeline and the model
         metainfo_keys = [
             'upper_body_ids', 'lower_body_ids', 'flip_pairs',
-            'dataset_keypoint_weights'
+            'dataset_keypoint_weights', 'flip_indices'
         ]
 
         for key in metainfo_keys:
