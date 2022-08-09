@@ -116,6 +116,34 @@ class TestRegressionHead(TestCase):
 
         self.assertNotIn('pred_fields', preds[0])
 
+    def test_tta(self):
+        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
+
+        # inputs transform: select
+        head = RegressionHead(
+            in_channels=[16, 32],
+            num_joints=17,
+            input_transform='select',
+            input_index=-1,
+            decoder=decoder_cfg,
+        )
+
+        feats = self._get_feats(
+            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, with_heatmap=False)
+        preds = head.predict([feats, feats],
+                             batch_data_samples,
+                             test_cfg=dict(flip_test=True, shift_coords=True))
+
+        self.assertEqual(len(preds), 2)
+        self.assertIsInstance(preds[0], PoseDataSample)
+        self.assertIn('pred_instances', preds[0])
+        self.assertEqual(
+            preds[0].pred_instances.keypoints.shape,
+            preds[0].gt_instances.keypoints.shape,
+        )
+
     def test_loss(self):
         head = RegressionHead(
             in_channels=[16, 32],

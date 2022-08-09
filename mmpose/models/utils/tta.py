@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import List
+from typing import List, Tuple
 
 from torch import Tensor
 
@@ -46,3 +46,50 @@ def flip_heatmaps(heatmaps: Tensor,
         heatmaps[..., 1:] = heatmaps[..., :-1]
 
     return heatmaps
+
+
+def flip_vectors(x_labels: Tensor, y_labels: Tensor, flip_indices: List[int]):
+    """Flip instance-level labels in specific axis for test-time augmentation.
+
+    Args:
+        x_labels (Tensor): The vector labels in x-axis to flip. Should be
+            a tensor in shape [B, C, Wx]
+        y_labels (Tensor): The vector labels in y-axis to flip. Should be
+            a tensor in shape [B, C, Wy]
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
+    """
+    assert x_labels.ndim == 3 and y_labels.ndim == 3
+    assert len(flip_indices) == x_labels.shape[1] and len(
+        flip_indices) == y_labels.shape[1]
+    x_labels = x_labels[:, flip_indices].flip(-1)
+    y_labels = y_labels[:, flip_indices]
+
+    return x_labels, y_labels
+
+
+def flip_coordinates(coords: Tensor, flip_indices: List[int],
+                     shift_coords: bool, img_shape: Tuple[int, int, int]):
+    """Flip normalized coordinates for test-time augmentation.
+
+    Args:
+        coords (Tensor): The coordinates to flip. Should be a tensor in shape
+            [B, K, D]
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
+        shift_heatmap (bool): Shift the flipped coordinates to align with the
+            original coordinates and improve accuracy. Defaults to ``True``
+        img_shape (Tuple[int, int]): The shape of input image, channels are
+            ordered by [C, H, W]
+    """
+    assert coords.ndim == 3
+    assert len(flip_indices) == coords.shape[1]
+
+    coords[:, :, 0] = 1.0 - coords[:, :, 0]
+
+    if shift_coords:
+        img_width = img_shape[2]
+        coords[:, :, 0] -= 1.0 / img_width
+
+    coords = coords[:, flip_indices]
+    return coords
