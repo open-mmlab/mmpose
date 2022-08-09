@@ -59,8 +59,9 @@ def flip_vectors(x_labels: Tensor, y_labels: Tensor, flip_indices: List[int]):
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
     """
-    assert len(x_labels) == 3
-    assert len(flip_indices) == x_labels.shape[1]
+    assert x_labels.ndim == 3 and y_labels.ndim == 3
+    assert len(flip_indices) == x_labels.shape[1] and len(
+        flip_indices) == y_labels.shape[1]
     x_labels = x_labels[:, flip_indices].flip(-1)
     y_labels = y_labels[:, flip_indices]
 
@@ -76,6 +77,7 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int]):
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
     """
+    assert coords.ndim == 3
     assert len(flip_indices) == coords.shape[1]
     coords[:, :, 0] = 1.0 - coords[:, :, 0]
     coords = coords[:, flip_indices]

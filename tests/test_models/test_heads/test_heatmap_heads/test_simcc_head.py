@@ -177,6 +177,37 @@ class TestSimCCHead(TestCase):
                 preds[0].pred_instance_labels.keypoint_y_labels.shape,
                 (1, 17, 256 * 2))
 
+    def test_tta(self):
+        # flip test
+        decoder_cfg = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            smoothing_type='gaussian',
+            sigma=2.,
+            simcc_split_ratio=2.0)
+
+        head = SimCCHead(
+            in_channels=[16, 32],
+            out_channels=17,
+            input_size=(192, 256),
+            in_featuremap_size=(8, 6),
+            input_transform='select',
+            input_index=-1,
+            decoder=decoder_cfg)
+        feats = self._get_feats(
+            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        batch_data_samples = self._get_data_samples(
+            batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
+        preds = head.predict([feats, feats],
+                             batch_data_samples,
+                             test_cfg=dict(flip_test=True))
+
+        self.assertEqual(len(preds), 2)
+        self.assertIsInstance(preds[0], PoseDataSample)
+        self.assertIn('pred_instances', preds[0])
+        self.assertEqual(preds[0].pred_instances.keypoints.shape,
+                         preds[0].gt_instances.keypoints.shape)
+
     def test_loss(self):
         decoder_cfg1 = dict(
             type='SimCCLabel',
