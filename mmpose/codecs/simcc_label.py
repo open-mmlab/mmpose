@@ -104,7 +104,8 @@ class SimCCLabel(BaseKeypointCodec):
         coordinates are in the input image space.
 
         Args:
-            encoded (Tuple[np.ndarray, np.ndarray]): SimCC labels for x and y
+            encoded (Tuple[np.ndarray, np.ndarray]): SimCC labels for x-axis
+                and y-axis
 
         Returns:
             tuple:

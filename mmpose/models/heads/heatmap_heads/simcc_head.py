@@ -7,6 +7,7 @@ from mmengine.data import InstanceData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
+from mmpose.models.utils.tta import flip_vectors
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -194,7 +195,25 @@ class SimCCHead(BaseHead):
     ) -> SampleList:
         """Predict results from features."""
 
-        batch_pred_x, batch_pred_y = self.forward(feats)
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test -> feats = [orig, flipped]
+            assert isinstance(feats, list) and len(feats) == 2
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            _feats, _feats_flip = feats
+
+            _batch_pred_x, _batch_pred_y = self.forward(_feats)
+
+            _batch_pred_x_flip, _batch_pred_y_flip = self.forward(_feats_flip)
+            _batch_pred_x_flip, _batch_pred_y_flip = flip_vectors(
+                _batch_pred_x_flip,
+                _batch_pred_y_flip,
+                flip_indices=flip_indices)
+
+            batch_pred_x = (_batch_pred_x + _batch_pred_x_flip) * 0.5
+            batch_pred_y = (_batch_pred_y + _batch_pred_y_flip) * 0.5
+        else:
+            batch_pred_x, batch_pred_y = self.forward(feats)
+
         preds = self.decode((batch_pred_x, batch_pred_y), batch_data_samples)
 
         # Whether to visualize the predicted simcc representations

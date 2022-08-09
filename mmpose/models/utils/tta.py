@@ -48,8 +48,23 @@ def flip_heatmaps(heatmaps: Tensor,
     return heatmaps
 
 
-def flip_vectors():
-    pass
+def flip_vectors(x_labels: Tensor, y_labels: Tensor, flip_indices: List[int]):
+    """Flip instance-level labels in specific axis for test-time augmentation.
+
+    Args:
+        x_labels (Tensor): The vector labels in x-axis to flip. Should be
+            a tensor in shape [B, C, Wx]
+        y_labels (Tensor): The vector labels in y-axis to flip. Should be
+            a tensor in shape [B, C, Wy]
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
+    """
+    assert len(x_labels) == 3
+    assert len(flip_indices) == x_labels.shape[1]
+    x_labels = x_labels[:, flip_indices].flip(-1)
+    y_labels = y_labels[:, flip_indices]
+
+    return x_labels, y_labels
 
 
 def flip_coordinates(coords: Tensor, flip_indices: List[int]):
@@ -61,7 +76,7 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int]):
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
     """
-
+    assert len(flip_indices) == coords.shape[1]
     coords[:, :, 0] = 1.0 - coords[:, :, 0]
     coords = coords[:, flip_indices]
     return coords
