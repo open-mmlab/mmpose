@@ -6,6 +6,7 @@ import torch
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.models.utils.tta import flip_coordinates
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -99,8 +100,21 @@ class RLEHead(BaseHead):
                 test_cfg: ConfigType = {}) -> SampleList:
         """Predict results from outputs."""
 
-        batch_coords = self.forward(feats)
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test -> feats = [orig, flipped]
+            assert isinstance(feats, list) and len(feats == 2)
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            _feats, _feats_flip = feats
+
+            _batch_coords = self.forward(_feats)
+            _batch_coords_flip = flip_coordinates(
+                self.forward(_feats_flip), flip_indices=flip_indices)
+            batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
+        else:
+            batch_coords = self.forward(feats)  # (B, K, D)
+
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
+
         preds = self.decode(batch_coords, batch_data_samples)
 
         return preds

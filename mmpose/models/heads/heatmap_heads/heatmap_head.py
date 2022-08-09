@@ -270,7 +270,7 @@ class HeatmapHead(BaseHead):
         """
 
         if test_cfg.get('flip_test', False):
-            # TTA: flip test
+            # TTA: flip test -> feats = [orig, flipped]
             assert isinstance(feats, list) and len(feats) == 2
             flip_indices = batch_data_samples[0].metainfo['flip_indices']
             _feats, _feats_flip = feats

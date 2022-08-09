@@ -9,6 +9,7 @@ from mmengine.data import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import keypoint_pck_accuracy
+from mmpose.models.utils.tta import flip_coordinates, flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
@@ -208,7 +209,29 @@ class IntegralRegressionHead(BaseHead):
                 test_cfg: ConfigType = {}) -> SampleList:
         """Predict results from outputs."""
 
-        batch_coords, batch_heatmaps = self.forward(feats)
+        if test_cfg.get('flip_test', False):
+            # TTA: flip test -> feats = [orig, flipped]
+            assert isinstance(feats, list) and len(feats == 2)
+            flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            _feats, _feats_flip = feats
+
+            _batch_coords, _batch_heatmaps = self.forward(_feats)
+
+            _batch_coords_flip, _batch_heatmaps_flip = self.forward(
+                _feats_flip)
+            _batch_coords_flip = flip_coordinates(
+                _batch_coords_flip, flip_indices=flip_indices)
+            _batch_heatmaps_flip = flip_heatmaps(
+                _batch_heatmaps_flip,
+                flip_mode='heatmap',
+                flip_indices=flip_indices,
+                shift_heatmap=False)
+
+            batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
+            batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5
+        else:
+            batch_coords, batch_heatmaps = self.forward(feats)  # (B, K, D)
+
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
         preds = self.decode(batch_coords, batch_data_samples)
 

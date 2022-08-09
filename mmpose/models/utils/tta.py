@@ -46,3 +46,22 @@ def flip_heatmaps(heatmaps: Tensor,
         heatmaps[..., 1:] = heatmaps[..., :-1]
 
     return heatmaps
+
+
+def flip_vectors():
+    pass
+
+
+def flip_coordinates(coords: Tensor, flip_indices: List[int]):
+    """Flip normalized coordinates for test-time augmentation.
+
+    Args:
+        coords (Tensor): The coordinates to flip. Should be a tensor in shape
+            [B, K, D]
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
+    """
+
+    coords[:, :, 0] = 1.0 - coords[:, :, 0]
+    coords = coords[:, flip_indices]
+    return coords
