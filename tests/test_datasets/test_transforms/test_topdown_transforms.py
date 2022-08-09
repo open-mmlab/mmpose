@@ -146,7 +146,7 @@ class TestTopdownGenerateTarget(TestCase):
         encoder = dict(
             type='SimCCLabel',
             input_size=(192, 256),
-            simcc_type='gaussian',
+            smoothing_type='gaussian',
             simcc_split_ratio=2.0)
 
         # generate keypoint label

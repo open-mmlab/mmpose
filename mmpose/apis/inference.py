@@ -93,26 +93,27 @@ def init_model(config: Union[str, Path, Config],
     config.model.train_cfg = None
 
     model = build_pose_estimator(config.model)
+    # get dataset_meta in this priority: checkpoint > config > default (COCO)
+    dataset_meta = None
 
     if checkpoint is not None:
         ckpt = load_checkpoint(model, checkpoint, map_location='cpu')
 
         if 'dataset_meta' in ckpt.get('meta', {}):
             # checkpoint from mmpose 1.x
-            model.dataset_meta = ckpt['meta']['dataset_meta']
-        else:
-            dataset_meta = dataset_meta_from_config(
-                config, dataset_mode='test')
+            dataset_meta = ckpt['meta']['dataset_meta']
 
-            if dataset_meta is None:
-                warnings.simplefilter('once')
-                warnings.warn(
-                    'Can not load dataset_meta from the checkpoint or the '
-                    'model config. Use COCO metainfo by default.')
-                dataset_meta = parse_pose_metainfo(
-                    dict(from_file='configs/_base_/datasets/coco.py'))
+    if dataset_meta is None:
+        dataset_meta = dataset_meta_from_config(config, dataset_mode='test')
 
-            model.dataset_meta = dataset_meta
+    if dataset_meta is None:
+        warnings.simplefilter('once')
+        warnings.warn('Can not load dataset_meta from the checkpoint or the '
+                      'model config. Use COCO metainfo by default.')
+        dataset_meta = parse_pose_metainfo(
+            dict(from_file='configs/_base_/datasets/coco.py'))
+
+    model.dataset_meta = dataset_meta
 
     model.cfg = config  # save the config in the model for convenience
     model.to(device)
@@ -170,6 +171,7 @@ def inference_topdown(model: nn.Module,
 
         _data['bbox'] = bbox[None]  # shape (1, 4)
         _data['bbox_score'] = np.ones(1, dtype=np.float32)  # shape (1,)
+        _data.update(model.dataset_meta)
         data.append(pipeline(_data))
 
     with torch.no_grad():
