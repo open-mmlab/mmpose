@@ -213,6 +213,7 @@ class IntegralRegressionHead(BaseHead):
             # TTA: flip test -> feats = [orig, flipped]
             assert isinstance(feats, list) and len(feats) == 2
             flip_indices = batch_data_samples[0].metainfo['flip_indices']
+            img_shape = batch_data_samples[0].metainfo['img_shape']
             _feats, _feats_flip = feats
 
             _batch_coords, _batch_heatmaps = self.forward(_feats)
@@ -220,12 +221,15 @@ class IntegralRegressionHead(BaseHead):
             _batch_coords_flip, _batch_heatmaps_flip = self.forward(
                 _feats_flip)
             _batch_coords_flip = flip_coordinates(
-                _batch_coords_flip, flip_indices=flip_indices)
+                _batch_coords_flip,
+                flip_indices=flip_indices,
+                shift_coords=test_cfg.get('shift_coords', True),
+                img_shape=img_shape)
             _batch_heatmaps_flip = flip_heatmaps(
                 _batch_heatmaps_flip,
                 flip_mode='heatmap',
                 flip_indices=flip_indices,
-                shift_heatmap=False)
+                shift_heatmap=test_cfg.get('shift_heatmap', False))
 
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
             batch_heatmaps = (_batch_heatmaps + _batch_heatmaps_flip) * 0.5

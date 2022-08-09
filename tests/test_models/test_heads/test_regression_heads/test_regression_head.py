@@ -134,7 +134,7 @@ class TestRegressionHead(TestCase):
             batch_size=2, with_heatmap=False)
         preds = head.predict([feats, feats],
                              batch_data_samples,
-                             test_cfg=dict(flip_test=True))
+                             test_cfg=dict(flip_test=True, shift_coords=True))
 
         self.assertEqual(len(preds), 2)
         self.assertIsInstance(preds[0], PoseDataSample)
