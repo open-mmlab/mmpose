@@ -52,12 +52,12 @@
 
 Results on COCO val2017 without multi-scale test
 
-| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.380 | 0.671 | 0.368 | 0.473 | 0.741 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py) |  512x512   | 0.380 |      0.671      |      0.368      | 0.473 |      0.741      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |
 
 Results on COCO val2017 with multi-scale test. 3 default scales (\[2, 1, 0.5\]) are used
 
-| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py)  | 512x512 | 0.442 | 0.696 | 0.422 | 0.517 | 0.766 | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [pose_mobilenetv2](/configs/body/2d_kpt_sview_rgb_img/associative_embedding/coco/mobilenetv2_coco_512x512.py) |  512x512   | 0.442 |      0.696      |      0.422      | 0.517 |      0.766      | [ckpt](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512-4d96e309_20200816.pth) | [log](https://download.openmmlab.com/mmpose/bottom_up/mobilenetv2_coco_512x512_20200816.log.json) |

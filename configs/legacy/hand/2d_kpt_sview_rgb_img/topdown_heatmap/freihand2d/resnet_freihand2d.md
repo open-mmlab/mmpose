@@ -51,7 +51,7 @@
 
 Results on FreiHand val & test set
 
-| Set | Arch  | Input Size | PCK@0.2 |  AUC  |  EPE  | ckpt    | log     |
-| :--- | :--------: | :--------: | :------: | :------: | :------: |:------: |:------: |
-|val| [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py) | 224x224 | 0.993 | 0.868 | 3.25 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224_20200914.log.json) |
-|test| [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py) | 224x224 | 0.992 | 0.868 | 3.27 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224_20200914.log.json) |
+| Set  |                           Arch                            | Input Size | PCK@0.2 |  AUC  | EPE  |                           ckpt                            |                           log                            |
+| :--- | :-------------------------------------------------------: | :--------: | :-----: | :---: | :--: | :-------------------------------------------------------: | :------------------------------------------------------: |
+| val  | [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py) |  224x224   |  0.993  | 0.868 | 3.25 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224_20200914.log.json) |
+| test | [pose_resnet_50](/configs/hand/2d_kpt_sview_rgb_img/topdown_heatmap/freihand2d/res50_freihand_224x224.py) |  224x224   |  0.992  | 0.868 | 3.27 | [ckpt](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224-ff0799bc_20200914.pth) | [log](https://download.openmmlab.com/mmpose/hand/resnet/res50_freihand_224x224_20200914.log.json) |

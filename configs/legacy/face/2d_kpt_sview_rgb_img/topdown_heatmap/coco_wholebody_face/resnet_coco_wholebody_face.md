@@ -50,6 +50,6 @@
 
 Results on COCO-WholeBody-Face val set
 
-| Arch  | Input Size | NME | ckpt | log |
-| :-------------- | :-----------: | :------: |:------: |:------: |
-| [pose_res50](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/res50_coco_wholebody_face_256x256.py)  | 256x256 | 0.0566 | [ckpt](https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256-5128edf5_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256_20210909.log.json) |
+| Arch                                                          | Input Size |  NME   |                              ckpt                              |                              log                              |
+| :------------------------------------------------------------ | :--------: | :----: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
+| [pose_res50](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/res50_coco_wholebody_face_256x256.py) |  256x256   | 0.0566 | [ckpt](https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256-5128edf5_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/resnet/res50_coco_wholebody_face_256x256_20210909.log.json) |

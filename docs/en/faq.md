@@ -9,7 +9,7 @@ If the contents here do not cover your issue, please create an issue using the [
 - **Unable to install xtcocotools**
 
   1. Try to install it using pypi manually `pip install xtcocotools`.
-  1. If step1 does not work. Try to install it from [source](https://github.com/jin-s13/xtcocoapi).
+  2. If step1 does not work. Try to install it from [source](https://github.com/jin-s13/xtcocoapi).
 
   ```
   git clone https://github.com/jin-s13/xtcocoapi
@@ -20,7 +20,7 @@ If the contents here do not cover your issue, please create an issue using the [
 - **No matching distribution found for xtcocotools>=1.6**
 
   1. Install cython by `pip install cython`.
-  1. Install xtcocotools from [source](https://github.com/jin-s13/xtcocoapi).
+  2. Install xtcocotools from [source](https://github.com/jin-s13/xtcocoapi).
 
   ```
   git clone https://github.com/jin-s13/xtcocoapi
@@ -28,10 +28,10 @@ If the contents here do not cover your issue, please create an issue using the [
   python setup.py install
   ```
 
-- **"No module named 'mmcv.ops'"; "No module named 'mmcv._ext'"**
+- **"No module named 'mmcv.ops'"; "No module named 'mmcv.\_ext'"**
 
   1. Uninstall existing mmcv in the environment using `pip uninstall mmcv`.
-  1. Install mmcv-full following the [installation instruction](https://mmcv.readthedocs.io/en/latest/#installation).
+  2. Install mmcv-full following the [installation instruction](https://mmcv.readthedocs.io/en/latest/#installation).
 
 ## Data
 
@@ -95,8 +95,8 @@ If the contents here do not cover your issue, please create an issue using the [
 
 - **How to fix stages of backbone when finetuning a model ?**
 
-    You can refer to [`def _freeze_stages()`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L618) and [`frozen_stages`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L498),
-    reminding to set `find_unused_parameters = True` in config files for distributed training or testing.
+  You can refer to [`def _freeze_stages()`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L618) and [`frozen_stages`](https://github.com/open-mmlab/mmpose/blob/d026725554f9dc08e8708bd9da8678f794a7c9a6/mmpose/models/backbones/resnet.py#L498),
+  reminding to set `find_unused_parameters = True` in config files for distributed training or testing.
 
 ## Evaluation
 
@@ -118,18 +118,18 @@ If the contents here do not cover your issue, please create an issue using the [
   For top-down models, try to edit the config file. For example,
 
   1. set `flip_test=False` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L51).
-  1. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
-  1. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+  2. set `post_process='default'` in [topdown-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/top_down/resnet/coco/res50_coco_256x192.py#L54).
+  3. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
 
   For bottom-up models, try to edit the config file. For example,
 
   1. set `flip_test=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L91).
-  1. set `adjust=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
-  1. set `refine=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
-  1. use smaller input image size in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
+  2. set `adjust=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L89).
+  3. set `refine=False` in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L90).
+  4. use smaller input image size in [AE-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/bottom_up/resnet/coco/res50_coco_512x512.py#L39).
 
 ## Deployment
 
 - **Why is the onnx model converted by mmpose throwing error when converting to other frameworks such as TensorRT?**
 
-    For now, we can only make sure that models in mmpose are onnx-compatible. However, some operations in onnx may be unsupported by your target framework for deployment, e.g. TensorRT in [this issue](https://github.com/open-mmlab/mmaction2/issues/414). When such situation occurs, we suggest you raise an issue and ask the community to help as long as `pytorch2onnx.py` works well and is verified numerically.
+  For now, we can only make sure that models in mmpose are onnx-compatible. However, some operations in onnx may be unsupported by your target framework for deployment, e.g. TensorRT in [this issue](https://github.com/open-mmlab/mmaction2/issues/414). When such situation occurs, we suggest you raise an issue and ask the community to help as long as `pytorch2onnx.py` works well and is verified numerically.

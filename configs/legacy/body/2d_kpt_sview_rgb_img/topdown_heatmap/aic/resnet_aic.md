@@ -50,6 +50,6 @@
 
 Results on AIC val set with ground-truth bounding boxes
 
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_101](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/res101_aic_256x192.py) | 256x192 | 0.294 | 0.736 | 0.174 | 0.337 | 0.763 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [pose_resnet_101](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/aic/res101_aic_256x192.py) |  256x192   | 0.294 |      0.736      |      0.174      | 0.337 |      0.763      | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192-79b35445_20200826.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res101_aic_256x192_20200826.log.json) |

@@ -32,6 +32,6 @@ year = {2015}
 
 Results on CMU Panoptic dataset.
 
-| Arch | mAP | mAR | MPJPE | Recall@500mm| ckpt | log |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [prn64_cpn80_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.py) | 97.31 | 97.99 | 17.57| 99.85| [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-545c150e_20211103.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5_20211103.log.json) |
+| Arch                                                       |  mAP  |  mAR  | MPJPE | Recall@500mm |                            ckpt                            |                            log                            |
+| :--------------------------------------------------------- | :---: | :---: | :---: | :----------: | :--------------------------------------------------------: | :-------------------------------------------------------: |
+| [prn64_cpn80_res50](/configs/body/3d_kpt_mview_rgb_img/voxelpose/panoptic/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5.py) | 97.31 | 97.99 | 17.57 |    99.85     | [ckpt](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5-545c150e_20211103.pth) | [log](https://download.openmmlab.com/mmpose/body3d/voxelpose/voxelpose_prn64x64x64_cpn80x80x20_panoptic_cam5_20211103.log.json) |

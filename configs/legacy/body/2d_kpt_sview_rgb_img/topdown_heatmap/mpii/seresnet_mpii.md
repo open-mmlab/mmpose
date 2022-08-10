@@ -34,10 +34,10 @@
 
 Results on MPII val set
 
-| Arch  | Input Size | Mean | Mean@0.1   | ckpt    | log     |
-| :--- | :--------: | :------: | :------: |:------: |:------: |
-| [pose_seresnet_50](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet50_mpii_256x256.py) | 256x256 | 0.884 | 0.292 | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256-1bb21f79_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256_20200927.log.json) |
-| [pose_seresnet_101](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet101_mpii_256x256.py) | 256x256 | 0.884 | 0.295 | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256-0ba14ff5_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256_20200927.log.json) |
-| [pose_seresnet_152\*](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet152_mpii_256x256.py) | 256x256 | 0.884 | 0.287 | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256-6ea1e774_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256_20200927.log.json) |
+| Arch                                                        | Input Size | Mean  | Mean@0.1 |                            ckpt                             |                             log                             |
+| :---------------------------------------------------------- | :--------: | :---: | :------: | :---------------------------------------------------------: | :---------------------------------------------------------: |
+| [pose_seresnet_50](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet50_mpii_256x256.py) |  256x256   | 0.884 |  0.292   | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256-1bb21f79_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet50_mpii_256x256_20200927.log.json) |
+| [pose_seresnet_101](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet101_mpii_256x256.py) |  256x256   | 0.884 |  0.295   | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256-0ba14ff5_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet101_mpii_256x256_20200927.log.json) |
+| [pose_seresnet_152\*](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/mpii/seresnet152_mpii_256x256.py) |  256x256   | 0.884 |  0.287   | [ckpt](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256-6ea1e774_20200927.pth) | [log](https://download.openmmlab.com/mmpose/top_down/seresnet/seresnet152_mpii_256x256_20200927.log.json) |
 
-Note that \* means without imagenet pre-training.
+Note that * means without imagenet pre-training.

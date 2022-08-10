@@ -33,6 +33,6 @@
 
 Results on COCO-WholeBody-Face val set
 
-| Arch  | Input Size | NME | ckpt | log |
-| :-------------- | :-----------: | :------: |:------: |:------: |
-| [pose_scnet_50](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/scnet50_coco_wholebody_face_256x256.py)  | 256x256 | 0.0565 | [ckpt](https://download.openmmlab.com/mmpose/face/scnet/scnet50_coco_wholebody_face_256x256-a0183f5f_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/scnet/scnet50_coco_wholebody_face_256x256_20210909.log.json) |
+| Arch                                                          | Input Size |  NME   |                              ckpt                              |                              log                              |
+| :------------------------------------------------------------ | :--------: | :----: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
+| [pose_scnet_50](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/scnet50_coco_wholebody_face_256x256.py) |  256x256   | 0.0565 | [ckpt](https://download.openmmlab.com/mmpose/face/scnet/scnet50_coco_wholebody_face_256x256-a0183f5f_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/scnet/scnet50_coco_wholebody_face_256x256_20210909.log.json) |
