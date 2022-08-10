@@ -36,6 +36,6 @@
 
 Results on MPI-INF-3DHP dataset with ground truth 2D detections, supervised training
 
-| Arch | Receptive Field | MPJPE | P-MPJPE | 3DPCK | 3DAUC | ckpt | log |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [VideoPose3D](configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py) | 1 | 58.3 | 40.6 | 94.1 | 63.1 | [ckpt](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth) | [log](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt_20210603.log.json) |
+| Arch                                                   | Receptive Field | MPJPE | P-MPJPE | 3DPCK | 3DAUC |                          ckpt                           |                          log                           |
+| :----------------------------------------------------- | :-------------: | :---: | :-----: | :---: | :---: | :-----------------------------------------------------: | :----------------------------------------------------: |
+| [VideoPose3D](configs/body/3d_kpt_sview_rgb_vid/video_pose_lift/mpi_inf_3dhp/videopose3d_mpi-inf-3dhp_1frame_fullconv_supervised_gt.py) |        1        | 58.3  |  40.6   | 94.1  | 63.1  | [ckpt](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt-d6ed21ef_20210603.pth) | [log](https://download.openmmlab.com/mmpose/body3d/videopose/videopose_mpi-inf-3dhp_1frame_fullconv_supervised_gt_20210603.log.json) |

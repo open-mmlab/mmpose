@@ -34,6 +34,6 @@
 
 Results on COCO-WholeBody-Face val set
 
-| Arch  | Input Size | NME | ckpt | log |
-| :-------------- | :-----------: | :------: |:------: |:------: |
-| [pose_hrnetv2_w18](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_w18_coco_wholebody_face_256x256.py)  | 256x256 | 0.0569 | [ckpt](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_coco_wholebody_face_256x256-c1ca469b_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_coco_wholebody_face_256x256_20210909.log.json) |
+| Arch                                                          | Input Size |  NME   |                              ckpt                              |                              log                              |
+| :------------------------------------------------------------ | :--------: | :----: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
+| [pose_hrnetv2_w18](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_w18_coco_wholebody_face_256x256.py) |  256x256   | 0.0569 | [ckpt](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_coco_wholebody_face_256x256-c1ca469b_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_coco_wholebody_face_256x256_20210909.log.json) |

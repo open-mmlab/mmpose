@@ -34,6 +34,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :----------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [vgg](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg16_bn_coco_256x192.py)  | 256x192 | 0.698 | 0.890 | 0.768 | 0.754 | 0.929 | [ckpt](https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192-7e7c58d6_20210517.pth) | [log](https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192_20210517.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [vgg](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/vgg16_bn_coco_256x192.py) |  256x192   | 0.698 |      0.890      |      0.768      | 0.754 |      0.929      | [ckpt](https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192-7e7c58d6_20210517.pth) | [log](https://download.openmmlab.com/mmpose/top_down/vgg/vgg16_bn_coco_256x192_20210517.log.json) |

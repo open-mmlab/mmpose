@@ -51,6 +51,6 @@
 
 Results on COCO-WholeBody-Face val set
 
-| Arch  | Input Size | NME | ckpt | log |
-| :-------------- | :-----------: | :------: |:------: |:------: |
-| [pose_hrnetv2_w18_dark](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_w18_coco_wholebody_face_256x256_dark.py)  | 256x256 | 0.0513 | [ckpt](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark_20210909.log.json) |
+| Arch                                                          | Input Size |  NME   |                              ckpt                              |                              log                              |
+| :------------------------------------------------------------ | :--------: | :----: | :------------------------------------------------------------: | :-----------------------------------------------------------: |
+| [pose_hrnetv2_w18_dark](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/coco_wholebody_face/hrnetv2_w18_coco_wholebody_face_256x256_dark.py) |  256x256   | 0.0513 | [ckpt](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark-3d9a334e_20210909.pth) | [log](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_coco_wholebody_face_256x256_dark_20210909.log.json) |

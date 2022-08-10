@@ -151,4 +151,4 @@ Some tips to speed up MMPose inference:
 For 2D animal pose estimation models, try to edit the config file. For example,
 
 1. set `flip_test=False` in [macaque-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/animal/resnet/macaque/res50_macaque_256x192.py#L51).
-1. set `post_process='default'` in [macaque-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/animal/resnet/macaque/res50_macaque_256x192.py#L52).
+2. set `post_process='default'` in [macaque-res50](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/animal/resnet/macaque/res50_macaque_256x192.py#L52).

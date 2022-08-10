@@ -55,6 +55,6 @@ Results on AFLW dataset
 
 The model is trained on AFLW train and evaluated on AFLW full and frontal.
 
-| Arch  | Input Size | NME<sub>*full*</sub> | NME<sub>*frontal*</sub>  | ckpt | log |
-| :-------------- | :-----------: | :------: | :------: |:------: |:------: |
-| [pose_hrnetv2_w18_dark](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256_dark.py)  | 256x256 | 1.34 | 1.20 | [ckpt](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth) | [log](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark_20210125.log.json) |
+| Arch                                              | Input Size | NME<sub>*full*</sub> | NME<sub>*frontal*</sub> |                       ckpt                        |                        log                        |
+| :------------------------------------------------ | :--------: | :------------------: | :---------------------: | :-----------------------------------------------: | :-----------------------------------------------: |
+| [pose_hrnetv2_w18_dark](/configs/face/2d_kpt_sview_rgb_img/topdown_heatmap/aflw/hrnetv2_w18_aflw_256x256_dark.py) |  256x256   |         1.34         |          1.20           | [ckpt](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark-219606c0_20210125.pth) | [log](https://download.openmmlab.com/mmpose/face/darkpose/hrnetv2_w18_aflw_256x256_dark_20210125.log.json) |

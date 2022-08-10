@@ -90,7 +90,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
        --eval mAP
    ```
 
-1. Test ResNet50 on COCO with 8 GPUS. Download the checkpoint via url, and evaluate the mAP.
+2. Test ResNet50 on COCO with 8 GPUS. Download the checkpoint via url, and evaluate the mAP.
 
    ```shell
    ./tools/dist_test.sh configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192.py \
@@ -98,7 +98,7 @@ Assume that you have already downloaded the checkpoints to the directory `checkp
        --eval mAP
    ```
 
-1. Test ResNet50 on COCO in slurm environment and evaluate the mAP.
+3. Test ResNet50 on COCO in slurm environment and evaluate the mAP.
 
    ```shell
    ./tools/slurm_test.sh slurm_partition test_job \

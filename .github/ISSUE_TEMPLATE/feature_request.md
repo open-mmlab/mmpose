@@ -4,7 +4,6 @@ about: Suggest an idea for this project
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 Thanks for your feature request and we will review and plan for it when necessary.
@@ -13,7 +12,7 @@ If you feel we have helped you, give us a STAR! :satisfied:
 **Steps**
 
 1. Check if the feature has been requested in the [meta issue](https://github.com/open-mmlab/mmpose/issues/9), and if so, click thumb up button.
-1. Post the feature request in the [meta issue](https://github.com/open-mmlab/mmpose/issues/9), if it is new.
+2. Post the feature request in the [meta issue](https://github.com/open-mmlab/mmpose/issues/9), if it is new.
 
 **Describe the feature**
 
@@ -21,8 +20,8 @@ If you feel we have helped you, give us a STAR! :satisfied:
 
 A clear and concise description of the motivation of the feature.
 
-1. Ex1. It is inconvenient when [....].
-1. Ex2. There is a recent paper [....], which is very helpful for [....].
+1. Ex1. It is inconvenient when \[....\].
+2. Ex2. There is a recent paper \[....\], which is very helpful for \[....\].
 
 **Related resources**
 
