@@ -47,7 +47,7 @@ jobs:
           name: Install Libraries
           command: |
             sudo apt-get update
-            sudo apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg
+            sudo apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6 libturbojpeg git
       - run:
           name: Configure Python & pip
           command: |
@@ -61,10 +61,12 @@ jobs:
       - run:
           name: Install mmpose dependencies
           command: |
+            python -m pip install -U numpy
             python -m pip install git+ssh://git@github.com/open-mmlab/mmengine.git@main
             python -m pip install << parameters.mmcv >>
             python -m pip install git+ssh://git@github.com/open-mmlab/mmdetection.git@dev-3.x
             python -m pip install -r requirements.txt
+            python -m pip install -r requirements/albu.txt
       - run:
           name: Build and install
           command: |
@@ -72,7 +74,7 @@ jobs:
       - run:
           name: Run unittests
           command: |
-            python -m coverage run --branch --source mmpose -m pytest tests/
+            python -m coverage run --branch --source mmpose -m --omit *legacy* pytest tests/test_utils/
             python -m coverage xml
             python -m coverage report -m
   build_cuda:
@@ -107,10 +109,12 @@ jobs:
       - run:
           name: Install mmpose dependencies
           command: |
+            docker exec mmpose apt install git -y
             docker exec mmpose pip install -e /mmengine
             docker exec mmpose pip install << parameters.mmcv >>
             docker exec mmpose pip install -e /mmdetection
             docker exec mmpose pip install -r requirements.txt
+            docker exec mmpose pip install -r requirements/albu.txt
       - run:
           name: Build and install
           command: |
