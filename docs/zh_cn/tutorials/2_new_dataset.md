@@ -74,7 +74,7 @@ configs/_base_/datasets/custom.py
 
 1. `name`: 代表关键点的名称。一个数据集的每个关键点，名称必须唯一。
 2. `id`: 关键点的标识号。
-3. `color`: ([B, G, R]) 用于可视化关键点。
+3. `color`: (\[B, G, R\]) 用于可视化关键点。
 4. `type`: 分为 'upper' 和 'lower' 两种，用于数据增强。
 5. `swap`: 表示与当前关键点，“镜像对称”的关键点名称。
 
@@ -274,10 +274,10 @@ dataset_info = dict(
 
 2. 定义数据集类，并且注册这个类。
 
-    ```
-    @DATASETS.register_module(name='MyCustomDataset')
-    class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
-    ```
+   ```
+   @DATASETS.register_module(name='MyCustomDataset')
+   class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
+   ```
 
 3. 为你的自定义类别创建 `mmpose/datasets/datasets/custom/__init__.py`
 

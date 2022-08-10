@@ -38,7 +38,7 @@
 
 Results on Human3.6M test set with ground truth 2D detections
 
-| Arch  | Input Size | EPE | PCK | ckpt | log |
-| :--- | :-----------: | :---: | :---: | :----: | :---: |
-| [pose_hrnet_w32](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w32_h36m_256x256.py) | 256x256 | 9.43 | 0.911 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-d3206675_20210621.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256_20210621.log.json) |
-| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w48_h36m_256x256.py) | 256x256 | 7.36 | 0.932 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_h36m_256x256-78e88d08_20210621.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_h36m_256x256_20210621.log.json) |
+| Arch                                                         | Input Size | EPE  |  PCK  |                             ckpt                              |                             log                              |
+| :----------------------------------------------------------- | :--------: | :--: | :---: | :-----------------------------------------------------------: | :----------------------------------------------------------: |
+| [pose_hrnet_w32](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w32_h36m_256x256.py) |  256x256   | 9.43 | 0.911 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256-d3206675_20210621.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_h36m_256x256_20210621.log.json) |
+| [pose_hrnet_w48](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/h36m/hrnet_w48_h36m_256x256.py) |  256x256   | 7.36 | 0.932 | [ckpt](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_h36m_256x256-78e88d08_20210621.pth) | [log](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_h36m_256x256_20210621.log.json) |

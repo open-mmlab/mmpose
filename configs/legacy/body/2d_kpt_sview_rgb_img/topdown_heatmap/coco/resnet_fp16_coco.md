@@ -68,6 +68,6 @@
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-| Arch  | Input Size | AP | AP<sup>50</sup> | AP<sup>75</sup> | AR | AR<sup>50</sup> | ckpt | log |
-| :-------------- | :-----------: | :------: | :------: | :------: | :------: | :------: |:------: |:------: |
-| [pose_resnet_50_fp16](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_fp16_dynamic.py)  | 256x192 | 0.717 | 0.898 | 0.793 | 0.772 | 0.936 | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic-6edb79f3_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic_20210430.log.json) |
+| Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
+| :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
+| [pose_resnet_50_fp16](/configs/body/2d_kpt_sview_rgb_img/topdown_heatmap/coco/res50_coco_256x192_fp16_dynamic.py) |  256x192   | 0.717 |      0.898      |      0.793      | 0.772 |      0.936      | [ckpt](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic-6edb79f3_20210430.pth) | [log](https://download.openmmlab.com/mmpose/top_down/resnet/res50_coco_256x192_fp16_dynamic_20210430.log.json) |

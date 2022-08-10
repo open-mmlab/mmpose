@@ -2,9 +2,8 @@
 name: Reimplementation Questions
 about: Ask about questions during model reimplementation
 title: ''
-labels: 'reimplementation'
+labels: reimplementation
 assignees: ''
-
 ---
 
 If you feel we have helped you, give us a STAR! :satisfied:
@@ -14,9 +13,9 @@ If you feel we have helped you, give us a STAR! :satisfied:
 There are several common situations in the reimplementation issues as below
 
 1. Reimplement a model in the model zoo using the provided configs.
-1. Reimplement a model in the model zoo on other dataset (e.g., custom datasets).
-1. Reimplement a custom model but all the components are implemented in MMPose.
-1. Reimplement a custom model with new modules implemented by yourself.
+2. Reimplement a model in the model zoo on other dataset (e.g., custom datasets).
+3. Reimplement a custom model but all the components are implemented in MMPose.
+4. Reimplement a custom model with new modules implemented by yourself.
 
 There are several things to do for different cases as below.
 
@@ -27,7 +26,7 @@ There are several things to do for different cases as below.
 **Checklist**
 
 1. I have searched related issues but cannot get the expected help.
-1. The issue has not been fixed in the latest version.
+2. The issue has not been fixed in the latest version.
 
 **Describe the issue**
 
@@ -53,9 +52,10 @@ A placeholder for the config.
 **Environment**
 
 1. Please run `PYTHONPATH=${PWD}:$PYTHONPATH python mmpose/utils/collect_env.py` to collect necessary environment information and paste it here.
-1. You may add addition that may be helpful for locating the problem, such as
-  - How you installed PyTorch [e.g., pip, conda, source]
-  - Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
+2. You may add addition that may be helpful for locating the problem, such as
+
+- How you installed PyTorch \[e.g., pip, conda, source\]
+- Other environment variables that may be related (such as `$PATH`, `$LD_LIBRARY_PATH`, `$PYTHONPATH`, etc.)
 
 **Results**
 
