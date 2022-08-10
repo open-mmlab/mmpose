@@ -7,13 +7,13 @@ from unittest import TestCase
 import numpy as np
 from mmcv.transforms import LoadImageFromFile
 
-from mmpose.datasets.transforms import (Albumentation, GetBboxCenterScale,
+from mmpose.datasets.transforms import (Albumentation, GetBBoxCenterScale,
                                         PhotometricDistortion,
-                                        RandomBboxTransform, RandomFlip,
+                                        RandomBBoxTransform, RandomFlip,
                                         RandomHalfBody)
 
 
-class TestGetBboxCenterScale(TestCase):
+class TestGetBBoxCenterScale(TestCase):
 
     def setUp(self):
 
@@ -39,7 +39,7 @@ class TestGetBboxCenterScale(TestCase):
         # test converting bbox to center and scale
         padding = 1.25
 
-        transform = GetBboxCenterScale(padding=padding)
+        transform = GetBBoxCenterScale(padding=padding)
         results = deepcopy(self.data_info)
         results = transform(results)
 
@@ -59,8 +59,8 @@ class TestGetBboxCenterScale(TestCase):
         self.assertTrue(np.allclose(results['bbox_scale'], scale))
 
     def test_repr(self):
-        transform = GetBboxCenterScale(padding=1.25)
-        self.assertEqual(repr(transform), 'GetBboxCenterScale(padding=1.25)')
+        transform = GetBBoxCenterScale(padding=1.25)
+        self.assertEqual(repr(transform), 'GetBBoxCenterScale(padding=1.25)')
 
 
 class TestRandomFlip(TestCase):
@@ -273,7 +273,7 @@ class TestRandomHalfBody(TestCase):
             'padding=1.5, prob=0.3)')
 
 
-class TestRandomBboxTransform(TestCase):
+class TestRandomBBoxTransform(TestCase):
 
     def setUp(self):
         # prepare dummy top-down data sample with COCO metainfo
@@ -302,7 +302,7 @@ class TestRandomBboxTransform(TestCase):
         rotate_factor = 40.
 
         # test random shift
-        transform = RandomBboxTransform(
+        transform = RandomBBoxTransform(
             shift_factor=shfit_factor,
             shift_prob=1.0,
             scale_prob=0.0,
@@ -324,7 +324,7 @@ class TestRandomBboxTransform(TestCase):
             np.allclose(results['bbox_rotation'], np.zeros((1, 17))))
 
         # test random resizing
-        transform = RandomBboxTransform(
+        transform = RandomBBoxTransform(
             scale_factor=scale_factor,
             shift_prob=0.0,
             scale_prob=1.0,
@@ -343,7 +343,7 @@ class TestRandomBboxTransform(TestCase):
             np.allclose(results['bbox_rotation'], np.zeros((1, 17))))
 
         # test random rotation
-        transform = RandomBboxTransform(
+        transform = RandomBBoxTransform(
             rotate_factor=rotate_factor,
             shift_prob=0.0,
             scale_prob=0.0,
@@ -363,7 +363,7 @@ class TestRandomBboxTransform(TestCase):
                          (results['bbox_rotation'] < bbox_rotation_max)).all())
 
         # test hybrid transform
-        transform = RandomBboxTransform(
+        transform = RandomBBoxTransform(
             shift_factor=shfit_factor,
             scale_factor=scale_factor,
             rotate_factor=rotate_factor,
@@ -395,10 +395,10 @@ class TestRandomBboxTransform(TestCase):
     def test_errors(self):
         # invalid arguments
         with self.assertRaises(AssertionError):
-            _ = RandomBboxTransform(scale_factor=2.)
+            _ = RandomBBoxTransform(scale_factor=2.)
 
     def test_repr(self):
-        transform = RandomBboxTransform(
+        transform = RandomBBoxTransform(
             shift_factor=0.16,
             shift_prob=0.3,
             scale_factor=0.5,
@@ -408,7 +408,7 @@ class TestRandomBboxTransform(TestCase):
 
         self.assertEqual(
             repr(transform),
-            'RandomBboxTransform(shift_prob=0.3, shift_factor=0.16, '
+            'RandomBBoxTransform(shift_prob=0.3, shift_factor=0.16, '
             'scale_prob=1.0, scale_factor=0.5, rotate_prob=0.6, '
             'rotate_factor=40.0)')
 

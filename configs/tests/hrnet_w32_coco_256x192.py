@@ -67,8 +67,8 @@ file_client_args = dict(backend='disk')
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBboxCenterScale'),
-    dict(type='RandomBboxTransform'),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='RandomBBoxTransform'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -77,7 +77,7 @@ train_pipeline = [
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBboxCenterScale'),
+    dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
