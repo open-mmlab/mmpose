@@ -61,6 +61,7 @@ jobs:
       - run:
           name: Install mmpose dependencies
           command: |
+            docker exec mmpose apt-get install git
             python -m pip install git+ssh://git@github.com/open-mmlab/mmengine.git@main
             python -m pip install << parameters.mmcv >>
             python -m pip install git+ssh://git@github.com/open-mmlab/mmdetection.git@dev-3.x
@@ -107,6 +108,7 @@ jobs:
       - run:
           name: Install mmpose dependencies
           command: |
+            docker exec mmpose apt-get install git -y
             docker exec mmpose pip install -e /mmengine
             docker exec mmpose pip install << parameters.mmcv >>
             docker exec mmpose pip install -e /mmdetection
@@ -142,6 +144,13 @@ workflows:
               ignore:
                 - dev-1.x
                 - test-1.x
+      - build_cuda:
+          name: minimum_version_gpu
+          torch: 1.6.0
+          # Use double quotation mark to explicitly specify its type
+          # as string instead of number
+          mmcv: https://download.openmmlab.com/mmcv/dev-2.x/cu101/torch1.6.0/mmcv_full-2.0.0rc0-cp37-cp37m-manylinux1_x86_64.whl
+          cuda: "10.1"
   merge_stage_test:
     when:
       not:
