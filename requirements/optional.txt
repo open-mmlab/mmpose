@@ -1,6 +1,7 @@
+# poseval@git+https://github.com/svenkreiss/poseval.git
+git+https://github.com/cocodataset/panopticapi.git
 onnx
 onnxruntime
-poseval@git+https://github.com/svenkreiss/poseval.git
 protobuf~=3.19.0
 pyrender
 requests
