@@ -7,7 +7,7 @@ from mmpose.codecs import UDPHeatmap
 from mmpose.registry import KEYPOINT_CODECS
 
 
-class TestMSRAHeatmap(TestCase):
+class TestUDPHeatmap(TestCase):
 
     def setUp(self) -> None:
         # name and configs of all test cases

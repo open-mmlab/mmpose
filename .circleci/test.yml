@@ -146,7 +146,7 @@ workflows:
                 - dev-1.x
                 - test-1.x
       - build_cpu:
-          name: minimum_version_cpu
+          name: maximum_version_cpu
           torch: 1.9.0
           torchvision: 0.10.0
           python: 3.9.0
