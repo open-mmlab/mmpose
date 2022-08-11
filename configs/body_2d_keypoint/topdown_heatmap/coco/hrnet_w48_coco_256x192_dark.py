@@ -1,11 +1,15 @@
 _base_ = [
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_bs512_ep210.py',
+    '../../../_base_/default_runtime.py',
+    '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MSRAHeatmap',
+    input_size=(192, 256),
+    heatmap_size=(48, 64),
+    sigma=2,
+    unbiased=True)
 
 # model settings
 model = dict(
@@ -30,23 +34,23 @@ model = dict(
                 num_branches=2,
                 block='BASIC',
                 num_blocks=(4, 4),
-                num_channels=(32, 64)),
+                num_channels=(48, 96)),
             stage3=dict(
                 num_modules=4,
                 num_branches=3,
                 block='BASIC',
                 num_blocks=(4, 4, 4),
-                num_channels=(32, 64, 128)),
+                num_channels=(48, 96, 192)),
             stage4=dict(
                 num_modules=3,
                 num_branches=4,
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
-                num_channels=(32, 64, 128, 256))),
+                num_channels=(48, 96, 192, 384))),
     ),
     head=dict(
         type='HeatmapHead',
-        in_channels=32,
+        in_channels=48,
         out_channels=17,
         deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
@@ -67,8 +71,8 @@ file_client_args = dict(backend='disk')
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale'),
-    dict(type='RandomBBoxTransform'),
+    dict(type='GetBboxCenterScale'),
+    dict(type='RandomBboxTransform'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -77,14 +81,14 @@ train_pipeline = [
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale'),
+    dict(type='GetBboxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

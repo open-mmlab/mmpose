@@ -1,11 +1,11 @@
 _base_ = [
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_bs512_ep210.py',
+    '../../../_base_/default_runtime.py',
+    '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=3)
 
 # model settings
 model = dict(
@@ -67,8 +67,8 @@ file_client_args = dict(backend='disk')
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale'),
-    dict(type='RandomBBoxTransform'),
+    dict(type='GetBboxCenterScale'),
+    dict(type='RandomBboxTransform'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
@@ -77,7 +77,7 @@ train_pipeline = [
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale'),
+    dict(type='GetBboxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
