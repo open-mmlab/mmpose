@@ -23,7 +23,7 @@ Number = Union[int, float]
 
 
 @TRANSFORMS.register_module()
-class GetBboxCenterScale(BaseTransform):
+class GetBBoxCenterScale(BaseTransform):
     """Convert bboxes from [x, y, w, h] to center and scale.
 
     The center is the coordinates of the bbox center, and the scale is the
@@ -50,7 +50,7 @@ class GetBboxCenterScale(BaseTransform):
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`GetBboxCenterScale`.
+        """The transform function of :class:`GetBBoxCenterScale`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 
@@ -412,7 +412,7 @@ class RandomHalfBody(BaseTransform):
 
 
 @TRANSFORMS.register_module()
-class RandomBboxTransform(BaseTransform):
+class RandomBBoxTransform(BaseTransform):
     r"""Rnadomly shift, resize and rotate the bounding boxes.
 
     Required Keys:
@@ -510,7 +510,7 @@ class RandomBboxTransform(BaseTransform):
 
     def transform(self,
                   results: Dict) -> Optional[Union[Dict, Tuple[List, List]]]:
-        """The transform function of :class:`RandomBboxTransform`.
+        """The transform function of :class:`RandomBBoxTransform`.
 
         See ``transform()`` method of :class:`BaseTransform` for details.
 

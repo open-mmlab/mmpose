@@ -48,7 +48,7 @@ def bbox_xyxy2cs(bbox: np.ndarray,
     Args:
         bbox (ndarray): Bounding box(es) in shape (4,) or (n, 4), formatted
             as (left, top, right, bottom)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
 
     Returns:
@@ -81,7 +81,7 @@ def bbox_xywh2cs(bbox: np.ndarray,
     Args:
         bbox (ndarray): Bounding box(es) in shape (4,) or (n, 4), formatted
             as (x, y, h, w)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
 
     Returns:
@@ -114,13 +114,13 @@ def bbox_cs2xyxy(center: np.ndarray,
     """Transform the bbox format from (center, scale) to (x,y,w,h).
 
     Args:
-        center (ndarray): Bbox center (x, y) in shape (2,) or (n, 2)
-        scale (ndarray): Bbox scale (w, h) in shape (2,) or (n, 2)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        center (ndarray): BBox center (x, y) in shape (2,) or (n, 2)
+        scale (ndarray): BBox scale (w, h) in shape (2,) or (n, 2)
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
 
     Returns:
-        ndarray[float32]: Bbox (x, y, w, h) in shape (4, ) or (n, 4)
+        ndarray[float32]: BBox (x, y, w, h) in shape (4, ) or (n, 4)
     """
 
     dim = center.ndim
@@ -146,13 +146,13 @@ def bbox_cs2xywh(center: np.ndarray,
     """Transform the bbox format from (center, scale) to (x,y,w,h).
 
     Args:
-        center (ndarray): Bbox center (x, y) in shape (2,) or (n, 2)
-        scale (ndarray): Bbox scale (w, h) in shape (2,) or (n, 2)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        center (ndarray): BBox center (x, y) in shape (2,) or (n, 2)
+        scale (ndarray): BBox scale (w, h) in shape (2,) or (n, 2)
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
 
     Returns:
-        ndarray[float32]: Bbox (x, y, w, h) in shape (4, ) or (n, 4)
+        ndarray[float32]: BBox (x, y, w, h) in shape (4, ) or (n, 4)
     """
 
     dim = center.ndim

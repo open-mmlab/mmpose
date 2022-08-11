@@ -43,7 +43,7 @@ def bbox_xywh2cs(bbox, aspect_ratio, padding=1., pixel_std=200.):
     Args:
         bbox (ndarray): Single bbox in (x, y, w, h)
         aspect_ratio (float): The expected bbox aspect ratio (w over h)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
         pixel_std (float): The scale normalization factor. Default: 200.0
 
@@ -75,7 +75,7 @@ def bbox_cs2xywh(center, scale, padding=1., pixel_std=200.):
     Args:
         center (ndarray): Single bbox center in (x, y)
         scale (ndarray): Single bbox scale in (scale_x, scale_y)
-        padding (float): Bbox padding factor that will be multilied to scale.
+        padding (float): BBox padding factor that will be multilied to scale.
             Default: 1.0
         pixel_std (float): The scale normalization factor. Default: 200.0
 
