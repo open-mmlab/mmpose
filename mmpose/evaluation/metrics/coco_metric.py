@@ -305,14 +305,14 @@ class CocoMetric(BaseMetric):
                 [img_kpt['keypoints'] for img_kpt in img_kpts])
             num_keypoints = self.dataset_meta['num_keypoints']
             # collect all the person keypoints in current image
-            keypoints = _keypoints.reshape(-1, num_keypoints * 3)
+            _keypoints = _keypoints.reshape(-1, num_keypoints * 3)
 
             result = [{
                 'image_id': img_kpt['img_id'],
                 'category_id': cat_id,
                 'keypoints': keypoint.tolist(),
                 'score': float(img_kpt['score']),
-            } for img_kpt, keypoint in zip(img_kpts, keypoints)]
+            } for img_kpt, keypoint in zip(img_kpts, _keypoints)]
 
             cat_results.extend(result)
 

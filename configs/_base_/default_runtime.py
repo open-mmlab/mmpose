@@ -24,7 +24,8 @@ visualizer = dict(
     type='PoseLocalVisualizer', vis_backends=vis_backends, name='visualizer')
 
 # logger
-log_processor = dict(type='LogProcessor', window_size=50, by_epoch=True)
+log_processor = dict(
+    type='LogProcessor', window_size=50, by_epoch=True, num_digits=6)
 log_level = 'INFO'
 load_from = None
 resume = False
