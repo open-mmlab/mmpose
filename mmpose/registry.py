@@ -7,6 +7,7 @@ https://mmengine.readthedocs.io/en/latest/tutorials/registry.html.
 """
 
 from mmengine.registry import DATASETS as MMENGINE_DATASETS
+from mmengine.registry import HOOKS as MMENGINE_HOOKS
 from mmengine.registry import METRICS as MMENGINE_METRICS
 from mmengine.registry import MODELS as MMENGINE_MODELS
 from mmengine.registry import TRANSFORMS as MMENGINE_TRANSFORMS
@@ -31,3 +32,6 @@ METRICS = Registry('metric', parent=MMENGINE_METRICS)
 
 # manager keypoint encoder/decoder
 KEYPOINT_CODECS = Registry('KEYPOINT_CODECS')
+
+# manage all kinds of hooks like `CheckpointHook`
+HOOKS = Registry('hook', parent=MMENGINE_HOOKS)

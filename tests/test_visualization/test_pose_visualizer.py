@@ -19,7 +19,7 @@ class TestPoseLocalVisualizer(TestCase):
         out_file = 'out_file.jpg'
 
         # None: kpt or link is hidden
-        pose_kpt_color = [None] + [(127, 127, 127)] * 3
+        pose_kpt_color = [None] + [(127, 127, 127)] * 2 + ['red']
         pose_link_color = [(127, 127, 127)] * 2 + [None]
         dataset_meta = {
             'keypoint_colors': pose_kpt_color,
@@ -27,10 +27,7 @@ class TestPoseLocalVisualizer(TestCase):
             'skeleton_links': [[0, 1], [1, 2], [2, 3]]
         }
 
-        pose_local_visualizer = PoseLocalVisualizer(
-            kpt_color=pose_kpt_color,
-            link_color=pose_link_color,
-            show_keypoint_weight=True)
+        pose_local_visualizer = PoseLocalVisualizer(show_keypoint_weight=True)
         pose_local_visualizer.set_dataset_meta(dataset_meta)
 
         # setting keypoints
@@ -65,6 +62,12 @@ class TestPoseLocalVisualizer(TestCase):
             draw_bbox=True,
             out_file=out_file)
         self._assert_image_and_shape(out_file, (h, w * 2, 3))
+
+        pose_local_visualizer = PoseLocalVisualizer(
+            kpt_color=pose_kpt_color,
+            link_color=pose_link_color,
+            show_keypoint_weight=True)
+        pose_local_visualizer.set_dataset_meta(dataset_meta)
 
         pose_local_visualizer.show_keypoint_weight = False
         pose_local_visualizer.add_datasample(
