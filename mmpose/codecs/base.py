@@ -54,10 +54,10 @@ class BaseKeypointCodec(metaclass=ABCMeta):
         Args:
             keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D).
                 The coordinate is in the bbox space
-            bbox_centers (np.ndarray): Bbox centers in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
-            bbox_scale (np.ndarray): Bbox scales in shape (N, 2).
-                See `pipelines.GetBboxCenterScale` for details
+            bbox_centers (np.ndarray): BBox centers in shape (N, 2).
+                See `pipelines.GetBBoxCenterScale` for details
+            bbox_scale (np.ndarray): BBox scales in shape (N, 2).
+                See `pipelines.GetBBoxCenterScale` for details
 
         Returns:
             np.ndarray: The transformed keypoints in shape (N, K, D).
