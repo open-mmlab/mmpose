@@ -333,7 +333,12 @@ class HeatmapHead(BaseHead):
             target=to_numpy(gt_heatmaps),
             mask=to_numpy(keypoint_weights) > 0)
 
-        losses.update(acc_pose=float(avg_acc))
+        if torch.cuda.is_available():
+            device = torch.cuda.current_device()
+        else:
+            device = 'cpu'
+        acc_pose = torch.tensor(avg_acc, device=device)
+        losses.update(acc_pose=acc_pose)
 
         return losses
 

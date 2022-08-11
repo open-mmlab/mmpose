@@ -1,5 +1,5 @@
 # training/validatin/testing progress
-train_cfg = dict(by_epoch=True, max_epoch=210, val_epoch=1)
+train_cfg = dict(by_epoch=True, max_epochs=210, val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
 
