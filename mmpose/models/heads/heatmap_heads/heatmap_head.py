@@ -355,7 +355,7 @@ class HeatmapHead(BaseHead):
             if not _k.startswith(prefix):
                 continue
             v = state_dict.pop(_k)
-            k = _k.lstrip(prefix)
+            k = _k[len(prefix):]
             # In old version, "final_layer" includes both intermediate
             # conv layers (new "conv_layers") and final conv layers (new
             # "final_layer").
@@ -364,8 +364,8 @@ class HeatmapHead(BaseHead):
             # have keys like "final_layer.xxx", which should be still
             # named "final_layer.xxx";
             #
-            # If there are intermediate conv layerse, old "final_layer"  will
-            # have keys like "final_layer.n.xxx", where the weghts of the last
+            # If there are intermediate conv layers, old "final_layer"  will
+            # have keys like "final_layer.n.xxx", where the weights of the last
             # one should be renamed "final_layer.xxx", and others should be
             # renamed "conv_layers.n.xxx"
             k_parts = _k.split('.')
