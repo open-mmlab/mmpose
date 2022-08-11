@@ -104,7 +104,8 @@ class RLEHead(BaseHead):
             # TTA: flip test -> feats = [orig, flipped]
             assert isinstance(feats, list) and len(feats) == 2
             flip_indices = batch_data_samples[0].metainfo['flip_indices']
-            img_shape = batch_data_samples[0].metainfo['img_shape']
+            input_size = batch_data_samples[0].metainfo['input_size']
+
             _feats, _feats_flip = feats
 
             _batch_coords = self.forward(_feats)
@@ -112,7 +113,7 @@ class RLEHead(BaseHead):
                 self.forward(_feats_flip),
                 flip_indices=flip_indices,
                 shift_coords=test_cfg.get('shift_coords', True),
-                img_shape=img_shape)
+                input_size=input_size)
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
         else:
             batch_coords = self.forward(feats)  # (B, K, D)
@@ -181,14 +182,14 @@ class RLEHead(BaseHead):
             k = _k.lstrip(prefix)
             # In old version, "loss" includes the instances of loss,
             # now it should be renamed "loss_module"
-            k_parts = _k.split('.')
+            k_parts = k.split('.')
             if k_parts[0] == 'loss':
                 # loss.xxx -> loss_module.xxx
-                k_new = 'loss_module.' + '.'.join(k_parts[1:])
+                k_new = prefix + 'loss_module.' + '.'.join(k_parts[1:])
             else:
-                k_new = k
+                k_new = _k
 
-            state_dict[prefix + k_new] = v
+            state_dict[k_new] = v
 
     @property
     def default_init_cfg(self):

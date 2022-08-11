@@ -5,8 +5,10 @@ from typing import List
 
 import numpy as np
 from mmengine.utils import check_file_exist
+from scipy.io import loadmat
 
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_cs2xyxy
 from ..base import BaseCocoStyleDataset
 
 
@@ -84,13 +86,20 @@ class MpiiDataset(BaseCocoStyleDataset):
         with open(self.ann_file) as anno_file:
             anns = json.load(anno_file)
 
+        if self.headbox_file:
+            check_file_exist(self.headbox_file)
+            headbox_dict = loadmat(self.headbox_file)
+            headboxes_src = np.transpose(headbox_dict['headboxes_src'],
+                                         [2, 0, 1])
+            SC_BIAS = 0.6
+
         data_list = []
         ann_id = 0
 
         # mpii bbox scales are normalized with factor 200.
         pixel_std = 200.
 
-        for ann in anns:
+        for ann, headbox in zip(anns, headboxes_src):
             center = np.array(ann['center'], dtype=np.float32)
             scale = np.array([ann['scale'], ann['scale']],
                              dtype=np.float32) * pixel_std
@@ -102,6 +111,13 @@ class MpiiDataset(BaseCocoStyleDataset):
             # MPII uses matlab format, index is 1-based,
             # we should first convert to 0-based index
             center = center - 1
+
+            # unify shape with coco datasets
+            center = center.reshape(1, -1)
+            scale = scale.reshape(1, -1)
+
+            # initialize bbox from center and scale
+            bbox = bbox_cs2xyxy(center, scale)
 
             # the ground truth keypoint information is available
             # only when ``test_mode=False``
@@ -115,16 +131,25 @@ class MpiiDataset(BaseCocoStyleDataset):
                 keypoints = np.zeros((1, num_keypoints, 2), dtype=np.float32)
                 keypoints_visible = np.ones((1, num_keypoints),
                                             dtype=np.float32)
+
             data_info = {
                 'id': ann_id,
                 'img_id': int(ann['image'].split('.')[0]),
                 'img_path': osp.join(self.data_prefix['img'], ann['image']),
                 'bbox_center': center,
                 'bbox_scale': scale,
+                'bbox': bbox,
                 'bbox_score': np.ones(1, dtype=np.float32),
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
             }
+
+            if self.headbox_file:
+                # calculate the diagonal length of head box
+                head_size = np.linalg.norm(headbox[0] - headbox[1], axis=0)
+                head_size *= SC_BIAS
+                data_info['head_size'] = head_size.reshape(1, -1)
+
             data_list.append(data_info)
             ann_id = ann_id + 1
 

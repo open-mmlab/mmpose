@@ -75,13 +75,15 @@ class PCKAccuracy(BaseMetric):
         """
         for data, pred in zip(data_batch, predictions):
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints'].cpu().numpy()
+            pred_coords = pred['pred_instances']['keypoints']
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
+            # print('pred_coords', pred_coords)
+            # print('gt_coords', gt_coords)
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].reshape(1, -1)
+            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
