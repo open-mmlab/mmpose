@@ -145,7 +145,7 @@ class UDPHeatmap(BaseKeypointCodec):
             x_offset = heatmaps[1::3].flatten() * radius
             y_offset = heatmaps[2::3].flatten() * radius
             keypoints, scores = get_heatmap_maximum(heatmaps=heatmaps[::3])
-            index = keypoints[..., 0] + keypoints[..., 1] * W
+            index = (keypoints[..., 0] + keypoints[..., 1] * W).flatten()
             index += W * H * np.arange(0, K)
             index = index.astype(int)
             keypoints += np.stack((x_offset[index], y_offset[index]), axis=-1)
