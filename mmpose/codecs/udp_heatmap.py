@@ -151,7 +151,8 @@ class UDPHeatmap(BaseKeypointCodec):
             keypoints += np.stack((x_offset[index], y_offset[index]), axis=-1)
 
         # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints[None] * self.scale_factor
+        W, H = self.heatmap_size
+        keypoints = keypoints[None] / [W - 1, H - 1] * self.input_size
         scores = scores[None]
 
         return keypoints, scores
