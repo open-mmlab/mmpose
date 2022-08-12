@@ -579,7 +579,7 @@ def keypoints_from_heatmaps(heatmaps,
             offset_y = heatmaps[:, 2::3, :].flatten() * valid_radius
             heatmaps = heatmaps[:, ::3, :]
             preds, maxvals = _get_max_preds(heatmaps)
-            index = preds[..., 0] + preds[..., 1] * W
+            index = (preds[..., 0] + preds[..., 1] * W).flatten()
             index += W * H * np.arange(0, N * K / 3)
             index = index.astype(int).reshape(N, K // 3, 1)
             preds += np.concatenate((offset_x[index], offset_y[index]), axis=2)
