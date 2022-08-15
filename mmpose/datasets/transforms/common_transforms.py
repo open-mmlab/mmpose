@@ -463,7 +463,7 @@ class RandomBBoxTransformV0(BaseTransform):
 
         # Get rotation parameters
         rotate = np.clip(
-            np.random.randn(num_bbox, 1) * self.rotate_factor,
+            np.random.randn(num_bbox) * self.rotate_factor,
             -self.rotate_factor * 2, self.rotate_factor * 2)
         rotate = np.where(
             np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)
