@@ -13,8 +13,42 @@ IndexType = Union[str, slice, int, list, torch.LongTensor,
 
 
 class MultilevelPixelData(BaseDataElement):
-    """Data structure for multi-level pixel-level annotations or
-    predictions."""
+    """Data structure for multi-level pixel-wise annotations or predictions.
+
+    All data items in ``data_fields`` of ``MultilevelPixelData`` are lists
+    of np.ndarray or torch.Tensor, and should meet the following requirements:
+
+    - Have the same length, which is the number of levels
+    - At each level, the data should have 3 dimensions in order of channel,
+        height and weight
+    - At each level, the data should have the same height and weight
+
+    Examples:
+        >>> metainfo = dict(num_keypoints=17)
+        >>> sizes = [(64, 48), (128, 96), (256, 192)]
+        >>> heatmaps = [np.random.rand(17, h, w) for h, w in sizes]
+        >>> masks = [torch.rand(1, h, w) for h, w in sizes]
+        >>> data = MultilevelPixelData(metainfo=metainfo,
+        ...                            heatmaps=heatmaps,
+        ...                            masks=masks)
+
+        >>> # get data item
+        >>> heatmaps = data.heatmaps  # A list of 3 numpy.ndarrays
+        >>> masks = data.masks  # A list of 3 torch.Tensors
+
+        >>> # get level
+        >>> data_l0 = data[0]  # PixelData with fields 'heatmaps' and 'masks'
+        >>> data.nlevel
+        3
+
+        >>> # get shape
+        >>> data.shape
+        [(64, 48), (128, 96), (256, 192)]
+
+        >>> # set
+        >>> offset_maps = [torch.rand(2, h, w) for h, w in sizes]
+        >>> data.offset_maps = offset_maps
+    """
 
     def __init__(self, *, metainfo: Optional[dict] = None, **kwargs) -> None:
         object.__setattr__(self, '_nlevel', None)
