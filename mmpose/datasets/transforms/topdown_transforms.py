@@ -121,10 +121,15 @@ class TopdownAffine(BaseTransform):
             results['img'] = cv2.warpAffine(
                 results['img'], warp_mat, warp_size, flags=cv2.INTER_LINEAR)
 
-        if 'keypoints' in results:
+        if results.get('transformed_keypoints', None) is not None:
+            transformed_keypoints = results['transformed_keypoints']
+        elif results.get('keypoints', None) is not None:
+            transformed_keypoints = results['keypoints']
+
+        if results.get('keypoints', None) is not None:
             # Only transform (x, y) coordinates
             results['transformed_keypoints'] = cv2.transform(
-                results['keypoints'][..., :2], warp_mat)
+                transformed_keypoints[..., :2], warp_mat)
 
         results['input_size'] = (w, h)
 

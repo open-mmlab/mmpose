@@ -237,6 +237,10 @@ class MpiiPCKAccuracy(PCKAccuracy):
         # mask: [N, K]
         mask = np.concatenate([result['mask'] for result in results])
 
+        # MPII uses matlab format, gt index is 1-based,
+        # convert 0-based index to 1-based index
+        pred_coords = pred_coords + 1.0
+
         metrics = super().compute_metrics(results)
 
         if 'head' in self.norm_item:
@@ -288,6 +292,7 @@ class MpiiPCKAccuracy(PCKAccuracy):
                 'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
 
+            del metrics[f'PCKh@thr-{self.thr}']
             for stats_name, stat in stats.items():
                 metrics[stats_name] = stat
 
@@ -381,6 +386,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
                 'Mean': pck
             }
 
+            del metrics[f'PCK@thr-{self.thr}']
             for stats_name, stat in stats.item():
                 metrics[f'{stats_name} PCK'] = stat
 
@@ -406,6 +412,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
                 'Mean': pck
             }
 
+            del metrics[f'tPCK@thr-{self.thr}']
             for stats_name, stat in stats.item():
                 metrics[f'{stats_name} tPCK'] = stat
 

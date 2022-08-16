@@ -193,7 +193,7 @@ class MpiiDataset(BaseCocoStyleDataset):
             if self.headbox_file:
                 # calculate the diagonal length of head box as norm_factor
                 headbox = headboxes_src[idx]
-                head_size = np.linalg.norm(headbox[0] - headbox[1], axis=0)
+                head_size = np.linalg.norm(headbox[1] - headbox[0], axis=0)
                 head_size *= SC_BIAS
                 data_info['head_size'] = head_size.reshape(1, -1)
 

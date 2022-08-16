@@ -77,7 +77,7 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int],
             [B, K, D]
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
-        shift_heatmap (bool): Shift the flipped coordinates to align with the
+        shift_coords (bool): Shift the flipped coordinates to align with the
             original coordinates and improve accuracy. Defaults to ``True``
         input_size (Tuple[int, int]): The size of input image in [w, h]
     """

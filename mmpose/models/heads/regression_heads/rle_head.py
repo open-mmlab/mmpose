@@ -118,6 +118,9 @@ class RLEHead(BaseHead):
         else:
             batch_coords = self.forward(feats)  # (B, K, D)
 
+        # use sigmoid() to normalize output_sigma
+        batch_coords[..., 2:] = batch_coords[..., 2:].sigmoid()
+
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
 
         preds = self.decode(batch_coords, batch_data_samples)
