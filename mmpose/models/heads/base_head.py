@@ -114,7 +114,6 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                 bbox_centers = data_sample.gt_instances.bbox_centers
                 bbox_scales = data_sample.gt_instances.bbox_scales
                 input_size = data_sample.metainfo['input_size']
-
                 keypoints = keypoints / input_size * bbox_scales + \
                     bbox_centers - 0.5 * bbox_scales
 

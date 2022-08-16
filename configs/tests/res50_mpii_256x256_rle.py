@@ -90,5 +90,5 @@ val_dataloader = dict(
     ))
 test_dataloader = val_dataloader
 
-val_evaluator = dict(type='MPII_PCKAccuracy', norm_item='head')
+val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')
 test_evaluator = val_evaluator

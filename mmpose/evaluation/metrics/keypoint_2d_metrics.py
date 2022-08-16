@@ -78,8 +78,6 @@ class PCKAccuracy(BaseMetric):
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
-            # print('pred_coords', pred_coords)
-            # print('gt_coords', gt_coords)
             # ground truth keypoints_visible, [1, K, 1]
             mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
@@ -177,7 +175,7 @@ class PCKAccuracy(BaseMetric):
 
 
 @METRICS.register_module()
-class MPII_PCKAccuracy(PCKAccuracy):
+class MpiiPCKAccuracy(PCKAccuracy):
     """PCKh accuracy evaluation metric for MPII dataset.
 
     Calculate the pose accuracy of Percentage of Correct Keypoints (PCK) for
@@ -251,8 +249,8 @@ class MPII_PCKAccuracy(PCKAccuracy):
             pck_p, _, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                 self.thr, norm_size_head)
 
-            jnt_count = np.sum(mask, axis=1)
-            PCKh = 100. * np.sum(pck_p, axis=1) / jnt_count
+            jnt_count = np.sum(mask, axis=0)
+            PCKh = 100. * pck_p
 
             rng = np.arange(0, 0.5 + 0.01, 0.01)
             pckAll = np.zeros((len(rng), 16), dtype=np.float32)
@@ -290,14 +288,14 @@ class MPII_PCKAccuracy(PCKAccuracy):
                 'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
 
-            for stats_name, stat in stats.item():
+            for stats_name, stat in stats.items():
                 metrics[stats_name] = stat
 
         return metrics
 
 
 @METRICS.register_module()
-class Jhmdb_PCKAccuracy(PCKAccuracy):
+class JhmdbPCKAccuracy(PCKAccuracy):
     """PCK accuracy evaluation metric for Jhmdb dataset.
 
     Calculate the pose accuracy of Percentage of Correct Keypoints (PCK) for

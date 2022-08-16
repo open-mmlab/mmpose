@@ -123,7 +123,9 @@ class TopdownAffine(BaseTransform):
 
         if 'keypoints' in results:
             # Only transform (x, y) coordinates
-            results['keypoints'][..., :2] = cv2.transform(
+            # results['keypoints'][..., :2] = cv2.transform(
+            #     results['keypoints'][..., :2], warp_mat)
+            results['transformed_keypoints'] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
 
         results['input_size'] = (w, h)
@@ -192,7 +194,7 @@ class TopdownGenerateTarget(BaseTransform):
 
         if self.target_type == 'heatmap':
             heatmaps, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
+                keypoints=results['transformed_keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
             results['heatmaps'] = heatmaps
@@ -200,7 +202,7 @@ class TopdownGenerateTarget(BaseTransform):
 
         elif self.target_type == 'keypoint_label':
             keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
+                keypoints=results['transformed_keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
             results['keypoint_labels'] = keypoint_labels
@@ -208,7 +210,7 @@ class TopdownGenerateTarget(BaseTransform):
 
         elif self.target_type == 'keypoint_xy_label':
             x_labels, y_labels, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
+                keypoints=results['transformed_keypoints'],
                 keypoints_visible=results['keypoints_visible'])
 
             results['keypoint_x_labels'] = x_labels

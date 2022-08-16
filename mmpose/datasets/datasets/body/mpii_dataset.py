@@ -98,25 +98,10 @@ class MpiiDataset(BaseCocoStyleDataset):
                  lazy_init: bool = False,
                  max_refetch: int = 1000):
 
-        super().__init__(
-            ann_file=ann_file,
-            bbox_file=bbox_file,
-            data_mode=data_mode,
-            metainfo=metainfo,
-            data_root=data_root,
-            data_prefix=data_prefix,
-            filter_cfg=filter_cfg,
-            indices=indices,
-            serialize_data=serialize_data,
-            pipeline=pipeline,
-            test_mode=test_mode,
-            lazy_init=lazy_init,
-            max_refetch=max_refetch)
-
         if headbox_file:
-            if self.data_mode != 'topdown':
+            if data_mode != 'topdown':
                 raise ValueError(
-                    f'{self.__class__.__name__} is set to {self.data_mode}: '
+                    f'{self.__class__.__name__} is set to {data_mode}: '
                     'mode, while "headbox_file" is only '
                     'supported in topdown mode.')
 
@@ -133,6 +118,21 @@ class MpiiDataset(BaseCocoStyleDataset):
                 f'The head boxes file type {headbox_file_type} is not '
                 f'supported. Should be `mat` but got {headbox_file_type}.')
         self.headbox_file = headbox_file
+
+        super().__init__(
+            ann_file=ann_file,
+            bbox_file=bbox_file,
+            data_mode=data_mode,
+            metainfo=metainfo,
+            data_root=data_root,
+            data_prefix=data_prefix,
+            filter_cfg=filter_cfg,
+            indices=indices,
+            serialize_data=serialize_data,
+            pipeline=pipeline,
+            test_mode=test_mode,
+            lazy_init=lazy_init,
+            max_refetch=max_refetch)
 
     def _load_annotations(self) -> List[dict]:
         """Load data from annotations in MPII format."""
@@ -172,7 +172,7 @@ class MpiiDataset(BaseCocoStyleDataset):
             scale = scale.reshape(1, -1)
 
             # initialize bbox from center and scale
-            bbox = bbox_cs2xyxy(center, scale)
+            bbox = bbox_cs2xyxy(center, scale, padding=1.25)
 
             # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             keypoints = np.array(ann['joints']).reshape(1, -1, 2)
