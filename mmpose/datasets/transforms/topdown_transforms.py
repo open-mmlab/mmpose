@@ -123,8 +123,6 @@ class TopdownAffine(BaseTransform):
 
         if 'keypoints' in results:
             # Only transform (x, y) coordinates
-            # results['keypoints'][..., :2] = cv2.transform(
-            #     results['keypoints'][..., :2], warp_mat)
             results['transformed_keypoints'] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
 
