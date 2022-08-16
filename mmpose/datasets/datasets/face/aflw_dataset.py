@@ -101,6 +101,7 @@ class AFLWDataset(BaseCocoStyleDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'orig_keypoints': keypoints.copy(),
             'iscrowd': ann['iscrowd'],
             'id': ann['id'],
         }

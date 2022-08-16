@@ -473,7 +473,7 @@ class AUC(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['keypoints']
+            gt_coords = gt['orig_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
             mask = gt['keypoints_visible'].reshape(1, -1)
 
@@ -556,7 +556,7 @@ class EPE(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['keypoints']
+            gt_coords = gt['orig_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
             mask = gt['keypoints_visible'].reshape(1, -1)
 
@@ -692,7 +692,7 @@ class NME(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['keypoints']
+            gt_coords = gt['orig_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
             mask = gt['keypoints_visible'].reshape(1, -1)
 
