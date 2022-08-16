@@ -63,7 +63,6 @@ class BaseCocoStyleDataset(BaseDataset):
     def __init__(self,
                  ann_file: str = '',
                  bbox_file: Optional[str] = None,
-                 headbox_file: Optional[str] = None,
                  data_mode: str = 'topdown',
                  metainfo: Optional[dict] = None,
                  data_root: Optional[str] = None,
@@ -82,27 +81,19 @@ class BaseCocoStyleDataset(BaseDataset):
                 f'{data_mode}. Should be "topdown" or "bottomup".')
         self.data_mode = data_mode
 
-        if bbox_file or headbox_file:
+        if bbox_file:
             if self.data_mode != 'topdown':
                 raise ValueError(
                     f'{self.__class__.__name__} is set to {self.data_mode}: '
-                    'mode, while "bbox_file" and "headbox_file" are only '
+                    'mode, while "bbox_file" is only '
                     'supported in topdown mode.')
 
             if not test_mode:
                 raise ValueError(
                     f'{self.__class__.__name__} has `test_mode==False` '
-                    'while "bbox_file" and "headbox_file" are only '
+                    'while "bbox_file" is only '
                     'supported when `test_mode==True`.')
         self.bbox_file = bbox_file
-
-        headbox_file_type = headbox_file[-3:]
-        allow_headbox_file_type = ['mat']
-        if headbox_file_type not in allow_headbox_file_type:
-            raise KeyError(
-                f'The head boxes file type {headbox_file_type} is not '
-                f'supported. Should be `mat` but got {headbox_file_type}.')
-        self.headbox_file = headbox_file
 
         super().__init__(
             ann_file=ann_file,

@@ -14,7 +14,6 @@ from ..functional import (keypoint_auc, keypoint_epe, keypoint_nme,
 @METRICS.register_module()
 class PCKAccuracy(BaseMetric):
     """PCK accuracy evaluation metric.
-
     Calculate the pose accuracy of Percentage of Correct Keypoints (PCK) for
     each individual keypoint and the averaged accuracy across all keypoints.
     PCK metric measures accuracy of the localization of the body joints.
@@ -22,12 +21,10 @@ class PCKAccuracy(BaseMetric):
     are typically normalized by the person bounding box size.
     The threshold (thr) of the normalized distance is commonly set
     as 0.05, 0.1 or 0.2 etc.
-
     Note:
         - length of dataset: N
         - num_keypoints: K
         - number of keypoint dimensions: D (typically D = 2)
-
     Args:
         thr(float): Threshold of PCK calculation. Default: 0.05.
         norm_item (str | Sequence[str]): The item used for normalization.
@@ -63,10 +60,11 @@ class PCKAccuracy(BaseMetric):
 
     def process(self, data_batch: Sequence[dict],
                 predictions: Sequence[dict]) -> None:
-        """Process one batch of data samples and predictions. The processed
+        """Process one batch of data samples and predictions.
+
+        The processed
         results should be stored in ``self.results``, which will be used to
         compute the metrics when all batches have been processed.
-
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
@@ -127,7 +125,6 @@ class PCKAccuracy(BaseMetric):
 
         Args:
             results (list): The processed results of each batch.
-
         Returns:
             Dict[str, float]: The computed metrics. The keys are the names of
             the metrics, and the values are corresponding results.
@@ -152,7 +149,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                               self.thr, norm_size_bbox)
-            metrics[f'@thr-{self.thr}'] = pck
+            metrics[f'PCK@thr-{self.thr}'] = pck
 
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(
@@ -172,23 +169,247 @@ class PCKAccuracy(BaseMetric):
             logger.info(f'Evaluating {self.__class__.__name__} '
                         f'(normalized by ``"torso_size"``)...')
 
+            _, tpck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
+                                               self.thr, norm_size_torso)
+            metrics[f'tPCK@thr-{self.thr}'] = tpck
+
+        return metrics
+
+
+@METRICS.register_module()
+class MPII_PCKAccuracy(PCKAccuracy):
+    """PCKh accuracy evaluation metric for MPII dataset.
+
+    Calculate the pose accuracy of Percentage of Correct Keypoints (PCK) for
+    each individual keypoint and the averaged accuracy across all keypoints.
+    PCK metric measures accuracy of the localization of the body joints.
+    The distances between predicted positions and the ground-truth ones
+    are typically normalized by the person bounding box size.
+    The threshold (thr) of the normalized distance is commonly set
+    as 0.05, 0.1 or 0.2 etc.
+
+    Note:
+        - length of dataset: N
+        - num_keypoints: K
+        - number of keypoint dimensions: D (typically D = 2)
+
+    Args:
+        thr(float): Threshold of PCK calculation. Default: 0.05.
+        norm_item (str | Sequence[str]): The item used for normalization.
+            Valid items include 'bbox', 'head', 'torso', which correspond
+            to 'PCK', 'PCKh' and 'tPCK' respectively. Default: ``'bbox'``.
+        collect_device (str): Device name used for collecting results from
+            different ranks during distributed training. Must be ``'cpu'`` or
+            ``'gpu'``. Default: ``'cpu'``.
+        prefix (str, optional): The prefix that will be added in the metric
+            names to disambiguate homonymous metrics of different evaluators.
+            If prefix is not provided in the argument, ``self.default_prefix``
+            will be used instead. Default: ``None``.
+    """
+    default_prefix: Optional[str] = 'pck'
+
+    def __init__(self,
+                 thr: float = 0.5,
+                 norm_item: Union[str, Sequence[str]] = 'head',
+                 collect_device: str = 'cpu',
+                 prefix: Optional[str] = None) -> None:
+        super().__init__(
+            thr=thr,
+            norm_item=norm_item,
+            collect_device=collect_device,
+            prefix=prefix)
+
+    def compute_metrics(self, results: list) -> Dict[str, float]:
+        """Compute the metrics from processed results.
+
+        Args:
+            results (list): The processed results of each batch.
+
+        Returns:
+            Dict[str, float]: The computed metrics. The keys are the names of
+            the metrics, and the values are corresponding results.
+        """
+        logger: MMLogger = MMLogger.get_current_instance()
+
+        # pred_coords: [N, K, D]
+        pred_coords = np.concatenate(
+            [result['pred_coords'] for result in results])
+        # gt_coords: [N, K, D]
+        gt_coords = np.concatenate([result['gt_coords'] for result in results])
+        # mask: [N, K]
+        mask = np.concatenate([result['mask'] for result in results])
+
+        metrics = super().compute_metrics(results)
+
+        if 'head' in self.norm_item:
+            norm_size_head = np.concatenate(
+                [result['head_size'] for result in results])
+
+            logger.info(f'Evaluating {self.__class__.__name__} '
+                        f'(normalized by ``"head_size"``)...')
+
+            pck_p, _, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
+                                                self.thr, norm_size_head)
+
+            jnt_count = np.sum(mask, axis=1)
+            PCKh = 100. * np.sum(pck_p, axis=1) / jnt_count
+
+            rng = np.arange(0, 0.5 + 0.01, 0.01)
+            pckAll = np.zeros((len(rng), 16), dtype=np.float32)
+
+            for r, threshold in enumerate(rng):
+                _pck, _, _ = keypoint_pck_accuracy(pred_coords, gt_coords,
+                                                   mask, threshold,
+                                                   norm_size_head)
+                pckAll[r, :] = 100. * _pck
+
+            PCKh = np.ma.array(PCKh, mask=False)
+            PCKh.mask[6:8] = True
+
+            jnt_count = np.ma.array(jnt_count, mask=False)
+            jnt_count.mask[6:8] = True
+            jnt_ratio = jnt_count / np.sum(jnt_count).astype(np.float64)
+
+            # dataset_joints_idx:
+            #   head 9
+            #   lsho 13  rsho 12
+            #   lelb 14  relb 11
+            #   lwri 15  rwri 10
+            #   lhip 3   rhip 2
+            #   lkne 4   rkne 1
+            #   lank 5   rank 0
+            stats = {
+                'Head': PCKh[9],
+                'Shoulder': 0.5 * (PCKh[13] + PCKh[12]),
+                'Elbow': 0.5 * (PCKh[14] + PCKh[11]),
+                'Wrist': 0.5 * (PCKh[15] + PCKh[10]),
+                'Hip': 0.5 * (PCKh[3] + PCKh[2]),
+                'Knee': 0.5 * (PCKh[4] + PCKh[1]),
+                'Ankle': 0.5 * (PCKh[5] + PCKh[0]),
+                'PCKh': np.sum(PCKh * jnt_ratio),
+                'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
+            }
+
+            for stats_name, stat in stats.item():
+                metrics[stats_name] = stat
+
+        return metrics
+
+
+@METRICS.register_module()
+class Jhmdb_PCKAccuracy(PCKAccuracy):
+    """PCK accuracy evaluation metric for Jhmdb dataset.
+
+    Calculate the pose accuracy of Percentage of Correct Keypoints (PCK) for
+    each individual keypoint and the averaged accuracy across all keypoints.
+    PCK metric measures accuracy of the localization of the body joints.
+    The distances between predicted positions and the ground-truth ones
+    are typically normalized by the person bounding box size.
+    The threshold (thr) of the normalized distance is commonly set
+    as 0.05, 0.1 or 0.2 etc.
+
+    Note:
+        - length of dataset: N
+        - num_keypoints: K
+        - number of keypoint dimensions: D (typically D = 2)
+
+    Args:
+        thr(float): Threshold of PCK calculation. Default: 0.05.
+        norm_item (str | Sequence[str]): The item used for normalization.
+            Valid items include 'bbox', 'head', 'torso', which correspond
+            to 'PCK', 'PCKh' and 'tPCK' respectively. Default: ``'bbox'``.
+        collect_device (str): Device name used for collecting results from
+            different ranks during distributed training. Must be ``'cpu'`` or
+            ``'gpu'``. Default: ``'cpu'``.
+        prefix (str, optional): The prefix that will be added in the metric
+            names to disambiguate homonymous metrics of different evaluators.
+            If prefix is not provided in the argument, ``self.default_prefix``
+            will be used instead. Default: ``None``.
+    """
+    default_prefix: Optional[str] = 'pck'
+
+    def __init__(self,
+                 thr: float = 0.05,
+                 norm_item: Union[str, Sequence[str]] = 'bbox',
+                 collect_device: str = 'cpu',
+                 prefix: Optional[str] = None) -> None:
+        super().__init__(
+            thr=thr,
+            norm_item=norm_item,
+            collect_device=collect_device,
+            prefix=prefix)
+
+    def compute_metrics(self, results: list) -> Dict[str, float]:
+        """Compute the metrics from processed results.
+
+        Args:
+            results (list): The processed results of each batch.
+
+        Returns:
+            Dict[str, float]: The computed metrics. The keys are the names of
+            the metrics, and the values are corresponding results.
+        """
+        logger: MMLogger = MMLogger.get_current_instance()
+
+        # pred_coords: [N, K, D]
+        pred_coords = np.concatenate(
+            [result['pred_coords'] for result in results])
+        # gt_coords: [N, K, D]
+        gt_coords = np.concatenate([result['gt_coords'] for result in results])
+        # mask: [N, K]
+        mask = np.concatenate([result['mask'] for result in results])
+
+        metrics = super().compute_metrics(results)
+
+        if 'bbox' in self.norm_item:
+            norm_size_bbox = np.concatenate(
+                [result['bbox_size'] for result in results])
+
+            logger.info(f'Evaluating {self.__class__.__name__} '
+                        f'(normalized by ``"bbox_size"``)...')
+
+            pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
+                                                  self.thr, norm_size_bbox)
+            metrics[f'@thr-{self.thr}'] = pck
+
+            stats = {
+                'Head': pck_p[2],
+                'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                'Elb': 0.5 * pck_p[7] + 0.5 * pck_p[8],
+                'Wri': 0.5 * pck_p[11] + 0.5 * pck_p[12],
+                'Hip': 0.5 * pck_p[5] + 0.5 * pck_p[6],
+                'Knee': 0.5 * pck_p[9] + 0.5 * pck_p[10],
+                'Ank': 0.5 * pck_p[13] + 0.5 * pck_p[14],
+                'Mean': pck
+            }
+
+            for stats_name, stat in stats.item():
+                metrics[f'{stats_name} PCK'] = stat
+
+        if 'torso' in self.norm_item:
+            norm_size_torso = np.concatenate(
+                [result['torso_size'] for result in results])
+
+            logger.info(f'Evaluating {self.__class__.__name__} '
+                        f'(normalized by ``"torso_size"``)...')
+
             pck_p, pckh, _ = keypoint_pck_accuracy(pred_coords, gt_coords,
                                                    mask, self.thr,
                                                    norm_size_torso)
-            stats_names = [
-                'Head', 'Sho', 'Elb', 'Wri', 'Hip', 'Knee', 'Ank', 'Mean'
-            ]
-            stats = [
-                pck_p[2], 0.5 * pck_p[3] + 0.5 * pck_p[4],
-                0.5 * pck_p[7] + 0.5 * pck_p[8],
-                0.5 * pck_p[11] + 0.5 * pck_p[12],
-                0.5 * pck_p[5] + 0.5 * pck_p[6],
-                0.5 * pck_p[9] + 0.5 * pck_p[10],
-                0.5 * pck_p[13] + 0.5 * pck_p[14], pck
-            ]
 
-            for stats_name, stat in zip(stats_names, stats):
-                metrics[stats_name + f'@thr-{self.thr}'] = stat
+            stats = {
+                'Head': pck_p[2],
+                'Sho': 0.5 * pck_p[3] + 0.5 * pck_p[4],
+                'Elb': 0.5 * pck_p[7] + 0.5 * pck_p[8],
+                'Wri': 0.5 * pck_p[11] + 0.5 * pck_p[12],
+                'Hip': 0.5 * pck_p[5] + 0.5 * pck_p[6],
+                'Knee': 0.5 * pck_p[9] + 0.5 * pck_p[10],
+                'Ank': 0.5 * pck_p[13] + 0.5 * pck_p[14],
+                'Mean': pck
+            }
+
+            for stats_name, stat in stats.item():
+                metrics[f'{stats_name} tPCK'] = stat
 
         return metrics
 

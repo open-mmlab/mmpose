@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import json
 import os.path as osp
-from typing import List
+from typing import Callable, List, Optional, Sequence, Union
 
 import numpy as np
 from mmengine.utils import check_file_exist
@@ -46,6 +46,9 @@ class MpiiDataset(BaseCocoStyleDataset):
             be used instead of ground-truth bboxes. This setting is only for
             evaluation, i.e., ignored when ``test_mode`` is ``False``.
             Default: ``None``.
+        headbox_file (str, optional): The path of ``mpii_gt_val.mat`` which
+            provides the headboxes information used for ``PCKh``.
+            Default: ``None``.
         data_mode (str): Specifies the mode of data samples: ``'topdown'`` or
             ``'bottomup'``. In ``'topdown'`` mode, each data sample contains
             one instance; while in ``'bottomup'`` mode, each data sample
@@ -79,6 +82,58 @@ class MpiiDataset(BaseCocoStyleDataset):
 
     METAINFO: dict = dict(from_file='configs/_base_/datasets/mpii.py')
 
+    def __init__(self,
+                 ann_file: str = '',
+                 bbox_file: Optional[str] = None,
+                 headbox_file: Optional[str] = None,
+                 data_mode: str = 'topdown',
+                 metainfo: Optional[dict] = None,
+                 data_root: Optional[str] = None,
+                 data_prefix: dict = dict(img=''),
+                 filter_cfg: Optional[dict] = None,
+                 indices: Optional[Union[int, Sequence[int]]] = None,
+                 serialize_data: bool = True,
+                 pipeline: List[Union[dict, Callable]] = [],
+                 test_mode: bool = False,
+                 lazy_init: bool = False,
+                 max_refetch: int = 1000):
+
+        super().__init__(
+            ann_file=ann_file,
+            bbox_file=bbox_file,
+            data_mode=data_mode,
+            metainfo=metainfo,
+            data_root=data_root,
+            data_prefix=data_prefix,
+            filter_cfg=filter_cfg,
+            indices=indices,
+            serialize_data=serialize_data,
+            pipeline=pipeline,
+            test_mode=test_mode,
+            lazy_init=lazy_init,
+            max_refetch=max_refetch)
+
+        if headbox_file:
+            if self.data_mode != 'topdown':
+                raise ValueError(
+                    f'{self.__class__.__name__} is set to {self.data_mode}: '
+                    'mode, while "headbox_file" is only '
+                    'supported in topdown mode.')
+
+            if not test_mode:
+                raise ValueError(
+                    f'{self.__class__.__name__} has `test_mode==False` '
+                    'while "headbox_file" is only '
+                    'supported when `test_mode==True`.')
+
+        headbox_file_type = headbox_file[-3:]
+        allow_headbox_file_type = ['mat']
+        if headbox_file_type not in allow_headbox_file_type:
+            raise KeyError(
+                f'The head boxes file type {headbox_file_type} is not '
+                f'supported. Should be `mat` but got {headbox_file_type}.')
+        self.headbox_file = headbox_file
+
     def _load_annotations(self) -> List[dict]:
         """Load data from annotations in MPII format."""
 
@@ -99,7 +154,7 @@ class MpiiDataset(BaseCocoStyleDataset):
         # mpii bbox scales are normalized with factor 200.
         pixel_std = 200.
 
-        for ann, headbox in zip(anns, headboxes_src):
+        for idx, ann in enumerate(anns):
             center = np.array(ann['center'], dtype=np.float32)
             scale = np.array([ann['scale'], ann['scale']],
                              dtype=np.float32) * pixel_std
@@ -119,18 +174,9 @@ class MpiiDataset(BaseCocoStyleDataset):
             # initialize bbox from center and scale
             bbox = bbox_cs2xyxy(center, scale)
 
-            # the ground truth keypoint information is available
-            # only when ``test_mode=False``
-            # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
-            if not self.test_mode:
-                keypoints = np.array(ann['joints']).reshape(1, -1, 2)
-                keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
-            else:
-                # use dummy keypoint location and visibility
-                num_keypoints = self.metainfo['num_keypoints']
-                keypoints = np.zeros((1, num_keypoints, 2), dtype=np.float32)
-                keypoints_visible = np.ones((1, num_keypoints),
-                                            dtype=np.float32)
+            # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
+            keypoints = np.array(ann['joints']).reshape(1, -1, 2)
+            keypoints_visible = np.array(ann['joints_vis']).reshape(1, -1)
 
             data_info = {
                 'id': ann_id,
@@ -145,7 +191,8 @@ class MpiiDataset(BaseCocoStyleDataset):
             }
 
             if self.headbox_file:
-                # calculate the diagonal length of head box
+                # calculate the diagonal length of head box as norm_factor
+                headbox = headboxes_src[idx]
                 head_size = np.linalg.norm(headbox[0] - headbox[1], axis=0)
                 head_size *= SC_BIAS
                 data_info['head_size'] = head_size.reshape(1, -1)
