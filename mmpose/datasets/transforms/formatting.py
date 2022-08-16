@@ -78,6 +78,7 @@ class PackPoseInputs(BaseTransform):
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
+        'transformed_keypoints': 'transformed_keypoints'
     }
 
     label_mapping_table = {

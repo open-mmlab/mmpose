@@ -258,7 +258,8 @@ class SimCCHead(BaseHead):
         )
 
         target_coords = np.concatenate(
-            [d.gt_instances.keypoints for d in batch_data_samples], axis=0)
+            [d.gt_instances.transformed_keypoints for d in batch_data_samples],
+            axis=0)
 
         pred_simcc = (pred_x, pred_y)
         gt_simcc = (gt_x, gt_y)
