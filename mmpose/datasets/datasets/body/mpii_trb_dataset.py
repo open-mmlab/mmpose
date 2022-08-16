@@ -149,6 +149,8 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
                 keypoints,
                 'keypoints_visible':
                 keypoints_visible,
+                'orig_keypoints':
+                keypoints.copy(),
                 'iscrowd':
                 ann['iscrowd'],
             }

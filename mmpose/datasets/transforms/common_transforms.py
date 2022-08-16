@@ -221,20 +221,15 @@ class RandomFlip(BaseTransform):
                     direction=flip_dir)
 
             # flip keypoints
-            if results.get('transformed_keypoints', None) is not None:
-                transformed_keypoints = results['transformed_keypoints']
-            elif results.get('keypoints', None) is not None:
-                transformed_keypoints = results['keypoints']
-
             if results.get('keypoints', None) is not None:
                 keypoints, keypoints_visible = flip_keypoints(
-                    transformed_keypoints,
+                    results['keypoints'],
                     results.get('keypoints_visible', None),
                     image_size=(w, h),
                     flip_pairs=results['flip_pairs'],
                     direction=flip_dir)
 
-                results['transformed_keypoints'] = keypoints
+                results['keypoints'] = keypoints
                 results['keypoints_visible'] = keypoints_visible
 
         return results
@@ -393,13 +388,8 @@ class RandomHalfBody(BaseTransform):
                 bbox_center.append(results['bbox_center'][i])
                 bbox_scale.append(results['bbox_scale'][i])
             else:
-                if results.get('transformed_keypoints', None) is not None:
-                    transformed_keypoints = results['transformed_keypoints']
-                elif results.get('keypoints', None) is not None:
-                    transformed_keypoints = results['keypoints']
-
                 _center, _scale = self._get_half_body_bbox(
-                    transformed_keypoints[i], indices)
+                    results['keypoints'][i], indices)
                 bbox_center.append(_center)
                 bbox_scale.append(_scale)
 

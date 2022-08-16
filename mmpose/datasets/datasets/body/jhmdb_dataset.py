@@ -125,6 +125,7 @@ class JhmdbDataset(BaseCocoStyleDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'orig_keypoints': keypoints.copy(),
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
