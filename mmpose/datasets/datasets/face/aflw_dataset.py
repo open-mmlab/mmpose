@@ -81,8 +81,8 @@ class AFLWDataset(BaseCocoStyleDataset):
 
         img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
-        center = np.array(ann['center'], dtype=np.float32)
-        scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
+        center = np.array(ann['center'], dtype=np.float32)[None, ...]
+        scale = np.array([[ann['scale'], ann['scale']]], dtype=np.float32)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(

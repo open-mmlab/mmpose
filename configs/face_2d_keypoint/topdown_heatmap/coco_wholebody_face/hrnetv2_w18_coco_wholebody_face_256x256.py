@@ -55,7 +55,7 @@ model = dict(
         out_channels=68,
         deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
-        conv_out_channels=(280, ),
+        conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
         decoder=codec),
     test_cfg=dict(

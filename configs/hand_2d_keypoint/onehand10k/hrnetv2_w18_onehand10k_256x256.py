@@ -46,14 +46,15 @@ model = dict(
                 multiscale_output=True),
             upsample=dict(mode='bilinear', align_corners=False)),
         init_cfg=dict(
-            type='Pretrained', checkpoint='open-mmlab://msra/hrnetv2_w18'),
-    ),
+            type='Pretrained',
+            checkpoint='open-mmlab://msra/hrnetv2_w18',
+        )),
     head=dict(
         type='HeatmapHead',
-        in_channels=(18, 36, 72, 144),
+        in_channels=[18, 36, 72, 144],
         input_index=(0, 1, 2, 3),
         input_transform='resize_concat',
-        out_channels=68,
+        out_channels=21,
         deconv_out_channels=None,
         conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
@@ -66,17 +67,17 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'Face300WDataset'
+dataset_type = 'FreiHandDataset'
 data_mode = 'topdown'
-data_root = 'data/300w/'
+data_root = 'data/onehand10k/'
 
 file_client_args = dict(
     backend='petrel',
     path_mapping=dict({
-        '.data/300w/':
-        'openmmlab:s3://openmmlab/datasets/pose/300w/',
-        'data/300w/':
-        'openmmlab:s3://openmmlab/datasets/pose/300w/'
+        '.data/onehand10k/':
+        'openmmlab:s3://openmmlab/datasets/pose/OneHand10K/',
+        'data/onehand10k/':
+        'openmmlab:s3://openmmlab/datasets/pose/OneHand10K/'
     }))
 
 # pipelines
@@ -106,8 +107,8 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/face_landmarks_300w_train.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/onehand10k_train.json',
+        data_prefix=dict(img=''),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -119,15 +120,12 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/face_landmarks_300w_valid.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/onehand10k_test.json',
+        data_prefix=dict(img=''),
         test_mode=True,
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
 
-val_evaluator = dict(
-    type='NME',
-    norm_mode='keypoint_distance',
-)
+val_evaluator = dict(type='PCKAccuracy', thr=0.2)
 test_evaluator = val_evaluator

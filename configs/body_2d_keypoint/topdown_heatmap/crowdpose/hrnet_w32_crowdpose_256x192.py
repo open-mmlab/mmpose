@@ -124,5 +124,6 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/mmpose_crowdpose_test.json')
+    ann_file=data_root + 'annotations/mmpose_crowdpose_test.json',
+    use_area=False)
 test_evaluator = val_evaluator

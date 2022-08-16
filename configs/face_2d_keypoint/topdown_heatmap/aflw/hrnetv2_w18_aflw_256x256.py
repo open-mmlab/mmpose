@@ -43,7 +43,8 @@ model = dict(
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
                 num_channels=(18, 36, 72, 144),
-                multiscale_output=True)),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False)),
         init_cfg=dict(
             type='Pretrained', checkpoint='open-mmlab://msra/hrnetv2_w18'),
     ),
@@ -52,9 +53,9 @@ model = dict(
         in_channels=(18, 36, 72, 144),
         input_index=(0, 1, 2, 3),
         input_transform='resize_concat',
-        out_channels=68,
+        out_channels=19,
         deconv_out_channels=None,
-        conv_out_channels=(280, ),
+        conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
@@ -126,7 +127,5 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
-    type='NME',
-    norm_mode='keypoint_distance',
-)
+    type='NME', norm_mode='use_norm_item', norm_item='bbox_scales')
 test_evaluator = val_evaluator

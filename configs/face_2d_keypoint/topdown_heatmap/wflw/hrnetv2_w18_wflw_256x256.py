@@ -43,11 +43,10 @@ model = dict(
                 block='BASIC',
                 num_blocks=(4, 4, 4, 4),
                 num_channels=(18, 36, 72, 144),
-                multiscale_output=True)),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False)),
         init_cfg=dict(
-            type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose'
-            '/pretrain_models/hrnet_w32-36af842e.pth'),
+            type='Pretrained', checkpoint='open-mmlab://msra/hrnetv2_w18'),
     ),
     head=dict(
         type='HeatmapHead',
@@ -56,7 +55,7 @@ model = dict(
         input_transform='resize_concat',
         out_channels=98,
         deconv_out_channels=None,
-        conv_out_channels=(280, ),
+        conv_out_channels=(270, ),
         conv_kernel_sizes=(1, ),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),

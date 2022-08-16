@@ -5,7 +5,10 @@ _base_ = [
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
+    type='MegviiHeatmap',
+    input_size=(192, 256),
+    heatmap_size=(48, 64),
+    kernel_size=5)
 
 # model settings
 norm_cfg = dict(type='SyncBN', requires_grad=True)
@@ -47,7 +50,7 @@ model = dict(
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
-        shift_heatmap=True,
+        shift_heatmap=False,
     ))
 
 # base dataset settings
