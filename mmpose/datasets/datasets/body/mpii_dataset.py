@@ -161,7 +161,7 @@ class MpiiDataset(BaseCocoStyleDataset):
 
             # Adjust center/scale slightly to avoid cropping limbs
             if center[0] != -1:
-                center[1] = center[1] + 15 / pixel_std * scale[1]
+                center[1] = center[1] + 15. / pixel_std * scale[1]
 
             # MPII uses matlab format, index is 1-based,
             # we should first convert to 0-based index
@@ -172,7 +172,7 @@ class MpiiDataset(BaseCocoStyleDataset):
             scale = scale.reshape(1, -1)
 
             # initialize bbox from center and scale
-            bbox = bbox_cs2xyxy(center, scale, padding=1.25)
+            bbox = bbox_cs2xyxy(center, scale)
 
             # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             keypoints = np.array(ann['joints']).reshape(1, -1, 2)
@@ -188,7 +188,7 @@ class MpiiDataset(BaseCocoStyleDataset):
                 'bbox_score': np.ones(1, dtype=np.float32),
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
-                'orig_keypoints': keypoints.copy(),
+                'ori_keypoints': keypoints.copy(),
             }
 
             if self.headbox_file:

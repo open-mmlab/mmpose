@@ -249,7 +249,7 @@ class BaseCocoStyleDataset(BaseDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
-            'orig_keypoints': keypoints.copy(),
+            'ori_keypoints': keypoints.copy(),
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
@@ -395,7 +395,7 @@ class BaseCocoStyleDataset(BaseDataset):
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
-                'orig_keypoints': keypoints.copy(),
+                'ori_keypoints': keypoints.copy(),
                 'id': id_,
             })
 

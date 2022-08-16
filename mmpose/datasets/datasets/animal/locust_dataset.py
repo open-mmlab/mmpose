@@ -133,7 +133,7 @@ class LocustDataset(BaseCocoStyleDataset):
             'num_keypoints': ann['num_keypoints'],
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
-            'orig_keypoints': keypoints.copy(),
+            'ori_keypoints': keypoints.copy(),
             'iscrowd': ann['iscrowd'],
             'id': ann['id'],
         }
