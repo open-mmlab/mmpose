@@ -6,8 +6,8 @@ from typing import (Any, Callable, Dict, Iterable, List, Optional, Sequence,
                     Union)
 
 import numpy as np
-from mmcv.fileio import load
 from mmengine.dataset import BaseDataset, force_full_init
+from mmengine.fileio import load
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
@@ -85,14 +85,14 @@ class BaseCocoStyleDataset(BaseDataset):
             if self.data_mode != 'topdown':
                 raise ValueError(
                     f'{self.__class__.__name__} is set to {self.data_mode}: '
-                    'mode, while "bbox_file" is only supported in '
-                    'topdown mode.')
+                    'mode, while "bbox_file" is only '
+                    'supported in topdown mode.')
 
             if not test_mode:
                 raise ValueError(
                     f'{self.__class__.__name__} has `test_mode==False` '
-                    'while "bbox_file" is only supported when '
-                    '`test_mode==True`.')
+                    'while "bbox_file" is only '
+                    'supported when `test_mode==True`.')
         self.bbox_file = bbox_file
 
         super().__init__(
@@ -249,6 +249,8 @@ class BaseCocoStyleDataset(BaseDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'ori_keypoints': keypoints.copy(),
+            'ori_keypoints_visible': keypoints_visible.copy(),
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
@@ -394,6 +396,8 @@ class BaseCocoStyleDataset(BaseDataset):
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
+                'ori_keypoints': keypoints.copy(),
+                'ori_keypoints_visible': keypoints_visible.copy(),
                 'id': id_,
             })
 

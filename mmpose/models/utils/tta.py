@@ -69,7 +69,7 @@ def flip_vectors(x_labels: Tensor, y_labels: Tensor, flip_indices: List[int]):
 
 
 def flip_coordinates(coords: Tensor, flip_indices: List[int],
-                     shift_coords: bool, img_shape: Tuple[int, int, int]):
+                     shift_coords: bool, input_size: Tuple[int, int]):
     """Flip normalized coordinates for test-time augmentation.
 
     Args:
@@ -77,10 +77,9 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int],
             [B, K, D]
         flip_indices (List[int]): The indices of each keypoint's symmetric
             keypoint
-        shift_heatmap (bool): Shift the flipped coordinates to align with the
+        shift_coords (bool): Shift the flipped coordinates to align with the
             original coordinates and improve accuracy. Defaults to ``True``
-        img_shape (Tuple[int, int]): The shape of input image, channels are
-            ordered by [C, H, W]
+        input_size (Tuple[int, int]): The size of input image in [w, h]
     """
     assert coords.ndim == 3
     assert len(flip_indices) == coords.shape[1]
@@ -88,7 +87,7 @@ def flip_coordinates(coords: Tensor, flip_indices: List[int],
     coords[:, :, 0] = 1.0 - coords[:, :, 0]
 
     if shift_coords:
-        img_width = img_shape[2]
+        img_width = input_size[0]
         coords[:, :, 0] -= 1.0 / img_width
 
     coords = coords[:, flip_indices]

@@ -21,7 +21,7 @@ class LoadImageFromFile:
           candidates are 'color', 'grayscale' and 'unchanged'.
         channel_order (str): Order of channel, candidates are 'bgr' and 'rgb'.
         file_client_args (dict): Arguments to instantiate a FileClient.
-            See :class:`mmcv.fileio.FileClient` for details.
+            See :class:`mmengine.fileio.FileClient` for details.
             Defaults to ``dict(backend='disk')``.
     """
 

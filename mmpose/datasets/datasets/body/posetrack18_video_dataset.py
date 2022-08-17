@@ -3,7 +3,7 @@ import os.path as osp
 from typing import Callable, List, Optional, Sequence, Union
 
 import numpy as np
-from mmcv.fileio import load
+from mmengine.fileio import load
 from mmengine.utils import check_file_exist, is_list_of
 from xtcocotools.coco import COCO
 
@@ -279,6 +279,8 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             'num_keypoints': ann['num_keypoints'],
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
+            'ori_keypoints': keypoints.copy(),
+            'ori_keypoints_visible': keypoints_visible.copy(),
             'frame_weights': self.frame_weights,
             'id': ann['id'],
         }
@@ -381,6 +383,8 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
+                'ori_keypoints': keypoints.copy(),
+                'ori_keypoints_visible': keypoints_visible.copy(),
                 'id': id_,
             })
 
