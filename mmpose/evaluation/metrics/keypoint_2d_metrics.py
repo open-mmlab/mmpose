@@ -79,7 +79,7 @@ class PCKAccuracy(BaseMetric):
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['ori_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
+            mask = gt['ori_keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -475,7 +475,7 @@ class AUC(BaseMetric):
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['ori_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].reshape(1, -1)
+            mask = gt['ori_keypoints_visible'].reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -558,7 +558,7 @@ class EPE(BaseMetric):
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['ori_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].reshape(1, -1)
+            mask = gt['ori_keypoints_visible'].reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -694,7 +694,7 @@ class NME(BaseMetric):
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['ori_keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['keypoints_visible'].reshape(1, -1)
+            mask = gt['ori_keypoints_visible'].reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,

@@ -250,6 +250,7 @@ class BaseCocoStyleDataset(BaseDataset):
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
             'ori_keypoints': keypoints.copy(),
+            'ori_keypoints_visible': keypoints_visible.copy(),
             'iscrowd': ann.get('iscrowd', 0),
             'segmentation': ann.get('segmentation', None),
             'id': ann['id'],
@@ -396,6 +397,7 @@ class BaseCocoStyleDataset(BaseDataset):
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
                 'ori_keypoints': keypoints.copy(),
+                'ori_keypoints_visible': keypoints_visible.copy(),
                 'id': id_,
             })
 

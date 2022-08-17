@@ -129,6 +129,7 @@ class CocoWholeBodyHandDataset(BaseCocoStyleDataset):
                             'keypoints': keypoints,
                             'keypoints_visible': keypoints_visible,
                             'ori_keypoints': keypoints.copy(),
+                            'ori_keypoints_visible': keypoints_visible.copy(),
                             'iscrowd': ann['iscrowd'],
                             'segmentation': ann['segmentation'],
                             'id': id,

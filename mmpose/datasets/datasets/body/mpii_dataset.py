@@ -189,6 +189,7 @@ class MpiiDataset(BaseCocoStyleDataset):
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
                 'ori_keypoints': keypoints.copy(),
+                'ori_keypoints_visible': keypoints_visible.copy(),
             }
 
             if self.headbox_file:
