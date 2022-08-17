@@ -88,8 +88,4 @@ class RegressionLabel(BaseKeypointCodec):
         w, h = self.input_size
         keypoints = normalized_coords * np.array([w, h])
 
-        # Unsqueeze the instance dimension for single-instance results
-        keypoints = keypoints
-        scores = scores
-
         return keypoints, scores

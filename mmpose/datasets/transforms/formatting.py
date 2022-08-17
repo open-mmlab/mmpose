@@ -72,11 +72,14 @@ class PackPoseInputs(BaseTransform):
     # PoseDataSample without converting to Tensor
     instance_mapping_table = {
         'bbox': 'bboxes',
+        'head_size': 'head_size',
         'bbox_center': 'bbox_centers',
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
         'keypoints_visible': 'keypoints_visible',
+        'ori_keypoints': 'ori_keypoints',
+        'ori_keypoints_visible': 'ori_keypoints_visible'
     }
 
     label_mapping_table = {

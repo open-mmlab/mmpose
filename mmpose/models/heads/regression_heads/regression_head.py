@@ -101,7 +101,7 @@ class RegressionHead(BaseHead):
             # TTA: flip test -> feats = [orig, flipped]
             assert isinstance(feats, list) and len(feats) == 2
             flip_indices = batch_data_samples[0].metainfo['flip_indices']
-            img_shape = batch_data_samples[0].metainfo['img_shape']
+            input_size = batch_data_samples[0].metainfo['input_size']
             _feats, _feats_flip = feats
 
             _batch_coords = self.forward(_feats)
@@ -109,7 +109,7 @@ class RegressionHead(BaseHead):
                 self.forward(_feats_flip),
                 flip_indices=flip_indices,
                 shift_coords=test_cfg.get('shift_coords', True),
-                img_shape=img_shape)
+                input_size=input_size)
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
         else:
             batch_coords = self.forward(feats)  # (B, K, D)

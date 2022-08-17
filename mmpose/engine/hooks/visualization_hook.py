@@ -41,7 +41,7 @@ class PoseVisualizationHook(Hook):
         test_out_dir (str, optional): directory where painted images
             will be saved in testing process.
         file_client_args (dict): Arguments to instantiate a FileClient.
-            See :class:`mmcv.fileio.FileClient` for details.
+            See :class:`mmengine.fileio.FileClient` for details.
             Defaults to ``dict(backend='disk')``.
     """
 
