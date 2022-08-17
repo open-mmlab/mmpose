@@ -126,7 +126,13 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             # Store the keypoint predictions in the data sample
             if 'pred_instances' not in data_sample:
                 pred_instances = InstanceData()
-                pred_instances.bboxes = data_sample.gt_instances.bboxes
+                if 'bboxes' in data_sample.gt_instances:
+                    pred_instances.bboxes = data_sample.gt_instances.bboxes
+                else:
+                    pred_instances.bbox_center = \
+                        data_sample.gt_instances.bbox_centers
+                    pred_instances.bbox_scale = \
+                        data_sample.gt_instances.bbox_scales
                 pred_instances.bbox_scores = \
                     data_sample.gt_instances.bbox_scores
                 data_sample.pred_instances = pred_instances
