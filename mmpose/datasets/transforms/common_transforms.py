@@ -462,8 +462,6 @@ class RandomBBoxTransform(BaseTransform):
                  rotate_prob: float = 0.6) -> None:
         super().__init__()
 
-        assert 0. < scale_factor < 1.0
-
         self.shift_factor = shift_factor
         self.shift_prob = shift_prob
         self.scale_factor = scale_factor
@@ -510,7 +508,6 @@ class RandomBBoxTransform(BaseTransform):
 
         # Get rotation parameters
         rotate = self._truncnorm(size=(num_bbox, )) * self.rotate_factor
-        rotate = rotate * self.rotate_factor
         rotate = np.where(
             np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)
 
@@ -970,7 +967,7 @@ class GenerateTarget(BaseTransform):
 
             results['heatmaps'] = heatmaps
             # keypoint_weights.shape: [N, K] -> [N, n, K]
-            results['keypoint_weights'] = np.stack(heatmaps, axis=1)
+            results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
 
         else:
             raise ValueError(f'Invalid target type {self.target_type}')
