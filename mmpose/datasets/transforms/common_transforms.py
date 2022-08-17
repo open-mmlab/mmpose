@@ -234,7 +234,7 @@ class RandomFlip(BaseTransform):
                     results['keypoints'],
                     results.get('keypoints_visible', None),
                     image_size=(w, h),
-                    flip_pairs=results['flip_pairs'],
+                    flip_indices=results['flip_indices'],
                     direction=flip_dir)
 
                 results['keypoints'] = keypoints

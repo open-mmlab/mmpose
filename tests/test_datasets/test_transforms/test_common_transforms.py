@@ -13,6 +13,7 @@ from mmpose.datasets.transforms import (Albumentation, GenerateTarget,
                                         PhotometricDistortion,
                                         RandomBBoxTransform, RandomFlip,
                                         RandomHalfBody, TopdownAffine)
+from mmpose.testing import get_coco_sample
 
 
 class TestGetBBoxCenterScale(TestCase):
@@ -20,22 +21,11 @@ class TestGetBBoxCenterScale(TestCase):
     def setUp(self):
 
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
 
     def test_transform(self):
         # test converting bbox to center and scale
@@ -45,8 +35,8 @@ class TestGetBBoxCenterScale(TestCase):
         results = deepcopy(self.data_info)
         results = transform(results)
 
-        center = results['bbox'][:, :2] + results['bbox'][:, 2:4] * 0.5
-        scale = results['bbox'][:, 2:4] * padding
+        center = (results['bbox'][:, :2] + results['bbox'][:, 2:4]) * 0.5
+        scale = (results['bbox'][:, 2:4] - results['bbox'][:, :2]) * padding
 
         self.assertTrue(np.allclose(results['bbox_center'], center))
         self.assertTrue(np.allclose(results['bbox_scale'], scale))
@@ -68,31 +58,12 @@ class TestGetBBoxCenterScale(TestCase):
 class TestRandomFlip(TestCase):
 
     def setUp(self):
-
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.random.randint(0, 256, (480, 640, 3), dtype=np.uint8),
-            img_mask=np.random.randint(0, 2, (480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
-
-        # assign different visibility for keypoints in symmetric pairs
-        for idx, _ in self.data_info['flip_pairs']:
-            self.data_info['keypoints_visible'][0, idx] = 0
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
 
     def test_init(self):
         # prob: float, direction: str
@@ -115,13 +86,16 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible'][:, ids1]
         kpts2 = results['keypoints'][:, ids2]
         kpts2_vis = results['keypoints_visible'][:, ids2]
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 0] = 640 - 1 - bbox_center_flipped[:, 0]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][:, ::-1]))
         self.assertTrue(
             np.allclose(results['img_mask'],
                         self.data_info['img_mask'][:, ::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[589., 50.]]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], kpts2[..., 1]))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -136,12 +110,15 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible'][:, ids1]
         kpts2 = results['keypoints'][:, ids2]
         kpts2_vis = results['keypoints_visible'][:, ids2]
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 1] = 480 - 1 - bbox_center_flipped[:, 1]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1]))
         self.assertTrue(
             np.allclose(results['img_mask'], self.data_info['img_mask'][::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[50., 429.]]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], kpts2[..., 0]))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -155,13 +132,17 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible']
         kpts2 = results['keypoints']
         kpts2_vis = results['keypoints_visible']
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 0] = 640 - 1 - bbox_center_flipped[:, 0]
+        bbox_center_flipped[:, 1] = 480 - 1 - bbox_center_flipped[:, 1]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1, ::-1]))
         self.assertTrue(
             np.allclose(results['img_mask'],
                         self.data_info['img_mask'][::-1, ::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[589., 429.]]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -191,26 +172,13 @@ class TestRandomFlip(TestCase):
 class TestRandomHalfBody(TestCase):
 
     def setUp(self):
-
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True,
+            random_keypoints_visible=False)
 
     def test_transform(self):
         padding = 1.5
@@ -288,24 +256,11 @@ class TestRandomBBoxTransform(TestCase):
 
     def setUp(self):
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
 
     def test_transform(self):
         shfit_factor = 0.16
@@ -485,25 +440,12 @@ class TestGenerateTarget(TestCase):
 
     def setUp(self):
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_rotation=np.array([45], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(10, 50, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.ones((1, 17)).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True,
+            random_keypoints_visible=False)
 
     def test_generate_heatmap(self):
         encoder = dict(
