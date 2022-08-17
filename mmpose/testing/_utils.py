@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Optional
+
 import numpy as np
 import torch
 from mmengine.data import InstanceData, PixelData
@@ -9,15 +11,19 @@ from mmpose.structures.bbox import bbox_xyxy2cs
 
 def get_coco_sample(
         img_shape=(240, 320),
+        img_fill: Optional[int] = None,
         num_instances=1,
         with_bbox_cs=True,
         with_img_mask=False,
-        random_keypoints_visible=True):
+        random_keypoints_visible=False):
     """Create a dummy data sample in COCO style."""
     rng = np.random.RandomState(0)
     h, w = img_shape
+    if img_fill is None:
+        img = np.random.randint(0, 256, (h, w, 3), dtype=np.uint8)
+    else:
+        img = np.full((h, w, 3), img_fill, dtype=np.uint8)
 
-    img = np.random.randint(0, 256, (h, w, 3), dtype=np.uint8)
     bbox = _rand_bboxes(rng, num_instances, w, h)
     keypoints = _rand_keypoints(rng, bbox, 17)
     if random_keypoints_visible:
@@ -47,7 +53,8 @@ def get_coco_sample(
         'lower_body_ids': lower_body_ids,
         'flip_pairs': flip_pairs,
         'flip_indices': flip_indices,
-        'dataset_keypoint_weights': dataset_keypoint_weights
+        'dataset_keypoint_weights': dataset_keypoint_weights,
+        'invalid_segs': [],
     }
 
     if with_bbox_cs:

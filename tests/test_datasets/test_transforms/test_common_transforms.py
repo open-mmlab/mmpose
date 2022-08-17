@@ -25,7 +25,8 @@ class TestGetBBoxCenterScale(TestCase):
             img_shape=(480, 640),
             num_instances=1,
             with_bbox_cs=True,
-            with_img_mask=True)
+            with_img_mask=True,
+            random_keypoints_visible=True)
 
     def test_transform(self):
         # test converting bbox to center and scale
@@ -63,7 +64,8 @@ class TestRandomFlip(TestCase):
             img_shape=(480, 640),
             num_instances=1,
             with_bbox_cs=True,
-            with_img_mask=True)
+            with_img_mask=True,
+            random_keypoints_visible=True)
 
     def test_init(self):
         # prob: float, direction: str
@@ -177,8 +179,7 @@ class TestRandomHalfBody(TestCase):
             img_shape=(480, 640),
             num_instances=1,
             with_bbox_cs=True,
-            with_img_mask=True,
-            random_keypoints_visible=False)
+            with_img_mask=True)
 
     def test_transform(self):
         padding = 1.5
@@ -444,8 +445,7 @@ class TestGenerateTarget(TestCase):
             img_shape=(480, 640),
             num_instances=1,
             with_bbox_cs=True,
-            with_img_mask=True,
-            random_keypoints_visible=False)
+            with_img_mask=True)
 
     def test_generate_heatmap(self):
         encoder = dict(

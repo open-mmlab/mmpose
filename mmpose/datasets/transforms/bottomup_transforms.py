@@ -6,7 +6,7 @@ import numpy as np
 import xtcocotools.mask as cocomask
 from mmcv.image import imflip_, imresize
 from mmcv.transforms import BaseTransform
-from mmcv.transforms.utils import cache_random_params
+from mmcv.transforms.utils import cache_randomness
 from scipy.stats import truncnorm
 
 from mmpose.registry import TRANSFORMS
@@ -81,7 +81,8 @@ class BottomupGetHeatmapMask(BaseTransform):
         """
 
         invalid_segs = results.get('invalid_segs', [])
-        img_shape = results['image_shape']  # (img_h, img_w)
+        img_shape = results['img_shape']  # (img_h, img_w)
+        input_size = results['input_size']
 
         # Calculate the mask of the valid region by negating the segmentation
         # mask of invalid objects
@@ -90,12 +91,11 @@ class BottomupGetHeatmapMask(BaseTransform):
         # Apply an affine transform to the mask if the image has been
         # transformed
         if 'warp_mat' in results:
-            warp_size = (int(img_shape[1]), int(img_shape[0]))
             warp_mat = results['warp_mat']
 
-            mask = results['img_mask'].astype(np.float32)
+            mask = mask.astype(np.float32)
             mask = cv2.warpAffine(
-                mask, warp_mat, warp_size, flags=cv2.INTER_LINEAR)
+                mask, warp_mat, input_size, flags=cv2.INTER_LINEAR)
 
         # Flip the mask if the image has been flipped
         if results.get('flip', False):
@@ -219,7 +219,7 @@ class BottomupRandomAffine(BaseTransform):
 
         return np.array([_w, _h], dtype=scale.dtype)
 
-    @cache_random_params
+    @cache_randomness
     def _get_transform_params(self) -> Tuple:
         """Get random transform parameters.
 
@@ -239,13 +239,13 @@ class BottomupRandomAffine(BaseTransform):
         if np.random.rand() < self.scale_prob:
             scale_min, scale_max = self.scale_factor
             scale = scale_min + (scale_max -
-                                 scale_min) * self.transform(size=(1, ))
+                                 scale_min) * self._truncnorm(size=(1, ))
         else:
             scale = np.ones(1, dtype=np.float32)
 
         # get rotation
         if np.random.rand() < self.rotate_prob:
-            rotate = self._truncnorm(size=(1, )) * self.rotate_factor
+            rotate = self._truncnorm() * self.rotate_factor
         else:
             rotate = 0
 
@@ -296,7 +296,7 @@ class BottomupRandomAffine(BaseTransform):
 
         if 'keypoints' in results:
             # Only transform (x, y) coordinates
-            results['keypoint'][..., :2] = cv2.transform(
+            results['keypoints'][..., :2] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
 
         results['input_size'] = self.input_size
@@ -349,8 +349,6 @@ class BottomupResize(BaseTransform):
                     relatively shorter side with the aspect ratio kept. The
                     resized image will exceed the given input size at the
                     longer side
-                - ``'stretch'``: The image will be resized exactly to the
-                    input size without keeping the aspect ratio
         use_udp (bool): Whether use unbiased data processing. See
             `UDP (CVPR 2020)`_ for details. Defaults to ``False``
 
@@ -410,12 +408,8 @@ class BottomupResize(BaseTransform):
             rsz_h = max(tgt_h, tgt_w / ratio)
 
             target_img_size = (rsz_w, rsz_h)
-            target_input_size = self._ceil_to_multiple(target_img_size)
-
-        elif self.resize_mode == 'stretch':
-            target_input_size = self._ceil_to_multiple(input_size,
+            target_input_size = self._ceil_to_multiple(target_img_size,
                                                        self.base_size)
-            target_img_size = target_input_size
 
         else:
             raise ValueError(f'Invalid resize mode {self.resize_mode}')
