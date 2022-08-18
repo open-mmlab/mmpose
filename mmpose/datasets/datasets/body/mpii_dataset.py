@@ -188,8 +188,6 @@ class MpiiDataset(BaseCocoStyleDataset):
                 'bbox_score': np.ones(1, dtype=np.float32),
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
-                'ori_keypoints': keypoints.copy(),
-                'ori_keypoints_visible': keypoints_visible.copy(),
             }
 
             if self.headbox_file:

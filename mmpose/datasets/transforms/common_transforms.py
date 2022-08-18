@@ -929,26 +929,36 @@ class GenerateTarget(BaseTransform):
 
     def transform(self, results: Dict) -> Optional[dict]:
 
+        if results.get('transformed_keypoints', None) is not None:
+            # use keypoints transformed by TopdownAffine
+            keypoints = results['transformed_keypoints']
+        elif results.get('keypoints', None) is not None:
+            # use original keypoints
+            keypoints = results['keypoints']
+        else:
+            raise ValueError(
+                'GenerateTarget requires \'transformed_keypoints\' or'
+                ' \'keypoints\' in the results.')
+
+        keypoints_visible = results['keypoints_visible']
+
         if self.target_type == 'heatmap':
             heatmaps, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
-                keypoints_visible=results['keypoints_visible'])
+                keypoints=keypoints, keypoints_visible=keypoints_visible)
 
             results['heatmaps'] = heatmaps
             results['keypoint_weights'] = keypoint_weights
 
         elif self.target_type == 'keypoint_label':
             keypoint_labels, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
-                keypoints_visible=results['keypoints_visible'])
+                keypoints=keypoints, keypoints_visible=keypoints_visible)
 
             results['keypoint_labels'] = keypoint_labels
             results['keypoint_weights'] = keypoint_weights
 
         elif self.target_type == 'keypoint_xy_label':
             x_labels, y_labels, keypoint_weights = self.encoder.encode(
-                keypoints=results['keypoints'],
-                keypoints_visible=results['keypoints_visible'])
+                keypoints=keypoints, keypoints_visible=keypoints_visible)
 
             results['keypoint_x_labels'] = x_labels
             results['keypoint_y_labels'] = y_labels
@@ -960,8 +970,7 @@ class GenerateTarget(BaseTransform):
 
             for encoder in self.encoder:
                 _heatmaps, _keypoint_weights = encoder.encode(
-                    keypoints=results['keypoints'],
-                    keypoints_visible=results['keypoints_visible'])
+                    keypoints=keypoints, keypoints_visible=keypoints_visible)
                 heatmaps.append(_heatmaps)
                 keypoint_weights.append(_keypoint_weights)
 

@@ -129,32 +129,20 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
             keypoints = _keypoints[..., :2]
             keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
+            img_path = osp.join(self.data_prefix['img'],
+                                imgid2info[img_id]['file_name'])
+
             data_info = {
-                'id':
-                ann['id'],
-                'img_id':
-                img_id,
-                'img_path':
-                osp.join(self.data_prefix['img'],
-                         imgid2info[img_id]['file_name']),
-                'bbox_center':
-                center,
-                'bbox_scale':
-                scale,
-                'bbox_score':
-                np.ones(1, dtype=np.float32),
-                'num_keypoints':
-                ann['num_joints'],
-                'keypoints':
-                keypoints,
-                'keypoints_visible':
-                keypoints_visible,
-                'ori_keypoints':
-                keypoints.copy(),
-                'ori_keypoints_visible':
-                keypoints_visible.copy(),
-                'iscrowd':
-                ann['iscrowd'],
+                'id': ann['id'],
+                'img_id': img_id,
+                'img_path': img_path,
+                'bbox_center': center,
+                'bbox_scale': scale,
+                'bbox_score': np.ones(1, dtype=np.float32),
+                'num_keypoints': ann['num_joints'],
+                'keypoints': keypoints,
+                'keypoints_visible': keypoints_visible,
+                'iscrowd': ann['iscrowd'],
             }
 
             # val set

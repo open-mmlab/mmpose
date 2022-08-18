@@ -279,8 +279,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
             'num_keypoints': ann['num_keypoints'],
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
-            'ori_keypoints': keypoints.copy(),
-            'ori_keypoints_visible': keypoints_visible.copy(),
             'frame_weights': self.frame_weights,
             'id': ann['id'],
         }
@@ -383,8 +381,6 @@ class PoseTrack18VideoDataset(BaseCocoStyleDataset):
                 'bbox_score': bbox_score,
                 'keypoints': keypoints,
                 'keypoints_visible': keypoints_visible,
-                'ori_keypoints': keypoints.copy(),
-                'ori_keypoints_visible': keypoints_visible.copy(),
                 'id': id_,
             })
 
