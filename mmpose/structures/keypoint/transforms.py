@@ -27,8 +27,6 @@ def flip_keypoints(keypoints: np.ndarray,
             keypoint
         direction (str): The flip direction. Options are ``'horizontal'``,
             ``'vertical'`` and ``'diagonal'``. Defaults to ``'horizontal'``
-        inplace (bool): Whether modify ``keypoints`` and ``keypoints_visible``
-            in-place. Defaults to ``False``
 
     Returns:
         tuple:

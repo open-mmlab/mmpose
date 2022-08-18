@@ -201,7 +201,7 @@ class RandomFlip(BaseTransform):
             results['flip_direction'] = flip_dir
 
             h, w = results['img_shape']
-            # flip image and make
+            # flip image and mask
             if isinstance(results['img'], list):
                 results['img'] = [
                     imflip(img, direction=flip_dir) for img in results['img']
@@ -894,7 +894,7 @@ class GenerateTarget(BaseTransform):
             - ``'heatmap'``: The encoded should be instance-irrelevant
                 heatmaps and will be stored in ``results['heatmaps']``
             - ``'multiscale_heatmap'`` The encoded should be a list of
-                heatmaps and will be stored in ``results['hatmaps']``. Note
+                heatmaps and will be stored in ``results['heatmaps']``. Note
                 that in this case ``self.encoder`` is also a list, each
                 encoder for a single scale of heatmaps
             - ``'keypoint_label'``: The encoded should be instance-level
