@@ -30,7 +30,7 @@ def _calc_distances(preds: np.ndarray, gts: np.ndarray, mask: np.ndarray,
     """
     N, K, _ = preds.shape
     # set mask=0 when norm_factor==0
-    _mask = mask.copy()
+    _mask = mask.copy() > 0
     _mask[np.where((norm_factor == 0).sum(1))[0], :] = False
     distances = np.full((N, K), -1, dtype=np.float32)
     # handle invalid values

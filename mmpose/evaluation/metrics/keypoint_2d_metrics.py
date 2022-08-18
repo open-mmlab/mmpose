@@ -469,7 +469,7 @@ class AUC(BaseMetric):
         """
         for data, pred in zip(data_batch, predictions):
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints'].cpu().numpy()
+            pred_coords = pred['pred_instances']['keypoints']
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
@@ -552,7 +552,7 @@ class EPE(BaseMetric):
         """
         for data, pred in zip(data_batch, predictions):
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints'].cpu().numpy()
+            pred_coords = pred['pred_instances']['keypoints']
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
@@ -688,7 +688,7 @@ class NME(BaseMetric):
         """
         for data, pred in zip(data_batch, predictions):
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints'].cpu().numpy()
+            pred_coords = pred['pred_instances']['keypoints']
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]

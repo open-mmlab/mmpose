@@ -368,7 +368,7 @@ class HeatmapHead(BaseHead):
             # have keys like "final_layer.n.xxx", where the weights of the last
             # one should be renamed "final_layer.xxx", and others should be
             # renamed "conv_layers.n.xxx"
-            k_parts = _k.split('.')
+            k_parts = k.split('.')
             if k_parts[0] == 'final_layer':
                 if len(k_parts) == 3:
                     assert isinstance(self.conv_layers, nn.Sequential)
@@ -382,7 +382,6 @@ class HeatmapHead(BaseHead):
                 else:
                     # final_layer.xxx remains final_layer.xxx
                     k_new = k
-
             else:
                 k_new = k
 

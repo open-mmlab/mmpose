@@ -5,6 +5,7 @@ from typing import Optional
 import numpy as np
 
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_cs2xyxy
 from ..base import BaseCocoStyleDataset
 
 
@@ -78,8 +79,10 @@ class WFLWDataset(BaseCocoStyleDataset):
 
         img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
-        center = np.array(ann['center'], dtype=np.float32)
-        scale = np.array([ann['scale'], ann['scale']], dtype=np.float32)
+        # center, scale in shape [1, 2] and bbox in [1, 4]
+        center = np.array([ann['center']], dtype=np.float32)
+        scale = np.array([[ann['scale'], ann['scale']]], dtype=np.float32)
+        bbox = bbox_cs2xyxy(center, scale)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(
@@ -92,6 +95,7 @@ class WFLWDataset(BaseCocoStyleDataset):
         data_info = {
             'img_id': ann['image_id'],
             'img_path': img_path,
+            'bbox': bbox,
             'bbox_center': center,
             'bbox_scale': scale,
             'bbox_score': np.ones(1, dtype=np.float32),

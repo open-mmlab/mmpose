@@ -221,7 +221,7 @@ class CocoMetric(BaseMetric):
 
         # score the prediction results according to `score_mode`
         # and perform NMS according to `nms_mode`
-        valid_kpts = dict()
+        valid_kpts = defaultdict(list)
         num_keypoints = self.dataset_meta['num_keypoints']
         for img_id, instances in kpts.items():
             for instance in instances:
