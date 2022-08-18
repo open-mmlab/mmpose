@@ -109,6 +109,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         ann_file='annotations/mmpose_crowdpose_test.json',
+        bbox_file='data/crowdpose/annotations/det_for_crowd_test_0.1_0.5.json',
         data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=test_pipeline,
@@ -118,5 +119,6 @@ test_dataloader = val_dataloader
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/mmpose_crowdpose_test.json',
-    use_area=False)
+    use_area=False,
+    iou_type='keypoints_crowd')
 test_evaluator = val_evaluator

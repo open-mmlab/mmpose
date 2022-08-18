@@ -112,7 +112,8 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json',
+    nms_mode='none')
 test_evaluator = val_evaluator
 
 # fp16 settings
