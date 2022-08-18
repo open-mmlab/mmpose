@@ -120,8 +120,9 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
         for ann in data['annotations']:
             img_id = ann['image_id']
 
-            center = np.array(ann['center'], dtype=np.float32)
-            scale = np.array([ann['scale'], ann['scale']],
+            # center, scale in shape [1, 2] and bbox in [1, 4]
+            center = np.array([ann['center']], dtype=np.float32)
+            scale = np.array([[ann['scale'], ann['scale']]],
                              dtype=np.float32) * pixel_std
             bbox = bbox_cs2xyxy(center, scale)
 
