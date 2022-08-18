@@ -5,12 +5,15 @@ from copy import deepcopy
 from unittest import TestCase
 
 import numpy as np
-from mmcv.transforms import LoadImageFromFile
+from mmcv.transforms import Compose, LoadImageFromFile
+from mmengine.utils import is_list_of
 
-from mmpose.datasets.transforms import (Albumentation, GetBBoxCenterScale,
+from mmpose.datasets.transforms import (Albumentation, GenerateTarget,
+                                        GetBBoxCenterScale,
                                         PhotometricDistortion,
                                         RandomBBoxTransform, RandomFlip,
-                                        RandomHalfBody)
+                                        RandomHalfBody, TopdownAffine)
+from mmpose.testing import get_coco_sample
 
 
 class TestGetBBoxCenterScale(TestCase):
@@ -18,22 +21,12 @@ class TestGetBBoxCenterScale(TestCase):
     def setUp(self):
 
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True,
+            random_keypoints_visible=True)
 
     def test_transform(self):
         # test converting bbox to center and scale
@@ -43,8 +36,8 @@ class TestGetBBoxCenterScale(TestCase):
         results = deepcopy(self.data_info)
         results = transform(results)
 
-        center = results['bbox'][:, :2] + results['bbox'][:, 2:4] * 0.5
-        scale = results['bbox'][:, 2:4] * padding
+        center = (results['bbox'][:, :2] + results['bbox'][:, 2:4]) * 0.5
+        scale = (results['bbox'][:, 2:4] - results['bbox'][:, :2]) * padding
 
         self.assertTrue(np.allclose(results['bbox_center'], center))
         self.assertTrue(np.allclose(results['bbox_scale'], scale))
@@ -66,30 +59,13 @@ class TestGetBBoxCenterScale(TestCase):
 class TestRandomFlip(TestCase):
 
     def setUp(self):
-
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
-
-        # assign different visibility for keypoints in symmetric pairs
-        for idx, _ in self.data_info['flip_pairs']:
-            self.data_info['keypoints_visible'][0, idx] = 0
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True,
+            random_keypoints_visible=True)
 
     def test_init(self):
         # prob: float, direction: str
@@ -112,10 +88,16 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible'][:, ids1]
         kpts2 = results['keypoints'][:, ids2]
         kpts2_vis = results['keypoints_visible'][:, ids2]
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 0] = 640 - 1 - bbox_center_flipped[:, 0]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][:, ::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[589., 50.]]))
+        self.assertTrue(
+            np.allclose(results['img_mask'],
+                        self.data_info['img_mask'][:, ::-1]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], kpts2[..., 1]))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -130,10 +112,15 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible'][:, ids1]
         kpts2 = results['keypoints'][:, ids2]
         kpts2_vis = results['keypoints_visible'][:, ids2]
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 1] = 480 - 1 - bbox_center_flipped[:, 1]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[50., 429.]]))
+        self.assertTrue(
+            np.allclose(results['img_mask'], self.data_info['img_mask'][::-1]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], kpts2[..., 0]))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -147,10 +134,17 @@ class TestRandomFlip(TestCase):
         kpts1_vis = self.data_info['keypoints_visible']
         kpts2 = results['keypoints']
         kpts2_vis = results['keypoints_visible']
+        bbox_center_flipped = self.data_info['bbox_center'].copy()
+        bbox_center_flipped[:, 0] = 640 - 1 - bbox_center_flipped[:, 0]
+        bbox_center_flipped[:, 1] = 480 - 1 - bbox_center_flipped[:, 1]
 
         self.assertTrue(
             np.allclose(results['img'], self.data_info['img'][::-1, ::-1]))
-        self.assertTrue(np.allclose(results['bbox_center'], [[589., 429.]]))
+        self.assertTrue(
+            np.allclose(results['img_mask'],
+                        self.data_info['img_mask'][::-1, ::-1]))
+        self.assertTrue(
+            np.allclose(results['bbox_center'], bbox_center_flipped))
         self.assertTrue(np.allclose(kpts1[..., 0], 640 - kpts2[..., 0] - 1))
         self.assertTrue(np.allclose(kpts1[..., 1], 480 - kpts2[..., 1] - 1))
         self.assertTrue(np.allclose(kpts1_vis, kpts2_vis))
@@ -180,26 +174,12 @@ class TestRandomFlip(TestCase):
 class TestRandomHalfBody(TestCase):
 
     def setUp(self):
-
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
 
     def test_transform(self):
         padding = 1.5
@@ -277,29 +257,16 @@ class TestRandomBBoxTransform(TestCase):
 
     def setUp(self):
         # prepare dummy top-down data sample with COCO metainfo
-        self.data_info = dict(
-            img=np.zeros((480, 640, 3), dtype=np.uint8),
+        self.data_info = get_coco_sample(
             img_shape=(480, 640),
-            bbox=np.array([[0, 0, 100, 100]], dtype=np.float32),
-            bbox_center=np.array([[50, 50]], dtype=np.float32),
-            bbox_scale=np.array([[125, 125]], dtype=np.float32),
-            bbox_score=np.ones(1, dtype=np.float32),
-            keypoints=np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
-            keypoints_visible=np.full((1, 17), 1).astype(np.float32),
-            upper_body_ids=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            lower_body_ids=[11, 12, 13, 14, 15, 16],
-            flip_pairs=[[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
-                        [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
-                        [13, 14], [16, 15], [15, 16]],
-            dataset_keypoint_weights=np.array([
-                1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2,
-                1.2, 1.5, 1.5
-            ]).astype(np.float32))
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
 
     def test_transform(self):
         shfit_factor = 0.16
-        scale_factor = 0.5
-        rotate_factor = 40.
+        scale_factor = (0.5, 1.5)
+        rotate_factor = 90.
 
         # test random shift
         transform = RandomBBoxTransform(
@@ -333,7 +300,7 @@ class TestRandomBBoxTransform(TestCase):
         results = transform(deepcopy(self.data_info))
         center = self.data_info['bbox_center']
         scale = self.data_info['bbox_scale']
-        scale_range = [scale * (1 - scale_factor), scale * (1 + scale_factor)]
+        scale_range = [scale * scale_factor[0], scale * scale_factor[1]]
 
         self.assertTrue(np.allclose(results['bbox_center'], center))
         self.assertFalse(np.allclose(results['bbox_scale'], scale))
@@ -350,7 +317,7 @@ class TestRandomBBoxTransform(TestCase):
             rotate_prob=1.0)
 
         results = transform(deepcopy(self.data_info))
-        rotation_range = [-2 * rotate_factor, 2 * rotate_factor]
+        rotation_range = [-rotate_factor, rotate_factor]
         bbox_rotation_min = np.full((1, 17), rotation_range[0])
         bbox_rotation_max = np.full((1, 17), rotation_range[1])
 
@@ -379,8 +346,8 @@ class TestRandomBBoxTransform(TestCase):
             center - scale * shfit_factor,
             center + scale * shfit_factor,
         ]
-        scale_range = [scale * (1 - scale_factor), scale * (1 + scale_factor)]
-        rotation_range = [-2 * rotate_factor, 2 * rotate_factor]
+        scale_range = [scale * scale_factor[0], scale * scale_factor[1]]
+        rotation_range = [-rotate_factor, rotate_factor]
 
         self.assertFalse(np.allclose(results['bbox_center'], center))
         self.assertTrue(((results['bbox_center'] > center_range[0]) &
@@ -391,11 +358,6 @@ class TestRandomBBoxTransform(TestCase):
         self.assertFalse(np.allclose(results['bbox_rotation'], 0))
         self.assertTrue(((results['bbox_rotation'] > rotation_range[0]) &
                          (results['bbox_rotation'] < rotation_range[1])).all())
-
-    def test_errors(self):
-        # invalid arguments
-        with self.assertRaises(AssertionError):
-            _ = RandomBBoxTransform(scale_factor=2.)
 
     def test_repr(self):
         transform = RandomBBoxTransform(
@@ -473,3 +435,120 @@ class TestPhotometricDistortion(TestCase):
                               'contrast_range=(0.5, 1.5), '
                               'saturation_range=(0.5, 1.5), '
                               'hue_delta=18)'))
+
+
+class TestGenerateTarget(TestCase):
+
+    def setUp(self):
+        # prepare dummy top-down data sample with COCO metainfo
+        self.data_info = get_coco_sample(
+            img_shape=(480, 640),
+            num_instances=1,
+            with_bbox_cs=True,
+            with_img_mask=True)
+
+    def test_generate_heatmap(self):
+        encoder = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+
+        # generate heatmap
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(target_type='heatmap', encoder=encoder)
+        ])
+        results = pipeline(deepcopy(self.data_info))
+
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'], np.ones((1, 17))))
+
+        # generate heatmap and use meta keypoint weights
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(
+                target_type='heatmap',
+                encoder=encoder,
+                use_dataset_keypoint_weights=True,
+            )
+        ])
+        results = pipeline(deepcopy(self.data_info))
+
+        self.assertEqual(results['heatmaps'].shape, (17, 64, 48))
+        self.assertEqual(results['keypoint_weights'].shape, (1, 17))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'],
+                        self.data_info['dataset_keypoint_weights'][None]))
+
+    def test_generate_multiscale_heatmap(self):
+        encoder_0 = dict(
+            type='MSRAHeatmap',
+            input_size=(192, 256),
+            heatmap_size=(48, 64),
+            sigma=2.0)
+        encoder_1 = dict(encoder_0, heatmap_size=(24, 32))
+
+        # generate multi-scale heatmap
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(
+                target_type='multiscale_heatmap',
+                encoder=[encoder_0, encoder_1])
+        ])
+        results = pipeline(deepcopy(self.data_info))
+
+        self.assertTrue(is_list_of(results['heatmaps'], np.ndarray))
+        self.assertEqual(results['heatmaps'][0].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'][1].shape, (17, 32, 24))
+        self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
+
+    def test_generate_keypoint_label(self):
+        encoder = dict(type='RegressionLabel', input_size=(192, 256))
+
+        # generate keypoint label
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(target_type='keypoint_label', encoder=encoder)
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'], np.ones((1, 17))))
+
+        # generate keypoint label and use meta keypoint weights
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(
+                target_type='keypoint_label',
+                encoder=encoder,
+                use_dataset_keypoint_weights=True)
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['keypoint_labels'].shape, (1, 17, 2))
+        self.assertEqual(results['keypoint_weights'].shape, (1, 17))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'],
+                        self.data_info['dataset_keypoint_weights'][None]))
+
+    def test_generate_keypoint_xy_label(self):
+        encoder = dict(
+            type='SimCCLabel',
+            input_size=(192, 256),
+            smoothing_type='gaussian',
+            simcc_split_ratio=2.0)
+
+        # generate keypoint label
+        pipeline = Compose([
+            TopdownAffine(input_size=(192, 256)),
+            GenerateTarget(target_type='keypoint_xy_label', encoder=encoder)
+        ])
+
+        results = pipeline(deepcopy(self.data_info))
+        self.assertEqual(results['keypoint_x_labels'].shape, (1, 17, 192 * 2))
+        self.assertEqual(results['keypoint_y_labels'].shape, (1, 17, 256 * 2))
+        self.assertTrue(
+            np.allclose(results['keypoint_weights'], np.ones((1, 17))))

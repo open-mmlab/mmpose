@@ -317,39 +317,14 @@ class BaseCocoStyleDataset(BaseDataset):
                 if key not in data_info_bu:
                     data_info_bu[key] = _concat(data_infos_valid, key)
 
-            # TODO: move the calculation of masks into pipeline
-            # get region mask of invalid instances (crowd objects or objects
-            # without valid keypoint annotations)
-
-            # RLE is a simple yet efficient format for storing binary masks.
-            # details can be found at `COCO tools <https://github.com/
-            # cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/
-            # mask.py>`__
-
-            # rles = []
-            # for data_info_invalid in filterfalse(self._is_valid_instance,
-            #                                      data_infos):
-            #     seg = data_info_invalid.get('segmentation', None)
-            #     if not seg:
-            #         continue
-
-            #     img_h, img_w = img_shape
-
-            #     if data_info_invalid['iscrowd']:
-            #         # crowd object has a unitary mask region
-            #         rles.append(cocomask.frPyObjects(seg, img_h, img_w))
-            #     elif data_info_invalid['num_keypoints'] == 0:
-            #         # non-crowd object has a list of mask regions
-            #         rles.extend(cocomask.frPyObjects(seg, img_h, img_w))
-
-            # data_info_bu['mask_invalid_rle'] = cocomask.merge(rles)
-
-            mask_segs = []
+            # The segmentation annotation of invalid objects will be used
+            # to generate valid region mask in the pipeline.
+            invalid_segs = []
             for data_info_invalid in filterfalse(self._is_valid_instance,
                                                  data_infos):
                 if 'segementation' in data_info_invalid:
-                    mask_segs.append(data_info_invalid['segmentation'])
-            data_info_bu['mask_segs'] = mask_segs
+                    invalid_segs.append(data_info_invalid['segmentation'])
+            data_info_bu['invalid_segs'] = invalid_segs
 
             data_list_bu.append(data_info_bu)
 

@@ -1,4 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import Optional
+
 import numpy as np
 import torch
 from mmengine.data import InstanceData, PixelData
@@ -7,11 +9,68 @@ from mmpose.structures import PoseDataSample
 from mmpose.structures.bbox import bbox_xyxy2cs
 
 
+def get_coco_sample(
+        img_shape=(240, 320),
+        img_fill: Optional[int] = None,
+        num_instances=1,
+        with_bbox_cs=True,
+        with_img_mask=False,
+        random_keypoints_visible=False):
+    """Create a dummy data sample in COCO style."""
+    rng = np.random.RandomState(0)
+    h, w = img_shape
+    if img_fill is None:
+        img = np.random.randint(0, 256, (h, w, 3), dtype=np.uint8)
+    else:
+        img = np.full((h, w, 3), img_fill, dtype=np.uint8)
+
+    bbox = _rand_bboxes(rng, num_instances, w, h)
+    keypoints = _rand_keypoints(rng, bbox, 17)
+    if random_keypoints_visible:
+        keypoints_visible = np.random.randint(0, 2, (num_instances,
+                                                     17)).astype(np.float32)
+    else:
+        keypoints_visible = np.full((num_instances, 17), 1, dtype=np.float32)
+
+    upper_body_ids = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    lower_body_ids = [11, 12, 13, 14, 15, 16]
+    flip_pairs = [[2, 1], [1, 2], [4, 3], [3, 4], [6, 5], [5, 6], [8, 7],
+                  [7, 8], [10, 9], [9, 10], [12, 11], [11, 12], [14, 13],
+                  [13, 14], [16, 15], [15, 16]]
+    flip_indices = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
+    dataset_keypoint_weights = np.array([
+        1., 1., 1., 1., 1., 1., 1., 1.2, 1.2, 1.5, 1.5, 1., 1., 1.2, 1.2, 1.5,
+        1.5
+    ]).astype(np.float32)
+
+    data = {
+        'img': img,
+        'img_shape': img_shape,
+        'bbox': bbox,
+        'keypoints': keypoints,
+        'keypoints_visible': keypoints_visible,
+        'upper_body_ids': upper_body_ids,
+        'lower_body_ids': lower_body_ids,
+        'flip_pairs': flip_pairs,
+        'flip_indices': flip_indices,
+        'dataset_keypoint_weights': dataset_keypoint_weights,
+        'invalid_segs': [],
+    }
+
+    if with_bbox_cs:
+        data['bbox_center'], data['bbox_scale'] = bbox_xyxy2cs(data['bbox'])
+
+    if with_img_mask:
+        data['img_mask'] = np.random.randint(0, 2, (h, w), dtype=np.uint8)
+
+    return data
+
+
 def get_packed_inputs(batch_size=2,
                       num_instances=1,
                       num_keypoints=17,
                       num_levels=1,
-                      image_shape=(3, 128, 128),
+                      img_shape=(128, 128),
                       input_size=(192, 256),
                       heatmap_size=(48, 64),
                       simcc_split_ratio=2.0,
@@ -26,8 +85,8 @@ def get_packed_inputs(batch_size=2,
         inputs = dict()
 
         # input
-        c, h, w = image_shape
-        image = rng.randint(0, 255, size=(c, h, w), dtype=np.uint8)
+        h, w = img_shape
+        image = rng.randint(0, 255, size=(3, h, w), dtype=np.uint8)
         inputs['inputs'] = torch.from_numpy(image)
 
         # meta
@@ -35,7 +94,7 @@ def get_packed_inputs(batch_size=2,
             'id': idx,
             'img_id': idx,
             'img_path': '<demo>.png',
-            'img_shape': image_shape,
+            'img_shape': img_shape,
             'input_size': input_size,
             'flip': False,
             'flip_direction': None,
@@ -117,8 +176,10 @@ def get_packed_inputs(batch_size=2,
 
 def _rand_keypoints(rng, bboxes, num_keypoints):
     n = bboxes.shape[0]
-    keypoints = rng.rand(n, num_keypoints,
-                         2) * bboxes[:, None, 2:4] + bboxes[:, None, :2]
+    relative_pos = rng.rand(n, num_keypoints, 2)
+    keypoints = relative_pos * bboxes[:, None, :2] + (
+        1 - relative_pos) * bboxes[:, None, 2:4]
+
     return keypoints
 
 

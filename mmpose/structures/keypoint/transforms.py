@@ -7,7 +7,7 @@ import numpy as np
 def flip_keypoints(keypoints: np.ndarray,
                    keypoints_visible: Optional[np.ndarray],
                    image_size: Tuple[int, int],
-                   flip_pairs: List,
+                   flip_indices: List[int],
                    direction: str = 'horizontal'
                    ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Flip keypoints in the given direction.
@@ -23,8 +23,8 @@ def flip_keypoints(keypoints: np.ndarray,
             in shape (..., K, 1). Set ``None`` if the keypoint visibility is
             unavailable
         image_size (tuple): The image shape in [w, h]
-        flip_pairs (list[tuple]): The list of symmetric keypoint pairs'
-            indices
+        flip_indices (List[int]): The indices of each keypoint's symmetric
+            keypoint
         direction (str): The flip direction. Options are ``'horizontal'``,
             ``'vertical'`` and ``'diagonal'``. Defaults to ``'horizontal'``
 
@@ -46,30 +46,19 @@ def flip_keypoints(keypoints: np.ndarray,
         f'Invalid flipping direction "{direction}". '
         f'Options are {direction_options}')
 
-    keypoints_flipped = keypoints.copy()
-    if keypoints_visible is None:
-        keypoints_visible_flipped = None
-    else:
-        keypoints_visible_flipped = keypoints_visible.copy()
-
     # swap the symmetric keypoint pairs
     if direction == 'horizontal' or direction == 'vertical':
-        for left, right in flip_pairs:
-            keypoints_flipped[..., left, :] = keypoints[..., right, :]
-
+        keypoints = keypoints[..., flip_indices, :]
         if keypoints_visible is not None:
-            for left, right in flip_pairs:
-                keypoints_visible_flipped[..., left] = keypoints_visible[...,
-                                                                         right]
+            keypoints_visible = keypoints_visible[..., flip_indices]
 
     # flip the keypoints
-    # TODO: consider using "integer corner" coordinate system
     w, h = image_size
     if direction == 'horizontal':
-        keypoints_flipped[..., 0] = w - 1 - keypoints_flipped[..., 0]
+        keypoints[..., 0] = w - 1 - keypoints[..., 0]
     elif direction == 'vertical':
-        keypoints_flipped[..., 1] = h - 1 - keypoints_flipped[..., 1]
+        keypoints[..., 1] = h - 1 - keypoints[..., 1]
     else:
-        keypoints_flipped = [w, h] - keypoints_flipped - 1
+        keypoints = [w, h] - keypoints - 1
 
-    return keypoints_flipped, keypoints_visible_flipped
+    return keypoints, keypoints_visible

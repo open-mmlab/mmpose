@@ -44,7 +44,7 @@ class TestMhpDataset(TestCase):
                 num_keypoints=list,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
-                mask_segs=list,
+                invalid_segs=list,
                 id=list)
         else:
             raise ValueError(f'Invalid data_mode {data_mode}')

@@ -50,7 +50,7 @@ class TestPoseTrack18VideoDataset(TestCase):
                 bbox_score=np.ndarray,
                 keypoints=np.ndarray,
                 keypoints_visible=np.ndarray,
-                mask_segs=list,
+                invalid_segs=list,
                 frame_weights=np.ndarray,
                 id=list)
         else:
