@@ -170,8 +170,6 @@ class MpiiDataset(BaseCocoStyleDataset):
             # unify shape with coco datasets
             center = center.reshape(1, -1)
             scale = scale.reshape(1, -1)
-
-            # initialize bbox from center and scale
             bbox = bbox_cs2xyxy(center, scale)
 
             # load keypoints in shape [1, K, 2] and keypoints_visible in [1, K]

@@ -7,6 +7,7 @@ import numpy as np
 from mmengine.utils import check_file_exist
 
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_cs2xyxy
 from ..base import BaseCocoStyleDataset
 
 
@@ -122,6 +123,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
             center = np.array(ann['center'], dtype=np.float32)
             scale = np.array([ann['scale'], ann['scale']],
                              dtype=np.float32) * pixel_std
+            bbox = bbox_cs2xyxy(center, scale)
 
             # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             _keypoints = np.array(
@@ -138,6 +140,7 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
                 'img_path': img_path,
                 'bbox_center': center,
                 'bbox_scale': scale,
+                'bbox': bbox,
                 'bbox_score': np.ones(1, dtype=np.float32),
                 'num_keypoints': ann['num_joints'],
                 'keypoints': keypoints,
