@@ -3,11 +3,8 @@ _base_ = [
     '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
-# hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
-
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(256, 256))
+codec = dict(type='RegressionLabel', input_size=(192, 256))
 
 # model settings
 model = dict(
@@ -25,20 +22,20 @@ model = dict(
     ),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
-        type='RegressionHead',
+        type='RLEHead',
         in_channels=2048,
-        num_joints=16,
-        loss=dict(type='SmoothL1Loss', use_target_weight=True),
+        num_joints=17,
+        loss=dict(type='RLELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
-        shift_coords=False,
+        shift_coords=True,
     ))
 
 # base dataset settings
-dataset_type = 'MpiiDataset'
+dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/mpii/'
+data_root = 'data/coco/'
 
 file_client_args = dict(backend='disk')
 
@@ -69,8 +66,8 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/mpii_train.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_train2017.json',
+        data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -82,13 +79,17 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/mpii_val.json',
-        headbox_file=f'{data_root}/annotations/mpii_gt_val.mat',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_val2017.json',
+        bbox_file=f'{data_root}person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
 
-val_evaluator = dict(type='MpiiPCKAccuracy', norm_item='head')
+val_evaluator = dict(
+    type='CocoMetric',
+    ann_file=f'{data_root}annotations/person_keypoints_val2017.json',
+    score_mode='bbox_rle')
 test_evaluator = val_evaluator
