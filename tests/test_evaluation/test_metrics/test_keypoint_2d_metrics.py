@@ -54,14 +54,14 @@ class TestPCKAccuracy(TestCase):
         pck_metric = PCKAccuracy(thr=0.5, norm_item='bbox')
         pck_metric.process(self.data_batch, self.predictions)
         pck = pck_metric.evaluate(self.batch_size)
-        target = {'pck/@thr-0.5': 1.0}
+        target = {'pck/PCK@0.5': 1.0}
         self.assertDictEqual(pck, target)
 
         # test normalized by 'head_size'
         pckh_metric = PCKAccuracy(thr=0.3, norm_item='head')
         pckh_metric.process(self.data_batch, self.predictions)
         pckh = pckh_metric.evaluate(self.batch_size)
-        target = {'pck/PCKh@thr-0.3': 1.0}
+        target = {'pck/PCKh@0.3': 1.0}
         self.assertDictEqual(pckh, target)
 
         # test normalized by 'torso_size'
@@ -70,15 +70,8 @@ class TestPCKAccuracy(TestCase):
         tpck = tpck_metric.evaluate(self.batch_size)
         self.assertIsInstance(tpck, dict)
         target = {
-            'pck/@thr-0.05': 1.0,
-            'pck/Head@thr-0.05': 1.0,
-            'pck/Sho@thr-0.05': 1.0,
-            'pck/Elb@thr-0.05': 1.0,
-            'pck/Wri@thr-0.05': 1.0,
-            'pck/Hip@thr-0.05': 1.0,
-            'pck/Knee@thr-0.05': 1.0,
-            'pck/Ank@thr-0.05': 1.0,
-            'pck/Mean@thr-0.05': 1.0,
+            'pck/PCK@0.05': 1.0,
+            'pck/tPCK@0.05': 1.0,
         }
         self.assertDictEqual(tpck, target)
 
