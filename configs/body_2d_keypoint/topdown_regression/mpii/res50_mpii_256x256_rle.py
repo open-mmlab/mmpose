@@ -3,6 +3,9 @@ _base_ = [
     '../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
+
 # codec settings
 codec = dict(type='RegressionLabel', input_size=(256, 256))
 

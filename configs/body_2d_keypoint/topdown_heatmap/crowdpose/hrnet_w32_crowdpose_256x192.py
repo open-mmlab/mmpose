@@ -3,6 +3,9 @@ _base_ = [
     '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='crowdpose/AP', rule='greater'))
+
 # codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
@@ -120,5 +123,6 @@ val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/mmpose_crowdpose_test.json',
     use_area=False,
-    iou_type='keypoints_crowd')
+    iou_type='keypoints_crowd',
+    prefix='crowdpose')
 test_evaluator = val_evaluator
