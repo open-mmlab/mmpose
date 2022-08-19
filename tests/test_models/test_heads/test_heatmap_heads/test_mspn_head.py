@@ -155,7 +155,7 @@ class TestMSPNHead(TestCase):
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], float)
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
         # num_stages = 4, num_units = 4, unit_channels = 16
         # different losses for different stages and units
@@ -190,7 +190,7 @@ class TestMSPNHead(TestCase):
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], float)
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_predict(self):
         decoder_cfg = dict(
