@@ -4,10 +4,7 @@ _base_ = [
 ]
 
 # hooks
-default_hooks = dict(
-    checkpoint=dict(
-        type='CheckpointHook', interval=1, save_best='coco/AP',
-        rule='greater'), )
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(

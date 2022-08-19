@@ -3,6 +3,9 @@ _base_ = [
     '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+
 # codec settings
 codec = dict(
     type='UDPHeatmap',
