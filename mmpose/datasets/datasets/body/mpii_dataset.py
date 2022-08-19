@@ -111,12 +111,12 @@ class MpiiDataset(BaseCocoStyleDataset):
                     'while "headbox_file" is only '
                     'supported when `test_mode==True`.')
 
-        headbox_file_type = headbox_file[-3:]
-        allow_headbox_file_type = ['mat']
-        if headbox_file_type not in allow_headbox_file_type:
-            raise KeyError(
-                f'The head boxes file type {headbox_file_type} is not '
-                f'supported. Should be `mat` but got {headbox_file_type}.')
+            headbox_file_type = headbox_file[-3:]
+            allow_headbox_file_type = ['mat']
+            if headbox_file_type not in allow_headbox_file_type:
+                raise KeyError(
+                    f'The head boxes file type {headbox_file_type} is not '
+                    f'supported. Should be `mat` but got {headbox_file_type}.')
         self.headbox_file = headbox_file
 
         super().__init__(
