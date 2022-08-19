@@ -208,7 +208,7 @@ class TestHeatmapHead(TestCase):
         losses = head.loss(feats, batch_data_samples)
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], float)
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
         # Invalid arguments
