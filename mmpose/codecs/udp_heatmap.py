@@ -7,14 +7,15 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
+from .functional import generate_udp_gaussian_heatmaps
 from .utils import get_heatmap_maximum
 
 
 @KEYPOINT_CODECS.register_module()
 class UDPHeatmap(BaseKeypointCodec):
-    r"""Generate keypoint heatmap via "UDP" approach. See the paper: `The Devil
-    is in the Details: Delving into Unbiased Data Processing for Human Pose
-    Estimation`_ by Huang et al (2020) for more details.
+    r"""Generate keypoint heatmaps by Unbiased Data Processing (UDP).
+    See the paper: `The Devil is in the Details: Delving into Unbiased Data
+    Processing for Human Pose Estimation`_ by Huang et al (2020) for details.
 
     Note:
 
@@ -64,8 +65,8 @@ class UDPHeatmap(BaseKeypointCodec):
 
         w, h = input_size
         W, H = heatmap_size
-        self.scale_factor = (np.array([w - 1, h - 1]) /
-                             [W - 1, H - 1]).astype(np.float32)
+        self.scale_factor = ((np.array(input_size) - 1) /
+                             (np.array(heatmap_size) - 1)).astype(np.float32)
 
         if self.heatmap_type not in {'gaussian', 'combined'}:
             raise ValueError(
@@ -97,15 +98,29 @@ class UDPHeatmap(BaseKeypointCodec):
             - keypoint_weights (np.ndarray): The target weights in shape
                 (K,)
         """
+        assert keypoints.shape[0] == 1, (
+            f'{self.__class__.__name__} only support single-instance '
+            'keypoint encoding')
+
+        if keypoints_visible is None:
+            keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
+
         if self.heatmap_type == 'gaussian':
-            return self._encode_gaussian(keypoints, keypoints_visible)
+            heatmaps, keypoint_weights = generate_udp_gaussian_heatmaps(
+                heatmap_size=self.heatmap_size,
+                keypoints=keypoints / self.scale_factor,
+                keypoints_visible=keypoints_visible,
+                sigma=self.sigma)
         elif self.heatmap_type == 'combined':
-            return self._encode_combined(keypoints, keypoints_visible)
+            heatmaps, keypoint_weights = self._encode_combined(
+                keypoints, keypoints_visible)
         else:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `heatmap_type` value'
                 f'{self.heatmap_type}. Should be one of '
                 '{"gaussian", "combined"}')
+
+        return heatmaps, keypoint_weights
 
     def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Decode keypoint coordinates from heatmaps. The decoded keypoint
@@ -157,68 +172,6 @@ class UDPHeatmap(BaseKeypointCodec):
 
         return keypoints, scores
 
-    def _encode_gaussian(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """Encode keypoints into Gaussian heatmaps."""
-
-        N, K, _ = keypoints.shape
-        W, H = self.heatmap_size
-
-        assert N == 1, (
-            f'{self.__class__.__name__} only support single-instance '
-            'keypoint encoding')
-
-        heatmaps = np.zeros((K, H, W), dtype=np.float32)
-        keypoint_weights = keypoints_visible.copy()
-
-        # 3-sigma rule
-        radius = self.sigma * 3
-
-        # xy grid
-        gaussian_size = 2 * radius + 1
-        x = np.arange(0, gaussian_size, 1, dtype=np.float32)
-        y = x[:, None]
-
-        for n, k in product(range(N), range(K)):
-            # skip unlabled keypoints
-            if keypoints_visible[n, k] < 0.5:
-                continue
-
-            mu = (keypoints[n, k] / self.scale_factor + 0.5).astype(np.int64)
-            # check that the gaussian has in-bounds part
-            left, top = (mu - radius).astype(np.int64)
-            right, bottom = (mu + radius + 1).astype(np.int64)
-
-            if left >= W or top >= H or right < 0 or bottom < 0:
-                keypoint_weights[n, k] = 0
-                continue
-
-            mu_ac = keypoints[n, k] / self.scale_factor
-            x0 = y0 = gaussian_size // 2
-            x0 += mu_ac[0] - mu[0]
-            y0 += mu_ac[1] - mu[1]
-            gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) /
-                              (2 * self.sigma**2))
-
-            # valid range in gaussian
-            g_x1 = max(0, -left)
-            g_x2 = min(W, right) - left
-            g_y1 = max(0, -top)
-            g_y2 = min(H, bottom) - top
-
-            # valid range in heatmap
-            h_x1 = max(0, left)
-            h_x2 = min(W, right)
-            h_y1 = max(0, top)
-            h_y2 = min(H, bottom)
-
-            heatmaps[k, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2, g_x1:g_x2]
-
-        return heatmaps, keypoint_weights
-
     def _encode_combined(
         self,
         keypoints: np.ndarray,
@@ -228,10 +181,6 @@ class UDPHeatmap(BaseKeypointCodec):
 
         N, K, _ = keypoints.shape
         W, H = self.heatmap_size
-
-        assert N == 1, (
-            f'{self.__class__.__name__} only support single-instance '
-            'keypoint encoding')
 
         heatmaps = np.zeros((K, 3, H, W), dtype=np.float32)
         keypoint_weights = keypoints_visible.copy()

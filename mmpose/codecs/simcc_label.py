@@ -29,6 +29,9 @@ class SimCCLabel(BaseKeypointCodec):
         simcc_split_ratio (float): The ratio of the label size to the input
             size. For example, if the input width is ``w``, the x label size
             will be :math:`w*simcc_split_ratio`. Defaults to 2.0
+
+    .. _`SimCC: a Simple Coordinate Classification Perspective for Human Pose
+    Estimation`: https://arxiv.org/abs/2107.03332
     """
 
     def __init__(self,
@@ -86,6 +89,8 @@ class SimCCLabel(BaseKeypointCodec):
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
+        if keypoints_visible is None:
+            keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if self.smoothing_type == 'gaussian':
             return self._generate_gaussian(keypoints, keypoints_visible)

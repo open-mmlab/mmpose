@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from itertools import product
 from typing import Optional, Tuple
 
 import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
+from .functional import generate_gaussian_heatmaps
+from .functional.gaussian_heatmap import generate_unbiased_gaussian_heatmaps
 from .utils import gaussian_blur, get_heatmap_maximum
 
 
@@ -84,85 +85,25 @@ class MSRAHeatmap(BaseKeypointCodec):
                 (N, K)
         """
 
-        N, K, _ = keypoints.shape
-        W, H = self.heatmap_size
-
-        assert N == 1, (
+        assert keypoints.shape[0] == 1, (
             f'{self.__class__.__name__} only support single-instance '
             'keypoint encoding')
 
-        heatmaps = np.zeros((K, H, W), dtype=np.float32)
-        keypoint_weights = keypoints_visible.copy()
-
-        # 3-sigma rule
-        sigma = self.sigma
-        radius = sigma * 3
+        if keypoints_visible is None:
+            keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         if self.unbiased:
-            # xy grid
-            x = np.arange(0, W, 1, dtype=np.float32)
-            y = np.arange(0, H, 1, dtype=np.float32)[:, None]
-
-            for n, k in product(range(N), range(K)):
-                # skip unlabled keypoints
-                if keypoints_visible[n, k] < 0.5:
-                    continue
-
-                mu = keypoints[n, k] / self.scale_factor
-
-                # check that the gaussian has in-bounds part
-                left, top = mu - radius
-                right, bottom = mu + radius + 1
-
-                if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[n, k] = 0
-                    continue
-
-                heatmaps[k] = np.exp(-((x - mu[0])**2 + (y - mu[1])**2) /
-                                     (2 * sigma**2))
+            heatmaps, keypoint_weights = generate_unbiased_gaussian_heatmaps(
+                heatmap_size=self.heatmap_size,
+                keypoints=keypoints / self.scale_factor,
+                keypoints_visible=keypoints_visible,
+                sigma=self.sigma)
         else:
-            # xy grid
-            gaussian_size = 2 * radius + 1
-            x = np.arange(0, gaussian_size, 1, dtype=np.float32)
-            y = x[:, None]
-            x0 = y0 = gaussian_size // 2
-
-            for n, k in product(range(N), range(K)):
-                # skip unlabled keypoints
-                if keypoints_visible[n, k] < 0.5:
-                    continue
-
-                # get gaussian center coordinates
-                mu = (keypoints[n, k] / self.scale_factor +
-                      0.5).astype(np.int64)
-
-                # check that the gaussian has in-bounds part
-                left, top = (mu - radius).astype(np.int64)
-                right, bottom = (mu + radius + 1).astype(np.int64)
-
-                if left >= W or top >= H or right < 0 or bottom < 0:
-                    keypoint_weights[n, k] = 0
-                    continue
-
-                # The gaussian is not normalized,
-                # we want the center value to equal 1
-                gaussian = np.exp(-((x - x0)**2 + (y - y0)**2) /
-                                  (2 * sigma**2))
-
-                # valid range in gaussian
-                g_x1 = max(0, -left)
-                g_x2 = min(W, right) - left
-                g_y1 = max(0, -top)
-                g_y2 = min(H, bottom) - top
-
-                # valid range in heatmap
-                h_x1 = max(0, left)
-                h_x2 = min(W, right)
-                h_y1 = max(0, top)
-                h_y2 = min(H, bottom)
-
-                heatmaps[k, h_y1:h_y2, h_x1:h_x2] = gaussian[g_y1:g_y2,
-                                                             g_x1:g_x2]
+            heatmaps, keypoint_weights = generate_gaussian_heatmaps(
+                heatmap_size=self.heatmap_size,
+                keypoints=keypoints / self.scale_factor,
+                keypoints_visible=keypoints_visible,
+                sigma=self.sigma)
 
         return heatmaps, keypoint_weights
 
