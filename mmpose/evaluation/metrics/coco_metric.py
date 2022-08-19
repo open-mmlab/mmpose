@@ -30,6 +30,10 @@ class CocoMetric(BaseMetric):
             If the ground truth annotations (e.g. CrowdPose, AIC) do not have
             the field ``'area'``, please set ``use_area=False``.
             Default: ``True``.
+        iou_type (str): The same parameter as `iouType` in
+            :class:`xtcocotools.COCOeval`, which can be ``'keypoints'``, or
+            ``'keypoints_crowd'`` (used in CrowdPose dataset).
+            Defaults to ``'keypoints'``.
         score_mode (str): The mode to score the prediction results which
             should be one of the following options:
 
@@ -81,6 +85,7 @@ class CocoMetric(BaseMetric):
     def __init__(self,
                  ann_file: str,
                  use_area: bool = True,
+                 iou_type: str = 'keypoints',
                  score_mode: str = 'bbox_keypoint',
                  keypoint_score_thr: float = 0.2,
                  nms_mode: str = 'oks_nms',
@@ -95,6 +100,7 @@ class CocoMetric(BaseMetric):
         self.coco = COCO(ann_file)
 
         self.use_area = use_area
+        self.iou_type = iou_type
 
         allowed_score_modes = ['bbox', 'bbox_keypoint', 'bbox_rle']
         if score_mode not in allowed_score_modes:
@@ -334,7 +340,7 @@ class CocoMetric(BaseMetric):
         res_file = f'{outfile_prefix}.keypoints.json'
         coco_det = self.coco.loadRes(res_file)
         sigmas = self.dataset_meta['sigmas']
-        coco_eval = COCOeval(self.coco, coco_det, 'keypoints', sigmas,
+        coco_eval = COCOeval(self.coco, coco_det, self.iou_type, sigmas,
                              self.use_area)
         coco_eval.params.useSegm = None
         coco_eval.evaluate()
