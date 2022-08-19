@@ -67,7 +67,7 @@ class NormalizeTensor:
             ]
         else:
             results['img'] = F.normalize(
-                results['img'], mean=self.mean, std=self.std, inplace=True)
+                results['img'], mean=self.mean, std=self.std, inplace=False)
 
         return results
 
