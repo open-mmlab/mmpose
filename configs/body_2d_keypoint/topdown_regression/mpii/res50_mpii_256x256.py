@@ -32,7 +32,7 @@ model = dict(
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
-        shift_coords=False,
+        shift_coords=True,
     ))
 
 # base dataset settings
