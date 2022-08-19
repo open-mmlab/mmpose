@@ -3,6 +3,12 @@ _base_ = [
     '../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
+# hooks
+default_hooks = dict(
+    checkpoint=dict(
+        type='CheckpointHook', interval=1, save_best='coco/AP',
+        rule='greater'), )
+
 # codec settings
 codec = dict(
     type='MSRAHeatmap', input_size=(192, 256), heatmap_size=(48, 64), sigma=2)
@@ -76,7 +82,7 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='TopdownGenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
@@ -88,7 +94,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=1,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

@@ -47,10 +47,7 @@ train_pipeline = [
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(
-        type='TopdownGenerateTarget',
-        target_type='keypoint_label',
-        encoder=codec),
+    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
