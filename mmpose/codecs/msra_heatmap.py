@@ -133,7 +133,8 @@ class MSRAHeatmap(BaseKeypointCodec):
                     continue
 
                 # get gaussian center coordinates
-                mu = (keypoints[n, k] / self.scale_factor + 0.5)
+                mu = (keypoints[n, k] / self.scale_factor +
+                      0.5).astype(np.int64)
 
                 # check that the gaussian has in-bounds part
                 left, top = (mu - radius).astype(np.int64)

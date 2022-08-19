@@ -193,7 +193,7 @@ class UDPHeatmap(BaseKeypointCodec):
             right, bottom = (mu + radius + 1).astype(np.int64)
 
             if left >= W or top >= H or right < 0 or bottom < 0:
-                keypoint_weights[k] = 0
+                keypoint_weights[n, k] = 0
                 continue
 
             mu_ac = keypoints[n, k] / self.scale_factor
