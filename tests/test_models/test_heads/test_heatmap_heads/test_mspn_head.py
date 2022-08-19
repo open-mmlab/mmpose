@@ -39,7 +39,7 @@ class TestMSPNHead(TestCase):
                 batch_size=batch_size,
                 num_instances=1,
                 num_keypoints=17,
-                image_shape=(3, 128, 128),
+                img_shape=(128, 128),
                 input_size=(192, 256),
                 heatmap_size=heatmap_size,
                 with_heatmap=True,
