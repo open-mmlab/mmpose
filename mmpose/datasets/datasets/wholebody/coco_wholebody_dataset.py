@@ -114,8 +114,6 @@ class CocoWholeBodyDataset(BaseCocoStyleDataset):
             'num_keypoints': num_keypoints,
             'keypoints': keypoints,
             'keypoints_visible': keypoints_visible,
-            'ori_keypoints': keypoints.copy(),
-            'ori_keypoints_visible': keypoints_visible.copy(),
             'iscrowd': ann['iscrowd'],
             'segmentation': ann['segmentation'],
             'id': ann['id'],

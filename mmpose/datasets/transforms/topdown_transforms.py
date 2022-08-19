@@ -25,12 +25,12 @@ class TopdownAffine(BaseTransform):
     Modified Keys:
 
         - img
-        - keypoints
         - bbox_scale
 
     Added Keys:
 
         - input_size
+        - transformed_keypoints
 
     Args:
         input_size (Tuple[int, int]): The input image size of the model in
@@ -118,9 +118,11 @@ class TopdownAffine(BaseTransform):
                 results['img'], warp_mat, warp_size, flags=cv2.INTER_LINEAR)
 
         if results.get('keypoints', None) is not None:
+            transformed_keypoints = results['keypoints'].copy()
             # Only transform (x, y) coordinates
-            results['keypoints'][..., :2] = cv2.transform(
+            transformed_keypoints[..., :2] = cv2.transform(
                 results['keypoints'][..., :2], warp_mat)
+            results['transformed_keypoints'] = transformed_keypoints
 
         results['input_size'] = (w, h)
 

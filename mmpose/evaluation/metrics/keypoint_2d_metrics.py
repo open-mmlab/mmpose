@@ -77,9 +77,9 @@ class PCKAccuracy(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['ori_keypoints']
+            gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['ori_keypoints_visible'].astype(bool).reshape(1, -1)
+            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -147,7 +147,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                               self.thr, norm_size_bbox)
-            metrics[f'PCK@thr-{self.thr}'] = pck
+            metrics[f'PCK@{self.thr}'] = pck
 
         if 'head' in self.norm_item:
             norm_size_head = np.concatenate(
@@ -158,7 +158,7 @@ class PCKAccuracy(BaseMetric):
 
             _, pckh, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                self.thr, norm_size_head)
-            metrics[f'PCKh@thr-{self.thr}'] = pckh
+            metrics[f'PCKh@{self.thr}'] = pckh
 
         if 'torso' in self.norm_item:
             norm_size_torso = np.concatenate(
@@ -169,7 +169,7 @@ class PCKAccuracy(BaseMetric):
 
             _, tpck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                self.thr, norm_size_torso)
-            metrics[f'tPCK@thr-{self.thr}'] = tpck
+            metrics[f'tPCK@{self.thr}'] = tpck
 
         return metrics
 
@@ -292,7 +292,7 @@ class MpiiPCKAccuracy(PCKAccuracy):
                 'PCKh@0.1': np.sum(pckAll[10, :] * jnt_ratio)
             }
 
-            del metrics[f'PCKh@thr-{self.thr}']
+            del metrics[f'PCKh@{self.thr}']
             for stats_name, stat in stats.items():
                 metrics[stats_name] = stat
 
@@ -373,7 +373,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
 
             pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
                                                   self.thr, norm_size_bbox)
-            metrics[f'@thr-{self.thr}'] = pck
+            metrics[f'@{self.thr}'] = pck
 
             stats = {
                 'Head': pck_p[2],
@@ -386,7 +386,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
                 'Mean': pck
             }
 
-            del metrics[f'PCK@thr-{self.thr}']
+            del metrics[f'PCK@{self.thr}']
             for stats_name, stat in stats.item():
                 metrics[f'{stats_name} PCK'] = stat
 
@@ -412,7 +412,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
                 'Mean': pck
             }
 
-            del metrics[f'tPCK@thr-{self.thr}']
+            del metrics[f'tPCK@{self.thr}']
             for stats_name, stat in stats.item():
                 metrics[f'{stats_name} tPCK'] = stat
 
@@ -473,9 +473,9 @@ class AUC(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['ori_keypoints']
+            gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['ori_keypoints_visible'].reshape(1, -1)
+            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -556,9 +556,9 @@ class EPE(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['ori_keypoints']
+            gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['ori_keypoints_visible'].reshape(1, -1)
+            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,
@@ -639,18 +639,17 @@ class NME(BaseMetric):
     default_prefix: Optional[str] = 'nme'
 
     DEFAULT_KEYPOINT_INDICES = {
-        'horse10': [0, 1],  # corresponding to `nose` and `eye` keypoints
-        '300w':
-        [36,
-         45],  # corresponding to `right-most` and `left-most` eye keypoints
-        'coco_wholebody_face':
-        [36,
-         45],  # corresponding to `right-most` and `left-most` eye keypoints
-        'cofw':
-        [8, 9],  # corresponding to `right-most` and `left-most` eye keypoints
-        'wflw':
-        [60,
-         72],  # corresponding to `right-most` and `left-most` eye keypoints
+        # horse10: corresponding to `nose` and `eye` keypoints
+        'horse10': [0, 1],
+        # 300w: corresponding to `right-most` and `left-most` eye keypoints
+        '300w': [36, 45],
+        # coco_wholebody_face corresponding to `right-most` and `left-most`
+        # eye keypoints
+        'coco_wholebody_face': [36, 45],
+        # cofw: corresponding to `right-most` and `left-most` eye keypoints
+        'cofw': [8, 9],
+        # wflw: corresponding to `right-most` and `left-most` eye keypoints
+        'wflw': [60, 72],
     }
 
     def __init__(self,
@@ -692,9 +691,9 @@ class NME(BaseMetric):
             # ground truth data_info
             gt = data['data_sample']['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
-            gt_coords = gt['ori_keypoints']
+            gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
-            mask = gt['ori_keypoints_visible'].reshape(1, -1)
+            mask = gt['keypoints_visible'].astype(bool).reshape(1, -1)
 
             result = {
                 'pred_coords': pred_coords,

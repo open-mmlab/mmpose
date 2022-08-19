@@ -7,6 +7,7 @@ import numpy as np
 from mmengine.utils import check_file_exist
 
 from mmpose.registry import DATASETS
+from mmpose.structures.bbox import bbox_cs2xyxy
 from ..base import BaseCocoStyleDataset
 
 
@@ -119,9 +120,11 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
         for ann in data['annotations']:
             img_id = ann['image_id']
 
-            center = np.array(ann['center'], dtype=np.float32)
-            scale = np.array([ann['scale'], ann['scale']],
+            # center, scale in shape [1, 2] and bbox in [1, 4]
+            center = np.array([ann['center']], dtype=np.float32)
+            scale = np.array([[ann['scale'], ann['scale']]],
                              dtype=np.float32) * pixel_std
+            bbox = bbox_cs2xyxy(center, scale)
 
             # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
             _keypoints = np.array(
@@ -129,32 +132,21 @@ class MpiiTrbDataset(BaseCocoStyleDataset):
             keypoints = _keypoints[..., :2]
             keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
+            img_path = osp.join(self.data_prefix['img'],
+                                imgid2info[img_id]['file_name'])
+
             data_info = {
-                'id':
-                ann['id'],
-                'img_id':
-                img_id,
-                'img_path':
-                osp.join(self.data_prefix['img'],
-                         imgid2info[img_id]['file_name']),
-                'bbox_center':
-                center,
-                'bbox_scale':
-                scale,
-                'bbox_score':
-                np.ones(1, dtype=np.float32),
-                'num_keypoints':
-                ann['num_joints'],
-                'keypoints':
-                keypoints,
-                'keypoints_visible':
-                keypoints_visible,
-                'ori_keypoints':
-                keypoints.copy(),
-                'ori_keypoints_visible':
-                keypoints_visible.copy(),
-                'iscrowd':
-                ann['iscrowd'],
+                'id': ann['id'],
+                'img_id': img_id,
+                'img_path': img_path,
+                'bbox_center': center,
+                'bbox_scale': scale,
+                'bbox': bbox,
+                'bbox_score': np.ones(1, dtype=np.float32),
+                'num_keypoints': ann['num_joints'],
+                'keypoints': keypoints,
+                'keypoints_visible': keypoints_visible,
+                'iscrowd': ann['iscrowd'],
             }
 
             # val set
