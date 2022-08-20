@@ -7,8 +7,7 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
-from .functional import generate_udp_gaussian_heatmaps
-from .utils import get_heatmap_maximum
+from .utils import generate_udp_gaussian_heatmaps, get_heatmap_maximum
 
 
 @KEYPOINT_CODECS.register_module()

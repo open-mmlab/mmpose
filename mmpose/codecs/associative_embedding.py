@@ -6,8 +6,7 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
-from .functional import (generate_gaussian_heatmaps,
-                         generate_udp_gaussian_heatmaps)
+from .utils import generate_gaussian_heatmaps, generate_udp_gaussian_heatmaps
 
 
 @KEYPOINT_CODECS.register_module()
@@ -15,7 +14,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
     """Encode/decode keypoints with the method introduced in "Associative
     Embedding". This is an asymmetric codec, where the keypoints are
     represented as gaussian heatmaps and position indices during encoding, and
-    reostred from predicted heatmaps and embedding vectors.
+    reostred from predicted heatmaps and group tags.
 
     See the paper `Associative Embedding: End-to-End Learning for Joint
     Detection and Grouping`_ by Newell et al (2017) for details
@@ -32,15 +31,12 @@ class AssociativeEmbedding(BaseKeypointCodec):
         input_size (tuple): Image size in [w, h]
         heatmap_size (tuple): Heatmap size in [W, H]
         sigma (float): The sigma value of the Gaussian heatmap
-        unbiased (bool): Whether use unbiased method (DarkPose) in ``'msra'``
-            encoding. See `Dark Pose`_ for details. Defaults to ``False``
-        blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
-            modulation in DarkPose. The kernel size and sigma should follow
-            the expirical formula :math:`sigma = 0.3*((ks-1)*0.5-1)+0.8`.
-            Defaults to 11
+        use_udp (bool): Whether use unbiased data processing. See
+            `UDP (CVPR 2020)`_ for details. Defaults to ``False``
 
     .. _`Associative Embedding: End-to-End Learning for Joint Detection and
     Grouping`: https://arxiv.org/abs/1611.05424
+    .. _`UDP (CVPR 2020)`: https://arxiv.org/abs/1911.07524
     """
 
     def __init__(self,

@@ -101,37 +101,62 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
             raise ValueError(
                 '`batch_data_samples` is required to decode keypoitns.')
 
-        batch_outputs_np, device = to_numpy(
-            batch_outputs, return_device=True, unzip=True)
+        if self.decoder.support_batch_decoding:
+            batch_keypoints, batch_scores = self.decoder.batch_decode(
+                batch_outputs)
 
-        # TODO: support decoding with tensor data
-        for outputs, data_sample in zip(batch_outputs_np, batch_data_samples):
-            keypoints, scores = self.decoder.decode(outputs)
-            # Convert the decoded local keypoints (in input space)
-            # to the image coordinate space
-            # Convert keypoint coordinates from input space to image space
-            if 'gt_instances' in data_sample:
-                bbox_centers = data_sample.gt_instances.bbox_centers
-                bbox_scales = data_sample.gt_instances.bbox_scales
-                input_size = data_sample.metainfo['input_size']
-                keypoints = keypoints / input_size * bbox_scales + \
-                    bbox_centers - 0.5 * bbox_scales
+        else:
+            batch_output_np = to_numpy(batch_outputs, unzip=True)
+            batch_keypoints = []
+            batch_scores = []
+            for outputs in batch_output_np:
+                keypoints, scores = self.decoder.decode(outputs)
+                batch_keypoints.append(keypoints)
+                batch_scores.append(scores)
 
-            else:
-                raise ValueError(
-                    '`gt_instances` is required to convert keypoints from'
-                    ' from the heatmap space to the image space.')
+        preds = []
+        for keypoints, scores, data_sample in zip(batch_keypoints,
+                                                  batch_scores,
+                                                  batch_data_samples):
+            # convert to pred_instances
+            pred_instances = InstanceData(
+                keypoints=keypoints, keypoint_scores=scores)
+            preds.append(pred_instances)
 
-            # Store the keypoint predictions in the data sample
-            if 'pred_instances' not in data_sample:
-                pred_instances = InstanceData()
-                if 'bboxes' in data_sample.gt_instances:
-                    pred_instances.bboxes = data_sample.gt_instances.bboxes
-                pred_instances.bbox_scores = \
-                    data_sample.gt_instances.bbox_scores
-                data_sample.pred_instances = pred_instances
+        return preds
 
-            data_sample.pred_instances.keypoints = keypoints
-            data_sample.pred_instances.keypoint_scores = scores
+        # batch_outputs_np, device = to_numpy(
+        #     batch_outputs, return_device=True, unzip=True)
 
-        return batch_data_samples
+        # # TODO: support decoding with tensor data
+        # for outputs, data_sample in zip(batch_outputs_np,
+        #                                 batch_data_samples):
+        #     keypoints, scores = self.decoder.decode(outputs)
+        #     # Convert the decoded local keypoints (in input space)
+        #     # to the image coordinate space
+        #     # Convert keypoint coordinates from input space to image space
+        #     if 'gt_instances' in data_sample:
+        #         bbox_centers = data_sample.gt_instances.bbox_centers
+        #         bbox_scales = data_sample.gt_instances.bbox_scales
+        #         input_size = data_sample.metainfo['input_size']
+        #         keypoints = keypoints / input_size * bbox_scales + \
+        #             bbox_centers - 0.5 * bbox_scales
+
+        #     else:
+        #         raise ValueError(
+        #             '`gt_instances` is required to convert keypoints from'
+        #             ' from the heatmap space to the image space.')
+
+        #     # Store the keypoint predictions in the data sample
+        #     if 'pred_instances' not in data_sample:
+        #         pred_instances = InstanceData()
+        #         if 'bboxes' in data_sample.gt_instances:
+        #             pred_instances.bboxes = data_sample.gt_instances.bboxes
+        #         pred_instances.bbox_scores = \
+        #             data_sample.gt_instances.bbox_scores
+        #         data_sample.pred_instances = pred_instances
+
+        #     data_sample.pred_instances.keypoints = keypoints
+        #     data_sample.pred_instances.keypoint_scores = scores
+
+        # return batch_data_samples
