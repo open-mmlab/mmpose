@@ -11,7 +11,7 @@ from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (Features, MultiConfig, OptConfigType,
-                                 OptSampleList, SampleList)
+                                 OptSampleList, Predictions)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -193,7 +193,7 @@ class CPMHead(BaseHead):
     def predict(self,
                 feats: Features,
                 batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
+                test_cfg: OptConfigType = {}) -> Predictions:
         """Predict results from multi-stage feature maps.
 
         Args:
@@ -205,15 +205,23 @@ class CPMHead(BaseHead):
                 to {}
 
         Returns:
-            list[:obj:`PoseDataSample`]: The batch data samples with
-            ``pred_instances`` field, which contains the following prediction
-            results:
+            Union[InstanceList | Tuple[InstanceList | PixelDataList]]: If
+            ``test_cfg['output_heatmap']==True``, return both pose and heatmap
+            prediction; otherwise only return the pose prediction.
 
-                - keypoints (Tensor): predicted keypoint coordinates in shape
-                    (num_instances, K, D) where K is the keypoint number and D
-                    is the keypoint dimension
-                - keypoint_scores (Tensor): predicted keypoint scores in shape
-                    (num_instances, K)
+            The pose prediction is a list of ``InstanceData``, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+
+            The heatmap prediction is a list of ``PixelData``, each contains
+            the following fields:
+
+                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
         """
 
         if test_cfg.get('flip_test', False):
@@ -232,17 +240,15 @@ class CPMHead(BaseHead):
             multi_stage_heatmaps = self.forward(feats)
             batch_heatmaps = multi_stage_heatmaps[-1]
 
-        preds = self.decode(batch_heatmaps, batch_data_samples)
+        preds = self.decode(batch_heatmaps)
 
-        # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
-            for heatmaps, data_sample in zip(batch_heatmaps, preds):
-                # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
-
-        return preds
+            pred_fields = [
+                PixelData(heatmaps=hm) for hm in batch_heatmaps.detach()
+            ]
+            return preds, pred_fields
+        else:
+            return preds
 
     def loss(self,
              feats: Sequence[Tensor],

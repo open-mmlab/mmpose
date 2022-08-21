@@ -9,8 +9,8 @@ from mmengine.model import BaseModule
 from torch import Tensor
 
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (Features, OptConfigType, OptSampleList,
-                                 SampleList)
+from mmpose.utils.typing import (Features, InstanceList, OptConfigType,
+                                 OptSampleList, Predictions)
 
 
 class BaseHead(BaseModule, metaclass=ABCMeta):
@@ -29,7 +29,7 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
     def predict(self,
                 feats: Features,
                 batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
+                test_cfg: OptConfigType = {}) -> Predictions:
         """Predict results from features."""
 
     @abstractmethod
@@ -87,19 +87,24 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
 
         return inputs
 
-    def decode(self, batch_outputs: Union[Tensor, Tuple[Tensor]],
-               batch_data_samples: OptSampleList) -> SampleList:
-        """Decode keypoints from outputs."""
+    def decode(self, batch_outputs: Union[Tensor,
+                                          Tuple[Tensor]]) -> InstanceList:
+        """Decode keypoints from outputs.
+
+        Args:
+            batch_outputs (Tensor | Tuple[Tensor]): The network outputs of
+                a data batch
+
+        Returns:
+            List[InstanceData]: A list of InstanceData, each contains the
+            decoded pose information of the instances of one data sample.
+        """
 
         if self.decoder is None:
             raise RuntimeError(
                 f'The decoder has not been set in {self.__class__.__name__}. '
                 'Please set the decoder configs in the init parameters to '
                 'enable head methods `head.predict()` and `head.decode()`')
-
-        if batch_data_samples is None:
-            raise ValueError(
-                '`batch_data_samples` is required to decode keypoitns.')
 
         if self.decoder.support_batch_decoding:
             batch_keypoints, batch_scores = self.decoder.batch_decode(
@@ -114,49 +119,9 @@ class BaseHead(BaseModule, metaclass=ABCMeta):
                 batch_keypoints.append(keypoints)
                 batch_scores.append(scores)
 
-        preds = []
-        for keypoints, scores, data_sample in zip(batch_keypoints,
-                                                  batch_scores,
-                                                  batch_data_samples):
-            # convert to pred_instances
-            pred_instances = InstanceData(
-                keypoints=keypoints, keypoint_scores=scores)
-            preds.append(pred_instances)
+        preds = [
+            InstanceData(keypoints=keypoints, keypoint_scores=scores)
+            for keypoints, scores in zip(batch_keypoints, batch_scores)
+        ]
 
         return preds
-
-        # batch_outputs_np, device = to_numpy(
-        #     batch_outputs, return_device=True, unzip=True)
-
-        # # TODO: support decoding with tensor data
-        # for outputs, data_sample in zip(batch_outputs_np,
-        #                                 batch_data_samples):
-        #     keypoints, scores = self.decoder.decode(outputs)
-        #     # Convert the decoded local keypoints (in input space)
-        #     # to the image coordinate space
-        #     # Convert keypoint coordinates from input space to image space
-        #     if 'gt_instances' in data_sample:
-        #         bbox_centers = data_sample.gt_instances.bbox_centers
-        #         bbox_scales = data_sample.gt_instances.bbox_scales
-        #         input_size = data_sample.metainfo['input_size']
-        #         keypoints = keypoints / input_size * bbox_scales + \
-        #             bbox_centers - 0.5 * bbox_scales
-
-        #     else:
-        #         raise ValueError(
-        #             '`gt_instances` is required to convert keypoints from'
-        #             ' from the heatmap space to the image space.')
-
-        #     # Store the keypoint predictions in the data sample
-        #     if 'pred_instances' not in data_sample:
-        #         pred_instances = InstanceData()
-        #         if 'bboxes' in data_sample.gt_instances:
-        #             pred_instances.bboxes = data_sample.gt_instances.bboxes
-        #         pred_instances.bbox_scores = \
-        #             data_sample.gt_instances.bbox_scores
-        #         data_sample.pred_instances = pred_instances
-
-        #     data_sample.pred_instances.keypoints = keypoints
-        #     data_sample.pred_instances.keypoint_scores = scores
-
-        # return batch_data_samples
