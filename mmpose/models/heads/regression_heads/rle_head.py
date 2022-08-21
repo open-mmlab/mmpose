@@ -109,17 +109,19 @@ class RLEHead(BaseHead):
             _feats, _feats_flip = feats
 
             _batch_coords = self.forward(_feats)
+            _batch_coords[..., 2:] = _batch_coords[..., 2:].sigmoid()
+
             _batch_coords_flip = flip_coordinates(
                 self.forward(_feats_flip),
                 flip_indices=flip_indices,
                 shift_coords=test_cfg.get('shift_coords', True),
                 input_size=input_size)
+            _batch_coords_flip[..., 2:] = _batch_coords_flip[..., 2:].sigmoid()
+
             batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
         else:
             batch_coords = self.forward(feats)  # (B, K, D)
-
-        # use sigmoid() to normalize output_sigma
-        batch_coords[..., 2:] = batch_coords[..., 2:].sigmoid()
+            batch_coords[..., 2:] = batch_coords[..., 2:].sigmoid()
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
 
@@ -161,7 +163,8 @@ class RLEHead(BaseHead):
             thr=0.05,
             norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
-        losses.update(acc_pose=float(avg_acc))
+        acc_pose = torch.tensor(avg_acc, device=keypoint_labels.device)
+        losses.update(acc_pose=acc_pose)
 
         return losses
 
