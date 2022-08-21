@@ -409,6 +409,7 @@ class MSPNHead(BaseHead):
             target=to_numpy(gt_heatmaps[:, -K:]),
             mask=to_numpy(keypoint_weights[:, -1]) > 0)
 
-        losses.update(acc_pose=float(avg_acc))
+        acc_pose = torch.tensor(avg_acc, device=gt_heatmaps.device)
+        losses.update(acc_pose=acc_pose)
 
         return losses

@@ -1,6 +1,6 @@
 _base_ = [
-    '../_base_/default_runtime.py',
-    '../_base_/schedules/schedule_bs512_ep210.py',
+    '../../../_base_/default_runtime.py',
+    '../../../_base_/schedules/schedule_bs512_ep210.py',
 ]
 
 # hooks
@@ -32,7 +32,7 @@ model = dict(
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
-        shift_coords=False,
+        shift_coords=True,
     ))
 
 # base dataset settings

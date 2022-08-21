@@ -282,7 +282,8 @@ class IntegralRegressionHead(BaseHead):
             thr=0.05,
             norm_factor=np.ones((pred_coords.size(0), 2), dtype=np.float32))
 
-        losses.update(acc_pose=float(avg_acc))
+        acc_pose = torch.tensor(avg_acc, device=keypoint_labels.device)
+        losses.update(acc_pose=acc_pose)
 
         return losses
 

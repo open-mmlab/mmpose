@@ -198,7 +198,7 @@ class TestCPMHead(TestCase):
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], float)
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
         num_stages = 6
         head = CPMHead(
@@ -223,7 +223,7 @@ class TestCPMHead(TestCase):
 
         self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
         self.assertEqual(losses['loss_kpt'].shape, torch.Size(()))
-        self.assertIsInstance(losses['acc_pose'], float)
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
         # Invalid arguments
