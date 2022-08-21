@@ -4,9 +4,9 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
+from mmengine.data import InstanceData
 
 from mmpose.models.heads import RegressionHead
-from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 
@@ -68,13 +68,10 @@ class TestRegressionHead(TestCase):
             batch_size=2, with_heatmap=False)
         preds = head.predict(feats, batch_data_samples)
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(
-            preds[0].pred_instances.keypoints.shape,
-            preds[0].gt_instances.keypoints.shape,
-        )
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
         # inputs transform: resize and concat
         head = RegressionHead(
@@ -89,32 +86,10 @@ class TestRegressionHead(TestCase):
         batch_data_samples = self._get_data_samples(batch_size=2)
         preds = head.predict(feats, batch_data_samples)
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(
-            preds[0].pred_instances.keypoints.shape,
-            preds[0].gt_instances.keypoints.shape,
-        )
-        self.assertNotIn('pred_fields', preds[0])
-
-        # input transform: output heatmap
-        head = RegressionHead(
-            in_channels=[16, 32],
-            num_joints=17,
-            input_transform='select',
-            input_index=-1,
-            decoder=decoder_cfg,
-        )
-
-        feats = self._get_feats(
-            batch_size=2, feat_shapes=[(16, 1, 1), (32, 1, 1)])
-        batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=False)
-        preds = head.predict(
-            feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
-
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_tta(self):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
@@ -136,13 +111,10 @@ class TestRegressionHead(TestCase):
                              batch_data_samples,
                              test_cfg=dict(flip_test=True, shift_coords=True))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(
-            preds[0].pred_instances.keypoints.shape,
-            preds[0].gt_instances.keypoints.shape,
-        )
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
         head = RegressionHead(

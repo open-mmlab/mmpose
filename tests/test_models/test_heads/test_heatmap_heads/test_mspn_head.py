@@ -3,10 +3,10 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
+from mmengine.data import InstanceData, PixelData
 from torch import Tensor, nn
 
 from mmpose.models.heads import MSPNHead
-from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 
@@ -259,13 +259,10 @@ class TestMSPNHead(TestCase):
             batch_size=2, heatmap_size=(48, 64), num_levels=4)
         preds = head.predict(feats, batch_data_samples)
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
-        # output_heatmaps = False
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
         # num_stages = 4, num_units = 4, unit_channels = 16
         unit_channels = 16
@@ -284,17 +281,16 @@ class TestMSPNHead(TestCase):
                          (unit_channels, 32, 24), (unit_channels, 64, 48)])
         batch_data_samples = self._get_data_samples(
             batch_size=2, heatmap_size=(48, 64), num_levels=16)
-        preds = head.predict(
+        preds, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
-        self.assertIn('pred_fields', preds[0])
-        # output_heatmaps = True
-        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 64, 48))
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
+        self.assertTrue(len(pred_heatmaps), 2)
+        self.assertIsInstance(pred_heatmaps[0], PixelData)
+        self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 64, 48))
 
     def test_tta(self):
         # flip test: heatmap
@@ -328,11 +324,10 @@ class TestMSPNHead(TestCase):
                                  shift_heatmap=True,
                              ))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_errors(self):
         # Invalid arguments

@@ -241,8 +241,8 @@ class SimCCHead(BaseHead):
         if test_cfg.get('output_heatmaps', False):
             for pred_instances, pred_x, pred_y in zip(
                     preds,
-                    batch_pred_x.cpu().numpy(),
-                    batch_pred_y.cpy().numpy()):
+                    batch_pred_x.cpu().detach().numpy(),
+                    batch_pred_y.cpu().detach().numpy()):
 
                 pred_instances.keypoint_x_labels = pred_x[None]
                 pred_instances.keypoint_y_labels = pred_y[None]
