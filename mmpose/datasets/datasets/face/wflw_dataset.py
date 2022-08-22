@@ -79,9 +79,13 @@ class WFLWDataset(BaseCocoStyleDataset):
 
         img_path = osp.join(self.data_prefix['img'], img['file_name'])
 
+        # wflw bbox scales are normalized with factor 200.
+        pixel_std = 200.
+
         # center, scale in shape [1, 2] and bbox in [1, 4]
         center = np.array([ann['center']], dtype=np.float32)
-        scale = np.array([[ann['scale'], ann['scale']]], dtype=np.float32)
+        scale = np.array([[ann['scale'], ann['scale']]],
+                         dtype=np.float32) * pixel_std
         bbox = bbox_cs2xyxy(center, scale)
 
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
