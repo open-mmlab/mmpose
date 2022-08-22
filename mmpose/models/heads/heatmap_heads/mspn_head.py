@@ -13,7 +13,7 @@ from mmpose.models.utils.tta import flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, MultiConfig, OptConfigType,
-                                 OptSampleList, SampleList)
+                                 OptSampleList, Predictions)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -298,7 +298,7 @@ class MSPNHead(BaseHead):
     def predict(self,
                 feats: Union[MSMUFeatures, List[MSMUFeatures]],
                 batch_data_samples: OptSampleList,
-                test_cfg: OptConfigType = {}) -> SampleList:
+                test_cfg: OptConfigType = {}) -> Predictions:
         """Predict results from multi-stage feature maps.
 
         Args:
@@ -310,8 +310,23 @@ class MSPNHead(BaseHead):
             test_cfg (Config, optional): The testing/inference config
 
         Returns:
-            List[:obj:`PoseDataSample`]: Pose estimation results of each
-            sample after the post process.
+            Union[InstanceList | Tuple[InstanceList | PixelDataList]]: If
+            ``test_cfg['output_heatmap']==True``, return both pose and heatmap
+            prediction; otherwise only return the pose prediction.
+
+            The pose prediction is a list of ``InstanceData``, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+
+            The heatmap prediction is a list of ``PixelData``, each contains
+            the following fields:
+
+                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
         """
         # multi-stage multi-unit batch heatmaps
         if test_cfg.get('flip_test', False):
@@ -330,17 +345,15 @@ class MSPNHead(BaseHead):
             msmu_batch_heatmaps = self.forward(feats)
             batch_heatmaps = msmu_batch_heatmaps[-1]
 
-        preds = self.decode(batch_heatmaps, batch_data_samples)
+        preds = self.decode(batch_heatmaps)
 
-        # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
-            for heatmaps, data_sample in zip(batch_heatmaps, preds):
-                # Store the heatmap predictions in the data sample
-                if 'pred_fileds' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
-
-        return preds
+            pred_fields = [
+                PixelData(heatmaps=hm) for hm in batch_heatmaps.detach()
+            ]
+            return preds, pred_fields
+        else:
+            return preds
 
     def loss(self,
              feats: MSMUFeatures,

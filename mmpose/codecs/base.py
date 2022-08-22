@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
+from mmengine.utils import is_method_overridden
 
 
 class BaseKeypointCodec(metaclass=ABCMeta):
@@ -45,22 +46,25 @@ class BaseKeypointCodec(metaclass=ABCMeta):
                 (N, K, D)
         """
 
-    def keypoints_bbox2img(self, keypoints: np.ndarray,
-                           bbox_centers: np.ndarray,
-                           bbox_scales: np.ndarray) -> np.ndarray:
-        """Convert decoded keypoints from the bbox space to the image space.
-        Topdown codecs should override this method.
+    def batch_decode(self, batch_encoded: Any
+                     ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+        """Decode keypoints.
 
         Args:
-            keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D).
-                The coordinate is in the bbox space
-            bbox_centers (np.ndarray): BBox centers in shape (N, 2).
-                See `pipelines.GetBBoxCenterScale` for details
-            bbox_scale (np.ndarray): BBox scales in shape (N, 2).
-                See `pipelines.GetBBoxCenterScale` for details
+            batch_encoded (any): A batch of encoded keypoint
+                representations
 
         Returns:
-            np.ndarray: The transformed keypoints in shape (N, K, D).
-            The coordinate is in the image space.
+            tuple:
+            - batch_keypoints (List[np.ndarray]): Each element is keypoint
+                coordinates in shape (N, K, D)
+            - batch_keypoints (List[np.ndarray]): Each element is keypoint
+                visibility in shape (N, K)
         """
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    @property
+    def support_batch_decoding(self) -> bool:
+        """Return whether the codec support decoding from batch data."""
+        return is_method_overridden('batch_decode', BaseKeypointCodec,
+                                    self.__class__)

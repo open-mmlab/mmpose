@@ -45,6 +45,8 @@ class RegressionLabel(BaseKeypointCodec):
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
+        if keypoints_visible is None:
+            keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
 
         w, h = self.input_size
         valid = ((keypoints >= 0) &

@@ -3,15 +3,14 @@ from typing import Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-from mmengine.data import InstanceData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import simcc_pck_accuracy
 from mmpose.models.utils.tta import flip_vectors
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
-from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                 SampleList)
+from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
+                                 OptSampleList)
 from ..base_head import BaseHead
 from .heatmap_head import HeatmapHead
 
@@ -192,8 +191,31 @@ class SimCCHead(BaseHead):
         feats: Tuple[Tensor],
         batch_data_samples: OptSampleList,
         test_cfg: OptConfigType = {},
-    ) -> SampleList:
-        """Predict results from features."""
+    ) -> InstanceList:
+        """Predict results from features.
+
+        Args:
+            feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
+                features (or multiple multi-stage features in TTA)
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
+
+        Returns:
+            List[InstanceData]: The pose predictions, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+                - keypoint_x_labels (np.ndarray, optional): The predicted 1-D
+                    intensity distribution in the x direction
+                - keypoint_y_labels (np.ndarray, optional): The predicted 1-D
+                    intensity distribution in the y direction
+        """
 
         if test_cfg.get('flip_test', False):
             # TTA: flip test -> feats = [orig, flipped]
@@ -214,20 +236,15 @@ class SimCCHead(BaseHead):
         else:
             batch_pred_x, batch_pred_y = self.forward(feats)
 
-        preds = self.decode((batch_pred_x, batch_pred_y), batch_data_samples)
+        preds = self.decode((batch_pred_x, batch_pred_y))
 
-        # Whether to visualize the predicted simcc representations
         if test_cfg.get('output_heatmaps', False):
-            for pred_x, pred_y, data_sample in zip(batch_pred_x, batch_pred_y,
-                                                   preds):
+            for pred_instances, pred_x, pred_y in zip(preds,
+                                                      to_numpy(batch_pred_x),
+                                                      to_numpy(batch_pred_y)):
 
-                if 'pred_instance_labels' not in data_sample:
-                    data_sample.pred_instance_labels = InstanceData()
-                    # Store the simcc predictions in the data sample
-                data_sample.pred_instance_labels.keypoint_x_labels = pred_x[
-                    None, :]
-                data_sample.pred_instance_labels.keypoint_y_labels = pred_y[
-                    None, :]
+                pred_instances.keypoint_x_labels = pred_x[None]
+                pred_instances.keypoint_y_labels = pred_y[None]
 
         return preds
 

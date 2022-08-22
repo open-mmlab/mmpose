@@ -13,7 +13,7 @@ from mmpose.models.utils.tta import flip_coordinates, flip_heatmaps
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                 SampleList)
+                                 Predictions)
 from .. import HeatmapHead
 from ..base_head import BaseHead
 
@@ -206,8 +206,36 @@ class IntegralRegressionHead(BaseHead):
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
-                test_cfg: ConfigType = {}) -> SampleList:
-        """Predict results from outputs."""
+                test_cfg: ConfigType = {}) -> Predictions:
+        """Predict results from features.
+
+        Args:
+            feats (Tuple[Tensor] | List[Tuple[Tensor]]): The multi-stage
+                features (or multiple multi-stage features in TTA)
+            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+                data samples
+            test_cfg (dict): The runtime config for testing process. Defaults
+                to {}
+
+        Returns:
+            Union[InstanceList | Tuple[InstanceList | PixelDataList]]: If
+            ``test_cfg['output_heatmap']==True``, return both pose and heatmap
+            prediction; otherwise only return the pose prediction.
+
+            The pose prediction is a list of ``InstanceData``, each contains
+            the following fields:
+
+                - keypoints (np.ndarray): predicted keypoint coordinates in
+                    shape (num_instances, K, D) where K is the keypoint number
+                    and D is the keypoint dimension
+                - keypoint_scores (np.ndarray): predicted keypoint scores in
+                    shape (num_instances, K)
+
+            The heatmap prediction is a list of ``PixelData``, each contains
+            the following fields:
+
+                - heatmaps (Tensor): The predicted heatmaps in shape (K, h, w)
+        """
 
         if test_cfg.get('flip_test', False):
             # TTA: flip test -> feats = [orig, flipped]
@@ -237,17 +265,15 @@ class IntegralRegressionHead(BaseHead):
             batch_coords, batch_heatmaps = self.forward(feats)  # (B, K, D)
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
-        preds = self.decode(batch_coords, batch_data_samples)
+        preds = self.decode(batch_coords)
 
-        # Whether to visualize the predicted heatmaps
         if test_cfg.get('output_heatmaps', False):
-            for heatmaps, data_sample in zip(batch_heatmaps, preds):
-                # Store the heatmap predictions in the data sample
-                if 'pred_fields' not in data_sample:
-                    data_sample.pred_fields = PixelData()
-                data_sample.pred_fields.heatmaps = heatmaps
-
-        return preds
+            pred_fields = [
+                PixelData(heatmaps=hm) for hm in batch_heatmaps.detach()
+            ]
+            return preds, pred_fields
+        else:
+            return preds
 
     def loss(self,
              inputs: Tuple[Tensor],
