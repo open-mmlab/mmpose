@@ -18,6 +18,7 @@ def generate_gaussian_heatmaps(
         keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
         keypoints_visible (np.ndarray): Keypoint visibilities in shape
             (N, K)
+        sigma (float): The sigma value of the Gaussian heatmap
 
     Returns:
         tuple:

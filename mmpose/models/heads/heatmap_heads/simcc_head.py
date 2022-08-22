@@ -239,10 +239,9 @@ class SimCCHead(BaseHead):
         preds = self.decode((batch_pred_x, batch_pred_y))
 
         if test_cfg.get('output_heatmaps', False):
-            for pred_instances, pred_x, pred_y in zip(
-                    preds,
-                    batch_pred_x.cpu().detach().numpy(),
-                    batch_pred_y.cpu().detach().numpy()):
+            for pred_instances, pred_x, pred_y in zip(preds,
+                                                      to_numpy(batch_pred_x),
+                                                      to_numpy(batch_pred_y)):
 
                 pred_instances.keypoint_x_labels = pred_x[None]
                 pred_instances.keypoint_y_labels = pred_y[None]

@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from itertools import product
 from typing import Optional, Tuple
 
 import cv2
@@ -7,7 +6,8 @@ import numpy as np
 
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
-from .utils import generate_udp_gaussian_heatmaps, get_heatmap_maximum
+from .utils import (generate_offset_heatmap, generate_udp_gaussian_heatmaps,
+                    get_heatmap_maximum)
 
 
 @KEYPOINT_CODECS.register_module()
@@ -61,9 +61,6 @@ class UDPHeatmap(BaseKeypointCodec):
         self.radius_factor = radius_factor
         self.heatmap_type = heatmap_type
         self.blur_kernel_size = blur_kernel_size
-
-        w, h = input_size
-        W, H = heatmap_size
         self.scale_factor = ((np.array(input_size) - 1) /
                              (np.array(heatmap_size) - 1)).astype(np.float32)
 
@@ -111,8 +108,11 @@ class UDPHeatmap(BaseKeypointCodec):
                 keypoints_visible=keypoints_visible,
                 sigma=self.sigma)
         elif self.heatmap_type == 'combined':
-            heatmaps, keypoint_weights = self._encode_combined(
-                keypoints, keypoints_visible)
+            heatmaps, keypoint_weights = generate_offset_heatmap(
+                heatmap_size=self.heatmap_size,
+                keypoints=keypoints / self.scale_factor,
+                keypoints_visible=keypoints_visible,
+                radius_factor=self.radius_factor)
         else:
             raise ValueError(
                 f'{self.__class__.__name__} got invalid `heatmap_type` value'
@@ -170,45 +170,6 @@ class UDPHeatmap(BaseKeypointCodec):
         scores = scores[None]
 
         return keypoints, scores
-
-    def _encode_combined(
-        self,
-        keypoints: np.ndarray,
-        keypoints_visible: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """Encode keypoints into Combined label and offset maps."""
-
-        N, K, _ = keypoints.shape
-        W, H = self.heatmap_size
-
-        heatmaps = np.zeros((K, 3, H, W), dtype=np.float32)
-        keypoint_weights = keypoints_visible.copy()
-
-        # xy grid
-        x = np.arange(0, W, 1)
-        y = np.arange(0, H, 1)[:, None]
-
-        # positive area radius in the classification map
-        radius = self.radius_factor * max(W, H)
-
-        for n, k in product(range(N), range(K)):
-            if keypoints_visible[n, k] < 0.5:
-                continue
-
-            mu = keypoints[n, k] / self.scale_factor
-
-            x_offset = (mu[0] - x) / radius
-            y_offset = (mu[1] - y) / radius
-
-            heatmaps[k, 0] = np.where(x_offset**2 + y_offset**2 <= 1, 1., 0.)
-            heatmaps[k, 1] = x_offset
-            heatmaps[k, 2] = y_offset
-
-        # keep only valid region in offset maps
-        heatmaps[:, 1:] *= heatmaps[:, :1]
-        heatmaps = heatmaps.reshape(K * 3, H, W)
-
-        return heatmaps, keypoint_weights
 
     @staticmethod
     def _postprocess_dark_udp(heatmaps: np.ndarray, keypoints: np.ndarray,
