@@ -395,6 +395,13 @@ class BottomupResize(BaseTransform):
         if self.resize_mode == 'fit':
             target_input_size = self._ceil_to_multiple(input_size,
                                                        self.base_size)
+            if target_input_size != input_size:
+                raise ValueError(
+                    'When ``resize_mode==\'fit\', the input size (height and'
+                    ' width) should be mulitples of the base_size('
+                    f'{self.base_size}) at all scales. Got invalid input size'
+                    f' {input_size}.')
+
             tgt_w, tgt_h = target_input_size
             rsz_w = min(tgt_w, tgt_h * ratio)
             rsz_h = min(tgt_h, tgt_w / ratio)

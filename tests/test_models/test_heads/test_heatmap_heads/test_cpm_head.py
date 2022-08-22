@@ -3,10 +3,10 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
+from mmengine.data import InstanceData, PixelData
 from torch import nn
 
 from mmpose.models.heads import CPMHead
-from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 
@@ -125,13 +125,10 @@ class TestCPMHead(TestCase):
         batch_data_samples = self._get_data_samples(batch_size=2)
         preds = head.predict(feats, batch_data_samples)
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
-        # output_heatmaps = False
-        self.assertNotIn('pred_fields', preds[0])
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
         # num_stages = 1, has_final_layer = True
         head = CPMHead(
@@ -142,16 +139,16 @@ class TestCPMHead(TestCase):
             decoder=decoder_cfg)
         feats = self._get_feats(batch_size=2, feat_shapes=[(32, 32, 24)])
         batch_data_samples = self._get_data_samples(batch_size=2)
-        preds = head.predict(
+        preds, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
-        self.assertIn('pred_fields', preds[0])
-        self.assertEqual(preds[0].pred_fields.heatmaps.shape, (17, 32, 24))
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
+        self.assertTrue(len(pred_heatmaps), 2)
+        self.assertIsInstance(pred_heatmaps[0], PixelData)
+        self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 32, 24))
 
     def test_tta(self):
         # flip test: heatmap
@@ -178,11 +175,10 @@ class TestCPMHead(TestCase):
                                  shift_heatmap=True,
                              ))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
         # num_stages = 1

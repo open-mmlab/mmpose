@@ -10,7 +10,7 @@ from mmpose.models.utils.tta import flip_coordinates
 from mmpose.registry import KEYPOINT_CODECS, MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import (ConfigType, OptConfigType, OptSampleList,
-                                 SampleList)
+                                 Predictions)
 from ..base_head import BaseHead
 
 OptIntSeq = Optional[Sequence[int]]
@@ -97,7 +97,7 @@ class RLEHead(BaseHead):
     def predict(self,
                 feats: Tuple[Tensor],
                 batch_data_samples: OptSampleList,
-                test_cfg: ConfigType = {}) -> SampleList:
+                test_cfg: ConfigType = {}) -> Predictions:
         """Predict results from outputs."""
 
         if test_cfg.get('flip_test', False):
@@ -124,8 +124,7 @@ class RLEHead(BaseHead):
             batch_coords[..., 2:] = batch_coords[..., 2:].sigmoid()
 
         batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
-
-        preds = self.decode(batch_coords, batch_data_samples)
+        preds = self.decode(batch_coords)
 
         return preds
 

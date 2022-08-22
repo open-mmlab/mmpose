@@ -4,9 +4,9 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
+from mmengine.data import InstanceData
 
 from mmpose.models.heads import SimCCHead
-from mmpose.structures import PoseDataSample
 from mmpose.testing import get_packed_inputs
 
 
@@ -120,11 +120,11 @@ class TestSimCCHead(TestCase):
                 batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             preds = head.predict(feats, batch_data_samples)
 
-            self.assertEqual(len(preds), 2)
-            self.assertIsInstance(preds[0], PoseDataSample)
-            self.assertIn('pred_instances', preds[0])
-            self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                             preds[0].gt_instances.keypoints.shape)
+            self.assertTrue(len(preds), 2)
+            self.assertIsInstance(preds[0], InstanceData)
+            self.assertEqual(
+                preds[0].keypoints.shape,
+                batch_data_samples[0].gt_instances.keypoints.shape)
 
             # input transform: resize and concat
             head = SimCCHead(
@@ -145,12 +145,11 @@ class TestSimCCHead(TestCase):
                 batch_size=2, simcc_split_ratio=2.0, with_simcc_label=True)
             preds = head.predict(feats, batch_data_samples)
 
-            self.assertEqual(len(preds), 2)
-            self.assertIsInstance(preds[0], PoseDataSample)
-            self.assertIn('pred_instances', preds[0])
-            self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                             preds[0].gt_instances.keypoints.shape)
-            self.assertNotIn('pred_fields', preds[0])
+            self.assertTrue(len(preds), 2)
+            self.assertIsInstance(preds[0], InstanceData)
+            self.assertEqual(
+                preds[0].keypoints.shape,
+                batch_data_samples[0].gt_instances.keypoints.shape)
 
             # input transform: output heatmap
             head = SimCCHead(
@@ -168,14 +167,10 @@ class TestSimCCHead(TestCase):
             preds = head.predict(
                 feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
-            self.assertIn('keypoint_x_labels', preds[0].pred_instance_labels)
-            self.assertIn('keypoint_y_labels', preds[0].pred_instance_labels)
-            self.assertEqual(
-                preds[0].pred_instance_labels.keypoint_x_labels.shape,
-                (1, 17, 192 * 2))
-            self.assertEqual(
-                preds[0].pred_instance_labels.keypoint_y_labels.shape,
-                (1, 17, 256 * 2))
+            self.assertEqual(preds[0].keypoint_x_labels.shape,
+                             (1, 17, 192 * 2))
+            self.assertEqual(preds[0].keypoint_y_labels.shape,
+                             (1, 17, 256 * 2))
 
     def test_tta(self):
         # flip test
@@ -202,11 +197,10 @@ class TestSimCCHead(TestCase):
                              batch_data_samples,
                              test_cfg=dict(flip_test=True))
 
-        self.assertEqual(len(preds), 2)
-        self.assertIsInstance(preds[0], PoseDataSample)
-        self.assertIn('pred_instances', preds[0])
-        self.assertEqual(preds[0].pred_instances.keypoints.shape,
-                         preds[0].gt_instances.keypoints.shape)
+        self.assertTrue(len(preds), 2)
+        self.assertIsInstance(preds[0], InstanceData)
+        self.assertEqual(preds[0].keypoints.shape,
+                         batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
         decoder_cfg1 = dict(

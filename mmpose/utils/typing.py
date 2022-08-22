@@ -2,6 +2,7 @@
 from typing import Dict, List, Optional, Tuple, Union
 
 from mmengine.config import ConfigDict
+from mmengine.data import InstanceData, PixelData
 from torch import Tensor
 
 from mmpose.structures import PoseDataSample
@@ -15,6 +16,9 @@ OptMultiConfig = Optional[MultiConfig]
 # Type hint of data samples
 SampleList = List[PoseDataSample]
 OptSampleList = Optional[SampleList]
+InstanceList = List[InstanceData]
+PixelDataList = List[PixelData]
+Predictions = Union[InstanceList, Tuple[InstanceList, PixelDataList]]
 # Type hint of model outputs
 ForwardResults = Union[Dict[str, Tensor], List[PoseDataSample], Tuple[Tensor],
                        Tensor]

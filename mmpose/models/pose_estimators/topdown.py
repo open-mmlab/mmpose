@@ -1,11 +1,12 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-from typing import Tuple
+from itertools import zip_longest
+from typing import Optional, Tuple
 
 from torch import Tensor
 
 from mmpose.registry import MODELS
-from mmpose.utils.typing import (ConfigType, OptConfigType, OptMultiConfig,
-                                 SampleList)
+from mmpose.utils.typing import (ConfigType, InstanceList, OptConfigType,
+                                 OptMultiConfig, PixelDataList, SampleList)
 from .base import BasePoseEstimator
 
 
@@ -146,7 +147,66 @@ class TopdownPoseEstimator(BasePoseEstimator):
         preds = self.head.predict(
             feats, batch_data_samples, test_cfg=self.test_cfg)
 
-        return preds
+        if isinstance(preds, Tuple):
+            pred_instances, pred_fields = preds
+        else:
+            pred_instances = preds
+            pred_fields = None
+
+        pred_data_samples = self.convert_to_datasample(pred_instances,
+                                                       pred_fields,
+                                                       batch_data_samples)
+
+        return pred_data_samples
+
+    def convert_to_datasample(self, batch_pred_instances: InstanceList,
+                              batch_pred_fields: Optional[PixelDataList],
+                              batch_data_samples: SampleList) -> SampleList:
+        """Add predictions into data samples.
+
+        Args:
+            batch_pred_instances (List[InstanceData]): The predicted instances
+                of the input data batch
+            batch_pred_fields (List[PixelData], optional): The predicted
+                fields (e.g. heatmaps) of the input batch
+            batch_data_samples (List[PoseDataSample]): The input data batch
+            merge (bool): Whether merge all predictions into a single
+                `PoseDataSample`. This is useful when the input batch is
+                instances (bboxes) from the same image. Defaults to ``False``
+
+        Returns:
+            List[PoseDataSample]: A list of data samples where the predictions
+            are stored in the ``pred_instances`` field of each data sample.
+            The length of the list is the batch size when ``merge==False``, or
+            1 when ``merge==True``.
+        """
+        assert len(batch_pred_instances) == len(batch_data_samples)
+        if batch_pred_fields is None:
+            batch_pred_fields = []
+
+        for pred_instances, pred_fields, data_sample in zip_longest(
+                batch_pred_instances, batch_pred_fields, batch_data_samples):
+
+            gt_instances = data_sample.gt_instances
+
+            # convert keypoint coordinates from input space to image space
+            bbox_centers = gt_instances.bbox_centers
+            bbox_scales = gt_instances.bbox_scales
+            input_size = data_sample.metainfo['input_size']
+
+            pred_instances.keypoints = pred_instances.keypoints / input_size \
+                * bbox_scales + bbox_centers - 0.5 * bbox_scales
+
+            # add bbox information into pred_instances
+            pred_instances.bboxes = gt_instances.bboxes
+            pred_instances.bbox_scores = gt_instances.bbox_scores
+
+            data_sample.pred_instances = pred_instances
+
+            if pred_fields is not None:
+                data_sample.pred_fields = pred_fields
+
+        return batch_data_samples
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):
