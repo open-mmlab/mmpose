@@ -98,10 +98,7 @@ class PackPoseInputs(BaseTransform):
                             'flip_direction', 'flip_indices'),
                  pack_transformed=False):
         self.meta_keys = meta_keys
-
-        if 'transformed_keypoints' in self.instance_mapping_table:
-            if not pack_transformed:
-                del self.instance_mapping_table['transformed_keypoints']
+        self.pack_transformed = pack_transformed
 
     def transform(self, results: dict) -> dict:
         """Method to pack the input data.
@@ -128,6 +125,9 @@ class PackPoseInputs(BaseTransform):
         for key, packed_key in self.instance_mapping_table.items():
             if key in results:
                 gt_instances.set_field(results[key], packed_key)
+        if not self.pack_transformed:
+            if 'transformed_keypoints' in gt_instances:
+                del gt_instances['transformed_keypoints']
         data_sample.gt_instances = gt_instances
 
         # pack instance labels
