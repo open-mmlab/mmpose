@@ -77,7 +77,8 @@ class PackPoseInputs(BaseTransform):
         'bbox_scale': 'bbox_scales',
         'bbox_score': 'bbox_scores',
         'keypoints': 'keypoints',
-        'keypoints_visible': 'keypoints_visible'
+        'keypoints_visible': 'keypoints_visible',
+        'transformed_keypoints': 'transformed_keypoints'
     }
 
     label_mapping_table = {
@@ -94,8 +95,13 @@ class PackPoseInputs(BaseTransform):
     def __init__(self,
                  meta_keys=('id', 'img_id', 'img_path', 'ori_shape',
                             'img_shape', 'input_size', 'flip',
-                            'flip_direction', 'flip_indices')):
+                            'flip_direction', 'flip_indices'),
+                 pack_transformed=False):
         self.meta_keys = meta_keys
+
+        if 'transformed_keypoints' in self.instance_mapping_table:
+            if not pack_transformed:
+                del self.instance_mapping_table['transformed_keypoints']
 
     def transform(self, results: dict) -> dict:
         """Method to pack the input data.

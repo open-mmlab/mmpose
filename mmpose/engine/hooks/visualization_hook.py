@@ -4,6 +4,7 @@ import warnings
 from typing import Optional, Sequence
 
 import mmcv
+import mmengine
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 from mmengine.visualization import Visualizer
@@ -131,7 +132,7 @@ class PoseVisualizationHook(Hook):
             mmcv.mkdir_or_exist(self.test_out_dir)
 
         if self.file_client is None:
-            self.file_client = mmcv.FileClient(**self.file_client_args)
+            self.file_client = mmengine.FileClient(**self.file_client_args)
 
         for input_data, output in zip(data_batch, outputs):
             self._test_index += 1
