@@ -24,10 +24,24 @@ def test_rotate_point():
 
 
 def test_fliplr_joints():
+    # binary visibility
     joints = np.array([[0, 0, 0], [1, 1, 0]])
     joints_vis = np.array([[1], [1]])
     joints_flip, _ = fliplr_joints(joints, joints_vis, 5, [[0, 1]])
     res = np.array([[3, 1, 0], [4, 0, 0]])
+    assert_array_almost_equal(joints_flip, res)
+
+    # float visibility
+    joints = np.array([[0, 0, 0], [1, 1, 0]])
+    joints_vis = np.array([[0.5], [1]])
+    joints_flip, _ = fliplr_joints(joints, joints_vis, 5, [[0, 1]])
+    res = np.array([[3, 1, 0], [4, 0, 0]])
+    assert_array_almost_equal(joints_flip, res)
+
+    joints = np.array([[0, 0, 0], [1, 1, 0]])
+    joints_vis = np.array([[0], [1]])
+    joints_flip, _ = fliplr_joints(joints, joints_vis, 5, [[0, 1]])
+    res = np.array([[3, 1, 0], [0, 0, 0]])
     assert_array_almost_equal(joints_flip, res)
 
 
