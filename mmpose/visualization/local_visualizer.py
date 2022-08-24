@@ -158,7 +158,8 @@ class PoseLocalVisualizer(Visualizer):
         img_h, img_w, _ = image.shape
 
         if 'keypoints' in instances:
-            keypoints = instances.keypoints
+            keypoints = instances.get('transformed_keypoints',
+                                      instances.keypoints)
 
             if 'scores' in instances and self.show_keypoint_weight:
                 scores = instances.scores

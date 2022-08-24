@@ -37,7 +37,7 @@ def parse_args():
         help='the interval of show (s)')
     parser.add_argument(
         '--mode',
-        default='original',
+        default='transformed',
         type=str,
         choices=['original', 'transformed'],
         help='display mode; display original pictures or transformed pictures'
@@ -89,6 +89,10 @@ def main():
     # unset `bbox_file` to make dataset read in reasonable keypoints
     if 'bbox_file' in cfg[f'{args.phase}_dataloader'].dataset:
         cfg[f'{args.phase}_dataloader'].dataset.bbox_file = None
+
+    # pack transformed keypoints for visualization
+    cfg[f'{args.phase}_dataloader'].dataset.pipeline[
+        -1].pack_transformed = True
 
     dataset = build_from_cfg(cfg[f'{args.phase}_dataloader'].dataset, DATASETS)
 

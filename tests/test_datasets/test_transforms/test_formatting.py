@@ -60,11 +60,19 @@ class TestPackPoseInputs(TestCase):
             np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
             'keypoint_y_labels':
             np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
+            'transformed_keypoints':
+            np.random.randint(0, 100, (1, 17, 2)).astype(np.float32),
         }
         self.meta_keys = ('img_id', 'img_path', 'ori_shape', 'img_shape',
                           'scale_factor', 'flip', 'flip_direction')
 
     def test_transform(self):
+        transform = PackPoseInputs(
+            meta_keys=self.meta_keys, pack_transformed=True)
+        results = transform(copy.deepcopy(self.results_topdown))
+        self.assertIn('transformed_keypoints',
+                      results['data_sample'].gt_instances)
+
         transform = PackPoseInputs(meta_keys=self.meta_keys)
         results = transform(copy.deepcopy(self.results_topdown))
         self.assertIn('inputs', results)
@@ -78,6 +86,8 @@ class TestPackPoseInputs(TestCase):
         self.assertEqual(len(results['data_sample'].gt_instances), 1)
         self.assertIsInstance(results['data_sample'].gt_fields.heatmaps,
                               torch.Tensor)
+        self.assertNotIn('transformed_keypoints',
+                         results['data_sample'].gt_instances)
 
         # test when results['img'] is sequence of frames
         results = copy.deepcopy(self.results_topdown)
