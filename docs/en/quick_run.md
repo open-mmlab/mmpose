@@ -2,7 +2,15 @@
 
 This page provides a basic tutorial about the usage of MMPose.
 
-We will walk you through the 7 key steps of a typical MMPose workflow by training a top-down residual log-likelihood algorithm based on resnet50 on COCO dataset.
+We will walk you through the 7 key steps of a typical MMPose workflow by training a top-down residual log-likelihood algorithm based on resnet50 on COCO dataset:
+
+1. Inference with a pretrained model
+2. Prepare the dataset
+3. Prepare a config
+4. Browse the transformed images
+5. Training
+6. Testing
+7. Visualization
 
 ## Installation
 
@@ -10,7 +18,7 @@ For installation instructions, please refer to \[Installation\].
 
 ## Get Started
 
-### Inference with a Pretrained Model
+### Inference with a pretrained model
 
 We provide a useful script to perform pose estimation with a pretrained model:
 
@@ -27,7 +35,7 @@ If MMPose is properly installed, you will get the visualized result as follows:
 
 More demo and full instructions can be found in \[Demo\].
 
-### Prepare datasets
+### Prepare the dataset
 
 MMPose supports multiple tasks. We provide the corresponding guidelines for data preparation.
 
