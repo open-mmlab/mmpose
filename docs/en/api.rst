@@ -4,28 +4,10 @@ mmpose.apis
     :members:
 
 
-mmpose.core
+mmpose.codes
 -------------
-evaluation
-^^^^^^^^^^^
-.. automodule:: mmpose.core.evaluation
-    :members:
 
-fp16
-^^^^^^^^^^^
-.. automodule:: mmpose.core.fp16
-    :members:
-
-
-utils
-^^^^^^^^^^^
-.. automodule:: mmpose.core.utils
-    :members:
-
-
-post_processing
-^^^^^^^^^^^^^^^^
-.. automodule:: mmpose.core.post_processing
+.. automodule:: mmpose.codecs
     :members:
 
 
@@ -68,44 +50,79 @@ mmpose.datasets
 
 datasets
 ^^^^^^^^^^^
-.. automodule:: mmpose.datasets.datasets.top_down
+.. automodule:: mmpose.datasets.datasets.base
     :members:
     :noindex:
 
-.. automodule:: mmpose.datasets.datasets.bottom_up
+.. automodule:: mmpose.datasets.datasets.body
     :members:
     :noindex:
 
-pipelines
+.. automodule:: mmpose.datasets.datasets.face
+    :members:
+    :noindex:
+
+.. automodule:: mmpose.datasets.datasets.hand
+    :members:
+    :noindex:
+
+.. automodule:: mmpose.datasets.datasets.animal
+    :members:
+    :noindex:
+
+.. automodule:: mmpose.datasets.datasets.fashion
+    :members:
+    :noindex:
+
+transforms
 ^^^^^^^^^^^
-.. automodule:: mmpose.datasets.pipelines
+.. automodule:: mmpose.datasets.transforms.loading
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.loading
+.. automodule:: mmpose.datasets.transforms.common_transforms
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.shared_transform
+.. automodule:: mmpose.datasets.transforms.topdown_transforms
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.top_down_transform
+.. automodule:: mmpose.datasets.transforms.bottomup_transforms
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.bottom_up_transform
+.. automodule:: mmpose.datasets.transforms.formatting
     :members:
 
-.. automodule:: mmpose.datasets.pipelines.mesh_transform
-    :members:
-
-.. automodule:: mmpose.datasets.pipelines.pose3d_transform
-    :members:
-
-samplers
-^^^^^^^^^^^
-.. automodule:: mmpose.datasets.samplers
-    :members:
-    :noindex:
-
-mmpose.utils
+mmpose.structures
 ---------------
-.. automodule:: mmpose.utils
+.. automodule:: mmpose.structures
+    :members:
+
+bbox
+^^^^^^^^^^^
+.. automodule:: mmpose.structures.bbox
+    :members:
+
+keypoint
+^^^^^^^^^^^
+.. automodule:: mmpose.structures.keypoint
+    :members:
+
+
+mmpose.registry
+---------------
+.. automodule:: mmpose.registry
+    :members:
+
+mmpose.evaluation
+---------------
+.. automodule:: mmpose.evaluation
+    :members:
+
+mmpose.visualization
+---------------
+.. automodule:: mmpose.visualization
+    :members:
+
+mmpose.engine
+---------------
+.. automodule:: mmpose.engine
     :members:
