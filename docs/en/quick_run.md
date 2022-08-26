@@ -1,3 +1,148 @@
 # Quick Run
 
-Work in progress...
+This page provides a basic tutorial about the usage of MMPose.
+
+We will walk you through the 7 key steps of a typical MMPose workflow by training a top-down residual log-likelihood algorithm based on resnet50 on COCO dataset.
+
+## Installation
+
+For installation instructions, please refer to \[Installation\].
+
+## Get Started
+
+### Inference with a Pretrained Model
+
+We provide a useful script to perform pose estimation with a pretrained model:
+
+```Bash
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py \
+    https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192_rle-2ea9bb4a_20220616.pth
+```
+
+If MMPose is properly installed, you will get the visualized result as follows:
+
+![img](https://aicarrier.feishu.cn/space/api/box/stream/download/asynccode/?code=NjljMjI0ODFiMTRlYWUxYmQ3OTliYzIzZDZhMzlhYzVfNkF5MmJMRUdrRDBJdVpZUGZWOUFuNkU2YUNxaGRobjhfVG9rZW46Ym94Y25nc3JBcU5keEFqZEFBN2Y5WmZUbUViXzE2NjE1MDYwNjI6MTY2MTUwOTY2Ml9WNA)
+
+More demo and full instructions can be found in \[Demo\].
+
+### Prepare datasets
+
+MMPose supports multiple tasks. We provide the corresponding guidelines for data preparation.
+
+- 2D Body Keypoint Detection
+
+- 3D Body Keypoint Detection
+
+- 3D Body Mesh Recovery
+
+- 2D Hand Keypoint Detection
+
+- 3D Hand Keypoint Detection
+
+- 2D Face Keypoint Detection
+
+- 2D WholeBody Keypoint Detection
+
+- 2D Fashion Landmark Detection
+
+- 2D Animal Keypoint Detection
+
+You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO data preparation. In this example, we place the data under `$MMPOSE/data`.
+
+### Prepare a config
+
+MMPose is equipped with a powerful config system to conduct various experiments conveniently. A config file organizes the settings of:
+
+- Environments
+
+- Data Loading and Augmentations
+
+- Hyperparameters of Train/Validation/Test
+
+- Model Structures
+
+- Evaluation metrics
+
+We provide a bunch of well-prepared configs under `$MMPOSE/configs` that you can directly use or modify.
+
+Going back to our example, we  will use the prepared config:
+
+```Bash
+$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py.
+```
+
+We can set the path of the coco dataset by modifying `data_root` in the config：
+
+```Python
+data_root = 'data/coco'
+```
+
+If you wish to learn more about our config system, please refer to \[Configs\].
+
+### Browse the transformed images
+
+Before training, we can browse the transformed training data to check if the images are augmented properly:
+
+```Bash
+python tools/misc/browse_dastaset.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+```
+
+![img](https://aicarrier.feishu.cn/space/api/box/stream/download/asynccode/?code=MjNmM2VmOTVjZWM3OWE2MDExZmFiNjEzNDdhMzdlYWVfeEJZRkpVZll5T3ZYUTdKdXVXNjMzN21odjlJOFZobjVfVG9rZW46Ym94Y25nNXh2Y2pBZTlQMjd1TTlkSFczRWhnXzE2NjE1MDYwNjI6MTY2MTUwOTY2Ml9WNA)
+
+### Training
+
+Use the following command to train with a single GPU:
+
+```Bash
+python tools/train.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+```
+
+MMPose automates 40+ useful training tricks and functions including:
+
+- Learning rate warmup and scheduling
+
+- ImageNet pretrained models
+
+- Automatic learning rate scaling
+
+- Multi-GPU and Multi-Node training support
+
+- Various Data backend support, e.g. HardDisk、LMDB、Petrel、HTTP etc.
+
+- Mixed precision training support
+
+- TensorBoard
+
+### Testing
+
+Checkpoints and logs will be saved under `$MMPOSE/work_dirs` by default. The best model is under `$MMPOSE/work_dir/best_coco`.
+
+Use the following command to evaluate the model on coco dataset:
+
+```Bash
+python tools/test.py \
+    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py \
+    work_dir/best_coco/AP_epoch_20.pth
+```
+
+Here is an example of evaluation results：
+
+```Bash
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] =  0.704
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] =  0.883
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] =  0.777
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] =  0.667
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] =  0.769
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] =  0.751
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] =  0.920
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] =  0.815
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] =  0.709
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] =  0.811
+08/23 12:04:42 - mmengine - INFO - Epoch(test) [3254/3254]  coco/AP: 0.704168  coco/AP .5: 0.883134  coco/AP .75: 0.777015  coco/AP (M): 0.667207  coco/AP (L): 0.768644  coco/AR: 0.750913  coco/AR .5: 0.919710  coco/AR .75: 0.815334  coco/AR (M): 0.709232  coco/AR (L): 0.811334
+```
+
+If you want to perform evaluation on other datasets, please refer to \[Train & Test\].
+
+### Visualization
