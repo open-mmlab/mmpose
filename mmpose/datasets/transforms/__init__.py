@@ -7,6 +7,7 @@ from .common_transforms import (Albumentation, GenerateTarget,
                                 RandomHalfBody)
 from .formatting import PackPoseInputs
 from .loading import LoadImage
+from .master_transforms import *  # noqa
 from .topdown_transforms import TopdownAffine
 
 __all__ = [
