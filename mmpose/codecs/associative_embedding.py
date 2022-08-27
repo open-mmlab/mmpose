@@ -13,7 +13,8 @@ from mmpose.registry import KEYPOINT_CODECS
 from mmpose.utils.tensor_utils import to_numpy
 from .base import BaseKeypointCodec
 from .utils import (batch_heatmap_nms, generate_gaussian_heatmaps,
-                    generate_udp_gaussian_heatmaps)
+                    generate_udp_gaussian_heatmaps, refine_keypoints,
+                    refine_keypoints_dark_udp)
 
 
 def _group_keypoints_by_tags(vals: np.ndarray,
@@ -164,8 +165,16 @@ class AssociativeEmbedding(BaseKeypointCodec):
         sigma (float): The sigma value of the Gaussian heatmap
         use_udp (bool): Whether use unbiased data processing. See
             `UDP (CVPR 2020)`_ for details. Defaults to ``False``
+        decode_keypoint_order (List[int]): The grouping order of the
+            keypoint indices. The groupping usually starts from a keypoints
+            around the head and torso, and gruadually moves out to the limbs
+        decode_thr (float): The threshold of keypoint response value in
+            heatmaps. Defaults to 0.1
         decode_nms_kernel (int): The kernel size of the NMS during decoding,
-            which should be a odd integer. Defaults to 5
+            which should be an odd integer. Defaults to 5
+        decode_gaussian_kernel (int): The kernel size of the Gaussian blur
+            during decoding, which should be an odd integer. It is only used
+            when ``self.use_udp==True``. Defaults to 3
         decode_topk (int): The number top-k candidates of each keypoints that
             will be retrieved from the heatmaps during dedocding. Defaults to
             20
@@ -183,7 +192,9 @@ class AssociativeEmbedding(BaseKeypointCodec):
                  heatmap_size: Tuple[int, int],
                  sigma: Optional[float] = None,
                  use_udp: bool = False,
+                 decode_keypoint_order: List[int] = [],
                  decode_nms_kernel: int = 5,
+                 decode_gaussian_kernel: int = 3,
                  decode_thr: float = 0.1,
                  decode_topk: int = 20,
                  decode_max_instances: Optional[int] = None,
@@ -193,10 +204,12 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.heatmap_size = heatmap_size
         self.use_udp = use_udp
         self.decode_nms_kernel = decode_nms_kernel
+        self.decode_gaussian_kernel = decode_gaussian_kernel
         self.decode_thr = decode_thr
         self.decode_topk = decode_topk
         self.decode_max_instances = decode_max_instances
         self.tag_per_keypoint = tag_per_keypoint
+        self.dedecode_keypoint_order = decode_keypoint_order.copy()
 
         if sigma is None:
             sigma = (heatmap_size[0] * heatmap_size[1])**0.5 / 64
@@ -318,17 +331,37 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         return topk_vals, topk_tags, topk_locs
 
-    def _group_keypoints(self, vals: np.ndarray, tags: np.ndarray,
-                         locs: np.ndarray, keypoint_order: list[int],
-                         val_thr: float):
+    def _group_keypoints(self, batch_vals: np.ndarray, batch_tags: np.ndarray,
+                         batch_locs: np.ndarray):
         """Group keypoints into groups (each represents an instance) by tags.
 
         Args:
-            vals (Tensor): Heatmap response values of keypoint candidates in
-                shape (B, K, Topk)
-            tags (Tensor): Tags of keypoint candidates in shape
+            batch_vals (Tensor): Heatmap response values of keypoint
+                candidates in shape (B, K, Topk)
+            batch_tags (Tensor): Tags of keypoint candidates in shape
                 (B, K, Topk, L)
+            batch_locs (Tensor): Locations of keypoint candidates in shape
+                (B, K, Topk, 2)
+
+        Returns:
+            List[Tuple[np.ndarray, np.ndarray]]: Grouping results of a batch,
+            eath element is a tuple of keypoints (in shape [N, K, D]) and
+            keypoint scores (in shape [N, K]) decoded from one image.
         """
+
+        def _group_func(inputs: Tuple):
+            vals, tags, locs = inputs
+            return _group_keypoints_by_tags(
+                vals,
+                tags,
+                locs,
+                keypoint_order=self.keypoint_order,
+                val_thr=self.decode_thr,
+                max_groups=self.decode_max_instances)
+
+        _results = map(_group_func, zip(batch_tags, batch_tags, batch_locs))
+        results = list(_results)
+        return results
 
     def batch_decode(self, batch_heatmaps: Tensor, batch_tags: Tensor
                      ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -363,3 +396,22 @@ class AssociativeEmbedding(BaseKeypointCodec):
         batch_topk_vals, batch_topk_tags, batch_topk_locs = to_numpy(
             self._get_batch_topk(
                 batch_heatmaps, batch_tags, k=self.decode_topk))
+
+        # Group keypoint candidates into groups (instances)
+        batch_groups = self._group_keypoints(batch_topk_vals, batch_topk_tags,
+                                             batch_topk_locs)
+
+        batch_keypoints, batch_keypoint_scores = map(list, zip(*batch_groups))
+
+        # Refine the keypoint prediction
+        for i, keypoints, heatmaps in enumerate(
+                zip(batch_keypoints, batch_heatmaps)):
+            if self.use_udp:
+                keypoints = refine_keypoints_dark_udp(
+                    keypoints,
+                    heatmaps.copy(),
+                    blur_kernel_size=self.decode_gaussian_kernel)
+            else:
+                keypoints = refine_keypoints(keypoints, heatmaps.copy())
+
+            batch_keypoints[i] = keypoints

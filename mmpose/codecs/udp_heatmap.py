@@ -7,7 +7,7 @@ import numpy as np
 from mmpose.registry import KEYPOINT_CODECS
 from .base import BaseKeypointCodec
 from .utils import (generate_offset_heatmap, generate_udp_gaussian_heatmaps,
-                    get_heatmap_maximum)
+                    get_heatmap_maximum, refine_keypoints_dark_udp)
 
 
 @KEYPOINT_CODECS.register_module()
@@ -139,8 +139,9 @@ class UDPHeatmap(BaseKeypointCodec):
 
         if self.heatmap_type == 'gaussian':
             keypoints, scores = get_heatmap_maximum(heatmaps)
-            keypoints = self._postprocess_dark_udp(heatmaps, keypoints,
-                                                   self.blur_kernel_size)
+            keypoints = refine_keypoints_dark_udp(
+                keypoints, heatmaps, blur_kernel_size=self.blur_kernel_size)
+
         elif self.heatmap_type == 'combined':
             _K, H, W = heatmaps.shape
             K = _K // 3
@@ -170,54 +171,3 @@ class UDPHeatmap(BaseKeypointCodec):
         scores = scores[None]
 
         return keypoints, scores
-
-    @staticmethod
-    def _postprocess_dark_udp(heatmaps: np.ndarray, keypoints: np.ndarray,
-                              kernel_size: int) -> np.ndarray:
-        """Distribution aware post-processing for UDP.
-
-        Args:
-            heatmaps (np.ndarray): Heatmaps in shape (K, H, W)
-            keypoints (np.ndarray): Keypoint coordinates in shape (K, D)
-            kernel_size (int): The Gaussian blur kernel size of the heatmap
-                modulation
-
-        Returns:
-            np.ndarray: Post-processed keypoint coordinates
-        """
-        K, H, W = heatmaps.shape
-
-        for k in range(K):
-            cv2.GaussianBlur(heatmaps[k], (kernel_size, kernel_size), 0,
-                             heatmaps[k])
-
-        np.clip(heatmaps, 0.001, 50., heatmaps)
-        np.log(heatmaps, heatmaps)
-        heatmaps_pad = np.pad(
-            heatmaps, ((0, 0), (1, 1), (1, 1)), mode='edge').flatten()
-
-        index = keypoints[..., 0] + 1 + (keypoints[..., 1] + 1) * (W + 2)
-        index += (W + 2) * (H + 2) * np.arange(0, K)
-        index = index.astype(int).reshape(-1, 1)
-        i_ = heatmaps_pad[index]
-        ix1 = heatmaps_pad[index + 1]
-        iy1 = heatmaps_pad[index + W + 2]
-        ix1y1 = heatmaps_pad[index + W + 3]
-        ix1_y1_ = heatmaps_pad[index - W - 3]
-        ix1_ = heatmaps_pad[index - 1]
-        iy1_ = heatmaps_pad[index - 2 - W]
-
-        dx = 0.5 * (ix1 - ix1_)
-        dy = 0.5 * (iy1 - iy1_)
-        derivative = np.concatenate([dx, dy], axis=1)
-        derivative = derivative.reshape(K, 2, 1)
-
-        dxx = ix1 - 2 * i_ + ix1_
-        dyy = iy1 - 2 * i_ + iy1_
-        dxy = 0.5 * (ix1y1 - ix1 - iy1 + i_ + i_ - ix1_ - iy1_ + ix1_y1_)
-        hessian = np.concatenate([dxx, dxy, dxy, dyy], axis=1)
-        hessian = hessian.reshape(K, 2, 2)
-        hessian = np.linalg.inv(hessian + np.finfo(np.float32).eps * np.eye(2))
-        keypoints -= np.einsum('imn,ink->imk', hessian, derivative).squeeze()
-
-        return keypoints
