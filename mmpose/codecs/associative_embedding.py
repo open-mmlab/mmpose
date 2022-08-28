@@ -1,7 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import namedtuple
 from itertools import product
-from math import dist
 from typing import Any, List, Optional, Tuple
 
 import numpy as np
@@ -58,7 +57,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
         - grouped_keypoint_scores (np.ndarray): The grouped keypoint scores
              in shape (G, K)
     """
-    K, M, D = locs.shape[0]
+    K, M, D = locs.shape
     assert vals.shape == tags.shape[:2] == (K, M)
     assert len(keypoint_order) == K
 
@@ -90,7 +89,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
         locs_i = locs[i, valid]  # (M', D)
 
         if len(groups) == 0:  # Initialize the group pool
-            for tag, loc, val in zip(tags_i, vals_i, locs_i):
+            for tag, val, loc in zip(tags_i, vals_i, locs_i):
                 group = _init_group()
                 group.kpts[i] = loc
                 group.scores[i] = val
@@ -120,8 +119,8 @@ def _group_keypoints_by_tags(vals: np.ndarray,
             # Match keypoints and groups by Munkres algorithm
             matches = munkres.compute(costs)
             for kpt_idx, group_idx in matches:
-                if group_idx < num_groups and dist[kpt_idx,
-                                                   group_idx] < tag_dist_thr:
+                if group_idx < num_groups and dists[kpt_idx,
+                                                    group_idx] < tag_dist_thr:
                     # Add the keypoint to the matched group
                     group = groups[group_idx]
                 else:
@@ -135,7 +134,7 @@ def _group_keypoints_by_tags(vals: np.ndarray,
 
     groups = groups[:max_groups]
     grouped_keypoints = np.stack((g.kpts for g in groups))  # (G, K, D)
-    grouped_keypoint_scores = np.stack((g.vals for g in groups))  # (G, K)
+    grouped_keypoint_scores = np.stack((g.scores for g in groups))  # (G, K)
 
     return grouped_keypoints, grouped_keypoint_scores
 
@@ -216,7 +215,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
         self.sigma = sigma
 
         if self.use_udp:
-            self.scale_factor = ((np.array(heatmap_size) - 1) /
+            self.scale_factor = ((np.array(input_size) - 1) /
                                  (np.array(heatmap_size) - 1)).astype(
                                      np.float32)
         else:
@@ -281,7 +280,7 @@ class AssociativeEmbedding(BaseKeypointCodec):
         N, K, _ = keypoints.shape
         keypoint_indices = np.zeros((N, K, 2), dtype=np.int64)
 
-        for n, k in product(N, K):
+        for n, k in product(range(N), range(K)):
             x, y = (keypoints[n, k] + 0.5).astype(np.int64)
             index = y * w + x
             vis = (keypoints_visible[n, k] > 0.5 and 0 <= x < w and 0 <= y < h)
@@ -314,20 +313,21 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 heatmap, in shape (B, K, Topk, 2) where last dimension
                 represents x and y coordinates
         """
-        K, W = batch_heatmaps.shape[1], batch_heatmaps.shape[3]
+        B, K, H, W = batch_heatmaps.shape
+        L = batch_tags.shape[1] // K
 
-        # shape of topk_val, top_indices: (B, K, k)
+        # shape of topk_val, top_indices: (B, K, TopK)
         topk_vals, topk_indices = batch_heatmaps.flatten(-2, -1).topk(
             k, dim=-1)
 
-        batch_tags = batch_tags.flatten(-2, -1)  # (B, K*L, H*W)
         topk_tags_per_kpts = [
-            torch.gather(_tags, dim=2, index=topk_indices)
-            for _tags in torch.chunk(batch_heatmaps, chunks=K, dim=1)
+            torch.gather(_tag, dim=2, index=topk_indices)
+            for _tag in torch.unbind(batch_tags.view(B, K, L, H * W), dim=2)
         ]
-        topk_tags = torch.stack(topk_tags_per_kpts, dim=-1)  # (B, K, k, L)
+
+        topk_tags = torch.stack(topk_tags_per_kpts, dim=-1)  # (B, K, TopK, L)
         topk_locs = torch.stack([topk_indices % W, topk_indices // W],
-                                dim=-1)  # (B, K, k, 2)
+                                dim=-1)  # (B, K, TopK, 2)
 
         return topk_vals, topk_tags, topk_locs
 
@@ -355,13 +355,62 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 vals,
                 tags,
                 locs,
-                keypoint_order=self.keypoint_order,
+                keypoint_order=self.dedecode_keypoint_order,
                 val_thr=self.decode_thr,
                 max_groups=self.decode_max_instances)
 
-        _results = map(_group_func, zip(batch_tags, batch_tags, batch_locs))
+        _results = map(_group_func, zip(batch_vals, batch_tags, batch_locs))
         results = list(_results)
         return results
+
+    def _fill_missing_keypoints(self, keypoints: np.ndarray,
+                                keypoint_scores: np.ndarray,
+                                heatmaps: np.ndarray, tags: np.ndarray):
+        """Fill the missing keypoints in the initial predictions.
+
+        Args:
+            keypoints (np.ndarray): Keypoint predictions in shape (N, K, D)
+            keypoint_scores (np.ndarray): Keypint score predictions in shape
+                (N, K), in which 0 means the corresponding keypoint is
+                missing in the initial prediction
+            heatmaps (np.ndarry): Heatmaps in shape (K, H, W)
+            tags (np.ndarray): Tagging heatmaps in shape (C, H, W) where
+                C=K*L
+
+        Returns:
+            tuple:
+            - keypoints (np.ndarray): Keypoint predictions with missing
+                ones filled
+            - keypoint_scores (np.ndarray): Keypoint score predictions with
+                missing ones filled
+        """
+
+        N, K = keypoints.shape[:2]
+        H, W = heatmaps.shape[1:]
+        keypoint_tags = np.split(tags, K, axis=0)
+
+        for n in range(N):
+            # Calculate the instance tag (mean tag of detected keypoints)
+            _tag = []
+            for k in range(K):
+                if keypoint_scores[n, k] > 0:
+                    x, y = keypoints[n, k, :2].astype(np.int64)
+                    x = np.clip(x, 0, W - 1)
+                    y = np.clip(y, 0, H - 1)
+                    _tag.append(keypoint_tags[k][:, y, x])
+            tag = np.mean(_tag, axis=0)
+
+            # Search maximum response of the missing keypoints
+            for k in range(K):
+                if keypoint_scores[n, k] > 0:
+                    continue
+                dist_map = np.linalg.norm(keypoint_tags - tag, ord=2, axis=0)
+                cost_map = np.round(dist_map) * 100 - heatmaps[k]  # H, W
+                y, x = np.unravel_index(np.argmin(cost_map), shape=(H, W))
+                keypoints[n, k] = [x, y]
+                keypoint_scores[n, k] = heatmaps[k, y, x]
+
+        return keypoints, keypoint_scores
 
     def batch_decode(self, batch_heatmaps: Tensor, batch_tags: Tensor
                      ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -373,7 +422,8 @@ class AssociativeEmbedding(BaseKeypointCodec):
             batch_heatmaps (Tensor): Keypoint detection heatmaps in shape
                 (B, K, H, W)
             batch_tags (Tensor): Tagging heatmaps in shape (B, C, H, W), where
-                the tag dim C is 2*K when using flip testing, or K otherwise
+                :math:`C=L` if `tag_per_keypoint==False`, or
+                :math:`C=L*K` otherwise
 
         Returns:
             tuple:
@@ -384,6 +434,9 @@ class AssociativeEmbedding(BaseKeypointCodec):
                 confidience of the keypoint prediction
         """
         B, K, H, W = batch_heatmaps.shape
+        assert batch_tags.shape[0] == B and batch_tags.shape[2:4] == (H, W), (
+            f'Unmatched shapes of heatmap ({batch_heatmaps.shape}) and '
+            f'tagging map ({batch_tags.shape})')
 
         if not self.tag_per_keypoint:
             batch_tags = batch_tags.tile((1, K, 1, 1))
@@ -403,15 +456,34 @@ class AssociativeEmbedding(BaseKeypointCodec):
 
         batch_keypoints, batch_keypoint_scores = map(list, zip(*batch_groups))
 
+        # Convert to numpy
+        batch_heatmaps_np = to_numpy(batch_heatmaps)
+        batch_tags_np = to_numpy(batch_tags)
+
         # Refine the keypoint prediction
-        for i, keypoints, heatmaps in enumerate(
-                zip(batch_keypoints, batch_heatmaps)):
+        for i, (keypoints, scores, heatmaps, tags) in enumerate(
+                zip(batch_keypoints, batch_keypoint_scores, batch_heatmaps_np,
+                    batch_tags_np)):
+
+            # identify missing keypoints
+            keypoints, scores = self._fill_missing_keypoints(
+                keypoints, scores, heatmaps, tags)
+
+            # refine keypoint coordinates according to heatmap distribution
             if self.use_udp:
                 keypoints = refine_keypoints_dark_udp(
                     keypoints,
-                    heatmaps.copy(),
+                    heatmaps,
                     blur_kernel_size=self.decode_gaussian_kernel)
             else:
-                keypoints = refine_keypoints(keypoints, heatmaps.copy())
+                keypoints = refine_keypoints(keypoints, heatmaps)
 
             batch_keypoints[i] = keypoints
+            batch_keypoint_scores[i] = scores
+
+        # restore keypoint scale
+        batch_keypoints = [
+            kpts * self.scale_factor for kpts in batch_keypoints
+        ]
+
+        return batch_keypoints, batch_keypoint_scores

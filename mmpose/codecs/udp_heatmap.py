@@ -139,6 +139,10 @@ class UDPHeatmap(BaseKeypointCodec):
 
         if self.heatmap_type == 'gaussian':
             keypoints, scores = get_heatmap_maximum(heatmaps)
+            # unsqueeze the instance dimension for single-instance results
+            keypoints = keypoints[None]
+            scores = scores[None]
+
             keypoints = refine_keypoints_dark_udp(
                 keypoints, heatmaps, blur_kernel_size=self.blur_kernel_size)
 
@@ -164,10 +168,11 @@ class UDPHeatmap(BaseKeypointCodec):
             index += W * H * np.arange(0, K)
             index = index.astype(int)
             keypoints += np.stack((x_offset[index], y_offset[index]), axis=-1)
+            # unsqueeze the instance dimension for single-instance results
+            keypoints = keypoints[None].astype(np.float32)
+            scores = scores[None]
 
-        # Unsqueeze the instance dimension for single-instance results
         W, H = self.heatmap_size
-        keypoints = keypoints[None] / [W - 1, H - 1] * self.input_size
-        scores = scores[None]
+        keypoints = keypoints / [W - 1, H - 1] * self.input_size
 
         return keypoints, scores
