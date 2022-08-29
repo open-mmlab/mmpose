@@ -32,17 +32,11 @@ Among them, modules related to **General**, **Training** and **Evaluation** are 
 
 ## Step1: Configs
 
-在MMPose中，我们使用一个python文件作为config，用于整个项目的定义、参数管理，因此我们强烈建议第一次接触MMPose的开发者，查阅\[Config\]学习配置文件的定义。
-
-需要注意的是，所有新增的模块都需要使用`Registry`进行注册，并在对应目录的`__init__.py`中进行`import`。
-
 In MMPose, we use a Python file as config for the definition, parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to \[Config\].
 
 Note that all the new modules need to be registered using `Registry`, and `import` in `__init__.py` in the corresponding directory.
 
-## Step2: 数据
-
-MMPose数据的组织主要包含三个方面：
+## Step2: Data
 
 The organization of data in MMPose contains:
 
@@ -223,7 +217,7 @@ In a keypoint detection task, data will be transformed in three scale spaces:
 
 - **Input Image Space:** the image space used for model training. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
 
-- **Output Space:** 用the space used for model training, and also the scale space where model outputs are located, such as`64x64(Heatmap)`，`1x1(Regression)`, etc.
+- **Output Space:** the space used for model training, and also the scale space where model outputs are located, such as`64x64(Heatmap)`，`1x1(Regression)`, etc.
 
 Here is a diagram to show the flow of data transformation in the three scale spaces:
 
