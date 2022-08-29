@@ -94,7 +94,17 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
       step=[170, 200])  # Steps to decay the learning rate
   total_epochs = 210  # Total epochs to train the model
   log_config = dict(  # Config to register logger hook
-      interval=50,  # Interval to print the log
+      intervlog_config = dict(  # Config to register logger hook
+    interval=50,  # Interval to print the log
+    hooks=[
+      dict(type='TextLoggerHook', by_epoch=False),  # The logger used to record the training process
+      dict(type='TensorboardLoggerHook', by_epoch=False),  # The Tensorboard logger to record log offline
+      dict(type='WandbLoggerHook', by_epoch=False,  # The Wandb logger is also supported, It requires `wandb` to be installed.
+           init_kwargs={'entity': "OpenMMLab",  # The entity used to log on Wandb
+                        'project': "MMPose",  # Project name in WandB 
+                        'config': cfg_dict}),  # Check https://docs.wandb.ai/ref/python/init for more init arguments.
+  ])  # ClearMLLoggerHook, DvcliveLoggerHook, MlflowLoggerHook, NeptuneLoggerHook, PaviLoggerHook, SegmindLoggerHook are also supported based on MMCV implementation.
+al=50,  # Interval to print the log
       hooks=[
           dict(type='TextLoggerHook'),  # The logger used to record the training process
           # dict(type='TensorboardLoggerHook')  # The Tensorboard logger is also supported
