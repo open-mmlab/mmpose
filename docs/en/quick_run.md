@@ -94,7 +94,8 @@ If you wish to learn more about our config system, please refer to \[Configs\].
 Before training, we can browse the transformed training data to check if the images are augmented properly:
 
 ```Bash
-python tools/misc/browse_dastaset.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+python tools/misc/browse_dastaset.py \
+    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
 ```
 
 ![transformed_training_img](https://user-images.githubusercontent.com/13503330/187112376-e604edcb-46cc-4995-807b-e8f204f991b0.png)
@@ -154,3 +155,5 @@ Here is an example of evaluation results：
 If you want to perform evaluation on other datasets, please refer to \[Train & Test\].
 
 ### Visualization
+
+If you wish to apply MMPose to your own projects, we have prepared a detailed \[migration guide\].
