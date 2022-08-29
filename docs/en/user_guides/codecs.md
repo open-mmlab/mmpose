@@ -8,7 +8,7 @@ MMPose proposes the `Codec` to integrate the `encoder` and `decoder` together, t
 
 Here is a diagram to show where the Codec is:
 
-![img](https://aicarrier.feishu.cn/space/api/box/stream/download/asynccode/?code=MDUwYjJkZjJiNDMzYzg0YTNkODUyOWJmM2UzMzk5YTdfYzdyVG4wTTh1NnVmMTZyMHZzN3VjUW9jUVlnM2ZKT3RfVG9rZW46Ym94Y25lblBtVEl3RzdENTNhUVpGT05WTGhjXzE2NjE1MDYxNTQ6MTY2MTUwOTc1NF9WNA)
+![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
 
 A typical codec consists of two parts:
 

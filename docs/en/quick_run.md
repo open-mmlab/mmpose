@@ -31,7 +31,7 @@ python demo/image_demo.py \
 
 If MMPose is properly installed, you will get the visualized result as follows:
 
-![img](https://aicarrier.feishu.cn/space/api/box/stream/download/asynccode/?code=NjljMjI0ODFiMTRlYWUxYmQ3OTliYzIzZDZhMzlhYzVfNkF5MmJMRUdrRDBJdVpZUGZWOUFuNkU2YUNxaGRobjhfVG9rZW46Ym94Y25nc3JBcU5keEFqZEFBN2Y5WmZUbUViXzE2NjE1MDYwNjI6MTY2MTUwOTY2Ml9WNA)
+![inference_demo](https://user-images.githubusercontent.com/13503330/187112344-0c5062f2-689c-445c-a259-d5d4311e2497.png)
 
 More demo and full instructions can be found in \[Demo\].
 
@@ -97,7 +97,7 @@ Before training, we can browse the transformed training data to check if the ima
 python tools/misc/browse_dastaset.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
 ```
 
-![img](https://aicarrier.feishu.cn/space/api/box/stream/download/asynccode/?code=MjNmM2VmOTVjZWM3OWE2MDExZmFiNjEzNDdhMzdlYWVfeEJZRkpVZll5T3ZYUTdKdXVXNjMzN21odjlJOFZobjVfVG9rZW46Ym94Y25nNXh2Y2pBZTlQMjd1TTlkSFczRWhnXzE2NjE1MDYwNjI6MTY2MTUwOTY2Ml9WNA)
+![transformed_training_img](https://user-images.githubusercontent.com/13503330/187112376-e604edcb-46cc-4995-807b-e8f204f991b0.png)
 
 ### Training
 
