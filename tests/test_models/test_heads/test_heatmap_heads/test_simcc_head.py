@@ -4,7 +4,7 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
-from mmengine.data import InstanceData
+from mmengine.structures import InstanceData
 
 from mmpose.models.heads import SimCCHead
 from mmpose.testing import get_packed_inputs

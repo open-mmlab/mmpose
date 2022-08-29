@@ -51,30 +51,29 @@ class TestCocoMetric(TestCase):
             bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
             bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
             keypoints = np.array(ann['keypoints']).reshape((1, -1, 3))
-            data = {}
-            data['inputs'] = None
-            data['data_sample'] = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
+
+            gt_instances = {
                 'bbox_scales': bbox_scales,
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
+                'bboxes': bboxes,
             }
-            pred = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
-                'gt_instances': {
-                    'bbox_scales': bbox_scales
-                },
-            }
-            pred['pred_instances'] = {
+            pred_instances = {
                 'keypoints': keypoints[..., :2],
                 'keypoint_scores': keypoints[..., -1],
-                'bboxes': bboxes,
-                'bbox_scores': np.ones((1, ), dtype=np.float32),
+            }
+
+            data = {'inputs': None}
+            data_sample = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': gt_instances,
+                'pred_instances': pred_instances
             }
             # batch size = 1
             data_batch = [data]
-            predictions = [pred]
-            topdown_data.append((data_batch, predictions))
+            data_samples = [data_sample]
+            topdown_data.append((data_batch, data_samples))
+
         return topdown_data
 
     def _convert_ann_to_bottomup_batch_data(self):
@@ -87,26 +86,28 @@ class TestCocoMetric(TestCase):
         for img_id, anns in img2ann.items():
             keypoints = np.array([ann['keypoints'] for ann in anns]).reshape(
                 (len(anns), -1, 3))
-            data = {}
-            data['inputs'] = None
-            data['data_sample'] = {
-                'id': [ann['id'] for ann in anns],
-                'img_id': img_id,
-            }
-            pred = {
-                'id': [ann['id'] for ann in anns],
-                'img_id': img_id,
-                'gt_instances': dict(),
-            }
-            pred['pred_instances'] = {
-                'keypoints': keypoints[..., :2],
-                'keypoint_scores': keypoints[..., -1],
+
+            gt_instances = {
                 'bbox_scores': np.ones((len(anns)), dtype=np.float32)
             }
+
+            pred_instances = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+            }
+
+            data = {'inputs': None}
+            data_sample = {
+                'id': [ann['id'] for ann in anns],
+                'img_id': img_id,
+                'gt_instances': gt_instances,
+                'pred_instances': pred_instances
+            }
+
             # batch size = 1
             data_batch = [data]
-            predictions = [pred]
-            bottomup_data.append((data_batch, predictions))
+            data_samples = [data_sample]
+            bottomup_data.append((data_batch, data_samples))
         return bottomup_data
 
     def tearDown(self):
@@ -141,8 +142,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in self.topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -159,8 +160,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in self.topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -177,8 +178,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in self.topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(self.topdown_data))
 
@@ -197,8 +198,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in self.bottomup_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in self.bottomup_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(self.bottomup_data))
         self.assertDictEqual(eval_results, self.target)
@@ -212,11 +213,11 @@ class TestCocoMetric(TestCase):
             ann_file=self.ann_file, score_mode='bbox', nms_mode='none')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process samples
-        for data_batch, predictions in self.topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in self.topdown_data:
+            coco_metric.process(data_batch, data_samples)
         # process one extra sample
-        data_batch, predictions = self.topdown_data[0]
-        coco_metric.process(data_batch, predictions)
+        data_batch, data_samples = self.topdown_data[0]
+        coco_metric.process(data_batch, data_samples)
         # an extra sample
         eval_results = coco_metric.evaluate(size=len(self.topdown_data) + 1)
         self.assertDictEqual(eval_results, self.target)
@@ -231,8 +232,8 @@ class TestCocoMetric(TestCase):
             nms_mode='oks_nms')
         coco_metric.dataset_meta = self.coco_dataset_meta
         # process one sample
-        data_batch, predictions = self.topdown_data[0]
-        coco_metric.process(data_batch, predictions)
+        data_batch, data_samples = self.topdown_data[0]
+        coco_metric.process(data_batch, data_samples)
         eval_results = coco_metric.evaluate(size=1)
         self.assertDictEqual(eval_results, {})
         self.assertTrue(
@@ -256,36 +257,34 @@ class TestCocoMetric(TestCase):
             w, h = ann['bbox'][2], ann['bbox'][3]
             bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
             bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
-            data = {}
-            data['inputs'] = None
-            data['data_sample'] = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
-                'bbox_scales': bbox_scales,
-            }
-            pred = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
-                'gt_instances': {
-                    'bbox_scales': bbox_scales
-                },
-            }
+
             keypoints = np.array(
                 ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
             keypoints[..., 0] = keypoints[..., 0] * 0.98
             keypoints[..., 1] = keypoints[..., 1] * 1.02
             keypoints[..., 2] = keypoints[..., 2] * 0.8
 
-            pred['pred_instances'] = {
+            gt_instances = {
+                'bbox_scales': bbox_scales,
+                'bbox_scores': np.ones((1, ), dtype=np.float32) * 0.98,
+                'bboxes': bboxes,
+            }
+            pred_instances = {
                 'keypoints': keypoints[..., :2],
                 'keypoint_scores': keypoints[..., -1],
-                'bboxes': bboxes,
-                'bbox_scores': np.ones((1, ), dtype=np.float32) * 0.98,
+            }
+
+            data = {'inputs': None}
+            data_sample = {
+                'id': ann['id'],
+                'img_id': ann['image_id'],
+                'gt_instances': gt_instances,
+                'pred_instances': pred_instances
             }
             # batch size = 1
             data_batch = [data]
-            predictions = [pred]
-            topdown_data.append((data_batch, predictions))
+            data_samples = [data_sample]
+            topdown_data.append((data_batch, data_samples))
 
         # case 1:
         # typical setting: score_mode='bbox_keypoint', nms_mode='oks_nms'
@@ -297,8 +296,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(topdown_data))
 
@@ -330,8 +329,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(topdown_data))
 
@@ -360,65 +359,60 @@ class TestCocoMetric(TestCase):
             w, h = ann['bbox'][2], ann['bbox'][3]
             bboxes = np.array(ann['bbox'], dtype=np.float32).reshape(-1, 4)
             bbox_scales = np.array([w * 1.25, h * 1.25]).reshape(-1, 2)
-            data0 = {}
-            data0['inputs'] = None
-            data0['data_sample'] = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
-                'bbox_scales': bbox_scales,
-            }
-            pred0 = {
-                'id': ann['id'],
-                'img_id': ann['image_id'],
-                'gt_instances': {
-                    'bbox_scales': bbox_scales
-                },
-            }
+
             keypoints = np.array(
                 ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
             keypoints[..., 0] = keypoints[..., 0] * (1 - i / 100)
             keypoints[..., 1] = keypoints[..., 1] * (1 + i / 100)
             keypoints[..., 2] = keypoints[..., 2] * (1 - i / 100)
 
-            pred0['pred_instances'] = {
+            gt_instances0 = {
+                'bbox_scales': bbox_scales,
+                'bbox_scores': np.ones((1, ), dtype=np.float32),
+                'bboxes': bboxes,
+            }
+            pred_instances0 = {
                 'keypoints': keypoints[..., :2],
                 'keypoint_scores': keypoints[..., -1],
-                'bboxes': bboxes,
-                'bbox_scores': np.ones((1, ), dtype=np.float32),
             }
 
-            data1 = {}
-            data1['inputs'] = None
-            data1['data_sample'] = {
-                'id': ann['id'] + 1,
+            data0 = {'inputs': None}
+            data_sample0 = {
+                'id': ann['id'],
                 'img_id': ann['image_id'],
-                'bbox_scales': bbox_scales,
+                'gt_instances': gt_instances0,
+                'pred_instances': pred_instances0
             }
-            pred1 = {
-                'id': ann['id'] + 1,
-                'img_id': ann['image_id'],
-                'gt_instances': {
-                    'bbox_scales': bbox_scales
-                },
-            }
+
             keypoints = np.array(
                 ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
             keypoints[..., 0] = keypoints[..., 0] * (1 + i / 100)
             keypoints[..., 1] = keypoints[..., 1] * (1 - i / 100)
             keypoints[..., 2] = keypoints[..., 2] * (1 - 2 * i / 100)
 
-            pred1['pred_instances'] = {
-                'keypoints': keypoints[..., :2],
-                'keypoint_scores': keypoints[..., -1],
+            gt_instances1 = {
+                'bbox_scales': bbox_scales,
                 'bboxes': bboxes,
                 'bbox_scores': np.ones(
                     (1, ), dtype=np.float32) * (1 - 2 * i / 100)
             }
+            pred_instances1 = {
+                'keypoints': keypoints[..., :2],
+                'keypoint_scores': keypoints[..., -1],
+            }
+
+            data1 = {'inputs': None}
+            data_sample1 = {
+                'id': ann['id'] + 1,
+                'img_id': ann['image_id'],
+                'gt_instances': gt_instances1,
+                'pred_instances': pred_instances1
+            }
 
             # batch size = 2
             data_batch = [data0, data1]
-            predictions = [pred0, pred1]
-            topdown_data.append((data_batch, predictions))
+            data_samples = [data_sample0, data_sample1]
+            topdown_data.append((data_batch, data_samples))
 
         # case 3: score_mode='bbox_keypoint', nms_mode='soft_oks_nms'
         coco_metric = CocoMetric(
@@ -431,8 +425,8 @@ class TestCocoMetric(TestCase):
         coco_metric.dataset_meta = self.coco_dataset_meta
 
         # process samples
-        for data_batch, predictions in topdown_data:
-            coco_metric.process(data_batch, predictions)
+        for data_batch, data_samples in topdown_data:
+            coco_metric.process(data_batch, data_samples)
 
         eval_results = coco_metric.evaluate(size=len(topdown_data) * 2)
 

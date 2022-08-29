@@ -3,7 +3,7 @@ from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from mmcv.cnn import build_conv_layer, build_upsample_layer
-from mmengine.data import PixelData
+from mmengine.structures import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import pose_pck_accuracy

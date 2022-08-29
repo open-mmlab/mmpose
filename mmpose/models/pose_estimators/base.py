@@ -36,8 +36,8 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         return hasattr(self, 'head') and self.head is not None
 
     def forward(self,
-                batch_inputs: torch.Tensor,
-                batch_data_samples: OptSampleList,
+                inputs: torch.Tensor,
+                data_samples: OptSampleList,
                 mode: str = 'tensor') -> ForwardResults:
         """The unified entry for a forward process in both training and test.
 
@@ -54,9 +54,9 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         optimizer updating, which are done in the :meth:`train_step`.
 
         Args:
-            batch_inputs (torch.Tensor): The input tensor with shape
+            inputs (torch.Tensor): The input tensor with shape
                 (N, C, ...) in general
-            batch_data_sample (list[:obj:`PoseDataSample`], optional): The
+            data_samples (list[:obj:`PoseDataSample`], optional): The
                 annotation of every sample. Defaults to ``None``
             mode (str): Set the forward mode and return value type. Defaults
                 to ``'tensor'``
@@ -71,30 +71,26 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
                 function value
         """
         if mode == 'loss':
-            return self.loss(batch_inputs, batch_data_samples)
+            return self.loss(inputs, data_samples)
         elif mode == 'predict':
-            return self.predict(batch_inputs, batch_data_samples)
+            return self.predict(inputs, data_samples)
         elif mode == 'tensor':
-            return self._forward(batch_inputs)
+            return self._forward(inputs)
         else:
             raise RuntimeError(f'Invalid mode "{mode}". '
                                'Only supports loss, predict and tensor mode.')
 
     @abstractmethod
-    def loss(self, batch_inputs: Tensor,
-             batch_data_samples: SampleList) -> dict:
+    def loss(self, inputs: Tensor, data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and data samples."""
 
     @abstractmethod
-    def predict(self, batch_inputs: Tensor,
-                batch_data_samples: SampleList) -> SampleList:
+    def predict(self, inputs: Tensor, data_samples: SampleList) -> SampleList:
         """Predict results from a batch of inputs and data samples with post-
         processing."""
 
     @abstractmethod
-    def _forward(self,
-                 batch_inputs: Tensor,
-                 batch_data_samples: OptSampleList = None):
+    def _forward(self, inputs: Tensor, data_samples: OptSampleList = None):
         """Network forward process.
 
         Usually includes backbone, neck and head forward without any post-
@@ -102,5 +98,5 @@ class BasePoseEstimator(BaseModel, metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def extract_feat(self, batch_inputs: Tensor):
+    def extract_feat(self, inputs: Tensor):
         """Extract features."""

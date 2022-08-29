@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 import torch
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 
 from mmpose.structures import PoseDataSample
 from mmpose.structures.bbox import bbox_xyxy2cs

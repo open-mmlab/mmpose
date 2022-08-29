@@ -4,10 +4,9 @@ import math
 
 import torch
 import torch.nn as nn
-from mmcv.cnn import (build_activation_layer, build_conv_layer,
-                      build_norm_layer, trunc_normal_init)
+from mmcv.cnn import build_activation_layer, build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks.transformer import build_dropout
-from mmengine.model import BaseModule
+from mmengine.model import BaseModule, trunc_normal_init
 from torch.nn.functional import pad
 
 from mmpose.registry import MODELS

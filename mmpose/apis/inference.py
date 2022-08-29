@@ -6,8 +6,8 @@ from typing import Optional, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from mmcv.transforms import Compose
 from mmengine.config import Config
+from mmengine.dataset import Compose
 from mmengine.runner import load_checkpoint
 from PIL import Image
 
@@ -139,8 +139,8 @@ def inference_topdown(model: nn.Module,
     Returns:
         :obj:`PoseDataSample`: The inference results. Specifically, the
         predicted keypoints and scores are saved at
-        ``data_sample.pred_instances.keypoints`` and
-        ``data_sample.pred_instances.keypoint_scores``.
+        ``data_samples.pred_instances.keypoints`` and
+        ``data_samples.pred_instances.keypoint_scores``.
     """
     cfg = model.cfg
     pipeline = Compose(cfg.test_dataloader.dataset.pipeline)
@@ -174,7 +174,11 @@ def inference_topdown(model: nn.Module,
         _data.update(model.dataset_meta)
         data.append(pipeline(_data))
 
+    data_ = dict()
+    data_['inputs'] = [_data['inputs'] for _data in data]
+    data_['data_samples'] = [_data['data_samples'] for _data in data]
+
     with torch.no_grad():
-        results = model.test_step(data)
+        results = model.test_step(data_)
 
     return results

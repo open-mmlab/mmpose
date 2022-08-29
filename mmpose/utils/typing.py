@@ -2,7 +2,7 @@
 from typing import Dict, List, Optional, Tuple, Union
 
 from mmengine.config import ConfigDict
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 from torch import Tensor
 
 from mmpose.structures import PoseDataSample

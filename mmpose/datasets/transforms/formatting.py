@@ -4,7 +4,7 @@ from typing import Sequence, Union
 import numpy as np
 import torch
 from mmcv.transforms import BaseTransform, to_tensor
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_seq_of
 
 from mmpose.registry import TRANSFORMS
@@ -61,6 +61,8 @@ class PackPoseInputs(BaseTransform):
 
         - ``flip_direction``: the flipping direction
 
+        - ``flip_indices``: the indices of each keypoint's symmetric keypoint
+
     Args:
         meta_keys (Sequence[str], optional): Meta keys which will be stored in
             :obj: `PoseDataSample` as meta info. Defaults to ``('id',
@@ -110,7 +112,7 @@ class PackPoseInputs(BaseTransform):
             dict:
 
             - 'inputs' (obj:`torch.Tensor`): The forward data of models.
-            - 'data_sample' (obj:`PoseDataSample`): The annotation info of the
+            - 'data_samples' (obj:`PoseDataSample`): The annotation info of the
                 sample.
         """
         # Pack image(s)
@@ -149,7 +151,7 @@ class PackPoseInputs(BaseTransform):
 
         packed_results = dict()
         packed_results['inputs'] = img_tensor
-        packed_results['data_sample'] = data_sample
+        packed_results['data_samples'] = data_sample
 
         return packed_results
 

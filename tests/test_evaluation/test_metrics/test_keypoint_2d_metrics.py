@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import numpy as np
 import torch
-from mmengine.data import InstanceData
+from mmengine.structures import InstanceData
 
 from mmpose.datasets.datasets.utils import parse_pose_metainfo
 from mmpose.evaluation.metrics import AUC, EPE, NME, PCKAccuracy
@@ -20,7 +20,7 @@ class TestPCKAccuracy(TestCase):
         self.batch_size = 8
         num_keypoints = 15
         self.data_batch = []
-        self.predictions = []
+        self.data_samples = []
 
         for i in range(self.batch_size):
             gt_instances = InstanceData()
@@ -33,13 +33,17 @@ class TestPCKAccuracy(TestCase):
             gt_instances.bboxes = np.random.random((1, 4)) * 20 * i
             gt_instances.head_size = np.random.random((1, 1)) * 10 * i
 
-            self.data_batch.append(
-                {'data_sample': dict(gt_instances=gt_instances.to_dict())})
-
             pred_instances = InstanceData()
             pred_instances.keypoints = torch.from_numpy(keypoints)
-            self.predictions.append(
-                {'pred_instances': pred_instances.to_dict()})
+
+            data = {'inputs': None}
+            data_sample = {
+                'gt_instances': gt_instances.to_dict(),
+                'pred_instances': pred_instances.to_dict(),
+            }
+
+            self.data_batch.append(data)
+            self.data_samples.append(data_sample)
 
     def test_init(self):
         """test metric init method."""
@@ -52,21 +56,21 @@ class TestPCKAccuracy(TestCase):
         """test PCK accuracy evaluation metric."""
         # test normalized by 'bbox'
         pck_metric = PCKAccuracy(thr=0.5, norm_item='bbox')
-        pck_metric.process(self.data_batch, self.predictions)
+        pck_metric.process(self.data_batch, self.data_samples)
         pck = pck_metric.evaluate(self.batch_size)
         target = {'pck/PCK@0.5': 1.0}
         self.assertDictEqual(pck, target)
 
         # test normalized by 'head_size'
         pckh_metric = PCKAccuracy(thr=0.3, norm_item='head')
-        pckh_metric.process(self.data_batch, self.predictions)
+        pckh_metric.process(self.data_batch, self.data_samples)
         pckh = pckh_metric.evaluate(self.batch_size)
         target = {'pck/PCKh@0.3': 1.0}
         self.assertDictEqual(pckh, target)
 
         # test normalized by 'torso_size'
         tpck_metric = PCKAccuracy(thr=0.05, norm_item=['bbox', 'torso'])
-        tpck_metric.process(self.data_batch, self.predictions)
+        tpck_metric.process(self.data_batch, self.data_samples)
         tpck = tpck_metric.evaluate(self.batch_size)
         self.assertIsInstance(tpck, dict)
         target = {
@@ -110,16 +114,19 @@ class TestAUCandEPE(TestCase):
         pred_instances = InstanceData()
         pred_instances.keypoints = torch.from_numpy(output)
 
-        self.data_batch = [{
-            'data_sample':
-            dict(gt_instances=gt_instances.to_dict())
-        }]
-        self.predictions = [{'pred_instances': pred_instances.to_dict()}]
+        data = {'inputs': None}
+        data_sample = {
+            'gt_instances': gt_instances.to_dict(),
+            'pred_instances': pred_instances.to_dict()
+        }
+
+        self.data_batch = [data]
+        self.data_samples = [data_sample]
 
     def test_auc_evaluate(self):
         """test AUC evaluation metric."""
         auc_metric = AUC(norm_factor=20, num_thrs=4)
-        auc_metric.process(self.data_batch, self.predictions)
+        auc_metric.process(self.data_batch, self.data_samples)
         auc = auc_metric.evaluate(1)
         target = {'auc/@4thrs': 0.375}
         self.assertDictEqual(auc, target)
@@ -127,7 +134,7 @@ class TestAUCandEPE(TestCase):
     def test_epe_evaluate(self):
         """test EPE evaluation metric."""
         epe_metric = EPE()
-        epe_metric.process(self.data_batch, self.predictions)
+        epe_metric.process(self.data_batch, self.data_samples)
         epe = epe_metric.evaluate(1)
         self.assertAlmostEqual(epe['epe/epe'], 11.5355339)
 
@@ -138,10 +145,10 @@ class TestNME(TestCase):
                        batch_size: int = 1,
                        num_keypoints: int = 5,
                        norm_item: str = 'box_size') -> tuple:
-        """Generate data_batch and predictions according to different
+        """Generate data_batch and data_samples according to different
         settings."""
         data_batch = []
-        predictions = []
+        data_samples = []
 
         for i in range(batch_size):
             gt_instances = InstanceData()
@@ -153,14 +160,18 @@ class TestNME(TestCase):
             gt_instances.keypoints_visible[0, (2 * i) % batch_size, 0] = False
             gt_instances[norm_item] = np.random.random((1, 1)) * 20 * i
 
-            data_batch.append(
-                {'data_sample': dict(gt_instances=gt_instances.to_dict())})
-
             pred_instances = InstanceData()
             pred_instances.keypoints = torch.from_numpy(keypoints)
-            predictions.append({'pred_instances': pred_instances.to_dict()})
 
-        return data_batch, predictions
+            data = {'inputs': None}
+            data_sample = {
+                'gt_instances': gt_instances.to_dict(),
+                'pred_instances': pred_instances.to_dict(),
+            }
+            data_batch.append(data)
+            data_samples.append(data_sample)
+
+        return data_batch, data_samples
 
     def test_nme_evaluate(self):
         """test NME evaluation metric."""
@@ -172,9 +183,9 @@ class TestNME(TestCase):
         aflw_dataset_meta = parse_pose_metainfo(aflw_meta_info)
         nme_metric.dataset_meta = aflw_dataset_meta
 
-        data_batch, predictions = self._generate_data(
+        data_batch, data_samples = self._generate_data(
             batch_size=4, num_keypoints=19, norm_item=norm_item)
-        nme_metric.process(data_batch, predictions)
+        nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(4)
         target = {'nme/@box_size': 0.0}
         self.assertDictEqual(nme, target)
@@ -188,9 +199,9 @@ class TestNME(TestCase):
         horse10_dataset_meta = parse_pose_metainfo(horse10_meta_info)
         nme_metric.dataset_meta = horse10_dataset_meta
 
-        data_batch, predictions = self._generate_data(
+        data_batch, data_samples = self._generate_data(
             batch_size=4, num_keypoints=22)
-        nme_metric.process(data_batch, predictions)
+        nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(4)
 
         target = {'nme/@[0, 1]': 0.0}
@@ -205,9 +216,9 @@ class TestNME(TestCase):
         coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
         nme_metric.dataset_meta = coco_dataset_meta
 
-        data_batch, predictions = self._generate_data(
+        data_batch, data_samples = self._generate_data(
             batch_size=2, num_keypoints=17)
-        nme_metric.process(data_batch, predictions)
+        nme_metric.process(data_batch, data_samples)
         nme = nme_metric.evaluate(2)
 
         target = {f'nme/@{keypoint_indices}': 0.0}
@@ -239,10 +250,10 @@ class TestNME(TestCase):
             coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
             nme_metric.dataset_meta = coco_dataset_meta
 
-            data_batch, predictions = self._generate_data(
+            data_batch, data_samples = self._generate_data(
                 norm_item='norm_item2')
             # raise AssertionError here
-            nme_metric.process(data_batch, predictions)
+            nme_metric.process(data_batch, data_samples)
 
         # test when norm_mode = 'keypoint_distance', `keypoint_indices` = None
         # but the dataset_name not in `DEFAULT_KEYPOINT_INDICES`
@@ -255,8 +266,8 @@ class TestNME(TestCase):
             coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
             nme_metric.dataset_meta = coco_dataset_meta
 
-            data_batch, predictions = self._generate_data()
-            nme_metric.process(data_batch, predictions)
+            data_batch, data_samples = self._generate_data()
+            nme_metric.process(data_batch, data_samples)
             # raise KeyError here
             _ = nme_metric.evaluate(1)
 
@@ -271,8 +282,8 @@ class TestNME(TestCase):
             coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
             nme_metric.dataset_meta = coco_dataset_meta
 
-            data_batch, predictions = self._generate_data()
-            nme_metric.process(data_batch, predictions)
+            data_batch, data_samples = self._generate_data()
+            nme_metric.process(data_batch, data_samples)
             # raise AssertionError here
             _ = nme_metric.evaluate(1)
 
@@ -285,7 +296,7 @@ class TestNME(TestCase):
             coco_dataset_meta = parse_pose_metainfo(coco_meta_info)
             nme_metric.dataset_meta = coco_dataset_meta
 
-            data_batch, predictions = self._generate_data()
-            nme_metric.process(data_batch, predictions)
+            data_batch, predidata_samplesctions = self._generate_data()
+            nme_metric.process(data_batch, data_samples)
             # raise AssertionError here
             _ = nme_metric.evaluate(1)

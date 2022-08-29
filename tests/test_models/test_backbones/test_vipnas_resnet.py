@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import torch
 import torch.nn as nn
-from mmcv.utils.parrots_wrapper import _BatchNorm
+from mmengine.utils.dl_utils.parrots_wrapper import _BatchNorm
 
 from mmpose.models.backbones import ViPNAS_ResNet
 from mmpose.models.backbones.vipnas_resnet import (ViPNAS_Bottleneck,

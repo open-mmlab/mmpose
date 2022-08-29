@@ -4,6 +4,7 @@ from copy import deepcopy
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import mmcv
+import mmengine
 import numpy as np
 from mmcv.image import imflip
 from mmcv.transforms import BaseTransform
@@ -631,7 +632,7 @@ class Albumentation(BaseTransform):
         args = cfg.copy()
 
         obj_type = args.pop('type')
-        if mmcv.is_str(obj_type):
+        if mmengine.is_str(obj_type):
             if albumentations is None:
                 raise RuntimeError('albumentations is not installed')
             if not hasattr(albumentations.augmentations.transforms, obj_type):

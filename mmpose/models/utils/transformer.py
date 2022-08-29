@@ -4,8 +4,8 @@ import math
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import build_conv_layer, build_norm_layer
-from mmcv.runner.base_module import BaseModule
-from mmcv.utils import to_2tuple
+from mmengine.model import BaseModule
+from mmengine.utils import to_2tuple
 
 
 def nlc_to_nchw(x, hw_shape):
@@ -134,8 +134,8 @@ class PatchEmbed(BaseModule):
         input_size (int | tuple | None): The size of input, which will be
             used to calculate the out size. Only work when `dynamic_size`
             is False. Default: None.
-        init_cfg (`mmcv.ConfigDict`, optional): The Config for initialization.
-            Default: None.
+        init_cfg (`mmengine.ConfigDict`, optional): The Config for
+            initialization. Default: None.
     """
 
     def __init__(

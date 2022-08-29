@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from functools import partial
 
 import numpy as np
-from mmcv import Timer
+from mmengine import Timer
 
 
 class RunningAverage():

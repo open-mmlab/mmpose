@@ -1,11 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import logging
 
-from mmcv.utils import get_logger
+from mmengine.logging import MMLogger
 
 
 def get_root_logger(log_file=None, log_level=logging.INFO):
-    """Use `get_logger` method in mmcv to get the root logger.
+    """Use `MMLogger` class in mmengine to get the root logger.
 
     The logger will be initialized if it has not been initialized. By default a
     StreamHandler will be added. If `log_file` is specified, a FileHandler will
@@ -22,4 +22,4 @@ def get_root_logger(log_file=None, log_level=logging.INFO):
     Returns:
         logging.Logger: The root logger.
     """
-    return get_logger(__name__.split('.')[0], log_file, log_level)
+    return MMLogger('MMLogger', __name__.split('.')[0], log_file, log_level)

@@ -3,7 +3,7 @@ import argparse
 import os.path as osp
 from functools import wraps
 
-import mmcv
+import mmengine
 import numpy as np
 from PIL import Image
 
@@ -106,7 +106,7 @@ def main():
     args = parser.parse_args()
 
     h36m_data = np.load(args.ann_file)
-    h36m_camera_params = mmcv.load(args.camera_param_file)
+    h36m_camera_params = mmengine.load(args.camera_param_file)
     h36m_coco = {}
 
     # categories
@@ -134,7 +134,8 @@ def main():
         imgnames = [osp.basename(fn) for fn in imgnames]
     tasks = [(idx, fn, args.img_root) for idx, fn in enumerate(imgnames)]
 
-    h36m_imgs = mmcv.track_parallel_progress(_get_img_info, tasks, nproc=12)
+    h36m_imgs = mmengine.track_parallel_progress(
+        _get_img_info, tasks, nproc=12)
 
     # annotations
     kpts_2d = h36m_data['part']
@@ -145,7 +146,7 @@ def main():
              for idx, args in enumerate(
                  zip(kpts_2d, kpts_3d, centers, scales, imgnames))]
 
-    h36m_anns = mmcv.track_parallel_progress(_get_ann, tasks, nproc=12)
+    h36m_anns = mmengine.track_parallel_progress(_get_ann, tasks, nproc=12)
 
     # remove invalid data
     h36m_imgs = [img for img in h36m_imgs if img is not None]
@@ -158,7 +159,7 @@ def main():
         'annotations': h36m_anns,
     }
 
-    mmcv.dump(h36m_coco, args.out_file)
+    mmengine.dump(h36m_coco, args.out_file)
 
 
 if __name__ == '__main__':
