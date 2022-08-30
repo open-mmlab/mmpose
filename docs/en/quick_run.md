@@ -116,6 +116,7 @@ Use the following command to train with a single GPU:
 python tools/train.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
 ```
 
+```{note}
 MMPose automates many useful training tricks and functions including:
 
 - Learning rate warmup and scheduling
@@ -131,6 +132,7 @@ MMPose automates many useful training tricks and functions including:
 - Mixed precision training support
 
 - TensorBoard
+```
 
 ### Testing
 

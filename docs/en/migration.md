@@ -5,7 +5,7 @@ MMPose 1.0 has made significant BC-breaking changes, with modules redesigned and
 Whether you are **a user of the previous version of MMPose**, or **a new user wishing to migrate your Pytorch project to MMPose**, you can learn how to build a project based on MMpose 1.0 with this tutorial.
 
 ```{note}
-This  tutorial covers what developers will care about when using MMPose 1.0:
+This  tutorial covers what developers will concern when using MMPose 1.0:
 
 - Overall code architecture
 

@@ -4,7 +4,11 @@
 
 In this release, we made lots of major refactoring and modifications.
 
-1. **More documentation and tutorials**. We add a bunch of documentation and tutorials to help users get started more smoothly. Read it here.
+For more details, please refer to \[Migration\].
+
+## **v0.28.0 (28/07/2022)**
+
+This release is meant to fix the compatibility with the latest mmcv v1.6.1
 
 ## **v0.28.0 (06/07/2022)**
 
