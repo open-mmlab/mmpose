@@ -286,7 +286,7 @@ class RandomHalfBody(BaseTransform):
     """
 
     def __init__(self,
-                 min_total_keypoints: int = 8,
+                 min_total_keypoints: int = 9,
                  min_upper_keypoints: int = 2,
                  min_lower_keypoints: int = 3,
                  padding: float = 1.5,
