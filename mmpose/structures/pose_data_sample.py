@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from typing import List
 
-from mmengine.data import BaseDataElement, InstanceData, PixelData
+from mmengine.structures import BaseDataElement, InstanceData, PixelData
 from mmengine.utils import is_list_of
 
 
@@ -21,7 +21,7 @@ class PoseDataSample(BaseDataElement):
 
     Examples:
         >>> import torch
-        >>> from mmengine.data import InstanceData, PixelData
+        >>> from mmengine.structures import InstanceData, PixelData
         >>> from mmpose.structures import PoseDataSample
 
         >>> pose_meta = dict(img_shape=(800, 1216),

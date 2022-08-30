@@ -4,10 +4,11 @@ import os
 import os.path as osp
 
 import mmcv
+import mmengine
 import numpy as np
-from mmcv import Config, DictAction
-from mmengine.data import InstanceData
+from mmengine import Config, DictAction
 from mmengine.registry import build_from_cfg
+from mmengine.structures import InstanceData
 
 from mmpose.registry import DATASETS, VISUALIZERS
 from mmpose.structures import PoseDataSample, bbox_xywh2xyxy
@@ -99,7 +100,7 @@ def main():
     visualizer = VISUALIZERS.build(cfg.visualizer)
     visualizer.set_dataset_meta(dataset.metainfo)
 
-    progress_bar = mmcv.ProgressBar(len(dataset))
+    progress_bar = mmengine.ProgressBar(len(dataset))
 
     idx = 0
     item = dataset[0]

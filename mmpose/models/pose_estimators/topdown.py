@@ -55,78 +55,75 @@ class TopdownPoseEstimator(BasePoseEstimator):
         # Register the hook to automatically convert old version state dicts
         self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
 
-    def extract_feat(self, batch_inputs: Tensor) -> Tuple[Tensor]:
+    def extract_feat(self, inputs: Tensor) -> Tuple[Tensor]:
         """Extract features.
 
         Args:
-            batch_inputs (Tensor): Image tensor with shape (N, C, H ,W).
+            inputs (Tensor): Image tensor with shape (N, C, H ,W).
 
         Returns:
             tuple[Tensor]: Multi-level features that may have various
             resolutions.
         """
-        x = self.backbone(batch_inputs)
+        x = self.backbone(inputs)
         if self.with_neck:
             x = self.neck(x)
 
         return x
 
-    def _forward(self, batch_inputs: Tensor):
+    def _forward(self, inputs: Tensor):
         """Network forward process. Usually includes backbone, neck and head
         forward without any post-processing.
 
         Args:
-            batch_inputs (Tensor): Inputs with shape (N, C, H, W).
+            inputs (Tensor): Inputs with shape (N, C, H, W).
 
         Returns:
             tuple: A tuple of features from ``rpn_head`` and ``roi_head``
             forward.
         """
 
-        x = self.extract_feat(batch_inputs)
+        x = self.extract_feat(inputs)
         if self.with_head:
             x = self.head.forward(x)
 
         return x
 
-    def loss(self, batch_inputs: Tensor,
-             batch_data_samples: SampleList) -> dict:
+    def loss(self, inputs: Tensor, data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and data samples.
 
         Args:
-            batch_inputs (Tensor): Inputs with shape (N, C, H, W).
-            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+            inputs (Tensor): Inputs with shape (N, C, H, W).
+            data_samples (List[:obj:`PoseDataSample`]): The batch
                 data samples.
 
         Returns:
             dict: A dictionary of losses.
         """
-        feats = self.extract_feat(batch_inputs)
+        feats = self.extract_feat(inputs)
 
         losses = dict()
 
         if self.with_head:
             losses.update(
-                self.head.loss(
-                    feats, batch_data_samples, train_cfg=self.train_cfg))
+                self.head.loss(feats, data_samples, train_cfg=self.train_cfg))
 
         return losses
 
-    def predict(self, batch_inputs: Tensor,
-                batch_data_samples: SampleList) -> SampleList:
+    def predict(self, inputs: Tensor, data_samples: SampleList) -> SampleList:
         """Predict results from a batch of inputs and data samples with post-
         processing.
 
         Args:
-            batch_inputs (Tensor): Inputs with shape (N, C, H, W)
-            batch_data_samples (List[:obj:`PoseDataSample`]): The batch
+            inputs (Tensor): Inputs with shape (N, C, H, W)
+            data_samples (List[:obj:`PoseDataSample`]): The batch
                 data samples
 
         Returns:
             list[:obj:`PoseDataSample`]: The pose estimation results of the
-            input images. The return value is PoseDataSample instances with
-            ``pred_instances`` field, which usually contains the following
-            keys:
+            input images. The return value is `PoseDataSample` instances with
+            ``pred_instances`` and ``pred_fields``(optional) field , and
+            ``pred_instances`` usually contains the following keys:
 
                 - keypoints (Tensor): predicted keypoint coordinates in shape
                     (num_instances, K, D) where K is the keypoint number and D
@@ -138,14 +135,13 @@ class TopdownPoseEstimator(BasePoseEstimator):
             'The model must have head to perform prediction.')
 
         if self.test_cfg.get('flip_test', False):
-            _feats = self.extract_feat(batch_inputs)
-            _feats_flip = self.extract_feat(batch_inputs.flip(-1))
+            _feats = self.extract_feat(inputs)
+            _feats_flip = self.extract_feat(inputs.flip(-1))
             feats = [_feats, _feats_flip]
         else:
-            feats = self.extract_feat(batch_inputs)
+            feats = self.extract_feat(inputs)
 
-        preds = self.head.predict(
-            feats, batch_data_samples, test_cfg=self.test_cfg)
+        preds = self.head.predict(feats, data_samples, test_cfg=self.test_cfg)
 
         if isinstance(preds, Tuple):
             pred_instances, pred_fields = preds
@@ -153,39 +149,34 @@ class TopdownPoseEstimator(BasePoseEstimator):
             pred_instances = preds
             pred_fields = None
 
-        pred_data_samples = self.convert_to_datasample(pred_instances,
-                                                       pred_fields,
-                                                       batch_data_samples)
+        results = self.convert_to_datasample(pred_instances, pred_fields,
+                                             data_samples)
 
-        return pred_data_samples
+        return results
 
-    def convert_to_datasample(self, batch_pred_instances: InstanceList,
-                              batch_pred_fields: Optional[PixelDataList],
-                              batch_data_samples: SampleList) -> SampleList:
+    def convert_to_datasample(self, pred_instances: InstanceList,
+                              pred_fields: Optional[PixelDataList],
+                              data_samples: SampleList) -> SampleList:
         """Add predictions into data samples.
 
         Args:
-            batch_pred_instances (List[InstanceData]): The predicted instances
+            pred_instances (List[InstanceData]): The predicted instances
                 of the input data batch
-            batch_pred_fields (List[PixelData], optional): The predicted
+            pred_fields (List[PixelData], optional): The predicted
                 fields (e.g. heatmaps) of the input batch
-            batch_data_samples (List[PoseDataSample]): The input data batch
-            merge (bool): Whether merge all predictions into a single
-                `PoseDataSample`. This is useful when the input batch is
-                instances (bboxes) from the same image. Defaults to ``False``
+            data_samples (List[PoseDataSample]): The input data batch
 
         Returns:
             List[PoseDataSample]: A list of data samples where the predictions
-            are stored in the ``pred_instances`` field of each data sample.
-            The length of the list is the batch size when ``merge==False``, or
-            1 when ``merge==True``.
+            are stored in the ``pred_instances`` or ``pred_fields`` field of
+            each data sample.
         """
-        assert len(batch_pred_instances) == len(batch_data_samples)
-        if batch_pred_fields is None:
-            batch_pred_fields = []
+        assert len(pred_instances) == len(data_samples)
+        if pred_fields is None:
+            pred_fields = []
 
-        for pred_instances, pred_fields, data_sample in zip_longest(
-                batch_pred_instances, batch_pred_fields, batch_data_samples):
+        for pred_instance, pred_field, data_sample in zip_longest(
+                pred_instances, pred_fields, data_samples):
 
             gt_instances = data_sample.gt_instances
 
@@ -194,19 +185,15 @@ class TopdownPoseEstimator(BasePoseEstimator):
             bbox_scales = gt_instances.bbox_scales
             input_size = data_sample.metainfo['input_size']
 
-            pred_instances.keypoints = pred_instances.keypoints / input_size \
+            pred_instance.keypoints = pred_instance.keypoints / input_size \
                 * bbox_scales + bbox_centers - 0.5 * bbox_scales
 
-            # add bbox information into pred_instances
-            pred_instances.bboxes = gt_instances.bboxes
-            pred_instances.bbox_scores = gt_instances.bbox_scores
+            data_sample.pred_instances = pred_instance
 
-            data_sample.pred_instances = pred_instances
+            if pred_field is not None:
+                data_sample.pred_fields = pred_field
 
-            if pred_fields is not None:
-                data_sample.pred_fields = pred_fields
-
-        return batch_data_samples
+        return data_samples
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):

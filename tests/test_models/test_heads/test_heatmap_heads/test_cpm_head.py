@@ -3,7 +3,7 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 from torch import nn
 
 from mmpose.models.heads import CPMHead

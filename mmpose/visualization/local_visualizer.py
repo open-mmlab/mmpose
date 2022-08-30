@@ -6,9 +6,9 @@ import cv2
 import mmcv
 import numpy as np
 import torch
-from mmengine import Visualizer
-from mmengine.data import InstanceData, PixelData
 from mmengine.dist import master_only
+from mmengine.structures import InstanceData, PixelData
+from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
 from mmpose.structures import PoseDataSample
@@ -41,7 +41,7 @@ class PoseLocalVisualizer(Visualizer):
 
     Examples:
         >>> import numpy as np
-        >>> from mmengine.data import InstanceData
+        >>> from mmengine.structures import InstanceData
         >>> from mmpose.structures import PoseDataSample
         >>> from mmpose.visualization import PoseLocalVisualizer
 

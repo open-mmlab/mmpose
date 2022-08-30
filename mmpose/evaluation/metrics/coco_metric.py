@@ -133,7 +133,7 @@ class CocoMetric(BaseMetric):
         self.outfile_prefix = outfile_prefix
 
     def process(self, data_batch: Sequence[dict],
-                predictions: Sequence[dict]) -> None:
+                data_samples: Sequence[dict]) -> None:
         """Process one batch of data samples and predictions. The processed
         results should be stored in ``self.results``, which will be used to
         compute the metrics when all batches have been processed.
@@ -141,15 +141,15 @@ class CocoMetric(BaseMetric):
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
-            predictions (Sequence[dict]): A batch of outputs from
+            data_samples (Sequence[dict]): A batch of outputs from
                 the model, each of which has the following keys:
 
                 - 'id': The id of the sample
                 - 'img_id': The image_id of the sample
                 - 'pred_instances': The prediction results of instance(s)
         """
-        for _, pred in zip(data_batch, predictions):
-            if 'pred_instances' not in pred:
+        for data_sample in data_samples:
+            if 'pred_instances' not in data_sample:
                 raise ValueError(
                     '`pred_instances` are required to process the '
                     f'predictions results in {self.__class__.__name__}. ')
@@ -158,22 +158,22 @@ class CocoMetric(BaseMetric):
             # N: number of instances, K: number of keypoints
             # for topdown-style output, N is usually 1, while for
             # bottomup-style output, N is the number of instances in the image
-            keypoints = pred['pred_instances']['keypoints']
+            keypoints = data_sample['pred_instances']['keypoints']
             # [N, K], the scores for all keypoints of all instances
-            keypoint_scores = pred['pred_instances']['keypoint_scores']
+            keypoint_scores = data_sample['pred_instances']['keypoint_scores']
             assert keypoint_scores.shape == keypoints.shape[:2]
 
             result = dict()
-            result['id'] = pred['id']
-            result['img_id'] = pred['img_id']
+            result['id'] = data_sample['id']
+            result['img_id'] = data_sample['img_id']
             result['keypoints'] = keypoints
             result['keypoint_scores'] = keypoint_scores
-            result['bbox_scores'] = pred['pred_instances']['bbox_scores']
+            result['bbox_scores'] = data_sample['gt_instances']['bbox_scores']
 
             # get area information
-            if 'bbox_scales' in pred['gt_instances']:
+            if 'bbox_scales' in data_sample['gt_instances']:
                 result['areas'] = np.prod(
-                    pred['gt_instances']['bbox_scales'], axis=1)
+                    data_sample['gt_instances']['bbox_scales'], axis=1)
             # add converted result to the results list
             self.results.append(result)
 

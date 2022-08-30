@@ -4,7 +4,7 @@ from typing import Any, Callable, List, Optional, Sequence, Tuple, Type, Union
 
 import numpy as np
 import torch
-from mmengine.data import BaseDataElement, PixelData
+from mmengine.structures import BaseDataElement, PixelData
 from mmengine.utils import is_list_of
 
 IndexType = Union[str, slice, int, list, torch.LongTensor,
