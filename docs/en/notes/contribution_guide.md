@@ -62,7 +62,9 @@ rvm install 2.7.1
 
 After this on every commit check code linters and formatter will be enforced.
 
-> Before you create a PR, make sure that your code lints and is formatted by yapf.
+```{note}
+Before you create a PR, make sure that your code lints and is formatted by yapf.
+```
 
 ### C++ and CUDA
 
