@@ -518,3 +518,43 @@ keypoint_weights = torch.cat([
     d.gt_instance_labels.keypoint_weights for d in batch_data_samples
 ])
 ```
+
+Here is the complete implementation of `loss()` in `RegressionHead`:
+
+```Python
+def loss(self,
+         inputs: Tuple[Tensor],
+         batch_data_samples: OptSampleList,
+         train_cfg: ConfigType = {}) -> dict:
+    """Calculate losses from a batch of inputs and data samples."""
+
+    pred_outputs = self.forward(inputs)
+
+    keypoint_labels = torch.cat(
+        [d.gt_instance_labels.keypoint_labels for d in batch_data_samples])
+    keypoint_weights = torch.cat([
+        d.gt_instance_labels.keypoint_weights for d in batch_data_samples
+    ])
+
+    # calculate losses
+    losses = dict()
+    loss = self.loss_module(pred_outputs, keypoint_labels,
+                            keypoint_weights.unsqueeze(-1))
+
+    if isinstance(loss, dict):
+        losses.update(loss)
+    else:
+        losses.update(loss_kpt=loss)
+
+    # calculate accuracy
+    _, avg_acc, _ = keypoint_pck_accuracy(
+        pred=to_numpy(pred_outputs),
+        gt=to_numpy(keypoint_labels),
+        mask=to_numpy(keypoint_weights) > 0,
+        thr=0.05,
+        norm_factor=np.ones((pred_outputs.size(0), 2), dtype=np.float32))
+    acc_pose = torch.tensor(avg_acc, device=keypoint_labels.device)
+    losses.update(acc_pose=acc_pose)
+
+    return losses
+```
