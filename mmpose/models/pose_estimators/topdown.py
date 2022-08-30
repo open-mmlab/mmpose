@@ -144,39 +144,43 @@ class TopdownPoseEstimator(BasePoseEstimator):
         preds = self.head.predict(feats, data_samples, test_cfg=self.test_cfg)
 
         if isinstance(preds, Tuple):
-            pred_instances, pred_fields = preds
+            batch_pred_instances, batch_pred_fields = preds
         else:
-            pred_instances = preds
-            pred_fields = None
+            batch_pred_instances = preds
+            batch_pred_fields = None
 
-        results = self.convert_to_datasample(pred_instances, pred_fields,
+        results = self.add_pred_to_datasample(batch_pred_instances, batch_pred_fields,
                                              data_samples)
 
         return results
 
-    def convert_to_datasample(self, pred_instances: InstanceList,
-                              pred_fields: Optional[PixelDataList],
-                              data_samples: SampleList) -> SampleList:
+    def add_pred_to_datasample(self, batch_pred_instances: InstanceList,
+                              batch_pred_fields: Optional[PixelDataList],
+                              batch_data_samples: SampleList) -> SampleList:
         """Add predictions into data samples.
 
         Args:
-            pred_instances (List[InstanceData]): The predicted instances
+            batch_pred_instances (List[InstanceData]): The predicted instances
                 of the input data batch
-            pred_fields (List[PixelData], optional): The predicted
+            batch_pred_fields (List[PixelData], optional): The predicted
                 fields (e.g. heatmaps) of the input batch
-            data_samples (List[PoseDataSample]): The input data batch
+            batch_data_samples (List[PoseDataSample]): The input data batch
+            merge (bool): Whether merge all predictions into a single
+                `PoseDataSample`. This is useful when the input batch is
+                instances (bboxes) from the same image. Defaults to ``False``
 
         Returns:
             List[PoseDataSample]: A list of data samples where the predictions
-            are stored in the ``pred_instances`` or ``pred_fields`` field of
-            each data sample.
+            are stored in the ``pred_instances`` field of each data sample.
+            The length of the list is the batch size when ``merge==False``, or
+            1 when ``merge==True``.
         """
-        assert len(pred_instances) == len(data_samples)
-        if pred_fields is None:
-            pred_fields = []
+        assert len(batch_pred_instances) == len(batch_data_samples)
+        if batch_pred_fields is None:
+            batch_pred_fields = []
 
-        for pred_instance, pred_field, data_sample in zip_longest(
-                pred_instances, pred_fields, data_samples):
+        for pred_instances, pred_fields, data_sample in zip_longest(
+                batch_pred_instances, batch_pred_fields, batch_data_samples):
 
             gt_instances = data_sample.gt_instances
 
@@ -185,15 +189,19 @@ class TopdownPoseEstimator(BasePoseEstimator):
             bbox_scales = gt_instances.bbox_scales
             input_size = data_sample.metainfo['input_size']
 
-            pred_instance.keypoints = pred_instance.keypoints / input_size \
+            pred_instances.keypoints = pred_instances.keypoints / input_size \
                 * bbox_scales + bbox_centers - 0.5 * bbox_scales
 
-            data_sample.pred_instances = pred_instance
+            # add bbox information into pred_instances
+            pred_instances.bboxes = gt_instances.bboxes
+            pred_instances.bbox_scores = gt_instances.bbox_scores
 
-            if pred_field is not None:
-                data_sample.pred_fields = pred_field
+            data_sample.pred_instances = pred_instances
 
-        return data_samples
+            if pred_fields is not None:
+                data_sample.pred_fields = pred_fields
+
+        return batch_data_samples
 
     def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
                                   **kwargs):

@@ -1,7 +1,33 @@
-_base_ = [
-    '../../../_base_/default_runtime.py',
-    '../../../_base_/schedules/schedule_bs512_ep210.py',
+_base_ = ['../../../_base_/default_runtime.py']
+
+# runtime
+train_cfg = dict(max_epochs=210, val_interval=10)
+
+# optimizer
+optim_wrapper = dict(optimizer=dict(
+    type='Adam',
+    lr=5e-4,
+))
+
+# learning policy
+param_scheduler = [
+    dict(
+        type='LinearLR', begin=0, end=500, start_factor=0.001,
+        by_epoch=False),  # warm-up
+    dict(
+        type='MultiStepLR',
+        begin=0,
+        end=210,
+        milestones=[170, 200],
+        gamma=0.1,
+        by_epoch=True)
 ]
+
+# automatically scaling LR based on the actual training batch size
+auto_scale_lr = dict(base_batch_size=512)
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
@@ -95,6 +121,7 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
+        data_mode=data_mode,
         ann_file='annotations/aic_train.json',
         data_prefix=dict(img='ai_challenger_keypoint_train_20170902/'
                          'keypoint_train_images_20170902/'),
@@ -105,10 +132,11 @@ val_dataloader = dict(
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False),
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
+        data_mode=data_mode,
         ann_file='annotations/aic_val.json',
         data_prefix=dict(img='ai_challenger_keypoint_validation_20170911/'
                          'keypoint_validation_images_20170911/'),
@@ -117,6 +145,7 @@ val_dataloader = dict(
     ))
 test_dataloader = val_dataloader
 
+# evaluators
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/aic_val.json',
