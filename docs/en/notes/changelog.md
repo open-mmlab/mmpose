@@ -4,7 +4,7 @@
 
 In this release, we made lots of major refactoring and modifications.
 
-For more details, please refer to \[Migration\].
+For more details, please refer to [Migration](../migration.md).
 
 ## **v0.28.0 (28/07/2022)**
 

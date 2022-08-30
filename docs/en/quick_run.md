@@ -14,7 +14,7 @@ We will walk you through the 7 key steps of a typical MMPose workflow by trainin
 
 ## Installation
 
-For installation instructions, please refer to \[Installation\].
+For installation instructions, please refer to [Installation](./installation.md).
 
 ## Get Started
 
@@ -34,30 +34,30 @@ If MMPose is properly installed, you will get the visualized result as follows:
 ![inference_demo](https://user-images.githubusercontent.com/13503330/187112344-0c5062f2-689c-445c-a259-d5d4311e2497.png)
 
 ```{note}
-More demo and full instructions can be found in \[Demo\].
+More demo and full instructions can be found in [Inference](./user_guides/inference.md).
 ```
 
 ### Prepare the dataset
 
 MMPose supports multiple tasks. We provide the corresponding guidelines for data preparation.
 
-- 2D Body Keypoint Detection
+- [2D Body Keypoint Detection](./dataset_zoo/2d_body_keypoint.md)
 
-- 3D Body Keypoint Detection
+- [3D Body Keypoint Detection](./dataset_zoo/3d_body_keypoint.md)
 
-- 3D Body Mesh Recovery
+- [3D Body Mesh Recovery](./dataset_zoo/3d_body_mesh.md)
 
-- 2D Hand Keypoint Detection
+- [2D Hand Keypoint Detection](./dataset_zoo/2d_hand_keypoint.md)
 
-- 3D Hand Keypoint Detection
+- [3D Hand Keypoint Detection](./dataset_zoo/3d_hand_keypoint.md)
 
-- 2D Face Keypoint Detection
+- [2D Face Keypoint Detection](./dataset_zoo/2d_face_keypoint.md)
 
-- 2D WholeBody Keypoint Detection
+- [2D WholeBody Keypoint Detection](./dataset_zoo/2d_wholebody_keypoint.md)
 
-- 2D Fashion Landmark Detection
+- [2D Fashion Landmark Detection](./dataset_zoo/2d_fashion_landmark.md)
 
-- 2D Animal Keypoint Detection
+- [2D Animal Keypoint Detection](./dataset_zoo/2d_animal_keypoint.md)
 
 You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO dataset preparation.
 
@@ -94,7 +94,7 @@ data_root = 'data/coco'
 ```
 
 ```{note}
-If you wish to learn more about our config system, please refer to \[Configs\].
+If you wish to learn more about our config system, please refer to [Configs](./user_guides/configs.md).
 ```
 
 ### Browse the transformed images
@@ -163,11 +163,11 @@ Here is an example of evaluation results：
 ```
 
 ```{note}
-If you want to perform evaluation on other datasets, please refer to \[Train & Test\].
+If you want to perform evaluation on other datasets, please refer to [Train & Test](./user_guides/train_and_test.md).
 ```
 
 ### Visualization
 
 ```{note}
-If you wish to apply MMPose to your own projects, we have prepared a detailed \[migration guide\].
+If you wish to apply MMPose to your own projects, we have prepared a detailed [Migration guide](./migration.md).
 ```

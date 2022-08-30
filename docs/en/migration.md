@@ -36,7 +36,7 @@ Among them, modules related to **General**, **Training** and **Evaluation** are 
 
 ## Step1: Configs
 
-In MMPose, we use a Python file as config for the definition, parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to \[Config\].
+In MMPose, we use a Python file as config for the definition, parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to [Configs](./user_guides/configs.md).
 
 Note that all the new modules need to be registered using `Registry`, and `import` them in `__init__.py` in the corresponding directory.
 
@@ -63,7 +63,7 @@ If not, you need to define the keypoint information of the data (keypoint order,
 For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data format.
 
 ```{note}
-Please refer to \[COCO\] for more details about the COCO data format.
+Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
 ```
 
 Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
@@ -300,7 +300,7 @@ Note that we unify the data format of top-down and bottom-up methods, which mean
 The provided codecs are stored under `$MMPOSE/mmpose/codecs`.
 
 ```{note}
-If you wish to customize a new codec, you can refer to \[Codec\] for more details.
+If you wish to customize a new codec, you can refer to [Codec](./user_guides/codecs.md) for more details.
 ```
 
 #### iv. Packing
@@ -641,7 +641,7 @@ The old methods like:
 - `BottomUpGenerateHeatmapTarget`
 - `BottomUpGenerateTarget`
 
-will be merged in to `GenerateTarget`, and the actual generation methods are implemented in **Codec**.
+will be merged in to `GenerateTarget`, and the actual generation methods are implemented in [Codec](./user_guides/codecs.md).
 
 ```Python
 @TRANSFORMS.register_module()
@@ -714,7 +714,7 @@ def __init__(self):
 
 #### Heatmap-based Model
 
-For models based on `SimpleBaseline` approach, developers need to pay attention on the last convolutional layer.
+For models based on `SimpleBaseline` approach, developers need to pay attention to the last convolutional layer.
 
 ```Python
 def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
