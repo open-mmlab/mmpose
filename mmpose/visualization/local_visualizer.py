@@ -11,7 +11,7 @@ from mmengine.structures import InstanceData, PixelData
 from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import PoseDataSample
+from mmpose.structures import PoseDataSample, get_warp_matrix
 
 
 @VISUALIZERS.register_module()
@@ -284,6 +284,9 @@ class PoseLocalVisualizer(Visualizer):
         heatmaps = fields.heatmaps
         if isinstance(heatmaps, np.ndarray):
             heatmaps = torch.from_numpy(heatmaps)
+        if heatmaps.dim() == 3:
+            heatmaps, _ = heatmaps.max(dim=0)
+            heatmaps = heatmaps.unsqueeze(0)
         out_image = self.draw_featmap(heatmaps, overlaid_image)
         return out_image
 
@@ -392,3 +395,29 @@ class PoseLocalVisualizer(Visualizer):
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
+
+    @staticmethod
+    def revert_heatmap(heatmap, bbox_center, bbox_scale, img_shape):
+        """Revert predicted heatmap on the original image.
+
+        Args:
+            heatmap (np.ndarray or torch.tensor): predicted heatmap.
+            bbox_center (np.ndarray): bounding box center coordinate.
+            bbox_scale (np.ndarray): bounding box scale.
+            img_shape (tuple or list): size of original image.
+        """
+        if torch.is_tensor(heatmap):
+            heatmap = heatmap.cpu().detach().numpy()
+
+        hm_h, hm_w = heatmap.shape[-2:]
+        img_h, img_w = img_shape[-2:]
+        warp_mat = get_warp_matrix(
+            bbox_center.reshape((2, )),
+            bbox_scale.reshape((2, )),
+            rot=0,
+            output_size=(hm_w, hm_h),
+            inv=True)
+
+        heatmap = cv2.warpAffine(
+            heatmap, warp_mat, (img_w, img_h), flags=cv2.INTER_LINEAR)
+        return heatmap
