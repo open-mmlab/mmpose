@@ -11,6 +11,7 @@ from mmengine.structures import InstanceData, PixelData
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
+from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
 from mmpose.utils import register_all_modules as register_mmpose_modules
 
@@ -29,11 +30,12 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
     # predict bbox
     register_mmdet_modules()
     detect_result = inference_detector(detector, img_path)
-    pred_instance = detect_result.pred_instances.cpu()
-    bboxes = pred_instance.bboxes[np.logical_and(
-        pred_instance.labels == args.det_cat_id,
-        pred_instance.scores > args.bbox_thr)]
-    bboxes = bboxes.numpy()
+    pred_instance = detect_result.pred_instances.cpu().numpy()
+    bboxes = np.concatenate(
+        (pred_instance.bboxes, pred_instance.scores[:, None]), axis=1)
+    bboxes = bboxes[np.logical_and(pred_instance.labels == args.det_cat_id,
+                                   pred_instance.scores > args.bbox_thr)]
+    bboxes = bboxes[nms(bboxes, 0.3)][:, :4]
 
     # predict keypoints
     register_mmpose_modules()
@@ -212,7 +214,8 @@ def main():
                 show_interval=1)
         tmp_folder.cleanup()
     else:
-        raise ValueError(f'file {os.basename(args.input)} has invalid format.')
+        raise ValueError(
+            f'file {os.path.basename(args.input)} has invalid format.')
 
 
 if __name__ == '__main__':
