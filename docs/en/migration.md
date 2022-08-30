@@ -281,7 +281,7 @@ Currently we support the following types of Targets.
 - `keypoint_y_labels`: y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
 
-Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances in the same image, in shape:
+Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:
 
 ```Python
 [batch_size, num_instances, num_keypoints, dim_coordinates]
@@ -301,9 +301,9 @@ This method converts the data stored in the dictionary `results` into the format
 
 Specifically, we divide the data into `gt` and `pred`, each of which has the following types:
 
-- instances(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
-- instance_labels(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
-- fields(torch.tensor): instance-level training labels with spatial information(e.g. Gaussian Heatmaps), used for model training in the output scale space
+- **instances**(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
+- **instance_labels**(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
+- **fields**(torch.tensor): instance-level training labels with spatial information(e.g. Gaussian Heatmaps), used for model training in the output scale space
 
 The following is an example of the implementation of `PoseDataSample` under the hood:
 
@@ -364,7 +364,7 @@ We define a base class `BasePoseEstimator` for the model in `$MMPOSE/models/pose
 
 Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc.
 
-Three modes are provided in `forward()`:
+Three modes are provided in `forward()` of the estimator:
 
 - `mode == 'loss'`: return the result of loss function for model training
 
