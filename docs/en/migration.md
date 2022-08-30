@@ -315,7 +315,9 @@ In MMPose 1.0, the model consists of the following components:
 
 We define a base class `BasePoseEstimator` for the model in `$MMPOSE/models/pose_estimators/base.py`. All models should inherit from this base class and override the corresponding methods.
 
-Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc. Three modes are provided in `forward()`:
+Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc.
+
+Three modes are provided in `forward()`:
 
 - `mode == 'loss'`: return the result of loss function for model training
 
