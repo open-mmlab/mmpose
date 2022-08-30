@@ -59,7 +59,7 @@ class PCKAccuracy(BaseMetric):
                     f"'head', 'torso', but got {item}.")
 
     def process(self, data_batch: Sequence[dict],
-                predictions: Sequence[dict]) -> None:
+                data_samples: Sequence[dict]) -> None:
         """Process one batch of data samples and predictions.
 
         The processed
@@ -68,14 +68,14 @@ class PCKAccuracy(BaseMetric):
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
-            predictions (Sequence[dict]): A batch of outputs from
+            data_samples (Sequence[dict]): A batch of outputs from
                 the model.
         """
-        for data, pred in zip(data_batch, predictions):
+        for data_sample in data_samples:
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints']
+            pred_coords = data_sample['pred_instances']['keypoints']
             # ground truth data_info
-            gt = data['data_sample']['gt_instances']
+            gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
@@ -456,7 +456,7 @@ class AUC(BaseMetric):
         self.num_thrs = num_thrs
 
     def process(self, data_batch: Sequence[dict],
-                predictions: Sequence[dict]) -> None:
+                data_samples: Sequence[dict]) -> None:
         """Process one batch of data samples and predictions. The processed
         results should be stored in ``self.results``, which will be used to
         compute the metrics when all batches have been processed.
@@ -464,14 +464,14 @@ class AUC(BaseMetric):
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
-            predictions (Sequence[dict]): A batch of outputs from
+            data_sample (Sequence[dict]): A batch of outputs from
                 the model.
         """
-        for data, pred in zip(data_batch, predictions):
+        for data_sample in data_samples:
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints']
+            pred_coords = data_sample['pred_instances']['keypoints']
             # ground truth data_info
-            gt = data['data_sample']['gt_instances']
+            gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
@@ -539,7 +539,7 @@ class EPE(BaseMetric):
     default_prefix: Optional[str] = 'epe'
 
     def process(self, data_batch: Sequence[dict],
-                predictions: Sequence[dict]) -> None:
+                data_samples: Sequence[dict]) -> None:
         """Process one batch of data samples and predictions. The processed
         results should be stored in ``self.results``, which will be used to
         compute the metrics when all batches have been processed.
@@ -547,14 +547,14 @@ class EPE(BaseMetric):
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
-            predictions (Sequence[dict]): A batch of outputs from
+            data_samples (Sequence[dict]): A batch of outputs from
                 the model.
         """
-        for data, pred in zip(data_batch, predictions):
+        for data_sample in data_samples:
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints']
+            pred_coords = data_sample['pred_instances']['keypoints']
             # ground truth data_info
-            gt = data['data_sample']['gt_instances']
+            gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]
@@ -674,7 +674,7 @@ class NME(BaseMetric):
         self.keypoint_indices = keypoint_indices
 
     def process(self, data_batch: Sequence[dict],
-                predictions: Sequence[dict]) -> None:
+                data_samples: Sequence[dict]) -> None:
         """Process one batch of data samples and predictions. The processed
         results should be stored in ``self.results``, which will be used to
         compute the metrics when all batches have been processed.
@@ -682,14 +682,14 @@ class NME(BaseMetric):
         Args:
             data_batch (Sequence[dict]): A batch of data
                 from the dataloader.
-            predictions (Sequence[dict]): A batch of outputs from
+            data_samples (Sequence[dict]): A batch of outputs from
                 the model.
         """
-        for data, pred in zip(data_batch, predictions):
+        for data_sample in data_samples:
             # predicted keypoints coordinates, [1, K, D]
-            pred_coords = pred['pred_instances']['keypoints']
+            pred_coords = data_sample['pred_instances']['keypoints']
             # ground truth data_info
-            gt = data['data_sample']['gt_instances']
+            gt = data_sample['gt_instances']
             # ground truth keypoints coordinates, [1, K, D]
             gt_coords = gt['keypoints']
             # ground truth keypoints_visible, [1, K, 1]

@@ -3,7 +3,7 @@
 # Original licence: Apache License 2.0.
 # ------------------------------------------------------------------------------
 
-import mmcv
+import mmengine
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -46,7 +46,7 @@ class SpatialWeighting(BaseModule):
         if isinstance(act_cfg, dict):
             act_cfg = (act_cfg, act_cfg)
         assert len(act_cfg) == 2
-        assert mmcv.is_tuple_of(act_cfg, dict)
+        assert mmengine.is_tuple_of(act_cfg, dict)
         self.global_avgpool = nn.AdaptiveAvgPool2d(1)
         self.conv1 = ConvModule(
             in_channels=channels,
@@ -100,7 +100,7 @@ class CrossResolutionWeighting(BaseModule):
         if isinstance(act_cfg, dict):
             act_cfg = (act_cfg, act_cfg)
         assert len(act_cfg) == 2
-        assert mmcv.is_tuple_of(act_cfg, dict)
+        assert mmengine.is_tuple_of(act_cfg, dict)
         self.channels = channels
         total_channel = sum(channels)
         self.conv1 = ConvModule(

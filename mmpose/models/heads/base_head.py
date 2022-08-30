@@ -4,8 +4,8 @@ from typing import List, Tuple, Union
 
 import torch
 import torch.nn.functional as F
-from mmengine.data import InstanceData
 from mmengine.model import BaseModule
+from mmengine.structures import InstanceData
 from torch import Tensor
 
 from mmpose.utils.tensor_utils import to_numpy

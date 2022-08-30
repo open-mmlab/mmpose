@@ -3,10 +3,9 @@ import copy
 
 import torch.nn as nn
 import torch.utils.checkpoint as cp
-from mmcv.cnn import (ConvModule, build_conv_layer, build_norm_layer,
-                      constant_init)
-from mmcv.utils.parrots_wrapper import _BatchNorm
-from mmengine.model import BaseModule
+from mmcv.cnn import ConvModule, build_conv_layer, build_norm_layer
+from mmengine.model import BaseModule, constant_init
+from mmengine.utils.dl_utils.parrots_wrapper import _BatchNorm
 
 from mmpose.registry import MODELS
 from .base_backbone import BaseBackbone

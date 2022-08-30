@@ -6,13 +6,12 @@ from typing import Sequence
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import (build_activation_layer, build_conv_layer,
-                      build_norm_layer, xavier_init)
+from mmcv.cnn import build_activation_layer, build_conv_layer, build_norm_layer
 from mmcv.cnn.bricks.transformer import (BaseTransformerLayer,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
-from mmcv.utils import to_2tuple
-from mmengine.model import BaseModule
+from mmengine.model import BaseModule, xavier_init
+from mmengine.utils import to_2tuple
 from torch.nn.init import normal_
 
 try:

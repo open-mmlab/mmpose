@@ -4,7 +4,7 @@ from unittest import TestCase
 import torch
 import torch.nn as nn
 from mmcv.cnn import ConvModule
-from mmcv.utils.parrots_wrapper import _BatchNorm
+from mmengine.utils.dl_utils.parrots_wrapper import _BatchNorm
 
 from mmpose.models.backbones import ResNet, ResNetV1d
 from mmpose.models.backbones.resnet import (BasicBlock, Bottleneck, ResLayer,

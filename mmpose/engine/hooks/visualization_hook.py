@@ -89,7 +89,7 @@ class PoseVisualizationHook(Hook):
             return
 
         if self.file_client is None:
-            self.file_client = mmcv.FileClient(**self.file_client_args)
+            self.file_client = mmengine.FileClient(**self.file_client_args)
 
         # There is no guarantee that the same batch of images
         # is visualized for each evaluation.
@@ -129,7 +129,7 @@ class PoseVisualizationHook(Hook):
         if self.test_out_dir is not None:
             self.test_out_dir = osp.join(runner.work_dir, runner.timestamp,
                                          self.test_out_dir)
-            mmcv.mkdir_or_exist(self.test_out_dir)
+            mmengine.mkdir_or_exist(self.test_out_dir)
 
         if self.file_client is None:
             self.file_client = mmengine.FileClient(**self.file_client_args)

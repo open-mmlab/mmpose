@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 
 import mmcv
 import torch
-from mmcv.runner import CheckpointLoader
+from mmengine.runner import CheckpointLoader
 
 try:
     from model_archiver.model_packaging import package_model

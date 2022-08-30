@@ -5,7 +5,7 @@ from typing import Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
-from mmengine.data import PixelData
+from mmengine.structures import PixelData
 from torch import Tensor, nn
 
 from mmpose.evaluation.functional import keypoint_pck_accuracy

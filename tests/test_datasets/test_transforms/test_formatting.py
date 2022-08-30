@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import numpy as np
 import torch
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 
 from mmpose.datasets.transforms import PackPoseInputs
 from mmpose.structures import PoseDataSample
@@ -71,23 +71,23 @@ class TestPackPoseInputs(TestCase):
             meta_keys=self.meta_keys, pack_transformed=True)
         results = transform(copy.deepcopy(self.results_topdown))
         self.assertIn('transformed_keypoints',
-                      results['data_sample'].gt_instances)
+                      results['data_samples'].gt_instances)
 
         transform = PackPoseInputs(meta_keys=self.meta_keys)
         results = transform(copy.deepcopy(self.results_topdown))
         self.assertIn('inputs', results)
         self.assertIsInstance(results['inputs'], torch.Tensor)
         self.assertEqual(results['inputs'].shape, (3, 425, 640))
-        self.assertIn('data_sample', results)
-        self.assertIsInstance(results['data_sample'], PoseDataSample)
-        self.assertIsInstance(results['data_sample'].gt_instances,
+        self.assertIn('data_samples', results)
+        self.assertIsInstance(results['data_samples'], PoseDataSample)
+        self.assertIsInstance(results['data_samples'].gt_instances,
                               InstanceData)
-        self.assertIsInstance(results['data_sample'].gt_fields, PixelData)
-        self.assertEqual(len(results['data_sample'].gt_instances), 1)
-        self.assertIsInstance(results['data_sample'].gt_fields.heatmaps,
+        self.assertIsInstance(results['data_samples'].gt_fields, PixelData)
+        self.assertEqual(len(results['data_samples'].gt_instances), 1)
+        self.assertIsInstance(results['data_samples'].gt_fields.heatmaps,
                               torch.Tensor)
         self.assertNotIn('transformed_keypoints',
-                         results['data_sample'].gt_instances)
+                         results['data_samples'].gt_instances)
 
         # test when results['img'] is sequence of frames
         results = copy.deepcopy(self.results_topdown)

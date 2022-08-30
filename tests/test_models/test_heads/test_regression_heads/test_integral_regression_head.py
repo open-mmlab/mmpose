@@ -4,7 +4,7 @@ from typing import List, Tuple
 from unittest import TestCase
 
 import torch
-from mmengine.data import InstanceData, PixelData
+from mmengine.structures import InstanceData, PixelData
 
 from mmpose.models.heads import IntegralRegressionHead
 from mmpose.testing import get_packed_inputs
