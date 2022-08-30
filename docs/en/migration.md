@@ -34,7 +34,7 @@ Among them, modules related to **General**, **Training** and **Evaluation** are 
 
 In MMPose, we use a Python file as config for the definition, parameter management of the whole project. Therefore, we strongly recommend the developers who use MMPose for the first time to refer to \[Config\].
 
-Note that all the new modules need to be registered using `Registry`, and `import` in `__init__.py` in the corresponding directory.
+Note that all the new modules need to be registered using `Registry`, and `import` them in `__init__.py` in the corresponding directory.
 
 ## Step2: Data
 
@@ -54,13 +54,13 @@ Please refer to \[COCO\] for more details about the COCO data format.
 
 The data format of bbox is in `xyxy` instead of `xywh`, which is consistent with the format used in MMDetection.
 
-If your data is originally stored in COCO format, then you can use our implementation directly.
+If your data is originally organized in COCO format, then you can use our implementation directly.
 
-If not, you need to define the key point information of the data (key point order, skeleton information, weights, sigmas of annotation information) in the`$MMPOSE/configs/_base_/datasets`.
+If not, you need to define the keypoint information of the data (keypoint order, skeleton information, weights, sigmas of annotation) in `$MMPOSE/configs/_base_/datasets`.
 
-For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data formats.
+For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data format.
 
-Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example.
+Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
 
 ```Python
 dataset_info = dict(
@@ -102,7 +102,7 @@ dataset_info = dict(
 
 ### Dataset
 
-When your data is not stored in COCO format, you need to implement the `Dataset` class in `$MMPOSE/mmpose/datasets/datasets`, and convert the data into COCO format.
+When your data is not organized in COCO format, you need to implement the `Dataset` class in `$MMPOSE/mmpose/datasets/datasets`, and convert the data into COCO format.
 
 Let's take the implementation of the MPII dataset (`$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py`) as an example.
 
@@ -211,66 +211,6 @@ When supporting MPII dataset, since we need to use `head_size` to calculate `PCK
 
 ### Pipeline
 
-In a keypoint detection task, data will be transformed in three scale spaces:
-
-- **Original Image Space:** the space where the images are stored . The sizes of different images are not necessarily the same
-
-- **Input Image Space:** the image space used for model training. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
-
-- **Output Space:** the space used for model training, and also the scale space where model outputs are located, such as`64x64(Heatmap)`，`1x1(Regression)`, etc.
-
-Here is a diagram to show the flow of data transformation in the three scale spaces:
-
-![migration-en](https://user-images.githubusercontent.com/13503330/187190213-cad87b5f-0a95-4f1f-b722-15896914ded4.png)
-
-In MMPose, the modules used for data transformations are under `$MMPOSE/mmpose/datasets/transforms`, and their workflow is shown as follows:
-
-![transforms-en](https://user-images.githubusercontent.com/13503330/187190352-a7662346-b8da-4256-9192-c7a84b15cbb5.png)
-
-#### Augmentation
-
-Commonly used transforms are defined in `$MMPOSE/mmpose/datasets/transforms/common_transforms.py`, such as `RandomFlip`, `RandomHalfBody`, etc.
-
-For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
-
-Note that most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
-
-All transforms in this part will only generate the transformation matrix and will not perform the actual transformation on the input data.
-
-#### Transformation
-
-The matrix will be used to perform affine transformation on the images and annotations.
-
-For top-down methods, it is done by `TopdownAffine` and by `BottomupRandomAffine` for bottom-up methods.
-
-#### Encoding
-
-After the data is transformed from the original image space into the input space, it it necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
-
-In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which `encode()` and `decode()` are implemented.
-
-Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances in the same image, in shape `[batch_size, num_instances, num_keypoints, dim_coordinates]`：
-
-- top-down：`[B, 1, K, D]`
-
-- Bottom-up: `[B, N, K, D]`
-
-The provided codecs are stored under `$MMPOSE/mmpose/codecs`. If you wish to customize a new codec, you can refer to \[Codec\] for more details.
-
-#### Packing
-
-After the data is transformed, you need to pack it by using `PackPoseInputs`.
-
-This method converts the data stored in the dictionary `results` into the formats required for MMEngine training, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
-
-The packed `PoseDataSample` contains:
-
-- Original image information：used for Evaluation
-
-- Data in input space and output space：used for visualization in training，and calculation of loss and accuracy
-
-- BBox information：used for transformation between different scale spaces
-
 Here is an example of typical pipelines：
 
 ```Python
@@ -293,27 +233,95 @@ test_pipeline = [
 ]
 ```
 
+In a keypoint detection task, data will be transformed in the three scale spaces:
+
+- **Original Image Space**: the space where the images are stored. The sizes of different images are not necessarily the same
+
+- **Input Image Space**: the image space used for model training. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
+
+- **Output Space**: the space used for model training, and also the scale space where model outputs are located, such as `64x64(Heatmap)`，`1x1(Regression)`, etc.
+
+Here is a diagram to show the workflow of data transformation in the three scale spaces:
+
+![migration-en](https://user-images.githubusercontent.com/13503330/187190213-cad87b5f-0a95-4f1f-b722-15896914ded4.png)
+
+In MMPose, the modules used for data transformation are under `$MMPOSE/mmpose/datasets/transforms`, and their workflow is shown as follows:
+
+![transforms-en](https://user-images.githubusercontent.com/13503330/187190352-a7662346-b8da-4256-9192-c7a84b15cbb5.png)
+
+#### i. Augmentation
+
+Commonly used transforms are defined in `$MMPOSE/mmpose/datasets/transforms/common_transforms.py`, such as `RandomFlip`, `RandomHalfBody`, etc.
+
+For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
+
+Note that most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
+
+All transforms in this part will only generate the **transformation matrix** and **will not** perform the actual transformation on the input data.
+
+#### ii. Transformation
+
+The matrix will be used to perform affine transformation on the images and annotations.
+
+For top-down methods, it is done by `TopdownAffine` and by `BottomupRandomAffine` for bottom-up methods.
+
+#### iii. Encoding
+
+After the data is transformed from the original image space into the input space, it it necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
+
+In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which `encode()` and `decode()` are implemented.
+
+Currently we support the following types of Targets.
+
+- `heatmaps`: Gaussian heatmaps
+- `keypoint_labels`: normalized coordinates
+- `keypoint_x_labels`: x-axis representation
+- `keypoint_y_labels`: y-axis representation
+- `keypoint_weights`: keypoint visibility and weights
+
+Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances in the same image, in shape `[batch_size, num_instances, num_keypoints, dim_coordinates]`：
+
+- top-down: `[B, 1, K, D]`
+
+- Bottom-up: `[B, N, K, D]`
+
+The provided codecs are stored under `$MMPOSE/mmpose/codecs`. If you wish to customize a new codec, you can refer to \[Codec\] for more details.
+
+#### iv. Packing
+
+After the data is transformed, you need to pack it by using `PackPoseInputs`.
+
+This method converts the data stored in the dictionary `results` into the formats required for MMEngine training, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
+
+The packed `PoseDataSample` contains:
+
+- Original image information: used for Evaluation
+
+- Data in input space and output space: used for visualization in training，and calculation of loss and accuracy
+
+- BBox information: used for transformation between different scale spaces
+
 ## Step3: Model
 
 In MMPose 1.0, the model consists of the following components:
 
-- Data Preprocessor：perform data normalization and channel transposition
+- **Data Preprocessor**: perform data normalization and channel transposition
 
-- Backbone：used for feature extraction
+- **Backbone**: used for feature extraction
 
-- Neck：GAP，FPN, etc. are optional
+- **Neck**: GAP，FPN, etc. are optional
 
-- Head：used to implement the core algorithm and loss function
+- **Head**: used to implement the core algorithm and loss function
 
-We define a base class `BasePoseEstimator` for the model under `$MMPOSE/models/pose_estimators/base.py`. All models should inherit from this base class and overload the corresponding methods.
+We define a base class `BasePoseEstimator` for the model in `$MMPOSE/models/pose_estimators/base.py`. All models should inherit from this base class and override the corresponding methods.
 
-Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc. Three modes are provided in the inference:
+Depending on the algorithm, MMPose classifies the models into `TopdownPoseEstimator`, `BottomupPoseEstimator`, etc. Three modes are provided in `forward()`:
 
-- `mode == 'loss'`：return the result of loss function for model training
+- `mode == 'loss'`: return the result of loss function for model training
 
-- `mode == 'predict'`：return the prediction result in the input space, used for model inference
+- `mode == 'predict'`: return the prediction result in the input space, used for model inference
 
-- `mode == 'tensor'`：return the model output in the output space, i.e. model forward propagatin only, for model export
+- `mode == 'tensor'`: return the model output in the output space, i.e. model forward propagatin only, for model export
 
 Developers should build the components by calling the corresponding registry. Taking the top-down model as an example:
 
@@ -366,7 +374,7 @@ In MMPose, you can use the pre-trained weights by setting `init_cfg` in config:
 ```Python
 init_cfg=dict(
     type='Pretrained',
-    checkpoint='YOUR_MODEL_WEIGHTS.pth'),
+    checkpoint='PATH/TO/YOUR_MODEL_WEIGHTS.pth'),
 ```
 
 `checkpoint` can be either a local path or a download link. Thus, if you wish to use a pre-trained model provided by Torchvision(e.g. ResNet50), you can simply use:
@@ -379,7 +387,7 @@ init_cfg=dict(
 
 In addition to these commonly used backbones, you can easily use backbones from repositories in the OpenMMLab ecosystem such as MMClassification, which all share the same config system and provide pre-trained weights.
 
-It should be emphasized that if you add a new backbone, you need to register it at:
+It should be emphasized that if you add a new backbone, you need to register it by doing:
 
 ```Python
 @MODELS.register_module()
@@ -400,7 +408,7 @@ Neck is usually a module between Backbone and Head, which is used in some algori
 
 Generally speaking, Head is often the core of an algorithm, which is used to make predictions and perform loss calculation.
 
-Modules related to Head in MMPose are defined in the `$MMPOSE/mmpose/models/heads` directory, and developers need to inherit the base class `BaseHead` when customizing Head and override the following methods:
+Modules related to Head in MMPose are defined under `$MMPOSE/mmpose/models/heads`, and developers need to inherit the base class `BaseHead` when customizing Head and override the following methods:
 
 - forward()
 
@@ -410,7 +418,36 @@ Modules related to Head in MMPose are defined in the `$MMPOSE/mmpose/models/head
 
 Specifically, the `predict()` should return the result in the input image space, so you should call `self.decode()`, which we have implemented in `BaseHead`, to decode the output. It will call the `decoder` provided by the codec to perform the decoding process.
 
-The `loss()` not only performs the calculation of loss functions, but also the calculation of training-time metrics such as pose accuracy, and is passed through a dictionary `losses`:
+Here is an example of `predict()` in `RegressionHead`:
+
+```Python
+def predict(self,
+            feats: Tuple[Tensor],
+            batch_data_samples: OptSampleList,
+            test_cfg: ConfigType = {}) -> Predictions:
+    """Predict results from outputs."""
+
+    if test_cfg.get('flip_test', False):
+        # TTA: flip test -> feats = [orig, flipped]
+        assert isinstance(feats, list) and len(feats) == 2
+        flip_indices = batch_data_samples[0].metainfo['flip_indices']
+        input_size = batch_data_samples[0].metainfo['input_size']
+        _feats, _feats_flip = feats
+        _batch_coords = self.forward(_feats)
+        _batch_coords_flip = flip_coordinates(
+            self.forward(_feats_flip),
+            flip_indices=flip_indices,
+            shift_coords=test_cfg.get('shift_coords', True),
+            input_size=input_size)
+        batch_coords = (_batch_coords + _batch_coords_flip) * 0.5
+    else:
+        batch_coords = self.forward(feats)  # (B, K, D)
+
+    batch_coords.unsqueeze_(dim=1)  # (B, N, K, D)
+    preds = self.decode(batch_coords)
+```
+
+The `loss()` not only performs the calculation of loss functions, but also the calculation of training-time metrics such as pose accuracy, and is carried by a dictionary `losses`:
 
 ```Python
  # calculate accuracy

@@ -50,19 +50,32 @@ loss_cfg = dict(
 loss = MODELS.build(loss_cfg) # equals to `loss = Loss_A(param1=1.0, param2=True)`
 ```
 
+Here is a list of pre-defined registries in MMPose:
+
+- DATASETS: data-related modules
+- TRANSFORMS: data transformations
+- MODELS: all kinds of modules inheriting `nn.Module` (Backbone, Neck, Head, Loss, etc.)
+- VISUALIZERS: visualization tools
+- VISBACKENDS: visualizer backend
+- METRICS: all kinds of evaluation metrics
+- KEYPOINT_CODECS: keypoint encoder/decoder
+- HOOKS: all kinds of hooks like `CheckpointHook`
+
+All registries are defined in `$MMPOSE/mmpose/registry.py`.
+
 ## Config System
 
 It is best practice to layer your configs in five sections:
 
-- General: basic configurations non-related to training or testing, such as Timer, Logger, Visualizer and other Hooks, as well as distributed-related environment settings
+- **General**: basic configurations non-related to training or testing, such as Timer, Logger, Visualizer and other Hooks, as well as distributed-related environment settings
 
-- Data: dataset, dataloader and data augmentation
+- **Data**: dataset, dataloader and data augmentation
 
-- Training: resume, weights loading, optimizer, learning rate scheduling, epochs and valid interval etc.
+- **Training**: resume, weights loading, optimizer, learning rate scheduling, epochs and valid interval etc.
 
-- Model: structure, module and loss function etc.
+- **Model**: structure, module and loss function etc.
 
-- Evaluation: metrics
+- **Evaluation**: metrics
 
 You can find all the provided configs under `$MMPOSE/configs`. A config can inherit contents from another config.To keep a config file simple and easy to read, we store some necessary but unremarkable configurations to `$MMPOSE/configs/_base_`.You can inspect the complete configurations by：
 

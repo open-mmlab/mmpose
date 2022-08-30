@@ -57,31 +57,31 @@ MMPose supports multiple tasks. We provide the corresponding guidelines for data
 
 - 2D Animal Keypoint Detection
 
-You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO data preparation. In this example, we place the data under `$MMPOSE/data`.
+You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO dataset preparation. In MMPose, we suggest placing the data under `$MMPOSE/data`.
 
 ### Prepare a config
 
 MMPose is equipped with a powerful config system to conduct various experiments conveniently. A config file organizes the settings of:
 
-- Environments
+- **General**: basic configurations non-related to training or testing, such as Timer, Logger, Visualizer and other Hooks, as well as distributed-related environment settings
 
-- Data Loading and Augmentations
+- **Data**: dataset, dataloader and data augmentation
 
-- Hyperparameters of Train/Validation/Test
+- **Training**: resume, weights loading, optimizer, learning rate scheduling, epochs and valid interval etc.
 
-- Model Structures
+- **Model**: structure, module and loss function etc.
 
-- Evaluation metrics
+- **Evaluation**: metrics
 
-We provide a bunch of well-prepared configs under `$MMPOSE/configs` that you can directly use or modify.
+We provide a bunch of well-prepared configs under `$MMPOSE/configs` so that you can directly use or modify.
 
 Going back to our example, we  will use the prepared config:
 
 ```Bash
-$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py.
+$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
 ```
 
-We can set the path of the coco dataset by modifying `data_root` in the config：
+You can set the path of the COCO dataset by modifying `data_root` in the config：
 
 ```Python
 data_root = 'data/coco'
@@ -128,7 +128,7 @@ MMPose automates many useful training tricks and functions including:
 
 Checkpoints and logs will be saved under `$MMPOSE/work_dirs` by default. The best model is under `$MMPOSE/work_dir/best_coco`.
 
-Use the following command to evaluate the model on coco dataset:
+Use the following command to evaluate the model on COCO dataset:
 
 ```Bash
 python tools/test.py \

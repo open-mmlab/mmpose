@@ -6,7 +6,7 @@ In normal open source code, the encoding and decoding processes are usually scat
 
 MMPose proposes the `Codec` to integrate the `encoder` and `decoder` together, to make them modular and user friendly.
 
-Here is a diagram to show where the Codec is:
+Here is a diagram to show where the `Codec` is:
 
 ![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
 
@@ -105,7 +105,7 @@ def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return keypoints, scores
 ```
 
-By default, the `decode` method only performs decoding on a single instance. You can also implement the `batch_decode` method to boost the decoding process.
+By default, the `decode()` method only performs decoding on a single instance. You can also implement the `batch_decode()` method to boost the decoding process.
 
 ## Common Usage
 
