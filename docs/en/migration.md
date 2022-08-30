@@ -4,6 +4,7 @@ MMPose 1.0 has made significant BC-breaking changes, with modules redesigned and
 
 Whether you are **a user of the previous version of MMPose**, or **a new user wishing to migrate your Pytorch project to MMPose**, you can learn how to build a project based on MMpose 1.0 with this tutorial.
 
+```{note}
 This  tutorial covers what developers will care about when using MMPose 1.0:
 
 - Overall code architecture
@@ -13,6 +14,7 @@ This  tutorial covers what developers will care about when using MMPose 1.0:
 - How to use my own custom datasets
 
 - How to add new modules(backbone, head, loss function, etc.)
+```
 
 ## Overall code architecture
 
@@ -52,8 +54,6 @@ The organization of data in MMPose contains:
 
 In MMPose, **data is organized in COCO style**, and we define a base class `BaseCocoStyleDataset` under `$MMPOSE/mmpose/datasets/base`.
 
-Please refer to \[COCO\] for more details about the COCO data format.
-
 The data format of bbox is in `xyxy` instead of `xywh`, which is consistent with the format used in MMDetection.
 
 If your data is originally organized in COCO format, then you can use our implementation directly.
@@ -61,6 +61,10 @@ If your data is originally organized in COCO format, then you can use our implem
 If not, you need to define the keypoint information of the data (keypoint order, skeleton information, weights, sigmas of annotation) in `$MMPOSE/configs/_base_/datasets`.
 
 For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data format.
+
+```{note}
+Please refer to \[COCO\] for more details about the COCO data format.
+```
 
 Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
 
@@ -257,9 +261,11 @@ Commonly used transforms are defined in `$MMPOSE/mmpose/datasets/transforms/comm
 
 For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
 
-Note that most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
-
 All transforms in this part will only generate the **transformation matrix** and **will not** perform the actual transformation on the input data.
+
+```{note}
+Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
+```
 
 #### ii. Transformation
 
@@ -291,7 +297,11 @@ Note that we unify the data format of top-down and bottom-up methods, which mean
 
 - Bottom-up: `[B, N, K, D]`
 
-The provided codecs are stored under `$MMPOSE/mmpose/codecs`. If you wish to customize a new codec, you can refer to \[Codec\] for more details.
+The provided codecs are stored under `$MMPOSE/mmpose/codecs`.
+
+```{note}
+If you wish to customize a new codec, you can refer to \[Codec\] for more details.
+```
 
 #### iv. Packing
 
@@ -685,7 +695,7 @@ class GenerateTarget(BaseTransform):
 
 The data normalization operations `NormalizeTensor` and `ToTensor` will be replaced by **DataPreprocessor** module, which will no longer be used as a preprocessing operation, but will be merged as a part of the model forward propagation.
 
-#### compatibility of Models
+#### Compatibility of Models
 
 We have performed compatibility with the model weights provided by model zoo to ensure that the same model weights can get a comparable accuracy in both version. But note that due to the large number of differences in processing details, the inference outputs can be slightly different(less than 0.05% difference in accuracy).
 

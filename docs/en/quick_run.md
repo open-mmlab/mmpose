@@ -33,7 +33,9 @@ If MMPose is properly installed, you will get the visualized result as follows:
 
 ![inference_demo](https://user-images.githubusercontent.com/13503330/187112344-0c5062f2-689c-445c-a259-d5d4311e2497.png)
 
+```{note}
 More demo and full instructions can be found in \[Demo\].
+```
 
 ### Prepare the dataset
 
@@ -57,7 +59,11 @@ MMPose supports multiple tasks. We provide the corresponding guidelines for data
 
 - 2D Animal Keypoint Detection
 
-You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO dataset preparation. In MMPose, we suggest placing the data under `$MMPOSE/data`.
+You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO dataset preparation.
+
+```{note}
+In MMPose, we suggest placing the data under `$MMPOSE/data`.
+```
 
 ### Prepare a config
 
@@ -87,7 +93,9 @@ You can set the path of the COCO dataset by modifying `data_root` in the configï
 data_root = 'data/coco'
 ```
 
+```{note}
 If you wish to learn more about our config system, please refer to \[Configs\].
+```
 
 ### Browse the transformed images
 
@@ -152,8 +160,12 @@ Here is an example of evaluation resultsï¼š
 08/23 12:04:42 - mmengine - INFO - Epoch(test) [3254/3254]  coco/AP: 0.704168  coco/AP .5: 0.883134  coco/AP .75: 0.777015  coco/AP (M): 0.667207  coco/AP (L): 0.768644  coco/AR: 0.750913  coco/AR .5: 0.919710  coco/AR .75: 0.815334  coco/AR (M): 0.709232  coco/AR (L): 0.811334
 ```
 
+```{note}
 If you want to perform evaluation on other datasets, please refer to \[Train & Test\].
+```
 
 ### Visualization
 
+```{note}
 If you wish to apply MMPose to your own projects, we have prepared a detailed \[migration guide\].
+```

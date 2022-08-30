@@ -347,13 +347,13 @@ MMPose follow the style below to name config files：
 
 The filename is divided into four parts:
 
-- Algorithm Information: the name of algorithm, such as `topdown-heatmap`, `topdown-rle`
+- **Algorithm Information**: the name of algorithm, such as `topdown-heatmap`, `topdown-rle`
 
-- Module Information: list of intermediate modules in the forward order, such as `res101`, `hrnet-w48`
+- **Module Information**: list of intermediate modules in the forward order, such as `res101`, `hrnet-w48`
 
-- Training Information: settings of training(e.g. `batch_size`, `scheduler`), such as `8xb64-210e`
+- **Training Information**: settings of training(e.g. `batch_size`, `scheduler`), such as `8xb64-210e`
 
-- Data Information: the name of dataset, the reshape of input data, such as `ap10k-256x256`, `zebra-160x160`
+- **Data Information**: the name of dataset, the reshape of input data, such as `ap10k-256x256`, `zebra-160x160`
 
 Words between different parts are connected by `'_'`, and those from the same part are connected by `'-'`.
 
@@ -425,4 +425,6 @@ cfg = Config.fromfile('resnet50_lr0.01.py')
 cfg.optimizer  # ConfigDict(type='SGD', lr=0.01)
 ```
 
+```{note}
 If you wish to learn more about advanced usages of the config system, please refer to \[Config\].
+```
