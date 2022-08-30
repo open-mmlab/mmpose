@@ -11,6 +11,13 @@ default_hooks = dict(
     # visualization=dict(type='PoseVisualizationHook'))
 )
 
+# custom hooks
+custom_hooks = [
+    # Synchronize model buffers such as running_mean and running_var in BN
+    # at the end of each epoch
+    dict(type='SyncBuffersHook')
+]
+
 # multi-processing backend
 env_cfg = dict(
     cudnn_benchmark=False,
@@ -38,3 +45,8 @@ file_client_args = dict(backend='disk')
 #         './data/': 's3://openmmlab/datasets/pose/',
 #         'data/': 's3://openmmlab/datasets/pose/'
 #     }))
+
+# training/validatin/testing progress
+train_cfg = dict(by_epoch=True)
+val_cfg = dict()
+test_cfg = dict()

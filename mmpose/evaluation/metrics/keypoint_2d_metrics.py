@@ -91,7 +91,7 @@ class PCKAccuracy(BaseMetric):
                 assert 'bboxes' in gt, 'The ground truth data info do not ' \
                     'have the expected normalized_item ``"bbox"``.'
                 # ground truth bboxes, [1, 4]
-                bbox_size_ = np.max(gt['bboxes'][0][2:])
+                bbox_size_ = np.max(gt['bboxes'][0][2:] - gt['bboxes'][0][:2])
                 bbox_size = np.array([bbox_size_, bbox_size_]).reshape(-1, 2)
                 result['bbox_size'] = bbox_size
 
@@ -387,7 +387,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             }
 
             del metrics[f'PCK@{self.thr}']
-            for stats_name, stat in stats.item():
+            for stats_name, stat in stats.items():
                 metrics[f'{stats_name} PCK'] = stat
 
         if 'torso' in self.norm_item:
@@ -397,9 +397,8 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             logger.info(f'Evaluating {self.__class__.__name__} '
                         f'(normalized by ``"torso_size"``)...')
 
-            pck_p, pckh, _ = keypoint_pck_accuracy(pred_coords, gt_coords,
-                                                   mask, self.thr,
-                                                   norm_size_torso)
+            pck_p, pck, _ = keypoint_pck_accuracy(pred_coords, gt_coords, mask,
+                                                  self.thr, norm_size_torso)
 
             stats = {
                 'Head': pck_p[2],
@@ -413,7 +412,7 @@ class JhmdbPCKAccuracy(PCKAccuracy):
             }
 
             del metrics[f'tPCK@{self.thr}']
-            for stats_name, stat in stats.item():
+            for stats_name, stat in stats.items():
                 metrics[f'{stats_name} tPCK'] = stat
 
         return metrics
@@ -618,9 +617,9 @@ class NME(BaseMetric):
             When set as `'keypoint_distance'`, should specify the argument
             `keypoint_indices` that are used to calculate the keypoint
             distance as the normalization factor.
-        norm_item (str, optional): The item in the datainfo used as the
-            normalization factor. For example, `'box_size'` in `'AFLWDataset'`.
-            Only valid when ``norm_mode`` is ``use_norm_item``.
+        norm_item (str, optional): The item used as the normalization factor.
+            For example, `'bbox_size'` in `'AFLWDataset'`. Only valid when
+            ``norm_mode`` is ``use_norm_item``.
             Default: ``None``.
         keypoint_indices (Sequence[int], optional): The keypoint indices used
             to calculate the keypoint distance as the normalization factor.
@@ -702,12 +701,21 @@ class NME(BaseMetric):
             }
 
             if self.norm_item:
-                assert self.norm_item in gt, f'The ground truth data info ' \
-                    f'do not have the expected normalized factor ' \
-                    f'"{self.norm_item}"'
-                # ground truth norm_item
-                result[self.norm_item] = np.array(gt[self.norm_item]).reshape(
-                    [-1, 1])
+                if self.norm_item == 'bbox_size':
+                    assert 'bboxes' in gt, 'The ground truth data info do ' \
+                        'not have the item ``bboxes`` for expected ' \
+                        'normalized_item ``"bbox_size"``.'
+                    # ground truth bboxes, [1, 4]
+                    bbox_size = np.max(gt['bboxes'][0][2:] -
+                                       gt['bboxes'][0][:2])
+                    result['bbox_size'] = np.array([bbox_size]).reshape(-1, 1)
+                else:
+                    assert self.norm_item in gt, f'The ground truth data ' \
+                        f'info do not have the expected normalized factor ' \
+                        f'"{self.norm_item}"'
+                    # ground truth norm_item
+                    result[self.norm_item] = np.array(
+                        gt[self.norm_item]).reshape([-1, 1])
 
             self.results.append(result)
 

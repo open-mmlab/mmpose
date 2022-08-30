@@ -112,7 +112,9 @@ class JhmdbDataset(BaseCocoStyleDataset):
         # keypoints in shape [1, K, 2] and keypoints_visible in [1, K]
         _keypoints = np.array(
             ann['keypoints'], dtype=np.float32).reshape(1, -1, 3)
-        keypoints = _keypoints[..., :2]
+        # JHMDB uses matlab format, index is 1-based,
+        # we should first convert to 0-based index
+        keypoints = _keypoints[..., :2] - 1
         keypoints_visible = np.minimum(1, _keypoints[..., 2])
 
         num_keypoints = np.count_nonzero(keypoints.max(axis=2))
