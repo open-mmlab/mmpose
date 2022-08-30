@@ -404,10 +404,10 @@ A typical `data_preprocessor` in the config is as follows:
 
 ```Python
 data_preprocessor=dict(
-        type='PoseDataPreprocessor',
-        mean=[123.675, 116.28, 103.53],
-        std=[58.395, 57.12, 57.375],
-        bgr_to_rgb=True),
+    type='PoseDataPreprocessor',
+    mean=[123.675, 116.28, 103.53],
+    std=[58.395, 57.12, 57.375],
+    bgr_to_rgb=True),
 ```
 
 It will transpose the channel order of the input image from `bgr` to `rgb` and normalize the data according to `mean` and `std`.
@@ -466,6 +466,10 @@ Modules related to Head in MMPose are defined under `$MMPOSE/mmpose/models/heads
 - loss()
 
 Specifically, the `predict()` should return the result in the input image space, so you should call `self.decode()`, which we have implemented in `BaseHead`, to decode the output. It will call the `decoder` provided by the codec to perform the decoding process.
+
+On the other hand, we will perform test-time augmentation(TTA) in `predict()`.
+
+A commonly used TTA is `flip_test`, namely, an image and its flipped version are sent into the model to inference, and the output of the flipped version will be flipped back, then average them to stabilize the prediction.
 
 Here is an example of `predict()` in `RegressionHead`:
 

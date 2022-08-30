@@ -52,14 +52,14 @@ loss = MODELS.build(loss_cfg) # equals to `loss = Loss_A(param1=1.0, param2=True
 
 Here is a list of pre-defined registries in MMPose:
 
-- DATASETS: data-related modules
-- TRANSFORMS: data transformations
-- MODELS: all kinds of modules inheriting `nn.Module` (Backbone, Neck, Head, Loss, etc.)
-- VISUALIZERS: visualization tools
-- VISBACKENDS: visualizer backend
-- METRICS: all kinds of evaluation metrics
-- KEYPOINT_CODECS: keypoint encoder/decoder
-- HOOKS: all kinds of hooks like `CheckpointHook`
+- `DATASETS`: data-related modules
+- `TRANSFORMS`: data transformations
+- `MODELS`: all kinds of modules inheriting `nn.Module` (Backbone, Neck, Head, Loss, etc.)
+- `VISUALIZERS`: visualization tools
+- `VISBACKENDS`: visualizer backend
+- `METRICS`: all kinds of evaluation metrics
+- `KEYPOINT_CODECS`: keypoint encoder/decoder
+- `HOOKS`: all kinds of hooks like `CheckpointHook`
 
 All registries are defined in `$MMPOSE/mmpose/registry.py`.
 
@@ -87,13 +87,13 @@ python tools/analysis/print_config.py /PATH/TO/CONFIG
 
 General configuration refers to the necessary configuration non-related to training or testing, mainly including:
 
-- Default Hooks: time statistics, training logs, checkpoints etc.
+- **Default Hooks**: time statistics, training logs, checkpoints etc.
 
-- Environment: distributed backend, cudnn, multi-processing etc.
+- **Environment**: distributed backend, cudnn, multi-processing etc.
 
-- Visualizer: visualization backend and strategy
+- **Visualizer**: visualization backend and strategy
 
-- Log: log level, format, printing and recording interval etc.
+- **Log**: log level, format, printing and recording interval etc.
 
 Here is the description of General configuration:
 
@@ -132,15 +132,15 @@ _base_ = ['../../../_base_/default_runtime.py'] # take the config file as the st
 
 Data configuration refers to the data processing related settings, mainly including:
 
-- File Client: data storage backend, default is `disk`, we also support `LMDB`, `S3 Bucket` etc.
+- **File Client**: data storage backend, default is `disk`, we also support `LMDB`, `S3 Bucket` etc.
 
-- Dataset: image and annotation file path
+- **Dataset**: image and annotation file path
 
-- Data Loading: loading configuration, batch size etc.
+- **Dataloader**: loading configuration, batch size etc.
 
-- Data Pipeline: data augmentation
+- **Pipeline**: data augmentation
 
-- Input encoder: encoding the annotation into specific form of target
+- **Input Encoder**: encoding the annotation into specific form of target
 
 Here is the description of Data configuration:
 
@@ -206,7 +206,7 @@ test_dataloader = val_dataloader # use val as test by default
 
 ### Training
 
-Training configuration refers to the training related settings, mainly including:
+Training configuration refers to the training related settings including:
 
 - Resume training
 
@@ -243,7 +243,7 @@ auto_scale_lr = dict(base_batch_size=512) # auto scale the lr according to batch
 
 ### Model
 
-Model configuration refers to model training and inference related settings, mainly including:
+Model configuration refers to model training and inference related settings including:
 
 - Model Structure
 
