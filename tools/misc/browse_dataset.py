@@ -41,8 +41,8 @@ def parse_args():
         default='transformed',
         type=str,
         choices=['original', 'transformed'],
-        help='display mode; display original pictures or transformed pictures'
-        ' or comparison pictures. "original" means show images load from disk'
+        help='display mode; display original pictures or transformed '
+        'pictures. "original" means to show images load from disk'
         '; "transformed" means to show images after transformed;'
         'Defaults to "transformed".')
     parser.add_argument(
@@ -87,15 +87,13 @@ def main():
     if args.mode == 'original':
         cfg[f'{args.phase}_dataloader'].dataset.pipeline = []
     else:
+        # pack transformed keypoints for visualization
         cfg[f'{args.phase}_dataloader'].dataset.pipeline[
             -1].pack_transformed = True
 
     # unset `bbox_file` to make dataset read in reasonable keypoints
     if 'bbox_file' in cfg[f'{args.phase}_dataloader'].dataset:
         cfg[f'{args.phase}_dataloader'].dataset.bbox_file = None
-
-    # pack transformed keypoints for visualization
-    # print(cfg[f'{args.phase}_dataloader'].dataset)
 
     dataset = build_from_cfg(cfg[f'{args.phase}_dataloader'].dataset, DATASETS)
 
@@ -165,4 +163,4 @@ def main():
 
 
 if __name__ == '__main__':
-    item = main()
+    main()
