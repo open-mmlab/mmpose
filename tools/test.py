@@ -57,8 +57,9 @@ def merge_args(cfg, args):
     # -------------------- visualization --------------------
     if args.show or (args.show_dir is not None):
         assert 'visualization' in cfg.default_hooks, \
-            'VisualizationHook is not set in the `default_hooks` field of ' \
-            'config. Please set `visualization=dict(type="VisualizationHook")`'
+            'PoseVisualizationHook is not set in the ' \
+            '`default_hooks` field of config. Please set ' \
+            '`visualization=dict(type="PoseVisualizationHook")`'
 
         cfg.default_hooks.visualization.enable = True
         cfg.default_hooks.visualization.show = args.show
