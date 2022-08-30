@@ -16,6 +16,8 @@ This  tutorial covers what developers will care about when using MMPose 1.0:
 
 ## Overall code architecture
 
+![overall-en](https://user-images.githubusercontent.com/13503330/187369670-61e24714-5da0-4826-a335-56c22c51caab.png)
+
 Generally speaking, there are **five parts** developers will use during project development:
 
 - **General:** Environment, Hook, Checkpoint, Logger, Timer, etc.
