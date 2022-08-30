@@ -287,14 +287,18 @@ class RandomHalfBody(BaseTransform):
 
     def __init__(self,
                  min_total_keypoints: int = 8,
-                 min_half_keypoints: int = 2,
+                 min_upper_keypoints: int = 2,
+                 min_lower_keypoints: int = 3,
                  padding: float = 1.5,
-                 prob: float = 0.3) -> None:
+                 prob: float = 0.3,
+                 upper_prioritized_prob: float = 0.7) -> None:
         super().__init__()
         self.min_total_keypoints = min_total_keypoints
-        self.min_half_keypoints = min_half_keypoints
+        self.min_upper_keypoints = min_upper_keypoints
+        self.min_lower_keypoints = min_lower_keypoints
         self.padding = padding
         self.prob = prob
+        self.upper_prioritized_prob = upper_prioritized_prob
 
     def _get_half_body_bbox(self, keypoints: np.ndarray,
                             half_body_ids: List[int]
@@ -355,17 +359,17 @@ class RandomHalfBody(BaseTransform):
                 num_upper = len(upper_valid_ids)
                 num_lower = len(lower_valid_ids)
 
-                select_upper = np.random.rand() < 0.5
-                if (num_upper < self.min_half_keypoints
-                        and num_lower < self.min_half_keypoints):
+                prefer_upper = np.random.rand() < self.upper_prioritized_prob
+                if (num_upper < self.min_upper_keypoints
+                        and num_lower < self.min_lower_keypoints):
                     indices = None
-                elif num_lower < self.min_half_keypoints:
+                elif num_lower < self.min_lower_keypoints:
                     indices = upper_valid_ids
-                elif num_upper < self.min_half_keypoints:
+                elif num_upper < self.min_upper_keypoints:
                     indices = lower_valid_ids
                 else:
                     indices = (
-                        upper_body_ids if select_upper else lower_body_ids)
+                        upper_body_ids if prefer_upper else lower_body_ids)
 
             half_body_ids.append(indices)
 
@@ -413,9 +417,11 @@ class RandomHalfBody(BaseTransform):
         """
         repr_str = self.__class__.__name__
         repr_str += f'(min_total_keypoints={self.min_total_keypoints}, '
-        repr_str += f'min_half_keypoints={self.min_half_keypoints}, '
+        repr_str += f'min_upper_keypoints={self.min_upper_keypoints}, '
+        repr_str += f'min_lower_keypoints={self.min_lower_keypoints}, '
         repr_str += f'padding={self.padding}, '
-        repr_str += f'prob={self.prob})'
+        repr_str += f'prob={self.prob}, '
+        repr_str += f'upper_prioritized_prob={self.upper_prioritized_prob})'
         return repr_str
 
 
