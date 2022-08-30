@@ -279,7 +279,11 @@ Currently we support the following types of Targets.
 - `keypoint_y_labels`: y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
 
-Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances in the same image, in shape `[batch_size, num_instances, num_keypoints, dim_coordinates]`：
+Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances in the same image, in shape:
+
+```Python
+[batch_size, num_instances, num_keypoints, dim_coordinates]
+```
 
 - top-down: `[B, 1, K, D]`
 
@@ -293,13 +297,54 @@ After the data is transformed, you need to pack it by using `PackPoseInputs`.
 
 This method converts the data stored in the dictionary `results` into the formats required for MMEngine training, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
 
-The packed `PoseDataSample` contains:
+Specifically, we divide the data into `gt` and `pred`, each of which has the following types:
 
-- Original image information: used for Evaluation
+- instances(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
+- instance_labels(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
+- fields(torch.tensor): instance-level training labels with spatial information(e.g. Gaussian Heatmaps), used for model training in the output scale space
 
-- Data in input space and output space: used for visualization in training，and calculation of loss and accuracy
+The following is an example of the implementation of `PoseDataSample` under the hood:
 
-- BBox information: used for transformation between different scale spaces
+```Python
+def get_pose_data_sample(self):
+    # meta
+    pose_meta = dict(
+        img_shape=(600, 900),  # [h, w, c]
+        crop_size=(256, 192),  # [h, w]
+        heatmap_size=(64, 48),  # [h, w]
+    )
+
+    # gt_instances
+    gt_instances = InstanceData()
+    gt_instances.bboxes = np.random.rand(1, 4)
+    gt_instances.keypoints = np.random.rand(1, 17, 2)
+
+    # gt_instance_labels
+    gt_instance_labels = InstanceData()
+    gt_instance_labels.keypoint_labels = torch.rand(1, 17, 2)
+    gt_instance_labels.keypoint_weights = torch.rand(1, 17)
+
+    # pred_instances
+    pred_instances = InstanceData()
+    pred_instances.keypoints = np.random.rand(1, 17, 2)
+    pred_instances.keypoint_scores = np.random.rand(1, 17)
+
+    # gt_fields
+    gt_fields = PixelData()
+    gt_fields.heatmaps = torch.rand(17, 64, 48)
+
+    # pred_fields
+    pred_fields = PixelData()
+    pred_fields.heatmaps = torch.rand(17, 64, 48)
+    data_sample = PoseDataSample(
+        gt_instances=gt_instances,
+        pred_instances=pred_instances,
+        gt_fields=gt_fields,
+        pred_fields=pred_fields,
+        metainfo=pose_meta)
+
+    return data_sample
+```
 
 ## Step3: Model
 
