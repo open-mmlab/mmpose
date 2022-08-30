@@ -369,7 +369,7 @@ class RandomHalfBody(BaseTransform):
                     indices = lower_valid_ids
                 else:
                     indices = (
-                        upper_body_ids if prefer_upper else lower_body_ids)
+                        upper_valid_ids if prefer_upper else lower_valid_ids)
 
             half_body_ids.append(indices)
 
