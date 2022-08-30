@@ -24,6 +24,23 @@ def parse_args():
         'in xxx=yyy format will be merged into config file. For example, '
         "'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'")
     parser.add_argument(
+        '--show-dir',
+        help='directory where the visualization images will be saved.')
+    parser.add_argument(
+        '--show',
+        action='store_true',
+        help='whether to display the prediction results in a window.')
+    parser.add_argument(
+        '--interval',
+        type=int,
+        default=1,
+        help='visualize per interval samples.')
+    parser.add_argument(
+        '--wait-time',
+        type=float,
+        default=1,
+        help='display time of every window. (second)')
+    parser.add_argument(
         '--launcher',
         choices=['none', 'pytorch', 'slurm', 'mpi'],
         default='none',
@@ -35,6 +52,24 @@ def parse_args():
     return args
 
 
+def merge_args(cfg, args):
+    """Merge CLI arguments to config."""
+    # -------------------- visualization --------------------
+    if args.show or (args.show_dir is not None):
+        assert 'visualization' in cfg.default_hooks, \
+            'VisualizationHook is not set in the `default_hooks` field of ' \
+            'config. Please set `visualization=dict(type="VisualizationHook")`'
+
+        cfg.default_hooks.visualization.enable = True
+        cfg.default_hooks.visualization.show = args.show
+        if args.show:
+            cfg.default_hooks.visualization.wait_time = args.wait_time
+        cfg.default_hooks.visualization.out_dir = args.show_dir
+        cfg.default_hooks.visualization.interval = args.interval
+
+    return cfg
+
+
 def main():
     args = parse_args()
 
@@ -44,6 +79,7 @@ def main():
 
     # load config
     cfg = Config.fromfile(args.config)
+    cfg = merge_args(cfg, args)
     cfg.launcher = args.launcher
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)

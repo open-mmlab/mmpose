@@ -63,6 +63,7 @@ def register_all_modules(init_default_scope: bool = True) -> None:
 
     import mmpose.codecs  # noqa: F401, F403
     import mmpose.datasets  # noqa: F401,F403
+    import mmpose.engine  # noqa: F401,F403
     import mmpose.evaluation  # noqa: F401,F403
     import mmpose.models  # noqa: F401,F403
     import mmpose.visualization  # noqa: F401,F403
