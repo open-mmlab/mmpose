@@ -2,9 +2,25 @@
 
 ## **v1.0.0beta (1/09/2022)**
 
-In this release, we made lots of major refactoring and modifications.
+We are excited to announce the release of MMPose 1.0.0beta.
+MMPose 1.0.0beta is the first version of MMPose 1.x, a part of the OpenMMLab 2.x projects.
+Built upon the new [training engine](https://github.com/open-mmlab/mmengine),
+MMPose 1.x unifies the interfaces of dataset, models, evaluation, and visualization with faster training and testing speed.
+It also provide a general semi-supervised object detection framework, and more strong baselines.
 
-For more details, please refer to [Migration](../migration.md).
+**Highlights**
+
+- **New engines**. MMPose 1.x is based on MMEngine\](https://github.com/open-mmlab/mmengine), which provides a general and powerful runner that allows more flexible customizations and significantly simplifies the entrypoints of high-level interfaces.
+
+- **Unified interfaces**. As a part of the OpenMMLab 2.x projects, MMPose 1.x unifies and refactors the interfaces and internal logics of train, testing, datasets, models, evaluation, and visualization. All the OpenMMLab 2.x projects share the same design in those interfaces and logics to allow the emergence of multi-task/modality algorithms.
+
+- **Faster speed**. We optimize the training and inference speed for common models, achieving up to xx% speedup for training and xx% for inference.
+
+- **More documentation and tutorials**. We add a bunch of documentation and tutorials to help users get started more smoothly. Read it [here](https://mmpose.readthedocs.io/en/1.x/).
+
+### Breaking Changes
+
+In this release, we made lots of major refactoring and modifications. Please refer to the [migration guide](../migration.md) for details and migration instructions.
 
 ## **v0.28.0 (28/07/2022)**
 
