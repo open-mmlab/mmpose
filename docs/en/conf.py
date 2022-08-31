@@ -107,9 +107,9 @@ master_doc = 'index'
 
 
 def builder_inited_handler(app):
-    subprocess.run(['./collect_modelzoo.py'])
-    subprocess.run(['./merge_docs.sh'])
-    subprocess.run(['./stats.py'])
+    subprocess.run(['python', './collect_modelzoo.py'])
+    subprocess.run(['sh', './merge_docs.sh'])
+    subprocess.run(['python', './stats.py'])
 
 
 def setup(app):
