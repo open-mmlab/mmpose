@@ -32,7 +32,7 @@ MMPose supported datasets:
 
 </details>
 
-For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and run the [preprocessing script](/tools/dataset/preprocess_h36m.py), which will extract camera parameters and pose annotations at full framerate (50 FPS) and downsampled framerate (10 FPS). The processed data should have the following structure:
+For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and run the [preprocessing script](/tools/dataset_converters/preprocess_h36m.py), which will extract camera parameters and pose annotations at full framerate (50 FPS) and downsampled framerate (10 FPS). The processed data should have the following structure:
 
 ```text
 mmpose
@@ -73,8 +73,6 @@ mmpose
             ├── S9
             `── S11
 ```
-
-Please note that Human3.6M dataset is also used in the [3D_body_mesh](/docs/en/tasks/3d_body_mesh.md) task, where different schemes for data preprocessing and organizing are adopted.
 
 ## CMU Panoptic
 
