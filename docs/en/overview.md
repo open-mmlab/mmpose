@@ -1,10 +1,12 @@
 # Overview
 
-This chapter introduces you to the framework of MMPose, and provides links to detailed tutorials about MMPose.
+This chapter will introduce you to the overall framework of MMPose and provide links to detailed tutorials.
 
 ## What is MMPose
 
-MMPose is an open-source toolbox for pose estimation based on Pytorch. It is a part of the [OpenMMLab](https://github.com/open-mmlab) ecosystem. It contains a rich set of 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and animal pose estimation as well as related components and modules, and below is its whole framework:
+MMPose is a Pytorch-based pose estimation open-source toolkit, a member of the [OpenMMLab Project](https://github.com/open-mmlab). It contains a rich set of algorithms for 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and animal pose estimation as well as related components and modules, below is its overall framework.
+
+MMPose consists of **7** main components:
 
 - **apis** provides high-level APIs for model inference.
 - **structures** provides data structures like bbox, keypoint and PoseDataSample.
@@ -25,10 +27,11 @@ MMPose is an open-source toolbox for pose estimation based on Pytorch. It is a p
 
 ## How to Use this Guide
 
-Here is a detailed step-by-step guide for all kinds of users:
+We have prepared detailed guidelines for all types of users:
 
-1. For installation instrunctions, please refer to [installation.md](./installation.md)
-2. Basic usage of MMPose:
+1. For installation instrunctions:
+   - [Installation](./installation.md)
+2. For the basic usage of MMPose:
    - [Quick Run](./quick_run.md)
    - [Inference](./user_guides/inference.md)
 3. For users who want to learn more about components of MMPose:
