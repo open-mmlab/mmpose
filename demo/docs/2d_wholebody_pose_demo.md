@@ -4,97 +4,84 @@
 
 ### 2D Human Whole-Body Pose Top-Down Image Demo
 
-#### Using gt human bounding boxes as input
+#### Use full image as input
 
-We provide a demo script to test a single image, given gt json file.
+We provide a demo script to test a single image, using the full image as input bounding box.
 
 ```shell
-python demo/top_down_img_demo.py \
-    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --img-root ${IMG_ROOT} --json-file ${JSON_FILE} \
-    --out-img-root ${OUTPUT_DIR} \
-    [--show --device ${GPU_ID or CPU}] \
-    [--kpt-thr ${KPT_SCORE_THR}]
+python demo/image_demo.py \
+    ${IMG_FILE} ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
+    --out-file ${OUTPUT_FILE} \
+    [--device ${GPU_ID or CPU}] \
+    [--draw_heatmap]
 ```
 
 Examples:
 
 ```shell
-python demo/top_down_img_demo.py \
-    configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
-    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
-    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
-    --out-img-root vis_results
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_vipnas-res50_dark-8xb64-210e_coco-wholebody-256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth \
+    --out-file vis_results.jpg
+
 ```
 
 To run demos on CPU:
 
 ```shell
-python demo/top_down_img_demo.py \
-    configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
-    https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
-    --img-root tests/data/coco/ --json-file tests/data/coco/test_coco.json \
-    --out-img-root vis_results \
+python demo/image_demo.py \
+    tests/data/coco/000000000785.jpg \
+    configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_vipnas-res50_dark-8xb64-210e_coco-wholebody-256x192.py \
+    https://download.openmmlab.com/mmpose/top_down/vipnas/vipnas_res50_wholebody_256x192_dark-67c0ce35_20211112.pth \
+    --out-file vis_results.jpg \
     --device=cpu
 ```
 
-#### Using mmdet for human bounding box detection
+#### Use mmdet for human bounding box detection
 
 We provide a demo script to run mmdet for human detection, and mmpose for pose estimation.
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
 
 ```shell
-python demo/top_down_img_demo_with_mmdet.py \
+python demo/topdown_demo_with_mmdet.py \
     ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
     ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --img-root ${IMG_ROOT} --img ${IMG_FILE} \
-    --out-img-root ${OUTPUT_DIR} \
-    [--show --device ${GPU_ID or CPU}] \
+    --input ${IMG_OR_VIDEO_FILE} \
+    --output-root ${OUTPUT_DIR} \
+    [--show --draw-heatmap --device ${GPU_ID or CPU}] \
     [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
 ```
 
 Examples:
 
 ```shell
-python demo/top_down_img_demo_with_mmdet.py \
+python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
-    --img-root tests/data/coco/ \
-    --img 000000196141.jpg \
-    --out-img-root vis_results
+    --input tests/data/coco/000000196141.jpg \
+    --output-root vis_results/ --show
 ```
 
 ### 2D Human Whole-Body Pose Top-Down Video Demo
 
-We also provide a video demo to illustrate the results.
+The above demo script can also take video as input, and run mmdet for human detection, and mmpose for pose estimation.
 
 Assume that you have already installed [mmdet](https://github.com/open-mmlab/mmdetection).
-
-```shell
-python demo/top_down_video_demo_with_mmdet.py \
-    ${MMDET_CONFIG_FILE} ${MMDET_CHECKPOINT_FILE} \
-    ${MMPOSE_CONFIG_FILE} ${MMPOSE_CHECKPOINT_FILE} \
-    --video-path ${VIDEO_PATH} \
-    --out-video-root ${OUTPUT_VIDEO_ROOT} \
-    [--show --device ${GPU_ID or CPU}] \
-    [--bbox-thr ${BBOX_SCORE_THR} --kpt-thr ${KPT_SCORE_THR}]
-```
-
-Note that `${VIDEO_PATH}` can be the local path or **URL** link to video file.
 
 Examples:
 
 ```shell
-python demo/top_down_video_demo_with_mmdet.py \
+python demo/topdown_demo_with_mmdet.py \
     demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py \
     https://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth \
-    configs/wholebody/2d_kpt_sview_rgb_img/topdown_heatmap/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py \
+    configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py \
     https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w48_coco_wholebody_384x288_dark-f5726563_20200918.pth \
-    --video-path https://user-images.githubusercontent.com/87690686/137440639-fb08603d-9a35-474e-b65f-46b5c06b68d6.mp4 \
-    --out-video-root vis_results
+    --input https://user-images.githubusercontent.com/87690686/137440639-fb08603d-9a35-474e-b65f-46b5c06b68d6.mp4 \
+    --output-root vis_results/ --show
 ```
 
 ### Speed Up Inference
@@ -103,6 +90,5 @@ Some tips to speed up MMPose inference:
 
 For top-down models, try to edit the config file. For example,
 
-1. set `flip_test=False` in [pose_hrnet_w48_dark+](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L80).
-2. set `post_process='default'` in [pose_hrnet_w48_dark+](https://github.com/open-mmlab/mmpose/tree/e1ec589884235bee875c89102170439a991f8450/configs/wholebody/darkpose/coco-wholebody/hrnet_w48_coco_wholebody_384x288_dark_plus.py#L81).
-3. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+1. set `flip_test=False` in [pose_hrnet_w48_dark+](/configs/wholebody_2d_keypoint/topdown_heatmap/coco-wholebody/td-hm_hrnet-w48_dark-8xb32-210e_coco-wholebody-384x288.py#L90).
+2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
