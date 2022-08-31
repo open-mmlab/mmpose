@@ -24,11 +24,11 @@ Generally speaking, there are **five parts** developers will use during project 
 
 - **General:** Environment, Hook, Checkpoint, Logger, Timer, etc.
 
-- **Data:** Dataset、Dataloader、Data Augmentations, etc.
+- **Data:** Dataset, Dataloader, Data Augmentations, etc.
 
-- **Training:** Optimizer、Learning Rate, etc.
+- **Training:** Optimizer, Learning Rate, etc.
 
-- **Model:** Backbone、Neck、Head、Loss functions, etc.
+- **Model:** Backbone, Neck, Head, Loss functions, etc.
 
 - **Evaluation:** Metrics
 

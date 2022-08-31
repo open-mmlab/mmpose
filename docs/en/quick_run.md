@@ -25,7 +25,7 @@ We provide a useful script to perform pose estimation with a pretrained model:
 ```Bash
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
-    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py \
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py \
     https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192_rle-2ea9bb4a_20220616.pth
 ```
 
@@ -44,8 +44,6 @@ MMPose supports multiple tasks. We provide the corresponding guidelines for data
 - [2D Body Keypoint Detection](./dataset_zoo/2d_body_keypoint.md)
 
 - [3D Body Keypoint Detection](./dataset_zoo/3d_body_keypoint.md)
-
-- [3D Body Mesh Recovery](./dataset_zoo/3d_body_mesh.md)
 
 - [2D Hand Keypoint Detection](./dataset_zoo/2d_hand_keypoint.md)
 
@@ -103,7 +101,7 @@ Before training, we can browse the transformed training data to check if the ima
 
 ```Bash
 python tools/misc/browse_dastaset.py \
-    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
 ```
 
 ![transformed_training_img](https://user-images.githubusercontent.com/13503330/187112376-e604edcb-46cc-4995-807b-e8f204f991b0.png)
@@ -113,7 +111,7 @@ python tools/misc/browse_dastaset.py \
 Use the following command to train with a single GPU:
 
 ```Bash
-python tools/train.py configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+python tools/train.py configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
 ```
 
 ```{note}
@@ -127,7 +125,7 @@ MMPose automates many useful training tricks and functions including:
 
 - Multi-GPU and Multi-Node training support
 
-- Various Data backend support, e.g. HardDisk、LMDB、Petrel、HTTP etc.
+- Various Data backend support, e.g. HardDisk, LMDB, Petrel, HTTP etc.
 
 - Mixed precision training support
 
@@ -142,7 +140,7 @@ Use the following command to evaluate the model on COCO dataset:
 
 ```Bash
 python tools/test.py \
-    configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py \
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py \
     work_dir/best_coco/AP_epoch_20.pth
 ```
 
@@ -167,6 +165,21 @@ If you want to perform evaluation on other datasets, please refer to [Train & Te
 ```
 
 ### Visualization
+
+In addition to the visualization of the keypoint skeleton, MMPose also supports the visualization of Heatmaps by setting `output_heatmap=True` in confg:
+
+```Python
+model = dict(
+    ## omitted
+    test_cfg = dict(
+        ## omitted
+        output_heatmaps=True
+    )
+)
+```
+
+Visualization example (top: decoded keypoints; bottom: predicted heatmap):
+[vis_pred](https://user-images.githubusercontent.com/26127467/187578902-30ef7bb0-9a93-4e03-bae0-02aeccf7f689.jpg)
 
 ```{note}
 If you wish to apply MMPose to your own projects, we have prepared a detailed [Migration guide](./migration.md).
