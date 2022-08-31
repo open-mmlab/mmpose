@@ -1,3 +1,148 @@
 # Codecs
 
-Work in progress...
+In the keypoint detection task, depending on the algorithm, it is often necessary to generate targets in different formats, such as normalized coordinates, vectors and heatmaps, etc. Similarly, for the model outputs, a decoding process is required to transform them into coordinates.
+
+In normal open source code, the encoding and decoding processes are usually scattered across many files. This makes the pair of processes, which are mutually inverse, less intuitive and unified.
+
+MMPose proposes the `Codec` to integrate the `encoder` and `decoder` together, to make them modular and user friendly.
+
+Here is a diagram to show where the `Codec` is:
+
+![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
+
+A typical codec consists of two parts:
+
+- Encoder
+
+- Decoder
+
+### Encoder
+
+The encoder transforms the coordinates in the input image space into the needed target format:
+
+- Normalized Coordinates
+
+- One-dimensional Vectors
+
+- Gaussian Heatmaps
+
+For example, in the Regression-based method, the encoder will be:
+
+```Python
+def encode(
+    self,
+    keypoints: np.ndarray,
+    keypoints_visible: Optional[np.ndarray] = None
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Encoding keypoints from input image space to normalized space.
+
+    Args:
+        keypoints (np.ndarray): Keypoint coordinates in shape (N, K, D)
+        keypoints_visible (np.ndarray): Keypoint visibilities in shape
+            (N, K)
+
+    Returns:
+        tuple:
+        - reg_labels (np.ndarray): The normalized regression labels in
+            shape (N, K, D) where D is 2 for 2d coordinates
+        - keypoint_weights (np.ndarray): The target weights in shape
+            (N, K)
+    """
+
+    if keypoints_visible is None:
+        keypoints_visible = np.ones(keypoints.shape[:2], dtype=np.float32)
+
+    w, h = self.input_size
+    valid = ((keypoints >= 0) &
+             (keypoints <= [w - 1, h - 1])).all(axis=-1) & (
+                 keypoints_visible > 0.5)
+
+    reg_labels = (keypoints / np.array([w, h])).astype(np.float32)
+    keypoint_weights = np.where(valid, 1., 0.).astype(np.float32)
+
+    return reg_labels, keypoint_weights
+```
+
+### Decoder
+
+The decoder transforms the model outputs into coordinates in the input image space, which is the opposite processing of the encoder.
+
+For example, in the Regression-based method, the decoder will be:
+
+```Python
+def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Decode keypoint coordinates from normalized space to input image
+    space.
+
+    Args:
+        encoded (np.ndarray): Coordinates in shape (N, K, D)
+
+    Returns:
+        tuple:
+        - keypoints (np.ndarray): Decoded coordinates in shape (N, K, D)
+        - socres (np.ndarray): The keypoint scores in shape (N, K).
+            It usually represents the confidence of the keypoint prediction
+
+    """
+
+    if encoded.shape[-1] == 2:
+        N, K, _ = encoded.shape
+        normalized_coords = encoded.copy()
+        scores = np.ones((N, K), dtype=np.float32)
+    elif encoded.shape[-1] == 4:
+        # split coords and sigma if outputs contain output_sigma
+        normalized_coords = encoded[..., :2].copy()
+        output_sigma = encoded[..., 2:4].copy()
+        scores = (1 - output_sigma).mean(axis=-1)
+    else:
+        raise ValueError(
+            'Keypoint dimension should be 2 or 4 (with sigma), '
+            f'but got {encoded.shape[-1]}')
+
+    w, h = self.input_size
+    keypoints = normalized_coords * np.array([w, h])
+
+    return keypoints, scores
+```
+
+By default, the `decode()` method only performs decoding on a single instance. You can also implement the `batch_decode()` method to boost the decoding process.
+
+## Common Usage
+
+The example below shows how to use a codec in your config:
+
+- Definition
+
+- Generate Target
+
+- Head
+
+### Definition
+
+Take the Regression-based method to generate normalized coordinates as an example, you can define a `codec` in your config as follows:
+
+```Python
+codec = dict(type='RegressionLabel', input_size=(192, 256))
+```
+
+### Generate Target
+
+In pipelines, A codec should be passed into `GenerateTarget` to work as the `encoder`:
+
+```Python
+dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
+```
+
+### Head
+
+In MMPose workflows, we decode the model outputs in `Head`, which requires a codec to work as the `decoder`:
+
+```Python
+head=dict(
+    type='RLEHead',
+    in_channels=2048,
+    num_joints=17,
+    loss=dict(type='RLELoss', use_target_weight=True),
+    decoder=codec
+)
+```

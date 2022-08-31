@@ -13,6 +13,7 @@ All kinds of contributions are welcome, including but not limited to the followi
 4. Create a PR
 
 ```{note}
+- If you wish to PR to MMPose 1.0, please create your branch from `dev-1.x`
 - If you plan to add some new features that involve large changes, it is encouraged to open an issue for discussion first.
 - If you are the author of some papers and would like to include your method to mmpose, please contact us. We will much appreciate your contribution.
 ```
@@ -62,7 +63,9 @@ rvm install 2.7.1
 
 After this on every commit check code linters and formatter will be enforced.
 
-> Before you create a PR, make sure that your code lints and is formatted by yapf.
+```{note}
+Before you create a PR, make sure that your code lints and is formatted by yapf.
+```
 
 ### C++ and CUDA
 
