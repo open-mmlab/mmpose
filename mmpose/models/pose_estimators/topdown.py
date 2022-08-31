@@ -149,14 +149,14 @@ class TopdownPoseEstimator(BasePoseEstimator):
             batch_pred_instances = preds
             batch_pred_fields = None
 
-        results = self.add_pred_to_datasample(batch_pred_instances, batch_pred_fields,
-                                             data_samples)
+        results = self.add_pred_to_datasample(batch_pred_instances,
+                                              batch_pred_fields, data_samples)
 
         return results
 
     def add_pred_to_datasample(self, batch_pred_instances: InstanceList,
-                              batch_pred_fields: Optional[PixelDataList],
-                              batch_data_samples: SampleList) -> SampleList:
+                               batch_pred_fields: Optional[PixelDataList],
+                               batch_data_samples: SampleList) -> SampleList:
         """Add predictions into data samples.
 
         Args:
