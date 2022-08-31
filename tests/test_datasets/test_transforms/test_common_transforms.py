@@ -186,7 +186,10 @@ class TestRandomHalfBody(TestCase):
 
         # keep upper body
         transform = RandomHalfBody(
-            prob=1., min_total_keypoints=8, min_half_keypoints=2)
+            prob=1.,
+            min_total_keypoints=8,
+            min_upper_keypoints=2,
+            min_lower_keypoints=2)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['lower_body_ids']] = 0
         results = transform(results)
@@ -199,7 +202,10 @@ class TestRandomHalfBody(TestCase):
 
         # keep lower body
         transform = RandomHalfBody(
-            prob=1., min_total_keypoints=6, min_half_keypoints=4)
+            prob=1.,
+            min_total_keypoints=6,
+            min_upper_keypoints=4,
+            min_lower_keypoints=4)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['upper_body_ids']] = 0
         results = transform(results)
@@ -221,7 +227,10 @@ class TestRandomHalfBody(TestCase):
 
         # no transform due to insufficient valid total keypoints
         transform = RandomHalfBody(
-            prob=1., min_total_keypoints=8, min_half_keypoints=2)
+            prob=1.,
+            min_total_keypoints=8,
+            min_upper_keypoints=2,
+            min_lower_keypoints=2)
         results = deepcopy(self.data_info)
         results['keypoints_visible'].fill(0)
         results = transform(results)
@@ -233,7 +242,10 @@ class TestRandomHalfBody(TestCase):
 
         # no transform due to insufficient valid half-body keypoints
         transform = RandomHalfBody(
-            prob=1., min_total_keypoints=4, min_half_keypoints=3)
+            prob=1.,
+            min_total_keypoints=4,
+            min_upper_keypoints=3,
+            min_lower_keypoints=3)
         results = deepcopy(self.data_info)
         results['keypoints_visible'][:, results['upper_body_ids'][2:]] = 0
         results['keypoints_visible'][:, results['lower_body_ids'][2:]] = 0
@@ -246,11 +258,17 @@ class TestRandomHalfBody(TestCase):
 
     def test_repr(self):
         transform = RandomHalfBody(
-            min_total_keypoints=8, min_half_keypoints=2, padding=1.5, prob=0.3)
+            min_total_keypoints=8,
+            min_upper_keypoints=2,
+            min_lower_keypoints=2,
+            padding=1.5,
+            prob=0.3,
+            upper_prioritized_prob=0.7)
         self.assertEqual(
             repr(transform),
-            'RandomHalfBody(min_total_keypoints=8, min_half_keypoints=2, '
-            'padding=1.5, prob=0.3)')
+            'RandomHalfBody(min_total_keypoints=8, min_upper_keypoints=2, '
+            'min_lower_keypoints=2, padding=1.5, prob=0.3, '
+            'upper_prioritized_prob=0.7)')
 
 
 class TestRandomBBoxTransform(TestCase):
