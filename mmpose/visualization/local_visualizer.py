@@ -284,25 +284,26 @@ class PoseLocalVisualizer(Visualizer):
         heatmaps = fields.heatmaps
         if isinstance(heatmaps, np.ndarray):
             heatmaps = torch.from_numpy(heatmaps)
+        if heatmaps.dim() == 3:
+            heatmaps, _ = heatmaps.max(dim=0)
+        heatmaps = heatmaps.unsqueeze(0)
         out_image = self.draw_featmap(heatmaps, overlaid_image)
         return out_image
 
     @master_only
-    def add_datasample(
-            self,
-            name: str,
-            image: np.ndarray,
-            data_sample: PoseDataSample,
-            draw_gt: bool = True,
-            draw_pred: bool = True,
-            draw_heatmap: bool = False,
-            draw_bbox: bool = False,
-            show: bool = False,
-            wait_time: float = 0,
-            # TODO: Supported in mmengine's Viusalizer.
-            out_file: Optional[str] = None,
-            kpt_score_thr: float = 0.3,
-            step: int = 0) -> None:
+    def add_datasample(self,
+                       name: str,
+                       image: np.ndarray,
+                       data_sample: PoseDataSample,
+                       draw_gt: bool = True,
+                       draw_pred: bool = True,
+                       draw_heatmap: bool = False,
+                       draw_bbox: bool = False,
+                       show: bool = False,
+                       wait_time: float = 0,
+                       out_file: Optional[str] = None,
+                       kpt_score_thr: float = 0.3,
+                       step: int = 0) -> None:
         """Draw datasample and save to all backends.
 
         - If GT and prediction are plotted at the same time, they are
@@ -342,6 +343,8 @@ class PoseLocalVisualizer(Visualizer):
         if draw_gt:
             gt_img_data = image.copy()
             gt_img_heatmap = None
+
+            # draw bboxes & keypoints
             if 'gt_instances' in data_sample:
                 gt_img_data = self._draw_instances_kpts(
                     gt_img_data, data_sample.gt_instances, kpt_score_thr)
@@ -349,6 +352,7 @@ class PoseLocalVisualizer(Visualizer):
                     gt_img_data = self._draw_instances_bbox(
                         gt_img_data, data_sample.gt_instances)
 
+            # draw heatmaps
             if 'gt_fields' in data_sample and draw_heatmap:
                 gt_img_heatmap = self._draw_instance_heatmap(
                     data_sample.gt_fields, image)
@@ -359,12 +363,16 @@ class PoseLocalVisualizer(Visualizer):
         if draw_pred:
             pred_img_data = image.copy()
             pred_img_heatmap = None
+
+            # draw bboxes & keypoints
             if 'pred_instances' in data_sample:
                 pred_img_data = self._draw_instances_kpts(
                     pred_img_data, data_sample.pred_instances, kpt_score_thr)
                 if draw_bbox:
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
+
+            # draw heatmaps
             if 'pred_fields' in data_sample and draw_heatmap:
                 pred_img_heatmap = self._draw_instance_heatmap(
                     data_sample.pred_fields, image)
@@ -372,6 +380,7 @@ class PoseLocalVisualizer(Visualizer):
                     pred_img_data = np.concatenate(
                         (pred_img_data, pred_img_heatmap), axis=0)
 
+        # merge visualization results
         if gt_img_data is not None and pred_img_data is not None:
             if gt_img_heatmap is None and pred_img_heatmap is not None:
                 gt_img_data = np.concatenate((gt_img_data, image), axis=0)
@@ -385,6 +394,7 @@ class PoseLocalVisualizer(Visualizer):
         else:
             drawn_img = pred_img_data
 
+        # display & save visualized results
         if show:
             self.show(drawn_img, win_name=name, wait_time=wait_time)
         else:

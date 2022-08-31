@@ -11,7 +11,7 @@ from mmengine.registry import build_from_cfg
 from mmengine.structures import InstanceData
 
 from mmpose.registry import DATASETS, VISUALIZERS
-from mmpose.structures import PoseDataSample, bbox_xywh2xyxy
+from mmpose.structures import PoseDataSample
 from mmpose.utils import register_all_modules
 
 
@@ -41,8 +41,8 @@ def parse_args():
         default='transformed',
         type=str,
         choices=['original', 'transformed'],
-        help='display mode; display original pictures or transformed pictures'
-        ' or comparison pictures. "original" means show images load from disk'
+        help='display mode; display original pictures or transformed '
+        'pictures. "original" means to show images load from disk'
         '; "transformed" means to show images after transformed;'
         'Defaults to "transformed".')
     parser.add_argument(
@@ -86,14 +86,14 @@ def main():
 
     if args.mode == 'original':
         cfg[f'{args.phase}_dataloader'].dataset.pipeline = []
+    else:
+        # pack transformed keypoints for visualization
+        cfg[f'{args.phase}_dataloader'].dataset.pipeline[
+            -1].pack_transformed = True
 
     # unset `bbox_file` to make dataset read in reasonable keypoints
     if 'bbox_file' in cfg[f'{args.phase}_dataloader'].dataset:
         cfg[f'{args.phase}_dataloader'].dataset.bbox_file = None
-
-    # pack transformed keypoints for visualization
-    cfg[f'{args.phase}_dataloader'].dataset.pipeline[
-        -1].pack_transformed = True
 
     dataset = build_from_cfg(cfg[f'{args.phase}_dataloader'].dataset, DATASETS)
 
@@ -130,14 +130,14 @@ def main():
                 gt_instances = InstanceData()
                 gt_instances.keypoints = item['keypoints']
                 gt_instances.keypoints_visible = item['keypoints_visible']
-                gt_instances.bboxes = bbox_xywh2xyxy(item['bbox'])
+                gt_instances.bboxes = item['bbox']
                 data_sample = PoseDataSample()
                 data_sample.gt_instances = gt_instances
 
                 item = next_item
         else:
             img = item['inputs'].permute(1, 2, 0).numpy()
-            data_sample = item['data_sample']
+            data_sample = item['data_samples']
             img_path = data_sample.img_path
             item = next_item
 

@@ -36,6 +36,23 @@ def parse_args():
         help='whether to auto scale the learning rate according to the '
         'actual batch size and the original batch size.')
     parser.add_argument(
+        '--show-dir',
+        help='directory where the visualization images will be saved.')
+    parser.add_argument(
+        '--show',
+        action='store_true',
+        help='whether to display the prediction results in a window.')
+    parser.add_argument(
+        '--interval',
+        type=int,
+        default=1,
+        help='visualize per interval samples.')
+    parser.add_argument(
+        '--wait-time',
+        type=float,
+        default=1,
+        help='display time of every window. (second)')
+    parser.add_argument(
         '--cfg-options',
         nargs='+',
         action=DictAction,
@@ -96,6 +113,20 @@ def merge_args(cfg, args):
     # enable auto scale learning rate
     if args.auto_scale_lr:
         cfg.auto_scale_lr.enable = True
+
+    # visualization-
+    if args.show or (args.show_dir is not None):
+        assert 'visualization' in cfg.default_hooks, \
+            'PoseVisualizationHook is not set in the ' \
+            '`default_hooks` field of config. Please set ' \
+            '`visualization=dict(type="PoseVisualizationHook")`'
+
+        cfg.default_hooks.visualization.enable = True
+        cfg.default_hooks.visualization.show = args.show
+        if args.show:
+            cfg.default_hooks.visualization.wait_time = args.wait_time
+        cfg.default_hooks.visualization.out_dir = args.show_dir
+        cfg.default_hooks.visualization.interval = args.interval
 
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
