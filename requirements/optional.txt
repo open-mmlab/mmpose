@@ -1,8 +1,2 @@
-onnx
-onnxruntime
 poseval@git+https://github.com/svenkreiss/poseval.git
-protobuf~=3.19.0
-pyrender
 requests
-smplx>=0.1.28
-trimesh
