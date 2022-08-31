@@ -178,7 +178,10 @@ model = dict(
 )
 ```
 
-Visualization example (top: decoded keypoints; bottom: predicted heatmap):
+or add \`--cfg-options='model.test_cfg.output_heatmaps=True' in the end of command.
+
+Visualization result (top: decoded keypoints; bottom: predicted heatmap):
+
 ![vis_pred](https://user-images.githubusercontent.com/26127467/187578902-30ef7bb0-9a93-4e03-bae0-02aeccf7f689.jpg)
 
 ```{note}
