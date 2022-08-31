@@ -16,7 +16,7 @@ def anchor(name):
 
 # Count algorithms
 
-files = sorted(glob.glob('topics/*.md'))
+files = sorted(glob.glob('modelzoo_tasks/*.md'))
 
 stats = []
 
@@ -40,10 +40,10 @@ for f in files:
         print(p)
         paperlinks[p] = ', '.join(
             ((f'[{paperlink} ⇨]'
-              f'(topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})')
-             for paperlink in re.findall(
-                 rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
-                 revcontent, re.DOTALL | re.IGNORECASE)))
+              f'(modelzoo_tasks/{splitext(basename(f))[0]}.html#'
+              f'{anchor(paperlink)})') for paperlink in re.findall(
+                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
+                  revcontent, re.DOTALL | re.IGNORECASE)))
         print('   ', paperlinks[p])
     paperlist = '\n'.join(
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
@@ -94,12 +94,12 @@ For supported datasets, see [datasets overview](datasets.md).
 
 """
 
-with open('modelzoo.md', 'w') as f:
+with open('modelzoo_stats.md', 'w') as f:
     f.write(modelzoo)
 
 # Count datasets
 
-files = sorted(glob.glob('tasks/*.md'))
+files = sorted(glob.glob('modelzoo_tasks/*.md'))
 # files = sorted(glob.glob('docs/tasks/*.md'))
 
 datastats = []
@@ -123,8 +123,8 @@ for f in files:
     for _, p in papers:
         print(p)
         paperlinks[p] = ', '.join(
-            (f'[{p} ⇨](tasks/{splitext(basename(f))[0]}.html#{anchor(p)})'
-             for p in re.findall(
+            (f'[{p} ⇨](modelzoo_tasks/{splitext(basename(f))[0]}.html#'
+             f'{anchor(p)})' for p in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))
         print('   ', paperlinks[p])
@@ -172,5 +172,5 @@ For supported pose algorithms, see [modelzoo overview](modelzoo.md).
 {datamsglist}
 """
 
-with open('datasets.md', 'w') as f:
+with open('datasetzoo_stats.md', 'w') as f:
     f.write(modelzoo)
