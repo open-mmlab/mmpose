@@ -3,7 +3,7 @@ import os.path as osp
 import shutil
 import time
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import MagicMock
 
 import torch
 from mmengine.structures import InstanceData
@@ -40,33 +40,33 @@ class TestVisualizationHook(TestCase):
         pred_instances = InstanceData()
         pred_instances.keypoints = _rand_poses(5, 10, 12)
         pred_instances.score = torch.rand((5, 5))
-        pred_det_data_sample = PoseDataSample()
+        pred_det_data_sample = data_sample.clone()
         pred_det_data_sample.pred_instances = pred_instances
         self.outputs = [pred_det_data_sample] * 2
 
     def test_after_val_iter(self):
-        runner = Mock()
+        runner = MagicMock()
         runner.iter = 1
         hook = PoseVisualizationHook()
         hook.after_val_iter(runner, 1, self.data_batch, self.outputs)
 
     def test_after_test_iter(self):
-        runner = Mock()
+        runner = MagicMock()
         runner.iter = 1
-        hook = PoseVisualizationHook(draw=True)
+        hook = PoseVisualizationHook(enable=True)
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
         self.assertEqual(hook._test_index, 2)
 
         # test
         timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-        test_out_dir = timestamp + '1'
+        out_dir = timestamp + '1'
         runner.work_dir = timestamp
         runner.timestamp = '1'
-        hook = PoseVisualizationHook(draw=False, test_out_dir=test_out_dir)
+        hook = PoseVisualizationHook(enable=False, out_dir=out_dir)
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
-        self.assertTrue(not osp.exists(f'{timestamp}/1/{test_out_dir}'))
+        self.assertTrue(not osp.exists(f'{timestamp}/1/{out_dir}'))
 
-        hook = PoseVisualizationHook(draw=True, test_out_dir=test_out_dir)
+        hook = PoseVisualizationHook(enable=True, out_dir=out_dir)
         hook.after_test_iter(runner, 1, self.data_batch, self.outputs)
-        self.assertTrue(osp.exists(f'{timestamp}/1/{test_out_dir}'))
+        self.assertTrue(osp.exists(f'{timestamp}/1/{out_dir}'))
         shutil.rmtree(f'{timestamp}')

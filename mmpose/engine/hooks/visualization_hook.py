@@ -94,7 +94,7 @@ class PoseVisualizationHook(Hook):
         total_curr_iter = runner.iter + batch_idx
 
         # Visualize only the first data
-        img_path = data_batch[0]['data_sample'].img_path
+        img_path = data_batch[0]['data_sample'].get('img_path')
         img_bytes = self.file_client.get(img_path)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
@@ -136,7 +136,7 @@ class PoseVisualizationHook(Hook):
         for data_sample in outputs:
             self._test_index += 1
 
-            img_path = data_sample.img_path
+            img_path = data_sample.get('img_path')
             img_bytes = self.file_client.get(img_path)
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
