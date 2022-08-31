@@ -507,9 +507,9 @@ class RandomBBoxTransform(BaseTransform):
 
         # Get scaling parameters
         scale_min, scale_max = self.scale_factor
-        scale = scale_min + (scale_max -
-                             scale_min) * self._truncnorm(size=(num_bbox, 1))
-        scale = self._truncnorm(scale_min, scale_max, size=(num_bbox, 1))
+        scale = scale_min + 0.5 * (1 + self._truncnorm(size=(num_bbox, 1))) * (
+            scale_max - scale_min)
+
         scale = np.where(
             np.random.rand(num_bbox, 1) < self.scale_prob, scale, 1.)
 
