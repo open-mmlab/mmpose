@@ -16,7 +16,7 @@ python demo/topdown_face_demo.py \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-The pre-trained face keypoint estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/latest/topics/face.html).
+The pre-trained face keypoint estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/tasks/face.html).
 Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) as an example:
 
 ```shell
@@ -70,7 +70,5 @@ python demo/top_down_img_demo.py \
 The original video can be downloaded from [Google Drive](https://drive.google.com/file/d/1kQt80t6w802b_vgVcmiV_QfcSJ3RWzmb/view?usp=sharing).
 
 ### Speed Up Inference
-
-Some tips to speed up MMPose inference:
 
 For 2D face keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [aflw_hrnetv2](../../configs/face_2d_keypoint/topdown_heatmap/aflw/td-hm_hrnetv2-w18_8xb64-60e_aflw-256x256.py).

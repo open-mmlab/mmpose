@@ -19,7 +19,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```
 
-The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/latest/topics/hand%282d%2Ckpt%2Crgb%2Cimg%29.html).
+The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/tasks/hand.html).
 Take [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth) as an example:
 
 ```shell
@@ -81,7 +81,5 @@ python demo/topdown_demo_with_mmdet.py \
 The original video can be downloaded from [Github](https://raw.githubusercontent.com/open-mmlab/mmpose/master/tests/data/nvgesture/sk_color.avi).
 
 ### Speed Up Inference
-
-Some tips to speed up MMPose inference:
 
 For 2D hand keypoint estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [onehand10k_hrnetv2](../../configs/hand_2d_keypoint/topdown_heatmap/onehand10k/td-hm_hrnetv2-w18_8xb32-210e_onehand10k-256x256.py).

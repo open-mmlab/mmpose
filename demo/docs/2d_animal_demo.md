@@ -15,7 +15,8 @@ python demo/topdown_demo_with_mmdet.py \
     [--device ${GPU_ID or CPU}]
 ```
 
-Example:
+The pre-trained animal pose estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/tasks/animal.html).
+Take [animalpose model](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth) as an example:
 
 ```shell
 python demo/topdown_demo_with_mmdet.py \
@@ -88,4 +89,5 @@ The original video can be downloaded from [Google Drive](https://drive.google.co
 
 Some tips to speed up MMPose inference:
 
-For 2D animal pose estimation models, try to edit the config file. For example, set `model.test_cfg.flip_test=False` in [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py).
+1. set `model.test_cfg.flip_test=False` in [animalpose_hrnet-w32](../../configs/animal_2d_keypoint/topdown_heatmap/animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py).
+2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
