@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import os.path as osp
+import os
 import warnings
 from typing import Optional, Sequence
 
@@ -23,23 +23,23 @@ class PoseVisualizationHook(Hook):
     1. If ``show`` is True, it means that only the prediction results are
         visualized without storing data, so ``vis_backends`` needs to
         be excluded.
-    2. If ``test_out_dir`` is specified, it means that the prediction results
-        need to be saved to ``test_out_dir``. In order to avoid vis_backends
+    2. If ``out_dir`` is specified, it means that the prediction results
+        need to be saved to ``out_dir``. In order to avoid vis_backends
         also storing data, so ``vis_backends`` needs to be excluded.
     3. ``vis_backends`` takes effect if the user does not specify ``show``
-        and `test_out_dir``. You can set ``vis_backends`` to WandbVisBackend or
+        and `out_dir``. You can set ``vis_backends`` to WandbVisBackend or
         TensorboardVisBackend to store the prediction result in Wandb or
         Tensorboard.
 
     Args:
-        draw (bool): whether to draw prediction results. If it is False,
+        enable (bool): whether to draw prediction results. If it is False,
             it means that no drawing will be done. Defaults to False.
         interval (int): The interval of visualization. Defaults to 50.
         score_thr (float): The threshold to visualize the bboxes
             and masks. Defaults to 0.3.
         show (bool): Whether to display the drawn image. Default to False.
         wait_time (float): The interval of show (s). Defaults to 0.
-        test_out_dir (str, optional): directory where painted images
+        out_dir (str, optional): directory where painted images
             will be saved in testing process.
         file_client_args (dict): Arguments to instantiate a FileClient.
             See :class:`mmengine.fileio.FileClient` for details.
@@ -47,12 +47,12 @@ class PoseVisualizationHook(Hook):
     """
 
     def __init__(self,
-                 draw: bool = False,
+                 enable: bool = False,
                  interval: int = 50,
                  score_thr: float = 0.3,
                  show: bool = False,
                  wait_time: float = 0.,
-                 test_out_dir: Optional[str] = None,
+                 out_dir: Optional[str] = None,
                  file_client_args: dict = dict(backend='disk')):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
         self.interval = interval
@@ -69,23 +69,21 @@ class PoseVisualizationHook(Hook):
         self.wait_time = wait_time
         self.file_client_args = file_client_args.copy()
         self.file_client = None
-        self.draw = draw
-        self.test_out_dir = test_out_dir
+        self.enable = enable
+        self.out_dir = out_dir
         self._test_index = 0
 
-    def after_val_iter(self, runner: Runner, batch_idx: int,
-                       data_batch: Sequence[dict],
+    def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                        outputs: Sequence[PoseDataSample]) -> None:
         """Run after every ``self.interval`` validation iterations.
 
         Args:
             runner (:obj:`Runner`): The runner of the validation process.
             batch_idx (int): The index of the current batch in the val loop.
-            data_batch (Sequence[dict]): Data from dataloader.
+            data_batch (dict): Data from dataloader.
             outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
         """
-        # TODO: data_batch does not include annotation information
-        if self.draw is False:
+        if self.enable is False:
             return
 
         if self.file_client is None:
@@ -100,57 +98,66 @@ class PoseVisualizationHook(Hook):
         img_bytes = self.file_client.get(img_path)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
-        pred_sample = outputs[0]
+        data_sample = outputs[0]
         if total_curr_iter % self.interval == 0:
             self._visualizer.add_datasample(
-                osp.basename(img_path) if self.show else 'val_img',
+                os.path.basename(img_path) if self.show else 'val_img',
                 img,
-                data_sample=pred_sample,
+                data_sample=data_sample,
+                draw_gt=False,
+                draw_bbox=True,
+                draw_heatmap=True,
                 show=self.show,
                 wait_time=self.wait_time,
                 kpt_score_thr=self.score_thr,
                 step=total_curr_iter)
 
-    def after_test_iter(self, runner: Runner, batch_idx: int,
-                        data_batch: Sequence[dict],
+    def after_test_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
                         outputs: Sequence[PoseDataSample]) -> None:
         """Run after every testing iterations.
 
         Args:
             runner (:obj:`Runner`): The runner of the testing process.
-            batch_idx (int): The index of the current batch in the val loop.
-            data_batch (Sequence[dict]): Data from dataloader.
+            batch_idx (int): The index of the current batch in the test loop.
+            data_batch (dict): Data from dataloader.
             outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
         """
-        # TODO: data_batch does not include annotation information
-        if self.draw is False:
+        if self.enable is False:
             return
 
-        if self.test_out_dir is not None:
-            self.test_out_dir = osp.join(runner.work_dir, runner.timestamp,
-                                         self.test_out_dir)
-            mmengine.mkdir_or_exist(self.test_out_dir)
+        if self.out_dir is not None:
+            self.out_dir = os.path.join(runner.work_dir, runner.timestamp,
+                                        self.out_dir)
+            mmengine.mkdir_or_exist(self.out_dir)
 
         if self.file_client is None:
             self.file_client = mmengine.FileClient(**self.file_client_args)
 
-        for input_data, output in zip(data_batch, outputs):
+        for data_sample in outputs:
             self._test_index += 1
 
-            img_path = input_data['data_sample'].img_path
+            img_path = data_sample.img_path
             img_bytes = self.file_client.get(img_path)
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
             out_file = None
-            if self.test_out_dir is not None:
-                out_file = osp.basename(img_path)
-                out_file = osp.join(self.test_out_dir, out_file)
+            if self.out_dir is not None:
+                out_file_name, postfix = os.path.basename(img_path).split('.')
+                index = len([
+                    fname for fname in os.listdir(self.out_dir)
+                    if fname.startswith(out_file_name)
+                ])
+                out_file = f'{out_file_name}_{index}.{postfix}'
+                out_file = os.path.join(self.out_dir, out_file)
 
             self._visualizer.add_datasample(
-                osp.basename(img_path) if self.show else 'test_img',
+                os.path.basename(img_path) if self.show else 'test_img',
                 img,
-                data_sample=output,
+                data_sample=data_sample,
                 show=self.show,
+                draw_gt=False,
+                draw_bbox=True,
+                draw_heatmap=True,
                 wait_time=self.wait_time,
                 kpt_score_thr=self.score_thr,
                 out_file=out_file,

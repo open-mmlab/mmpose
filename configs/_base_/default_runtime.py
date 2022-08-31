@@ -7,8 +7,7 @@ default_hooks = dict(
     param_scheduler=dict(type='ParamSchedulerHook'),
     checkpoint=dict(type='CheckpointHook', interval=1),
     sampler_seed=dict(type='DistSamplerSeedHook'),
-    # TODO: Add visualizer hook
-    # visualization=dict(type='PoseVisualizationHook'))
+    visualization=dict(type='PoseVisualizationHook', enable=False),
 )
 
 # custom hooks
