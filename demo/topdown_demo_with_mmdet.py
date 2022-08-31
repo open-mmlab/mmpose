@@ -6,6 +6,7 @@ import warnings
 from argparse import ArgumentParser
 
 import mmcv
+import mmengine
 import numpy as np
 from mmengine.structures import InstanceData, PixelData
 
@@ -91,8 +92,8 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
     img = mmcv.imconvert(img, 'bgr', 'rgb')
 
     out_file = None
-    if args.out_img_root:
-        out_file = f'{args.out_img_root}/{os.path.basename(img_path)}'
+    if args.output_root:
+        out_file = f'{args.output_root}/{os.path.basename(img_path)}'
 
     visualizer.add_datasample(
         'result',
@@ -125,7 +126,7 @@ def main():
         default=False,
         help='whether to show img')
     parser.add_argument(
-        '--out-img-root',
+        '--output-root',
         type=str,
         default='',
         help='root of the output img file. '
@@ -164,10 +165,12 @@ def main():
 
     args = parser.parse_args()
 
-    assert args.show or (args.out_img_root != '')
+    assert args.show or (args.output_root != '')
     assert args.input != ''
     assert args.det_config is not None
     assert args.det_checkpoint is not None
+    if args.output_root:
+        mmengine.mkdir_or_exist(args.output_root)
 
     # build detector
     register_mmdet_modules()
@@ -204,6 +207,8 @@ def main():
         tmp_folder = tempfile.TemporaryDirectory()
         video = mmcv.VideoReader(args.input)
         video.cvt2frames(tmp_folder.name, show_progress=False)
+        output_root = args.output_root
+        args.output_root = tmp_folder.name
         for img_fname in os.listdir(tmp_folder.name):
             visualize_img(
                 args,
@@ -212,6 +217,13 @@ def main():
                 pose_estimator,
                 visualizer,
                 show_interval=1)
+        if output_root:
+            mmcv.frames2video(
+                tmp_folder.name,
+                f'{output_root}/{os.path.basename(args.input)}',
+                fps=video.fps,
+                fourcc='mp4v',
+                show_progress=False)
         tmp_folder.cleanup()
     else:
         raise ValueError(
