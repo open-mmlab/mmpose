@@ -488,14 +488,13 @@ class RandomBBoxTransform(BaseTransform):
         """Get random transform parameters.
 
         Args:
-            bbox_scale (np.ndarray): The bbox scales (w, h) in shape (n, 2)
+            num_bboxes (int): The number of bboxes
 
         Returns:
             tuple:
             - offset (np.ndarray): Offset factor of each bbox in shape (n, 2)
             - scale (np.ndarray): Scaling factor of each bbox in shape (n, 1)
-            - rotate (np.ndarray): Rotation degree of each bbox in shape
-                (n, 1)
+            - rotate (np.ndarray): Rotation degree of each bbox in shape (n,)
         """
         # Get shift parameters
         offset = self._truncnorm(size=(num_bboxes, 2)) * self.shift_factor
