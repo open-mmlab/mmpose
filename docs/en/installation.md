@@ -3,9 +3,9 @@
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Best Practices](#best-practices)
-  - [Verify the installation](#verify-the-installation)
   - [Customize Installation](#customize-installation)
     - [CUDA versions](#cuda-versions)
+    - [Install MMEngine without MIM](#install-mmengine-without-mim)
     - [Install MMCV without MIM](#install-mmcv-without-mim)
     - [Install on CPU-only platforms](#install-on-cpu-only-platforms)
     - [Install on Google Colab](#install-on-google-colab)
@@ -55,7 +55,7 @@ We recommend that users follow our best practices to install MMPose. However, th
 
 ## Best Practices
 
-**Step 0.** Install [MMEngine](https://github.com/open-mmlab/mmengine) [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
+**Step 0.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
 
 ```shell
 pip install -U openmim
@@ -84,47 +84,6 @@ Case b: If you use mmpose as a dependency or third-party package, install it wit
 mim install mmpose>=1.0.0rc0
 ```
 
-## Verify the installation
-
-To verify that MMPose is installed correctly, you can run an inference demo with the following steps.
-
-**Step 1.** We need to download config and checkpoint files.
-
-```shell
-mim download mmpose --config associative_embedding_hrnet_w32_coco_512x512  --dest .
-```
-
-The downloading will take several seconds or more, depending on your network environment. When it is done, you will find two files `associative_embedding_hrnet_w32_coco_512x512.py` and `hrnet_w32_coco_512x512-bcb8c247_20200816.pth` in your current folder.
-
-**Step 2.** Verify the inference demo.
-
-Option (a). If you install mmpose from source, just run the following command.
-
-```shell
-python demo/image_demo.py associative_embedding_hrnet_w32_coco_512x512.py hrnet_w32_coco_512x512-bcb8c247_20200816.pth --img-path tests/data/coco/ --out-img-root vis_results
-```
-
-You will see several images in this folder: `vis_results`, where the human pose estimation results are plotted on the images.
-
-Option (b). If you install mmpose with pip, open you python interpreter and copy&paste the following codes.
-
-```python
-from mmpose.apis import (init_pose_model, inference_bottom_up_pose_model, vis_pose_result)
-
-config_file = 'associative_embedding_hrnet_w32_coco_512x512.py'
-checkpoint_file = 'hrnet_w32_coco_512x512-bcb8c247_20200816.pth'
-pose_model = init_pose_model(config_file, checkpoint_file, device='cpu')  # or device='cuda:0'
-
-image_name = 'demo/persons.jpg'
-# test a single image
-pose_results, _ = inference_bottom_up_pose_model(pose_model, image_name)
-
-# show the results
-vis_pose_result(pose_model, image_name, pose_results, out_file='demo/vis_persons.jpg')
-```
-
-Prepare an image with persons and place it properly, then run the above code, and you will see the output image with detected human poses ploted on it.
-
 ## Customize Installation
 
 ### CUDA versions
@@ -137,6 +96,16 @@ When installing PyTorch, you need to specify the version of CUDA. If you are not
 Please make sure the GPU driver satisfies the minimum version requirements. See [this table](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-major-component-versions__table-cuda-toolkit-driver-versions) for more information.
 
 Installing CUDA runtime libraries is enough if you follow our best practices, because no CUDA code will be compiled locally. However if you hope to compile MMCV from source or develop other CUDA operators, you need to install the complete CUDA toolkit from NVIDIA's [website](https://developer.nvidia.com/cuda-downloads), and its version should match the CUDA version of PyTorch. i.e., the specified version of cudatoolkit in `conda install` command.
+
+### Install MMEngine without MIM
+
+To install MMEngine with pip instead of MIM, please follow [MMEngine installation guides](https://mmengine.readthedocs.io/zh_CN/latest/get_started/installation.html).
+
+For example, you can install MMEngine by the following command.
+
+```shell
+pip install mmengine
+```
 
 ### Install MMCV without MIM
 
@@ -159,19 +128,20 @@ However, some functionalities are missing in this mode, usually GPU-compiled ops
 ### Install on Google Colab
 
 [Google Colab](https://colab.research.google.com/) usually has PyTorch installed,
-thus we only need to install MMCV and MMPose with the following commands.
+thus we only need to install MMEngine, MMCV and MMPose with the following commands.
 
-**Step 1.** Install [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
+**Step 1.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
 
 ```shell
 !pip3 install openmim
-!mim install mmcv-full
+!mim install mmengine
+!mim install mmcv>=2.0.0rc1
 ```
 
 **Step 2.** Install MMPose from the source.
 
 ```shell
-!git clone https://github.com/open-mmlab/mmpose.git
+!git clone https://github.com/open-mmlab/mmpose.git -b dev-1.x
 %cd mmpose
 !pip install -e .
 ```
@@ -181,7 +151,7 @@ thus we only need to install MMCV and MMPose with the following commands.
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 0.26.0
+# Example output: 1.0.0
 ```
 
 ```{note}
@@ -214,5 +184,5 @@ If you encounter the error message like `permission denied`, please add `sudo` a
 
 ## Trouble shooting
 
-If you have some issues during the installation, please first view the [FAQ](faq.md) page.
+If you have some issues during the installation, please first view the [FAQ](./notes/faq.md) page.
 You may [open an issue](https://github.com/open-mmlab/mmpose/issues/new/choose) on GitHub if no solution is found.
