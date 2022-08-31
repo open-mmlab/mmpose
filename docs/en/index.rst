@@ -44,7 +44,7 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Model Zoo
 
-   modelzoo_stats.txt
+   model_zoo.txt
    modelzoo_tasks/body_2d_keypoint.md
    modelzoo_tasks/face_2d_keypoint.md
    modelzoo_tasks/hand_2d_keypoint.md
@@ -64,7 +64,7 @@ Welcome to MMPose's documentation!
    :maxdepth: 2
    :caption: Dataset Zoo
 
-   datasetzoo_stats.md
+   dataset_zoo.md
    datasetzoo/2d_body_keypoint.md
    datasetzoo/2d_wholebody_keypoint.md
    datasetzoo/2d_face_keypoint.md
