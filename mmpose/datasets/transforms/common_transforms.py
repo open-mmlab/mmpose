@@ -484,7 +484,7 @@ class RandomBBoxTransform(BaseTransform):
         return truncnorm.rvs(low, high, size=size).astype(np.float32)
 
     @cache_randomness
-    def _get_transform_params(self, bbox_scale: np.ndarray) -> Tuple:
+    def _get_transform_params(self, num_bboxes: int) -> Tuple:
         """Get random transform parameters.
 
         Args:
@@ -492,31 +492,28 @@ class RandomBBoxTransform(BaseTransform):
 
         Returns:
             tuple:
-            - offset (np.ndarray): Offset of each bbox in shape (n, 2)
+            - offset (np.ndarray): Offset factor of each bbox in shape (n, 2)
             - scale (np.ndarray): Scaling factor of each bbox in shape (n, 1)
             - rotate (np.ndarray): Rotation degree of each bbox in shape
                 (n, 1)
         """
-        num_bbox = bbox_scale.shape[0]
-
         # Get shift parameters
-        offset = self._truncnorm(size=(num_bbox, 2))
-        offset = offset * self.shift_factor * bbox_scale
+        offset = self._truncnorm(size=(num_bboxes, 2)) * self.shift_factor
         offset = np.where(
-            np.random.rand(num_bbox, 1) < self.shift_prob, offset, 0.)
+            np.random.rand(num_bboxes, 1) < self.shift_prob, offset, 0.)
 
         # Get scaling parameters
         scale_min, scale_max = self.scale_factor
-        scale = scale_min + 0.5 * (1 + self._truncnorm(size=(num_bbox, 1))) * (
-            scale_max - scale_min)
-
+        mu = (scale_max + scale_min) * 0.5
+        sigma = (scale_max - scale_min) * 0.5
+        scale = self._truncnorm(size=(num_bboxes, 1)) * sigma + mu
         scale = np.where(
-            np.random.rand(num_bbox, 1) < self.scale_prob, scale, 1.)
+            np.random.rand(num_bboxes, 1) < self.scale_prob, scale, 1.)
 
         # Get rotation parameters
-        rotate = self._truncnorm(size=(num_bbox, )) * self.rotate_factor
+        rotate = self._truncnorm(size=(num_bboxes, )) * self.rotate_factor
         rotate = np.where(
-            np.random.rand(num_bbox) < self.rotate_prob, rotate, 0.)
+            np.random.rand(num_bboxes) < self.rotate_prob, rotate, 0.)
 
         return offset, scale, rotate
 
@@ -531,10 +528,12 @@ class RandomBBoxTransform(BaseTransform):
         Returns:
             dict: The result dict.
         """
-        offset, scale, rotate = self._get_transform_params(
-            results['bbox_scale'])
+        bbox_scale = results['bbox_scale']
+        num_bboxes = bbox_scale.shape[0]
 
-        results['bbox_center'] += offset
+        offset, scale, rotate = self._get_transform_params(num_bboxes)
+
+        results['bbox_center'] += offset * bbox_scale
         results['bbox_scale'] *= scale
         results['bbox_rotation'] = rotate
 
