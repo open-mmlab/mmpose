@@ -493,7 +493,3 @@ For example,
 ```shell
 python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
 ```
-
-### MPII-INF-3DHP
-
-Work in progress...
