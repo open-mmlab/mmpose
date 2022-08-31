@@ -18,7 +18,7 @@ It also provide a general semi-supervised object detection framework, and more s
 
 - **More documentation and tutorials**. We add a bunch of documentation and tutorials to help users get started more smoothly. Read it [here](https://mmpose.readthedocs.io/en/1.x/).
 
-### Breaking Changes
+**Breaking Changes**
 
 In this release, we made lots of major refactoring and modifications. Please refer to the [migration guide](../migration.md) for details and migration instructions.
 
