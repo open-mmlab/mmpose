@@ -2,18 +2,17 @@
 import mimetypes
 import os
 import tempfile
-import warnings
 from argparse import ArgumentParser
 
 import mmcv
 import mmengine
 import numpy as np
-from mmengine.structures import InstanceData, PixelData
 
 from mmpose.apis import inference_topdown
 from mmpose.apis import init_model as init_pose_estimator
 from mmpose.evaluation.functional import nms
 from mmpose.registry import VISUALIZERS
+from mmpose.structures import merge_data_samples
 from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
@@ -41,51 +40,7 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
     # predict keypoints
     register_mmpose_modules()
     pose_results = inference_topdown(pose_estimator, img_path, bboxes)
-    data_samples = pose_results[0]
-
-    # merge predicted bboxes and keypoints
-    instances_data = dict(
-        bboxes=np.concatenate(
-            [data_sample.gt_instances.bboxes for data_sample in pose_results],
-            axis=0),
-        bbox_scores=np.concatenate([
-            data_sample.gt_instances.bbox_scores
-            for data_sample in pose_results
-        ],
-                                   axis=0),
-        keypoints=np.concatenate([
-            data_sample.pred_instances.keypoints
-            for data_sample in pose_results
-        ],
-                                 axis=0),
-        keypoint_scores=np.concatenate([
-            data_sample.pred_instances.keypoint_scores
-            for data_sample in pose_results
-        ],
-                                       axis=0))
-    pred_instances = InstanceData()
-    pred_instances.set_data(instances_data)
-    data_samples.pred_instances = pred_instances
-
-    if args.visualize_heatmap:
-        if 'pred_fields' not in data_samples:
-            warnings.warn('Heatmaps are not returned. Please check '
-                          'whether topdown-heatmap model is utilized.')
-        else:
-            # merge predicted heatmaps
-            heatmaps = []
-            for data_sample in pose_results:
-                heatmap, _ = data_sample.pred_fields.heatmaps.max(axis=0)
-                heatmap = visualizer.revert_heatmap(
-                    heatmap, data_sample.gt_instances.bbox_centers,
-                    data_sample.gt_instances.bbox_scales,
-                    data_samples.ori_shape)
-                heatmaps.append(heatmap)
-            heatmaps = np.stack(heatmaps, axis=0)
-
-            pred_fields = PixelData()
-            pred_fields.set_data(dict(heatmaps=heatmaps))
-            data_samples.pred_fields = pred_fields
+    data_samples = merge_data_samples(pose_results)
 
     # show the results
     img = mmcv.imread(img_path)
@@ -100,7 +55,7 @@ def visualize_img(args, img_path, detector, pose_estimator, visualizer,
         img,
         data_sample=data_samples,
         draw_gt=False,
-        draw_heatmap=args.visualize_heatmap,
+        draw_heatmap=args.draw_heatmap,
         draw_bbox=False,
         show=args.show,
         wait_time=show_interval,
@@ -146,10 +101,10 @@ def main():
     parser.add_argument(
         '--kpt-thr', type=float, default=0.3, help='Keypoint score threshold')
     parser.add_argument(
-        '--visualize-heatmap',
+        '--draw-heatmap',
         action='store_true',
         default=False,
-        help='whether to visualize output heatmap')
+        help='whether to draw output heatmap')
     parser.add_argument(
         '--radius',
         type=int,
@@ -184,7 +139,7 @@ def main():
         args.pose_checkpoint,
         device=args.device,
         cfg_options=dict(
-            model=dict(test_cfg=dict(output_heatmaps=args.visualize_heatmap))))
+            model=dict(test_cfg=dict(output_heatmaps=args.draw_heatmap))))
 
     # init visualizer
     pose_estimator.cfg.visualizer.radius = args.radius

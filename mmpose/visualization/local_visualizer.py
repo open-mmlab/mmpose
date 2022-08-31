@@ -11,7 +11,7 @@ from mmengine.structures import InstanceData, PixelData
 from mmengine.visualization import Visualizer
 
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import PoseDataSample, get_warp_matrix
+from mmpose.structures import PoseDataSample
 
 
 @VISUALIZERS.register_module()
@@ -301,7 +301,6 @@ class PoseLocalVisualizer(Visualizer):
                        draw_bbox: bool = False,
                        show: bool = False,
                        wait_time: float = 0,
-                       revert_heatmap: bool = False,
                        out_file: Optional[str] = None,
                        kpt_score_thr: float = 0.3,
                        step: int = 0) -> None:
@@ -329,9 +328,6 @@ class PoseLocalVisualizer(Visualizer):
                 ``False``
             draw_heatmap (bool): Whether to draw heatmaps. Defaults to
                 ``False``
-            revert_heatmap(bool): Whether to transform heatmap to the
-                corresponding location and size on the original image.
-                Default to ``False``
             show (bool): Whether to display the drawn image. Default to
                 ``False``
             wait_time (float): The interval of show (s). Defaults to 0
@@ -358,15 +354,6 @@ class PoseLocalVisualizer(Visualizer):
 
             # draw heatmaps
             if 'gt_fields' in data_sample and draw_heatmap:
-                if revert_heatmap and \
-                   'bbox_centers' in data_sample.gt_instances:
-                    heatmaps, _ = data_sample.gt_fields.heatmaps.max(axis=0)
-                    heatmaps = self.revert_heatmap(
-                        heatmaps, data_sample.gt_instances.bbox_centers,
-                        data_sample.gt_instances.bbox_scales,
-                        data_sample.ori_shape)
-                    gt_fields = PixelData(heatmaps=heatmaps)
-                    data_sample.gt_fields = gt_fields
                 gt_img_heatmap = self._draw_instance_heatmap(
                     data_sample.gt_fields, image)
                 if gt_img_heatmap is not None:
@@ -387,15 +374,6 @@ class PoseLocalVisualizer(Visualizer):
 
             # draw heatmaps
             if 'pred_fields' in data_sample and draw_heatmap:
-                if revert_heatmap and \
-                   'bbox_centers' in data_sample.gt_instances:
-                    heatmaps, _ = data_sample.pred_fields.heatmaps.max(axis=0)
-                    heatmaps = self.revert_heatmap(
-                        heatmaps, data_sample.gt_instances.bbox_centers,
-                        data_sample.gt_instances.bbox_scales,
-                        data_sample.ori_shape)
-                    pred_fields = PixelData(heatmaps=heatmaps)
-                    data_sample.pred_fields = pred_fields
                 pred_img_heatmap = self._draw_instance_heatmap(
                     data_sample.pred_fields, image)
                 if pred_img_heatmap is not None:
@@ -424,29 +402,3 @@ class PoseLocalVisualizer(Visualizer):
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
-
-    @staticmethod
-    def revert_heatmap(heatmap, bbox_center, bbox_scale, img_shape):
-        """Revert predicted heatmap on the original image.
-
-        Args:
-            heatmap (np.ndarray or torch.tensor): predicted heatmap.
-            bbox_center (np.ndarray): bounding box center coordinate.
-            bbox_scale (np.ndarray): bounding box scale.
-            img_shape (tuple or list): size of original image.
-        """
-        if torch.is_tensor(heatmap):
-            heatmap = heatmap.cpu().detach().numpy()
-
-        hm_h, hm_w = heatmap.shape[-2:]
-        img_h, img_w = img_shape[-2:]
-        warp_mat = get_warp_matrix(
-            bbox_center.reshape((2, )),
-            bbox_scale.reshape((2, )),
-            rot=0,
-            output_size=(hm_w, hm_h),
-            inv=True)
-
-        heatmap = cv2.warpAffine(
-            heatmap, warp_mat, (img_w, img_h), flags=cv2.INTER_LINEAR)
-        return heatmap

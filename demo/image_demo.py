@@ -5,7 +5,7 @@ from mmcv.image import imread
 
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
-from mmpose.structures import PoseDataSample
+from mmpose.structures import merge_data_samples
 from mmpose.utils import register_all_modules
 
 
@@ -31,7 +31,7 @@ def main(args):
 
     # build the model from a config file and a checkpoint file
     if args.draw_heatmap:
-        cfg_options = dict(model=dict(test_cfg=dict(output_heatmap=True)))
+        cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
     else:
         cfg_options = None
 
@@ -47,7 +47,7 @@ def main(args):
 
     # inference a single image
     results = inference_topdown(model, args.img)
-    results = PoseDataSample.merge(results)
+    results = merge_data_samples(results)
 
     # show the results
     img = imread(args.img, channel_order='rgb')
