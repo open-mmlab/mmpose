@@ -92,7 +92,7 @@ train_pipeline = [
         rot_factor=60,
         scale_factor=(0.75, 1.25)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='TopdownGenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
