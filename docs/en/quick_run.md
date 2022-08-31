@@ -179,7 +179,7 @@ model = dict(
 ```
 
 Visualization example (top: decoded keypoints; bottom: predicted heatmap):
-[vis_pred](https://user-images.githubusercontent.com/26127467/187578902-30ef7bb0-9a93-4e03-bae0-02aeccf7f689.jpg)
+![vis_pred](https://user-images.githubusercontent.com/26127467/187578902-30ef7bb0-9a93-4e03-bae0-02aeccf7f689.jpg)
 
 ```{note}
 If you wish to apply MMPose to your own projects, we have prepared a detailed [Migration guide](./migration.md).
