@@ -286,26 +286,25 @@ class PoseLocalVisualizer(Visualizer):
             heatmaps = torch.from_numpy(heatmaps)
         if heatmaps.dim() == 3:
             heatmaps, _ = heatmaps.max(dim=0)
-            heatmaps = heatmaps.unsqueeze(0)
+        heatmaps = heatmaps.unsqueeze(0)
         out_image = self.draw_featmap(heatmaps, overlaid_image)
         return out_image
 
     @master_only
-    def add_datasample(
-            self,
-            name: str,
-            image: np.ndarray,
-            data_sample: PoseDataSample,
-            draw_gt: bool = True,
-            draw_pred: bool = True,
-            draw_heatmap: bool = False,
-            draw_bbox: bool = False,
-            show: bool = False,
-            wait_time: float = 0,
-            # TODO: Supported in mmengine's Viusalizer.
-            out_file: Optional[str] = None,
-            kpt_score_thr: float = 0.3,
-            step: int = 0) -> None:
+    def add_datasample(self,
+                       name: str,
+                       image: np.ndarray,
+                       data_sample: PoseDataSample,
+                       draw_gt: bool = True,
+                       draw_pred: bool = True,
+                       draw_heatmap: bool = False,
+                       draw_bbox: bool = False,
+                       show: bool = False,
+                       wait_time: float = 0,
+                       revert_heatmap: bool = False,
+                       out_file: Optional[str] = None,
+                       kpt_score_thr: float = 0.3,
+                       step: int = 0) -> None:
         """Draw datasample and save to all backends.
 
         - If GT and prediction are plotted at the same time, they are
@@ -353,6 +352,15 @@ class PoseLocalVisualizer(Visualizer):
                         gt_img_data, data_sample.gt_instances)
 
             if 'gt_fields' in data_sample and draw_heatmap:
+                if revert_heatmap and \
+                   'bbox_centers' in data_sample.gt_instances:
+                    heatmaps, _ = data_sample.gt_fields.heatmaps.max(axis=0)
+                    heatmaps = self.revert_heatmap(
+                        heatmaps, data_sample.gt_instances.bbox_centers,
+                        data_sample.gt_instances.bbox_scales,
+                        data_sample.ori_shape)
+                    gt_fields = PixelData(heatmaps=heatmaps)
+                    data_sample.gt_fields = gt_fields
                 gt_img_heatmap = self._draw_instance_heatmap(
                     data_sample.gt_fields, image)
                 if gt_img_heatmap is not None:
@@ -369,6 +377,15 @@ class PoseLocalVisualizer(Visualizer):
                     pred_img_data = self._draw_instances_bbox(
                         pred_img_data, data_sample.pred_instances)
             if 'pred_fields' in data_sample and draw_heatmap:
+                if revert_heatmap and \
+                   'bbox_centers' in data_sample.gt_instances:
+                    heatmaps, _ = data_sample.pred_fields.heatmaps.max(axis=0)
+                    heatmaps = self.revert_heatmap(
+                        heatmaps, data_sample.gt_instances.bbox_centers,
+                        data_sample.gt_instances.bbox_scales,
+                        data_sample.ori_shape)
+                    pred_fields = PixelData(heatmaps=heatmaps)
+                    data_sample.pred_fields = pred_fields
                 pred_img_heatmap = self._draw_instance_heatmap(
                     data_sample.pred_fields, image)
                 if pred_img_heatmap is not None:

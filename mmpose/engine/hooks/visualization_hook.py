@@ -74,14 +74,14 @@ class PoseVisualizationHook(Hook):
         self._test_index = 0
 
     def after_val_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
-                       data_samples: Sequence[PoseDataSample]) -> None:
+                       outputs: Sequence[PoseDataSample]) -> None:
         """Run after every ``self.interval`` validation iterations.
 
         Args:
             runner (:obj:`Runner`): The runner of the validation process.
             batch_idx (int): The index of the current batch in the val loop.
             data_batch (dict): Data from dataloader.
-            data_samples (Sequence[:obj:`PoseDataSample`]): Outputs from model.
+            outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
         """
         if self.enable is False:
             return
@@ -98,27 +98,30 @@ class PoseVisualizationHook(Hook):
         img_bytes = self.file_client.get(img_path)
         img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
-        data_sample = data_samples[0]
+        data_sample = outputs[0]
         if total_curr_iter % self.interval == 0:
             self._visualizer.add_datasample(
                 os.path.basename(img_path) if self.show else 'val_img',
                 img,
                 data_sample=data_sample,
                 draw_gt=False,
+                draw_bbox=True,
+                draw_heatmap=True,
+                revert_heatmap=True,
                 show=self.show,
                 wait_time=self.wait_time,
                 kpt_score_thr=self.score_thr,
                 step=total_curr_iter)
 
     def after_test_iter(self, runner: Runner, batch_idx: int, data_batch: dict,
-                        data_samples: Sequence[PoseDataSample]) -> None:
+                        outputs: Sequence[PoseDataSample]) -> None:
         """Run after every testing iterations.
 
         Args:
             runner (:obj:`Runner`): The runner of the testing process.
             batch_idx (int): The index of the current batch in the test loop.
             data_batch (dict): Data from dataloader.
-            data_samples (Sequence[:obj:`PoseDataSample`]): Outputs from model.
+            outputs (Sequence[:obj:`PoseDataSample`]): Outputs from model.
         """
         if self.enable is False:
             return
@@ -131,7 +134,7 @@ class PoseVisualizationHook(Hook):
         if self.file_client is None:
             self.file_client = mmengine.FileClient(**self.file_client_args)
 
-        for data_sample in data_samples:
+        for data_sample in outputs:
             self._test_index += 1
 
             img_path = data_sample.img_path
@@ -154,6 +157,9 @@ class PoseVisualizationHook(Hook):
                 data_sample=data_sample,
                 show=self.show,
                 draw_gt=False,
+                draw_bbox=True,
+                draw_heatmap=True,
+                revert_heatmap=True,
                 wait_time=self.wait_time,
                 kpt_score_thr=self.score_thr,
                 out_file=out_file,
