@@ -21,7 +21,8 @@ class TestInference(TestCase):
     def setUp(self) -> None:
         register_all_modules()
 
-    @parameterized.expand([('configs/tests/hrnet_w32_coco_256x192.py',
+    @parameterized.expand([(('configs/body_2d_keypoint/topdown_heatmap/coco/'
+                             'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py'),
                             ('cpu', 'cuda'))])
     def test_init_model(self, config, devices):
         project_dir = osp.abspath(osp.dirname(osp.dirname(__file__)))
@@ -45,7 +46,8 @@ class TestInference(TestCase):
                 config_list = [config_file]
                 _ = init_model(config_list)
 
-    @parameterized.expand([('configs/tests/hrnet_w32_coco_256x192.py',
+    @parameterized.expand([(('configs/body_2d_keypoint/topdown_heatmap/coco/'
+                             'td-hm_hrnet-w32_8xb64-210e_coco-256x192.py'),
                             ('cpu', 'cuda'))])
     def test_inference_topdown(self, config, devices):
         project_dir = osp.abspath(osp.dirname(osp.dirname(__file__)))
