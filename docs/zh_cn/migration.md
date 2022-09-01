@@ -327,7 +327,7 @@ class GenerateTarget(BaseTransform):
 
 具体而言，我们将数据分为`gt`和`pred`两种，每一种都有如下类型：
 
-- **instances**(numpy.array(：实例级别的原始标注，用于在原始尺度空间下进行模型评测
+- **instances**(numpy.array)：实例级别的原始标注，用于在原始尺度空间下进行模型评测
 
 - **instance_labels**(torch.tensor)：实例级别的训练标签（如归一化的坐标值、关键点可见性），用于在输出尺度空间下进行模型训练
 
