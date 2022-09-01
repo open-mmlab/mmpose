@@ -1,59 +1,66 @@
-# Contributing to MMPose
+# 参与贡献代码
 
-All kinds of contributions are welcome, including but not limited to the following.
+我们欢迎任何形式的贡献，包括但不限于：
 
-- Fixes (typo, bugs)
-- New features and components
+- 修复错别字、bug
 
-## Workflow
+- 添加新feature和组件
 
-1. Fork and pull the latest mmpose
-2. Checkout a new branch with a meaningful name (do not use master branch for PRs)
-3. Commit your changes
-4. Create a PR
+## 流程
+
+1. Fork MMPose官方代码仓库，并Pull最新的代码
+
+2. 创建一个新的分支，使用有具体意义的分支名（不要在master分支上做PR）
+
+3. 提交你的改动
+
+4. 创建一个PR
 
 ```{note}
-- If you wish to PR to MMPose 1.0, please create your branch from `dev-1.x`
-- If you plan to add some new features that involve large changes, it is encouraged to open an issue for discussion first.
-- If you are the author of some papers and would like to include your method to mmpose, please contact us. We will much appreciate your contribution.
+- 如果你希望向 MMPose 1.0 贡献代码，请从dev-1.x上创建新分支，并提交PR到dev-1.x分支上
+- 如果你打算添加的新feature涉及的改动较大，我们鼓励你先开一个issue与我们进行讨论。
+- 如果你是论文作者，并希望将你的方法加入到MMPose中，欢迎联系我们，我们将非常感谢你的贡献。
 ```
 
-## Code style
+## 代码风格
 
 ### Python
 
-We adopt [PEP8](https://www.python.org/dev/peps/pep-0008/) as the preferred code style.
+我们采用[PEP8](https://www.python.org/dev/peps/pep-0008/)作为代码风格。
 
-We use the following tools for linting and formatting:
+使用下面的工具来对代码进行整理和格式化：
 
-- [flake8](http://flake8.pycqa.org/en/latest/): linter
-- [yapf](https://github.com/google/yapf): formatter
-- [isort](https://github.com/timothycrosley/isort): sort imports
+- [flake8](http://flake8.pycqa.org/en/latest/)：代码提示
 
-Style configurations of yapf and isort can be found in [setup.cfg](../setup.cfg).
+- [yapf](https://github.com/google/yapf)：格式化工具
 
-We use [pre-commit hook](https://pre-commit.com/) that checks and formats for `flake8`, `yapf`, `isort`, `trailing whitespaces`,
-fixes `end-of-files`, sorts `requirments.txt` automatically on every commit.
-The config for a pre-commit hook is stored in [.pre-commit-config](../.pre-commit-config.yaml).
+- [isort](https://github.com/timothycrosley/isort)：import排序
 
-After you clone the repository, you will need to install initialize pre-commit hook.
+`yapf`和`isort`的样式配置可以在[setup.cfg](./setup.cfg)中找到。
 
-```
+我们使用[pre-commit hook](https://pre-commit.com/)来：
+
+- 检查和格式化`flake8`、`yapf`、`isort`、`trailing whitespaces`
+
+- 修复`end-of-files`
+
+- 在每次提交时自动排序`requirments.txt`
+
+`pre-commit`的配置存储在[.pre-commit-config](.../.pre-commit-config.yaml)中。
+
+在clone代码仓库后，你需要安装并初始化`pre-commit`：
+
+```Shell
 pip install -U pre-commit
 ```
 
-From the repository folder
+如果你在安装`markdown lint`时遇到问题，你可以通过以下方式安装`ruby for markdown lint`：
 
-```
-pre-commit install
-```
+- 参考 [这个 repo](https://github.com/innerlee/setup)，按照指引并使用[zzruby.sh](https://github.com/innerlee/setup/blob/master/zzruby.sh)
 
-If you are facing an issue when installing markdown lint, you may install ruby for markdown lint by
-referring to [this repo](https://github.com/innerlee/setup) by following the usage and taking [`zzruby.sh`](https://github.com/innerlee/setup/blob/master/zzruby.sh)
+或者通过以下步骤：
 
-or by the following steps
-
-```shell
+```Shell
 # install rvm
 curl -L https://get.rvm.io | bash -s -- --autolibs=read-fail
 rvm autolibs disable
@@ -61,12 +68,12 @@ rvm autolibs disable
 rvm install 2.7.1
 ```
 
-After this on every commit check code linters and formatter will be enforced.
+在顺利安装后，你每次提交代码时都会强制执行代码格式检查与自动格式化。
 
 ```{note}
-Before you create a PR, make sure that your code lints and is formatted by yapf.
+在你创建PR之前，请确保你的代码格式符合规范，且经过了yapf格式化
 ```
 
-### C++ and CUDA
+### C++与CUDA
 
-We follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
+遵循[Google C++风格指南](https://google.github.io/styleguide/cppguide.html)
