@@ -16,7 +16,7 @@ def anchor(name):
 
 # Count algorithms
 
-files = sorted(glob.glob('topics/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 
 stats = []
 
@@ -37,14 +37,14 @@ for f in files:
     revcontent = '\n'.join(list(reversed(content.splitlines())))
     paperlinks = {}
     for _, p in papers:
-        print(p)
+        # print(p)
         paperlinks[p] = ', '.join(
             ((f'[{paperlink} ⇨]'
-              f'(topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})')
-             for paperlink in re.findall(
-                 rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
-                 revcontent, re.DOTALL | re.IGNORECASE)))
-        print('   ', paperlinks[p])
+              f'(model_zoo/{splitext(basename(f))[0]}.html#'
+              f'{anchor(paperlink)})') for paperlink in re.findall(
+                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
+                  revcontent, re.DOTALL | re.IGNORECASE)))
+        # print('   ', paperlinks[p])
     paperlist = '\n'.join(
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
@@ -59,9 +59,9 @@ for f in files:
     statsmsg = f"""
 ## [{title}]({f})
 
-* 模型权重文件数量: {len(ckpts)}
-* 配置文件数量: {len(configs)}
-* 论文数量: {len(papers)}
+* Number of checkpoints: {len(ckpts)}
+* Number of configs: {len(configs)}
+* Number of papers: {len(papers)}
 {paperlist}
 
     """
@@ -81,25 +81,25 @@ countstr = '\n'.join(
     [f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
 
 modelzoo = f"""
-# 概览
+# Overview
 
-* 模型权重文件数量: {len(allckpts)}
-* 配置文件数量: {len(allconfigs)}
-* 论文数量: {len(allpapers)}
+* Number of checkpoints: {len(allckpts)}
+* Number of configs: {len(allconfigs)}
+* Number of papers: {len(allpapers)}
 {countstr}
 
-已支持的数据集详细信息请见 [数据集](datasets.md).
+For supported datasets, see [datasets overview](datasets.md).
 
 {msglist}
 
 """
 
-with open('modelzoo.md', 'w') as f:
+with open('model_zoo.md', 'w') as f:
     f.write(modelzoo)
 
 # Count datasets
 
-files = sorted(glob.glob('tasks/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 # files = sorted(glob.glob('docs/tasks/*.md'))
 
 datastats = []
@@ -121,13 +121,13 @@ for f in files:
     revcontent = '\n'.join(list(reversed(content.splitlines())))
     paperlinks = {}
     for _, p in papers:
-        print(p)
+        # print(p)
         paperlinks[p] = ', '.join(
-            (f'[{p} ⇨](tasks/{splitext(basename(f))[0]}.html#{anchor(p)})'
-             for p in re.findall(
+            (f'[{p} ⇨](model_zoo/{splitext(basename(f))[0]}.html#'
+             f'{anchor(p)})' for p in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))
-        print('   ', paperlinks[p])
+        # print('   ', paperlinks[p])
     paperlist = '\n'.join(
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
@@ -142,7 +142,7 @@ for f in files:
     statsmsg = f"""
 ## [{title}]({f})
 
-* 论文数量: {len(papers)}
+* Number of papers: {len(papers)}
 {paperlist}
 
     """
@@ -161,16 +161,16 @@ papertypes, papercounts = np.unique([t for t, _ in alldatapapers],
 countstr = '\n'.join(
     [f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
 
-modelzoo = f"""
-# 概览
+dataset_zoo = f"""
+# Overview
 
-* 论文数量: {len(alldatapapers)}
+* Number of papers: {len(alldatapapers)}
 {countstr}
 
-已支持的算法详细信息请见 [模型池](modelzoo.md).
+For supported pose algorithms, see [modelzoo overview](modelzoo.md).
 
 {datamsglist}
 """
 
-with open('datasets.md', 'w') as f:
-    f.write(modelzoo)
+with open('dataset_zoo.md', 'w') as f:
+    f.write(dataset_zoo)
