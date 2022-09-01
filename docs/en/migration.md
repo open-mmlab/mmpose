@@ -261,7 +261,6 @@ Commonly used transforms are defined in `$MMPOSE/mmpose/datasets/transforms/comm
 
 For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
 
-
 ```{note}
 Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
 ```
