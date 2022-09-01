@@ -1,10 +1,12 @@
-# 教程 2: 增加新的数据集
+# Prepare Datasets
 
-## 将数据集转化为COCO格式
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](/docs/en/dataset_zoo/). Please follow the corresponding guidelines for data preparation.
 
-我们首先需要将自定义数据集，转换为COCO数据集格式。
+## Customize datasets by reorganizing data to COCO format
 
-COCO数据集格式的json标注文件有以下关键字：
+The simplest way to use the custom dataset is to convert your annotation format to COCO dataset format.
+
+The annotation json files in COCO format has the following necessary keys:
 
 ```python
 'images': [
@@ -54,35 +56,35 @@ COCO数据集格式的json标注文件有以下关键字：
  ]
 ```
 
-Json文件中必须包含以下三个关键字：
+There are three necessary keys in the json file:
 
-- `images`： 包含图片信息的列表，提供图片的 `file_name`， `height`， `width` 和 `id` 等信息。
-- `annotations`： 包含实例标注的列表。
-- `categories`： 包含类别名称 （'person'） 和对应的 ID (1)。
+- `images`: contains a list of images with their information like `file_name`, `height`, `width`, and `id`.
+- `annotations`: contains the list of instance annotations.
+- `categories`: contains the category name ('person') and its ID (1).
 
-## 为自定义数据集创建 dataset_info 数据集配置文件
+## Create a custom dataset_info config file for the dataset
 
-在如下位置，添加一个数据集配置文件。
+Add a new dataset info config file that containing the metainfo about the dataset.
 
 ```
 configs/_base_/datasets/custom.py
 ```
 
-数据集配置文件的样例如下：
+An example of the dataset config is as follows.
 
-`keypoint_info` 包含每个关键点的信息，其中：
+`keypoint_info` contains the information about each keypoint.
 
-1. `name`: 代表关键点的名称。一个数据集的每个关键点，名称必须唯一。
-2. `id`: 关键点的标识号。
-3. `color`: (\[B, G, R\]) 用于可视化关键点。
-4. `type`: 分为 'upper' 和 'lower' 两种，用于数据增强。
-5. `swap`: 表示与当前关键点，“镜像对称”的关键点名称。
+1. `name`: the keypoint name. The keypoint name must be unique.
+2. `id`: the keypoint id.
+3. `color`: (\[B, G, R\]) is used for keypoint visualization.
+4. `type`: 'upper' or 'lower', will be used in data augmentation.
+5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
 
-`skeleton_info` 包含关键点之间的连接关系，主要用于可视化。
+`skeleton_info` contains the information about the keypoint connectivity, which is used for visualization.
 
-`joint_weights` 可以为不同的关键点设置不同的损失权重，用于训练。
+`joint_weights` assigns different loss weights to different keypoints.
 
-`sigmas` 用于计算 OKS 得分，具体内容请参考 [keypoints-eval](https://cocodataset.org/#keypoints-eval)。
+`sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
 
 ```
 dataset_info = dict(
@@ -268,49 +270,68 @@ dataset_info = dict(
     ])
 ```
 
-## 创建自定义数据集类
+## Create a custom dataset class
 
-1. 首先在 mmpose/datasets/datasets 文件夹创建一个包，比如命名为 custom。
+1. First create a package inside the `mmpose/datasets/datasets` folder.
 
-2. 定义数据集类，并且注册这个类。
+2. Create a class definition of your dataset in the package folder and register it in the registry with a name. Without a name, it will keep giving the error. `KeyError: 'XXXXX is not in the dataset registry'`
 
    ```
    @DATASETS.register_module(name='MyCustomDataset')
    class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
    ```
 
-3. 为你的自定义类别创建 `mmpose/datasets/datasets/custom/__init__.py`
+3. Make sure you have updated the `__init__.py` of your package folder
 
-4. 更新 `mmpose/datasets/__init__.py`
+4. Make sure you have updated the `__init__.py` of the dataset package folder.
 
-## 创建和修改训练配置文件
+## Create a custom training config file
 
-创建和修改训练配置文件，来使用你的自定义数据集。
+Create a custom training config file as per your need and the model/architecture you want to use in the configs folder. You may modify an existing config file to use the new custom dataset.
 
-在 `configs/my_custom_config.py` 中，修改如下几行。
+In `configs/my_custom_config.py`:
 
 ```python
 ...
-# dataset settings
+# dataset and dataloader settings
 dataset_type = 'MyCustomDataset'
-...
-data = dict(
-    samples_per_gpu=2,
-    workers_per_gpu=2,
-    train=dict(
+
+train_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
         type=dataset_type,
+        data_root='root/of/your/train/data',
         ann_file='path/to/your/train/json',
-        img_prefix='path/to/your/train/img',
+        data_prefix=dict(img='path/to/your/train/img'),
         ...),
-    val=dict(
+    )
+
+val_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
         type=dataset_type,
+        data_root='root/of/your/val/data',
         ann_file='path/to/your/val/json',
-        img_prefix='path/to/your/val/img',
+        data_prefix=dict(img='path/to/your/val/img'),
         ...),
-    test=dict(
+    )
+
+test_dataloader = dict(
+    batch_size=2,
+    dataset=dict(
         type=dataset_type,
+        data_root='root/of/your/test/data',
         ann_file='path/to/your/test/json',
-        img_prefix='path/to/your/test/img',
-        ...))
+        data_prefix=dict(img='path/to/your/test/img'),
+        ...),
+    )
 ...
 ```
+
+Make sure you have provided all the paths correctly.
+
+## Dataset Wrappers
+
+The following dataset wrappers are supported in [MMEngine](TODO:), you can refer to [MMEngine tutorial](TODO:) to learn how to use it.
+
+- [RepeatDataset](https://github.com/open-mmlab/mmengine/blob/main/docs/en/tutorials/basedataset.md#repeatdataset)

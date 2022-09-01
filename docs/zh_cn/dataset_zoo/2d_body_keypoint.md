@@ -1,21 +1,21 @@
-# 2D 人体关键点数据集
+# 2D Body Keypoint Datasets
 
-我们建议您将数据集的根目录放置在 `$MMPOSE/data` 下。
-如果您的文件结构比较特别，您需要在配置文件中修改相应的路径。
+It is recommended to symlink the dataset root to `$MMPOSE/data`.
+If your folder structure is different, you may need to change the corresponding paths in config files.
 
-MMPose 支持的数据集如下所示:
+MMPose supported datasets:
 
-- 图像
-  - [COCO](#coco) \[ [主页](http://cocodataset.org/) \]
-  - [MPII](#mpii) \[ [主页](http://human-pose.mpi-inf.mpg.de/) \]
-  - [MPII-TRB](#mpii-trb) \[ [主页](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) \]
-  - [AI Challenger](#aic) \[ [主页](https://github.com/AIChallenger/AI_Challenger_2017) \]
-  - [CrowdPose](#crowdpose) \[ [主页](https://github.com/Jeff-sjtu/CrowdPose) \]
-  - [OCHuman](#ochuman) \[ [主页](https://github.com/liruilong940607/OCHumanApi) \]
-  - [MHP](#mhp) \[ [主页](https://lv-mhp.github.io/dataset) \]
-- 视频
-  - [PoseTrack18](#posetrack18) \[ [主页](https://posetrack.net/users/download.php) \]
-  - [sub-JHMDB](#sub-jhmdb-dataset) \[ [主页](http://jhmdb.is.tue.mpg.de/dataset) \]
+- Images
+  - [COCO](#coco) \[ [Homepage](http://cocodataset.org/) \]
+  - [MPII](#mpii) \[ [Homepage](http://human-pose.mpi-inf.mpg.de/) \]
+  - [MPII-TRB](#mpii-trb) \[ [Homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) \]
+  - [AI Challenger](#aic) \[ [Homepage](https://github.com/AIChallenger/AI_Challenger_2017) \]
+  - [CrowdPose](#crowdpose) \[ [Homepage](https://github.com/Jeff-sjtu/CrowdPose) \]
+  - [OCHuman](#ochuman) \[ [Homepage](https://github.com/liruilong940607/OCHumanApi) \]
+  - [MHP](#mhp) \[ [Homepage](https://lv-mhp.github.io/dataset) \]
+- Videos
+  - [PoseTrack18](#posetrack18) \[ [Homepage](https://posetrack.net/users/download.php) \]
+  - [sub-JHMDB](#sub-jhmdb-dataset) \[ [Homepage](http://jhmdb.is.tue.mpg.de/dataset) \]
 
 ## COCO
 
@@ -37,11 +37,11 @@ MMPose 支持的数据集如下所示:
 
 </details>
 
-请从此链接 [COCO download](http://cocodataset.org/#download) 下载数据集。请注意，2017 Train/Val 对于 COCO 关键点的训练和评估是非常必要的。
-[HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) 提供了 COCO val2017 的检测结果，可用于复现我们的多人姿态估计的结果。
-请从 [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) 或 [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing)下载。
-可选地, 为了在 COCO'2017 test-dev 上评估， 请下载 [image-info](https://download.openmmlab.com/mmpose/datasets/person_keypoints_test-dev-2017.json)。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [COCO](http://cocodataset.org/) data, please download from [COCO download](http://cocodataset.org/#download), 2017 Train/Val is needed for COCO keypoints training and validation.
+[HRNet-Human-Pose-Estimation](https://github.com/HRNet/HRNet-Human-Pose-Estimation) provides person detection result of COCO val2017 to reproduce our multi-person pose estimation results.
+Please download from [OneDrive](https://1drv.ms/f/s!AhIXJn_J-blWzzDXoz5BeFl8sWM-) or [GoogleDrive](https://drive.google.com/drive/folders/1fRUDNUDxe9fjqcRZ2bnF_TKMlO0nB_dk?usp=sharing).
+Optionally, to evaluate on COCO'2017 test-dev, please download the [image-info](https://download.openmmlab.com/mmpose/datasets/person_keypoints_test-dev-2017.json).
+Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -91,9 +91,9 @@ mmpose
 
 </details>
 
-请从此链接 [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/) 下载数据集。
-我们已经将原来的标注文件转成了 json 格式，请从此链接 [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar) 下载。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [MPII](http://human-pose.mpi-inf.mpg.de/) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+We have converted the original annotation files into json format, please download them from [mpii_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
 
 ```text
 mmpose
@@ -116,13 +116,13 @@ mmpose
 
 ```
 
-在训练和推理过程中，预测结果将会被默认保存为 '.mat' 的格式。我们提供了一个工具将这种 '.mat' 的格式转换成更加易读的 '.json' 格式。
+During training and inference, the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this '.mat' to more readable '.json' format.
 
 ```shell
 python tools/dataset/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTPUT_PRED_JSON_FILE}
 ```
 
-比如，
+For example,
 
 ```shell
 python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/annotations/mpii_val.json pred.json
@@ -147,8 +147,9 @@ python tools/dataset/mat2json work_dirs/res50_mpii_256x256/pred.mat data/mpii/an
 
 </details>
 
-请从此链接[MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/)下载数据集，并从此链接 [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar) 下载标注文件。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [MPII-TRB](https://github.com/kennymckormick/Triplet-Representation-of-human-Body) data, please download from [MPII Human Pose Dataset](http://human-pose.mpi-inf.mpg.de/).
+Please download the annotation files from [mpii_trb_annotations](https://download.openmmlab.com/mmpose/datasets/mpii_trb_annotations.tar).
+Extract them under {MMPose}/data, and make them look like this:
 
 ```text
 mmpose
@@ -186,9 +187,9 @@ mmpose
 
 </details>
 
-请从此链接 [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017) 下载 [AIC](https://github.com/AIChallenger/AI_Challenger_2017) 数据集。请注意，2017 Train/Val 对于关键点的训练和评估是必要的。
-请从此链接 [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar) 下载标注文件。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [AIC](https://github.com/AIChallenger/AI_Challenger_2017) data, please download from [AI Challenger 2017](https://github.com/AIChallenger/AI_Challenger_2017), 2017 Train/Val is needed for keypoints training and validation.
+Please download the annotation files from [aic_annotations](https://download.openmmlab.com/mmpose/datasets/aic_annotations.tar).
+Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -232,10 +233,11 @@ mmpose
 
 </details>
 
-请从此链接 [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) 下载数据集，并从此链接 [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar) 下载标注文件和人体检测结果。
-对于 top-down 方法，我们仿照 [CrowdPose](https://arxiv.org/abs/1812.00324)，使用 [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3)的[预训练权重](https://pjreddie.com/media/files/yolov3.weights) 来产生人体的检测框。
-对于模型训练， 我们仿照  [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation)，在 CrowdPose 训练/验证 数据集上训练模型， 并在 CrowdPose 测试集上评估模型。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose) data, please download from [CrowdPose](https://github.com/Jeff-sjtu/CrowdPose).
+Please download the annotation files and human detection results from [crowdpose_annotations](https://download.openmmlab.com/mmpose/datasets/crowdpose_annotations.tar).
+For top-down approaches, we follow [CrowdPose](https://arxiv.org/abs/1812.00324) to use the [pre-trained weights](https://pjreddie.com/media/files/yolov3.weights) of [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) to generate the detected human bounding boxes.
+For model training, we follow [HigherHRNet](https://github.com/HRNet/HigherHRNet-Human-Pose-Estimation) to train models on CrowdPose train/val dataset, and evaluate models on CrowdPose test dataset.
+Download and extract them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -278,8 +280,8 @@ mmpose
 
 </details>
 
-请从此链接 [OCHuman](https://github.com/liruilong940607/OCHumanApi) 下载数据集的图像和标注文件。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [OCHuman](https://github.com/liruilong940607/OCHumanApi) data, please download the images and annotations from [OCHuman](https://github.com/liruilong940607/OCHumanApi),
+Move them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -320,8 +322,9 @@ mmpose
 
 </details>
 
-请从此链接 [MHP](https://lv-mhp.github.io/dataset)下载数据文件，并从此链接 [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz)下载标注文件。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [MHP](https://lv-mhp.github.io/dataset) data, please download from [MHP](https://lv-mhp.github.io/dataset).
+Please download the annotation files from [mhp_annotations](https://download.openmmlab.com/mmpose/datasets/mhp_annotations.tar.gz).
+Please download and extract them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -374,10 +377,11 @@ mmpose
 
 </details>
 
-请从此链接 [PoseTrack18](https://posetrack.net/users/download.php)下载数据文件，并从此链接下载 [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar)下载标注文件。
-我们已将官方提供的所有单视频标注文件合并为两个 json 文件 (posetrack18_train & posetrack18_val.json)，并生成了 [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) 来加速训练。
-对于 top-down 的方法， 我们使用 [MMDetection](https://github.com/open-mmlab/mmdetection) 的预训练 [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) 来生成人体的检测框。
-请将数据置于 $MMPOSE/data 目录下，并整理成如下的格式：
+For [PoseTrack18](https://posetrack.net/users/download.php) data, please download from [PoseTrack18](https://posetrack.net/users/download.php).
+Please download the annotation files from [posetrack18_annotations](https://download.openmmlab.com/mmpose/datasets/posetrack18_annotations.tar).
+We have merged the video-wise separated official annotation files into two json files (posetrack18_train & posetrack18_val.json). We also generate the [mask files](https://download.openmmlab.com/mmpose/datasets/posetrack18_mask.tar) to speed up training.
+For top-down approaches, we use [MMDetection](https://github.com/open-mmlab/mmdetection) pre-trained [Cascade R-CNN](https://download.openmmlab.com/mmdetection/v2.0/cascade_rcnn/cascade_rcnn_x101_64x4d_fpn_20e_coco/cascade_rcnn_x101_64x4d_fpn_20e_coco_20200509_224357-051557b1.pth) (X-101-64x4d-FPN) to generate the detected human bounding boxes.
+Please download and extract them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose
@@ -439,7 +443,7 @@ mmpose
                 │-- ...
 ```
 
-请从 Github 上安装 PoseTrack 官方评估工具：
+The official evaluation tool for PoseTrack should be installed from GitHub.
 
 ```shell
 pip install git+https://github.com/svenkreiss/poseval.git
@@ -465,9 +469,9 @@ pip install git+https://github.com/svenkreiss/poseval.git
 
 </details>
 
-对于 [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) 数据集，请从此链接 [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) （来自 [JHMDB](http://jhmdb.is.tue.mpg.de/dataset)）下载，
-请从此链接 [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar)下载标注文件。
-将它们移至 $MMPOSE/data目录下， 使得文件呈如下的格式：
+For [sub-JHMDB](http://jhmdb.is.tue.mpg.de/dataset) data, please download the [images](<(http://files.is.tue.mpg.de/jhmdb/Rename_Images.tar.gz)>) from [JHMDB](http://jhmdb.is.tue.mpg.de/dataset),
+Please download the annotation files from [jhmdb_annotations](https://download.openmmlab.com/mmpose/datasets/jhmdb_annotations.tar).
+Move them under $MMPOSE/data, and make them look like this:
 
 ```text
 mmpose

@@ -20,7 +20,7 @@ It also provide a general semi-supervised object detection framework, and more s
 
 In this release, we made lots of major refactoring and modifications. Please refer to the [migration guide](../migration.md) for details and migration instructions.
 
-## **v0.28.1 (28/07/2022)**
+## **v0.28.0 (28/07/2022)**
 
 This release is meant to fix the compatibility with the latest mmcv v1.6.1
 

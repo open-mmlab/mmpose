@@ -10,9 +10,9 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
-import subprocess  # noqa: F401
+import subprocess
 import sys
 
 import pytorch_sphinx_theme
