@@ -1,9 +1,13 @@
-Welcome to MMPose's documentation!
+欢迎来到 MMPose 中文文档!
 ==================================
+
+您可以在页面左下角切换文档语言。
+
+You can change the documentation language at the lower-left corner of the page.
 
 .. toctree::
     :maxdepth: 1
-    :caption: Get Started
+    :caption: 开启 MMPose 之旅
 
     overview.md
     installation.md
@@ -11,7 +15,7 @@ Welcome to MMPose's documentation!
 
 .. toctree::
     :maxdepth: 1
-    :caption: User Guides
+    :caption: 用户教程
 
     user_guides/configs.md
     user_guides/prepare_datasets.md
@@ -24,19 +28,19 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Advanced Guides
+   :caption: 进阶教程
 
    advanced_guides.md
 
 .. toctree::
    :maxdepth: 1
-   :caption: Migration
+   :caption: 1.x 版本迁移指南
 
    migration.md
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo
+   :caption: 模型库
 
    model_zoo.txt
    model_zoo/body_2d_keypoint.md
@@ -47,7 +51,7 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Model Zoo (by paper)
+   :caption: 模型库（按论文整理）
 
    model_zoo_papers/algorithms.md
    model_zoo_papers/backbones.md
@@ -56,7 +60,7 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Dataset Zoo
+   :caption: 数据集
 
    dataset_zoo.md
    dataset_zoo/2d_body_keypoint.md
@@ -70,7 +74,7 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Notes
+   :caption: 其他说明
 
    notes/contribution_guide.md
    notes/projects.md
@@ -79,18 +83,18 @@ Welcome to MMPose's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: API Reference
+   :caption: API 参考文档
 
    api.rst
 
 .. toctree::
-   :caption: Switch Language
+   :caption: 切换语言
 
    switch_language.md
 
 
 
-Indices and tables
+索引与表格
 ==================
 
 * :ref:`genindex`
