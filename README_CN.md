@@ -18,7 +18,7 @@
   </div>
   <div>&nbsp;</div>
 
-[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
+[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/1.x/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
 [![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.26.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.26.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.26.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/zh_CN/1.x/) |
+[🛠️安装](https://mmpose.readthedocs.io/zh_CN/1.x/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/zh_CN/1.x/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/1.x/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -41,7 +41,7 @@
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
-主分支代码目前支持 **PyTorch 1.5 以上**的版本。
+主分支代码目前支持 **PyTorch 1.6 以上**的版本。
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
@@ -74,144 +74,141 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) 已经发布. 主要更新包括:
-  - 新增算法 [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
-  - 新增主干网络 [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021
-  - 新增主干网络 [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 和 [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022
-  - 优化了推理速度和 CPU 占用率
-- 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
-- 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
-- 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
-  MMPose Webcam API 用于快速开发基于 MMPose 的视频交互应用，具有上手简单、易于扩展的特点
-- 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
+- 2022-05-05: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/1.x) 已经发布. 主要更新包括:
+  - 对 MMPose 进行了重大重构，旨在提升算法库性能和可扩展性，并使其更容易上手。
+  - 基于一个全新的，可扩展性强的训练和测试引擎，但目前仍在开发中。欢迎根据[文档](https://mmpose.readthedocs.io/zh_CN/1.x/)进行试用。
+  - 新版本中存在一些与旧版本不兼容的修改。请查看[迁移文档](https://mmpose.readthedocs.io/zh_CN/1.x/migration.html)来详细了解这些变动。
+    -新版本的公测将持续到 2022 年末，在此期间，我们将基于 `1.x` 分支进行更新，不会合入到 `master` 分支。另外，至少
+    到 2023 年末，我们会保持对 0.x 版本的维护。
+
+发布历史和更新细节请参考 [更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html)
 
 ## 安装
 
-MMPose 依赖 [PyTorch](https://pytorch.org/) 和 [MMCV](https://github.com/open-mmlab/mmcv)，以下是安装的简要步骤。
-更详细的安装指南请参考 [install.md](docs/zh_cn/install.rst)。
+用户可以通过以下方式安装 MMPose：
 
 ```shell
-conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y
+conda create -n open-mmlab python=3.8 pytorch==1.10.1 torchvision==0.11.2 cudatoolkit=11.3 -c pytorch -y
 conda activate open-mmlab
-pip3 install openmim
-mim install mmcv-full
-git clone https://github.com/open-mmlab/mmpose.git
+pip install openmim
+git clone -b 1.x https://github.com/open-mmlab/mmpose.git
 cd mmpose
-pip3 install -e .
+mim install -e
 ```
+
+关于安装的详细说明请参考[文档](https://mmpose.readthedocs.io/zh_CN/1.x/installation.html)。
 
 ## 教程
 
-请参考 [getting_started.md](docs/zh_cn/getting_started.md) 了解 MMPose 的基本使用。
-MMPose 也提供了其他更详细的教程:
+我们提供了一系列简明的教程，帮助 MMPose 的新用户轻松上手使用：
 
-- [如何编写配置文件](docs/zh_cn/tutorials/0_config.md)
-- [如何微调模型](docs/zh_cn/tutorials/1_finetune.md)
-- [如何增加新数据集](docs/zh_cn/tutorials/2_new_dataset.md)
-- [如何设计数据处理流程](docs/zh_cn/tutorials/3_data_pipeline.md)
-- [如何增加新模块](docs/zh_cn/tutorials/4_new_modules.md)
-- [如何导出模型为 onnx 格式](docs/zh_cn/tutorials/5_export_model.md)
-- [如何自定义运行配置](docs/zh_cn/tutorials/6_customize_runtime.md)
+- [学习配置文件](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/configs.md)
+- [准备数据集](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/prepare_datasets.md)
+- [关键点编码、解码机制](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/codecs.md)
+- [使用现有模型推理](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/inference.md)
+- [模型训练和测试](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/train_and_test.md)
+- [可视化工具](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/visualization.md)
+- [其他实用工具](https://mmpose.readthedocs.io/zh_CN/1.x/user_guides/useful_tools.md)
 
 ## 模型库
 
 各个模型的结果和设置都可以在对应的 config（配置）目录下的 *README.md* 中查看。
-整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/latest/recognition_models.html) 页面中查看。
+整体的概况也可也在 [模型库](https://mmpose.readthedocs.io/zh_CN/1.x/recognition_models.html) 页面中查看。
 
 <details open>
 <summary><b>支持的算法</b></summary>
 
-- [x] [DeepPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
-- [x] [CPM](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#cpm-cvpr-2016) (CVPR'2016)
-- [x] [Hourglass](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hourglass-eccv-2016) (ECCV'2016)
-- [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
-- [x] [Associative Embedding](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#associative-embedding-nips-2017) (NeurIPS'2017)
-- [x] [HMR](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#hmr-cvpr-2018) (CVPR'2018)
-- [x] [SimpleBaseline2D](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#simplebaseline2d-eccv-2018) (ECCV'2018)
-- [x] [HRNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
-- [x] [VideoPose3D](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
-- [x] [HRNetv2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
-- [x] [MSPN](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
-- [x] [SCNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
-- [x] [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
-- [x] [RSN](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
-- [x] [InterNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
-- [x] [VoxelPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020
-- [x] [LiteHRNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
-- [x] [ViPNAS](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
+- [x] [DeepPose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#deeppose-cvpr-2014) (CVPR'2014)
+- [x] [CPM](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#cpm-cvpr-2016) (CVPR'2016)
+- [x] [Hourglass](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#hourglass-eccv-2016) (ECCV'2016)
+- [x] [SimpleBaseline3D](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#simplebaseline3d-iccv-2017) (ICCV'2017)
+- [x] [Associative Embedding](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#associative-embedding-nips-2017) (NeurIPS'2017)
+- [x] [HMR](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#hmr-cvpr-2018) (CVPR'2018)
+- [x] [SimpleBaseline2D](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#simplebaseline2d-eccv-2018) (ECCV'2018)
+- [x] [HRNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#hrnet-cvpr-2019) (CVPR'2019)
+- [x] [VideoPose3D](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#videopose3d-cvpr-2019) (CVPR'2019)
+- [x] [HRNetv2](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#hrnetv2-tpami-2019) (TPAMI'2019)
+- [x] [MSPN](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#mspn-arxiv-2019) (ArXiv'2019)
+- [x] [SCNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#scnet-cvpr-2020) (CVPR'2020)
+- [x] [HigherHRNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#higherhrnet-cvpr-2020) (CVPR'2020)
+- [x] [RSN](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#rsn-eccv-2020) (ECCV'2020)
+- [x] [InterNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#internet-eccv-2020) (ECCV'2020)
+- [x] [VoxelPose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html#voxelpose-eccv-2020) (ECCV'2020
+- [x] [LiteHRNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#litehrnet-cvpr-2021) (CVPR'2021)
+- [x] [ViPNAS](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#vipnas-cvpr-2021) (CVPR'2021)
 
 </details>
 
 <details open>
 <summary><b>支持的技术</b></summary>
 
-- [x] [FPN](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
-- [x] [FP16](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
-- [x] [Wingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
-- [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
-- [x] [DarkPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#darkpose-cvpr-2020) (CVPR'2020)
-- [x] [UDP](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
-- [x] [Albumentations](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#albumentations-information-2020) (Information'2020)
-- [x] [SoftWingloss](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
+- [x] [FPN](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#fpn-cvpr-2017) (CVPR'2017)
+- [x] [FP16](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#fp16-arxiv-2017) (ArXiv'2017)
+- [x] [Wingloss](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#wingloss-cvpr-2018) (CVPR'2018)
+- [x] [AdaptiveWingloss](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#adaptivewingloss-iccv-2019) (ICCV'2019)
+- [x] [DarkPose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#darkpose-cvpr-2020) (CVPR'2020)
+- [x] [UDP](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
+- [x] [Albumentations](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#albumentations-information-2020) (Information'2020)
+- [x] [SoftWingloss](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
 - [x] [SmoothNet](/configs/_base_/filters/smoothnet_h36m.md) (arXiv'2021)
-- [x] [RLE](https://mmpose.readthedocs.io/zh_CN/latest/papers/techniques.html#rle-iccv-2021) (ICCV'2021)
+- [x] [RLE](https://mmpose.readthedocs.io/zh_CN/1.x/papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
 
 <details open>
-<summary><b><a href="https://mmpose.readthedocs.io/zh_CN/latest/datasets.html">支持的数据集</a></b></summary>
+<summary><b><a href="https://mmpose.readthedocs.io/zh_CN/1.x/datasets.html">支持的数据集</a></b></summary>
 
-- [x] [AFLW](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#aflw-iccvw-2011) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
-- [x] [sub-JHMDB](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#jhmdb-iccv-2013) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
-- [x] [COFW](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cofw-iccv-2013) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
-- [x] [MPII](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#mpii-cvpr-2014) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
-- [x] [Human3.6M](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#human3-6m-tpami-2014) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
-- [x] [COCO](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
-- [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-iccv-2015) (ICCV'2015)
-- [x] [DeepFashion](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#deepfashion-cvpr-2016) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
-- [x] [300W](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#300w-imavis-2016) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
-- [x] [RHD](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#rhd-iccv-2017) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
-- [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#cmu-panoptic-iccv-2015) \[[homepage](http://domedb.perception.cs.cmu.edu/)\] (ICCV'2015)
-- [x] [AI Challenger](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#ai-challenger-arxiv-2017) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
-- [x] [MHP](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
-- [x] [WFLW](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
-- [x] [PoseTrack18](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#posetrack18-cvpr-2018) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
-- [x] [OCHuman](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#ochuman-cvpr-2019) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
-- [x] [CrowdPose](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#crowdpose-cvpr-2019) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
-- [x] [MPII-TRB](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#mpii-trb-iccv-2019) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
-- [x] [FreiHand](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#freihand-iccv-2019) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
-- [x] [Animal-Pose](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#animal-pose-iccv-2019) \[[homepage](https://sites.google.com/view/animal-pose/)\] (ICCV'2019)
-- [x] [OneHand10K](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#onehand10k-tcsvt-2019) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
-- [x] [Vinegar Fly](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#vinegar-fly-nature-methods-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
-- [x] [Desert Locust](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#desert-locust-elife-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
-- [x] [Grévy’s Zebra](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#grevys-zebra-elife-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
-- [x] [ATRW](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#atrw-acm-mm-2020) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
-- [x] [Halpe](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#halpe-cvpr-2020) \[[homepage](https://github.com/Fang-Haoshu/Halpe-FullBody/)\] (CVPR'2020)
-- [x] [COCO-WholeBody](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#coco-wholebody-eccv-2020) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
-- [x] [MacaquePose](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#macaquepose-biorxiv-2020) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
-- [x] [InterHand2.6M](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#interhand2-6m-eccv-2020) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
-- [x] [AP-10K](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
-- [x] [Horse-10](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
+- [x] [AFLW](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#aflw-iccvw-2011) \[[homepage](https://www.tugraz.at/institute/icg/research/team-bischof/lrs/downloads/aflw/)\] (ICCVW'2011)
+- [x] [sub-JHMDB](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#jhmdb-iccv-2013) \[[homepage](http://jhmdb.is.tue.mpg.de/dataset)\] (ICCV'2013)
+- [x] [COFW](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#cofw-iccv-2013) \[[homepage](http://www.vision.caltech.edu/xpburgos/ICCV13/)\] (ICCV'2013)
+- [x] [MPII](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#mpii-cvpr-2014) \[[homepage](http://human-pose.mpi-inf.mpg.de/)\] (CVPR'2014)
+- [x] [Human3.6M](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#human3-6m-tpami-2014) \[[homepage](http://vision.imar.ro/human3.6m/description.php)\] (TPAMI'2014)
+- [x] [COCO](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#coco-eccv-2014) \[[homepage](http://cocodataset.org/)\] (ECCV'2014)
+- [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#cmu-panoptic-iccv-2015) (ICCV'2015)
+- [x] [DeepFashion](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#deepfashion-cvpr-2016) \[[homepage](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/LandmarkDetection.html)\] (CVPR'2016)
+- [x] [300W](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#300w-imavis-2016) \[[homepage](https://ibug.doc.ic.ac.uk/resources/300-W/)\] (IMAVIS'2016)
+- [x] [RHD](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#rhd-iccv-2017) \[[homepage](https://lmb.informatik.uni-freiburg.de/resources/datasets/RenderedHandposeDataset.en.html)\] (ICCV'2017)
+- [x] [CMU Panoptic](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#cmu-panoptic-iccv-2015) \[[homepage](http://domedb.perception.cs.cmu.edu/)\] (ICCV'2015)
+- [x] [AI Challenger](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#ai-challenger-arxiv-2017) \[[homepage](https://github.com/AIChallenger/AI_Challenger_2017)\] (ArXiv'2017)
+- [x] [MHP](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#mhp-acm-mm-2018) \[[homepage](https://lv-mhp.github.io/dataset)\] (ACM MM'2018)
+- [x] [WFLW](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#wflw-cvpr-2018) \[[homepage](https://wywu.github.io/projects/LAB/WFLW.html)\] (CVPR'2018)
+- [x] [PoseTrack18](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#posetrack18-cvpr-2018) \[[homepage](https://posetrack.net/users/download.php)\] (CVPR'2018)
+- [x] [OCHuman](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#ochuman-cvpr-2019) \[[homepage](https://github.com/liruilong940607/OCHumanApi)\] (CVPR'2019)
+- [x] [CrowdPose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#crowdpose-cvpr-2019) \[[homepage](https://github.com/Jeff-sjtu/CrowdPose)\] (CVPR'2019)
+- [x] [MPII-TRB](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#mpii-trb-iccv-2019) \[[homepage](https://github.com/kennymckormick/Triplet-Representation-of-human-Body)\] (ICCV'2019)
+- [x] [FreiHand](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#freihand-iccv-2019) \[[homepage](https://lmb.informatik.uni-freiburg.de/projects/freihand/)\] (ICCV'2019)
+- [x] [Animal-Pose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#animal-pose-iccv-2019) \[[homepage](https://sites.google.com/view/animal-pose/)\] (ICCV'2019)
+- [x] [OneHand10K](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#onehand10k-tcsvt-2019) \[[homepage](https://www.yangangwang.com/papers/WANG-MCC-2018-10.html)\] (TCSVT'2019)
+- [x] [Vinegar Fly](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#vinegar-fly-nature-methods-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Nature Methods'2019)
+- [x] [Desert Locust](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#desert-locust-elife-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [Grévy’s Zebra](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#grevys-zebra-elife-2019) \[[homepage](https://github.com/jgraving/DeepPoseKit-Data)\] (Elife'2019)
+- [x] [ATRW](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#atrw-acm-mm-2020) \[[homepage](https://cvwc2019.github.io/challenge.html)\] (ACM MM'2020)
+- [x] [Halpe](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#halpe-cvpr-2020) \[[homepage](https://github.com/Fang-Haoshu/Halpe-FullBody/)\] (CVPR'2020)
+- [x] [COCO-WholeBody](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#coco-wholebody-eccv-2020) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
+- [x] [MacaquePose](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#macaquepose-biorxiv-2020) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
+- [x] [InterHand2.6M](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#interhand2-6m-eccv-2020) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
+- [x] [AP-10K](https://mmpose.readthedocs.io/en/1.x/papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
+- [x] [Horse-10](https://mmpose.readthedocs.io/zh_CN/1.x/papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
 
 </details>
 
 <details>
 <summary><b>支持的骨干网络</b></summary>
 
-- [x] [AlexNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#alexnet-neurips-2012) (NeurIPS'2012)
-- [x] [VGG](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#vgg-iclr-2015) (ICLR'2015)
-- [x] [ResNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnet-cvpr-2016) (CVPR'2016)
-- [x] [ResNext](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnext-cvpr-2017) (CVPR'2017)
-- [x] [SEResNet](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#seresnet-cvpr-2018) (CVPR'2018)
-- [x] [ShufflenetV1](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#shufflenetv1-cvpr-2018) (CVPR'2018)
-- [x] [ShufflenetV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#shufflenetv2-eccv-2018) (ECCV'2018)
-- [x] [MobilenetV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#mobilenetv2-cvpr-2018) (CVPR'2018)
-- [x] [ResNetV1D](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
-- [x] [ResNeSt](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
-- [x] [Swin](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
-- [x] [HRFormer](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
-- [x] [PVT](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvt-iccv-2021) (ICCV'2021)
-- [x] [PVTV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvtv2-cvmj-2022) (CVMJ'2022)
+- [x] [AlexNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#alexnet-neurips-2012) (NeurIPS'2012)
+- [x] [VGG](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#vgg-iclr-2015) (ICLR'2015)
+- [x] [ResNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#resnet-cvpr-2016) (CVPR'2016)
+- [x] [ResNext](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#resnext-cvpr-2017) (CVPR'2017)
+- [x] [SEResNet](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#seresnet-cvpr-2018) (CVPR'2018)
+- [x] [ShufflenetV1](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#shufflenetv1-cvpr-2018) (CVPR'2018)
+- [x] [ShufflenetV2](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#shufflenetv2-eccv-2018) (ECCV'2018)
+- [x] [MobilenetV2](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#mobilenetv2-cvpr-2018) (CVPR'2018)
+- [x] [ResNetV1D](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
+- [x] [ResNeSt](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
+- [x] [Swin](https://mmpose.readthedocs.io/en/1.x/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
+- [x] [HRFormer](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
+- [x] [PVT](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#pvt-iccv-2021) (ICCV'2021)
+- [x] [PVTV2](https://mmpose.readthedocs.io/zh_CN/1.x/papers/backbones.html#pvtv2-cvmj-2022) (CVMJ'2022)
 
 </details>
 
@@ -219,31 +216,9 @@ MMPose 也提供了其他更详细的教程:
 
 我们将跟进学界的最新进展，并支持更多算法和框架。如果您对 MMPose 有任何功能需求，请随时在 [MMPose Roadmap](https://github.com/open-mmlab/mmpose/issues/9) 中留言。
 
-### 基准测试
-
-#### 训练精度和速度
-
-MMPose 在主流关键点检测基准 COCO 上达到了优越的模型精度和训练速度。
-
-详细信息可见 [基准测试](docs/en/benchmark.md)(英文)。
-
-#### 推理速度
-
-我们总结了 MMPose 中主要模型的复杂度信息和推理速度，包括模型的计算复杂度、参数数量，以及以不同的批处理大小在 CPU 和 GPU 上的推理速度。
-
-详细信息可见 [模型推理速度](docs/zh_cn/inference_speed_summary.md)。
-
-## 数据准备
-
-请参考 [data_preparation.md](docs/en/data_preparation.md)（英文） 进行数据集准备。
-
-## 常见问题
-
-请参考 [FAQ](docs/en/faq.md) 了解其他用户的常见问题。
-
 ## 参与贡献
 
-我们非常欢迎用户对于 MMPose 做出的任何贡献，可以参考 [CONTRIBUTION.md](.github/CONTRIBUTING.md) 文件了解更多细节。
+我们非常欢迎用户对于 MMPose 做出的任何贡献，可以参考 [贡献指南](https://mmpose.readthedocs.io/zh_CN/1.x/notes/contribution_guide.html) 文件了解更多细节。
 
 ## 致谢
 
@@ -269,6 +244,7 @@ MMPose 是一款由不同学校和公司共同贡献的开源项目。我们感�
 
 ## OpenMMLab的其他项目
 
+- [MMEngine](https://github.com/open-mmlab/mmengine): OpenMMLab 深度学习模型训练基础库
 - [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab 计算机视觉基础库
 - [MIM](https://github.com/open-mmlab/mim): MIM 是 OpenMMlab 项目、算法、模型的统一入口
 - [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab 图像分类工具箱

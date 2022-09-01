@@ -2,27 +2,28 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 
 sed -i '$a\\n' ../../demo/docs/*_demo.md
-cat ../../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# 示例' | sed 's=](/docs/zh_cn/=](/=g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' >demo.md
+cat ../../demo/docs/*_demo.md | sed "s/#/#&/" | sed "s/md###t/html#t/g" | sed '1i\# Demo' | sed 's=](/docs/en/=](/=g' | sed 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' >demo.md
 
- # remove /docs_zh-CN/ for link used in doc site
-sed -i 's=](/docs/zh_cn/=](=g' ./tutorials/*.md
-sed -i 's=](/docs/zh_cn/=](=g' ./tasks/*.md
-sed -i 's=](/docs/zh_cn/=](=g' ./papers/*.md
-sed -i 's=](/docs/zh_cn/=](=g' ./topics/*.md
-sed -i 's=](/docs/zh_cn/=](=g' data_preparation.md
-sed -i 's=](/docs/zh_cn/=](=g' getting_started.md
-sed -i 's=](/docs/zh_cn/=](=g' install.md
-sed -i 's=](/docs/zh_cn/=](=g' benchmark.md
-# sed -i 's=](/docs/zh_cn/=](=g' changelog.md
-sed -i 's=](/docs/zh_cn/=](=g' faq.md
+ # remove /docs/ for link used in doc site
+sed -i 's=](/docs/en/=](=g' overview.md
+sed -i 's=](/docs/en/=](=g' installation.md
+sed -i 's=](/docs/en/=](=g' quick_run.md
+sed -i 's=](/docs/en/=](=g' migration.md
+sed -i 's=](/docs/en/=](=g' advanced_guides.md
+sed -i 's=](/docs/en/=](=g' ./model_zoo/*.md
+sed -i 's=](/docs/en/=](=g' ./model_zoo_papers/*.md
+sed -i 's=](/docs/en/=](=g' ./user_guides/*.md
+sed -i 's=](/docs/en/=](=g' ./dataset_zoo/*.md
+sed -i 's=](/docs/en/=](=g' ./notes/*.md
 
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tutorials/*.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./tasks/*.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./papers/*.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' ./topics/*.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' data_preparation.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' getting_started.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' install.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' benchmark.md
-# sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' changelog.md
-sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/master/=g' faq.md
+
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' overview.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' installation.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' quick_run.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' migration.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' advanced_guides.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' ./model_zoo/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' ./model_zoo_papers/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' ./user_guides/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' ./dataset_zoo/*.md
+sed -i 's=](/=](https://github.com/open-mmlab/mmpose/tree/1.x/=g' ./notes/*.md

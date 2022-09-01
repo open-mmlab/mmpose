@@ -16,7 +16,7 @@ def anchor(name):
 
 # Count algorithms
 
-files = sorted(glob.glob('topics/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 
 stats = []
 
@@ -37,14 +37,14 @@ for f in files:
     revcontent = '\n'.join(list(reversed(content.splitlines())))
     paperlinks = {}
     for _, p in papers:
-        print(p)
+        # print(p)
         paperlinks[p] = ', '.join(
             ((f'[{paperlink} ⇨]'
-              f'(topics/{splitext(basename(f))[0]}.html#{anchor(paperlink)})')
-             for paperlink in re.findall(
-                 rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
-                 revcontent, re.DOTALL | re.IGNORECASE)))
-        print('   ', paperlinks[p])
+              f'(model_zoo/{splitext(basename(f))[0]}.html#'
+              f'{anchor(paperlink)})') for paperlink in re.findall(
+                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
+                  revcontent, re.DOTALL | re.IGNORECASE)))
+        # print('   ', paperlinks[p])
     paperlist = '\n'.join(
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
@@ -94,12 +94,12 @@ For supported datasets, see [datasets overview](datasets.md).
 
 """
 
-with open('modelzoo.md', 'w') as f:
+with open('model_zoo.md', 'w') as f:
     f.write(modelzoo)
 
 # Count datasets
 
-files = sorted(glob.glob('tasks/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 # files = sorted(glob.glob('docs/tasks/*.md'))
 
 datastats = []
@@ -121,13 +121,13 @@ for f in files:
     revcontent = '\n'.join(list(reversed(content.splitlines())))
     paperlinks = {}
     for _, p in papers:
-        print(p)
+        # print(p)
         paperlinks[p] = ', '.join(
-            (f'[{p} ⇨](tasks/{splitext(basename(f))[0]}.html#{anchor(p)})'
-             for p in re.findall(
+            (f'[{p} ⇨](model_zoo/{splitext(basename(f))[0]}.html#'
+             f'{anchor(p)})' for p in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))
-        print('   ', paperlinks[p])
+        # print('   ', paperlinks[p])
     paperlist = '\n'.join(
         sorted(f'    - [{t}] {x} ({paperlinks[x]})' for t, x in papers))
     # count configs
@@ -161,7 +161,7 @@ papertypes, papercounts = np.unique([t for t, _ in alldatapapers],
 countstr = '\n'.join(
     [f'   - {t}: {c}' for t, c in zip(papertypes, papercounts)])
 
-modelzoo = f"""
+dataset_zoo = f"""
 # Overview
 
 * Number of papers: {len(alldatapapers)}
@@ -172,5 +172,5 @@ For supported pose algorithms, see [modelzoo overview](modelzoo.md).
 {datamsglist}
 """
 
-with open('datasets.md', 'w') as f:
-    f.write(modelzoo)
+with open('dataset_zoo.md', 'w') as f:
+    f.write(dataset_zoo)

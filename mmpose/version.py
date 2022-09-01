@@ -1,6 +1,6 @@
 # Copyright (c) Open-MMLab. All rights reserved.
 
-__version__ = '0.26.0'
+__version__ = '1.0.0b0'
 short_version = __version__
 
 
@@ -13,6 +13,10 @@ def parse_version_info(version_str):
             patch_version = x.split('rc')
             version_info.append(int(patch_version[0]))
             version_info.append(f'rc{patch_version[1]}')
+        elif x.find('b') != -1:
+            patch_version = x.split('b')
+            version_info.append(int(patch_version[0]))
+            version_info.append(f'b{patch_version[1]}')
     return tuple(version_info)
 
 

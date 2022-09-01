@@ -10,9 +10,9 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+
 import os
-import subprocess  # noqa: F401
+import subprocess
 import sys
 
 import pytorch_sphinx_theme
@@ -75,15 +75,8 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 html_theme_options = {
     'menu': [
         {
-            'name':
-            'Tutorial',
-            'url':
-            'https://colab.research.google.com/github/'
-            'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
-        },
-        {
             'name': 'GitHub',
-            'url': 'https://github.com/open-mmlab/mmpose'
+            'url': 'https://github.com/open-mmlab/mmpose/tree/1.x'
         },
     ],
     # Specify the language of the shared menu
@@ -107,10 +100,9 @@ master_doc = 'index'
 
 
 def builder_inited_handler(app):
-    # subprocess.run(['./collect.py'])
-    # subprocess.run(['./merge_docs.sh'])
-    # subprocess.run(['./stats.py'])
-    pass
+    subprocess.run(['python', './collect_modelzoo.py'])
+    subprocess.run(['sh', './merge_docs.sh'])
+    subprocess.run(['python', './stats.py'])
 
 
 def setup(app):
