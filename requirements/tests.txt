@@ -5,6 +5,5 @@ isort==4.3.21
 parameterized
 pytest
 pytest-runner
-smplx>=0.1.28
 xdoctest>=0.10.0
 yapf

@@ -1,5 +1,6 @@
 import os
 import os.path as osp
+import platform
 import shutil
 import sys
 import warnings
@@ -13,67 +14,6 @@ def readme():
 
 
 version_file = 'mmpose/version.py'
-is_windows = sys.platform == 'win32'
-
-
-def add_mim_extention():
-    """Add extra files that are required to support MIM into the package.
-
-    These files will be added by creating a symlink to the originals if the
-    package is installed in `editable` mode (e.g. pip install -e .), or by
-    copying from the originals otherwise.
-    """
-
-    # parse installment mode
-    if 'develop' in sys.argv:
-        # installed by `pip install -e .`
-        mode = 'symlink'
-    elif 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
-        # installed by `pip install .`
-        # or create source distribution by `python setup.py sdist`
-        mode = 'copy'
-    else:
-        return
-
-    filenames = ['tools', 'configs', 'model-index.yml']
-    repo_path = osp.dirname(__file__)
-    mim_path = osp.join(repo_path, 'mmpose', '.mim')
-    os.makedirs(mim_path, exist_ok=True)
-
-    for filename in filenames:
-        if osp.exists(filename):
-            src_path = osp.join(repo_path, filename)
-            tar_path = osp.join(mim_path, filename)
-
-            if osp.isfile(tar_path) or osp.islink(tar_path):
-                os.remove(tar_path)
-            elif osp.isdir(tar_path):
-                shutil.rmtree(tar_path)
-
-            if mode == 'symlink':
-                src_relpath = osp.relpath(src_path, osp.dirname(tar_path))
-                try:
-                    os.symlink(src_relpath, tar_path)
-                except OSError:
-                    # Creating a symbolic link on windows may raise an
-                    # `OSError: [WinError 1314]` due to privilege. If
-                    # the error happens, the src file will be copied
-                    mode = 'copy'
-                    warnings.warn(
-                        f'Failed to create a symbolic link for {src_relpath}, '
-                        f'and it will be copied to {tar_path}')
-                else:
-                    continue
-
-            if mode == 'copy':
-                if osp.isfile(src_path):
-                    shutil.copyfile(src_path, tar_path)
-                elif osp.isdir(src_path):
-                    shutil.copytree(src_path, tar_path)
-                else:
-                    warnings.warn(f'Cannot copy file {src_path}.')
-            else:
-                raise ValueError(f'Invalid mode {mode}')
 
 
 def get_version():
@@ -89,14 +29,16 @@ def get_version():
 
 
 def parse_requirements(fname='requirements.txt', with_version=True):
-    """Parse the package dependencies listed in a requirements file but strip
-    specific version information.
+    """Parse the package dependencies listed in a requirements file but strips
+    specific versioning information.
 
     Args:
-        fname (str): Path to requirements file.
-        with_version (bool, default=False): If True, include version specs.
+        fname (str): path to requirements file
+        with_version (bool, default=False): if True include version specs
+
     Returns:
-        info (list[str]): List of requirements items.
+        List[str]: list of requirements items
+
     CommandLine:
         python -c "import setup; print(setup.parse_requirements())"
     """
@@ -116,6 +58,8 @@ def parse_requirements(fname='requirements.txt', with_version=True):
             info = {'line': line}
             if line.startswith('-e '):
                 info['package'] = line.split('#egg=')[1]
+            elif '@git+' in line:
+                info['package'] = line
             else:
                 # Remove versioning from the package
                 pat = '(' + '|'.join(['>=', '==', '>']) + ')'
@@ -162,12 +106,59 @@ def parse_requirements(fname='requirements.txt', with_version=True):
     return packages
 
 
+def add_mim_extension():
+    """Add extra files that are required to support MIM into the package.
+
+    These files will be added by creating a symlink to the originals if the
+    package is installed in `editable` mode (e.g. pip install -e .), or by
+    copying from the originals otherwise.
+    """
+
+    # parse installment mode
+    if 'develop' in sys.argv:
+        # installed by `pip install -e .`
+        if platform.system() == 'Windows':
+            mode = 'copy'
+        else:
+            mode = 'symlink'
+    elif 'sdist' in sys.argv or 'bdist_wheel' in sys.argv:
+        # installed by `pip install .`
+        # or create source distribution by `python setup.py sdist`
+        mode = 'copy'
+    else:
+        return
+
+    filenames = ['tools', 'configs', 'demo', 'model-index.yml']
+    repo_path = osp.dirname(__file__)
+    mim_path = osp.join(repo_path, 'mmpose', '.mim')
+    os.makedirs(mim_path, exist_ok=True)
+
+    for filename in filenames:
+        if osp.exists(filename):
+            src_path = osp.join(repo_path, filename)
+            tar_path = osp.join(mim_path, filename)
+
+            if osp.isfile(tar_path) or osp.islink(tar_path):
+                os.remove(tar_path)
+            elif osp.isdir(tar_path):
+                shutil.rmtree(tar_path)
+
+            if mode == 'symlink':
+                src_relpath = osp.relpath(src_path, osp.dirname(tar_path))
+                os.symlink(src_relpath, tar_path)
+            elif mode == 'copy':
+                if osp.isfile(src_path):
+                    shutil.copyfile(src_path, tar_path)
+                elif osp.isdir(src_path):
+                    shutil.copytree(src_path, tar_path)
+                else:
+                    warnings.warn(f'Cannot copy file {src_path}.')
+            else:
+                raise ValueError(f'Invalid mode {mode}')
+
+
 if __name__ == '__main__':
-    add_mim_extention()
-    library_dirs = [
-        lp for lp in os.environ.get('LD_LIBRARY_PATH', '').split(':')
-        if len(lp) > 1
-    ]
+    add_mim_extension()
     setup(
         name='mmpose',
         version=get_version(),
@@ -197,7 +188,7 @@ if __name__ == '__main__':
         extras_require={
             'all': parse_requirements('requirements.txt'),
             'tests': parse_requirements('requirements/tests.txt'),
-            'build': parse_requirements('requirements/build.txt'),
-            'optional': parse_requirements('requirements/optional.txt')
+            'optional': parse_requirements('requirements/optional.txt'),
+            'mim': parse_requirements('requirements/mminstall.txt'),
         },
         zip_safe=False)

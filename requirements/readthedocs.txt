@@ -1,7 +1,6 @@
 mmcv>=2.0.0rc1
 mmengine
 munkres
-poseval@git+https://github.com/svenkreiss/poseval.git
 regex
 scipy
 titlecase

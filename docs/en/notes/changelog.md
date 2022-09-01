@@ -8,7 +8,7 @@ Built upon the new [training engine](https://github.com/open-mmlab/mmengine).
 
 **Highlights**
 
-- **New engines**. MMPose 1.x is based on MMEngine\](https://github.com/open-mmlab/mmengine), which provides a general and powerful runner that allows more flexible customizations and significantly simplifies the entrypoints of high-level interfaces.
+- **New engines**. MMPose 1.x is based on [MMEngine](https://github.com/open-mmlab/mmengine), which provides a general and powerful runner that allows more flexible customizations and significantly simplifies the entrypoints of high-level interfaces.
 
 - **Unified interfaces**. As a part of the OpenMMLab 2.x projects, MMPose 1.x unifies and refactors the interfaces and internal logics of train, testing, datasets, models, evaluation, and visualization. All the OpenMMLab 2.x projects share the same design in those interfaces and logics to allow the emergence of multi-task/modality algorithms.
 
