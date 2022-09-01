@@ -50,7 +50,7 @@
 
 在clone代码仓库后，你需要安装并初始化`pre-commit`：
 
-```Plain
+```Shell
 pip install -U pre-commit
 ```
 
@@ -70,7 +70,7 @@ rvm install 2.7.1
 
 在顺利安装后，你每次提交代码时都会强制执行代码格式检查与自动格式化。
 
-```Plain
+```{note}
 在你创建PR之前，请确保你的代码格式符合规范，且经过了yapf格式化
 ```
 
