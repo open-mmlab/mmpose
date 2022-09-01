@@ -15,7 +15,7 @@ python demo/topdown_demo_with_mmdet.py \
     [--device ${GPU_ID or CPU}]
 ```
 
-The pre-trained animal pose estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo_tasks/animal.html).
+The pre-trained animal pose estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/animal.html).
 Take [animalpose model](https://download.openmmlab.com/mmpose/animal/hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth) as an example:
 
 ```shell

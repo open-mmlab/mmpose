@@ -19,7 +19,7 @@ python demo/topdown_demo_with_mmdet.py \
 
 ```
 
-The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo_tasks/hand.html).
+The pre-trained hand pose estimation model can be downloaded from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/hand.html).
 Take [onehand10k model](https://download.openmmlab.com/mmpose/hand/hrnetv2/hrnetv2_w18_onehand10k_256x256-30bc9c6b_20210330.pth) as an example:
 
 ```shell

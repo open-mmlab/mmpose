@@ -35,30 +35,24 @@ Welcome to MMPose's documentation!
    migration.md
 
 .. toctree::
-   :maxdepth: 1
-   :caption: API Reference
-
-   api.rst
-
-.. toctree::
    :maxdepth: 2
    :caption: Model Zoo
 
    model_zoo.txt
-   modelzoo_tasks/body_2d_keypoint.md
-   modelzoo_tasks/face_2d_keypoint.md
-   modelzoo_tasks/hand_2d_keypoint.md
-   modelzoo_tasks/wholebody_2d_keypoint.md
-   modelzoo_tasks/animal_2d_keypoint.md
+   model_zoo/body_2d_keypoint.md
+   model_zoo/face_2d_keypoint.md
+   model_zoo/hand_2d_keypoint.md
+   model_zoo/wholebody_2d_keypoint.md
+   model_zoo/animal_2d_keypoint.md
 
 .. toctree::
    :maxdepth: 2
    :caption: Model Zoo (by paper)
 
-   modelzoo_papers/algorithms.md
-   modelzoo_papers/backbones.md
-   modelzoo_papers/techniques.md
-   modelzoo_papers/datasets.md
+   model_zoo_papers/algorithms.md
+   model_zoo_papers/backbones.md
+   model_zoo_papers/techniques.md
+   model_zoo_papers/datasets.md
 
 .. toctree::
    :maxdepth: 2
@@ -82,6 +76,12 @@ Welcome to MMPose's documentation!
    notes/projects.md
    notes/changelog.md
    notes/faq.md
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference
+
+   api.rst
 
 .. toctree::
    :caption: Switch Language

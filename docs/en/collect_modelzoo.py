@@ -105,8 +105,8 @@ def _parse_paper_ref(fn):
 def main():
 
     # Build output folders
-    os.makedirs('modelzoo_tasks', exist_ok=True)
-    os.makedirs('modelzoo_papers', exist_ok=True)
+    os.makedirs('model_zoo', exist_ok=True)
+    os.makedirs('model_zoo_papers', exist_ok=True)
 
     # Collect all document contents
     model_doc_list = _get_model_docs()
@@ -143,7 +143,7 @@ def main():
                      f' on {titlecase(dataset)}'), '', doc['content'], ''
                 ]
 
-        fn = osp.join('modelzoo_tasks', f'{task.replace(" ", "_").lower()}.md')
+        fn = osp.join('model_zoo', f'{task.replace(" ", "_").lower()}.md')
         with open(fn, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
 
@@ -178,7 +178,7 @@ def main():
         if lines:
             lines = [f'# {titlecase(paper_cat)}', ''] + lines
             with open(
-                    osp.join('modelzoo_papers', f'{paper_cat.lower()}.md'),
+                    osp.join('model_zoo_papers', f'{paper_cat.lower()}.md'),
                     'w',
                     encoding='utf-8') as f:
                 f.write('\n'.join(lines))

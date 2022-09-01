@@ -16,7 +16,7 @@ def anchor(name):
 
 # Count algorithms
 
-files = sorted(glob.glob('modelzoo_tasks/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 
 stats = []
 
@@ -40,7 +40,7 @@ for f in files:
         # print(p)
         paperlinks[p] = ', '.join(
             ((f'[{paperlink} ⇨]'
-              f'(modelzoo_tasks/{splitext(basename(f))[0]}.html#'
+              f'(model_zoo/{splitext(basename(f))[0]}.html#'
               f'{anchor(paperlink)})') for paperlink in re.findall(
                   rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n### (.*?)\s*[,;]?\s*\n',
                   revcontent, re.DOTALL | re.IGNORECASE)))
@@ -99,7 +99,7 @@ with open('model_zoo.md', 'w') as f:
 
 # Count datasets
 
-files = sorted(glob.glob('modelzoo_tasks/*.md'))
+files = sorted(glob.glob('model_zoo/*.md'))
 # files = sorted(glob.glob('docs/tasks/*.md'))
 
 datastats = []
@@ -123,7 +123,7 @@ for f in files:
     for _, p in papers:
         # print(p)
         paperlinks[p] = ', '.join(
-            (f'[{p} ⇨](modelzoo_tasks/{splitext(basename(f))[0]}.html#'
+            (f'[{p} ⇨](model_zoo/{splitext(basename(f))[0]}.html#'
              f'{anchor(p)})' for p in re.findall(
                  rf'\btitle\s*=\s*{{\s*{p}\s*}}.*?\n## (.*?)\s*[,;]?\s*\n',
                  revcontent, re.DOTALL | re.IGNORECASE)))

@@ -14,8 +14,6 @@ It also provide a general semi-supervised object detection framework, and more s
 
 - **Unified interfaces**. As a part of the OpenMMLab 2.x projects, MMPose 1.x unifies and refactors the interfaces and internal logics of train, testing, datasets, models, evaluation, and visualization. All the OpenMMLab 2.x projects share the same design in those interfaces and logics to allow the emergence of multi-task/modality algorithms.
 
-- **Faster speed**. We optimize the training and inference speed for common models, achieving up to xx% speedup for training and xx% for inference.
-
 - **More documentation and tutorials**. We add a bunch of documentation and tutorials to help users get started more smoothly. Read it [here](https://mmpose.readthedocs.io/en/1.x/).
 
 **Breaking Changes**
