@@ -69,15 +69,14 @@ file_client_args = dict(backend='disk')
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale', padding=0.8),
+    dict(type='RandomFlip', direction='horizontal'),
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.25,
         rot_factor=180,
         scale_factor=(0.7, 1.3)),
-    dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='TopdownGenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [

@@ -70,10 +70,10 @@ file_client_args = dict(backend='disk')
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
-    dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='TopdownGenerateTarget', target_type='heatmap', encoder=codec),
+    dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
