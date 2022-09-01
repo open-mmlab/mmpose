@@ -9,59 +9,6 @@ from glob import glob
 from addict import Addict
 from titlecase import titlecase
 
-# Step 1: get subtopics: a mix of topic and task
-# minisections = [
-#     x.split('/')[-2:] for x in glob('../../configs/*/*') if '_base_' not in x
-# ]
-# alltopics = sorted(list(set(x[0] for x in minisections)))
-# subtopics = []
-# for t in alltopics:
-#     data = [x[1].split('_') for x in minisections if x[0] == t]
-#     valid_ids = []
-#     for i in range(len(data[0])):
-#         if len(set(x[i] for x in data)) > 1:
-#             valid_ids.append(i)
-#     if len(valid_ids) > 0:
-#         subtopics.extend([
-#             f"{titlecase(t)}({','.join([d[i].title() for i in valid_ids])})",
-#             t, '_'.join(d)
-#         ] for d in data)
-#     else:
-#         subtopics.append([titlecase(t), t, '_'.join(data[0])])
-
-# minisections =
-# [['fashion', '2d_kpt_sview_rgb_img'],
-#  ['body', '2d_kpt_sview_rgb_img'],
-#  ['body', '2d_kpt_sview_rgb_vid'],
-#  ['body', '3d_kpt_mview_rgb_img'],
-#  ['body', '3d_mesh_sview_rgb_img'],
-#  ['body', '3d_kpt_sview_rgb_vid'],
-#  ['body', '3d_kpt_sview_rgb_img'],
-#  ['face', '2d_kpt_sview_rgb_img'],
-#  ['wholebody', '2d_kpt_sview_rgb_img'],
-#  ['animal', '2d_kpt_sview_rgb_img'],
-#  ['hand', '2d_kpt_sview_rgb_img'],
-#  ['hand', 'gesture_sview_rgbd_vid'],
-#  ['hand', '3d_kpt_sview_rgb_img']]
-
-#  alltopics =
-# ['animal', 'body', 'face', 'fashion', 'hand', 'wholebody']
-
-# subtopics =
-# [['Animal', 'animal', '2d_kpt_sview_rgb_img'],
-#  ['Body(2D,Kpt,Sview,Img)', 'body', '2d_kpt_sview_rgb_img'],
-#  ['Body(2D,Kpt,Sview,Vid)', 'body', '2d_kpt_sview_rgb_vid'],
-#  ['Body(3D,Kpt,Mview,Img)', 'body', '3d_kpt_mview_rgb_img'],
-#  ['Body(3D,Mesh,Sview,Img)', 'body', '3d_mesh_sview_rgb_img'],
-#  ['Body(3D,Kpt,Sview,Vid)', 'body', '3d_kpt_sview_rgb_vid'],
-#  ['Body(3D,Kpt,Sview,Img)', 'body', '3d_kpt_sview_rgb_img'],
-#  ['Face', 'face', '2d_kpt_sview_rgb_img'],
-#  ['Fashion', 'fashion', '2d_kpt_sview_rgb_img'],
-#  ['Hand(2D,Kpt,Rgb,Img)', 'hand', '2d_kpt_sview_rgb_img'],
-#  ['Hand(Gesture,Rgbd,Vid)', 'hand', 'gesture_sview_rgbd_vid'],
-#  ['Hand(3D,Kpt,Rgb,Img)', 'hand', '3d_kpt_sview_rgb_img'],
-#  ['Wholebody', 'wholebody', '2d_kpt_sview_rgb_img']]
-
 
 def _get_model_docs():
     """Get all model document files.
@@ -159,7 +106,7 @@ def main():
 
     # Build output folders
     os.makedirs('modelzoo_tasks', exist_ok=True)
-    os.makedirs('modelzoo_papers', 'tasks', exist_ok=True)
+    os.makedirs('modelzoo_papers', exist_ok=True)
 
     # Collect all document contents
     model_doc_list = _get_model_docs()

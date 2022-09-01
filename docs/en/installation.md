@@ -1,3 +1,5 @@
+# Installation
+
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Best Practices](#best-practices)
