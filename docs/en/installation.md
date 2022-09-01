@@ -3,6 +3,7 @@
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Best Practices](#best-practices)
+  - [Verify the installation](#verify-the-installation)
   - [Customize Installation](#customize-installation)
     - [CUDA versions](#cuda-versions)
     - [Install MMEngine without MIM](#install-mmengine-without-mim)
@@ -60,7 +61,7 @@ We recommend that users follow our best practices to install MMPose. However, th
 ```shell
 pip install -U openmim
 mim install mmengine
-mim install mmcv>=2.0.0rc1
+mim install "mmcv>=2.0.0rc1"
 ```
 
 **Step 1.** Install MMPose.
@@ -68,7 +69,7 @@ mim install mmcv>=2.0.0rc1
 Case a: If you develop and run mmpose directly, install it from source:
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git -d dev-1.x
+git clone https://github.com/open-mmlab/mmpose.git -b dev-1.x
 # "-b dev-1.x" means checkout to the `dev-1.x` branch.
 cd mmpose
 pip install -r requirements.txt
@@ -81,8 +82,12 @@ pip install -v -e .
 Case b: If you use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
-mim install mmpose>=1.0.0rc0
+mim install "mmpose>=1.0.0b0"
 ```
+
+### Verify the installation
+
+To verify that MMPose is installed correctly, you can run an inference demo according to this [guide](/demo/docs/2d_human_pose_demo.md).
 
 ### Customize Installation
 
@@ -135,7 +140,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```shell
 !pip3 install openmim
 !mim install mmengine
-!mim install mmcv>=2.0.0rc1
+!mim install "mmcv>=2.0.0rc1"
 ```
 
 **Step 2.** Install MMPose from the source.
