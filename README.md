@@ -20,8 +20,8 @@
 
 [![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/1.x/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
-[![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
-[![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
+[![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/1.x/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
+[![PyPI](https://badge.fury.io/py/mmpose.svg)](https://pypi.org/project/mmpose/)
 [![LICENSE](https://img.shields.io/github/license/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/blob/master/LICENSE)
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
@@ -76,7 +76,7 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 - 2022-09-01: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/v1.0.0b0) is released!
   - This release introduced major refactoring to MMPose towards better performance, extensibility and user-friendliness.
-  - Built upon a brand new and flexible training & test engine, which is still in progress. Welcome to try according to [the documentation](https://mmclassification.readthedocs.io/en/1.x/).
+  - Built upon a brand new and flexible training & test engine, which is still in progress. Welcome to try according to [the documentation](https://mmpose.readthedocs.io/en/1.x/).
   - There are BC-breaking changes. Please check [the migration tutorial](https://mmpose.readthedocs.io/en/1.x/migration.html).
   - The beta and release candidate versions will last until the end of 2022, and during the release candidate, we will develop on the `1.x` branch. And we will still maintain 0.x version still at least the end of 2023.
 
