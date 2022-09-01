@@ -67,6 +67,7 @@ jobs:
             python -m pip install git+ssh://git@github.com/open-mmlab/mmdetection.git@dev-3.x
             python -m pip install -r requirements.txt
             python -m pip install -r requirements/albu.txt
+            python -m pip install -r requirements/poseval.txt
       - run:
           name: Build and install
           command: |
@@ -115,6 +116,7 @@ jobs:
             docker exec mmpose pip install -e /mmdetection
             docker exec mmpose pip install -r requirements.txt
             docker exec mmpose pip install -r requirements/albu.txt
+            docker exec mmpose pip install -r requirements/poseval.txt
       - run:
           name: Build and install
           command: |
