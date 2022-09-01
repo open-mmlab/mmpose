@@ -1,34 +1,35 @@
-# Codecs
+# 编解码器
 
-In the keypoint detection task, depending on the algorithm, it is often necessary to generate targets in different formats, such as normalized coordinates, vectors and heatmaps, etc. Similarly, for the model outputs, a decoding process is required to transform them into coordinates.
+在关键点检测任务中，根据算法的不同，需要利用标注信息，生成不同格式的训练目标，比如归一化的坐标值、一维向量、高斯热图等。同样的，对于模型输出的结果，也需要经过处理转换成标注信息格式。我们一般将标注信息到训练目标的处理过程称为编码，模型输出到标注信息的处理过程称为解码。
 
-In normal open source code, the encoding and decoding processes are usually scattered across many files. This makes the pair of processes, which are mutually inverse, less intuitive and unified.
+在目前的开源项目代码中，编码和解码过程往往散落在不同模块里，使得这一对原本互逆的处理过程不够直观和统一，增加了用户的阅读成本。
 
-MMPose proposes the `Codec` to integrate the `encoder` and `decoder` together, to make them modular and user friendly.
+MMPose使用Codec来将关键点数据的编码器和解码器集成到一起，以增加代码的友好度和复用性。
 
-Here is a diagram to show where the `Codec` is:
+Codec在工作流程中所处的位置如下所示：
 
-![codec-en](https://user-images.githubusercontent.com/13503330/187112635-c01f13d1-a07e-420f-be50-3b8818524dec.png)
+![codec-cn](https://user-images.githubusercontent.com/13503330/187829784-4d5939de-97d7-43cc-b934-c6d17c02d589.png)
 
-A typical codec consists of two parts:
+一个编解码器（Codec）主要包含两个部分：
 
-- Encoder
+- 编码器
 
-- Decoder
+- 解码器
 
-### Encoder
+### 编码器
 
-The encoder transforms the coordinates in the input image space into the needed target format:
+编码器主要负责将处于输入图片尺度的坐标值，编码为模型训练所需要的目标格式，主要包括：
 
-- Normalized Coordinates
+- 归一化的坐标值：用于Regression-based方法
 
-- One-dimensional Vectors
+- 一维向量：用于SimCC-based方法
 
-- Gaussian Heatmaps
+- 高斯热图：用于Heatmap-based方法
 
-For example, in the Regression-based method, the encoder will be:
+以Regression-based方法的编码器为例：
 
 ```Python
+@abstractmethod
 def encode(
     self,
     keypoints: np.ndarray,
@@ -63,11 +64,11 @@ def encode(
     return reg_labels, keypoint_weights
 ```
 
-### Decoder
+### 解码器
 
-The decoder transforms the model outputs into coordinates in the input image space, which is the opposite processing of the encoder.
+解码器主要负责将模型的输出解码为输入图片尺度的坐标值，处理过程与编码器相反。
 
-For example, in the Regression-based method, the decoder will be:
+以Regression-based方法的解码器为例：
 
 ```Python
 def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -105,37 +106,37 @@ def decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     return keypoints, scores
 ```
 
-By default, the `decode()` method only performs decoding on a single instance. You can also implement the `batch_decode()` method to boost the decoding process.
+默认情况下，`decode()` 方法只提供单个目标数据的解码过程，你也可以通过`batch_decode()` 来实现批量解码提升执行效率。
 
-## Common Usage
+## 常见用法
 
-The example below shows how to use a codec in your config:
+在MMPose配置文件中，主要有三个地方用到Codec：
 
-- Definition
+- 定义
 
-- Generate Target
+- 生成训练目标
 
-- Head
+- 模型头部
 
-### Definition
+### 定义
 
-Take the Regression-based method to generate normalized coordinates as an example, you can define a `codec` in your config as follows:
+以回归方法生成归一化的坐标值为例，在配置文件中，我们通过如下方式定义Codec：
 
 ```Python
 codec = dict(type='RegressionLabel', input_size=(192, 256))
 ```
 
-### Generate Target
+### 生成训练目标
 
-In pipelines, A codec should be passed into `GenerateTarget` to work as the `encoder`:
+在数据处理阶段生成训练目标时，需要传入Codec作为编码器：
 
 ```Python
 dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec)
 ```
 
-### Head
+### 模型头部
 
-In MMPose workflows, we decode the model outputs in `Head`, which requires a codec to work as the `decoder`:
+在MMPose中，我们在模型头部对模型的输出进行解码，需要传入Codec作为解码器：
 
 ```Python
 head=dict(

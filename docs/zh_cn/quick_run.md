@@ -1,142 +1,141 @@
-# Quick Run
+# 快速上手
 
-This page provides a basic tutorial about the usage of MMPose.
+在这一章里，我们将带领你走过MMPose工作流程中关键的七个步骤，帮助你快速上手：
 
-We will walk you through the 7 key steps of a typical MMPose workflow by training a top-down residual log-likelihood algorithm based on resnet50 on COCO dataset:
+1. 使用预训练模型进行推理
+2. 准备数据集
+3. 准备配置文件
+4. 可视化训练图片
+5. 训练
+6. 测试
+7. 可视化
 
-1. Inference with a pretrained model
-2. Prepare the dataset
-3. Prepare a config
-4. Browse the transformed images
-5. Training
-6. Testing
-7. Visualization
+## 安装
 
-## Installation
+请查看[安装指南](./installation.md)，以了解完整步骤。
 
-For installation instructions, please refer to [Installation](./installation.md).
+## 快速开始
 
-## Get Started
+### 使用预训练模型进行推理
 
-### Inference with a pretrained model
-
-We provide a useful script to perform pose estimation with a pretrained model:
+你可以通过以下命令来使用预训练模型对单张图片进行识别：
 
 ```Bash
 python demo/image_demo.py \
     tests/data/coco/000000000785.jpg \
-    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py \
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py\
     https://download.openmmlab.com/mmpose/top_down/deeppose/deeppose_res50_coco_256x192_rle-2ea9bb4a_20220616.pth
 ```
 
-If MMPose is properly installed, you will get the visualized result as follows:
+该命令中用到了测试图片、完整的配置文件、预训练模型，如果MMPose安装无误，将会弹出一个新窗口，对检测结果进行可视化显示：
 
 ![inference_demo](https://user-images.githubusercontent.com/13503330/187112344-0c5062f2-689c-445c-a259-d5d4311e2497.png)
 
-```{note}
-More demo and full instructions can be found in [Inference](./user_guides/inference.md).
-```
+更多演示脚本的详细参数说明可以在 [模型推理](./user_guides/inference.md) 中找到。
 
-### Prepare the dataset
+### 准备数据集
 
-MMPose supports multiple tasks. We provide the corresponding guidelines for data preparation.
+MMPose支持各种不同的任务，我们提供了对应的数据集准备教程。
 
-- [2D Body Keypoint Detection](./dataset_zoo/2d_body_keypoint.md)
+- [2D人体关键点](./dataset_zoo/2d_body_keypoint.md)
 
-- [3D Body Keypoint Detection](./dataset_zoo/3d_body_keypoint.md)
+- [3D人体关键点](./dataset_zoo/3d_body_keypoint.md)
 
-- [2D Hand Keypoint Detection](./dataset_zoo/2d_hand_keypoint.md)
+- [2D人手关键点](./dataset_zoo/2d_hand_keypoint.md)
 
-- [3D Hand Keypoint Detection](./dataset_zoo/3d_hand_keypoint.md)
+- [3D人手关键点](./dataset_zoo/3d_hand_keypoint.md)
 
-- [2D Face Keypoint Detection](./dataset_zoo/2d_face_keypoint.md)
+- [2D人脸关键点](./dataset_zoo/2d_face_keypoint.md)
 
-- [2D WholeBody Keypoint Detection](./dataset_zoo/2d_wholebody_keypoint.md)
+- [2D全身人体关键点](./dataset_zoo/2d_wholebody_keypoint.md)
 
-- [2D Fashion Landmark Detection](./dataset_zoo/2d_fashion_landmark.md)
+- [2D服饰关键点](./dataset_zoo/2d_fashion_landmark.md)
 
-- [2D Animal Keypoint Detection](./dataset_zoo/2d_animal_keypoint.md)
+- [2D动物关键点](./dataset_zoo/2d_animal_keypoint.md)
 
-You can refer to \[2D Body Keypoint Detection\] > \[COCO\] for COCO dataset preparation.
+你可以在【2D人体关键点数据集】>【COCO】下找到COCO数据集的准备教程，并按照教程完成数据集的下载和整理。
 
 ```{note}
-In MMPose, we suggest placing the data under `$MMPOSE/data`.
+在MMPose中，我们建议将COCO数据集存放到新建的 `$MMPOSE/data` 目录下。
 ```
 
-### Prepare a config
+### 准备配置文件
 
-MMPose is equipped with a powerful config system to conduct various experiments conveniently. A config file organizes the settings of:
+MMPose拥有一套强大的配置系统，用于管理训练所需的一系列必要参数：
 
-- **General**: basic configurations non-related to training or testing, such as Timer, Logger, Visualizer and other Hooks, as well as distributed-related environment settings
+- **通用**：环境、Hook、Checkpoint、Logger、Timer等
 
-- **Data**: dataset, dataloader and data augmentation
+- **数据**：Dataset、Dataloader、数据增强等
 
-- **Training**: resume, weights loading, optimizer, learning rate scheduling, epochs and valid interval etc.
+- **训练**：优化器、学习率调整等
 
-- **Model**: structure, module and loss function etc.
+- **模型**：Backbone、Neck、Head、损失函数等
 
-- **Evaluation**: metrics
+- **评测**：Metrics
 
-We provide a bunch of well-prepared configs under `$MMPOSE/configs` so that you can directly use or modify.
+在`$MMPOSE/configs`目录下，我们提供了大量前沿论文方法的配置文件，可供直接使用和参考。
 
-Going back to our example, we  will use the prepared config:
+要在COCO数据集上训练基于ResNet50的RLE模型时，所需的配置文件为：
 
 ```Bash
-$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
 ```
 
-You can set the path of the COCO dataset by modifying `data_root` in the config：
+我们需要将配置文件中的 data_root 变量修改为COCO数据集存放路径：
 
 ```Python
 data_root = 'data/coco'
 ```
 
 ```{note}
-If you wish to learn more about our config system, please refer to [Configs](./user_guides/configs.md).
+感兴趣的读者也可以查阅 [配置文件](./user_guides/configs.md) 来进一步学习MMPose所使用的配置系统。
 ```
 
-### Browse the transformed images
+### 可视化训练图片
 
-Before training, we can browse the transformed training data to check if the images are augmented properly:
+在开始训练之前，我们还可以对训练图片进行可视化，检查训练图片是否正确进行了数据增强。
+
+我们提供了相应的可视化脚本：
 
 ```Bash
 python tools/misc/browse_dastaset.py \
-    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py \
+    --mode transformed
 ```
 
 ![transformed_training_img](https://user-images.githubusercontent.com/13503330/187112376-e604edcb-46cc-4995-807b-e8f204f991b0.png)
 
-### Training
+### 训练
 
-Use the following command to train with a single GPU:
+确定数据无误后，运行以下命令启动训练：
 
 ```Bash
 python tools/train.py configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
 ```
 
 ```{note}
-MMPose automates many useful training tricks and functions including:
+MMPose中集成了大量实用训练trick和功能：
 
-- Learning rate warmup and scheduling
+- 学习率warmup和scheduling
 
-- ImageNet pretrained models
+- ImageNet预训练权重
 
-- Automatic learning rate scaling
+- 自动学习率缩放、自动batch size缩放
 
-- Multi-GPU and Multi-Node training support
+- CPU训练、多机多卡训练、集群训练
 
-- Various Data backend support, e.g. HardDisk, LMDB, Petrel, HTTP etc.
+- HardDisk、LMDB、Petrel、HTTP等不同数据后端
 
-- Mixed precision training support
+- 混合精度浮点训练
 
 - TensorBoard
 ```
 
-### Testing
+### 测试
 
-Checkpoints and logs will be saved under `$MMPOSE/work_dirs` by default. The best model is under `$MMPOSE/work_dir/best_coco`.
+在不指定额外参数时，训练的权重和日志信息会默认存储到`$MMPOSE/work_dirs`目录下，最优的模型权重存放在`$MMPOSE/work_dir/best_coco`目录下。
 
-Use the following command to evaluate the model on COCO dataset:
+我们可以通过如下指令测试模型在COCO验证集上的精度：
 
 ```Bash
 python tools/test.py \
@@ -144,7 +143,7 @@ python tools/test.py \
     work_dir/best_coco/AP_epoch_20.pth
 ```
 
-Here is an example of evaluation results：
+在COCO验证集上评测结果样例如下：
 
 ```Bash
  Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] =  0.704
@@ -161,29 +160,29 @@ Here is an example of evaluation results：
 ```
 
 ```{note}
-If you want to perform evaluation on other datasets, please refer to [Train & Test](./user_guides/train_and_test.md).
+如果需要测试模型在其他数据集上的表现，可以前往 [训练与测试](./user_guides/train_and_test.md) 查看。
 ```
 
-### Visualization
+### 可视化
 
-In addition to the visualization of the keypoint skeleton, MMPose also supports the visualization of Heatmaps by setting `output_heatmap=True` in confg:
+除了对关键点骨架的可视化以外，我们还支持对热度图进行可视化，你只需要在配置文件中设置`output_heatmap=True`：
 
 ```Python
 model = dict(
-    ## omitted
+    ## 内容省略
     test_cfg = dict(
-        ## omitted
+        ## 内容省略
         output_heatmaps=True
     )
 )
 ```
 
-or add `--cfg-options='model.test_cfg.output_heatmaps=True` at the end of your command.
+或在命令行中添加`--cfg-options='model.test_cfg.output_heatmaps=True'`。
 
-Visualization result (top: decoded keypoints; bottom: predicted heatmap):
+可视化效果如下：
 
 ![vis_pred](https://user-images.githubusercontent.com/26127467/187578902-30ef7bb0-9a93-4e03-bae0-02aeccf7f689.jpg)
 
 ```{note}
-If you wish to apply MMPose to your own projects, we have prepared a detailed [Migration guide](./migration.md).
+如果你希望深入地学习MMPose，将其应用到自己的项目当中，我们准备了一份详细的 [迁移指南](./migration.md) 。
 ```
