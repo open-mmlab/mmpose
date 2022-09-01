@@ -88,7 +88,7 @@ data_root = 'data/coco'
 ```
 
 ```{note}
-感兴趣的读者也可以查阅【配置文件】来进一步学习MMPose所使用的配置系统。
+感兴趣的读者也可以查阅 [配置文件](./user_guides/configs.md) 来进一步学习MMPose所使用的配置系统。
 ```
 
 ### 可视化训练图片
