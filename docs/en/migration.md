@@ -261,10 +261,8 @@ Commonly used transforms are defined in `$MMPOSE/mmpose/datasets/transforms/comm
 
 For top-down methods, `Shift`, `Rotate`and `Resize` are implemented by `RandomBBoxTransform`**.** For bottom-up methods, `BottomupRandomAffine` is used.
 
-Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
-
 ```{note}
-All transforms in this part will only generate the **transformation matrix** and **will not** perform the actual transformation on the input data.
+Most data transforms depend on `bbox_center` and `bbox_scale`, which can be obtained by `GetBBoxCenterScale`.
 ```
 
 #### ii. Transformation
@@ -578,6 +576,8 @@ def loss(self,
 ## Compatibility of MMPose 0.X
 
 MMPose 1.0 has been refactored extensively and addressed many legacy issues. Most of the code in MMPose 1.0 will not be compatible with 0.x version.
+
+To try our best to help you migrate your code and model, here are some major changes:
 
 ### Data Transformation
 

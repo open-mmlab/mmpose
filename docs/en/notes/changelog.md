@@ -4,9 +4,7 @@
 
 We are excited to announce the release of MMPose 1.0.0beta.
 MMPose 1.0.0beta is the first version of MMPose 1.x, a part of the OpenMMLab 2.x projects.
-Built upon the new [training engine](https://github.com/open-mmlab/mmengine),
-MMPose 1.x unifies the interfaces of dataset, models, evaluation, and visualization with faster training and testing speed.
-It also provide a general semi-supervised object detection framework, and more strong baselines.
+Built upon the new [training engine](https://github.com/open-mmlab/mmengine).
 
 **Highlights**
 

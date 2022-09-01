@@ -16,7 +16,7 @@ python demo/topdown_face_demo.py \
     [--kpt-thr ${KPT_SCORE_THR}]
 ```
 
-The pre-trained face keypoint estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/face.html).
+The pre-trained face keypoint estimation model can be found from [model zoo](https://mmpose.readthedocs.io/en/1.x/model_zoo/face_2d_keypoint.html).
 Take [aflw model](https://download.openmmlab.com/mmpose/face/hrnetv2/hrnetv2_w18_aflw_256x256-f2bbc62b_20210125.pth) as an example:
 
 ```shell

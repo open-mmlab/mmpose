@@ -93,7 +93,7 @@ cd mmpose
 mim install -e .
 ```
 
-Please refer to [install.md](https://mmpose.readthedocs.io/en/1.x/installation.html) for more detailed installation and dataset preparation.
+Please refer to [installation.md](https://mmpose.readthedocs.io/en/1.x/installation.html) for more detailed installation and dataset preparation.
 
 ## Getting Started
 
@@ -147,7 +147,6 @@ A summary can be found in the [Model Zoo](https://mmpose.readthedocs.io/en/1.x/m
 - [x] [UDP](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#udp-cvpr-2020) (CVPR'2020)
 - [x] [Albumentations](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#albumentations-information-2020) (Information'2020)
 - [x] [SoftWingloss](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#softwingloss-tip-2021) (TIP'2021)
-- [x] [SmoothNet](/configs/_base_/filters/smoothnet_h36m.md) (arXiv'2021)
 - [x] [RLE](https://mmpose.readthedocs.io/en/1.x/model_zoo_papers/techniques.html#rle-iccv-2021) (ICCV'2021)
 
 </details>
