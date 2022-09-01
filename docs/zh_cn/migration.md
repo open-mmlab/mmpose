@@ -63,7 +63,7 @@ bbox的数据格式采用`xyxy`，而不是`xywh`，这与`mmdet`中采用的格
 对于不同bbox格式之间的转换，我们同样提供了丰富的方法：`bbox_xyxy2xywh`、`bbox_xywh2xyxy`、`bbox_xyxy2cs`等，定义在`$MMPOSE/mmpose/structures/bbox/transforms.py`中，可以帮助你完成自己数据格式的转换。
 
 ```{note}
-关于COCO数据格式的详细说明请参考[COCO]。
+关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
 ```
 
 以MPII数据集（`$MMPOSE/configs/_base_/datasets/mpii.py`）为例：
