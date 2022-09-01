@@ -82,7 +82,7 @@ We provide a bunch of well-prepared configs under `$MMPOSE/configs` so that you 
 Going back to our example, we  will use the prepared config:
 
 ```Bash
-$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/res50_coco_256x192_rle.py
+$MMPOSE/configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
 ```
 
 You can set the path of the COCO dataset by modifying `data_root` in the config：
@@ -101,7 +101,8 @@ Before training, we can browse the transformed training data to check if the ima
 
 ```Bash
 python tools/misc/browse_dastaset.py \
-    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py
+    configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_rle-8xb64-210e_coco-256x192.py \
+    --mode transformed
 ```
 
 ![transformed_training_img](https://user-images.githubusercontent.com/13503330/187112376-e604edcb-46cc-4995-807b-e8f204f991b0.png)
