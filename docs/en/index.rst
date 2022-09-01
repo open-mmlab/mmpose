@@ -59,14 +59,14 @@ Welcome to MMPose's documentation!
    :caption: Dataset Zoo
 
    dataset_zoo.md
-   datasetzoo/2d_body_keypoint.md
-   datasetzoo/2d_wholebody_keypoint.md
-   datasetzoo/2d_face_keypoint.md
-   datasetzoo/2d_hand_keypoint.md
-   datasetzoo/2d_fashion_landmark.md
-   datasetzoo/2d_animal_keypoint.md
-   datasetzoo/3d_body_keypoint.md
-   datasetzoo/3d_hand_keypoint.md
+   dataset_zoo/2d_body_keypoint.md
+   dataset_zoo/2d_wholebody_keypoint.md
+   dataset_zoo/2d_face_keypoint.md
+   dataset_zoo/2d_hand_keypoint.md
+   dataset_zoo/2d_fashion_landmark.md
+   dataset_zoo/2d_animal_keypoint.md
+   dataset_zoo/3d_body_keypoint.md
+   dataset_zoo/3d_hand_keypoint.md
 
 .. toctree::
    :maxdepth: 1
