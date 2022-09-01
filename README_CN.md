@@ -18,7 +18,7 @@
   </div>
   <div>&nbsp;</div>
 
-[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/latest/?badge=latest)
+[![Documentation](https://readthedocs.org/projects/mmpose/badge/?version=latest)](https://mmpose.readthedocs.io/en/1.x/?badge=latest)
 [![actions](https://github.com/open-mmlab/mmpose/workflows/build/badge.svg)](https://github.com/open-mmlab/mmpose/actions)
 [![codecov](https://codecov.io/gh/open-mmlab/mmpose/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmpose)
 [![PyPI](https://img.shields.io/pypi/v/mmpose)](https://pypi.org/project/mmpose/)
@@ -26,11 +26,11 @@
 [![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 [![Percentage of issues still open](https://isitmaintained.com/badge/open/open-mmlab/mmpose.svg)](https://github.com/open-mmlab/mmpose/issues)
 
-[📘文档](https://mmpose.readthedocs.io/zh_CN/v0.26.0/) |
-[🛠️安装](https://mmpose.readthedocs.io/zh_CN/v0.26.0/install.html) |
-[👀模型库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/modelzoo.html) |
-[📜论文库](https://mmpose.readthedocs.io/zh_CN/v0.26.0/papers/algorithms.html) |
-[🆕更新日志](https://mmpose.readthedocs.io/en/v0.26.0/changelog.html) |
+[📘文档](https://mmpose.readthedocs.io/zh_CN/1.x/) |
+[🛠️安装](https://mmpose.readthedocs.io/zh_CN/1.x/install.html) |
+[👀模型库](https://mmpose.readthedocs.io/zh_CN/1.x/modelzoo.html) |
+[📜论文库](https://mmpose.readthedocs.io/zh_CN/1.x/papers/algorithms.html) |
+[🆕更新日志](https://mmpose.readthedocs.io/en/1.x/changelog.html) |
 [🤔报告问题](https://github.com/open-mmlab/mmpose/issues/new/choose)
 
 </div>
@@ -41,7 +41,7 @@
 
 MMPose 是一款基于 PyTorch 的姿态分析的开源工具箱，是 [OpenMMLab](http://openmmlab.org/) 项目的成员之一。
 
-主分支代码目前支持 **PyTorch 1.5 以上**的版本。
+主分支代码目前支持 **PyTorch 1.6 以上**的版本。
 
 https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-84f6-24eeddbf4d91.mp4
 
@@ -74,30 +74,26 @@ https://user-images.githubusercontent.com/15977946/124654387-0fd3c500-ded1-11eb-
 
 ## 最新进展
 
-- 2022-05-05: MMPose [v0.26.0](https://github.com/open-mmlab/mmpose/releases/tag/v0.26.0) 已经发布. 主要更新包括:
-  - 新增算法 [RLE (Residual Log-likelihood Estimation)](https://arxiv.org/abs/2107.11291), ICCV'2021
-  - 新增主干网络 [Swin Transformer](https://arxiv.org/abs/2103.14030), ICCV'2021
-  - 新增主干网络 [PVT](https://arxiv.org/abs/2102.12122), ICCV'2021 和 [PVTv2](https://arxiv.org/abs/2106.13797), CVMJ'2022
-  - 优化了推理速度和 CPU 占用率
-- 2022-04: MMPose 代码可以通过 [Gitee](https://gitee.com/open-mmlab/mmpose) 访问
-- 2022-02-28: [MMDeploy](https://github.com/open-mmlab/mmdeploy) v0.3.0 支持 MMPose 模型部署
-- 2022-02-11: [MMPose Webcam API](https://github.com/open-mmlab/mmpose/tree/master/tools/webcam) 和相关教程文档发布
-  MMPose Webcam API 用于快速开发基于 MMPose 的视频交互应用，具有上手简单、易于扩展的特点
-- 2021-12-29: OpenMMLab 开放平台已经正式上线! 欢迎试用基于 MMPose 的[姿态估计 Demo](https://platform.openmmlab.com/web-demo/demo/poseestimation)
+- 2022-05-05: MMPose [v1.0.0b0](https://github.com/open-mmlab/mmpose/releases/tag/1.x) 已经发布. 主要更新包括:
+  - 对 MMPose 进行了重大重构，旨在提升算法库性能和可扩展性，并使其更容易上手。
+  - 基于一个全新的，可扩展性强的训练和测试引擎，但目前仍在开发中。欢迎根据[文档](https://mmpose.readthedocs.io/zh_CN/1.x/)进行试用。
+  - 新版本中存在一些与旧版本不兼容的修改。请查看[迁移文档](https://mmpose.readthedocs.io/zh_CN/1.x/migration.html)来详细了解这些变动。
+    -新版本的公测将持续到 2022 年末，在此期间，我们将基于 `1.x` 分支进行更新，不会合入到 `master` 分支。另外，至少
+    到 2023 年末，我们会保持对 0.x 版本的维护。
+
+发布历史和更新细节请参考 [更新日志](https://mmpose.readthedocs.io/zh_CN/1.x/notes/changelog.html)
 
 ## 安装
 
-MMPose 依赖 [PyTorch](https://pytorch.org/) 和 [MMCV](https://github.com/open-mmlab/mmcv)，以下是安装的简要步骤。
-更详细的安装指南请参考 [install.md](docs/zh_cn/install.rst)。
+用户可以通过以下方式安装 MMPose：
 
 ```shell
-conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y
+conda create -n open-mmlab python=3.8 pytorch==1.10.1 torchvision==0.11.2 cudatoolkit=11.3 -c pytorch -y
 conda activate open-mmlab
-pip3 install openmim
-mim install mmcv-full
-git clone https://github.com/open-mmlab/mmpose.git
+pip install openmim
+git clone -b 1.x https://github.com/open-mmlab/mmpose.git
 cd mmpose
-pip3 install -e .
+mim install -e
 ```
 
 ## 教程
@@ -190,7 +186,7 @@ MMPose 也提供了其他更详细的教程:
 - [x] [COCO-WholeBody](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#coco-wholebody-eccv-2020) \[[homepage](https://github.com/jin-s13/COCO-WholeBody/)\] (ECCV'2020)
 - [x] [MacaquePose](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#macaquepose-biorxiv-2020) \[[homepage](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html)\] (bioRxiv'2020)
 - [x] [InterHand2.6M](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#interhand2-6m-eccv-2020) \[[homepage](https://mks0601.github.io/InterHand2.6M/)\] (ECCV'2020)
-- [x] [AP-10K](https://mmpose.readthedocs.io/en/latest/papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
+- [x] [AP-10K](https://mmpose.readthedocs.io/en/1.x/papers/datasets.html#ap-10k-neurips-2021) \[[homepage](https://github.com/AlexTheBad/AP-10K)\] (NeurIPS'2021)
 - [x] [Horse-10](https://mmpose.readthedocs.io/zh_CN/latest/papers/datasets.html#horse-10-wacv-2021) \[[homepage](http://www.mackenziemathislab.org/horse10)\] (WACV'2021)
 
 </details>
@@ -208,7 +204,7 @@ MMPose 也提供了其他更详细的教程:
 - [x] [MobilenetV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#mobilenetv2-cvpr-2018) (CVPR'2018)
 - [x] [ResNetV1D](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnetv1d-cvpr-2019) (CVPR'2019)
 - [x] [ResNeSt](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#resnest-arxiv-2020) (ArXiv'2020)
-- [x] [Swin](https://mmpose.readthedocs.io/en/latest/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
+- [x] [Swin](https://mmpose.readthedocs.io/en/1.x/papers/backbones.html#swin-cvpr-2021) (CVPR'2021)
 - [x] [HRFormer](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#hrformer-nips-2021) (NIPS'2021)
 - [x] [PVT](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvt-iccv-2021) (ICCV'2021)
 - [x] [PVTV2](https://mmpose.readthedocs.io/zh_CN/latest/papers/backbones.html#pvtv2-cvmj-2022) (CVMJ'2022)

@@ -75,15 +75,8 @@ html_theme_path = [pytorch_sphinx_theme.get_html_theme_path()]
 html_theme_options = {
     'menu': [
         {
-            'name':
-            'Tutorial',
-            'url':
-            'https://colab.research.google.com/github/'
-            'open-mmlab/mmpose/blob/master/demo/MMPose_Tutorial.ipynb'
-        },
-        {
             'name': 'GitHub',
-            'url': 'https://github.com/open-mmlab/mmpose'
+            'url': 'https://github.com/open-mmlab/mmpose/tree/1.x'
         },
     ],
     # Specify the language of the shared menu
