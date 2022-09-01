@@ -161,6 +161,7 @@ def main():
     elif input_type == 'video':
         tmp_folder = tempfile.TemporaryDirectory()
         video = mmcv.VideoReader(args.input)
+        progressbar = mmengine.ProgressBar(len(video))
         video.cvt2frames(tmp_folder.name, show_progress=False)
         output_root = args.output_root
         args.output_root = tmp_folder.name
@@ -172,6 +173,7 @@ def main():
                 pose_estimator,
                 visualizer,
                 show_interval=1)
+            progressbar.update()
         if output_root:
             mmcv.frames2video(
                 tmp_folder.name,
