@@ -9,19 +9,20 @@ from mmpose.evaluation.functional import keypoint_pck_accuracy
 from mmpose.registry import MODELS
 from mmpose.utils.tensor_utils import to_numpy
 from mmpose.utils.typing import ConfigType, OptConfigType, OptSampleList
-from .integral_regression_head import IntegralRegressionHead
+from .soft_argmax_head import SoftArgmaxHead
 
 OptIntSeq = Optional[Sequence[int]]
 
 
 @MODELS.register_module()
-class DSNTHead(IntegralRegressionHead):
+class DSNTHead(SoftArgmaxHead):
     """Top-down integral regression head introduced in `DSNT`_ by Nibali et
     al(2018). The head contains a differentiable spatial to numerical transform
     (DSNT) layer that do soft-argmax operation on the predicted heatmaps to
     regress the coordinates.
 
-    This head is used for algorithms that require supervision of heatmaps.
+    This head is used for algorithms that require supervision of heatmaps
+    in `DSNT` approach.
 
     Args:
         in_channels (int | sequence[int]): Number of input channels

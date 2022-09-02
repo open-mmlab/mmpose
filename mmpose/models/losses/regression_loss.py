@@ -39,7 +39,7 @@ class DSNTLoss(nn.Module):
     def __init__(self,
                  use_target_weight: bool = False,
                  size_average: bool = True,
-                 dist_loss: str = 'l2',
+                 dist_loss: str = 'l1',
                  div_reg: str = 'js',
                  sigma: float = 1.0) -> None:
         super().__init__()
@@ -84,7 +84,11 @@ class DSNTLoss(nn.Module):
         ) == ndims + 2, f'expected heatmaps to be a {ndims+2}D tensor'
         assert heatmaps.size()[:-ndims] == target.size()[:-1]
 
-        gauss = self._generate_gaussian(target, heatmaps.size()[2:], sigma)
+        H, W = heatmaps.size()[2:]
+        target = target * torch.tensor(
+            [H, W], dtype=target.dtype, device=target.device)
+
+        gauss = self._generate_gaussian(target, [H, W], sigma)
 
         divergences = divergence(heatmaps, gauss, ndims)
 
@@ -105,8 +109,7 @@ class DSNTLoss(nn.Module):
         if isinstance(length, torch.Tensor):
             length = length.to(device, dtype)
 
-        return torch.arange(
-            0.0, length, 1, dtype=dtype, device=device) / length
+        return torch.arange(0.0, length, 1, dtype=dtype, device=device)
 
     def _generate_gaussian(self, means, heatmap_size, sigma, normalize=True):
         """Generate Gaussian distribution. This function is differential with

@@ -4,6 +4,7 @@ from .heatmap_loss import AdaptiveWingLoss
 from .mesh_loss import GANLoss, MeshLoss
 from .mse_loss import KeypointMSELoss, KeypointOHKMMSELoss
 from .multi_loss_factory import AELoss, HeatmapLoss, MultiLossFactory
+from .multi_task_loss import MultiTaskLoss
 from .regression_loss import (BoneLoss, L1Loss, MPJPELoss, MSELoss, RLELoss,
                               SemiSupervisionLoss, SmoothL1Loss, SoftWingLoss,
                               WingLoss)
@@ -13,5 +14,5 @@ __all__ = [
     'MultiLossFactory', 'MeshLoss', 'GANLoss', 'SmoothL1Loss', 'WingLoss',
     'MPJPELoss', 'MSELoss', 'L1Loss', 'BCELoss', 'BoneLoss',
     'SemiSupervisionLoss', 'SoftWingLoss', 'AdaptiveWingLoss', 'RLELoss',
-    'KLDiscretLoss'
+    'KLDiscretLoss', 'MultiTaskLoss'
 ]
