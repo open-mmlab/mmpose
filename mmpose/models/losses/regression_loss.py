@@ -304,6 +304,10 @@ class SmoothL1Loss(nn.Module):
 
         if self.use_target_weight:
             assert target_weight is not None
+
+            for i in range(output.ndim - target_weight.ndim):
+                target_weight = target_weight.unsqueeze(-1)
+
             loss = self.criterion(output * target_weight,
                                   target * target_weight)
         else:

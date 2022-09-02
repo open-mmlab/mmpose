@@ -59,9 +59,9 @@ class IntegralRegressionLabel(BaseKeypointCodec):
             - keypoint_weights (np.ndarray): The target weights in shape
                 (N, K)
         """
-        heatmaps, keypoint_weights = self.heatmap_codec(
+        heatmaps, keypoint_weights = self.heatmap_codec.encode(
             keypoints, keypoints_visible)
-        reg_labels, keypoint_weights = self.keypoint_codec(
+        reg_labels, keypoint_weights = self.keypoint_codec.encode(
             keypoints, keypoint_weights)
 
         return heatmaps, reg_labels, keypoint_weights
@@ -80,6 +80,6 @@ class IntegralRegressionLabel(BaseKeypointCodec):
                 It usually represents the confidence of the keypoint prediction
         """
 
-        keypoints, scores = self.keypoint_codec(encoded)
+        keypoints, scores = self.keypoint_codec.decode(encoded)
 
         return keypoints, scores

@@ -123,11 +123,11 @@ class IntegralRegressionHead(SoftArgmaxHead):
 
         # calculate losses
         losses = dict()
-
+        print('pred', pred_heatmaps.shape, 'gt', gt_heatmaps.shape, 'w',
+              keypoint_weights.shape)
         input_list = [pred_coords, pred_heatmaps]
         target_list = [keypoint_labels, gt_heatmaps]
-        loss = self.loss_module(input_list, target_list,
-                                keypoint_weights.unsqueeze(-1))
+        loss = self.loss_module(input_list, target_list, keypoint_weights)
 
         if isinstance(loss, dict):
             losses.update(loss)

@@ -6,11 +6,11 @@ from unittest import TestCase
 import torch
 from mmengine.structures import InstanceData, PixelData
 
-from mmpose.models.heads import DSNTHead
+from mmpose.models.heads import SoftArgmaxHead
 from mmpose.testing import get_packed_inputs
 
 
-class TestDSNTHead(TestCase):
+class TestSoftArgmaxHead(TestCase):
 
     def _get_feats(
         self,
@@ -27,31 +27,31 @@ class TestDSNTHead(TestCase):
 
     def _get_data_samples(self,
                           batch_size: int = 2,
-                          with_reg_label: bool = False):
+                          with_heatmap: bool = False):
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
-                batch_size, with_reg_label=with_reg_label)
+                batch_size, with_heatmap=with_heatmap)
         ]
 
         return batch_data_samples
 
     def test_init(self):
         # square heatmap
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32, in_featuremap_size=(8, 8), num_joints=17)
         self.assertEqual(head.linspace_x.shape, (1, 1, 1, 64))
         self.assertEqual(head.linspace_y.shape, (1, 1, 64, 1))
         self.assertIsNone(head.decoder)
 
         # rectangle heatmap
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32, in_featuremap_size=(6, 8), num_joints=17)
         self.assertEqual(head.linspace_x.shape, (1, 1, 1, 6 * 8))
         self.assertEqual(head.linspace_y.shape, (1, 1, 8 * 8, 1))
         self.assertIsNone(head.decoder)
 
         # 2 deconv + 1x1 conv
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -65,7 +65,7 @@ class TestDSNTHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # 2 deconv + w/o 1x1 conv
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -80,7 +80,7 @@ class TestDSNTHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -93,7 +93,7 @@ class TestDSNTHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/o deconv and 1x1 conv
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=32,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -106,7 +106,7 @@ class TestDSNTHead(TestCase):
         self.assertIsNone(head.decoder)
 
         # w/ decoder
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -118,7 +118,7 @@ class TestDSNTHead(TestCase):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -130,7 +130,7 @@ class TestDSNTHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+            batch_size=2, with_heatmap=False)
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -139,7 +139,7 @@ class TestDSNTHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
         # inputs transform: resize and concat
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=[16, 32],
             in_featuremap_size=(12, 16),
             num_joints=17,
@@ -158,7 +158,7 @@ class TestDSNTHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
         # input transform: output heatmap
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -170,7 +170,7 @@ class TestDSNTHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+            batch_size=2, with_heatmap=False)
         _, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -182,7 +182,7 @@ class TestDSNTHead(TestCase):
         decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
-        head = DSNTHead(
+        head = SoftArgmaxHead(
             in_channels=[16, 32],
             in_featuremap_size=(6, 8),
             num_joints=17,
@@ -194,10 +194,13 @@ class TestDSNTHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_reg_label=False)
+            batch_size=2, with_heatmap=False)
         preds = head.predict([feats, feats],
                              batch_data_samples,
-                             test_cfg=dict(flip_test=True))
+                             test_cfg=dict(
+                                 flip_test=True,
+                                 shift_coords=True,
+                                 shift_heatmap=True))
 
         self.assertTrue(len(preds), 2)
         self.assertIsInstance(preds[0], InstanceData)
@@ -205,35 +208,29 @@ class TestDSNTHead(TestCase):
                          batch_data_samples[0].gt_instances.keypoints.shape)
 
     def test_loss(self):
-        for dist_loss in ['l1', 'l2']:
-            for div_reg in ['kl', 'js']:
-                head = DSNTHead(
-                    in_channels=[16, 32],
-                    in_featuremap_size=(6, 8),
-                    num_joints=17,
-                    input_transform='select',
-                    input_index=-1,
-                    loss=dict(
-                        type='DSNTLoss',
-                        use_target_weight=True,
-                        dist_loss=dist_loss,
-                        div_reg=div_reg))
+        head = SoftArgmaxHead(
+            in_channels=[16, 32],
+            in_featuremap_size=(6, 8),
+            num_joints=17,
+            input_transform='select',
+            input_index=-1,
+        )
 
-                feats = self._get_feats(
-                    batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-                batch_data_samples = self._get_data_samples(
-                    batch_size=2, with_reg_label=True)
-                losses = head.loss(feats, batch_data_samples)
+        feats = self._get_feats(
+            batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+        batch_data_samples = self._get_data_samples(batch_size=2)
+        losses = head.loss(feats, batch_data_samples)
 
-                self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
-                self.assertEqual(losses['loss_kpt'].shape, torch.Size())
-                self.assertIsInstance(losses['acc_pose'], torch.Tensor)
+        self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
+        self.assertEqual(losses['loss_kpt'].shape, torch.Size())
+        self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
 
         with self.assertRaisesRegex(ValueError,
                                     'selecting multiple input features'):
-            _ = DSNTHead(
+
+            _ = SoftArgmaxHead(
                 in_channels=[16, 32],
                 in_featuremap_size=(6, 8),
                 num_joints=17,
