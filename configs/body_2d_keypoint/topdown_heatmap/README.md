@@ -18,7 +18,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 |      Model      | Input Size |  AP   |  AR   |                Details and Download                 |
 | :-------------: | :--------: | :---: | :---: | :-------------------------------------------------: |
-|     AlexNet     |  256x192   | 0.448 | 0.521 |        [cpm_coco.md](./coco/alexnet_coco.md)        |
+|     AlexNet     |  256x192   | 0.448 | 0.521 |      [alexnet_coco.md](./coco/alexnet_coco.md)      |
 |       CPM       |  256x192   | 0.623 | 0.685 |          [cpm_coco.md](./coco/cpm_coco.md)          |
 |  HourglassNet   |  256x256   | 0.726 | 0.780 |    [hourglass_coco.md](./coco/hourglass_coco.md)    |
 |   HRFormer-S    |  256x192   | 0.738 | 0.793 |     [hrformer_coco.md](./coco/hrformer_coco.md)     |
@@ -35,15 +35,15 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |      PVT-S      |  256x192   | 0.714 | 0.773 |          [pvt_coco.md](./coco/pvt_coco.md)          |
 |    ResNet-50    |  256x192   | 0.718 | 0.773 |       [resnet_coco.md](./coco/resnet_coco.md)       |
 |   ResNet-101    |  256x192   | 0.726 | 0.781 |       [resnet_coco.md](./coco/resnet_coco.md)       |
-| ResNet-101+Dark |  256x192   | 0.732 | 0.786 |    [resnet_coco.md](./coco/resnet_dark_coco.md)     |
+| ResNet-101+Dark |  256x192   | 0.732 | 0.786 |  [resnet_dark_coco.md](./coco/resnet_dark_coco.md)  |
 |   ResNeSt-50    |  256x192   | 0.720 | 0.775 |      [resnest_coco.md](./coco/resnest_coco.md)      |
 |   ResNeSt-101   |  256x192   | 0.725 | 0.781 |      [resnest_coco.md](./coco/resnest_coco.md)      |
 |  ResNetV1d-50   |  256x192   | 0.722 | 0.777 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
 |  ResNetV1d-101  |  256x192   | 0.731 | 0.786 |    [resnetv1d_coco.md](./coco/resnetv1d_coco.md)    |
 |   ResNeXt-50    |  256x192   | 0.715 | 0.771 |      [resnext_coco.md](./coco/resnext_coco.md)      |
 |   ResNeXt-101   |  256x192   | 0.726 | 0.781 |      [resnext_coco.md](./coco/resnext_coco.md)      |
-|     RCN-50      |  256x192   | 0.726 | 0.781 |          [rsn_coco.md](./coco/rsn_coco.md)          |
-|    RCN-50-3x    |  256x192   | 0.749 | 0.812 |          [rsn_coco.md](./coco/rsn_coco.md)          |
+|     RSN-50      |  256x192   | 0.726 | 0.781 |          [rsn_coco.md](./coco/rsn_coco.md)          |
+|    RSN-50-3x    |  256x192   | 0.749 | 0.812 |          [rsn_coco.md](./coco/rsn_coco.md)          |
 |    SCNet-50     |  256x192   | 0.728 | 0.784 |        [scnet_coco.md](./coco/scnet_coco.md)        |
 |    SCNet-101    |  256x192   | 0.733 | 0.789 |        [scnet_coco.md](./coco/scnet_coco.md)        |
 |   SEResNet-50   |  256x192   | 0.729 | 0.784 |     [seresnet_coco.md](./coco/seresnet_coco.md)     |
