@@ -75,3 +75,37 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |  MobileNet-v2  |  256x256   |  0.854   |  0.234   |  [mobilenetv2_mpii.md](./mpii/mobilenetv2_mpii.md)  |
 | ShuffleNet-v2  |  256x256   |  0.828   |  0.205   | [shufflenetv2_mpii.md](./mpii/shufflenetv2_mpii.md) |
 | ShuffleNet-v1  |  256x256   |  0.824   |  0.195   | [shufflenetv1_mpii.md](./mpii/shufflenetv1_mpii.md) |
+
+### CrowdPose Dataset
+
+Results on CrowdPose test with [YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) human detector
+
+|   Model    | Input Size |  AP   |  AR   |                  Details and Download                  |
+| :--------: | :--------: | :---: | :---: | :----------------------------------------------------: |
+| HRNet-w32  |  256x192   | 0.675 | 0.816 |  [hrnet_crowdpose.md](./crowdpose/hrnet_crowdpose.md)  |
+| ResNet-101 |  256x192   | 0.647 | 0.800 | [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md) |
+| HRNet-w32  |  256x192   | 0.637 | 0.785 | [resnet_crowdpose.md](./crowdpose/resnet_crowdpose.md) |
+
+### AIC Dataset
+
+Results on AIC val set with ground-truth bounding boxes.
+
+|   Model    | Input Size |  AP   |  AR   |         Details and Download         |
+| :--------: | :--------: | :---: | :---: | :----------------------------------: |
+| HRNet-w32  |  256x192   | 0.323 | 0.366 |  [hrnet_aic.md](./aic/hrnet_aic.md)  |
+| ResNet-101 |  256x192   | 0.294 | 0.337 | [resnet_aic.md](./aic/resnet_aic.md) |
+
+### JHMDB Dataset
+
+|   Model   | Input Size | PCK(norm. by person size) | PCK (norm. by torso size) |            Details and Download            |
+| :-------: | :--------: | :-----------------------: | :-----------------------: | :----------------------------------------: |
+| ResNet-50 |  256x256   |           96.0            |           80.1            | [resnet_jhmdb.md](./jhmdb/resnet_jhmdb.md) |
+|    CPM    |  368x368   |           89.8            |           65.7            |    [cpm_jhmdb.md](./jhmdb/cpm_jhmdb.md)    |
+
+### PoseTrack2018 Dataset
+
+Results on PoseTrack2018 val with ground-truth bounding boxes.
+| Model | Input Size | AP | Details and Download |
+| HRNet-w48 | 256x192 | 84.6 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
+| HRNet-w32 | 256x192 | 83.4 | [hrnet_posetrack18.md](./posetrack18/hrnet_posetrack18.md) |
+| ResNet-50 | 256x192 | 81.2 | [resnet_posetrack18.md](./posetrack18/resnet_posetrack18.md) |
