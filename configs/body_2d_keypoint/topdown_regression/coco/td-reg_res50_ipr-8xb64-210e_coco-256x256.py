@@ -83,7 +83,10 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
+    dict(
+        type='GenerateTarget',
+        target_type='heatmap+keypoint_label',
+        encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
