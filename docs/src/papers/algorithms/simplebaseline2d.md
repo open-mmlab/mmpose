@@ -21,8 +21,7 @@
 
 <!-- [ABSTRACT] -->
 
-There has been significant progress on pose estimation and increasing interests on pose tracking in recent years. At the same time, the overall algorithm and system complexity increases as well, making the algorithm analysis and comparison more difficult. This work provides simple and effective baseline methods. They are helpful for inspiring and
-evaluating new ideas for the field. State-of-the-art results are achieved on challenging benchmarks.
+There has been significant progress on pose estimation and increasing interests on pose tracking in recent years. At the same time, the overall algorithm and system complexity increases as well, making the algorithm analysis and comparison more difficult. This work provides simple and effective baseline methods. They are helpful for inspiring and evaluating new ideas for the field. State-of-the-art results are achieved on challenging benchmarks.
 
 <!-- [IMAGE] -->
 
