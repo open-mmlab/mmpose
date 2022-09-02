@@ -16,7 +16,7 @@ likelihood of being a keypoint.
 
 Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 dataset
 
-|    Backbone     | Input Size |  AP   |   AR    |                Details and Download                 |
+|      Model      | Input Size |  AP   |   AR    |                Details and Download                 |
 | :-------------: | :--------: | :---: | :-----: | :-------------------------------------------------: |
 |     AlexNet     |  256x192   | 0.448 | 0.0.521 |        [cpm_coco.md](./coco/alexnet_coco.md)        |
 |       CPM       |  256x192   | 0.623 | 0.0.685 |          [cpm_coco.md](./coco/cpm_coco.md)          |
@@ -55,3 +55,23 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 |     Swin-L      |  256x192   | 0.743 |  0.798  |         [swin_coco.md](./coco/swin_coco.md)         |
 
 ### MPII Dataset
+
+|     Model      | Input Size | PCKh@0.5 | PCKH@0.1 |                Details and Download                 |
+| :------------: | :--------: | :------: | :------: | :-------------------------------------------------: |
+|      CPM       |  368x368   |  0.876   |  0.285   |          [cpm_mpii.md](./mpii/cpm_mpii.md)          |
+|  HourglassNet  |  256x256   |  0.889   |  0.317   |    [hourglass_mpii.md](./mpii/hourglass_mpii.md)    |
+|   HRNet-w32    |  256x256   |  0.900   |  0.334   |        [hrnet_mpii.md](./mpii/hrnet_mpii.md)        |
+|   HRNet-w48    |  256x256   |  0.901   |  0.337   |        [hrnet_mpii.md](./mpii/hrnet_mpii.md)        |
+| HRNet-w48+Dark |  256x256   |  0.905   |  0.360   |   [hrnet_dark_mpii.md](./mpii/hrnet_dark_mpii.md)   |
+|  LiteHRNet-18  |  256x256   |  0.859   |  0.260   |    [litehrnet_mpii.md](./mpii/litehrnet_mpii.md)    |
+|  LiteHRNet-30  |  256x256   |  0.869   |  0.271   |    [litehrnet_mpii.md](./mpii/litehrnet_mpii.md)    |
+|  MobileNet-v2  |  256x256   |  0.854   |  0.234   |  [mobilenetv2_mpii.md](./mpii/mobilenetv2_mpii.md)  |
+|   ResNet-50    |  256x256   |  0.882   |  0.286   |       [resnet_mpii.md](./mpii/resnet_mpii.md)       |
+|   ResNet-152   |  256x256   |  0.889   |  0.303   |       [resnet_mpii.md](./mpii/resnet_mpii.md)       |
+|  ResNetV1d-50  |  256x256   |  0.881   |  0.290   |    [resnetv1d_mpii.md](./mpii/resnetv1d_mpii.md)    |
+| ResNetV1d-152  |  256x256   |  0.888   |  0.300   |    [resnetv1d_mpii.md](./mpii/resnetv1d_mpii.md)    |
+|  ResNeXt-152   |  256x256   |  0.887   |  0.294   |      [resnext_mpii.md](./mpii/resnext_mpii.md)      |
+|    SCNet-50    |  256x256   |  0.888   |  0.290   |        [scnet_mpii.md](./mpii/scnet_mpii.md)        |
+|  SEResNet-50   |  256x256   |  0.884   |  0.292   |     [seresnet_mpii.md](./mpii/seresnet_mpii.md)     |
+| ShuffleNet-v1  |  256x256   |  0.824   |  0.195   | [shufflenetv1_mpii.md](./mpii/shufflenetv1_mpii.md) |
+| ShuffleNet-v2  |  256x256   |  0.828   |  0.205   | [shufflenetv2_mpii.md](./mpii/shufflenetv2_mpii.md) |
