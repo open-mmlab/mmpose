@@ -1,16 +1,17 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+from typing import List
+
 import cv2
 import numpy as np
 import torch
 from mmengine.structures import InstanceData, PixelData
 from mmengine.utils import is_list_of
 
-from mmpose.utils.typing import SampleList
 from .bbox.transforms import get_warp_matrix
 from .pose_data_sample import PoseDataSample
 
 
-def merge_data_samples(data_samples: SampleList) -> PoseDataSample:
+def merge_data_samples(data_samples: List[PoseDataSample]) -> PoseDataSample:
     """Merge the given data samples into a single data sample.
 
     This function can be used to merge the top-down predictions with
