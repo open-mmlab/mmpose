@@ -56,7 +56,7 @@ Results on COCO val2017 with detector having human AP of 56.4 on COCO val2017 da
 
 ### MPII Dataset
 
-|     Model      | Input Size | PCKh@0.5 | PCKH@0.1 |                Details and Download                 |
+|     Model      | Input Size | PCKh@0.5 | PCKh@0.1 |                Details and Download                 |
 | :------------: | :--------: | :------: | :------: | :-------------------------------------------------: |
 |      CPM       |  368x368   |  0.876   |  0.285   |          [cpm_mpii.md](./mpii/cpm_mpii.md)          |
 |  HourglassNet  |  256x256   |  0.889   |  0.317   |    [hourglass_mpii.md](./mpii/hourglass_mpii.md)    |
