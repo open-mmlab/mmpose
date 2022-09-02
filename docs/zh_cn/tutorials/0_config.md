@@ -95,7 +95,7 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
   log_config = dict(  # 注册日志钩子的设置
       interval=20,  # 打印日志间隔
       hooks=[ # 训练期间执行的钩子
-        dict(type='TextLoggerHook', by_epoch=False), 
+        dict(type='TextLoggerHook', by_epoch=False),
         dict(type='TensorboardLoggerHook', by_epoch=False),
         dict(type='WandbLoggerHook', by_epoch=False, # 还支持 Wandb 记录器，它需要安装 `wandb`。
              init_kwargs={'entity': "entity", # 用于登录wandb的实体
