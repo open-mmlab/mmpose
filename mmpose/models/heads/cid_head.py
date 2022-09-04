@@ -119,7 +119,7 @@ class CIDHead(nn.Module):
                 dtype=torch.long,
                 device=features.device)
             instance_param = self._sample_feats(features[i], instance_coord)
-            contrastive_loss += self.contrastive_loss(instance_param)
+            # contrastive_loss += self.contrastive_loss(instance_param)
             total_instances += instance_coord.size(0)
 
             instances['instance_coord'].append(instance_coord)
@@ -384,7 +384,6 @@ class ContrastiveLoss(nn.Module):
         features_norm = F.normalize(features, dim=1)
         logits = features_norm.mm(features_norm.t()) / self.temp
         targets = torch.arange(n, dtype=torch.long, device=features.device)
-        assert logits.device == targets.device
         loss = F.cross_entropy(logits, targets, reduction='sum')
         return loss
 
