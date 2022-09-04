@@ -1,7 +1,7 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=20, val_interval=1)
+train_cfg = dict(max_epochs=210, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
@@ -17,21 +17,21 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=20,
-        milestones=[8, 15],
+        end=210,
+        milestones=[170, 200],
         gamma=0.1,
         by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=256)
+auto_scale_lr = dict(base_batch_size=128)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='pck/Mean PCK', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=3)
 
 # model settings
 model = dict(
@@ -41,11 +41,15 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
-    backbone=dict(type='ResNet', depth=50),
+    backbone=dict(
+        type='ResNeSt',
+        depth=269,
+        init_cfg=dict(type='Pretrained', checkpoint='mmcls://resnest269'),
+    ),
     head=dict(
         type='HeatmapHead',
         in_channels=2048,
-        out_channels=15,
+        out_channels=17,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
@@ -53,12 +57,11 @@ model = dict(
         flip_mode='heatmap',
         shift_heatmap=True,
     ))
-load_from = 'https://download.openmmlab.com/mmpose/top_down/resnet/res50_mpii_256x256-418ffc88_20200812.pth'  # noqa: E501
 
 # base dataset settings
-dataset_type = 'JhmdbDataset'
+dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/jhmdb/'
+data_root = 'data/coco/'
 
 file_client_args = dict(backend='disk')
 
@@ -67,15 +70,12 @@ train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(
-        type='RandomBBoxTransform',
-        rotate_factor=60,
-        scale_factor=(0.75, 1.25)),
+    dict(type='RandomHalfBody'),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
-
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
@@ -85,7 +85,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -93,12 +93,12 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/Sub3_train.json',
-        data_prefix=dict(img=''),
+        ann_file='annotations/person_keypoints_train2017.json',
+        data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
@@ -107,16 +107,17 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/Sub3_test.json',
-        data_prefix=dict(img=''),
+        ann_file='annotations/person_keypoints_val2017.json',
+        bbox_file='data/coco/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = [
-    dict(type='JhmdbPCKAccuracy', thr=0.2),
-    dict(type='JhmdbPCKAccuracy', thr=0.2, norm_item='torso'),
-]
+val_evaluator = dict(
+    type='CocoMetric',
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

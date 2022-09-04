@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -42,9 +42,10 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
+        type='ResNeXt',
         depth=101,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet101'),
+        init_cfg=dict(
+            type='Pretrained', checkpoint='mmcls://resnext101_32x4d'),
     ),
     head=dict(
         type='HeatmapHead',
@@ -85,7 +86,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

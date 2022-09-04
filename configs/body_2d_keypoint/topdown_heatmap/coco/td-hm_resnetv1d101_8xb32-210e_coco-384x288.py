@@ -24,7 +24,7 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
@@ -43,8 +43,8 @@ model = dict(
         bgr_to_rgb=True),
     backbone=dict(
         type='ResNetV1d',
-        depth=152,
-        init_cfg=dict(type='Pretrained', checkpoint='mmcls://resnet152_v1d'),
+        depth=101,
+        init_cfg=dict(type='Pretrained', checkpoint='mmcls://resnet101_v1d'),
     ),
     head=dict(
         type='HeatmapHead',

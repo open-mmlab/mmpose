@@ -24,14 +24,14 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='pck/PCKh', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(160, 160), heatmap_size=(40, 40), sigma=2)
+    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
 
 # model settings
 model = dict(
@@ -42,14 +42,14 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
+        type='SEResNet',
         depth=152,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet152'),
+        init_cfg=dict(type='Pretrained', checkpoint='mmcls://se-resnet152'),
     ),
     head=dict(
         type='HeatmapHead',
         in_channels=2048,
-        out_channels=9,
+        out_channels=16,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
@@ -59,36 +59,32 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'ZebraDataset'
+dataset_type = 'MpiiDataset'
 data_mode = 'topdown'
-data_root = 'data/zebra/'
+data_root = 'data/mpii/'
 
 file_client_args = dict(backend='disk')
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale', padding=0.8),
+    dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(
-        type='RandomBBoxTransform',
-        shift_factor=0.25,
-        rot_factor=180,
-        scale_factor=(0.7, 1.3)),
+    dict(type='RandomBBoxTransform', shift_prob=0),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale', padding=0.8),
+    dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -96,7 +92,7 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/zebra_train.json',
+        ann_file='annotations/mpii_train.json',
         data_prefix=dict(img='images/'),
         pipeline=train_pipeline,
     ))
@@ -110,7 +106,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/zebra_test.json',
+        ann_file='annotations/mpii_val.json',
+        headbox_file='data/mpii/annotations/mpii_gt_val.mat',
         data_prefix=dict(img='images/'),
         test_mode=True,
         pipeline=test_pipeline,
@@ -118,9 +115,5 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = [
-    dict(type='PCKAccuracy', thr=0.2),
-    dict(type='AUC'),
-    dict(type='EPE'),
-]
+val_evaluator = dict(type='MpiiPCKAccuracy')
 test_evaluator = val_evaluator

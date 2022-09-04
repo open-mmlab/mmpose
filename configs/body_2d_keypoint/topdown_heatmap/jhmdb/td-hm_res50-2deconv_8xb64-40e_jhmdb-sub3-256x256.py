@@ -1,7 +1,7 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=20, val_interval=1)
+train_cfg = dict(max_epochs=40, val_interval=1)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
@@ -17,21 +17,21 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=20,
-        milestones=[8, 15],
+        end=40,
+        milestones=[20, 30],
         gamma=0.1,
         by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=256)
+auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='pck/Mean PCK', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
+    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(32, 32), sigma=2)
 
 # model settings
 model = dict(
@@ -46,6 +46,8 @@ model = dict(
         type='HeatmapHead',
         in_channels=2048,
         out_channels=15,
+        deconv_out_channels=(256, 256),
+        deconv_kernel_sizes=(4, 4),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
@@ -85,7 +87,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=64,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -93,7 +95,7 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/Sub2_train.json',
+        ann_file='annotations/Sub3_train.json',
         data_prefix=dict(img=''),
         pipeline=train_pipeline,
     ))
@@ -107,7 +109,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/Sub2_test.json',
+        ann_file='annotations/Sub3_test.json',
         data_prefix=dict(img=''),
         test_mode=True,
         pipeline=test_pipeline,
