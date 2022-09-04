@@ -384,7 +384,7 @@ class ContrastiveLoss(nn.Module):
         features_norm = F.normalize(features, dim=1)
         logits = features_norm.mm(features_norm.t()) / self.temp
         targets = torch.arange(n, dtype=torch.long, device=features.device)
-
+        assert logits.device == targets.device
         loss = F.cross_entropy(logits, targets, reduction='sum')
         return loss
 
