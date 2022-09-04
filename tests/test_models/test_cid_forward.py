@@ -54,7 +54,7 @@ def test_cid_forward():
         train_cfg=dict(),
         test_cfg=dict(
             num_joints=17,
-            flip_test=True,
+            flip_test=False,
             max_num_people=30,
             detection_threshold=0.01,
             center_pool_kernel=3))
@@ -94,6 +94,7 @@ def test_cid_forward():
     assert isinstance(losses, dict)
 
     # Test forward test
+    detector.eval()
     with torch.no_grad():
         _ = detector.forward(imgs, img_metas=img_metas, return_loss=False)
         _ = detector.forward_dummy(imgs)
@@ -121,11 +122,11 @@ def _demo_mm_inputs(input_shape=(1, 3, 512, 512)):
     img_metas = [{
         'image_file':
         'test.jpg',
-        'aug_data': [torch.zeros(1, 3, 256, 256)],
+        'aug_data': [torch.zeros(1, 3, 512, 512)],
         'test_scale_factor': [1],
         'base_size': (256, 256),
         'center':
-        np.array([128, 128]),
+        np.array([256, 256]),
         'scale':
         np.array([1.28, 1.28]),
         'flip_index':
@@ -143,6 +144,3 @@ def _demo_mm_inputs(input_shape=(1, 3, 512, 512)):
         'img_metas': img_metas
     }
     return mm_inputs
-
-
-test_cid_forward()
