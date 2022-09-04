@@ -1,30 +1,34 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import math
+from collections import defaultdict
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import math
-from collections import defaultdict
 
 from ..builder import HEADS
 
 
 def _sigmoid(x):
-    y = torch.clamp(x.sigmoid_(), min=1e-4, max=1-1e-4)
+    y = torch.clamp(x.sigmoid_(), min=1e-4, max=1 - 1e-4)
     return y
+
 
 @HEADS.register_module()
 class CIDHead(nn.Module):
-    """CID head. paper ref: Dongkai Wang et al. "Contextual Instance Decouple for Robust Multi-Person Pose Estimation".
+    """CID head. paper ref: Dongkai Wang et al. "Contextual Instance Decouple
+    for Robust Multi-Person Pose Estimation".
 
     Args:
         in_channels (int): Number of input channels.
         gfd_channels (int): Number of instance feature map channels
         num_joints (int): Number of joints
-        multi_hm_loss_factor (float): loss weight for multi-person heatmap 
+        multi_hm_loss_factor (float): loss weight for multi-person heatmap
         single_hm_loss_factor (float): loss weight for single person heatmap
         contrastive_loss_factor (float): loss weight for contrastive loss
-        max_train_instances (int): limit the number of instances during training to avoid 
-        prior_prob (float): focal loss bias initailization
+        max_train_instances (int): limit the number of instances
+        during training to avoid
+        prior_prob (float): focal loss bias initialization
     """
 
     def __init__(self,
@@ -44,12 +48,13 @@ class CIDHead(nn.Module):
         self.prior_prob = prior_prob
 
         # iia module
-        self.keypoint_center_conv = nn.Conv2d(in_channels, num_joints+1, 1, 1, 0)
+        self.keypoint_center_conv = nn.Conv2d(in_channels, num_joints + 1, 1,
+                                              1, 0)
         # gfd module
         self.conv_down = nn.Conv2d(in_channels, gfd_channels, 1, 1, 0)
         self.c_attn = ChannelAtten(in_channels, gfd_channels)
         self.s_attn = SpatialAtten(in_channels, gfd_channels)
-        self.fuse_attn = nn.Conv2d(gfd_channels*2, gfd_channels, 1, 1, 0)
+        self.fuse_attn = nn.Conv2d(gfd_channels * 2, gfd_channels, 1, 1, 0)
         self.heatmap_conv = nn.Conv2d(gfd_channels, num_joints, 1, 1, 0)
 
         # loss
@@ -64,10 +69,24 @@ class CIDHead(nn.Module):
         assert isinstance(features, list)
         x0_h, x0_w = features[0].size(2), features[0].size(3)
 
-        features = torch.cat([features[0], \
-                       F.interpolate(features[1], size=(x0_h, x0_w), mode='bilinear', align_corners=False), \
-                       F.interpolate(features[2], size=(x0_h, x0_w), mode='bilinear', align_corners=False), \
-                       F.interpolate(features[3], size=(x0_h, x0_w), mode='bilinear', align_corners=False)], 1)
+        features = torch.cat([
+            features[0],
+            F.interpolate(
+                features[1],
+                size=(x0_h, x0_w),
+                mode='bilinear',
+                align_corners=False),
+            F.interpolate(
+                features[2],
+                size=(x0_h, x0_w),
+                mode='bilinear',
+                align_corners=False),
+            F.interpolate(
+                features[3],
+                size=(x0_h, x0_w),
+                mode='bilinear',
+                align_corners=False)
+        ], 1)
 
         if self.training:
             return self.forward_train(features, forward_info)
@@ -75,22 +94,30 @@ class CIDHead(nn.Module):
             return self.forward_test(features, forward_info)
 
     def forward_train(self, features, labels):
-        gt_multi_heatmap, gt_multi_mask, gt_instance_coord, gt_instance_heatmap, gt_instance_mask, gt_instance_valid = labels
+        gt_multi_heatmap, gt_multi_mask, gt_instance_coord,\
+            gt_instance_heatmap, gt_instance_mask, gt_instance_valid = labels
 
         pred_multi_heatmap = _sigmoid(self.keypoint_center_conv(features))
 
         # multi-person heatmap loss
-        multi_heatmap_loss = self.heatmap_loss(pred_multi_heatmap, gt_multi_heatmap, gt_multi_mask)
+        multi_heatmap_loss = self.heatmap_loss(pred_multi_heatmap,
+                                               gt_multi_heatmap, gt_multi_mask)
 
         contrastive_loss = 0
         total_instances = 0
         instances = defaultdict(list)
         for i in range(features.size(0)):
-            if torch.sum(gt_instance_valid[i]) < 0.5: continue
-            instance_coord = gt_instance_coord[i][gt_instance_valid[i] > 0.5].long()
-            instance_heatmap = gt_instance_heatmap[i][gt_instance_valid[i] > 0.5]
+            if torch.sum(gt_instance_valid[i]) < 0.5:
+                continue
+            instance_coord = gt_instance_coord[i][
+                gt_instance_valid[i] > 0.5].long()
+            instance_heatmap = gt_instance_heatmap[i][
+                gt_instance_valid[i] > 0.5]
             instance_mask = gt_instance_mask[i][gt_instance_valid[i] > 0.5]
-            instance_imgid = i * torch.ones(instance_coord.size(0), dtype=torch.long, device=features.device)
+            instance_imgid = i * torch.ones(
+                instance_coord.size(0),
+                dtype=torch.long,
+                device=features.device)
             instance_param = self._sample_feats(features[i], instance_coord)
             contrastive_loss += self.contrastive_loss(instance_param)
             total_instances += instance_coord.size(0)
@@ -100,41 +127,51 @@ class CIDHead(nn.Module):
             instances['instance_param'].append(instance_param)
             instances['instance_heatmap'].append(instance_heatmap)
             instances['instance_mask'].append(instance_mask)
-        
+
         contrastive_loss = contrastive_loss / total_instances
-        
+
         for k, v in instances.items():
             instances[k] = torch.cat(v, dim=0)
 
         # limit max instances in training
         if 0 <= self.max_train_instances < instances['instance_param'].size(0):
-            inds = torch.randperm(instances['instance_param'].size(0), device=self.device).long()
+            inds = torch.randperm(
+                instances['instance_param'].size(0),
+                device=features.device).long()
             for k, v in instances.items():
                 instances[k] = v[inds[:self.max_train_instances]]
-        
+
         # single person heatmap loss
         global_features = self.conv_down(features)
         instance_features = global_features[instances['instance_imgid']]
         instance_params = instances['instance_param']
         c_instance_feats = self.c_attn(instance_features, instance_params)
-        s_instance_feats = self.s_attn(instance_features, instance_params, instances['instance_coord'])
-        cond_instance_feats = torch.cat((c_instance_feats, s_instance_feats), dim=1)
+        s_instance_feats = self.s_attn(instance_features, instance_params,
+                                       instances['instance_coord'])
+        cond_instance_feats = torch.cat((c_instance_feats, s_instance_feats),
+                                        dim=1)
         cond_instance_feats = self.fuse_attn(cond_instance_feats)
         cond_instance_feats = F.relu(cond_instance_feats)
 
-        pred_instance_heatmaps = _sigmoid(self.heatmap_conv(cond_instance_feats))
+        pred_instance_heatmaps = _sigmoid(
+            self.heatmap_conv(cond_instance_feats))
 
         gt_instance_heatmaps = instances['instance_heatmap']
         gt_instance_masks = instances['instance_mask']
-        single_heatmap_loss = self.heatmap_loss(pred_instance_heatmaps, gt_instance_heatmaps, gt_instance_masks)
-        
+        single_heatmap_loss = self.heatmap_loss(pred_instance_heatmaps,
+                                                gt_instance_heatmaps,
+                                                gt_instance_masks)
+
         losses = dict()
-        losses['multi_heatmap_loss'] = multi_heatmap_loss * self.multi_hm_loss_factor
-        losses['single_heatmap_loss'] = single_heatmap_loss * self.single_hm_loss_factor
-        losses['contrastive_loss'] = contrastive_loss * self.contrastive_loss_factor
+        losses['multi_heatmap_loss'] = multi_heatmap_loss *\
+            self.multi_hm_loss_factor
+        losses['single_heatmap_loss'] = single_heatmap_loss *\
+            self.single_hm_loss_factor
+        losses['contrastive_loss'] = contrastive_loss *\
+            self.contrastive_loss_factor
 
         return losses
-    
+
     def forward_test(self, features, test_cfg):
         flip_test = test_cfg.get('flip_test', False)
         center_pool_kernel = test_cfg.get('center_pool_kernel', 3)
@@ -142,18 +179,21 @@ class CIDHead(nn.Module):
         keypoint_thre = test_cfg.get('detection_threshold', 0.01)
 
         # flip back feature map
-        if flip_test: features[1, :, :, :] = features[1, :, :, :].flip([2])
+        if flip_test:
+            features[1, :, :, :] = features[1, :, :, :].flip([2])
 
         instances = {}
         pred_multi_heatmap = _sigmoid(self.keypoint_center_conv(features))
         W = pred_multi_heatmap.size()[-1]
 
         if flip_test:
-            center_heatmap = pred_multi_heatmap[:, -1, :, :].mean(dim=0, keepdim=True)
+            center_heatmap = pred_multi_heatmap[:, -1, :, :].mean(
+                dim=0, keepdim=True)
         else:
             center_heatmap = pred_multi_heatmap[:, -1, :, :]
 
-        center_pool = F.avg_pool2d(center_heatmap, center_pool_kernel, 1, (center_pool_kernel-1)//2)
+        center_pool = F.avg_pool2d(center_heatmap, center_pool_kernel, 1,
+                                   (center_pool_kernel - 1) // 2)
         center_heatmap = (center_heatmap + center_pool) / 2.0
         maxm = self.hierarchical_pool(center_heatmap)
         maxm = torch.eq(maxm, center_heatmap).float()
@@ -171,33 +211,43 @@ class CIDHead(nn.Module):
         y = (pos_ind / W).long()
         instance_coord = torch.stack((y, x), dim=1)
         instance_param = self._sample_feats(features[0], instance_coord)
-        instance_imgid = torch.zeros(instance_coord.size(0), dtype=torch.long).to(features.device)
+        instance_imgid = torch.zeros(
+            instance_coord.size(0), dtype=torch.long).to(features.device)
         if flip_test:
-            instance_param_flip = self._sample_feats(features[1], instance_coord)
-            instance_imgid_flip = torch.ones(instance_coord.size(0), dtype=torch.long).to(features.device)
+            instance_param_flip = self._sample_feats(features[1],
+                                                     instance_coord)
+            instance_imgid_flip = torch.ones(
+                instance_coord.size(0), dtype=torch.long).to(features.device)
             instance_coord = torch.cat((instance_coord, instance_coord), dim=0)
-            instance_param = torch.cat((instance_param, instance_param_flip), dim=0)
-            instance_imgid = torch.cat((instance_imgid, instance_imgid_flip), dim=0)
+            instance_param = torch.cat((instance_param, instance_param_flip),
+                                       dim=0)
+            instance_imgid = torch.cat((instance_imgid, instance_imgid_flip),
+                                       dim=0)
 
         instances['instance_coord'] = instance_coord
         instances['instance_imgid'] = instance_imgid
         instances['instance_param'] = instance_param
-    
+
         global_features = self.conv_down(features)
         instance_features = global_features[instances['instance_imgid']]
         instance_params = instances['instance_param']
         c_instance_feats = self.c_attn(instance_features, instance_params)
-        s_instance_feats = self.s_attn(instance_features, instance_params, instances['instance_coord'])
-        cond_instance_feats = torch.cat((c_instance_feats, s_instance_feats), dim=1)
+        s_instance_feats = self.s_attn(instance_features, instance_params,
+                                       instances['instance_coord'])
+        cond_instance_feats = torch.cat((c_instance_feats, s_instance_feats),
+                                        dim=1)
         cond_instance_feats = self.fuse_attn(cond_instance_feats)
         cond_instance_feats = F.relu(cond_instance_feats)
 
         instance_heatmaps = _sigmoid(self.heatmap_conv(cond_instance_feats))
 
         if flip_test:
-            instance_heatmaps, instance_heatmaps_flip = torch.chunk(instance_heatmaps, 2, dim=0)
-            instance_heatmaps_flip = instance_heatmaps_flip[:, test_cfg['flip_index'], :, :]
-            instance_heatmaps = (instance_heatmaps + instance_heatmaps_flip) / 2.0
+            instance_heatmaps, instance_heatmaps_flip = torch.chunk(
+                instance_heatmaps, 2, dim=0)
+            instance_heatmaps_flip = instance_heatmaps_flip[:, test_cfg[
+                'flip_index'], :, :]
+            instance_heatmaps = (instance_heatmaps +
+                                 instance_heatmaps_flip) / 2.0
 
         return instance_heatmaps, scores
 
@@ -233,7 +283,9 @@ class CIDHead(nn.Module):
         torch.nn.init.constant_(self.keypoint_center_conv.bias, bias_value)
         torch.nn.init.constant_(self.heatmap_conv.bias, bias_value)
 
+
 class ChannelAtten(nn.Module):
+
     def __init__(self, in_channels, out_channels):
         super(ChannelAtten, self).__init__()
         self.atn = nn.Linear(in_channels, out_channels)
@@ -243,7 +295,9 @@ class ChannelAtten(nn.Module):
         instance_params = self.atn(instance_params).reshape(B, C, 1, 1)
         return global_features * instance_params.expand_as(global_features)
 
+
 class SpatialAtten(nn.Module):
+
     def __init__(self, in_channels, out_channels):
         super(SpatialAtten, self).__init__()
         self.atn = nn.Linear(in_channels, out_channels)
@@ -257,32 +311,42 @@ class SpatialAtten(nn.Module):
         feats = global_features * instance_params.expand_as(global_features)
         fsum = torch.sum(feats, dim=1, keepdim=True)
         input_feats = fsum
-        locations = compute_locations(global_features.size(2), global_features.size(3), stride=1, device=global_features.device)
+        locations = compute_locations(
+            global_features.size(2),
+            global_features.size(3),
+            stride=1,
+            device=global_features.device)
         n_inst = instance_inds.size(0)
         H, W = global_features.size()[2:]
         instance_locations = torch.flip(instance_inds, [1])
         instance_locations = instance_locations
-        relative_coords = instance_locations.reshape(-1, 1, 2) - locations.reshape(1, -1, 2)
+        relative_coords = instance_locations.reshape(
+            -1, 1, 2) - locations.reshape(1, -1, 2)
         relative_coords = relative_coords.permute(0, 2, 1).float()
-        relative_coords = (relative_coords / 32).to(dtype=global_features.dtype)
+        relative_coords = (relative_coords /
+                           32).to(dtype=global_features.dtype)
         relative_coords = relative_coords.reshape(n_inst, 2, H, W)
         input_feats = torch.cat((input_feats, relative_coords), dim=1)
         mask = self.conv(input_feats).sigmoid()
         return global_features * mask
 
+
 class FocalLoss(nn.Module):
+
     def __init__(self, alpha=2, beta=4):
         super(FocalLoss, self).__init__()
         self.alpha = alpha
         self.beta = beta
 
     def forward(self, pred, gt, mask=None):
-        ''' Modified focal loss. Exactly the same as CornerNet.
-            Runs faster and costs a little bit more memory
-            Arguments:
-              pred (batch x c x h x w)
-              gt_regr (batch x c x h x w)
-        '''
+        """Modified focal loss.
+
+        Exactly the same as CornerNet.
+        Runs faster and costs a little bit more memory
+        Arguments:
+          pred (batch x c x h x w)
+          gt_regr (batch x c x h x w)
+        """
         pos_inds = gt.eq(1).float()
         neg_inds = gt.lt(1).float()
 
@@ -295,7 +359,8 @@ class FocalLoss(nn.Module):
         loss = 0
 
         pos_loss = torch.log(pred) * torch.pow(1 - pred, self.alpha) * pos_inds
-        neg_loss = torch.log(1 - pred) * torch.pow(pred, self.alpha) * neg_weights * neg_inds
+        neg_loss = torch.log(1 - pred) * torch.pow(
+            pred, self.alpha) * neg_weights * neg_inds
 
         num_pos = pos_inds.float().sum()
         pos_loss = pos_loss.sum()
@@ -307,7 +372,9 @@ class FocalLoss(nn.Module):
             loss = loss - (pos_loss + neg_loss) / num_pos
         return loss
 
+
 class ContrastiveLoss(nn.Module):
+
     def __init__(self, temperature=0.05):
         super(ContrastiveLoss, self).__init__()
         self.temp = temperature
@@ -316,20 +383,17 @@ class ContrastiveLoss(nn.Module):
         n = features.size(0)
         features_norm = F.normalize(features, dim=1)
         logits = features_norm.mm(features_norm.t()) / self.temp
-        targets = torch.arange(n, dtype=torch.long).cuda()
+        targets = torch.arange(n, dtype=torch.long, device=features.device)
 
         loss = F.cross_entropy(logits, targets, reduction='sum')
         return loss
 
+
 def compute_locations(h, w, stride, device):
     shifts_x = torch.arange(
-        0, w * stride, step=stride,
-        dtype=torch.float32, device=device
-    )
+        0, w * stride, step=stride, dtype=torch.float32, device=device)
     shifts_y = torch.arange(
-        0, h * stride, step=stride,
-        dtype=torch.float32, device=device
-    )
+        0, h * stride, step=stride, dtype=torch.float32, device=device)
     shift_y, shift_x = torch.meshgrid(shifts_y, shifts_x)
     shift_x = shift_x.reshape(-1)
     shift_y = shift_y.reshape(-1)
