@@ -119,7 +119,7 @@ class CIDHead(nn.Module):
                 dtype=torch.long,
                 device=features.device)
             instance_param = self._sample_feats(features[i], instance_coord)
-            # contrastive_loss += self.contrastive_loss(instance_param)
+            contrastive_loss += self.contrastive_loss(instance_param)
             total_instances += instance_coord.size(0)
 
             instances['instance_coord'].append(instance_coord)
