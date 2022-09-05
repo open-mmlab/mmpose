@@ -90,6 +90,8 @@ class IntegralRegressionHead(SoftArgmaxHead):
                  decoder: OptConfigType = None,
                  init_cfg: OptConfigType = None):
 
+        self.train_epoch_idx = 0
+
         super().__init__(
             in_channels=in_channels,
             in_featuremap_size=in_featuremap_size,
@@ -145,3 +147,6 @@ class IntegralRegressionHead(SoftArgmaxHead):
         losses.update(acc_pose=acc_pose)
 
         return losses
+
+    def set_train_epoch(self, epoch_idx):
+        self.train_epoch_idx = epoch_idx

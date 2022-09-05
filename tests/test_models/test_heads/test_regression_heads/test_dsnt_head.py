@@ -206,28 +206,26 @@ class TestDSNTHead(TestCase):
 
     def test_loss(self):
         for dist_loss in ['l1', 'l2']:
-            for div_reg in ['kl', 'js']:
-                head = DSNTHead(
-                    in_channels=[16, 32],
-                    in_featuremap_size=(6, 8),
-                    num_joints=17,
-                    input_transform='select',
-                    input_index=-1,
-                    loss=dict(
-                        type='DSNTLoss',
-                        use_target_weight=True,
-                        dist_loss=dist_loss,
-                        div_reg=div_reg))
+            head = DSNTHead(
+                in_channels=[16, 32],
+                in_featuremap_size=(6, 8),
+                num_joints=17,
+                input_transform='select',
+                input_index=-1,
+                loss=dict(
+                    type='DSNTLoss',
+                    use_target_weight=True,
+                    dist_loss=dist_loss))
 
-                feats = self._get_feats(
-                    batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
-                batch_data_samples = self._get_data_samples(
-                    batch_size=2, with_reg_label=True)
-                losses = head.loss(feats, batch_data_samples)
+            feats = self._get_feats(
+                batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
+            batch_data_samples = self._get_data_samples(
+                batch_size=2, with_reg_label=True)
+            losses = head.loss(feats, batch_data_samples)
 
-                self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
-                self.assertEqual(losses['loss_kpt'].shape, torch.Size())
-                self.assertIsInstance(losses['acc_pose'], torch.Tensor)
+            self.assertIsInstance(losses['loss_kpt'], torch.Tensor)
+            self.assertEqual(losses['loss_kpt'].shape, torch.Size())
+            self.assertIsInstance(losses['acc_pose'], torch.Tensor)
 
     def test_errors(self):
 

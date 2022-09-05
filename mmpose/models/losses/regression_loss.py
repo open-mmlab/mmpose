@@ -40,12 +40,10 @@ class DSNTLoss(nn.Module):
                  use_target_weight: bool = False,
                  size_average: bool = True,
                  dist_loss: str = 'l1',
-                 div_reg: str = 'js',
                  sigma: float = 1.0) -> None:
         super().__init__()
 
         assert dist_loss in ['l1', 'l2'], ''
-        assert div_reg in ['kl', 'js'], ''
 
         self.use_target_weight = use_target_weight
         self.size_average = size_average
@@ -55,12 +53,8 @@ class DSNTLoss(nn.Module):
         else:
             self.dist_loss = MSELoss(use_target_weight=use_target_weight)
 
-        if div_reg == 'kl':
-            self.div_reg_loss = partial(
-                self._divergence_reg_loss, divergence=self._kl)
-        else:
-            self.div_reg_loss = partial(
-                self._divergence_reg_loss, divergence=self._js)
+        self.div_reg_loss = partial(
+            self._divergence_reg_loss, divergence=self._js)
 
         self.sigma = sigma
 

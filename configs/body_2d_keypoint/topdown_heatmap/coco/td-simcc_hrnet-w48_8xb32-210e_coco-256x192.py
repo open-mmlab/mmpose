@@ -6,7 +6,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-3,
 ))
 
 # learning policy
@@ -30,7 +30,8 @@ auto_scale_lr = dict(base_batch_size=512)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(256, 256))
+codec = dict(
+    type='SimCCLabel', input_size=(192, 256), sigma=4.0, simcc_split_ratio=2.0)
 
 # model settings
 model = dict(
@@ -41,24 +42,49 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(48, 96)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(48, 96, 192)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(48, 96, 192, 384))),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='https://download.openmmlab.com/mmpose/'
+            'pretrain_models/hrnet_w48-8ef0771d.pth'),
     ),
     head=dict(
-        type='DSNTHead',
-        in_channels=2048,
-        in_featuremap_size=(8, 8),
-        num_joints=17,
-        loss=dict(
-            type='DSNTLoss', use_target_weight=True, dist_loss='l1',
-            sigma=2.0),
+        type='HeatmapHead',
+        in_channels=48,
+        out_channels=17,
+        deconv_out_channels=None,
+        input_size=codec['input_size'],
+        in_featuremap_size=(48, 64),
+        simcc_split_ratio=codec['simcc_split_ratio'],
+        loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
-    test_cfg=dict(
-        flip_test=True,
-        shift_coords=True,
-        shift_heatmap=True,
-    ))
+    test_cfg=dict(flip_test=True))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -73,10 +99,15 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(type='RandomBBoxTransform'),
+    dict(
+        type='RandomBBoxTransform',
+        scale_factor=(0.65, 1.35),
+        rotate_factor=90),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
-    dict(type='PackPoseInputs')
+    dict(
+        type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
+    # simcc needs transformed keypoints to calculate the training accuracy
+    dict(type='PackPoseInputs', pack_transformed=True)
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
@@ -87,7 +118,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -121,5 +152,5 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=f'{data_root}annotations/person_keypoints_val2017.json')
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

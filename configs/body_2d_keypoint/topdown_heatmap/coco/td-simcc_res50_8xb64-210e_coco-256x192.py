@@ -55,11 +55,7 @@ model = dict(
         simcc_split_ratio=codec['simcc_split_ratio'],
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
-    test_cfg=dict(
-        flip_test=True,
-        flip_mode='heatmap',
-        shift_heatmap=True,
-    ))
+    test_cfg=dict(flip_test=True))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -90,7 +86,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=16,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -113,7 +109,7 @@ val_dataloader = dict(
         data_root=data_root,
         data_mode=data_mode,
         ann_file='annotations/person_keypoints_val2017.json',
-        bbox_file='data/coco/person_detection_results/'
+        bbox_file=f'{data_root}person_detection_results/'
         'COCO_val2017_detections_AP_H_56_person.json',
         data_prefix=dict(img='val2017/'),
         test_mode=True,
