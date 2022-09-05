@@ -75,13 +75,13 @@ model = dict(
             'pretrain_models/hrnet_w48-8ef0771d.pth'),
     ),
     head=dict(
-        type='HeatmapHead',
+        type='SimCCHead',
         in_channels=48,
         out_channels=17,
-        deconv_out_channels=None,
         input_size=codec['input_size'],
         in_featuremap_size=(48, 64),
         simcc_split_ratio=codec['simcc_split_ratio'],
+        deconv_out_channels=None,
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(flip_test=True))
