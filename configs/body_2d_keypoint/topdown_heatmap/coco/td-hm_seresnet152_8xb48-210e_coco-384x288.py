@@ -44,7 +44,6 @@ model = dict(
     backbone=dict(
         type='SEResNet',
         depth=152,
-        init_cfg=dict(type='Pretrained', checkpoint='mmcls://se-resnet152'),
     ),
     head=dict(
         type='HeatmapHead',

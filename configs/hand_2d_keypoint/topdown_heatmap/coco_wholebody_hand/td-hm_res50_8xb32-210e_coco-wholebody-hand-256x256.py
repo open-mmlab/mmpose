@@ -43,7 +43,7 @@ model = dict(
     backbone=dict(
         type='ResNet',
         depth=50,
-        init_cfg=dict(type='Pretrained', checkpoint='mmcls://mobilenet_v2')),
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
     head=dict(
         type='HeatmapHead',
         in_channels=2048,
