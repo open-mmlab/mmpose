@@ -1,12 +1,12 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=210, val_interval=10)
+train_cfg = dict(max_epochs=140, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-3,
 ))
 
 # learning policy
@@ -17,21 +17,21 @@ param_scheduler = [
     dict(
         type='MultiStepLR',
         begin=0,
-        end=210,
-        milestones=[170, 200],
+        end=140,
+        milestones=[90, 120],
         gamma=0.1,
         by_epoch=True)
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=128)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='SimCCLabel', input_size=(192, 256), sigma=6.0, simcc_split_ratio=2.0)
+    type='SimCCLabel', input_size=(288, 384), sigma=6.0, simcc_split_ratio=2.0)
 
 # model settings
 model = dict(
@@ -51,7 +51,7 @@ model = dict(
         in_channels=2048,
         out_channels=17,
         input_size=codec['input_size'],
-        in_featuremap_size=(6, 8),
+        in_featuremap_size=(9, 12),
         simcc_split_ratio=codec['simcc_split_ratio'],
         loss=dict(type='KLDiscretLoss', use_target_weight=True),
         decoder=codec),
@@ -70,7 +70,8 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(type='RandomBBoxTransform'),
+    dict(
+        type='RandomBBoxTransform', scale_factor=(0.7, 1.3), rotate_factor=80),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
         type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
@@ -86,7 +87,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=64,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -99,7 +100,7 @@ train_dataloader = dict(
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
-    batch_size=32,
+    batch_size=64,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
