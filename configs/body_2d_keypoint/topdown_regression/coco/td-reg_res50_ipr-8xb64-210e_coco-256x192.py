@@ -46,7 +46,7 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
     ),
     head=dict(
-        type='SoftArgmaxHead',
+        type='IntegralRegressionHead',
         in_channels=2048,
         in_featuremap_size=(6, 8),
         num_joints=17,
