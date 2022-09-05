@@ -25,6 +25,22 @@ class RLEHead(BaseHead):
     Args:
         in_channels (int | sequence[int]): Number of input channels
         num_joints (int): Number of joints
+        input_transform (str): Transformation of input features which should
+            be one of the following options:
+
+                - ``'resize_concat'``: Resize multiple feature maps specified
+                    by ``input_index`` to the same size as the first one and
+                    concat these feature maps
+                - ``'select'``: Select feature map(s) specified by
+                    ``input_index``. Multiple selected features will be
+                    bundled into a tuple
+
+            Defaults to ``'select'``
+        input_index (int | sequence[int]): The feature map index used in the
+            input transformation. See also ``input_transform``. Defaults to -1
+        align_corners (bool): `align_corners` argument of
+            :func:`torch.nn.functional.interpolate` used in the input
+            transformation. Defaults to ``False``
         loss (Config): Config for keypoint loss. Defaults to use
             :class:`RLELoss`
         decoder (Config, optional): The decoder config that controls decoding

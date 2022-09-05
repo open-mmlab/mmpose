@@ -29,10 +29,6 @@ class DSNTLoss(nn.Module):
             Options:
                 - ``'l1'``: Smooth L1 loss
                 - ``'l2'``: MSE Loss
-        div_reg (string): Option for the divergence regularization,
-            Options:
-                - ``'kl'``: Kullback-Leibler divergences
-                - ``'js'``: Jensen-Shannon divergences
         sigma (float): Target standard deviation (in pixels)
     """
 
@@ -80,7 +76,7 @@ class DSNTLoss(nn.Module):
 
         H, W = heatmaps.size()[2:]
         target = target * torch.tensor(
-            [H, W], dtype=target.dtype, device=target.device)
+            [W, H], dtype=target.dtype, device=target.device)
 
         gauss = self._generate_gaussian(target, [H, W], sigma)
 
