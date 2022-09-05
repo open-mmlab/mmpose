@@ -79,7 +79,7 @@ class DSNTHead(SoftArgmaxHead):
                  conv_kernel_sizes: OptIntSeq = None,
                  has_final_layer: bool = True,
                  input_transform: str = 'select',
-                 input_index: Union[int, Sequence[int]] = 0,
+                 input_index: Union[int, Sequence[int]] = -1,
                  align_corners: bool = False,
                  loss: ConfigType = dict(
                      type='DSNTLoss', use_target_weight=True),

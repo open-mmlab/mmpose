@@ -1,5 +1,10 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
+custom_hooks = [
+    # get current training epoch idx
+    dict(type='ModelSetEpochHook', module_name='head')
+]
+
 # runtime
 train_cfg = dict(max_epochs=210, val_interval=10)
 
@@ -54,13 +59,14 @@ model = dict(
         in_channels=2048,
         in_featuremap_size=(8, 8),
         num_joints=17,
+        lambda_t=120,
         loss=dict(
             type='MultiTaskLoss',
             loss_cfg_list=[
                 dict(type='SmoothL1Loss', use_target_weight=True),
                 dict(type='KeypointMSELoss', use_target_weight=True),
             ],
-            factors=[0.5, 0.5]),
+            factors=[1, 1]),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -98,7 +104,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=16,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),

@@ -9,12 +9,9 @@ from mmpose.registry import HOOKS
 class ModelSetEpochHook(Hook):
     """The hook that tells model the current epoch in training."""
 
-    def __init__(self, prefix=None):
-        if prefix:
-            self.prefix = 'module'
-        else:
-            self.prefix = prefix
+    def __init__(self, module_name='head'):
+        self.module_name = module_name
 
     def before_train_epoch(self, runner: Runner):
-        m = getattr(runner.model, self.prefix)
+        m = getattr(runner.model, self.module_name)
         m.set_train_epoch(runner.epoch)

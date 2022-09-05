@@ -28,7 +28,11 @@ class MultiTaskLoss(nn.Module):
             losses.append(t_loss)
         self.losses = nn.ModuleList(losses)
 
-    def forward(self, input_list, target_list, keypoint_weights=None):
+    def forward(self,
+                input_list,
+                target_list,
+                keypoint_weights=None,
+                epoch_facotrs=None):
         assert isinstance(input_list, list), ''
         assert isinstance(target_list, list), ''
         assert len(input_list) == len(target_list), ''
@@ -39,6 +43,10 @@ class MultiTaskLoss(nn.Module):
             target_i = target_list[i]
 
             loss_i = self.losses[i](input_i, target_i, keypoint_weights)
-            loss_sum += loss_i * self.factors[i]
+
+            if epoch_facotrs:
+                loss_sum += loss_i * epoch_facotrs[i]
+            else:
+                loss_sum += loss_i * self.factors[i]
 
         return loss_sum
