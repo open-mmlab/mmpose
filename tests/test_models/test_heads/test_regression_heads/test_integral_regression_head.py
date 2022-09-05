@@ -27,7 +27,7 @@ class TestIntegralRegressionHead(TestCase):
 
     def _get_data_samples(self,
                           batch_size: int = 2,
-                          with_heatmap: bool = True):
+                          with_heatmap: bool = False):
         batch_data_samples = [
             inputs['data_sample'] for inputs in get_packed_inputs(
                 batch_size, with_heatmap=with_heatmap)
@@ -110,20 +110,12 @@ class TestIntegralRegressionHead(TestCase):
             in_channels=1024,
             in_featuremap_size=(6, 8),
             num_joints=17,
-            decoder=dict(
-                type='IntegralRegressionLabel',
-                input_size=(192, 256),
-                heatmap_size=(48, 64),
-                sigma=2),
+            decoder=dict(type='RegressionLabel', input_size=(192, 256)),
         )
         self.assertIsNotNone(head.decoder)
 
     def test_predict(self):
-        decoder_cfg = dict(
-            type='IntegralRegressionLabel',
-            input_size=(192, 256),
-            heatmap_size=(48, 64),
-            sigma=2)
+        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
         head = IntegralRegressionHead(
@@ -138,7 +130,7 @@ class TestIntegralRegressionHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=True)
+            batch_size=2, with_heatmap=False)
         preds = head.predict(feats, batch_data_samples)
 
         self.assertTrue(len(preds), 2)
@@ -178,7 +170,7 @@ class TestIntegralRegressionHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=True)
+            batch_size=2, with_heatmap=False)
         _, pred_heatmaps = head.predict(
             feats, batch_data_samples, test_cfg=dict(output_heatmaps=True))
 
@@ -187,11 +179,7 @@ class TestIntegralRegressionHead(TestCase):
         self.assertEqual(pred_heatmaps[0].heatmaps.shape, (17, 8 * 8, 6 * 8))
 
     def test_tta(self):
-        decoder_cfg = dict(
-            type='IntegralRegressionLabel',
-            input_size=(192, 256),
-            heatmap_size=(48, 64),
-            sigma=2)
+        decoder_cfg = dict(type='RegressionLabel', input_size=(192, 256))
 
         # inputs transform: select
         head = IntegralRegressionHead(
@@ -206,7 +194,7 @@ class TestIntegralRegressionHead(TestCase):
         feats = self._get_feats(
             batch_size=2, feat_shapes=[(16, 16, 12), (32, 8, 6)])
         batch_data_samples = self._get_data_samples(
-            batch_size=2, with_heatmap=True)
+            batch_size=2, with_heatmap=False)
         preds = head.predict([feats, feats],
                              batch_data_samples,
                              test_cfg=dict(

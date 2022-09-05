@@ -1,17 +1,12 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
-custom_hooks = [
-    # get current training epoch idx
-    dict(type='ModelSetEpochHook', module_name='head')
-]
-
 # runtime
-train_cfg = dict(max_epochs=210, val_interval=10)
+train_cfg = dict(max_epochs=300, val_interval=10)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=1e-3,
 ))
 
 # learning policy
@@ -23,7 +18,7 @@ param_scheduler = [
         type='MultiStepLR',
         begin=0,
         end=210,
-        milestones=[170, 200],
+        milestones=[270, 290],
         gamma=0.1,
         by_epoch=True)
 ]
@@ -35,11 +30,7 @@ auto_scale_lr = dict(base_batch_size=512)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(
-    type='IntegralRegressionLabel',
-    input_size=(256, 256),
-    heatmap_size=(64, 64),
-    sigma=2)
+codec = dict(type='RegressionLabel', input_size=(192, 256))
 
 # model settings
 model = dict(
@@ -55,18 +46,11 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
     ),
     head=dict(
-        type='IntegralRegressionHead',
+        type='SoftArgmaxHead',
         in_channels=2048,
-        in_featuremap_size=(8, 8),
+        in_featuremap_size=(6, 8),
         num_joints=17,
-        lambda_t=120,
-        loss=dict(
-            type='MultiTaskLoss',
-            loss_cfg_list=[
-                dict(type='SmoothL1Loss', use_target_weight=True),
-                dict(type='KeypointMSELoss', use_target_weight=True),
-            ],
-            factors=[1, 1]),
+        loss=dict(type='SmoothL1Loss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -87,12 +71,12 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(type='RandomBBoxTransform'),
-    dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
-        type='GenerateTarget',
-        target_type='heatmap+keypoint_label',
-        encoder=codec),
+        type='RandomBBoxTransform',
+        scale_factor=(0.75, 1.25),
+        rotate_factor=60),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
@@ -104,7 +88,7 @@ test_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=16,
+    batch_size=64,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
