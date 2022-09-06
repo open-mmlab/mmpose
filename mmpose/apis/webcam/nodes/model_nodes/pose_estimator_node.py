@@ -48,11 +48,6 @@ class TopDownPoseEstimatorNode(Node):
             apply pose estimation. See also ``class_ids``. Default: ``None``
         bbox_thr (float): Set a threshold to filter out objects with low bbox
             scores. Default: 0.5
-        smooth (bool): If set to ``True``, a :class:`Smoother` will be used to
-            refine the pose estimation result. Default: ``True``
-        smooth_filter_cfg (str): The filter config path to build the smoother.
-            Only valid when ``smooth==True``. By default, OneEuro filter will
-            be used.
 
     Example::
         >>> cfg = dict(
@@ -65,7 +60,6 @@ class TopDownPoseEstimatorNode(Node):
         ...     'top_down/vipnas/vipnas_mbv3_coco_wholebody_256x192_dark'
         ...     '-e2158108_20211205.pth',
         ...     labels=['person'],
-        ...     smooth=True,
         ...     input_buffer='det_result',
         ...     output_buffer='human_pose')
 
@@ -73,21 +67,18 @@ class TopDownPoseEstimatorNode(Node):
         >>> node = NODES.build(cfg)
     """
 
-    def __init__(
-            self,
-            name: str,
-            model_config: str,
-            model_checkpoint: str,
-            input_buffer: str,
-            output_buffer: Union[str, List[str]],
-            enable_key: Optional[Union[str, int]] = None,
-            enable: bool = True,
-            device: str = 'cuda:0',
-            class_ids: Optional[List[int]] = None,
-            labels: Optional[List[str]] = None,
-            bbox_thr: float = 0.5,
-            smooth: bool = False,
-            smooth_filter_cfg: str = 'configs/_base_/filters/one_euro.py'):
+    def __init__(self,
+                 name: str,
+                 model_config: str,
+                 model_checkpoint: str,
+                 input_buffer: str,
+                 output_buffer: Union[str, List[str]],
+                 enable_key: Optional[Union[str, int]] = None,
+                 enable: bool = True,
+                 device: str = 'cuda:0',
+                 class_ids: Optional[List[int]] = None,
+                 labels: Optional[List[str]] = None,
+                 bbox_thr: float = 0.5):
         super().__init__(name=name, enable_key=enable_key, enable=enable)
 
         # Init model
@@ -99,15 +90,10 @@ class TopDownPoseEstimatorNode(Node):
         self.labels = labels
         self.bbox_thr = bbox_thr
 
-        self.smoother = None
-
         # Init model
         register_all_modules()
         self.model = init_model(
             self.model_config, self.model_checkpoint, device=self.device)
-
-        # Store history for pose tracking
-        self.track_info = TrackInfo()
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', trigger=True)

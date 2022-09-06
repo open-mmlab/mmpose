@@ -40,7 +40,6 @@ executor_cfg = dict(
             'top_down/vipnas/vipnas_mbv3_coco_wholebody_256x192_dark'
             '-e2158108_20211205.pth',
             labels=['person'],
-            smooth=False,
             input_buffer='det_result',
             output_buffer='human_pose'),
         dict(

@@ -93,7 +93,6 @@ class DetectorNode(Node):
         register_all_modules()
         self.model = init_detector(
             self.model_config, self.model_checkpoint, device=self.device)
-        # print(self.model)
 
         # Register buffers
         self.register_input_buffer(input_buffer, 'input', trigger=True)
