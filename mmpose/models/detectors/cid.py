@@ -257,7 +257,8 @@ class CID(BasePose):
             nms_instance_heatmaps = instance_heatmaps.view(
                 num_people, num_keypoints, -1)
             vals, inds = torch.max(nms_instance_heatmaps, dim=2)
-            x, y = inds % w, (inds / w).long()
+            x = inds % w
+            y = inds // w
             # shift coords by 0.25
             x, y = self.adjust(x, y, instance_heatmaps)
 

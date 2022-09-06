@@ -208,7 +208,7 @@ class CIDHead(nn.Module):
         scores = scores[select_ind].squeeze(1)
         pos_ind = pos_ind[select_ind].squeeze(1)
         x = pos_ind % W
-        y = (pos_ind / W).long()
+        y = pos_ind // W
         instance_coord = torch.stack((y, x), dim=1)
         instance_param = self._sample_feats(features[0], instance_coord)
         instance_imgid = torch.zeros(

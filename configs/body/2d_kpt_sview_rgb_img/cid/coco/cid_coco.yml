@@ -11,7 +11,7 @@ Models:
     Architecture:
     - CID
     Training Data: COCO
-  Name: cid_cid_hrnet_w32_coco_512x512
+  Name: cid_hrnet_w32_coco_512x512
   Results:
   - Dataset: COCO
     Metrics:
