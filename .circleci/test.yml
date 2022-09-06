@@ -146,7 +146,7 @@ workflows:
             branches:
               ignore:
                 - dev-1.x
-                - test-1.x
+                - 1.x
       - build_cpu:
           name: minimum_version_cpu
           torch: 1.6.0
