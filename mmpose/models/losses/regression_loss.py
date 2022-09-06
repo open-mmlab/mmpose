@@ -74,7 +74,7 @@ class DSNTLoss(nn.Module):
         ) == ndims + 2, f'expected heatmaps to be a {ndims+2}D tensor'
         assert heatmaps.size()[:-ndims] == target.size()[:-1]
 
-        H, W = heatmaps.size()[2:]
+        B, _, H, W = heatmaps.size()
         target = target * torch.tensor(
             [W, H], dtype=target.dtype, device=target.device)
 
@@ -82,7 +82,10 @@ class DSNTLoss(nn.Module):
 
         divergences = divergence(heatmaps, gauss, ndims)
 
-        return divergences
+        if self.size_average:
+            divergence /= B
+
+        return divergences.sum()
 
     def _normalized_lingspace(self, length, dtype=None, device=None):
         """Generate a vector with values ranging from 0 to 1.
@@ -173,12 +176,10 @@ class DSNTLoss(nn.Module):
         else:
             loss1 = self.dist_loss(preds, targets)
             loss2 = self.div_reg_loss(heatmaps, targets, self.sigma)
+
         loss = loss1 + loss2
 
-        if self.size_average:
-            loss /= len(loss)
-
-        return loss.sum()
+        return loss
 
 
 @MODELS.register_module()
