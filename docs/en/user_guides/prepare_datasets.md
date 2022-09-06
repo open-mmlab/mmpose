@@ -2,6 +2,17 @@
 
 MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/1.x/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
 
+<!-- TOC -->
+
+- [Customize datasets by reorganizing data to COCO format](#customize-datasets-by-reorganizing-data-to-coco-format)
+- [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset)
+- [Create a custom dataset class](#create-a-custom-dataset-class)
+- [Create a custom training config file](#create-a-custom-training-config-file)
+- [Dataset Wrappers](#dataset-wrappers)
+
+<!-- TOC -->
+
+
 ## Customize datasets by reorganizing data to COCO format
 
 The simplest way to use the custom dataset is to convert your annotation format to COCO dataset format.
