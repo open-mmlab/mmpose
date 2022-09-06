@@ -264,3 +264,40 @@ class TestAssociativeEmbedding(TestCase):
         self.assertEqual(scores.shape, (2, 17))
 
         self.assertTrue(np.allclose(keypoints, data['keypoints'], atol=4.0))
+
+        # Dynamic input sizes in decoder
+        codec = AssociativeEmbedding(
+            input_size=(256, 256),
+            heatmap_size=(64, 64),
+            use_udp=False,
+            decode_keypoint_order=self.decode_keypoint_order,
+            tag_per_keypoint=True)
+
+        heatmaps, keypoint_indices, _ = codec.encode(data['keypoints'],
+                                                     data['keypoints_visible'])
+
+        tags = self._get_tags(
+            heatmaps, keypoint_indices, tag_per_keypoint=True)
+
+        # to Tensor
+        batch_heatmaps = torch.from_numpy(heatmaps[None])
+        batch_tags = torch.from_numpy(tags[None])
+
+        batch_keypoints, batch_keypoint_scores = codec.batch_decode(
+            batch_heatmaps, batch_tags, input_sizes=[(256, 256)])
+
+        self.assertIsInstance(batch_keypoints, list)
+        self.assertIsInstance(batch_keypoint_scores, list)
+        self.assertEqual(len(batch_keypoints), 1)
+        self.assertEqual(len(batch_keypoint_scores), 1)
+
+        keypoints, scores = self._sort_preds(batch_keypoints[0],
+                                             batch_keypoint_scores[0],
+                                             data['keypoints'])
+
+        self.assertIsInstance(keypoints, np.ndarray)
+        self.assertIsInstance(scores, np.ndarray)
+        self.assertEqual(keypoints.shape, (2, 17, 2))
+        self.assertEqual(scores.shape, (2, 17))
+
+        self.assertTrue(np.allclose(keypoints, data['keypoints'], atol=4.0))
