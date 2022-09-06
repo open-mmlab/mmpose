@@ -426,5 +426,5 @@ cfg.optimizer  # ConfigDict(type='SGD', lr=0.01)
 ```
 
 ```{note}
-If you wish to learn more about advanced usages of the config system, please refer to [MMEngine tutorials](https://github.com/open-mmlab/mmengine/tree/main/docs/en/tutorials).
+If you wish to learn more about advanced usages of the config system, please refer to [MMEngine Config](https://mmengine.readthedocs.io/en/latest/tutorials/config.html).
 ```

@@ -429,5 +429,5 @@ cfg.optimizer  # ConfigDict(type='SGD', lr=0.01)
 ```
 
 ```{note}
-如果你希望更深入地了解配置系统的高级用法，可以查看 [MMEngine 教程](https://github.com/open-mmlab/mmengine/tree/main/docs/en/tutorials)。
+如果你希望更深入地了解配置系统的高级用法，可以查看 [MMEngine 教程](https://mmengine.readthedocs.io/zh_CN/latest/tutorials/config.html)。
 ```
