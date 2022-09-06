@@ -109,6 +109,7 @@ class PoseLocalVisualizer(Visualizer):
             dataset_meta (dict): meta information of dataset.
         """
         self.dataset_meta = dataset_meta
+        self.bbox_color = dataset_meta.get('bbox_color', self.bbox_color)
         self.kpt_color = dataset_meta.get('keypoint_colors', self.kpt_color)
         self.link_color = dataset_meta.get('skeleton_link_colors',
                                            self.link_color)
@@ -402,3 +403,5 @@ class PoseLocalVisualizer(Visualizer):
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
+
+        return drawn_img
