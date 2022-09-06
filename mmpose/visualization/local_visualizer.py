@@ -466,3 +466,5 @@ class PoseLocalVisualizer(Visualizer):
 
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
+
+        return drawn_img

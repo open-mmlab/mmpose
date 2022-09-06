@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 
 def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right eyes
+    """A help function to get the keypoint indices of left and right eyes
     from the dataset meta information.
 
     Args:
@@ -37,8 +37,12 @@ def get_eye_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 
 def get_face_keypoint_ids(dataset_meta: Dict) -> List:
-    """A helpfer function to get the keypoint indices of the face from the
+    """A help function to get the keypoint indices of the face from the
+<<<<<<< HEAD
     dataset meta information.
+=======
+    model config.
+>>>>>>> add webcam api
 
     Args:
         dataset_meta (dict): dataset meta information.
@@ -66,8 +70,12 @@ def get_face_keypoint_ids(dataset_meta: Dict) -> List:
 
 
 def get_wrist_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
-    """A helpfer function to get the keypoint indices of left and right wrists
+    """A help function to get the keypoint indices of left and right wrists
+<<<<<<< HEAD
     from the dataset meta information.
+=======
+    from the model config.
+>>>>>>> add webcam api
 
     Args:
         dataset_meta (dict): dataset meta information.
@@ -100,7 +108,7 @@ def get_wrist_keypoint_ids(dataset_meta: Dict) -> Tuple[int, int]:
 
 
 def get_mouth_keypoint_ids(dataset_meta: Dict) -> int:
-    """A helpfer function to get the mouth keypoint index from the dataset meta
+    """A help function to get the mouth keypoint index from the dataset meta
     information.
 
     Args:
@@ -125,7 +133,7 @@ def get_mouth_keypoint_ids(dataset_meta: Dict) -> int:
 
 
 def get_hand_keypoint_ids(dataset_meta: Dict) -> List[int]:
-    """A helpfer function to get the keypoint indices of left and right hand
+    """A help function to get the keypoint indices of left and right hand
     from the dataset meta information.
 
     Args:
