@@ -89,7 +89,8 @@ class TestUDPHeatmap(TestCase):
 
             self.assertTrue(
                 np.allclose(keypoints, _keypoints, atol=5.),
-                f'Failed case: "{name}"')
+                f'Failed case: "{name}", {keypoints.sum()}, {_keypoints.sum()}'
+            )
 
     def test_errors(self):
         # invalid heatmap type
