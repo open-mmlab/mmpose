@@ -118,10 +118,12 @@ class BottomUpCocoDataset(Kpt2dSviewRgbImgBottomUpDataset):
             bboxes = np.zeros((num_people, 4, 2))
             for i, obj in enumerate(anno):
                 areas[i, 0] = obj['bbox'][2] * obj['bbox'][3]
-                bboxes[i, :, 0], bboxes[i, :, 1] = obj['bbox'][0], obj['bbox'][1]
+                bboxes[i, :, 0], bboxes[i, :,
+                                        1] = obj['bbox'][0], obj['bbox'][1]
                 bboxes[i, 1, 0] += obj['bbox'][2]
                 bboxes[i, 2, 1] += obj['bbox'][3]
-                bboxes[i, 3, 0] += obj['bbox'][2]; bboxes[i, 3, 1] += obj['bbox'][3]
+                bboxes[i, 3, 0] += obj['bbox'][2]
+                bboxes[i, 3, 1] += obj['bbox'][3]
             db_rec['bboxes'] = bboxes
             db_rec['areas'] = areas
 

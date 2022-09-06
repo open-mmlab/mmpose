@@ -108,9 +108,11 @@ class CID(BasePose):
             multi_heatmap (torch.Tensor[N,C,H,W]): Multi-person heatmaps
             multi_mask (torch.Tensor[N,1,H,W]): Multi-person heatmap mask
             instance_coord (torch.Tensor[N,M,2]): Instance center coord
-            instance_heatmap (torch.Tensor[N,M,C,H,W]): Single person heatmap for each instance
+            instance_heatmap (torch.Tensor[N,M,C,H,W]): Single person
+                heatmap for each instance
             instance_mask (torch.Tensor[N,M,C,1,1]): Single person heatmap mask
-            instance_valid (torch.Tensor[N,M]): Bool mask to indicate the existence of each person
+            instance_valid (torch.Tensor[N,M]): Bool mask to indicate the
+                existence of each person
             img_metas (dict): Information about val & test.
                 By default it includes:
 
@@ -132,12 +134,16 @@ class CID(BasePose):
         """
 
         if return_loss:
-            return self.forward_train(img, multi_heatmap, multi_mask, instance_coord, instance_heatmap, instance_mask, instance_valid, img_metas,
+            return self.forward_train(img, multi_heatmap, multi_mask,
+                                      instance_coord, instance_heatmap,
+                                      instance_mask, instance_valid, img_metas,
                                       **kwargs)
         return self.forward_test(
             img, img_metas, return_heatmap=return_heatmap, **kwargs)
 
-    def forward_train(self, img, multi_heatmap, multi_mask, instance_coord, instance_heatmap, instance_mask, instance_valid, img_metas, **kwargs):
+    def forward_train(self, img, multi_heatmap, multi_mask, instance_coord,
+                      instance_heatmap, instance_mask, instance_valid,
+                      img_metas, **kwargs):
         """Forward CID model and calculate the loss.
 
         Note:
@@ -155,9 +161,11 @@ class CID(BasePose):
             multi_heatmap (torch.Tensor[N,C,H,W]): Multi-person heatmaps
             multi_mask (torch.Tensor[N,1,H,W]): Multi-person heatmap mask
             instance_coord (torch.Tensor[N,M,2]): Instance center coord
-            instance_heatmap (torch.Tensor[N,M,C,H,W]): Single person heatmap for each instance
+            instance_heatmap (torch.Tensor[N,M,C,H,W]): Single person heatmap
+                for each instance
             instance_mask (torch.Tensor[N,M,C,1,1]): Single person heatmap mask
-            instance_valid (torch.Tensor[N,M]): Bool mask to indicate the existence of each person
+            instance_valid (torch.Tensor[N,M]): Bool mask to indicate
+                the existence of each person
             img_metas (dict):Information about val&test
                 By default this includes:
                 - "image_file": image path
@@ -174,7 +182,8 @@ class CID(BasePose):
 
         output = self.backbone(img)
 
-        labels = (multi_heatmap, multi_mask, instance_coord, instance_heatmap, instance_mask, instance_valid)
+        labels = (multi_heatmap, multi_mask, instance_coord, instance_heatmap,
+                  instance_mask, instance_valid)
 
         losses = dict()
         if self.with_keypoint:
@@ -235,30 +244,38 @@ class CID(BasePose):
             image_flipped = torch.flip(image_resized, [3])
             image_resized = torch.cat((image_resized, image_flipped), dim=0)
         features = self.backbone(image_resized)
-        instance_heatmaps, instance_scores = self.keypoint_head(features, self.test_cfg)
+        instance_heatmaps, instance_scores = self.keypoint_head(
+            features, self.test_cfg)
 
         if len(instance_heatmaps) > 0:
             # detect person with pose
             num_people, num_keypoints, h, w = instance_heatmaps.size()
             center_pool_kernel = self.test_cfg.get('center_pool_kernel', 3)
-            center_pool = F.avg_pool2d(instance_heatmaps, center_pool_kernel, 1, (center_pool_kernel-1)//2)
+            center_pool = F.avg_pool2d(instance_heatmaps, center_pool_kernel,
+                                       1, (center_pool_kernel - 1) // 2)
             instance_heatmaps = (instance_heatmaps + center_pool) / 2.0
-            nms_instance_heatmaps = instance_heatmaps.view(num_people, num_keypoints, -1)
+            nms_instance_heatmaps = instance_heatmaps.view(
+                num_people, num_keypoints, -1)
             vals, inds = torch.max(nms_instance_heatmaps, dim=2)
             x, y = inds % w, (inds / w).long()
             # shift coords by 0.25
             x, y = self.adjust(x, y, instance_heatmaps)
-            
+
             vals = vals * instance_scores.unsqueeze(1)
             poses = torch.stack((x, y, vals), dim=2)
 
             poses[:, :, :2] = poses[:, :, :2] * 4 + 2
             scores = torch.mean(poses[:, :, 2], dim=1)
             # add tag dim to match AE eval
-            poses = torch.cat((poses, torch.ones((poses.size(0), poses.size(1), 1), dtype=poses.dtype, device=poses.device)), dim=2)
+            poses = torch.cat((poses,
+                               torch.ones((poses.size(0), poses.size(1), 1),
+                                          dtype=poses.dtype,
+                                          device=poses.device)),
+                              dim=2)
             poses = poses.cpu().numpy()
             scores = scores.cpu().numpy()
-            poses = get_group_preds([poses], center, scale, [base_size[0], base_size[1]])
+            poses = get_group_preds([poses], center, scale,
+                                    [base_size[0], base_size[1]])
         else:
             poses, scores = [], []
 
@@ -271,23 +288,25 @@ class CID(BasePose):
         result['output_heatmap'] = None
 
         return result
-    
-    def adjust(self, res_x, res_y, heatmaps):
-        n, k, h, w = heatmaps.size()#[2:]
 
-        x_l, x_r = (res_x - 1).clamp(min=0), (res_x + 1).clamp(max=w-1)
-        y_t, y_b = (res_y + 1).clamp(max=h-1), (res_y - 1).clamp(min=0)
+    def adjust(self, res_x, res_y, heatmaps):
+        n, k, h, w = heatmaps.size()
+
+        x_l, x_r = (res_x - 1).clamp(min=0), (res_x + 1).clamp(max=w - 1)
+        y_t, y_b = (res_y + 1).clamp(max=h - 1), (res_y - 1).clamp(min=0)
         n_inds = torch.arange(n)[:, None].to(heatmaps.device)
         k_inds = torch.arange(k)[None].to(heatmaps.device)
 
-        px = torch.sign(heatmaps[n_inds, k_inds, res_y, x_r] - heatmaps[n_inds, k_inds, res_y, x_l])*0.25
-        py = torch.sign(heatmaps[n_inds, k_inds, y_t, res_x] - heatmaps[n_inds, k_inds, y_b, res_x])*0.25
+        px = torch.sign(heatmaps[n_inds, k_inds, res_y, x_r] -
+                        heatmaps[n_inds, k_inds, res_y, x_l]) * 0.25
+        py = torch.sign(heatmaps[n_inds, k_inds, y_t, res_x] -
+                        heatmaps[n_inds, k_inds, y_b, res_x]) * 0.25
 
         res_x, res_y = res_x.float(), res_y.float()
         x_l, x_r = x_l.float(), x_r.float()
         y_b, y_t = y_b.float(), y_t.float()
-        px = px*torch.sign(res_x-x_l)*torch.sign(x_r-res_x)
-        py = py*torch.sign(res_y-y_b)*torch.sign(y_t-res_y)
+        px = px * torch.sign(res_x - x_l) * torch.sign(x_r - res_x)
+        py = py * torch.sign(res_y - y_b) * torch.sign(y_t - res_y)
 
         res_x = res_x.float() + px
         res_y = res_y.float() + py

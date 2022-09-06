@@ -1,8 +1,9 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import cv2
-import numpy as np
 import math
 import random
+
+import cv2
+import numpy as np
 
 from mmpose.core.post_processing import (get_affine_transform, get_warp_matrix,
                                          warp_affine_joints)
@@ -561,7 +562,8 @@ class BottomUpRandomAffine:
                     joints[i][:, :, 3] = joints[i][:, :, 3] / aug_scale
 
                 if i == 0 and 'bboxes' in results:
-                    results['bboxes'] = warp_affine_joints(results['bboxes'], mat_output)
+                    results['bboxes'] = warp_affine_joints(
+                        results['bboxes'], mat_output)
 
             scale = self._get_scale(img_scale, self.input_size)
             mat_input = get_affine_transform(
@@ -668,6 +670,7 @@ class BottomUpGenerateTarget:
 
         return results
 
+
 @PIPELINES.register_module()
 class CIDGenerateTarget:
     """Generate target for CID training.
@@ -686,57 +689,70 @@ class CIDGenerateTarget:
         h = np.exp(-(x * x + y * y) / (2 * sigma * sigma))
         h[h < np.finfo(h.dtype).eps * h.max()] = 0
         return h
-    
+
     def gaussian_radius(self, det_size, min_overlap=0.7):
         height, width = det_size
 
-        a1  = 1
-        b1  = (height + width)
-        c1  = width * height * (1 - min_overlap) / (1 + min_overlap)
-        sq1 = np.sqrt(b1 ** 2 - 4 * a1 * c1)
-        r1  = (b1 + sq1) / 2
+        a1 = 1
+        b1 = (height + width)
+        c1 = width * height * (1 - min_overlap) / (1 + min_overlap)
+        sq1 = np.sqrt(b1**2 - 4 * a1 * c1)
+        r1 = (b1 + sq1) / 2
 
-        a2  = 4
-        b2  = 2 * (height + width)
-        c2  = (1 - min_overlap) * width * height
-        sq2 = np.sqrt(b2 ** 2 - 4 * a2 * c2)
-        r2  = (b2 + sq2) / 2
+        a2 = 4
+        b2 = 2 * (height + width)
+        c2 = (1 - min_overlap) * width * height
+        sq2 = np.sqrt(b2**2 - 4 * a2 * c2)
+        r2 = (b2 + sq2) / 2
 
-        a3  = 4 * min_overlap
-        b3  = -2 * min_overlap * (height + width)
-        c3  = (min_overlap - 1) * width * height
-        sq3 = np.sqrt(b3 ** 2 - 4 * a3 * c3)
-        r3  = (b3 + sq3) / 2
+        a3 = 4 * min_overlap
+        b3 = -2 * min_overlap * (height + width)
+        c3 = (min_overlap - 1) * width * height
+        sq3 = np.sqrt(b3**2 - 4 * a3 * c3)
+        r3 = (b3 + sq3) / 2
         return min(r1, r2, r3)
 
     def heatmap_generator(self, output_size, keypoints, bboxes):
         num_keypoints = keypoints.shape[1]
 
-        hms = np.zeros((num_keypoints, output_size, output_size), dtype=np.float32)
+        hms = np.zeros((num_keypoints, output_size, output_size),
+                       dtype=np.float32)
         mask = np.ones((num_keypoints, 1, 1), dtype=np.float32)
 
         for kpt, bbox in zip(keypoints, bboxes):
             bbox = np.clip(bbox, 0, output_size - 1)
-            h = np.sqrt(np.power(bbox[2, 0]-bbox[0, 0], 2) + np.power(bbox[2, 1] - bbox[0, 1], 2))
-            w = np.sqrt(np.power(bbox[1, 0]-bbox[0, 0], 2) + np.power(bbox[1, 1] - bbox[0, 1], 2))
+            h = np.sqrt(
+                np.power(bbox[2, 0] - bbox[0, 0], 2) +
+                np.power(bbox[2, 1] - bbox[0, 1], 2))
+            w = np.sqrt(
+                np.power(bbox[1, 0] - bbox[0, 0], 2) +
+                np.power(bbox[1, 1] - bbox[0, 1], 2))
             radius = self.gaussian_radius((math.ceil(h), math.ceil(w)))
             radius = max(0, int(radius))
             diameter = 2 * radius + 1
-            gaussian = self.gaussian2D((diameter, diameter), sigma=diameter / 6)
+            gaussian = self.gaussian2D((diameter, diameter),
+                                       sigma=diameter / 6)
             height, width = output_size, output_size
 
             for idx, pt in enumerate(kpt):
                 if pt[2] > 0:
                     x, y = int(pt[0]), int(pt[1])
-                    if x < 0 or y < 0 or x >= output_size or y >= output_size: continue
+                    if x < 0 or y < 0 or x >= output_size or y >= output_size:
+                        continue
 
                     left, right = min(x, radius), min(width - x, radius + 1)
                     top, bottom = min(y, radius), min(height - y, radius + 1)
 
-                    masked_heatmap = hms[idx][y - top:y + bottom, x - left:x + right]
-                    masked_gaussian = gaussian[radius - top:radius + bottom, radius - left:radius + right]
-                    if min(masked_gaussian.shape) > 0 and min(masked_heatmap.shape) > 0:
-                        np.maximum(masked_heatmap, masked_gaussian, out=masked_heatmap)
+                    masked_heatmap = hms[idx][y - top:y + bottom,
+                                              x - left:x + right]
+                    masked_gaussian = gaussian[radius - top:radius + bottom,
+                                               radius - left:radius + right]
+                    if min(masked_gaussian.shape) > 0 and min(
+                            masked_heatmap.shape) > 0:
+                        np.maximum(
+                            masked_heatmap,
+                            masked_gaussian,
+                            out=masked_heatmap)
                 else:
                     mask[idx] = 0.0
         return hms, mask
@@ -757,12 +773,15 @@ class CIDGenerateTarget:
             vis = (keypoints[i, :, 2:3] > 0).astype(np.float32)
             keypoints_sum = np.sum(keypoints[i, :, :2] * vis, axis=0)
             num_vis_keypoints = len(np.nonzero(keypoints[i, :, 2])[0])
-            if num_vis_keypoints <= 0: centers[i, 0, 2] = 0; continue
+            if num_vis_keypoints <= 0:
+                centers[i, 0, 2] = 0
+                continue
             centers[i, 0, :2] = keypoints_sum / num_vis_keypoints
             centers[i, 0, 2] = 2
-        
+
         keypoints_with_centers = np.concatenate((keypoints, centers), axis=1)
-        heatmap_with_center, _ = self.heatmap_generator(output_size, keypoints_with_centers, bboxes)
+        heatmap_with_center, _ = self.heatmap_generator(
+            output_size, keypoints_with_centers, bboxes)
 
         # generate instance heatmap target
         ind_vis = []
@@ -771,22 +790,27 @@ class CIDGenerateTarget:
         for i in area_idx:
             inst_coord = []
             center = centers[i, 0]
-            if center[2] < 1: continue
+            if center[2] < 1:
+                continue
             x, y = int(center[0]), int(center[1])
-            if x < 0 or x >= output_size or y < 0 or y >= output_size: continue
+            if x < 0 or x >= output_size or y < 0 or y >= output_size:
+                continue
             # rand center point in 3x3 grid
-            new_x = x + random.choice([-1, 0, 1]) 
-            new_y = y + random.choice([-1, 0, 1])                    
-            if new_x < 0 or new_x >= output_size or new_y < 0 or new_y >= output_size:       
-                new_x = x                        
-                new_y = y                    
+            new_x = x + random.choice([-1, 0, 1])
+            new_y = y + random.choice([-1, 0, 1])
+            if new_x < 0 or new_x >= output_size or \
+                    new_y < 0 or new_y >= output_size:
+                new_x = x
+                new_y = y
             x, y = new_x, new_y
-            
-            if [y, x] in ind_vis: continue
+
+            if [y, x] in ind_vis:
+                continue
             inst_coord.append([y, x])
             ind_vis.append([y, x])
             inst_coords.append(np.array(inst_coord))
-            inst_heatmap, inst_mask = self.heatmap_generator(output_size, keypoints[i:i+1, :, :], bboxes[i:i+1, :, :])
+            inst_heatmap, inst_mask = self.heatmap_generator(
+                output_size, keypoints[i:i + 1, :, :], bboxes[i:i + 1, :, :])
             inst_heatmaps.append(inst_heatmap[None, :, :, :])
             inst_masks.append(inst_mask[None, :, :, :])
 
@@ -794,14 +818,18 @@ class CIDGenerateTarget:
         results['multi_mask'] = mask[None, :, :]
         # pad instance targets for batching
         instance_coord = np.zeros((self.max_num_people, 2), dtype=np.int32)
-        instance_heatmap = np.zeros((self.max_num_people, num_keypoints, output_size, output_size), dtype=np.float32)
-        instance_mask = np.zeros((self.max_num_people, num_keypoints, 1, 1), dtype=np.float32)
+        instance_heatmap = np.zeros(
+            (self.max_num_people, num_keypoints, output_size, output_size),
+            dtype=np.float32)
+        instance_mask = np.zeros((self.max_num_people, num_keypoints, 1, 1),
+                                 dtype=np.float32)
         instance_valid = np.zeros((self.max_num_people), dtype=np.int32)
         if len(inst_coords) > 0:
             idx_list = list(range(len(inst_coords)))
             random.shuffle(idx_list)
             for i, idx in enumerate(idx_list):
-                if idx >= self.max_num_people: continue
+                if idx >= self.max_num_people:
+                    continue
                 instance_coord[i] = inst_coords[idx]
                 instance_heatmap[i] = inst_heatmaps[idx]
                 instance_mask[i] = inst_masks[idx]
@@ -812,6 +840,7 @@ class CIDGenerateTarget:
         results['instance_valid'] = instance_valid
 
         return results
+
 
 @PIPELINES.register_module()
 class BottomUpGeneratePAFTarget:

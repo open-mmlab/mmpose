@@ -11,9 +11,7 @@ optimizer = dict(
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
-lr_config = dict(
-    policy='step',
-    step=[90, 120])
+lr_config = dict(policy='step', step=[90, 120])
 total_epochs = 140
 channel_cfg = dict(
     dataset_joints=17,
@@ -113,7 +111,10 @@ train_pipeline = [
     ),
     dict(
         type='Collect',
-        keys=['img', 'multi_heatmap', 'multi_mask', 'instance_coord', 'instance_heatmap', 'instance_mask', 'instance_valid'],
+        keys=[
+            'img', 'multi_heatmap', 'multi_mask', 'instance_coord',
+            'instance_heatmap', 'instance_mask', 'instance_valid'
+        ],
         meta_keys=[]),
 ]
 
