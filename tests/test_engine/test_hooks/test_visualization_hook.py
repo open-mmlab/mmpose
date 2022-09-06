@@ -5,7 +5,7 @@ import time
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-import torch
+import numpy as np
 from mmengine.structures import InstanceData
 
 from mmpose.engine.hooks import PoseVisualizationHook
@@ -14,8 +14,8 @@ from mmpose.visualization import PoseLocalVisualizer
 
 
 def _rand_poses(num_boxes, h, w):
-    center = torch.rand(num_boxes, 2)
-    offset = torch.rand(num_boxes, 5, 2) / 2.0
+    center = np.random.rand(num_boxes, 2)
+    offset = np.random.rand(num_boxes, 5, 2) / 2.0
 
     pose = center[:, None, :] + offset.clip(0, 1)
     pose[:, :, 0] *= w
@@ -39,7 +39,7 @@ class TestVisualizationHook(TestCase):
 
         pred_instances = InstanceData()
         pred_instances.keypoints = _rand_poses(5, 10, 12)
-        pred_instances.score = torch.rand((5, 5))
+        pred_instances.score = np.random.rand(5, 5)
         pred_det_data_sample = data_sample.clone()
         pred_det_data_sample.pred_instances = pred_instances
         self.outputs = [pred_det_data_sample] * 2
