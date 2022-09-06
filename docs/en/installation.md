@@ -19,9 +19,9 @@
 
 In this section we demonstrate how to prepare an environment with PyTorch.
 
-MMPose works on Linux, Windows and macOS. It requires Python 3.6+, CUDA 9.2+ and PyTorch 1.5+.
+MMPose works on Linux, Windows and macOS. It requires Python 3.6+, CUDA 9.2+ and PyTorch 1.6+.
 
-If you are experienced with PyTorch and have already installed it, just skip this part and jump to the [next section](#installation). Otherwise, you can follow these steps for the preparation.
+If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose installation](#installation). Otherwise, you can follow these steps for the preparation.
 
 **Step 0.** Download and install Miniconda from the [official website](https://docs.conda.io/en/latest/miniconda.html).
 
@@ -66,7 +66,7 @@ mim install "mmcv>=2.0.0rc1"
 
 **Step 1.** Install MMPose.
 
-Case a: If you develop and run mmpose directly, install it from source:
+Case A: To develop and run mmpose directly, install it from source:
 
 ```shell
 git clone https://github.com/open-mmlab/mmpose.git -b dev-1.x
@@ -79,7 +79,7 @@ pip install -v -e .
 # thus any local modifications made to the code will take effect without reinstallation.
 ```
 
-Case b: If you use mmpose as a dependency or third-party package, install it with pip:
+Case B: To use mmpose as a dependency or third-party package, install it with pip:
 
 ```shell
 mim install "mmpose>=1.0.0b0"
@@ -126,7 +126,7 @@ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.1
 
 #### Install on CPU-only platforms
 
-MMPose can be built for CPU only environment. In CPU mode you can train (requires MMCV version >= 1.4.4), test or inference a model.
+MMPose can be built for CPU only environment. In CPU mode you can train, test or inference a model.
 
 However, some functionalities are missing in this mode, usually GPU-compiled ops like `Deformable Convolution`. Most models in MMPose don't depend on these ops, but if you try to train/test/infer a model containing these ops, an error will be raised.
 
