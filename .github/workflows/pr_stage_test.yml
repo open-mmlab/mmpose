@@ -93,7 +93,7 @@ jobs:
           apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libxrender-dev
       - name: Install mmpose dependencies
         run: |
-          pip install numpy
+          pip install -U numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
           mim install 'mmcv >= 2.0.0rc1'
