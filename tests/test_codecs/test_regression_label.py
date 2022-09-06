@@ -23,7 +23,7 @@ class TestRegressionLabel(TestCase):
 
         # The bbox is usually padded so the keypoint will not be near the
         # boundary
-        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [192, 256]
+        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [256, 192]
         keypoints = np.round(keypoints).astype(np.float32)
         encoded_with_sigma = np.random.rand(1, 17, 4)
         encoded_wo_sigma = np.random.rand(1, 17, 2)
