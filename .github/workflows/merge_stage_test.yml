@@ -10,10 +10,10 @@ on:
       - '.dev_scripts/**'
       - '.circleci/**'
     branches:
-      - dev-1.x
+      - main
 
 concurrency:
-  group: github.workflow−{{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
       - name: Install Numpy
         run: pip install -U numpy
       - name: Install PyTorch
-        run: pip install torch==matrix.torch+cputorchvision=={{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMEngine
         run: pip install git+https://github.com/open-mmlab/mmengine.git@main
       - name: Install MMCV
@@ -58,6 +58,7 @@ jobs:
           coverage run --branch --source mmpose -m pytest tests/
           coverage xml
           coverage report -m
+
   build_cpu_pt:
     runs-on: ubuntu-18.04
     strategy:
@@ -90,7 +91,7 @@ jobs:
       - name: Install Numpy
         run: pip install -U numpy
       - name: Install PyTorch
-        run: pip install torch==matrix.torch+cputorchvision=={{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        run: pip install torch==${{matrix.torch}}+cpu torchvision==${{matrix.torchvision}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
       - name: Install MMEngine
         run: pip install git+https://github.com/open-mmlab/mmengine.git@main
       - name: Install MMCV
@@ -152,7 +153,7 @@ jobs:
           apt-get update && apt-get install -y ffmpeg libsm6 libxext6 git ninja-build libglib2.0-0 libsm6 libxrender-dev libxext6
       - name: Install mmpose dependencies
         run: |
-          pip install -U numpy
+          pip install numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
           mim install 'mmcv >= 2.0.0rc1'
@@ -164,6 +165,7 @@ jobs:
         run: |
           python setup.py check -m -s
           TORCH_CUDA_ARCH_LIST=7.0 pip install -e .
+
   build_windows:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -182,10 +184,10 @@ jobs:
       - name: Install lmdb
         run: pip install lmdb
       - name: Install PyTorch
-        run: pip install torch==1.8.1+matrix.platformtorchvision==0.9.1+{{matrix.platform}} -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+        run: pip install torch==1.8.1+${{matrix.platform}} torchvision==0.9.1+${{matrix.platform}} -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
       - name: Install mmpose dependencies
         run: |
-          pip install -U numpy
+          pip install numpy
           pip install git+https://github.com/open-mmlab/mmengine.git@main
           pip install -U openmim
           mim install 'mmcv >= 2.0.0rc1'
