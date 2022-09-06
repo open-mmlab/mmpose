@@ -1,12 +1,12 @@
 # Prepare Datasets
 
-MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](/docs/en/dataset_zoo/). Please follow the corresponding guidelines for data preparation.
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/1.x/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
 
 ## Customize datasets by reorganizing data to COCO format
 
 The simplest way to use the custom dataset is to convert your annotation format to COCO dataset format.
 
-The annotation json files in COCO format has the following necessary keys:
+The annotation JSON files in COCO format have the following necessary keys:
 
 ```python
 'images': [
@@ -62,9 +62,11 @@ There are three necessary keys in the json file:
 - `annotations`: contains the list of instance annotations.
 - `categories`: contains the category name ('person') and its ID (1).
 
+If the annotations have been organized in COCO format, there is no need to create a new dataset class. You can use `CocoDataset` class alternatively.
+
 ## Create a custom dataset_info config file for the dataset
 
-Add a new dataset info config file that containing the metainfo about the dataset.
+Add a new dataset info config file that contains the metainfo about the dataset.
 
 ```
 configs/_base_/datasets/custom.py
@@ -80,7 +82,7 @@ An example of the dataset config is as follows.
 4. `type`: 'upper' or 'lower', will be used in data augmentation.
 5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
 
-`skeleton_info` contains the information about the keypoint connectivity, which is used for visualization.
+`skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
 
 `joint_weights` assigns different loss weights to different keypoints.
 
@@ -272,14 +274,21 @@ dataset_info = dict(
 
 ## Create a custom dataset class
 
+If the annotations are not organized in COCO format, you need to create a custom dataset class by the following steps:
+
 1. First create a package inside the `mmpose/datasets/datasets` folder.
 
 2. Create a class definition of your dataset in the package folder and register it in the registry with a name. Without a name, it will keep giving the error. `KeyError: 'XXXXX is not in the dataset registry'`
 
    ```
+   from mmengine.dataset import BaseDataset
+   from mmpose.registry import DATASETS
+
    @DATASETS.register_module(name='MyCustomDataset')
-   class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
+   class MyCustomDataset(BaseDataset):
    ```
+
+   You can refer to [this doc](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) on how to build customed dataset class with `mmengine.BaseDataset`.
 
 3. Make sure you have updated the `__init__.py` of your package folder
 
@@ -294,7 +303,7 @@ In `configs/my_custom_config.py`:
 ```python
 ...
 # dataset and dataloader settings
-dataset_type = 'MyCustomDataset'
+dataset_type = 'MyCustomDataset' # or 'CocoDataset'
 
 train_dataloader = dict(
     batch_size=2,
@@ -303,6 +312,7 @@ train_dataloader = dict(
         data_root='root/of/your/train/data',
         ann_file='path/to/your/train/json',
         data_prefix=dict(img='path/to/your/train/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 
@@ -313,6 +323,7 @@ val_dataloader = dict(
         data_root='root/of/your/val/data',
         ann_file='path/to/your/val/json',
         data_prefix=dict(img='path/to/your/val/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 
@@ -323,6 +334,7 @@ test_dataloader = dict(
         data_root='root/of/your/test/data',
         ann_file='path/to/your/test/json',
         data_prefix=dict(img='path/to/your/test/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 ...
