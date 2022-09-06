@@ -106,11 +106,6 @@ configs/{topic}/{task}/{algorithm}/{dataset}/{backbone}_[model_setting]_{dataset
   ]))  # ClearMLLoggerHook, DvcliveLoggerHook, MlflowLoggerHook, NeptuneLoggerHook, PaviLoggerHook, SegmindLoggerHook are also supported based on MMCV implementation.
   ```
 
-al=50,  # Interval to print the log
-hooks=\[
-dict(type='TextLoggerHook'),  # The logger used to record the training process
-\# dict(type='TensorboardLoggerHook')  # The Tensorboard logger is also supported
-\])
 
 channel_cfg = dict(
 num_output_channels=17,  # The output channels of keypoint head
