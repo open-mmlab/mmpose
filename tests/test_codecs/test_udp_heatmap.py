@@ -88,7 +88,7 @@ class TestUDPHeatmap(TestCase):
             _keypoints, _ = codec.decode(heatmaps)
 
             self.assertTrue(
-                np.allclose(keypoints, _keypoints, atol=4.),
+                np.allclose(keypoints, _keypoints, atol=5.),
                 f'Failed case: "{name}"')
 
     def test_errors(self):
