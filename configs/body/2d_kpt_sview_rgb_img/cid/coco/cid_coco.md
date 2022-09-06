@@ -38,4 +38,4 @@ Results on COCO val2017 without multi-scale test
 
 | Arch                                          | Input Size |  AP   | AP<sup>50</sup> | AP<sup>75</sup> |  AR   | AR<sup>50</sup> |                     ckpt                      |                      log                      |
 | :-------------------------------------------- | :--------: | :---: | :-------------: | :-------------: | :---: | :-------------: | :-------------------------------------------: | :-------------------------------------------: |
-| [CID](/configs/body/2d_kpt_sview_rgb_img/cid/coco/cid_w32_coco_512x512.py) |  512x512   | 0.698 |      0.886      |      0.762      | 0.750 |      0.924      | [ckpt](https://1drv.ms/u/s!AhpKYLhXKpH7g4dWSAsyog1FFlRcqA?e=b1iOr2) | [log](https://1drv.ms/u/s!AhpKYLhXKpH7g4dWSAsyog1FFlRcqA?e=b1iOr2) |
+| [CID](/configs/body/2d_kpt_sview_rgb_img/cid/coco/cid_hrnet_w32_coco_512x512.py) |  512x512   | 0.698 |      0.886      |      0.762      | 0.750 |      0.924      | [ckpt](https://1drv.ms/u/s!AhpKYLhXKpH7g4dWSAsyog1FFlRcqA?e=b1iOr2) | [log](https://1drv.ms/u/s!AhpKYLhXKpH7g4dWSAsyog1FFlRcqA?e=b1iOr2) |

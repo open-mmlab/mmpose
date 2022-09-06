@@ -3,15 +3,16 @@
 <!-- [ALGORITHM] -->
 
 <details>
-<summary align="right"><a href="https://openaccess.thecvf.com/content/CVPR2022/papers/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.pdf">CID (CVPR'2022)</a></summary>
+<summary align="right"><a href="https://openaccess.thecvf.com/content/CVPR2022/html/Wang_Contextual_Instance_Decoupling_for_Robust_Multi-Person_Pose_Estimation_CVPR_2022_paper.html">CID (CVPR'2022)</a></summary>
 
 ```bibtex
-@inproceedings{wang2022contextual,
-  title={Contextual Instance Decoupling for Robust Multi-Person Pose Estimation},
-  author={Wang, Dongkai and Zhang, Shiliang},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={11060--11068},
-  year={2022}
+@InProceedings{Wang_2022_CVPR,
+    author    = {Wang, Dongkai and Zhang, Shiliang},
+    title     = {Contextual Instance Decoupling for Robust Multi-Person Pose Estimation},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2022},
+    pages     = {11060-11068}
 }
 ```
 
