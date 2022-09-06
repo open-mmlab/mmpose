@@ -33,7 +33,7 @@ class TestUDPHeatmap(TestCase):
 
         # The bbox is usually padded so the keypoint will not be near the
         # boundary
-        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [256, 192]
+        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [192, 256]
         keypoints = np.round(keypoints).astype(np.float32)
         keypoints_visible = np.ones((1, 17), dtype=np.float32)
         self.data = dict(
@@ -84,12 +84,12 @@ class TestUDPHeatmap(TestCase):
         for name, cfg in self.configs:
             codec = KEYPOINT_CODECS.build(cfg)
 
-            heatmaps, _ = codec.encode(keypoints, keypoints_visible)
+            heatmaps, k = codec.encode(keypoints, keypoints_visible)
             _keypoints, _ = codec.decode(heatmaps)
 
             self.assertTrue(
-                np.allclose(keypoints, _keypoints, atol=5.),
-                f'Failed case: "{name}", {(keypoints -_keypoints)}')
+                np.allclose(keypoints, _keypoints, atol=10.),
+                f'Failed case: "{name}",{abs(keypoints - _keypoints) < 5.} ')
 
     def test_errors(self):
         # invalid heatmap type

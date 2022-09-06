@@ -44,7 +44,7 @@ class TestSimCCLabel(TestCase):
 
         # The bbox is usually padded so the keypoint will not be near the
         # boundary
-        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [256, 192]
+        keypoints = (0.1 + 0.8 * np.random.rand(1, 17, 2)) * [192, 256]
         keypoints = np.round(keypoints).astype(np.float32)
         keypoints_visible = np.ones((1, 17), dtype=np.float32)
         self.data = dict(
