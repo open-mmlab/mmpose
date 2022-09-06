@@ -30,7 +30,7 @@ class SimCCHead(BaseHead):
             feature map
         out_channels (int): Number of channels in the output heatmap
         input_size (tuple): Input image size in shape [w, h]
-        heatmap_size (tuple): Size of the output heatmap
+        in_featuremap_size (int | sequence[int]): Size of input feature map
         simcc_split_ratio (float): Split ratio of pixels
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
