@@ -3,8 +3,10 @@ import argparse
 from functools import partial
 
 import torch
+from mmengine.config import DictAction
 
-from mmpose.apis.inference import init_pose_model
+from mmpose.apis.inference import init_model
+from mmpose.utils import register_all_modules as register_mmpose_modules
 
 try:
     from mmcv.cnn import get_model_complexity_info
@@ -15,6 +17,18 @@ except ImportError:
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a recognizer')
     parser.add_argument('config', help='train config file path')
+    parser.add_argument(
+        '--device',
+        default='cuda:0',
+        help='Device used for model initialization')
+    parser.add_argument(
+        '--cfg-options',
+        nargs='+',
+        action=DictAction,
+        default={},
+        help='override some settings in the used config, the key-value pair '
+        'in xxx=yyy format will be merged into config file. For example, '
+        "'--cfg-options model.backbone.depth=18 model.backbone.with_cp=True'")
     parser.add_argument(
         '--shape',
         type=int,
@@ -46,16 +60,17 @@ def batch_constructor(flops_model, batch_size, input_shape):
     """Generate a batch of tensors to the model."""
     batch = {}
 
-    img = torch.ones(()).new_empty(
+    inputs = torch.ones(()).new_empty(
         (batch_size, *input_shape),
         dtype=next(flops_model.parameters()).dtype,
         device=next(flops_model.parameters()).device)
 
-    batch['img'] = img
+    batch['inputs'] = inputs
     return batch
 
 
 def main():
+    register_mmpose_modules()
 
     args = parse_args()
 
@@ -66,20 +81,19 @@ def main():
     else:
         raise ValueError('invalid input shape')
 
-    model = init_pose_model(args.config)
+    model = init_model(
+        args.config,
+        checkpoint=None,
+        device=args.device,
+        cfg_options=args.cfg_options)
 
     if args.input_constructor == 'batch':
         input_constructor = partial(batch_constructor, model, args.batch_size)
     else:
         input_constructor = None
 
-    if args.input_constructor == 'batch':
-        input_constructor = partial(batch_constructor, model, args.batch_size)
-    else:
-        input_constructor = None
-
-    if hasattr(model, 'forward_dummy'):
-        model.forward = model.forward_dummy
+    if hasattr(model, 'extract_feat'):
+        model.forward = model.extract_feat
     else:
         raise NotImplementedError(
             'FLOPs counter is currently not currently supported with {}'.
