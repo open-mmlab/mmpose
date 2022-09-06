@@ -2,84 +2,107 @@
 
 Apart from training/testing scripts, We provide lots of useful tools under the `tools/` directory.
 
+<!-- TOC -->
+
+- [Analysis Tools](#analysis-tools)
+  - [Log Analysis](#log-analysis)
+  - [Model Complexity (Experimental)](#model-complexity-experimental)
+  - [Print the entire config](#print-the-entire-config)
+- [Dataset Tools](#dataset-tools)
+  - [Animal Pose](#animal-pose)
+  - [COFW](#cofw)
+  - [DeepposeKit](#deepposekit)
+  - [Macaque](#macaque)
+  - [Human36M](#human36m)
+  - [MPII](#mpii)
+
+<!-- TOC -->
+
 ## Analysis Tools
-
-<!-- TOC -->
-
-- [Log Analysis](#log-analysis)
-- [Model Complexity (experimental)](#model-complexity-experimental)
-- [Benchmarks (experimental)](#benchmarks)
-- [Print the entire config](#print-the-entire-config)
-
-<!-- TOC -->
 
 ### Log Analysis
 
-`tools/analysis/analyze_logs.py` plots loss/pose acc curves given a training log file. Run `pip install seaborn` first to install the dependency.
+`tools/analysis_tools/analyze_logs.py` plots `loss_kpt` / `acc_pose` curves given a training log file. Run `pip install seaborn` first to install the dependency.
 
-![acc_curve_image](https://user-images.githubusercontent.com/26127467/187380669-d126299e-1d9c-43cf-9acf-6f3ee138bfce.png)
+![loss_kpt_curve_image](https://user-images.githubusercontent.com/87690686/188538215-5d985aaa-59f8-44cf-b6f9-10890d599e9c.png)
 
 ```shell
-python tools/analysis/analyze_logs.py plot_curve ${JSON_LOGS} [--keys ${KEYS}] [--title ${TITLE}] [--legend ${LEGEND}] [--backend ${BACKEND}] [--style ${STYLE}] [--out ${OUT_FILE}]
+python tools/analysis_tools/analyze_logs.py plot_curve ${JSON_LOGS} [--keys ${KEYS}] [--title ${TITLE}] [--legend ${LEGEND}] [--backend ${BACKEND}] [--style ${STYLE}] [--out ${OUT_FILE}]
 ```
 
 Examples:
 
-- Plot the mse loss of some run.
+- Plot the `loss_kpt` of some run.
 
   ```shell
-  python tools/analysis/analyze_logs.py plot_curve log.json --keys loss --legend loss
+  python tools/analysis_tools/analyze_logs.py plot_curve log.json --keys loss_kpt --legend loss_kpt
   ```
 
-- Plot the acc of some run, and save the figure to a pdf.
+- Plot the `acc_pose` of some run, and save the figure to a pdf.
 
   ```shell
-  python tools/analysis/analyze_logs.py plot_curve log.json --keys acc_pose --out results.pdf
+  python tools/analysis_tools/analyze_logs.py plot_curve log.json --keys acc_pose --out results.pdf
   ```
 
-- Compare the acc of two runs in the same figure.
+- Compare the `loss_kpt` of two runs in the same figure.
 
   ```shell
-  python tools/analysis/analyze_logs.py plot_curve log1.json log2.json --keys acc_pose --legend run1 run2
+  python tools/analysis_tools/analyze_logs.py plot_curve log1.json log2.json --keys loss_kpt --legend run1 run2 --title loss_kpt --out loss_kpt.png
   ```
 
 You can also compute the average training speed.
 
 ```shell
-python tools/analysis/analyze_logs.py cal_train_time ${JSON_LOGS} [--include-outliers]
+python tools/analysis_tools/analyze_logs.py cal_train_time ${JSON_LOGS} [--include-outliers]
 ```
 
-- Compute the average training speed for a config file
+- Compute the average training speed for a config file, for example:
 
   ```shell
-  python tools/analysis/analyze_logs.py cal_train_time log.json
+  python tools/analysis_tools/analyze_logs.py cal_train_time log.json
   ```
 
   The output is expected to be like the following.
 
   ```text
-  -----Analyze train time of log.json-----
-  slowest epoch 114, average time is 0.9662
-  fastest epoch 16, average time is 0.7532
-  time std over epochs is 0.0426
-  average iter time: 0.8406 s/iter
+  -----Analyze train time of hrnet_w32_256x192.json-----
+  slowest epoch 56, average time is 0.6924
+  fastest epoch 1, average time is 0.6502
+  time std over epochs is 0.0085
+  average iter time: 0.6688 s/iter
   ```
 
 ### Model Complexity (Experimental)
 
-`/tools/analysis/get_flops.py` is a script adapted from [flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch) to compute the FLOPs and params of a given model.
+`/tools/analysis_tools/get_flops.py` is a script adapted from [flops-counter.pytorch](https://github.com/sovrasov/flops-counter.pytorch) to compute the FLOPs and params of a given model.
+
+Usage:
 
 ```shell
-python tools/analysis/get_flops.py ${CONFIG_FILE} [--shape ${INPUT_SHAPE}]
+python tools/analysis_tools/get_flops.py ${CONFIG_FILE} [--shape ${INPUT_SHAPE}] [--cfg-options ${CFG_OPTIONS}]
 ```
 
-We will get the result like this
+Description of all arguments:
+
+- `CONFIG_FILE` : The path of a model config file.
+- `--shape`:  The input shape to the model.
+- `--input-constructor`: If specified as `batch`, it will generate a batch  tensor to calculate FLOPs.
+- `--batch-size`：If `--input-constructor` is specified as `batch`, it will generate a random tensor with shape (batch_size, 3, \*\*input_shape) to calculate FLOPs.
+- `--cfg-options`: If specified, the key-value pair optional cfg will be merged into config file.
+
+Examples:
+
+```shell
+python tools/analysis_tools/get_flops.py configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py
+```
+
+We will get the following results:
 
 ```
 ==============================
 Input shape: (1, 3, 256, 192)
-Flops: 8.9 GMac
-Params: 28.04 M
+Flops: 7.7 GFLOPs
+Params: 28.54 M
 ==============================
 ```
 
@@ -89,50 +112,19 @@ This tool is still experimental and we do not guarantee that the number is absol
 
 You may use the result for simple comparisons, but double check it before you adopt it in technical reports or papers.
 
-(1) FLOPs are related to the input shape while parameters are not. The default input shape is (1, 3, 340, 256) for 2D recognizer, (1, 3, 32, 340, 256) for 3D recognizer.
+(1) FLOPs are related to the input shape while parameters are not. The default input shape is (1, 3, 256, 192).
+
 (2) Some operators are not counted into FLOPs like GN and custom operators. Refer to [`mmcv.cnn.get_model_complexity_info()`](https://github.com/open-mmlab/mmcv/blob/master/mmcv/cnn/utils/flops_counter.py) for details.
-
-### Benchmarks
-
-#### Inference
-
-`tools/analysis/benchmark_inference.py` tests inference speed of the model specified by config.
-
-```shell
-python tools/analysis/benchmark_inference.py ${CONFIG} [-h] [--fuse-conv-bn] [--log-interval ${LOG_INTERVAL}]
-```
-
-Users can fuse the convolutional layers and succeeding BatchNorm layers using the option `--fuse-conv-bn`. This will slightly increase the inference speed.
-
-#### Data Processing
-
-`tools/analysis/benchmark_processing.py` tests speed of the data processing.
-
-```shell
-python tools/analysis/benchmark_processing.py ${CONFIG} [-h]
-```
 
 ### Print the entire config
 
-`tools/analysis/print_config.py` prints the whole config verbatim, expanding all its imports.
+`tools/analysis_tools/print_config.py` prints the whole config verbatim, expanding all its imports.
 
 ```shell
-python tools/analysis/print_config.py ${CONFIG} [-h] [--options ${OPTIONS [OPTIONS...]}]
+python tools/analysis_tools/print_config.py ${CONFIG} [-h] [--options ${OPTIONS [OPTIONS...]}]
 ```
 
 ## Dataset Tools
-
-<!-- TOC -->
-
-- [Animal Pose](#animal-pose)
-- [COFW](#cofw)
-- [DeepposeKit (Fly, Locust, Zebra)](#deepposekit)
-- [Macaque](#macaque)
-- [H36M](#human36m)
-- [MPII](#mpii)
-- [MPI-INF-3DHP](#mpi-inf-3dhp)
-
-<!-- TOC -->
 
 ### Animal Pose
 
@@ -151,9 +143,9 @@ python tools/analysis/print_config.py ${CONFIG} [-h] [--options ${OPTIONS [OPTIO
 
 </details>
 
-For [Animal-Pose](https://sites.google.com/view/animal-pose/) dataset, the images and annotations can be downloaded from [official website](https://sites.google.com/view/animal-pose/). The script `tools/dataset_converters/parse_animalpose_dataset.py` converts raw annotations into the format compatible with MMPose. The pre-processed [annotation files](https://download.openmmlab.com/mmpose/datasets/animalpose_annotations.tar) are available. If you would like to generate the annotations by yourself, please follows:
+For [Animal-Pose](https://sites.google.com/view/animal-pose/) dataset, the images and annotations can be downloaded from [official website](https://sites.google.com/view/animal-pose/). The script `tools/dataset_converters/parse_animalpose_dataset.py` converts raw annotations into the format compatible with MMPose. The pre-processed [annotation files](https://download.openmmlab.com/mmpose/datasets/animalpose_annotations.tar) are available. If you would like to generate the annotations by yourself, please follow:
 
-1. Download the raw images and annotations and extract them under `{MMPose}/data`. Make them look like this:
+1. Download the raw images and annotations and extract them under `$MMPOSE/data`. Make them look like this:
 
    ```text
    mmpose
@@ -206,7 +198,7 @@ For [Animal-Pose](https://sites.google.com/view/animal-pose/) dataset, the image
    python tools/dataset_converters/parse_animalpose_dataset.py
    ```
 
-   The generated annotation files are put in `{MMPose}/data/animalpose/annotations`.
+   The generated annotation files are put in `$MMPOSE/data/animalpose/annotations`.
 
 The official dataset does not provide the official train/val/test set split.
 We choose the images from PascalVOC for train & val. In total, we have 3608 images and 5117 annotations for train+val, where
@@ -231,7 +223,7 @@ Those images from other sources (1000 images with 1000 annotations) are used for
 </details>
 
 For COFW data, please download from [COFW Dataset (Color Images)](https://data.caltech.edu/records/20099).
-Move `COFW_train_color.mat` and `COFW_test_color.mat` to `data/cofw/` and make them look like:
+Move `COFW_train_color.mat` and `COFW_test_color.mat` to `$MMPOSE/data/cofw/` and make them look like:
 
 ```text
 mmpose
@@ -246,9 +238,11 @@ mmpose
         |── COFW_test_color.mat
 ```
 
-Run the following script under `{MMPose}/data`
+Run `pip install h5py` first to install the dependency, then run the following script under `$MMPOSE`:
 
-`python tools/dataset_converters/parse_cofw_dataset.py`
+```bash
+python tools/dataset_converters/parse_cofw_dataset.py
+```
 
 And you will get
 
@@ -292,7 +286,7 @@ mmpose
 
 For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data), [Desert Locust](https://github.com/jgraving/DeepPoseKit-Data), and [Grévy’s Zebra](https://github.com/jgraving/DeepPoseKit-Data) dataset, the annotations files can be downloaded from [DeepPoseKit-Data](https://github.com/jgraving/DeepPoseKit-Data). The script `tools/dataset_converters/parse_deepposekit_dataset.py` converts raw annotations into the format compatible with MMPose. The pre-processed annotation files are available at [vinegar_fly_annotations](https://download.openmmlab.com/mmpose/datasets/vinegar_fly_annotations.tar), [locust_annotations](https://download.openmmlab.com/mmpose/datasets/locust_annotations.tar), and [zebra_annotations](https://download.openmmlab.com/mmpose/datasets/zebra_annotations.tar). If you would like to generate the annotations by yourself, please follows:
 
-1. Download the raw images and annotations and extract them under `{MMPose}/data`. Make them look like this:
+1. Download the raw images and annotations and extract them under `$MMPOSE/data`. Make them look like this:
 
    ```text
    mmpose
@@ -335,7 +329,7 @@ For [Vinegar Fly](https://github.com/jgraving/DeepPoseKit-Data), [Desert Locust]
    python tools/dataset_converters/parse_deepposekit_dataset.py
    ```
 
-   The generated annotation files are put in `{MMPose}/data/fly/annotations`, `{MMPose}/data/locust/annotations`, and `{MMPose}/data/zebra/annotations`.
+   The generated annotation files are put in `$MMPOSE/data/fly/annotations`, `$MMPOSE/data/locust/annotations`, and `$MMPOSE/data/zebra/annotations`.
 
 Since the official dataset does not provide the test set, we randomly select 90% images for training, and the rest (10%) for evaluation.
 
@@ -356,9 +350,9 @@ Since the official dataset does not provide the test set, we randomly select 90%
 
 </details>
 
-For [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images and annotations can be downloaded from [download](http://www2.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html). The script `tools/dataset_converters/parse_macaquepose_dataset.py` converts raw annotations into the format compatible with MMPose. The pre-processed [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar) are available. If you would like to generate the annotations by yourself, please follows:
+For [MacaquePose](http://www2.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html) dataset, images and annotations can be downloaded from [download](http://www2.ehub.kyoto-u.ac.jp/datasets/macaquepose/index.html). The script `tools/dataset_converters/parse_macaquepose_dataset.py` converts raw annotations into the format compatible with MMPose. The pre-processed [macaque_annotations](https://download.openmmlab.com/mmpose/datasets/macaque_annotations.tar) are available. If you would like to generate the annotations by yourself, please follows:
 
-1. Download the raw images and annotations and extract them under `{MMPose}/data`. Make them look like this:
+1. Download the raw images and annotations and extract them under `$MMPOSE/data`. Make them look like this:
 
    ```text
    mmpose
@@ -385,7 +379,7 @@ For [MacaquePose](http://www.pri.kyoto-u.ac.jp/datasets/macaquepose/index.html) 
    python tools/dataset_converters/parse_macaquepose_dataset.py
    ```
 
-   The generated annotation files are put in `{MMPose}/data/macaque/annotations`.
+   The generated annotation files are put in `$MMPOSE/data/macaque/annotations`.
 
 Since the official dataset does not provide the test set, we randomly select 12500 images for training, and the rest for evaluation.
 
@@ -410,7 +404,7 @@ Since the official dataset does not provide the test set, we randomly select 125
 
 </details>
 
-For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and place the files under `{MMPose}/data/h36m`.
+For [Human3.6M](http://vision.imar.ro/human3.6m/description.php), please download from the official website and place the files under `$MMPOSE/data/h36m`.
 Then run the [preprocessing script](/tools/dataset_converters/preprocess_h36m.py):
 
 ```bash
@@ -462,7 +456,7 @@ mmpose
 After that, the annotations need to be transformed into COCO format which is compatible with MMPose. Please run:
 
 ```bash
-python /tools/dataset_converters/h36m_to_coco.py
+python tools/dataset_converters/h36m_to_coco.py
 ```
 
 ### MPII
@@ -482,7 +476,7 @@ python /tools/dataset_converters/h36m_to_coco.py
 
 </details>
 
-During training and inference for [MPII dataset](<[MPII](http://human-pose.mpi-inf.mpg.de/)>), the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this '.mat' to more readable '.json' format.
+During training and inference for [MPII dataset](<[MPII](http://human-pose.mpi-inf.mpg.de/)>), the prediction result will be saved as '.mat' format by default. We also provide a tool to convert this `.mat` to more readable `.json` format.
 
 ```shell
 python tools/dataset_converters/mat2json ${PRED_MAT_FILE} ${GT_JSON_FILE} ${OUTPUT_PRED_JSON_FILE}
