@@ -43,11 +43,62 @@ class BCELoss(nn.Module):
 
 
 @MODELS.register_module()
+class JSDiscretLoss(nn.Module):
+    """Discrete JS Divergence loss for DSNT with Gaussian Heatmap.
+
+    Modified from `the official implementation
+    <https://github.com/anibali/dsntnn/blob/master/dsntnn/__init__.py>`_.
+
+    Args:
+        use_target_weight (bool): Option to use weighted loss.
+            Different joint types may have different target weights.
+    """
+
+    def __init__(
+        self,
+        use_target_weight=True,
+        size_average: bool = True,
+    ):
+        super(JSDiscretLoss, self).__init__()
+        self.use_target_weight = use_target_weight
+        self.size_average = size_average
+        self.kl_loss = nn.KLDivLoss(reduction='none')
+
+    def kl(self, pred_hm, gt_hm):
+        eps = 1e-24
+        log_hm = (pred_hm + eps).log()
+        kl_values = self.kl_loss(log_hm, gt_hm)
+        return kl_values
+
+    def js(self, pred_hm, gt_hm):
+        m = 0.5 * (pred_hm + gt_hm)
+        js_values = 0.5 * (self.kl(pred_hm, m) + self.kl(gt_hm, m))
+        return js_values
+
+    def forward(self, pred_hm, gt_hm, target_weight=None):
+        if self.use_target_weight:
+            assert target_weight is not None
+            target_weight = target_weight.unsqueeze(-1)
+            loss = self.js(pred_hm * target_weight, gt_hm * target_weight)
+        else:
+            loss = self.js(pred_hm, gt_hm)
+
+        if self.size_average:
+            loss /= len(gt_hm)
+
+        return loss.sum()
+
+
+@MODELS.register_module()
 class KLDiscretLoss(nn.Module):
     """Discrete KL Divergence loss for SimCC with Gaussian Label Smoothing.
 
     Modified from `the official implementation
     <https://github.com/leeyegy/SimCC>`_.
+
+    Args:
+        use_target_weight (bool): Option to use weighted loss.
+            Different joint types may have different target weights.
     """
 
     def __init__(self, use_target_weight=True):

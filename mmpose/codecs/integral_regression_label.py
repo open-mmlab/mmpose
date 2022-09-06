@@ -31,12 +31,14 @@ class IntegralRegressionLabel(BaseKeypointCodec):
                  heatmap_size: Tuple[int, int],
                  sigma: float,
                  unbiased: bool = False,
-                 blur_kernel_size: int = 11) -> None:
+                 blur_kernel_size: int = 11,
+                 normalize: bool = True) -> None:
         super().__init__()
 
         self.heatmap_codec = MSRAHeatmap(input_size, heatmap_size, sigma,
                                          unbiased, blur_kernel_size)
         self.keypoint_codec = RegressionLabel(input_size)
+        self.normalize = normalize
 
     def encode(
         self,
@@ -63,6 +65,10 @@ class IntegralRegressionLabel(BaseKeypointCodec):
             keypoints, keypoints_visible)
         reg_labels, keypoint_weights = self.keypoint_codec.encode(
             keypoints, keypoint_weights)
+
+        if self.normalize:
+            val_sum = heatmaps.sum(axis=(-1, -2)).reshape(-1, 1, 1) + 1e-24
+            heatmaps = heatmaps / val_sum
 
         return heatmaps, reg_labels, keypoint_weights
 

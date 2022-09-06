@@ -33,6 +33,10 @@ class IntegralRegressionHead(BaseHead):
         in_channels (int | sequence[int]): Number of input channels
         in_featuremap_size (int | sequence[int]): Size of input feature map
         num_joints (int): Number of joints
+        debias (bool): Whether to remove the bias of Integral Pose Regression.
+            see `Removing the Bias of Integral Pose Regression`_ by Gu et al
+            (2021). Defaults to ``False``.
+        beta (float): A smoothing parameter in softmax. Defaults to ``1.0``.
         deconv_out_channels (sequence[int]): The output channel number of each
             deconv layer. Defaults to ``(256, 256, 256)``
         deconv_kernel_sizes (sequence[int | tuple], optional): The kernel size
@@ -70,6 +74,7 @@ class IntegralRegressionHead(BaseHead):
             :attr:`default_init_cfg` for default settings
 
     .. _`IPR`: https://arxiv.org/abs/1711.08229
+    .. _`Debias`:
     """
 
     _version = 2
@@ -78,6 +83,8 @@ class IntegralRegressionHead(BaseHead):
                  in_channels: Union[int, Sequence[int]],
                  in_featuremap_size: Tuple[int, int],
                  num_joints: int,
+                 debias: bool = False,
+                 beta: float = 1.0,
                  deconv_out_channels: OptIntSeq = (256, 256, 256),
                  deconv_kernel_sizes: OptIntSeq = (4, 4, 4),
                  conv_out_channels: OptIntSeq = None,
@@ -98,6 +105,8 @@ class IntegralRegressionHead(BaseHead):
 
         self.in_channels = in_channels
         self.num_joints = num_joints
+        self.debias = debias
+        self.beta = beta
         self.align_corners = align_corners
         self.input_transform = input_transform
         self.input_index = input_index
@@ -193,10 +202,17 @@ class IntegralRegressionHead(BaseHead):
         else:
             feats = self.simplebaseline_head(feats)
 
-        heatmaps = self._flat_softmax(feats)
+        heatmaps = self._flat_softmax(feats * self.beta)
 
         pred_x = self._linear_expectation(heatmaps, self.linspace_x)
         pred_y = self._linear_expectation(heatmaps, self.linspace_y)
+
+        if self.debias:
+            N, C, H, W = feats.shape
+            t = feats.reshape(N, C, H * W).exp().sum(dim=2).reshape(N, C, 1)
+            pred_x -= 3. * W / t
+            pred_y -= 3. * H / t
+
         coords = torch.cat([pred_x, pred_y], dim=-1)
         return coords, heatmaps
 

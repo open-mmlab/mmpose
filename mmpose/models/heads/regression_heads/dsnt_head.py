@@ -114,12 +114,15 @@ class DSNTHead(IntegralRegressionHead):
         keypoint_weights = torch.cat([
             d.gt_instance_labels.keypoint_weights for d in batch_data_samples
         ])
+        gt_heatmaps = torch.stack(
+            [d.gt_fields.heatmaps for d in batch_data_samples])
 
+        input_list = [pred_coords, pred_heatmaps]
+        target_list = [keypoint_labels, gt_heatmaps]
         # calculate losses
         losses = dict()
 
-        # TODO: multi-loss calculation
-        loss = self.loss_module(pred_coords, pred_heatmaps, keypoint_labels,
+        loss = self.loss_module(input_list, target_list,
                                 keypoint_weights.unsqueeze(-1))
 
         if isinstance(loss, dict):

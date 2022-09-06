@@ -13,7 +13,7 @@ class MultiTaskLoss(nn.Module):
         factors (list): List of Loss factors
     """
 
-    def __init__(self, loss_cfg_list: tuple, factors: tuple):
+    def __init__(self, loss_cfg_list: list, factors: list):
         super().__init__()
 
         assert len(loss_cfg_list) == len(factors), (
