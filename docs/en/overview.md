@@ -8,7 +8,7 @@ This chapter will introduce you to the overall framework of MMPose and provide l
 
 MMPose is a Pytorch-based pose estimation open-source toolkit, a member of the [OpenMMLab Project](https://github.com/open-mmlab). It contains a rich set of algorithms for 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and animal pose estimation as well as related components and modules, below is its overall framework.
 
-MMPose consists of **7** main components:
+MMPose consists of **8** main components:
 
 - **apis** provides high-level APIs for model inference
 - **structures** provides data structures like bbox, keypoint and PoseDataSample
