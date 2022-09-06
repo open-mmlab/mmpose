@@ -112,7 +112,7 @@ jobs:
             docker exec mmpose pip install -U openmim
             docker exec mmpose mim install 'mmcv >= 2.0.0rc1'
             docker exec mmpose pip install -e /mmdetection
-            docker exec mmpose pip install -r requirements/test.txt
+            docker exec mmpose pip install -r requirements/tests.txt
             docker exec mmpose pip install -r requirements/albu.txt
             docker exec mmpose pip install -r requirements/poseval.txt
       - run:
