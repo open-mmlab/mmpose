@@ -4,26 +4,28 @@ This chapter will introduce you to the overall framework of MMPose and provide l
 
 ## What is MMPose
 
+![image](https://user-images.githubusercontent.com/15977946/188659200-e5694ca7-28ff-43e5-ae33-acc1fdff7420.jpg)
+
 MMPose is a Pytorch-based pose estimation open-source toolkit, a member of the [OpenMMLab Project](https://github.com/open-mmlab). It contains a rich set of algorithms for 2d multi-person human pose estimation, 2d hand pose estimation, 2d face landmark detection, 133 keypoint whole-body human pose estimation, fashion landmark detection and animal pose estimation as well as related components and modules, below is its overall framework.
 
 MMPose consists of **7** main components:
 
-- **apis** provides high-level APIs for model inference.
-- **structures** provides data structures like bbox, keypoint and PoseDataSample.
-- **datasets** supports various datasets for pose estimation and keypoint detection
-  - **transforms** contains a lot of useful data augmentation transforms.
-- **codecs** provides the encoder and decoder for target generation and output decoding.
-- **models** is the most vital part for pose estimators and contains different components of a estimator.
-  - **pose_estimators** defines all of the estimation model classes.
-  - **data_preprocessors** is for preprocessing the input data  of the model
-  - **backbones** contains a bunch of backbone networks.
-  - **necks** contains various neck components.
-  - **heads** contains various prediction heads that perform pose estimation.
+- **apis** provides high-level APIs for model inference
+- **structures** provides data structures like bbox, keypoint and PoseDataSample
+- **datasets** supports various datasets for pose estimation
+  - **transforms** contains a lot of useful data augmentation transforms
+- **codecs** provides pose encoders and decoders: an encoder encodes poses (mostly keypoints) into learning targets (e.g. heatmaps), and a decoder decodes model outputs into pose predictions
+- **models** provides all components of pose estimation models in a modular structure
+  - **pose_estimators** defines all pose estimation model classes
+  - **data_preprocessors** is for preprocessing the input data of the model
+  - **backbones** provides a collection of backbone networks
+  - **necks** contains various neck modules
+  - **heads** contains various prediction heads that perform pose estimation
   - **losses** contains various loss functions
-- **engine** is a part for runtime components.
+- **engine** provides runtime components related to pose estimation
   - **hooks** provides various hooks of the runner
-- **evaluation** provides different metrics for evaluating model performance.
-- **visualization** is for visualizing skeleton and heatmaps
+- **evaluation** provides metrics for evaluating model performance
+- **visualization** is for visualizing skeletons, heatmaps and other information
 
 ## How to Use this Guide
 

@@ -4,21 +4,25 @@
 
 ## 什么是 MMPose
 
-MMPose 是一款基于 Pytorch 的姿态估计开源工具箱，是 OpenMMLab 项目的成员之一，包含了丰富的2D多人姿态估计、2D手部姿态估计、2D人脸关键点检测、133关键点全身人体姿态估计、动物关键点检测、服饰关键点检测等算法以及相关的组件和模块，下面是它的整体框架：
+![image](https://user-images.githubusercontent.com/15977946/188659200-e5694ca7-28ff-43e5-ae33-acc1fdff7420.jpg)
+
+MMPose 是一款基于 Pytorch 的姿态估计开源工具箱，是 OpenMMLab 项目的成员之一，包含了丰富的 2D 多人姿态估计、2D 手部姿态估计、2D 人脸关键点检测、133关键点全身人体姿态估计、动物关键点检测、服饰关键点检测等算法以及相关的组件和模块，下面是它的整体框架：
 
 MMPose 由 7 个主要部分组成，apis、structures、datasets、codecs、models、engine、评估和可视化。
 
-- **apis** 为模型推理提供高级 API
+- **apis** 提供用于模型推理的高级 API
 
-- **structures** 提供bbox、keypoint和 PoseDataSample 等数据结构
+- **structures** 提供 bbox、keypoint 和 PoseDataSample 等数据结构
 
-- **datasets** 支持用于关键点检测和姿态估计的各种数据集
+- **datasets** 支持用于姿态估计的各种数据集
 
   - **transforms** 包含各种数据增强变换
 
 - **codecs** 提供训练目标生成与模型输出解码所需的编码器和解码器
 
-- **models** 是检测器最重要的部分，包含检测器的不同组件
+- **codecs** 提供姿态编解码器：编码器用于将姿态信息（通常为关键点坐标）编码为模型学习目标（如热力图），解码器则用于将模型输出解码为姿态估计结果
+
+- **models** 以模块化结构提供了姿态估计模型的各类组件
 
   - **pose_estimators** 定义了所有姿态估计模型类
   - **data_preprocessors** 用于预处理模型的输入数据
@@ -27,13 +31,13 @@ MMPose 由 7 个主要部分组成，apis、structures、datasets、codecs、mod
   - **heads** 包含各种模型头部
   - **losses** 包含各种损失函数
 
-- **engine** 是运行时组件的一部分
+- **engine** 包含与姿态估计任务相关的运行时组件
 
   - **hooks** 提供运行时的各种钩子
 
-- **evaluation** 为评估模型性能提供不同的指标
+- **evaluation** 提供各种评估模型性能的指标
 
-- **visualization** 用于可视化关键点骨架和热度图
+- **visualization** 用于可视化关键点骨架和热力图等信息
 
 ## 如何使用本指南
 
