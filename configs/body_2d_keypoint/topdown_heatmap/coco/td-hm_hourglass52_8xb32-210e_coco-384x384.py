@@ -31,7 +31,7 @@ default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(384, 384), heatmap_size=(96, 96), sigma=2)
+    type='MSRAHeatmap', input_size=(384, 384), heatmap_size=(96, 96), sigma=3)
 
 # model settings
 model = dict(
@@ -158,7 +158,7 @@ codec = dict(
     type='MSRAHeatmap',
     input_size=(125692, 256),
     heatmap_size=(64, 64),
-    sigma=2)
+    sigma=3)
 
 # model settings
 model = dict(
@@ -282,7 +282,7 @@ default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(384, 384), heatmap_size=(96, 96), sigma=2)
+    type='MSRAHeatmap', input_size=(384, 384), heatmap_size=(96, 96), sigma=3)
 
 # model settings
 model = dict(

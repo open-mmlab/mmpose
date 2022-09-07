@@ -24,14 +24,14 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=512)
+auto_scale_lr = dict(base_batch_size=256)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(160, 160), heatmap_size=(40, 40), sigma=2)
+    type='MSRAHeatmap', input_size=(288, 384), heatmap_size=(72, 96), sigma=3)
 
 # model settings
 model = dict(
@@ -42,14 +42,15 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=152,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet152'),
+        type='ResNeXt',
+        depth=101,
+        init_cfg=dict(
+            type='Pretrained', checkpoint='mmcls://resnext101_32x4d'),
     ),
     head=dict(
         type='HeatmapHead',
         in_channels=2048,
-        out_channels=35,
+        out_channels=17,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
@@ -59,36 +60,33 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'LocustDataset'
+dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/locust/'
+data_root = 'data/coco/'
 
 file_client_args = dict(backend='disk')
 
 # pipelines
 train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale', padding=0.8),
+    dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(
-        type='RandomBBoxTransform',
-        shift_factor=0.25,
-        rot_factor=180,
-        scale_factor=(0.7, 1.3)),
+    dict(type='RandomHalfBody'),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
-    dict(type='GetBBoxCenterScale', padding=0.8),
+    dict(type='GetBBoxCenterScale'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
 
 # data loaders
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=32,
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -96,8 +94,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/locust_train.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_train2017.json',
+        data_prefix=dict(img='train2017/'),
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -110,17 +108,17 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/locust_test.json',
-        data_prefix=dict(img='images/'),
+        ann_file='annotations/person_keypoints_val2017.json',
+        bbox_file='data/coco/person_detection_results/'
+        'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='val2017/'),
         test_mode=True,
         pipeline=test_pipeline,
     ))
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = [
-    dict(type='PCKAccuracy', thr=0.2),
-    dict(type='AUC'),
-    dict(type='EPE'),
-]
+val_evaluator = dict(
+    type='CocoMetric',
+    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator

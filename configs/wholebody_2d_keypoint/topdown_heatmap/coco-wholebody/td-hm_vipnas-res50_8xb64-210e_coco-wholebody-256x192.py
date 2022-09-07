@@ -71,7 +71,10 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(type='RandomBBoxTransform', rot_factor=60, scale_factor=(0.75, 1.25)),
+    dict(
+        type='RandomBBoxTransform',
+        rotate_factor=60,
+        scale_factor=(0.75, 1.25)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')

@@ -71,8 +71,8 @@ model = dict(
                 num_channels=(32, 64, 128, 256))),
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose'
-            '/pretrain_models/hrnet_w32-36af842e.pth'),
+            checkpoint='https://download.openmmlab.com/mmpose/'
+            'pretrain_models/hrnet_w32-36af842e.pth'),
     ),
     head=dict(
         type='HeatmapHead',
@@ -118,7 +118,7 @@ test_pipeline = [
 # data loaders
 train_dataloader = dict(
     batch_size=64,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=dict(
@@ -131,7 +131,7 @@ train_dataloader = dict(
     ))
 val_dataloader = dict(
     batch_size=32,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
@@ -146,7 +146,7 @@ val_dataloader = dict(
     ))
 test_dataloader = dict(
     batch_size=32,
-    num_workers=2,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),

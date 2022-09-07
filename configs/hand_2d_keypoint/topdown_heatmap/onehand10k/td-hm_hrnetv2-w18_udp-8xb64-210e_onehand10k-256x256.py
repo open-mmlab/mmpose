@@ -27,11 +27,11 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(checkpoint=dict(save_best='auc/@20thrs', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='MSRAHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
+    type='UDPHeatmap', input_size=(256, 256), heatmap_size=(64, 64), sigma=2)
 
 # model settings
 model = dict(
@@ -42,26 +42,60 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='ResNet',
-        depth=152,
-        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet152'),
-    ),
+        type='HRNet',
+        in_channels=3,
+        extra=dict(
+            stage1=dict(
+                num_modules=1,
+                num_branches=1,
+                block='BOTTLENECK',
+                num_blocks=(4, ),
+                num_channels=(64, )),
+            stage2=dict(
+                num_modules=1,
+                num_branches=2,
+                block='BASIC',
+                num_blocks=(4, 4),
+                num_channels=(18, 36)),
+            stage3=dict(
+                num_modules=4,
+                num_branches=3,
+                block='BASIC',
+                num_blocks=(4, 4, 4),
+                num_channels=(18, 36, 72)),
+            stage4=dict(
+                num_modules=3,
+                num_branches=4,
+                block='BASIC',
+                num_blocks=(4, 4, 4, 4),
+                num_channels=(18, 36, 72, 144),
+                multiscale_output=True),
+            upsample=dict(mode='bilinear', align_corners=False)),
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint='open-mmlab://msra/hrnetv2_w18',
+        )),
     head=dict(
         type='HeatmapHead',
-        in_channels=2048,
-        out_channels=20,
+        in_channels=[18, 36, 72, 144],
+        input_index=(0, 1, 2, 3),
+        input_transform='resize_concat',
+        out_channels=21,
+        deconv_out_channels=None,
+        conv_out_channels=(270, ),
+        conv_kernel_sizes=(1, ),
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
         flip_mode='heatmap',
-        shift_heatmap=True,
+        shift_heatmap=False,
     ))
 
 # base dataset settings
-dataset_type = 'AnimalPoseDataset'
+dataset_type = 'OneHand10KDataset'
 data_mode = 'topdown'
-data_root = 'data/animalpose/'
+data_root = 'data/onehand10k/'
 
 file_client_args = dict(backend='disk')
 
@@ -70,8 +104,9 @@ train_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
-    dict(type='RandomHalfBody'),
-    dict(type='RandomBBoxTransform'),
+    dict(
+        type='RandomBBoxTransform', rotate_factor=180,
+        scale_factor=(0.7, 1.3)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
     dict(type='PackPoseInputs')
@@ -93,7 +128,7 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/animalpose_train.json',
+        ann_file='annotations/onehand10k_train.json',
         data_prefix=dict(img=''),
         pipeline=train_pipeline,
     ))
@@ -107,7 +142,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/animalpose_val.json',
+        ann_file='annotations/onehand10k_test.json',
         data_prefix=dict(img=''),
         test_mode=True,
         pipeline=test_pipeline,
@@ -115,6 +150,9 @@ val_dataloader = dict(
 test_dataloader = val_dataloader
 
 # evaluators
-val_evaluator = dict(
-    type='CocoMetric', ann_file=data_root + 'annotations/animalpose_val.json')
+val_evaluator = [
+    dict(type='PCKAccuracy', thr=0.2),
+    dict(type='AUC'),
+    dict(type='EPE'),
+]
 test_evaluator = val_evaluator
