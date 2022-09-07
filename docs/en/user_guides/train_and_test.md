@@ -1,25 +1,25 @@
-# Training and Test
+# Train and Test
 
 <!-- TOC -->
 
-- [Training](#training)
-  - [Training with your PC](#training-with-your-PC)
-  - [Training with multiple GPUs](#training-with-multiple-GPUs)
-  - [Training with multiple machines](#training-with-multiple-machines)
+- [Train](#train)
+  - [Train with your PC](#train-with-your-pc)
+  - [Train with multiple GPUs](#train-with-multiple-gpus)
+  - [Train with multiple machines](#train-with-multiple-machines)
     - [Multiple machines in the same network](#multiple-machines-in-the-same-network)
     - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm)
 - [Test](#test)
-  - [Test with your PC](#training-with-your-PC)
-  - [Test with multiple GPUs](#test-with-multiple-GPUs)
+  - [Test with your PC](#test-with-your-pc)
+  - [Test with multiple GPUs](#test-with-multiple-gpus)
   - [Test with multiple machines](#test-with-multiple-machines)
     - [Multiple machines in the same network](#multiple-machines-in-the-same-network-1)
     - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm-1)
 
 <!-- TOC -->
 
-## Training
+## Train
 
-### Training with your PC
+### Train with your PC
 
 You can use `tools/train.py` to train a model on a single machine with a CPU and optionally a GPU.
 
@@ -49,7 +49,7 @@ CUDA_VISIBLE_DEVICES=-1 python tools/train.py ${CONFIG_FILE} [ARGS]
 | `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that quotation marks are necessary and that **no white space is allowed**. |
 | `--launcher {none,pytorch,slurm,mpi}` | Options for job launcher.                                                                                                                                           |
 
-### Training with multiple GPUs
+### Train with multiple GPUs
 
 We provide a shell script to start a multi-GPUs task with `torch.distributed.launch`.
 
@@ -57,11 +57,11 @@ We provide a shell script to start a multi-GPUs task with `torch.distributed.lau
 bash ./tools/dist_train.sh ${CONFIG_FILE} ${GPU_NUM} [PY_ARGS]
 ```
 
-| ARGS          | Description                                                                           |
-| ------------- | ------------------------------------------------------------------------------------- |
-| `CONFIG_FILE` | The path to the config file.                                                          |
-| `GPU_NUM`     | The number of GPUs to be used.                                                        |
-| `[PYARGS]`    | The other optional arguments of `tools/train.py`, see [here](#training-with-your-pc). |
+| ARGS          | Description                                                                        |
+| ------------- | ---------------------------------------------------------------------------------- |
+| `CONFIG_FILE` | The path to the config file.                                                       |
+| `GPU_NUM`     | The number of GPUs to be used.                                                     |
+| `[PYARGS]`    | The other optional arguments of `tools/train.py`, see [here](#train-with-your-pc). |
 
 You can also specify extra arguments of the launcher by environment variables. For example, change the
 communication port of the launcher to 29666 by the below command:
@@ -78,7 +78,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29500 bash ./tools/dist_train.sh ${CONFIG_FILE
 CUDA_VISIBLE_DEVICES=4,5,6,7 GPUS=29501 bash ./tools/dist_train.sh ${CONFIG_FILE2} 4 [PY_ARGS]
 ```
 
-### Training with multiple machines
+### Train with multiple machines
 
 #### Multiple machines in the same network
 
@@ -117,13 +117,13 @@ If you run MMPose on a cluster managed with [slurm](https://slurm.schedmd.com/),
 
 Here are the arguments description of the script.
 
-| ARGS          | Description                                                                           |
-| ------------- | ------------------------------------------------------------------------------------- |
-| `PARTITION`   | The partition to use in your cluster.                                                 |
-| `JOB_NAME`    | The name of your job, you can name it as you like.                                    |
-| `CONFIG_FILE` | The path to the config file.                                                          |
-| `WORK_DIR`    | The target folder to save logs and checkpoints.                                       |
-| `[PYARGS]`    | The other optional arguments of `tools/train.py`, see [here](#training-with-your-pc). |
+| ARGS          | Description                                                                        |
+| ------------- | ---------------------------------------------------------------------------------- |
+| `PARTITION`   | The partition to use in your cluster.                                              |
+| `JOB_NAME`    | The name of your job, you can name it as you like.                                 |
+| `CONFIG_FILE` | The path to the config file.                                                       |
+| `WORK_DIR`    | The target folder to save logs and checkpoints.                                    |
+| `[PYARGS]`    | The other optional arguments of `tools/train.py`, see [here](#train-with-your-pc). |
 
 Here are the environment variables that can be used to configure the slurm job.
 

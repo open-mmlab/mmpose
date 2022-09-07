@@ -222,6 +222,6 @@ Make sure you have provided all the paths correctly.
 
 ## Dataset Wrappers
 
-The following dataset wrappers are supported in [MMEngine](TODO:), you can refer to [MMEngine tutorial](TODO:) to learn how to use it.
+The following dataset wrappers are supported in [MMEngine](https://github.com/open-mmlab/mmengine), you can refer to [MMEngine tutorial](https://mmengine.readthedocs.io/en/latest) to learn how to use it.
 
-- [RepeatDataset](https://github.com/open-mmlab/mmengine/blob/main/docs/en/tutorials/basedataset.md#repeatdataset)
+- [RepeatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#repeatdataset)
