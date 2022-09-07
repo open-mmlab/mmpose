@@ -6,7 +6,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 ))
 
 # learning policy
@@ -24,14 +24,17 @@ param_scheduler = [
 ]
 
 # automatically scaling LR based on the actual training batch size
-auto_scale_lr = dict(base_batch_size=128)
+auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 codec = dict(
-    type='SimCCLabel', input_size=(192, 256), sigma=4.0, simcc_split_ratio=2.0)
+    type='IntegralRegressionLabel',
+    input_size=(256, 256),
+    heatmap_size=(64, 64),
+    sigma=2)
 
 # model settings
 model = dict(
@@ -42,49 +45,28 @@ model = dict(
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True),
     backbone=dict(
-        type='HRNet',
-        in_channels=3,
-        extra=dict(
-            stage1=dict(
-                num_modules=1,
-                num_branches=1,
-                block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
-            stage2=dict(
-                num_modules=1,
-                num_branches=2,
-                block='BASIC',
-                num_blocks=(4, 4),
-                num_channels=(48, 96)),
-            stage3=dict(
-                num_modules=4,
-                num_branches=3,
-                block='BASIC',
-                num_blocks=(4, 4, 4),
-                num_channels=(48, 96, 192)),
-            stage4=dict(
-                num_modules=3,
-                num_branches=4,
-                block='BASIC',
-                num_blocks=(4, 4, 4, 4),
-                num_channels=(48, 96, 192, 384))),
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose/'
-            'pretrain_models/hrnet_w48-8ef0771d.pth'),
+        type='ResNet',
+        depth=50,
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
     ),
     head=dict(
-        type='SimCCHead',
-        in_channels=48,
-        out_channels=17,
-        input_size=codec['input_size'],
-        in_featuremap_size=(48, 64),
-        simcc_split_ratio=codec['simcc_split_ratio'],
-        deconv_out_channels=None,
-        loss=dict(type='KLDiscretLoss', use_target_weight=True),
+        type='DSNTHead',
+        in_channels=2048,
+        in_featuremap_size=(8, 8),
+        num_joints=17,
+        loss=dict(
+            type='MultiTaskLoss',
+            loss_cfg_list=[
+                dict(type='SmoothL1Loss', use_target_weight=True),
+                dict(type='JSDiscretLoss', use_target_weight=True)
+            ],
+            factors=[1.0, 1.0]),
         decoder=codec),
-    test_cfg=dict(flip_test=True))
+    test_cfg=dict(
+        flip_test=True,
+        shift_coords=True,
+        shift_heatmap=True,
+    ))
 
 # base dataset settings
 dataset_type = 'CocoDataset'
@@ -99,15 +81,13 @@ train_pipeline = [
     dict(type='GetBBoxCenterScale'),
     dict(type='RandomFlip', direction='horizontal'),
     dict(type='RandomHalfBody'),
-    dict(
-        type='RandomBBoxTransform',
-        scale_factor=(0.65, 1.35),
-        rotate_factor=90),
+    dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(
-        type='GenerateTarget', target_type='keypoint_xy_label', encoder=codec),
-    # simcc needs transformed keypoints to calculate the training accuracy
-    dict(type='PackPoseInputs', pack_transformed=True)
+        type='GenerateTarget',
+        target_type='heatmap+keypoint_label',
+        encoder=codec),
+    dict(type='PackPoseInputs')
 ]
 test_pipeline = [
     dict(type='LoadImage', file_client_args=file_client_args),
@@ -152,5 +132,5 @@ test_dataloader = val_dataloader
 # evaluators
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
+    ann_file=f'{data_root}annotations/person_keypoints_val2017.json')
 test_evaluator = val_evaluator
