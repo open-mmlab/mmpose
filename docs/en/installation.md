@@ -1,5 +1,4 @@
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
+- [MMPose Installation](#mmpose-installation)
   - [Best Practices](#best-practices)
   - [Verify the installation](#verify-the-installation)
   - [Customize Installation](#customize-installation)
@@ -54,7 +53,7 @@ We recommend that users follow our best practices to install MMPose. However, th
 
 ### Best Practices
 
-**Step 0.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
+**Step 0.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv/tree/2.x) using [MIM](https://github.com/open-mmlab/mim).
 
 ```shell
 pip install -U openmim
@@ -116,7 +115,7 @@ MMCV contains C++ and CUDA extensions, thus depending on PyTorch in a complex wa
 
 To install MMCV with pip instead of MIM, please follow [MMCV installation guides](https://mmcv.readthedocs.io/en/2.x/get_started/installation.html). This requires manually specifying a find-url based on PyTorch version and its CUDA version.
 
-For example, the following command install mmcv-full built for PyTorch 1.10.x and CUDA 11.3.
+For example, the following command install mmcv built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
 pip install 'mmcv>=2.0.0rc1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
@@ -133,7 +132,7 @@ However, some functionalities are missing in this mode, usually GPU-compiled ops
 [Google Colab](https://colab.research.google.com/) usually has PyTorch installed,
 thus we only need to install MMEngine, MMCV and MMPose with the following commands.
 
-**Step 1.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv) using [MIM](https://github.com/open-mmlab/mim).
+**Step 1.** Install [MMEngine](https://github.com/open-mmlab/mmengine) and [MMCV](https://github.com/open-mmlab/mmcv/tree/2.x) using [MIM](https://github.com/open-mmlab/mim).
 
 ```shell
 !pip3 install openmim
