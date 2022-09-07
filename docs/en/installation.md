@@ -1,5 +1,3 @@
-# Installation
-
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
   - [Best Practices](#best-practices)
@@ -21,7 +19,7 @@ In this section we demonstrate how to prepare an environment with PyTorch.
 
 MMPose works on Linux, Windows and macOS. It requires Python 3.6+, CUDA 9.2+ and PyTorch 1.6+.
 
-If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose installation](#installation). Otherwise, you can follow these steps for the preparation.
+If you are experienced with PyTorch and have already installed it, you can skip this part and jump to the [MMPose Installation](#installation). Otherwise, you can follow these steps for the preparation.
 
 **Step 0.** Download and install Miniconda from the [official website](https://docs.conda.io/en/latest/miniconda.html).
 
@@ -50,7 +48,7 @@ On CPU platforms:
 conda install pytorch torchvision cpuonly -c pytorch
 ```
 
-## Install MMPose
+# MMPose Installation
 
 We recommend that users follow our best practices to install MMPose. However, the whole process is highly customizable. See [Customize Installation](#customize-installation) section for more information.
 
@@ -69,8 +67,8 @@ mim install "mmcv>=2.0.0rc1"
 Case A: To develop and run mmpose directly, install it from source:
 
 ```shell
-git clone https://github.com/open-mmlab/mmpose.git -b dev-1.x
-# "-b dev-1.x" means checkout to the `dev-1.x` branch.
+git clone https://github.com/open-mmlab/mmpose.git -b 1.x
+# "-b 1.x" means checkout to the `1.x` branch.
 cd mmpose
 pip install -r requirements.txt
 pip install -v -e .
@@ -116,12 +114,12 @@ pip install mmengine
 
 MMCV contains C++ and CUDA extensions, thus depending on PyTorch in a complex way. MIM solves such dependencies automatically and makes the installation easier. However, it is not a must.
 
-To install MMCV with pip instead of MIM, please follow [MMCV installation guides](https://mmcv.readthedocs.io/en/latest/get_started/installation.html). This requires manually specifying a find-url based on PyTorch version and its CUDA version.
+To install MMCV with pip instead of MIM, please follow [MMCV installation guides](https://mmcv.readthedocs.io/en/2.x/get_started/installation.html). This requires manually specifying a find-url based on PyTorch version and its CUDA version.
 
 For example, the following command install mmcv-full built for PyTorch 1.10.x and CUDA 11.3.
 
 ```shell
-pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
+pip install 'mmcv>=2.0.0rc1' -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.10/index.html
 ```
 
 #### Install on CPU-only platforms
@@ -146,7 +144,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 **Step 2.** Install MMPose from the source.
 
 ```shell
-!git clone https://github.com/open-mmlab/mmpose.git -b dev-1.x
+!git clone https://github.com/open-mmlab/mmpose.git -b 1.x
 %cd mmpose
 !pip install -e .
 ```
@@ -156,7 +154,7 @@ thus we only need to install MMEngine, MMCV and MMPose with the following comman
 ```python
 import mmpose
 print(mmpose.__version__)
-# Example output: 1.0.0
+# Example output: 1.0.0b0
 ```
 
 ```{note}
