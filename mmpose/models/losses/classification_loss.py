@@ -66,7 +66,7 @@ class JSDiscretLoss(nn.Module):
 
     def kl(self, p, q):
         eps = 1e-24
-        kl_values = self.kl_loss((q + eps).log, p)
+        kl_values = self.kl_loss((q + eps).log(), p)
         return kl_values
 
     def js(self, pred_hm, gt_hm):
