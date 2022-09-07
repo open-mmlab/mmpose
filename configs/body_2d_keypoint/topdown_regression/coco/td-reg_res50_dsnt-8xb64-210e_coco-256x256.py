@@ -30,7 +30,11 @@ auto_scale_lr = dict(base_batch_size=512)
 default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
-codec = dict(type='RegressionLabel', input_size=(256, 256))
+codec = dict(
+    type='IntegralRegressionLabel',
+    input_size=(256, 256),
+    heatmap_size=(64, 64),
+    sigma=2)
 
 # model settings
 model = dict(
@@ -51,8 +55,12 @@ model = dict(
         in_featuremap_size=(8, 8),
         num_joints=17,
         loss=dict(
-            type='DSNTLoss', use_target_weight=True, dist_loss='l1',
-            sigma=2.0),
+            type='MultiTaskLoss',
+            loss_cfg_list=[
+                dict(type='SmoothL1Loss', use_target_weight=True),
+                dict(type='JSDiscretLoss', use_target_weight=True)
+            ],
+            factors=[1.0, 1.0]),
         decoder=codec),
     test_cfg=dict(
         flip_test=True,
@@ -75,7 +83,10 @@ train_pipeline = [
     dict(type='RandomHalfBody'),
     dict(type='RandomBBoxTransform'),
     dict(type='TopdownAffine', input_size=codec['input_size']),
-    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),
+    dict(
+        type='GenerateTarget',
+        target_type='heatmap+keypoint_label',
+        encoder=codec),
     dict(type='PackPoseInputs')
 ]
 test_pipeline = [
