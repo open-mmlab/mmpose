@@ -44,29 +44,17 @@ Note that all new modules need to be registered using `Registry` and imported in
 
 The organization of data in MMPose contains:
 
-- Dataset Information
+- Dataset Meta Information
 
 - Dataset
 
 - Pipeline
 
-### Dataset Information
+### Dataset Meta Information
 
-In MMPose, **data is organized in COCO style**, and we define a base class `BaseCocoStyleDataset` under `$MMPOSE/mmpose/datasets/base`.
+The meta information of a pose dataset usually includes the definition of keypoints and skeleton, symmetrical characteristic, and keypoint properties (e.g. belonging to upper or lower body, weights and sigmas). These information is important in data preprocessing, model training and evaluation. In MMpose, the dataset meta information is stored in configs files under `$MMPOSE/configs/_base_/datasets/`.
 
-The data format of bbox is in `xyxy` instead of `xywh`, which is consistent with the format used in MMDetection.
-
-If your data is originally organized in COCO format, you can use our implementation directly.
-
-If not, you need to define the keypoint information of the data (keypoint order, skeleton information, weights, sigmas of annotation) in `$MMPOSE/configs/_base_/datasets`.
-
-For the conversion between different bbox formats, we also provide many useful utils, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`, which can help you to convert your own data format.
-
-```{note}
-Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
-```
-
-Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
+To use a custom dataset in MMPose, you need to add a new config file of the dataset meta information. Take the MPII dataset (`$MMPOSE/configs/_base_/datasets/mpii.py`) as an example. Here is its dataset information:
 
 ```Python
 dataset_info = dict(
@@ -108,7 +96,17 @@ dataset_info = dict(
 
 ### Dataset
 
-If your data is not organized in a supported format in MMPose (e.g. COCO and MPII), you need to implement a new `Dataset` class in `$MMPOSE/mmpose/datasets/datasets`. We recommend subclassing [BaseCocoStyleDataset](mmpose/datasets/datasets/base/base_coco_style_dataset.py) and converting the data into COCO format.
+To use costom dataset in MMPose, we recommend converting the annotations into a supported format (e.g. COCO or MPII) and directly using our implementation of the corresponding dataset. If this is not applicable, you may need to implement your own dataset class.
+
+Most 2D keypoint datasets in MMPose **organize the annotations in a COCO-like style**. Thus we provide a base class [BaseCocoStyleDataset](mmpose/datasets/datasets/base/base_coco_style_dataset.py) for these datasets. We recommend that users subclass `BaseCocoStyleDataset` and override the methods as needed (usually `__init__()` and `_load_annotations()`) to extend to a new costom 2D keypoint dataset.
+
+```{note}
+Please refer to [COCO](./dataset_zoo/2d_body_keypoint.md) for more details about the COCO data format.
+```
+
+```{note}
+The bbox format in MMPose is in `xyxy` instead of `xywh`, which is consistent with the format used in other OpenMMLab projects like [MMDetection](https://github.com/open-mmlab/mmdetection).  We provide useful utils for bbox format conversion, such as `bbox_xyxy2xywh`, `bbox_xywh2xyxy`, `bbox_xyxy2cs`, etc., which are defined in `$MMPOSE/mmpose/structures/bbox/transforms.py`.
+```
 
 Let's take the implementation of the MPII dataset (`$MMPOSE/mmpose/datasets/datasets/body/mpii_dataset.py`) as an example.
 
@@ -216,6 +214,8 @@ class MpiiDataset(BaseCocoStyleDataset):
 
 When supporting MPII dataset, since we need to use `head_size` to calculate `PCKh`, we add `headbox_file` to `__init__()` and override`_load_annotations()`.
 
+To support a dataset that is beyond the scope of `BaseCocoStyleDataset`, you may need to subclass from the `BaseDataset` provided by [MMEngine](https://github.com/open-mmlab/mmengine). Please refer to the [documents](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) for details.
+
 ### Pipeline
 
 Data augmentations and transformations during pre-processing are organized as a pipeline. Here is an example of typical pipelines：
@@ -246,7 +246,7 @@ In a keypoint detection task, data will be transformed among three scale spaces:
 
 - **Input Image Space**: the image space used for model input. All **images** and **annotations** will be transformed into this space, such as `256x256`, `256x192`, etc.
 
-- **Output Space**: the space used for model training, and also the scale space where model outputs are located, such as `64x64(Heatmap)`，`1x1(Regression)`, etc.
+- **Output Space**: the scale space where model outputs are located, such as `64x64(Heatmap)`，`1x1(Regression)`, etc. The supervision signal is also in this space during training
 
 Here is a diagram to show the workflow of data transformation among the three scale spaces:
 
@@ -304,13 +304,13 @@ If you wish to customize a new codec, you can refer to [Codec](./user_guides/cod
 
 After the data is transformed, you need to pack it using `PackPoseInputs`.
 
-This method converts the data stored in the dictionary `results` into standard data structures required for MMEngine training, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
+This method converts the data stored in the dictionary `results` into standard data structures required for MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
 
 Specifically, we divide the data into `gt` (ground-truth) and `pred` (prediction), each of which has the following types:
 
 - **instances**(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
 - **instance_labels**(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
-- **fields**(torch.tensor): instance-level training labels with spatial information(e.g. Gaussian Heatmaps), used for model training in the output scale space
+- **fields**(torch.tensor): image-level training labels with spatial information (e.g. Gaussian Heatmaps), used for model training in the output scale space
 
 The following is an example of the implementation of `PoseDataSample` under the hood:
 
