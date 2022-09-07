@@ -38,12 +38,6 @@ resume = False
 
 # file I/O backend
 file_client_args = dict(backend='disk')
-# file_client_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         './data/': 's3://openmmlab/datasets/pose/',
-#         'data/': 's3://openmmlab/datasets/pose/'
-#     }))
 
 # training/validatin/testing progress
 train_cfg = dict(by_epoch=True)

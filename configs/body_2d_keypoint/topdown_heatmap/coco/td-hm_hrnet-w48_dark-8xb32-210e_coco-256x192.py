@@ -75,7 +75,7 @@ model = dict(
                 num_channels=(48, 96, 192, 384))),
         init_cfg=dict(
             type='Pretrained',
-            checkpoint='https://download.openmmlab.com/mmpose'
+            checkpoint='https://download.openmmlab.com/mmpose/'
             'pretrain_models/hrnet_w48-8ef0771d.pth'),
     ),
     head=dict(

@@ -72,7 +72,7 @@ train_pipeline = [
     dict(
         type='RandomBBoxTransform',
         shift_factor=0.25,
-        rot_factor=180,
+        rotate_factor=180,
         scale_factor=(0.7, 1.3)),
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='GenerateTarget', target_type='heatmap', encoder=codec),
