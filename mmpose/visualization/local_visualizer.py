@@ -181,6 +181,12 @@ class PoseLocalVisualizer(Visualizer):
                     label] if classes is not None else f'class {label}'
                 pos -= self.line_width
 
+                if isinstance(self.bbox_color,
+                              tuple) and max(self.bbox_color) > 1:
+                    facecolor = [c / 255.0 for c in self.bbox_color]
+                else:
+                    facecolor = self.bbox_color
+
                 self.draw_texts(
                     label_text,
                     pos,
@@ -188,7 +194,7 @@ class PoseLocalVisualizer(Visualizer):
                     font_sizes=int(13 * scales[i]),
                     vertical_alignments='bottom',
                     bboxes=[{
-                        'facecolor': [c / 255.0 for c in self.bbox_color],
+                        'facecolor': facecolor,
                         'alpha': 0.8,
                         'pad': 0.7,
                         'edgecolor': 'none'

@@ -63,9 +63,10 @@ class BigeyeEffectNode(BaseVisualizerNode):
         objects = input_msg.get_objects(lambda x:
                                         ('keypoints' in x and 'bbox' in x))
 
-        for model_cfg, group in groupby(objects,
-                                        lambda x: x['pose_model_cfg']):
-            left_eye_index, right_eye_index = get_eye_keypoint_ids(model_cfg)
+        for dataset_meta, group in groupby(objects,
+                                           lambda x: x['dataset_meta']):
+            left_eye_index, right_eye_index = get_eye_keypoint_ids(
+                dataset_meta)
             canvas = self.apply_bigeye_effect(canvas, group, left_eye_index,
                                               right_eye_index)
         return canvas
@@ -95,10 +96,10 @@ class BigeyeEffectNode(BaseVisualizerNode):
         for obj in objects:
             bbox = obj['bbox']
             kpts = obj['keypoints']
+            kpt_scores = obj['keypoint_scores']
 
-            if kpts[left_eye_index,
-                    2] < self.kpt_thr or kpts[right_eye_index,
-                                              2] < self.kpt_thr:
+            if kpt_scores[left_eye_index] < self.kpt_thr or kpt_scores[
+                    right_eye_index] < self.kpt_thr:
                 continue
 
             kpt_leye = kpts[left_eye_index, :2]

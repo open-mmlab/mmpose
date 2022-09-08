@@ -123,11 +123,18 @@ class ObjectVisualizerNode(BaseVisualizerNode):
             instances.labels = np.array(
                 [object['class_id'] for object in objects])
             if self.show_keypoint:
-                instances.keypoints = np.stack(
-                    [object['keypoints'] for object in objects])
-                instances.keypoint_scores = np.stack(
-                    [object['keypoint_scores'] for object in objects])
-
+                keypoints = [
+                    object['keypoints'] for object in objects
+                    if 'keypoints' in object
+                ]
+                if len(keypoints):
+                    instances.keypoints = np.stack(keypoints)
+                keypoint_scores = [
+                    object['keypoint_scores'] for object in objects
+                    if 'keypoint_scores' in object
+                ]
+                if len(keypoint_scores):
+                    instances.keypoint_scores = np.stack(keypoint_scores)
             data_sample = PoseDataSample()
             data_sample.pred_instances = instances
 
