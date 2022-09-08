@@ -12,9 +12,9 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
 ### MMPose 1.x
 
-| MMPose version |           MMCV version            |
-| :------------: | :-------------------------------: |
-|    dev-1.x     | mmcv-full>=2.0.0, mmengine>=0.0.1 |
+| MMPose version |          MMCV version           |
+| :------------: | :-----------------------------: |
+|    1.0.0b0     | mmcv>=2.0.0rc1, mmengine>=0.0.1 |
 
 ### MMPose 0.x
 
@@ -69,7 +69,7 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 - **"No module named 'mmcv.ops'"; "No module named 'mmcv.\_ext'"**
 
   1. Uninstall existing mmcv in the environment using `pip uninstall mmcv`.
-  2. Install mmcv-full following the [installation instruction](https://mmcv.readthedocs.io/en/latest/#installation).
+  2. Install mmcv following [mmcv installation instruction](https://mmcv.readthedocs.io/en/2.x/get_started/installation.html).
 
 ## Data
 
@@ -87,8 +87,11 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
 - **RuntimeError: Address already in use**
 
-  Set the environment variables `MASTER_PORT=XXX`. For example,
-  `MASTER_PORT=29517 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh Test res50 configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192.py work_dirs/res50_coco_256x192`
+  Set the environment variables `MASTER_PORT=XXX`. For example:
+
+  ```shell
+  MASTER_PORT=29517 GPUS=16 GPUS_PER_NODE=8 CPUS_PER_TASK=2 ./tools/slurm_train.sh train res50 configs/body_2d_keypoint/topdown_regression/coco/td-reg_res50_8xb64-210e_coco-256x192.py work_dirs/res50_coco_256x192
+  ```
 
 - **"Unexpected keys in source state dict" when loading pre-trained weights**
 
@@ -102,17 +105,23 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
 - **How to visualize the training accuracy/loss curves in real-time ?**
 
-  Use `TensorboardLoggerHook` in `log_config` like
+  Modify `vis_backends` in config file like:
 
   ```python
-  log_config=dict(interval=20, hooks=[dict(type='TensorboardLoggerHook')])
+  vis_backends = [
+    dict(type='LocalVisBackend'),
+    dict(type='TensorboardVisBackend')
+  ]
   ```
-
-  You can refer to [user_guides/visualization.md](../user_guides/visualization.md).
 
 - **Log info is NOT printed**
 
-  Use smaller log interval. For example, change `interval=50` to `interval=1` in the config.
+  Use smaller log interval. For example, change `interval=50` to `interval=1` in the config:
+
+  ```python
+  # hooks
+  default_hooks = dict(logger=dict(interval=1))
+  ```
 
 ## Evaluation
 
@@ -133,5 +142,5 @@ Compatible MMPose and MMCV versions are shown as below. Please choose the correc
 
   For top-down models, try to edit the config file. For example,
 
-  1. set `flip_test=False` in `init_cfg` in the config file.
-  2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/latest/model_zoo.html).
+  1. set `flip_test=False` in `test_cfg` in the config file.
+  2. use faster human bounding box detector, see [MMDetection](https://mmdetection.readthedocs.io/en/3.x/model_zoo.html).
