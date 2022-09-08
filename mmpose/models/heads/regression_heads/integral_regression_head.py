@@ -167,6 +167,8 @@ class IntegralRegressionHead(BaseHead):
         self.linspace_x = nn.Parameter(self.linspace_x, requires_grad=False)
         self.linspace_y = nn.Parameter(self.linspace_y, requires_grad=False)
 
+        self._register_load_state_dict_pre_hook(self._load_state_dict_pre_hook)
+
     def _linear_expectation(self, heatmaps: Tensor,
                             linspace: Tensor) -> Tensor:
         """Calculate linear expectation."""
@@ -330,3 +332,29 @@ class IntegralRegressionHead(BaseHead):
     def default_init_cfg(self):
         init_cfg = [dict(type='Normal', layer=['Linear'], std=0.01, bias=0)]
         return init_cfg
+
+    def _load_state_dict_pre_hook(self, state_dict, prefix, local_meta, *args,
+                                  **kwargs):
+        """A hook function to load weights of deconv layers from
+        :class:`HeatmapHead` into `simplebaseline_head`.
+
+        The hook will be automatically registered during initialization.
+        """
+
+        # convert old-version state dict
+        keys = list(state_dict.keys())
+        for _k in keys:
+            if not _k.startswith(prefix):
+                continue
+            v = state_dict.pop(_k)
+            k = _k.lstrip(prefix)
+
+            k_parts = k.split('.')
+            if k_parts[0] == 'conv_layers':
+                k_new = (
+                    prefix + 'simplebaseline_head.deconv_layers.' +
+                    '.'.join(k_parts[1:]))
+            else:
+                k_new = _k
+
+            state_dict[k_new] = v
