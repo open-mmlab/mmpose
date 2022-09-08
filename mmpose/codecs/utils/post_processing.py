@@ -3,6 +3,9 @@ from typing import Tuple
 
 import cv2
 import numpy as np
+import torch
+import torch.nn.functional as F
+from torch import Tensor
 
 
 def get_simcc_maximum(simcc_x: np.ndarray,
@@ -136,3 +139,28 @@ def gaussian_blur(heatmaps: np.ndarray, kernel: int = 11) -> np.ndarray:
         heatmaps[k] = dr[border:-border, border:-border].copy()
         heatmaps[k] *= origin_max / np.max(heatmaps[k])
     return heatmaps
+
+
+def batch_heatmap_nms(batch_heatmaps: Tensor, kernel_size: int = 5):
+    """Apply NMS on a batch of heatmaps.
+
+    Args:
+        batch_heatmaps (Tensor): batch heatmaps in shape (B, K, H, W)
+        kernel_size (int): The kernel size of the NMS which should be
+            a odd integer. Defaults to 5
+
+    Returns:
+        Tensor: The batch heatmaps after NMS.
+    """
+
+    assert isinstance(kernel_size, int) and kernel_size % 2 == 1, \
+        f'The kernel_size should be an odd integer, got {kernel_size}'
+
+    padding = (kernel_size - 1) // 2
+
+    maximum = F.max_pool2d(
+        batch_heatmaps, kernel_size, stride=1, padding=padding)
+    maximum_indicator = torch.eq(batch_heatmaps, maximum)
+    batch_heatmaps = batch_heatmaps * maximum_indicator.float()
+
+    return batch_heatmaps
