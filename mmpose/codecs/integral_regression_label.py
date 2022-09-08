@@ -12,8 +12,8 @@ from .regression_label import RegressionLabel
 
 @KEYPOINT_CODECS.register_module()
 class IntegralRegressionLabel(BaseKeypointCodec):
-    """Generate keypoint coordinates and heatmaps. See the paper: `IPR`_ by
-    Xiao et al(2018).
+    """Generate keypoint coordinates and normalized heatmaps. See the paper:
+    `DSNT`_ by Nibali et al(2018).
 
     Note:
 
@@ -21,9 +21,17 @@ class IntegralRegressionLabel(BaseKeypointCodec):
 
     Args:
         input_size (tuple): Input image size in [w, h]
+        heatmap_size (tuple): Heatmap size in [W, H]
+        sigma (float): The sigma value of the Gaussian heatmap
+        unbiased (bool): Whether use unbiased method (DarkPose) in ``'msra'``
+            encoding. See `Dark Pose`_ for details. Defaults to ``False``
+        blur_kernel_size (int): The Gaussian blur kernel size of the heatmap
+            modulation in DarkPose. The kernel size and sigma should follow
+            the expirical formula :math:`sigma = 0.3*((ks-1)*0.5-1)+0.8`.
+            Defaults to 11
+        normalize (bool): Whether to normalize the heatmaps. Defaults to True.
 
-
-    .. _`IPR`: https://arxiv.org/abs/1711.08229
+    .. _`DSNT`: https://arxiv.org/abs/1801.07372
     """
 
     def __init__(self,
