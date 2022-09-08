@@ -299,16 +299,16 @@ Affine transformation is used to convert images and annotations from the origina
 
 #### iii. Encoding
 
-After the data is transformed from the original image space into the input space, it is necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
+In training phase, after the data is transformed from the original image space into the input space, it is necessary to use `GenerateTarget` to obtain the training target(e.g. Gaussian Heatmaps). We name this process **Encoding**. Conversely, the process of getting the corresponding coordinates from Gaussian Heatmaps is called **Decoding**.
 
 In MMPose, we collect Encoding and Decoding processes into a **Codec**, in which `encode()` and `decode()` are implemented.
 
 Currently we support the following types of Targets.
 
 - `heatmaps`: Gaussian heatmaps
-- `keypoint_labels`: normalized coordinates
-- `keypoint_x_labels`: x-axis representation
-- `keypoint_y_labels`: y-axis representation
+- `keypoint_labels`: keypoint representation (e.g. normalized coordinates)
+- `keypoint_x_labels`: keypoint x-axis representation
+- `keypoint_y_labels`: keypoint y-axis representation
 - `keypoint_weights`: keypoint visibility and weights
 
 Note that we unify the data format of top-down and bottom-up methods, which means that a new dimension is added to represent different instances from the same image, in shape:

@@ -125,7 +125,7 @@ dataset_info = dict(
 
 在 MMPose 中使用自定义数据集时，我们推荐将数据转化为已支持的格式（如 COCO 或 MPII），并直接使用我们提供的对应数据集实现。如果这种方式不可行，则用户需要实现自己的数据集类。
 
-MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了接口类 [BaseCocoStyleDataset](/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该接口类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
+MMPose 中的大部分 2D 关键点数据集**以 COCO 形式组织**，为此我们提供了基类 [BaseCocoStyleDataset](/mmpose/datasets/datasets/base/base_coco_style_dataset.py)。我们推荐用户继承该基类，并按需重写它的方法（通常是 `__init__()` 和 `_load_annotations()` 方法），以扩展到新的 2D 关键点数据集。
 
 ```{note}
 关于COCO数据格式的详细说明请参考 [COCO](./dataset_zoo/2d_body_keypoint.md) 。
@@ -289,7 +289,7 @@ test_pipeline = [
 对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于bottom-up方法，这些则是由 `BottomupRandomAffine` 实现。
 
 ```{note}
-值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，可以通过 `GetBBoxCenterScale` 来得到。
+值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 `GetBBoxCenterScale` 来得到。
 ```
 
 #### ii. 数据变换
@@ -298,7 +298,7 @@ test_pipeline = [
 
 #### iii. 数据编码
 
-数据从原始空间变换到输入图片空间后，需要使用 `GenerateTarget` 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
+在模型训练时，数据从原始空间变换到输入图片空间后，需要使用 `GenerateTarget` 来生成训练所需的监督目标（比如用坐标值生成高斯热图），我们将这一过程称为编码（Encode），反之，通过高斯热图得到对应坐标值的过程称为解码（Decode）。
 
 在 MMPose 中，我们将编码和解码过程集合成一个编解码器（Codec），在其中实现 `encode()` 和 `decode()`。
 
@@ -306,11 +306,11 @@ test_pipeline = [
 
 - `heatmaps`：高斯热图
 
-- `keypoint_labels`：归一化的坐标值
+- `keypoint_labels`：关键点标签（如归一化的坐标值）
 
-- `keypoint_x_labels`：x 轴坐标表征
+- `keypoint_x_labels`：x 轴关键点标签
 
-- `keypoint_y_labels`：y 轴坐标表征
+- `keypoint_y_labels`：y 轴关键点标签
 
 - `keypoint_weights`：关键点权重
 
@@ -399,7 +399,7 @@ def get_pose_data_sample(self):
 
 ## Step3: 模型
 
-在 MMPose 1.0中，我们的模型由以下几部分构成：
+在 MMPose 1.0中，模型由以下几部分构成：
 
 - **预处理器（DataPreprocessor）**：完成图像归一化和通道转换等前处理
 
@@ -419,7 +419,7 @@ def get_pose_data_sample(self):
 
 - `mode == 'tensor'`：返回输出尺度下的模型输出，即只进行模型前向传播，用于模型导出
 
-开发者需要在 `PoseEstimator` 中按照模型结构调用对应的 `Registry` ，对模块进行实例化。以top-down模型为例：
+开发者需要在 `PoseEstimator` 中按照模型结构调用对应的 `Registry` ，对模块进行实例化。以 top-down 模型为例：
 
 ```Python
 @MODELS.register_module()
@@ -721,7 +721,7 @@ class GenerateTarget(BaseTransform):
 
 ### 模型兼容
 
-我们对 model zoo 提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与 0.x 版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理结果可能会产生轻微的不同（精度误差小于0.05%）。
+我们对 model zoo 提供的模型权重进行了兼容性处理，确保相同的模型权重测试精度能够与 0.x 版本保持同等水平，但由于在这两个版本中存在大量处理细节的差异，推理结果可能会产生轻微的不同（精度误差小于 0.05%）。
 
 对于使用 0.x 版本训练保存的模型权重，我们在预测头中提供了 `_load_state_dict_pre_hook()` 方法来将旧版的权重字典替换为新版，如果你希望将在旧版上开发的模型兼容到新版，可以参考我们的实现。
 
