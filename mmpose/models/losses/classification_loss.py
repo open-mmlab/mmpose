@@ -104,12 +104,12 @@ class KLDiscretLoss(nn.Module):
         super(KLDiscretLoss, self).__init__()
 
         self.use_target_weight = use_target_weight
-        self.LogSoftmax = nn.LogSoftmax(dim=1)  # [B,LOGITS]
-        self.criterion_ = nn.KLDivLoss(reduction='none')
+        self.log_softmax = nn.LogSoftmax(dim=1)  # [B,LOGITS]
+        self.kl_loss = nn.KLDivLoss(reduction='none')
 
     def criterion(self, dec_outs, labels):
-        scores = self.LogSoftmax(dec_outs)
-        loss = torch.mean(self.criterion_(scores, labels), dim=1)
+        scores = self.log_softmax(dec_outs)
+        loss = torch.mean(self.kl_loss(scores, labels), dim=1)
         return loss
 
     def forward(self, pred_simcc, gt_simcc, target_weight):
