@@ -146,3 +146,61 @@ head=dict(
     decoder=codec
 )
 ```
+
+Here is the phase of a config file:
+
+```Python
+
+# codec settings
+codec = dict(type='RegressionLabel', input_size=(192, 256))                     ## definition ##
+
+# model settings
+model = dict(
+    type='TopdownPoseEstimator',
+    data_preprocessor=dict(
+        type='PoseDataPreprocessor',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        bgr_to_rgb=True),
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50'),
+    ),
+    neck=dict(type='GlobalAveragePooling'),
+    head=dict(
+        type='RLEHead',
+        in_channels=2048,
+        num_joints=17,
+        loss=dict(type='RLELoss', use_target_weight=True),
+        decoder=codec),                                                         ## Head ##
+    test_cfg=dict(
+        flip_test=True,
+        shift_coords=True,
+    ))
+
+# base dataset settings
+dataset_type = 'CocoDataset'
+data_mode = 'topdown'
+data_root = 'data/coco/'
+
+file_client_args = dict(backend='disk')
+
+# pipelines
+train_pipeline = [
+    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='RandomFlip', direction='horizontal'),
+    dict(type='RandomHalfBody'),
+    dict(type='RandomBBoxTransform'),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='GenerateTarget', target_type='keypoint_label', encoder=codec),   ## Generate Target ##
+    dict(type='PackPoseInputs')
+]
+test_pipeline = [
+    dict(type='LoadImage', file_client_args=file_client_args),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='PackPoseInputs')
+]
+```

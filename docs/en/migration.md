@@ -434,6 +434,15 @@ init_cfg=dict(
     checkpoint='PATH/TO/YOUR_MODEL_WEIGHTS.pth'),
 ```
 
+If you want to load a checkopoint to your backbone, you should specify the `prefix`:
+
+```Python
+init_cfg=dict(
+    type='Pretrained',
+    prefix='backbone.',
+    checkpoint='PATH/TO/YOUR_CHECKPOINT.pth'),
+```
+
 `checkpoint` can be either a local path or a download link. Thus, if you wish to use a pre-trained model provided by Torchvision(e.g. ResNet50), you can simply use:
 
 ```Python
