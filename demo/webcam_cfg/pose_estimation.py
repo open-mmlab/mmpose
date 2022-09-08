@@ -60,7 +60,7 @@ executor_cfg = dict(
             type='ObjectAssignerNode',
             name='object assigner',
             frame_buffer='_frame_',  # `_frame_` is an executor-reserved buffer
-            object_buffer='human_pose',
+            object_buffer='animal_pose',
             output_buffer='frame'),
         # 'ObjectVisualizerNode':
         # This node draw the pose visualization result in the frame image.
