@@ -65,7 +65,11 @@ model = dict(
         unit_channels=256,
         out_channels=17,
         num_stages=1,
+        num_units=4,
         norm_cfg=dict(type='BN'),
+        # each sub list is for a stage
+        # and each element in each list if for a unit
+        level_indices=[0, 1, 2, 3],
         loss=[
             dict(
                 type='KeypointMSELoss',

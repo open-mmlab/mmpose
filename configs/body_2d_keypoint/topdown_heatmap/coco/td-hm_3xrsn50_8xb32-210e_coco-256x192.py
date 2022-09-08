@@ -31,7 +31,7 @@ default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
 
 # codec settings
 # multiple kernel_sizes of heatmap gaussian for 'Megvii' approach.
-kernel_sizes = [15, 11, 9, 7] * 2 + [11, 9, 7, 5]
+kernel_sizes = [15, 11, 9, 7, 5]
 codec = [
     dict(
         type='MegviiHeatmap',
@@ -63,7 +63,11 @@ model = dict(
         unit_channels=256,
         out_channels=17,
         num_stages=3,
+        num_units=4,
         norm_cfg=dict(type='BN'),
+        # each sub list is for a stage
+        # and each element in each list if for a unit
+        level_indices=[0, 1, 2, 3] * 2 + [1, 2, 3, 4],
         loss=([
             dict(
                 type='KeypointMSELoss',

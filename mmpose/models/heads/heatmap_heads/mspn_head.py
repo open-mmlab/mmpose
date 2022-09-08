@@ -188,6 +188,8 @@ class MSPNHead(BaseHead):
         loss (Config | List[Config]): Config of the keypoint loss for
             different stages and different units.
             Defaults to use :class:`KeypointMSELoss`.
+        level_indices (Sequence[int]): The indices that specified the level
+            of target heatmaps.
         decoder (Config, optional): The decoder config that controls decoding
             keypoint coordinates from the network output. Defaults to ``None``
         init_cfg (Config, optional): Config to control the initialization. See
@@ -206,6 +208,7 @@ class MSPNHead(BaseHead):
                  out_channels: int = 17,
                  use_prm: bool = False,
                  norm_cfg: ConfigType = dict(type='BN'),
+                 level_indices: Sequence[int] = [],
                  loss: MultiConfig = dict(
                      type='KeypointMSELoss', use_target_weight=True),
                  decoder: OptConfigType = None,
@@ -219,17 +222,23 @@ class MSPNHead(BaseHead):
         self.out_shape = out_shape
         self.unit_channels = unit_channels
         self.out_channels = out_channels
+        if len(level_indices) != num_stages * num_units:
+            raise ValueError(
+                f'The length of level_indices({len(level_indices)}) did not '
+                f'match `num_stages`({num_stages}) * `num_units`({num_units})')
+
+        self.level_indices = level_indices
 
         if isinstance(loss, list) and len(loss) != num_stages * num_units:
             raise ValueError(
                 f'The length of loss_module({len(loss)}) did not match '
-                f'`num_stages`({num_stages}) * `num_units` ({num_units})')
+                f'`num_stages`({num_stages}) * `num_units`({num_units})')
 
         if isinstance(loss, list):
             if len(loss) != num_stages * num_units:
                 raise ValueError(
                     f'The length of loss_module({len(loss)}) did not match '
-                    f'`num_stages`({num_stages}) * `num_units` ({num_units})')
+                    f'`num_stages`({num_stages}) * `num_units`({num_units})')
             self.loss_module = nn.ModuleList(
                 MODELS.build(_loss) for _loss in loss)
         else:
@@ -374,8 +383,7 @@ class MSPNHead(BaseHead):
                 stages and units
             batch_data_samples (List[:obj:`PoseDataSample`]): The Data
                 Samples. It usually includes information such as
-                `gt_instance_labels`. Specifically, for MSPNHead, the
-                data_samples contain extra info: `multilevel_gt_heatmaps`.
+                `gt_instance_labels`and `gt_fields`.
             train_cfg (Config, optional): The training config
 
         Returns:
@@ -387,9 +395,8 @@ class MSPNHead(BaseHead):
         num_levels = self.num_stages * self.num_units
 
         multilevel_gt_heatmaps = [
-            torch.stack([
-                d.multilevel_gt_fields[i].heatmaps for d in batch_data_samples
-            ]) for i in range(num_levels)
+            torch.stack([d.gt_fields[i].heatmaps for d in batch_data_samples])
+            for i in self.level_indices
         ]
 
         keypoint_weights = torch.cat([

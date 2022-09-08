@@ -160,7 +160,6 @@ def get_packed_inputs(batch_size=2,
                 W, H = heatmap_size
                 heatmaps = rng.rand(num_keypoints, H, W)
                 gt_fields.heatmaps = torch.FloatTensor(heatmaps)
-                data_sample.gt_fields = gt_fields
             else:
                 # generate multilevel heatmaps
                 heatmaps = []
@@ -169,9 +168,9 @@ def get_packed_inputs(batch_size=2,
                     heatmaps_ = rng.rand(num_keypoints, H, W)
                     heatmaps.append(torch.FloatTensor(heatmaps_))
                 # [num_levels*K, H, W]
-                multilevel_gt_fields = MultilevelPixelData()
-                multilevel_gt_fields.heatmaps = heatmaps
-                data_sample.multilevel_gt_fields = multilevel_gt_fields
+                gt_fields = MultilevelPixelData()
+                gt_fields.heatmaps = heatmaps
+            data_sample.gt_fields = gt_fields
 
         data_sample.gt_instances = gt_instances
         data_sample.gt_instance_labels = gt_instance_labels
