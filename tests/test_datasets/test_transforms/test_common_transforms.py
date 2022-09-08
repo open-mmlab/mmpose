@@ -500,7 +500,7 @@ class TestGenerateTarget(TestCase):
             np.allclose(results['keypoint_weights'],
                         self.data_info['dataset_keypoint_weights'][None]))
 
-    def test_generate_multiscale_heatmap(self):
+    def test_generate_multilevel_heatmap(self):
         encoder_0 = dict(
             type='MSRAHeatmap',
             input_size=(192, 256),
@@ -508,18 +508,18 @@ class TestGenerateTarget(TestCase):
             sigma=2.0)
         encoder_1 = dict(encoder_0, heatmap_size=(24, 32))
 
-        # generate multi-scale heatmap
+        # generate multilevel heatmap
         pipeline = Compose([
             TopdownAffine(input_size=(192, 256)),
             GenerateTarget(
-                target_type='multiscale_heatmap',
+                target_type='multilevel_heatmap',
                 encoder=[encoder_0, encoder_1])
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertTrue(is_list_of(results['heatmaps'], np.ndarray))
-        self.assertEqual(results['heatmaps'][0].shape, (17, 64, 48))
-        self.assertEqual(results['heatmaps'][1].shape, (17, 32, 24))
+        self.assertTrue(is_list_of(results['multilevel_heatmaps'], np.ndarray))
+        self.assertEqual(results['multilevel_heatmaps'][0].shape, (17, 64, 48))
+        self.assertEqual(results['multilevel_heatmaps'][1].shape, (17, 32, 24))
         self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
 
     def test_generate_keypoint_label(self):

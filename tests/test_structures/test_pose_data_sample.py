@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from mmengine.structures import InstanceData, PixelData
 
-from mmpose.structures import PoseDataSample
+from mmpose.structures import MultilevelPixelData, PoseDataSample
 
 
 class TestPoseDataSample(TestCase):
@@ -32,6 +32,14 @@ class TestPoseDataSample(TestCase):
         gt_fields = PixelData()
         gt_fields.heatmaps = torch.rand(17, 64, 48)
 
+        # multilevel_gt_fields
+        metainfo = dict(num_keypoints=17)
+        sizes = [(64, 48), (128, 96), (256, 192)]
+        heatmaps = [np.random.rand(17, h, w) for h, w in sizes]
+        masks = [torch.rand(1, h, w) for h, w in sizes]
+        multilevel_gt_fields = MultilevelPixelData(
+            metainfo=metainfo, heatmaps=heatmaps, masks=masks)
+
         # pred_fields
         pred_fields = PixelData()
         pred_fields.heatmaps = torch.rand(17, 64, 48)
@@ -40,6 +48,7 @@ class TestPoseDataSample(TestCase):
             gt_instances=gt_instances,
             pred_instances=pred_instances,
             gt_fields=gt_fields,
+            multilevel_gt_fields=multilevel_gt_fields,
             pred_fields=pred_fields,
             metainfo=pose_meta)
 
@@ -72,6 +81,9 @@ class TestPoseDataSample(TestCase):
         # test gt_fields
         data_sample.gt_fields = PixelData()
 
+        # test multilevel_gt_fields
+        data_sample.multilevel_gt_fields = MultilevelPixelData()
+
         # test pred_instances as pytorch tensor
         pred_instances_data = dict(
             keypoints=torch.rand(1, 17, 2), scores=torch.rand(1, 17, 1))
@@ -103,7 +115,8 @@ class TestPoseDataSample(TestCase):
         data_sample = self.get_pose_data_sample()
 
         for key in [
-                'gt_instances', 'pred_instances', 'gt_fields', 'pred_fields'
+                'gt_instances', 'pred_instances', 'gt_fields', 'pred_fields',
+                'multilevel_gt_fields'
         ]:
             self.assertIn(key, data_sample)
             exec(f'del data_sample.{key}')
