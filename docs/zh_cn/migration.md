@@ -348,11 +348,11 @@ class GenerateTarget(BaseTransform):
 
 具体而言，我们将数据样本内容分为 `gt`（标注真值） 和 `pred`（模型预测）两部分，它们都包含以下数据项：
 
-- **instances**(numpy.array)：实例级别的原始标注，用于在原始尺度空间下进行模型评测
+- **instances**(numpy.array)：实例级别的原始标注或预测结果，属于原始尺度空间
 
-- **instance_labels**(torch.tensor)：实例级别的训练标签（如归一化的坐标值、关键点可见性），用于在输出尺度空间下进行模型训练
+- **instance_labels**(torch.tensor)：实例级别的训练标签（如归一化的坐标值、关键点可见性），属于输出尺度空间
 
-- **fields**(torch.tensor)：图像级别且带空间信息的训练标签（如高斯热图），用于在输出尺度空间下进行模型训练
+- **fields**(torch.tensor)：像素级别的训练标签（如高斯热图）或预测结果，属于输出尺度空间
 
 下面是`PoseDataSample`底层实现的例子：
 

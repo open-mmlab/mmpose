@@ -331,13 +331,13 @@ If you wish to customize a new codec, you can refer to [Codec](./user_guides/cod
 
 After the data is transformed, you need to pack it using `PackPoseInputs`.
 
-This method converts the data stored in the dictionary `results` into standard data structures required for MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
+This method converts the data stored in the dictionary `results` into standard data structures in MMPose, such as `InstanceData`, `PixelData`, `PoseDataSample`, etc.
 
 Specifically, we divide the data into `gt` (ground-truth) and `pred` (prediction), each of which has the following types:
 
-- **instances**(numpy.array): instance-level raw annotations for model evaluatin in the original scale space
-- **instance_labels**(torch.tensor): instance-level training labels(e.g. normalized coordinates, keypoint visibility), used for model training in the output scale space
-- **fields**(torch.tensor): image-level training labels with spatial information (e.g. Gaussian Heatmaps), used for model training in the output scale space
+- **instances**(numpy.array): instance-level raw annotations or predictions in the original scale space
+- **instance_labels**(torch.tensor): instance-level training labels (e.g. normalized coordinates, keypoint visibility) in the output scale space
+- **fields**(torch.tensor): pixel-level training labels or predictions (e.g. Gaussian Heatmaps) in the output scale space
 
 The following is an example of the implementation of `PoseDataSample` under the hood:
 
