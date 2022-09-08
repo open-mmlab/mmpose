@@ -1,20 +1,20 @@
 # Inference with existing models
 
 MMPose provides hundreds of pre-trained models for pose estimation in [Model Zoo](https://mmpose.readthedocs.io/en/1.x/modelzoo.html).
-This note will show **how to inference**, which means use trained models to run pose estimation on given images or videos.
+This note will show **how to perform inference**, which means running pose estimation on given images or videos with trained models.
 
-As for how to test existing models on standard datasets, please see this [guide](./train_and_test.md#test)
+As for how to test existing models on standard datasets, please see this [guide](./train_and_test.md#test).
 
-In MMPose, a model is defined by a configuration file and existing model parameters are save in a checkpoint file.
+In MMPose, a model is defined by a configuration file and existing model parameters are saved in a checkpoint file.
 
-To start with, we recommend HRNet model with [this configuration file](configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth). It is recommended to download the checkpoint file to `checkpoints` directory.
+To start with, we recommend HRNet model with [this configuration file](/configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py) and [this checkpoint file](https://download.openmmlab.com/mmpose/top_down/hrnet/hrnet_w32_coco_256x192-c78dce93_20200708.pth). It is recommended to download the checkpoint file to `checkpoints` directory.
 
 ## High-level APIs for inference
 
 MMPose provides high-level Python APIs for inference on a given image:
 
-- [init_model](mmpose/apis/inference.py#L64): Initialize a model with a config and checkpoint
-- [inference_topdown](mmpose/apis/inference.py#L124): Inference the top-down pose estimator on a given image
+- [init_model](/mmpose/apis/inference.py#L64): Initialize a model with a config and checkpoint
+- [inference_topdown](/mmpose/apis/inference.py#L124): Conduct inference with the top-down pose estimator on a given image
 
 Here is an example of building the model and inference on a given image using the pre-trained checkpoint of HRNet model on COCO dataset.
 

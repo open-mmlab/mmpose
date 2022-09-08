@@ -1,12 +1,22 @@
 # Prepare Datasets
 
-MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](/docs/en/dataset_zoo/). Please follow the corresponding guidelines for data preparation.
+MMPose supports multiple tasks and corresponding datasets. You can find them in [dataset zoo](https://mmpose.readthedocs.io/en/1.x/dataset_zoo.html). Please follow the corresponding guidelines for data preparation.
+
+<!-- TOC -->
+
+- [Customize datasets by reorganizing data to COCO format](#customize-datasets-by-reorganizing-data-to-coco-format)
+- [Create a custom dataset_info config file for the dataset](#create-a-custom-datasetinfo-config-file-for-the-dataset)
+- [Create a custom dataset class](#create-a-custom-dataset-class)
+- [Create a custom training config file](#create-a-custom-training-config-file)
+- [Dataset Wrappers](#dataset-wrappers)
+
+<!-- TOC -->
 
 ## Customize datasets by reorganizing data to COCO format
 
 The simplest way to use the custom dataset is to convert your annotation format to COCO dataset format.
 
-The annotation json files in COCO format has the following necessary keys:
+The annotation JSON files in COCO format have the following necessary keys:
 
 ```python
 'images': [
@@ -62,9 +72,11 @@ There are three necessary keys in the json file:
 - `annotations`: contains the list of instance annotations.
 - `categories`: contains the category name ('person') and its ID (1).
 
+If the annotations have been organized in COCO format, there is no need to create a new dataset class. You can use `CocoDataset` class alternatively.
+
 ## Create a custom dataset_info config file for the dataset
 
-Add a new dataset info config file that containing the metainfo about the dataset.
+Add a new dataset info config file that contains the metainfo about the dataset.
 
 ```
 configs/_base_/datasets/custom.py
@@ -80,11 +92,13 @@ An example of the dataset config is as follows.
 4. `type`: 'upper' or 'lower', will be used in data augmentation.
 5. `swap`: indicates the 'swap pair' (also known as 'flip pair'). When applying image horizontal flip, the left part will become the right part. We need to flip the keypoints accordingly.
 
-`skeleton_info` contains the information about the keypoint connectivity, which is used for visualization.
+`skeleton_info` contains information about the keypoint connectivity, which is used for visualization.
 
 `joint_weights` assigns different loss weights to different keypoints.
 
 `sigmas` is used to calculate the OKS score. You can read [keypoints-eval](https://cocodataset.org/#keypoints-eval) to learn more about it.
+
+Here is an simplified example of dataset_info config file ([full text](/configs/_base_/datasets/coco.py)).
 
 ```
 dataset_info = dict(
@@ -109,104 +123,7 @@ dataset_info = dict(
             color=[51, 153, 255],
             type='upper',
             swap='right_eye'),
-        2:
-        dict(
-            name='right_eye',
-            id=2,
-            color=[51, 153, 255],
-            type='upper',
-            swap='left_eye'),
-        3:
-        dict(
-            name='left_ear',
-            id=3,
-            color=[51, 153, 255],
-            type='upper',
-            swap='right_ear'),
-        4:
-        dict(
-            name='right_ear',
-            id=4,
-            color=[51, 153, 255],
-            type='upper',
-            swap='left_ear'),
-        5:
-        dict(
-            name='left_shoulder',
-            id=5,
-            color=[0, 255, 0],
-            type='upper',
-            swap='right_shoulder'),
-        6:
-        dict(
-            name='right_shoulder',
-            id=6,
-            color=[255, 128, 0],
-            type='upper',
-            swap='left_shoulder'),
-        7:
-        dict(
-            name='left_elbow',
-            id=7,
-            color=[0, 255, 0],
-            type='upper',
-            swap='right_elbow'),
-        8:
-        dict(
-            name='right_elbow',
-            id=8,
-            color=[255, 128, 0],
-            type='upper',
-            swap='left_elbow'),
-        9:
-        dict(
-            name='left_wrist',
-            id=9,
-            color=[0, 255, 0],
-            type='upper',
-            swap='right_wrist'),
-        10:
-        dict(
-            name='right_wrist',
-            id=10,
-            color=[255, 128, 0],
-            type='upper',
-            swap='left_wrist'),
-        11:
-        dict(
-            name='left_hip',
-            id=11,
-            color=[0, 255, 0],
-            type='lower',
-            swap='right_hip'),
-        12:
-        dict(
-            name='right_hip',
-            id=12,
-            color=[255, 128, 0],
-            type='lower',
-            swap='left_hip'),
-        13:
-        dict(
-            name='left_knee',
-            id=13,
-            color=[0, 255, 0],
-            type='lower',
-            swap='right_knee'),
-        14:
-        dict(
-            name='right_knee',
-            id=14,
-            color=[255, 128, 0],
-            type='lower',
-            swap='left_knee'),
-        15:
-        dict(
-            name='left_ankle',
-            id=15,
-            color=[0, 255, 0],
-            type='lower',
-            swap='right_ankle'),
+        ...
         16:
         dict(
             name='right_ankle',
@@ -218,44 +135,7 @@ dataset_info = dict(
     skeleton_info={
         0:
         dict(link=('left_ankle', 'left_knee'), id=0, color=[0, 255, 0]),
-        1:
-        dict(link=('left_knee', 'left_hip'), id=1, color=[0, 255, 0]),
-        2:
-        dict(link=('right_ankle', 'right_knee'), id=2, color=[255, 128, 0]),
-        3:
-        dict(link=('right_knee', 'right_hip'), id=3, color=[255, 128, 0]),
-        4:
-        dict(link=('left_hip', 'right_hip'), id=4, color=[51, 153, 255]),
-        5:
-        dict(link=('left_shoulder', 'left_hip'), id=5, color=[51, 153, 255]),
-        6:
-        dict(link=('right_shoulder', 'right_hip'), id=6, color=[51, 153, 255]),
-        7:
-        dict(
-            link=('left_shoulder', 'right_shoulder'),
-            id=7,
-            color=[51, 153, 255]),
-        8:
-        dict(link=('left_shoulder', 'left_elbow'), id=8, color=[0, 255, 0]),
-        9:
-        dict(
-            link=('right_shoulder', 'right_elbow'), id=9, color=[255, 128, 0]),
-        10:
-        dict(link=('left_elbow', 'left_wrist'), id=10, color=[0, 255, 0]),
-        11:
-        dict(link=('right_elbow', 'right_wrist'), id=11, color=[255, 128, 0]),
-        12:
-        dict(link=('left_eye', 'right_eye'), id=12, color=[51, 153, 255]),
-        13:
-        dict(link=('nose', 'left_eye'), id=13, color=[51, 153, 255]),
-        14:
-        dict(link=('nose', 'right_eye'), id=14, color=[51, 153, 255]),
-        15:
-        dict(link=('left_eye', 'left_ear'), id=15, color=[51, 153, 255]),
-        16:
-        dict(link=('right_eye', 'right_ear'), id=16, color=[51, 153, 255]),
-        17:
-        dict(link=('left_ear', 'left_shoulder'), id=17, color=[51, 153, 255]),
+        ...
         18:
         dict(
             link=('right_ear', 'right_shoulder'), id=18, color=[51, 153, 255])
@@ -272,14 +152,21 @@ dataset_info = dict(
 
 ## Create a custom dataset class
 
+If the annotations are not organized in COCO format, you need to create a custom dataset class by the following steps:
+
 1. First create a package inside the `mmpose/datasets/datasets` folder.
 
 2. Create a class definition of your dataset in the package folder and register it in the registry with a name. Without a name, it will keep giving the error. `KeyError: 'XXXXX is not in the dataset registry'`
 
    ```
+   from mmengine.dataset import BaseDataset
+   from mmpose.registry import DATASETS
+
    @DATASETS.register_module(name='MyCustomDataset')
-   class MyCustomDataset(SomeOtherBaseClassAsPerYourNeed):
+   class MyCustomDataset(BaseDataset):
    ```
+
+   You can refer to [this doc](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html) on how to build customed dataset class with `mmengine.BaseDataset`.
 
 3. Make sure you have updated the `__init__.py` of your package folder
 
@@ -294,7 +181,7 @@ In `configs/my_custom_config.py`:
 ```python
 ...
 # dataset and dataloader settings
-dataset_type = 'MyCustomDataset'
+dataset_type = 'MyCustomDataset' # or 'CocoDataset'
 
 train_dataloader = dict(
     batch_size=2,
@@ -303,6 +190,7 @@ train_dataloader = dict(
         data_root='root/of/your/train/data',
         ann_file='path/to/your/train/json',
         data_prefix=dict(img='path/to/your/train/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 
@@ -313,6 +201,7 @@ val_dataloader = dict(
         data_root='root/of/your/val/data',
         ann_file='path/to/your/val/json',
         data_prefix=dict(img='path/to/your/val/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 
@@ -323,6 +212,7 @@ test_dataloader = dict(
         data_root='root/of/your/test/data',
         ann_file='path/to/your/test/json',
         data_prefix=dict(img='path/to/your/test/img'),
+        metainfo=dict(from_file='configs/_base_/datasets/custom.py'),
         ...),
     )
 ...
@@ -332,6 +222,6 @@ Make sure you have provided all the paths correctly.
 
 ## Dataset Wrappers
 
-The following dataset wrappers are supported in [MMEngine](TODO:), you can refer to [MMEngine tutorial](TODO:) to learn how to use it.
+The following dataset wrappers are supported in [MMEngine](https://github.com/open-mmlab/mmengine), you can refer to [MMEngine tutorial](https://mmengine.readthedocs.io/en/latest) to learn how to use it.
 
-- [RepeatDataset](https://github.com/open-mmlab/mmengine/blob/main/docs/en/tutorials/basedataset.md#repeatdataset)
+- [RepeatDataset](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html#repeatdataset)

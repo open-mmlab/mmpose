@@ -1,8 +1,25 @@
-# Training and Test
+# Train and Test
 
-## Training
+<!-- TOC -->
 
-### Training with your PC
+- [Train](#train)
+  - [Train with your PC](#train-with-your-pc)
+  - [Train with multiple GPUs](#train-with-multiple-gpus)
+  - [Train with multiple machines](#train-with-multiple-machines)
+    - [Multiple machines in the same network](#multiple-machines-in-the-same-network)
+    - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm)
+- [Test](#test)
+  - [Test with your PC](#test-with-your-pc)
+  - [Test with multiple GPUs](#test-with-multiple-gpus)
+  - [Test with multiple machines](#test-with-multiple-machines)
+    - [Multiple machines in the same network](#multiple-machines-in-the-same-network-1)
+    - [Multiple machines managed with slurm](#multiple-machines-managed-with-slurm-1)
+
+<!-- TOC -->
+
+## Train
+
+### Train with your PC
 
 You can use `tools/train.py` to train a model on a single machine with a CPU and optionally a GPU.
 
@@ -24,15 +41,15 @@ CUDA_VISIBLE_DEVICES=-1 python tools/train.py ${CONFIG_FILE} [ARGS]
 | ARGS                                  | Description                                                                                                                                                         |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `CONFIG_FILE`                         | The path to the config file.                                                                                                                                        |
-| `--work-dir WORK_DIR`                 | The target folder to save logs and checkpoints. Defaults to a folder with the same name of the config file under `./work_dirs`.                                     |
+| `--work-dir WORK_DIR`                 | The target folder to save logs and checkpoints. Defaults to a folder with the same name as the config file under `./work_dirs`.                                     |
 | `--resume [RESUME]`                   | Resume training. If specify a path, resume from it, while if not specify, try to auto resume from the latest checkpoint.                                            |
 | `--amp`                               | Enable automatic-mixed-precision training.                                                                                                                          |
 | `--no-validate`                       | **Not suggested**. Disable checkpoint evaluation during training.                                                                                                   |
-| `--auto-scale-lr`                     | Auto scale the learning rate according to the actual batch size and the original batch size.                                                                        |
-| `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that the quotation marks are necessary and that **no white space is allowed**. |
+| `--auto-scale-lr`                     | Automatically rescale the learning rate according to the actual batch size and the original batch size.                                                             |
+| `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that quotation marks are necessary and that **no white space is allowed**. |
 | `--launcher {none,pytorch,slurm,mpi}` | Options for job launcher.                                                                                                                                           |
 
-### Training with multiple GPUs
+### Train with multiple GPUs
 
 We provide a shell script to start a multi-GPUs task with `torch.distributed.launch`.
 
@@ -61,7 +78,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29500 bash ./tools/dist_train.sh ${CONFIG_FILE
 CUDA_VISIBLE_DEVICES=4,5,6,7 GPUS=29501 bash ./tools/dist_train.sh ${CONFIG_FILE2} 4 [PY_ARGS]
 ```
 
-### Training with multiple machines
+### Train with multiple machines
 
 #### Multiple machines in the same network
 
@@ -79,7 +96,7 @@ On the second machine:
 NNODES=2 NODE_RANK=1 PORT=$MASTER_PORT MASTER_ADDR=$MASTER_ADDR bash tools/dist_train.sh $CONFIG $GPUS
 ```
 
-Comparing with multi-GPUs in a single machine, you need to specify some extra environment variables:
+Compared with multi-GPUs in a single machine, you need to specify some extra environment variables:
 
 | ENV_VARS      | Description                                                                  |
 | ------------- | ---------------------------------------------------------------------------- |
@@ -88,7 +105,7 @@ Comparing with multi-GPUs in a single machine, you need to specify some extra en
 | `PORT`        | The communication port, it should be the same in all machines.               |
 | `MASTER_ADDR` | The IP address of the master machine, it should be the same in all machines. |
 
-Usually it is slow if you do not have high speed networking like InfiniBand.
+Usually, it is slow if you do not have high-speed networking like InfiniBand.
 
 #### Multiple machines managed with slurm
 
@@ -145,7 +162,7 @@ CUDA_VISIBLE_DEVICES=-1 python tools/test.py ${CONFIG_FILE} ${CHECKPOINT_FILE} [
 | `--work-dir WORK_DIR`                 | The directory to save the file containing evaluation metrics.                                                                                                       |
 | `--out OUT`                           | The path to save the file containing evaluation metrics.                                                                                                            |
 | `--dump DUMP`                         | The path to dump all outputs of the model for offline evaluation.                                                                                                   |
-| `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that the quotation marks are necessary and that no white space is allowed. |
+| `--cfg-options CFG_OPTIONS`           | Override some settings in the used config, the key-value pair in xxx=yyy format will be merged into the config file. If the value to be overwritten is a list, it should be of the form of either `key="[a,b]"` or `key=a,b`. The argument also allows nested list/tuple values, e.g. `key="[(a,b),(c,d)]"`. Note that quotation marks are necessary and that no white space is allowed. |
 | `--show-dir SHOW_DIR`                 | The directory to save the result visualization images.                                                                                                              |
 | `--show`                              | Visualize the prediction result in a window.                                                                                                                        |
 | `--interval INTERVAL`                 | The interval of samples to visualize.                                                                                                                               |
@@ -200,7 +217,7 @@ On the second machine:
 NNODES=2 NODE_RANK=1 PORT=$MASTER_PORT MASTER_ADDR=$MASTER_ADDR bash tools/dist_test.sh $CONFIG $CHECKPOINT_FILE $GPUS
 ```
 
-Comparing with multi-GPUs in a single machine, you need to specify some extra environment variables:
+Compared with multi-GPUs in a single machine, you need to specify some extra environment variables:
 
 | ENV_VARS      | Description                                                                  |
 | ------------- | ---------------------------------------------------------------------------- |
@@ -209,7 +226,7 @@ Comparing with multi-GPUs in a single machine, you need to specify some extra en
 | `PORT`        | The communication port, it should be the same in all machines.               |
 | `MASTER_ADDR` | The IP address of the master machine, it should be the same in all machines. |
 
-Usually it is slow if you do not have high speed networking like InfiniBand.
+Usually, it is slow if you do not have high-speed networking like InfiniBand.
 
 #### Multiple machines managed with slurm
 
@@ -219,7 +236,7 @@ If you run MMPose on a cluster managed with [slurm](https://slurm.schedmd.com/),
 [ENV_VARS] ./tools/slurm_test.sh ${PARTITION} ${JOB_NAME} ${CONFIG_FILE} ${CHECKPOINT_FILE} [PY_ARGS]
 ```
 
-Here are the arguments description of the script.
+Here are the argument descriptions of the script.
 
 | ARGS              | Description                                                                                                                                                  |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -229,7 +246,7 @@ Here are the arguments description of the script.
 | `CHECKPOINT_FILE` | The path to the checkpoint file (It can be a http link, and you can find checkpoints [here](https://MMPose.readthedocs.io/en/1.x/modelzoo_statistics.html)). |
 | `[PYARGS]`        | The other optional arguments of `tools/test.py`, see [here](#test-with-your-pc).                                                                             |
 
-Here are the environment variables can be used to configure the slurm job.
+Here are the environment variables that can be used to configure the slurm job.
 
 | ENV_VARS        | Description                                                                                                |
 | --------------- | ---------------------------------------------------------------------------------------------------------- |
