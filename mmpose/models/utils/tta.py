@@ -18,7 +18,7 @@ def flip_heatmaps(heatmaps: Tensor,
         flip_mode (str): Specify the flipping mode. Options are:
 
             - ``'heatmap'``: horizontally flip the heatmaps and swap heatmaps
-                of symmetric keypoints according to ``flip_pairs``
+                of symmetric keypoints according to ``flip_indices``
             - ``'udp_combined'``: similar to ``'heatmap'`` mode but further
                 flip the x_offset values
         shift_heatmap (bool): Shift the flipped heatmaps to align with the
