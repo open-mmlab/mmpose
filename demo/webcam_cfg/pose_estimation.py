@@ -47,9 +47,8 @@ executor_cfg = dict(
             name='animal pose estimator',
             model_config='configs/animal_2d_keypoint/topdown_heatmap/'
             'animalpose/td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py',
-            model_checkpoint='dev2.0/mmpose/configs/animal_2d_keypoint/'
-            'topdown_heatmap/animalpose/'
-            'td-hm_hrnet-w32_8xb64-210e_animalpose-256x256.py',
+            model_checkpoint='https://download.openmmlab.com/mmpose/animal/'
+            'hrnet/hrnet_w32_animalpose_256x256-1aa7f075_20210426.pth',
             labels=['cat', 'dog', 'horse', 'sheep', 'cow'],
             input_buffer='human_pose',
             output_buffer='animal_pose'),
@@ -61,7 +60,7 @@ executor_cfg = dict(
             type='ObjectAssignerNode',
             name='object assigner',
             frame_buffer='_frame_',  # `_frame_` is an executor-reserved buffer
-            object_buffer='animal_pose',
+            object_buffer='human_pose',
             output_buffer='frame'),
         # 'ObjectVisualizerNode':
         # This node draw the pose visualization result in the frame image.

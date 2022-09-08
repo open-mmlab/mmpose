@@ -120,6 +120,8 @@ class ObjectVisualizerNode(BaseVisualizerNode):
 
             instances = InstanceData()
             instances.bboxes = np.stack([object['bbox'] for object in objects])
+            instances.labels = np.array(
+                [object['class_id'] for object in objects])
             if self.show_keypoint:
                 instances.keypoints = np.stack(
                     [object['keypoints'] for object in objects])
@@ -129,7 +131,7 @@ class ObjectVisualizerNode(BaseVisualizerNode):
             data_sample = PoseDataSample()
             data_sample.pred_instances = instances
 
-            canvas = self.visualizer.add_datasample(
+            self.visualizer.add_datasample(
                 'result',
                 canvas,
                 data_sample=data_sample,
@@ -140,5 +142,6 @@ class ObjectVisualizerNode(BaseVisualizerNode):
                 wait_time=0,
                 out_file=None,
                 kpt_score_thr=self.kpt_thr)
+            canvas = self.visualizer.get_image()
 
         return canvas
