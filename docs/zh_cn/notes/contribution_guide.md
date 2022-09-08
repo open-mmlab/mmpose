@@ -34,7 +34,7 @@
 - [mdformat](https://github.com/executablebooks/mdformat): markdown 文件格式化工具
 - [docformatter](https://github.com/myint/docformatter): docstring 格式化工具
 
-`yapf`和`isort`的样式配置可以在[setup.cfg](./setup.cfg)中找到。
+`yapf`和`isort`的样式配置可以在[setup.cfg](/setup.cfg)中找到。
 
 我们使用[pre-commit hook](https://pre-commit.com/)来：
 
@@ -42,7 +42,7 @@
 - 修复 `end-of-files`
 - 在每次提交时自动排序 `requirments.txt`
 
-`pre-commit`的配置存储在[.pre-commit-config](.../.pre-commit-config.yaml)中。
+`pre-commit`的配置存储在[.pre-commit-config](/.pre-commit-config.yaml)中。
 
 在clone代码仓库后，你需要安装并初始化 `pre-commit`：
 
