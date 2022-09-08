@@ -171,8 +171,8 @@ class IntegralRegressionHead(BaseHead):
                             linspace: Tensor) -> Tensor:
         """Calculate linear expectation."""
 
-        N, C, _, _ = heatmaps.shape
-        heatmaps = heatmaps.mul(linspace).reshape(N, C, -1)
+        B, N, _, _ = heatmaps.shape
+        heatmaps = heatmaps.mul(linspace).reshape(B, N, -1)
         expectation = torch.sum(heatmaps, dim=2, keepdim=True)
 
         return expectation
@@ -180,12 +180,12 @@ class IntegralRegressionHead(BaseHead):
     def _flat_softmax(self, featmaps: Tensor) -> Tensor:
         """Use Softmax to normalize the featmaps in depthwise."""
 
-        _, C, H, W = featmaps.shape
+        _, N, H, W = featmaps.shape
 
-        featmaps = featmaps.reshape(-1, C, H * W)
+        featmaps = featmaps.reshape(-1, N, H * W)
         heatmaps = F.softmax(featmaps, dim=2)
 
-        return heatmaps.reshape(-1, C, H, W)
+        return heatmaps.reshape(-1, N, H, W)
 
     def forward(self, feats: Tuple[Tensor]) -> Union[Tensor, Tuple[Tensor]]:
         """Forward the network. The input is multi scale feature maps and the
@@ -208,10 +208,10 @@ class IntegralRegressionHead(BaseHead):
         pred_y = self._linear_expectation(heatmaps, self.linspace_y)
 
         if self.debias:
-            N, C, H, W = feats.shape
-            t = feats.reshape(N, C, H * W).exp().sum(dim=2).reshape(N, C, 1)
-            pred_x -= 3. * W / t
-            pred_y -= 3. * H / t
+            B, N, H, W = feats.shape
+            C = feats.reshape(B, N, H * W).exp().sum(dim=2).reshape(B, N, 1)
+            pred_x = C / (C - 1) * (pred_x - 1 / (2 * C))
+            pred_y = C / (C - 1) * (pred_y - 1 / (2 * C))
 
         coords = torch.cat([pred_x, pred_y], dim=-1)
         return coords, heatmaps
