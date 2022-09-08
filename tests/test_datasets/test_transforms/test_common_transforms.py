@@ -517,9 +517,9 @@ class TestGenerateTarget(TestCase):
         ])
         results = pipeline(deepcopy(self.data_info))
 
-        self.assertTrue(is_list_of(results['multilevel_heatmaps'], np.ndarray))
-        self.assertEqual(results['multilevel_heatmaps'][0].shape, (17, 64, 48))
-        self.assertEqual(results['multilevel_heatmaps'][1].shape, (17, 32, 24))
+        self.assertTrue(is_list_of(results['heatmaps'], np.ndarray))
+        self.assertEqual(results['heatmaps'][0].shape, (17, 64, 48))
+        self.assertEqual(results['heatmaps'][1].shape, (17, 32, 24))
         self.assertEqual(results['keypoint_weights'].shape, (1, 2, 17))
 
     def test_generate_keypoint_label(self):
