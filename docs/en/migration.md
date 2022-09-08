@@ -16,7 +16,34 @@ This  tutorial covers what developers will concern when using MMPose 1.0:
 - How to add new modules(backbone, head, loss function, etc.)
 ```
 
-## Overall code architecture
+The content of this tutorial is organized as follows:
+
+- [Migration](#migration)
+  - [Overall Code Architecture](#overall-code-architecture)
+  - [Step1: Configs](#step1-configs)
+  - [Step2: Data](#step2-data)
+    - [Dataset Meta Information](#dataset-meta-information)
+    - [Dataset](#dataset)
+    - [Pipeline](#pipeline)
+      - [i. Augmentation](#i-augmentation)
+      - [ii. Transformation](#ii-transformation)
+      - [iii. Encoding](#iii-encoding)
+      - [iv. Packing](#iv-packing)
+  - [Step3: Model](#step3-model)
+    - [Data Preprocessor](#data-preprocessor)
+    - [Backbone](#backbone)
+    - [Neck](#neck)
+    - [Head](#head)
+  - [Compatibility of MMPose 0.X](#compatibility-of-mmpose-0x)
+    - [Data Transformation](#data-transformation)
+      - [Translation, Rotation and Scaling](#translation-rotation-and-scaling)
+      - [Target Generation](#target-generation)
+      - [Data Normalization](#data-normalization)
+    - [Compatibility of Models](#compatibility-of-models)
+      - [Heatmap-based Model](#heatmap-based-model)
+      - [RLE-based Model](#rle-based-model)
+
+## Overall Code Architecture
 
 ![overall-en](https://user-images.githubusercontent.com/13503330/187372008-2a94bad5-5252-4155-9ae3-3da1c426f569.png)
 

@@ -16,6 +16,33 @@
 - 如何添加新的模块（骨干网络、模型头部、损失函数等）
 ```
 
+以下是这篇教程的目录：
+
+- [迁移指南](#迁移指南)
+  - [整体架构与设计](#整体架构与设计)
+  - [Step1：配置文件](#step1配置文件)
+  - [Step2：数据](#step2数据)
+    - [数据集元信息](#数据集元信息)
+    - [数据集](#数据集)
+    - [数据流水线](#数据流水线)
+      - [i. 数据增强](#i-数据增强)
+      - [ii. 数据变换](#ii-数据变换)
+      - [iii. 数据编码](#iii-数据编码)
+      - [iv. 数据打包](#iv-数据打包)
+  - [Step3: 模型](#step3-模型)
+    - [前处理器（DataPreprocessor）](#前处理器datapreprocessor)
+    - [主干网络（Backbone）](#主干网络backbone)
+    - [颈部模块（Neck）](#颈部模块neck)
+    - [预测头（Head）](#预测头head)
+  - [MMPose 0.X 兼容性说明](#mmpose-0x-兼容性说明)
+    - [数据变换](#数据变换)
+      - [平移、旋转和缩放](#平移旋转和缩放)
+      - [标签生成](#标签生成)
+      - [数据归一化](#数据归一化)
+    - [模型兼容](#模型兼容)
+      - [Heatmap-based 方法](#heatmap-based-方法)
+      - [RLE-based 方法](#rle-based-方法)
+
 ## 整体架构与设计
 
 ![overall-cn](https://user-images.githubusercontent.com/13503330/187830967-f2d7bf40-6261-42f3-91a5-ae045fa0dc0c.png)
@@ -259,7 +286,7 @@ test_pipeline = [
 
 数据增强中常用的变换存放在 `$MMPOSE/mmpose/datasets/transforms/common_transforms.py` 中，如`RandomFlip`、`RandomHalfBody` 等。
 
-对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现，对于bottom-up方法，则是由 `BottomupRandomAffine` 实现。
+对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于bottom-up方法，这些则是由 `BottomupRandomAffine` 实现。
 
 ```{note}
 值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，可以通过 `GetBBoxCenterScale` 来得到。
