@@ -1,12 +1,12 @@
 # 配置文件
 
-MMPose使用python文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
+MMPose 使用 Python 文件作为配置文件，将模块化设计和继承设计结合到配置系统中，便于进行各种实验。
 
 ## 简介
 
-MMPose拥有一套强大的配置系统，在注册器的配合下，用户可以通过一个配置文件来定义整个项目需要用到的所有内容，以python字典形式组织配置信息，传递给注册器完成对应模块的实例化。
+MMPose 拥有一套强大的配置系统，在注册器的配合下，用户可以通过一个配置文件来定义整个项目需要用到的所有内容，以 Python 字典形式组织配置信息，传递给注册器完成对应模块的实例化。
 
-下面是一个常见的模块定义的例子：
+下面是一个常见的 Pytorch 模块定义的例子：
 
 ```Python
 # 在loss_a.py中定义Loss_A类
@@ -50,7 +50,7 @@ loss_cfg = dict(
 loss = MODELS.build(loss_cfg) # 等价于 loss = Loss_A(param1=1.0, param2=True)
 ```
 
-MMPose预定义的Registry在`$MMPOSE/mmpose/registry.py`中，目前支持的有：
+MMPose 预定义的 Registry 在 `$MMPOSE/mmpose/registry.py` 中，目前支持的有：
 
 - `DATASETS`：数据集
 
@@ -72,7 +72,7 @@ MMPose预定义的Registry在`$MMPOSE/mmpose/registry.py`中，目前支持的�
 
 具体而言，一个配置文件主要包含如下五个部分：
 
-- 通用配置：与训练或测试无关的通用配置，如时间统计，模型存储与加载，可视化等相关Hook，以及一些分布式相关的环境配置
+- 通用配置：与训练或测试无关的通用配置，如时间统计，模型存储与加载，可视化等相关 Hook，以及一些分布式相关的环境配置
 
 - 数据配置：数据增强策略，Dataset和Dataloader相关配置
 
@@ -82,7 +82,7 @@ MMPose预定义的Registry在`$MMPOSE/mmpose/registry.py`中，目前支持的�
 
 - 评测配置：模型性能评测指标
 
-你可以在`$MMPOSE/configs`下找到我们提供的配置文件，配置文件之间通过继承来避免冗余。为了保持配置文件简洁易读，我们将一些必要但不常改动的配置存放到了 `$MMPOSE/configs/_base_` 目录下，如果希望查阅完整的配置信息，你可以运行如下指令：
+你可以在 `$MMPOSE/configs` 下找到我们提供的配置文件，配置文件之间通过继承来避免冗余。为了保持配置文件简洁易读，我们将一些必要但不常改动的配置存放到了 `$MMPOSE/configs/_base_` 目录下，如果希望查阅完整的配置信息，你可以运行如下指令：
 
 ```Bash
 python tools/analysis/print_config.py /PATH/TO/CONFIG
@@ -92,7 +92,7 @@ python tools/analysis/print_config.py /PATH/TO/CONFIG
 
 通用配置指与训练或测试无关的必要配置，主要包括：
 
-- **默认Hook**：迭代时间统计，训练日志，参数更新，checkpoint等
+- **默认Hook**：迭代时间统计，训练日志，参数更新，checkpoint 等
 
 - **环境配置**：分布式后端，cudnn，多进程配置等
 
@@ -137,7 +137,7 @@ _base_ = ['../../../_base_/default_runtime.py'] # 以运行时的config文件位
 
 数据配置指数据处理相关的配置，主要包括：
 
-- **数据后端**：数据供给后端设置，默认为本地硬盘，我们也支持从LMDB，S3 Bucket等加载
+- **数据后端**：数据供给后端设置，默认为本地硬盘，我们也支持从 LMDB，S3 Bucket 等加载
 
 - **数据集**：图像与标注文件路径
 
@@ -219,7 +219,7 @@ test_dataloader = val_dataloader # 默认情况下不区分验证集和测试集
 
 - 训练轮数和测试间隔
 
-- 学习率调整策略，如warmup，scheduler
+- 学习率调整策略，如 warmup，scheduler
 
 - 优化器和学习率
 
@@ -258,7 +258,7 @@ auto_scale_lr = dict(base_batch_size=512) # 根据batch_size自动缩放学习�
 
 - 测试时增强策略
 
-下面是模型配置的样例说明，定义了一个基于HRNetw32的Top-down Heatmap-based模型：
+下面是模型配置的样例说明，定义了一个基于 HRNetw32 的 Top-down Heatmap-based 模型：
 
 ```Python
 # 定义数据编解码器，如果在数据配置部分已经定义过则无需重复定义
@@ -360,7 +360,7 @@ MMPose 配置文件命名风格如下：
 
 - **数据信息**：数据集名称、模态、输入尺寸等，如 `ap10k-256x256`，`zebra-160x160` 等
 
-有时为了避免文件名过长，会省略模型信息中一些强相关的模块，只保留关键信息，如RLE-based算法中的`GAP`，Heatmap-based算法中的`deconv`等。
+有时为了避免文件名过长，会省略模型信息中一些强相关的模块，只保留关键信息，如RLE-based算法中的`GAP`，Heatmap-based算法中的 `deconv` 等。
 
 如果你希望向MMPose添加新的方法，你的配置文件同样需要遵守该命名规则。
 
@@ -421,7 +421,7 @@ model = dict(type='ResNet', depth=50)
 optimizer = dict(_delete_=True, type='SGD', lr=0.01) # 重新定义字典
 ```
 
-此时字典中除了`type`和`lr`以外的内容（`momentum`和`weight_decay`）将被全部删除：
+此时字典中除了 `type` 和 `lr` 以外的内容（`momentum`和`weight_decay`）将被全部删除：
 
 ```Python
 cfg = Config.fromfile('resnet50_lr0.01.py')
@@ -429,5 +429,5 @@ cfg.optimizer  # ConfigDict(type='SGD', lr=0.01)
 ```
 
 ```{note}
-如果你希望更深入地了解配置系统的高级用法，可以查看 [MMEngine 教程](https://github.com/open-mmlab/mmengine/tree/main/docs/en/tutorials)。
+如果你希望更深入地了解配置系统的高级用法，可以查看 [MMEngine 教程](https://mmengine.readthedocs.io/zh_CN/latest/tutorials/config.html)。
 ```
