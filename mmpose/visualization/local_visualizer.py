@@ -179,14 +179,16 @@ class PoseLocalVisualizer(Visualizer):
             for i, (pos, label) in enumerate(zip(positions, labels)):
                 label_text = classes[
                     label] if classes is not None else f'class {label}'
+                pos -= self.line_width
 
                 self.draw_texts(
                     label_text,
                     pos,
                     colors=self.text_color,
                     font_sizes=int(13 * scales[i]),
+                    vertical_alignments='bottom',
                     bboxes=[{
-                        'facecolor': 'black',
+                        'facecolor': [c / 255.0 for c in self.bbox_color],
                         'alpha': 0.8,
                         'pad': 0.7,
                         'edgecolor': 'none'
