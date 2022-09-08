@@ -12,7 +12,7 @@ class TestMultilevelPixelData(TestCase):
 
     def get_multi_level_pixel_data(self):
         metainfo = dict(num_keypoints=17)
-        sizes = [(64, 48), (32, 24), (16, 8)]
+        sizes = [(64, 48), (32, 24), (16, 12)]
         heatmaps = [np.random.rand(17, h, w) for h, w in sizes]
         masks = [torch.rand(1, h, w) for h, w in sizes]
         data = MultilevelPixelData(
@@ -25,7 +25,7 @@ class TestMultilevelPixelData(TestCase):
         data = self.get_multi_level_pixel_data()
         self.assertIn('num_keypoints', data)
         self.assertTrue(data.nlevel == 3)
-        self.assertTrue(data.shape == ((64, 48), (32, 24), (16, 8)))
+        self.assertTrue(data.shape == ((64, 48), (32, 24), (16, 12)))
         self.assertTrue(isinstance(data[0], PixelData))
 
     def test_setter(self):

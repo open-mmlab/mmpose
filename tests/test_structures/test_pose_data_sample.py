@@ -10,7 +10,7 @@ from mmpose.structures import MultilevelPixelData, PoseDataSample
 
 class TestPoseDataSample(TestCase):
 
-    def get_pose_data_sample(self):
+    def get_pose_data_sample(self, multilevel: bool = False):
         # meta
         pose_meta = dict(
             img_shape=(600, 900),  # [h, w, c]
@@ -29,16 +29,17 @@ class TestPoseDataSample(TestCase):
         pred_instances.keypoint_scores = torch.rand(1, 17)
 
         # gt_fields
-        gt_fields = PixelData()
-        gt_fields.heatmaps = torch.rand(17, 64, 48)
-
-        # multilevel_gt_fields
-        metainfo = dict(num_keypoints=17)
-        sizes = [(64, 48), (128, 96), (256, 192)]
-        heatmaps = [np.random.rand(17, h, w) for h, w in sizes]
-        masks = [torch.rand(1, h, w) for h, w in sizes]
-        multilevel_gt_fields = MultilevelPixelData(
-            metainfo=metainfo, heatmaps=heatmaps, masks=masks)
+        if multilevel:
+            # generate multilevel gt_fields
+            metainfo = dict(num_keypoints=17)
+            sizes = [(64, 48), (32, 24), (16, 12)]
+            heatmaps = [np.random.rand(17, h, w) for h, w in sizes]
+            masks = [torch.rand(1, h, w) for h, w in sizes]
+            gt_fields = MultilevelPixelData(
+                metainfo=metainfo, heatmaps=heatmaps, masks=masks)
+        else:
+            gt_fields = PixelData()
+            gt_fields.heatmaps = torch.rand(17, 64, 48)
 
         # pred_fields
         pred_fields = PixelData()
@@ -48,7 +49,6 @@ class TestPoseDataSample(TestCase):
             gt_instances=gt_instances,
             pred_instances=pred_instances,
             gt_fields=gt_fields,
-            multilevel_gt_fields=multilevel_gt_fields,
             pred_fields=pred_fields,
             metainfo=pose_meta)
 
@@ -81,8 +81,9 @@ class TestPoseDataSample(TestCase):
         # test gt_fields
         data_sample.gt_fields = PixelData()
 
-        # test multilevel_gt_fields
-        data_sample.multilevel_gt_fields = MultilevelPixelData()
+        # test multilevel gt_fields
+        data_sample = self.get_pose_data_sample(multilevel=True)
+        data_sample.gt_fields = MultilevelPixelData()
 
         # test pred_instances as pytorch tensor
         pred_instances_data = dict(
@@ -115,8 +116,10 @@ class TestPoseDataSample(TestCase):
         data_sample = self.get_pose_data_sample()
 
         for key in [
-                'gt_instances', 'pred_instances', 'gt_fields', 'pred_fields',
-                'multilevel_gt_fields'
+                'gt_instances',
+                'pred_instances',
+                'gt_fields',
+                'pred_fields',
         ]:
             self.assertIn(key, data_sample)
             exec(f'del data_sample.{key}')

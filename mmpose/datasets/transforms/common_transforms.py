@@ -991,7 +991,7 @@ class GenerateTarget(BaseTransform):
                 heatmaps.append(_heatmaps)
                 keypoint_weights.append(_keypoint_weights)
 
-            results['multilevel_heatmaps'] = heatmaps
+            results['heatmaps'] = heatmaps
             # keypoint_weights.shape: [N, K] -> [N, n, K]
             results['keypoint_weights'] = np.stack(keypoint_weights, axis=1)
 

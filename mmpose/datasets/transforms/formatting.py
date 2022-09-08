@@ -145,18 +145,21 @@ class PackPoseInputs(BaseTransform):
         data_sample.gt_instance_labels = gt_instance_labels.to_tensor()
 
         # pack fields
-        gt_fields = PixelData()
+        gt_fields = None
         for key, packed_key in self.field_mapping_table.items():
             if key in results:
-                gt_fields.set_field(results[key], packed_key)
-        data_sample.gt_fields = gt_fields.to_tensor()
+                if isinstance(results[key], list):
+                    data_type = MultilevelPixelData
+                else:
+                    data_type = PixelData
 
-        # pack multilevel fields
-        multilevel_gt_fields = MultilevelPixelData()
-        for key, packed_key in self.multilevel_field_mapping_table.items():
-            if key in results:
-                multilevel_gt_fields.set_field(results[key], packed_key)
-        data_sample.multilevel_gt_fields = multilevel_gt_fields.to_tensor()
+                if gt_fields is None:
+                    gt_fields = data_type()
+
+                gt_fields.set_field(results[key], packed_key)
+
+        if gt_fields:
+            data_sample.gt_fields = gt_fields.to_tensor()
 
         img_meta = {k: results[k] for k in self.meta_keys if k in results}
         data_sample.set_metainfo(img_meta)
