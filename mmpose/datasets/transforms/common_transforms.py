@@ -95,7 +95,7 @@ class RandomFlip(BaseTransform):
 
         - img
         - img_shape
-        - flip_pairs
+        - flip_indices
         - bbox (optional)
         - bbox_center (optional)
         - keypoints (optional)
