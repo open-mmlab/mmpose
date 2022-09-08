@@ -2,7 +2,7 @@
 
 重构之后的 MMPose 1.0 与之前的版本有较大改动，对部分模块进行了重新设计和组织，降低代码冗余度，提升运行效率，降低学习难度。
 
-对于有一定基础的开发者，本章节提供了一份迁移指南。不论你是**旧版 MMPose 的用户**，还是**希望将自己的 PyTorch项目迁移到 MMPose 的新用户**，都可以通过本教程了解如何构建一个基于 MMPose 1.0 的项目。
+对于有一定基础的开发者，本章节提供了一份迁移指南。不论你是**旧版 MMPose 的用户**，还是**希望将自己的 PyTorch 项目迁移到 MMPose 的新用户**，都可以通过本教程了解如何构建一个基于 MMPose 1.0 的项目。
 
 ```{note}
 本教程包含了使用 MMPose 1.0 时开发者会关心的内容：
@@ -238,7 +238,7 @@ class MpiiDataset(BaseCocoStyleDataset):
         return data_list
 ```
 
-在对MPII数据集进行支持时，由于MPII需要读入`head_size`信息来计算`PCKh`，因此我们在`__init__()`中增加了`headbox_file`，并重载了`_load_annotations()`来完成数据组织。
+在对MPII数据集进行支持时，由于MPII需要读入 `head_size` 信息来计算 `PCKh`，因此我们在`__init__()`中增加了 `headbox_file`，并重载了 `_load_annotations()` 来完成数据组织。
 
 如果自定义数据集无法被 `BaseCocoStyleDataset` 支持，你需要直接继承 [MMEngine](https://github.com/open-mmlab/mmengine) 中提供的 `BaseDataset` 基类。具体方法请参考相关[文档](https://mmengine.readthedocs.io/en/latest/advanced_tutorials/basedataset.html)。
 
@@ -270,7 +270,7 @@ test_pipeline = [
 
 - **原始图片空间**：图片存储时的原始空间，不同图片的尺寸不一定相同
 
-- **输入图片空间**：模型输入的图片尺度空间，所有**图片**和**标注**被缩放到输入尺度，如`256x256`，`256x192`等
+- **输入图片空间**：模型输入的图片尺度空间，所有**图片**和**标注**被缩放到输入尺度，如 `256x256`，`256x192` 等
 
 - **输出尺度空间**：模型输出和训练监督信息所在的尺度空间，如`64x64(热力图)`，`1x1(回归坐标值)`等
 
@@ -284,9 +284,9 @@ test_pipeline = [
 
 #### i. 数据增强
 
-数据增强中常用的变换存放在 `$MMPOSE/mmpose/datasets/transforms/common_transforms.py` 中，如`RandomFlip`、`RandomHalfBody` 等。
+数据增强中常用的变换存放在 `$MMPOSE/mmpose/datasets/transforms/common_transforms.py` 中，如 `RandomFlip`、`RandomHalfBody` 等。
 
-对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于bottom-up方法，这些则是由 `BottomupRandomAffine` 实现。
+对于 top-down 方法，`Shift`、`Rotate`、`Resize` 操作由 `RandomBBoxTransform`来实现；对于 bottom-up 方法，这些则是由 `BottomupRandomAffine` 实现。
 
 ```{note}
 值得注意的是，大部分数据变换都依赖于 `bbox_center` 和 `bbox_scale`，它们可以通过 `GetBBoxCenterScale` 来得到。
@@ -294,7 +294,7 @@ test_pipeline = [
 
 #### ii. 数据变换
 
-我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 `TopdownAffine` 完成，在 bottom-up 方法中则由 `BottomupRandomAffine`完成。
+我们使用仿射变换，将图像和坐标标注从原始图片空间变换到输入图片空间。这一操作在 top-down 方法中由 `TopdownAffine` 完成，在 bottom-up 方法中则由 `BottomupRandomAffine` 完成。
 
 #### iii. 数据编码
 
@@ -354,7 +354,7 @@ class GenerateTarget(BaseTransform):
 
 - **fields**(torch.tensor)：像素级别的训练标签（如高斯热图）或预测结果，属于输出尺度空间
 
-下面是`PoseDataSample`底层实现的例子：
+下面是 `PoseDataSample` 底层实现的例子：
 
 ```Python
 def get_pose_data_sample(self):
