@@ -315,7 +315,7 @@ class MSPNHead(BaseHead):
                 features (or multiple MSMU features for TTA)
             batch_data_samples (List[:obj:`PoseDataSample`]): The Data
                 Samples. It usually includes information such as
-                `gt_instances`
+                `gt_instance_labels`.
             test_cfg (Config, optional): The testing/inference config
 
         Returns:
@@ -383,7 +383,7 @@ class MSPNHead(BaseHead):
                 stages and units
             batch_data_samples (List[:obj:`PoseDataSample`]): The Data
                 Samples. It usually includes information such as
-                `gt_instance_labels`and `gt_fields`.
+                `gt_instance_labels` and `gt_fields`.
             train_cfg (Config, optional): The training config
 
         Returns:
